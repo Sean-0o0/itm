@@ -1,0 +1,9 @@
+{
+  "extends": "eslint-config-umi",
+  // "extends": "react-app",
+  "rules": {
+    "jsx-a11y/href-no-hash": "off",
+    "no-console": "warn",
+    "valid-jsdoc": "warn"
+  }
+}

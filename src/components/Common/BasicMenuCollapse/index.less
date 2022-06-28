@@ -1,0 +1,31 @@
+.basicMenuCollapse {
+  background-color: #fff;
+  border: none;
+
+  .panel {
+    &:global(.ant-collapse-item) {
+      border: none;
+
+      & > :global(.ant-collapse-header) {
+        padding-left: 1rem;
+
+        &:hover {
+          color: #1890ff;
+        }
+
+        & > :global(.arrow) {
+          left: inherit;
+          right: 1rem;
+        }
+      }
+
+      & > :global(.ant-collapse-content) {
+        border-top: 0;
+
+        & > :global(.ant-collapse-content-box) {
+          padding: 0;
+        }
+      }
+    }
+  }
+}

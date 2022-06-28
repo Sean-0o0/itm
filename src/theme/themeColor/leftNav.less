@@ -1,0 +1,372 @@
+@charset "utf-8";
+
+//m-sider
+.m-sider {
+  background: #f3f3f3;
+  // background: @menu-bg-wrap;
+
+  .m-sider-head {
+    background: #f3f3f3;
+    // background: @menu-bg-wrap;
+    .iconfont.icon-menu {
+      color: #333;
+    }
+  }
+
+}
+
+.ant-layout-sider {
+  // background: @menu-bg-wrap;
+  background: #f3f3f3;
+}
+
+.m-menu {
+  &.ant-menu {
+    .ant-menu-item {
+      &:hover {
+        //color: @head-bg;
+      }
+
+      a:hover {
+        color: @head-bg;
+      }
+
+      &.ant-menu-item-selected {
+        background: @head-bg;
+        color: #fff;
+      }
+    }
+
+    .ant-menu-submenu {
+      > .ant-menu-submenu-title {
+        &:hover {
+          color: @head-bg;
+
+          .ant-menu-submenu-arrow {
+            &:after,
+            &:before {
+
+              background: -webkit-gradient(linear, left top, right top, from(@head-bg), to(@head-bg));
+              background: -webkit-linear-gradient(left, @head-bg, @head-bg);
+              background: linear-gradient(to right, @head-bg, @head-bg);
+            }
+          }
+        }
+      }
+
+      // &.ant-menu-submenu-selected {
+      //   background: @head-bg;
+      // }
+
+      .ant-menu-item {
+        &:hover {
+          color: @head-bg;
+        }
+
+        &.ant-menu-item-selected {
+          color: #fff;
+          // background: @menu-hover-bg;
+
+          a {
+            color: @head-bg;
+
+            &:hover {
+              color: @head-bg;
+            }
+          }
+        }
+      }
+
+    }
+  }
+
+  //ant-menu-dark
+  &.ant-menu-dark {
+    // background: @menu-bg-wrap;
+    background: #f3f3f3;
+    color: #333 !important;
+
+    // .m-menu > li:focus,
+    // > li:hover {
+    //   background: @menu-hover-bg;
+    // }
+
+    .ant-menu-item {
+      &:hover{
+        background: @head-bg;
+        color: #fff !important;
+      }
+    }
+      .ant-menu-submenu {
+        .ant-menu-sub {
+          background: #f3f3f3;
+          color: #333 !important;
+          box-shadow: none;
+          // background: @menu-bg;
+
+          // .ant-menu-item {
+          //   &:hover {
+          //     background: @menu-hover-bg;
+          //   }
+          // }
+
+          .ant-menu-item > a {
+            color: #333;
+          }
+        }
+
+      }
+
+      .ant-menu-submenu-open {
+        color: inherit;
+      }
+    }
+
+    //m-menu-default
+    &.m-menu-default {
+      &.ant-menu {
+        .ant-menu-item {
+          &:hover {
+            background: @hover-bg;
+          }
+
+          &.ant-menu-item-selected {
+
+            border-left: 2px solid @head-bg;
+
+            > a {
+              color: @head-bg !important;
+            }
+          }
+        }
+
+      }
+
+    }
+
+    //m-menu-default-middle
+    &.m-menu-default-middle {
+      &.ant-menu {
+        .ant-menu-item {
+          &.ant-menu-item-selected {
+
+            border-left: 6px solid @head-bg;
+
+            > a {
+              color: @head-bg !important;
+            }
+          }
+        }
+
+      }
+
+    }
+
+    //m-menu-line
+    &.m-menu-line {
+      &.ant-menu {
+        .ant-menu-item {
+          .line {
+
+            background: @head-bg;
+
+          }
+
+        }
+
+        .ant-menu-submenu {
+          > .ant-menu-submenu-title {
+            .line {
+
+              background: @head-bg;
+
+            }
+
+          }
+
+          .ant-menu-item {
+            &.ant-menu-item-selected {
+              a {
+                color: @head-bg;
+
+                &:hover {
+                  color: @head-bg !important;
+                }
+              }
+            }
+
+          }
+
+        }
+
+      }
+
+    }
+
+    //m-menu-message
+    &.m-menu-message {
+      &.ant-menu {
+        .ant-menu-item {
+          i {
+            color: @head-bg;
+          }
+
+          &.ant-menu-item-selected {
+
+            border-left: 2px solid @head-bg;
+
+            > a {
+              color: @head-bg !important;
+            }
+          }
+        }
+
+      }
+
+      .ant-menu-submenu {
+        .ant-menu-submenu-title {
+          &:hover {
+            color: @head-bg !important;
+          }
+
+          i {
+            color: @head-bg;
+          }
+        }
+
+        &.ant-menu-submenu-selected {
+          .ant-menu-submenu-title {
+            &:hover {
+
+              color: @head-bg !important;
+
+              .ant-menu-submenu-arrow {
+                &:after,
+                &:before {
+                  background: -webkit-gradient(linear, left top, right top, from(@head-bg), to(@head-bg)) !important;
+                  background: -webkit-linear-gradient(left, @head-bg, @head-bg) !important;
+                  background: linear-gradient(to right, @head-bg, @head-bg) !important;
+                }
+              }
+
+            }
+
+            i {
+              color: @head-bg;
+            }
+          }
+        }
+      }
+
+    }
+
+  }
+
+  //m-menu-horizontal
+  .m-menu-horizontal {
+    .ant-menu-line {
+      background: @head-bg;
+      border-bottom-color: @head-bg;
+    }
+  }
+
+  //m-tabs-menu
+  .m-tabs-menu {
+    .m-tabs-menu-head {
+      .m-circular {
+
+        background: @head-bg;
+      }
+
+      .m-tabs-menu-title {
+
+        background: @head-bg;
+        border: 1px solid @head-bg;
+
+      }
+
+    }
+
+    .m-tabs-menu-body {
+      li {
+        :hover {
+          color: @head-bg;
+        }
+      }
+    }
+
+  }
+
+  //m-sider360    2018.3.14
+  .m-sider360 {
+    background: @menu-bg-wrap;
+
+    .m-sider360-head {
+      background: @menu-bg;
+    }
+  }
+
+  .m-xuanfu-handle {
+    .m-handle-item {
+      background: @head-bg-tm;
+
+      &:hover {
+        background: @head-bg;
+      }
+    }
+  }
+
+  .m-handle-list {
+    li {
+      .m-handle-icon {
+        background: @head-bg-tm;
+      }
+
+      .m-handle-text {
+        background: @head-bg;
+      }
+
+      &:hover {
+        & > .m-handle-icon {
+          background: @head-bg;
+        }
+      }
+    }
+  }
+
+  .m-menu.ant-menu .ant-menu-submenu > .ant-menu-submenu-title .ant-menu-submenu-arrow::after {
+    background: #333;
+  }
+
+  .m-menu.ant-menu .ant-menu-submenu > .ant-menu-submenu-title .ant-menu-submenu-arrow::before {
+    background: #333;
+  }
+
+  // .m-menu.ant-menu .ant-menu-submenu.ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-submenu-arrow::after {
+  //   background: #fff;
+  // }
+
+  // .m-menu.ant-menu .ant-menu-submenu.ant-menu-submenu-selected > .ant-menu-submenu-title .ant-menu-submenu-arrow::before {
+  //   background: #fff;
+  // }
+
+  .ant-menu.ant-menu-sub.ant-menu-vertical {
+    background: #f3f3f3;
+    color: #333;
+
+    .ant-menu-item > a {
+      color: #333 !important;
+    }
+
+    .ant-menu-item-selected {
+      background: @head-bg !important;
+
+      &.ant-menu-item > a {
+        color: #fff !important;
+      }
+    }
+  }
+
+  .m-menu.ant-menu-dark .ant-menu-item {
+    color: #333;
+  }

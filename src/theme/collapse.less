@@ -1,0 +1,455 @@
+@charset "utf-8";
+
+//m-collapse 2018-03-14
+.m-collapse {
+  &.ant-collapse {
+
+    border: none;
+    margin-bottom: 1.666rem;
+    font-family: @all-family;
+
+    > .ant-collapse-item {
+      .border-radius(0);
+      border: none;
+
+      &:last-child {
+        .border-radius(0);
+      }
+
+      > .ant-collapse-header {
+
+        font-size: 1.666rem;
+        padding: 2.083rem;
+        background: #fff;
+        color: @title-color;
+        .pos(r);
+
+        .arrow {
+          width: 2rem;
+          height: 2rem;
+          line-height: 2rem;
+          .tc();
+          .dib();
+          background: @arrow-box-bg;
+          .border-radius(2rem);
+          .pos(a);
+          left: inherit;
+          right: 2.083rem;
+          top: 2.083em;
+          -webkit-transform: translateY(0%);
+          transform: translateY(0%);
+
+          &:before {
+            content: '\e6e2';
+            font-family: "iconfont" !important;
+          }
+
+          svg {
+            width: 1.5rem;
+            height: 1.5rem;
+            margin: .25rem;
+          }
+
+        }
+
+      }
+
+      &.ant-collapse-item-active {
+        .arrow {
+          transform: rotateX(180deg) !important;
+        }
+      }
+
+      .ant-collapse-content {
+
+        border: none;
+        padding: 0 2.083rem;
+
+        > .ant-collapse-content-box {
+          padding: 0 0 2rem;
+        }
+
+      }
+
+    }
+  }
+
+  &.m-collapse-popup {
+    &.ant-collapse {
+      .ant-collapse-header {
+        border-bottom: 1px solid @border-color;
+      }
+    }
+  }
+
+  &.m-collapse-border {
+    &.ant-collapse {
+
+      border-bottom: 1px solid @border-color;
+      margin-bottom: 0;
+
+      .ant-collapse-content {
+
+        border: none;
+        padding: 0 2.083rem;
+
+        > .ant-collapse-content-box {
+          padding: 0 0 1rem;
+        }
+
+      }
+
+    }
+  }
+
+  &.m-collapse-tree {
+    &.ant-collapse {
+
+      margin-bottom: 0;
+      padding-top: 2rem;
+      background: #fff;
+      .pos(r);
+      overflow: hidden;
+
+      > .ant-collapse-item {
+        .pos(r);
+
+        &:after {
+          content: "";
+          border-left: 1px dashed @blue;
+          .pos(a);
+          .dn();
+          left: 5rem;
+          top: .25rem;
+          z-index: 100;
+          height: 100%;
+        }
+
+        > .ant-collapse-header {
+
+          font-size: 1.5rem;
+          padding: 0 2.083rem 1.5rem 8.083rem;
+          background: #fff;
+
+          .arrow {
+
+            right: inherit;
+            left: 4rem;
+            background: @blue;
+            color: #fff;
+            top: 0;
+            z-index: 110;
+            -webkit-transform: translateY(0%);
+            transform: translateY(0%);
+          }
+
+        }
+
+        .ant-collapse-content {
+
+          border: none;
+          padding: 0 2.083rem;
+          .pos(r);
+
+          > .ant-collapse-content-box {
+            padding: 0 0 2rem 6rem;
+          }
+
+        }
+
+        &.ant-collapse-item-active {
+          &:after {
+            .db();
+          }
+        }
+
+      }
+    }
+
+  }
+}
+
+//m-collapse-cond
+.m-collapse-cond {
+  &.ant-collapse {
+    border: none;
+    background-color: transparent;
+    font-family: @all-family;
+
+    .ant-collapse-item {
+      .border-radius(0);
+      border: none;
+      outline: none;
+
+      .ant-collapse-header {
+        outline: none;
+        padding: 0;
+        height: 2.5rem;
+        line-height: 2rem;
+        padding: 0 0 .5rem;
+
+        .arrow {
+          width: 2rem;
+          height: 2rem;
+          line-height: 2rem;
+          left: 50%;
+          margin-left: -1rem;
+          top: 0;
+          transform: rotate(0deg);
+          .font-s20();
+          color: @view-color;
+
+          &:before {
+            content: '\e6e2';
+            font-family: "iconfont" !important;
+          }
+        }
+      }
+
+      .ant-collapse-content {
+        border-top: none;
+        padding: 0;
+
+        .ant-collapse-content-box {
+          padding: 0;
+        }
+      }
+
+      &.ant-collapse-item-active {
+        .arrow {
+          transform: rotateX(180deg) !important;
+        }
+      }
+
+    }
+
+  }
+
+}
+
+//m-collapse 2018-03-14
+.m-collapse-zhibiao {
+  &.ant-collapse {
+    border: none;
+    margin-bottom: 1rem;
+    font-family: @all-family;
+
+    > .ant-collapse-item {
+      .border-radius(0);
+      border: none;
+
+      &:last-child {
+        .border-radius(0);
+      }
+
+      > .ant-collapse-header {
+        .font-s15();
+        padding: .25rem 0 .75rem 4rem;
+        background: #fff;
+        line-height: 2rem;
+        color: @title-color;
+        .pos(r);
+
+        .arrow {
+          line-height: 2.5rem;
+          left: 2.5rem;
+        }
+      }
+
+      .ant-collapse-content {
+        border: none;
+        padding: 0 0 0 6.25rem;
+
+        > .ant-collapse-content-box {
+          padding: 0 0 .75rem;
+        }
+      }
+
+    }
+  }
+
+}
+
+//数字营销-20190416
+.m-collapse-kequn {
+  &.ant-collapse {
+    .ant-collapse-item {
+      background: #fafafa;
+      .border-radius(.333rem);
+      margin-bottom: 1.666rem;
+      border: 0;
+      overflow: hidden;
+
+      .ant-collapse-header {
+        .font-s14();
+        .font-wb();
+        padding: 1rem 0 1rem 3rem;
+      }
+
+      .ant-collapse-content-box {
+        padding: 0 1.333rem 1.166rem;
+      }
+    }
+  }
+}
+
+//新数字营销
+.m-collapse-hd {
+  &.ant-collapse {
+    .ant-collapse-item {
+      border-bottom: 0;
+
+      .ant-collapse-header {
+        .font-s14();
+        color: @title-color;
+        .font-wb();
+        line-height: 1.833rem;
+        padding: 1rem 0 1rem 2.5rem;
+
+        .ant-collapse-arrow {
+          left: .166rem;
+          .font-wn();
+          width: 1.5rem;
+          height: 1.5rem;
+          line-height: 1.5rem;
+          .tc();
+          background: @blue;
+          .border-radius(1rem);
+          margin-top: 0;
+
+          &:before {
+            content: '\e60b';
+            font-family: "iconfont" !important;
+            .font-s12();
+            .db();
+            color: #fff;
+          }
+        }
+      }
+
+      &.ant-collapse-item-active {
+        .ant-collapse-arrow {
+          &:before {
+            content: '\e610';
+          }
+        }
+      }
+    }
+
+    .ant-collapse-content-box {
+      padding: .333rem 1.666rem 1.5rem 3rem;
+    }
+  }
+}
+
+.m-history-list {
+  > li {
+    .font-s14();
+    line-height: 1.833rem;
+    padding-bottom: .833rem;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+
+    .m-history-left {
+      .fl();
+      width: 12%;
+    }
+
+    .m-history-right {
+      .fl();
+      width: 88%;
+    }
+
+    .m-history-text {
+      color: @title-color;
+    }
+
+    .m-history-time {
+      padding-top: .166rem;
+      color: @light-gray;
+    }
+  }
+}
+
+// kyc collapse
+.m-collapse-kyc {
+  &.ant-collapse {
+
+    border: none;
+    margin-bottom: 1.666rem;
+    font-family: @all-family;
+
+    > .ant-collapse-item {
+      .border-radius(0);
+      border: none;
+
+      &:last-child {
+        .border-radius(0);
+      }
+
+      > .ant-collapse-header {
+
+        // font-size: 1.666rem;
+        padding: 2.683rem;
+        background: #fff;
+        color: @title-color;
+        .pos(r);
+
+        .ant-collapse-arrow {
+          font-size: 1.486rem;
+
+          &:before {
+            content: '\e6e2';
+            font-family: "iconfont" !important;
+          }
+
+        }
+
+        .ant-collapse-extra {
+          margin-top: -0.66rem;
+        }
+      }
+
+      &.ant-collapse-item-active {
+        .arrow {
+          transform: rotateX(180deg) !important;
+        }
+      }
+
+      .ant-collapse-content {
+
+        border: none;
+        padding: 0 2.083rem;
+
+        > .ant-collapse-content-box {
+          padding: 0;
+        }
+
+      }
+
+    }
+  }
+
+  &.m-collapse-border {
+    &.ant-collapse {
+
+      border-bottom: 1px solid @border-color;
+      margin-bottom: 0;
+
+      .ant-collapse-content {
+
+        border: none;
+        padding: 0 2.083rem;
+
+        > .ant-collapse-content-box {
+          padding: 0;
+        }
+
+      }
+
+    }
+  }
+
+}

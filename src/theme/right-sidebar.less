@@ -1,0 +1,171 @@
+@charset "utf-8";
+
+
+//m-right-sidebar
+
+.m-right-sidebar {
+    right: -20rem;
+    width: 20rem;
+    z-index: 1000;
+    background: #fff;
+    top: 0;
+    height: 100%;
+    box-shadow: 5px 1px 40px rgba(0,0,0,.1);
+    transition: all .3s ease;
+    .dn();
+    .pos(f);
+
+    .m-rpanel-title {
+        padding: 1.7rem;
+        color: #fff;
+        text-transform: uppercase;
+        .font-s14();
+        .db();
+        span {
+            cursor: pointer;
+            .fr();
+            .font-s12();
+            i{
+               .font-s12();
+            }
+        }
+    }
+
+    .m-r-panel-body {
+        padding: 1.666rem;
+        color:@font-color;
+
+        ul {
+            margin: 0;
+            padding: 0;
+
+            li {
+                list-style: none;
+                padding: .416rem 0;
+                .dib();
+                .tc();
+
+                .m-theme-name{
+                    color: @tag-color;
+                    .font-s13();
+                }
+
+                a{
+                    width: 4.166rem;
+                    height: 4.166rem;
+                    margin: 0.416rem;
+                    color: transparent;
+                    .pos(r);
+                    .dib();
+                }
+                a.working:before {
+                    content: "\e6b1";
+                    font-family: iconfont;
+                    line-height: 4.166rem;
+                    width: 4.166rem;
+                    height: 4.166rem;
+                    .pos(a);
+                    .font-s16();
+                    top: 0;
+                    left: 0;
+                    color: #fff;
+                    text-align: center;
+                }
+
+                .default-theme {
+                    background: #4c5667;
+                }
+                .green-theme {
+                    background: #53e69d;
+                }
+                .yellow-theme {
+                    background: #a0aec4;
+                }
+                .blue-theme {
+                    background: #2cabe3;
+                }
+                .purple-theme {
+                    background: #707cd2;
+                }
+                .megna-theme {
+                    background: #e4e7ea;
+                }
+
+                .default-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#e23c39 23%,#e23c39 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#e23c39 23%,#e23c39 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#e23c39 23%,#e23c39 99%);
+                }
+                .green-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#00c292 23%,#00c292 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#00c292 23%,#00c292 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#00c292 23%,#00c292 99%);
+                }
+                //2019.5.28新增
+                .orange-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#ed6f67 23%,#ed6f67 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#ed6f67 23%,#ed6f67 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#ed6f67 23%,#ed6f67 99%);
+                }
+
+                .yellow-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#a0aec4 23%,#a0aec4 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#a0aec4 23%,#a0aec4 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#a0aec4 23%,#a0aec4 99%);
+                }
+                .blue-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#54a9df 23%,#54a9df 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#54a9df 23%,#54a9df 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#54a9df 23%,#54a9df 99%);
+                }
+                 //2019.5.28新增
+                .blue-tech-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#2d68de 23%,#2d68de 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#2d68de 23%,#2d68de 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#2d68de 23%,#2d68de 99%);
+                }
+                 //2019.5.28新增
+                .blue-distant-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#4673ae 23%,#4673ae 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#4673ae 23%,#4673ae 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#4673ae 23%,#4673ae 99%);
+                }
+
+                .purple-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#707cd2 23%,#707cd2 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#707cd2 23%,#707cd2 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#707cd2 23%,#707cd2 99%);
+                }
+
+                .megna-dark-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#e4e7ea 23%,#e4e7ea 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#e4e7ea 23%,#e4e7ea 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#e4e7ea 23%,#e4e7ea 99%);
+                }
+
+                .blue-new-theme {
+                    background: #4f5467;
+                    background: -moz-linear-gradient(left,#4f5467 0,#4f5467 23%,#4090f7 23%,#4090f7 99%);
+                    background: -webkit-linear-gradient(left,#4f5467 0,#4f5467 23%,#4090f7 23%,#4090f7 99%);
+                    background: linear-gradient(to right,#4f5467 0,#4f5467 23%,#4090f7 23%,#4090f7 99%);
+                }
+
+            }
+        }
+    }
+
+}
+.m-shw-rside {
+    right: 0;
+    width: 20rem;
+    .db();
+}

@@ -1,0 +1,32 @@
+/*m-chartCard-bg*/
+.m-chartCard-bg{
+    background-image: url("../../assets/theme/@{path}/finish-bg.png");
+    .m-chartBottom{
+        span{
+            color: @head-bg;
+        }
+    }
+}
+
+/*m-chartCard-gray*/
+.m-chartCard-gray{
+
+    .m-chartTop{
+
+        i.icon-mark{
+            color: @head-bg;
+        }
+
+    }
+}
+
+.m-chartCard-gray-rose{
+
+    .m-chartCard-gray-roseMain{
+        border:1px solid @head-bg;
+    }
+
+    &::before{
+        .triangle(bottom,@w:8px,@color:@head-bg)
+    }
+}

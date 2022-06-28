@@ -1,0 +1,21 @@
+.userDrop {
+  float: right;
+  width: auto;
+  // 在伪类中清楚浮动
+  zoom: 1;
+  &:before, &:after {
+    display: table;
+    content: "";
+  }
+  &:after {
+    clear: both;
+  }
+
+  :global(.ant-dropdown) {
+    width: 26rem !important;
+
+    :global(.ant-dropdown-menu-item) {
+      padding: 0;
+    }
+  }
+}

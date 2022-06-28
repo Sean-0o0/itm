@@ -1,0 +1,676 @@
+@charset "utf-8";
+
+//m-table-blue
+.m-table-blue{
+
+    .ant-checkbox-input:focus + .ant-checkbox-inner {
+        border-color: @head-bg;
+    }
+
+    .ant-checkbox-wrapper{
+
+        .ant-checkbox-checked .ant-checkbox-inner,
+        .ant-checkbox-indeterminate .ant-checkbox-inner
+        {
+            background-color: @head-bg;
+            border-color: @head-bg;
+        }
+
+        .ant-checkbox{
+            &:hover{
+               .ant-checkbox-inner{
+                   border-color: @head-bg;
+                }
+            }
+            &:focus{
+               .ant-checkbox-inner{
+                   border-color: @head-bg;
+                }
+            }
+        }
+    }
+
+  .ant-table{
+
+    .ant-table-thead>tr>th {
+
+        i.icon-mark{
+          color: @head-bg;
+        }
+
+    }
+
+    .ant-table-tbody>tr{
+
+        &.active{
+
+            border:2px solid @orange !important;
+            td{
+                border-top:2px solid @orange;
+                border-bottom:2px solid @orange;
+              }
+              td:first-child{
+                border-left:2px solid @orange;
+              }
+
+            td:last-child{
+                border-right:2px solid @orange;
+                div{
+                    &:after{
+                    .triangle(left,@w:8px 12px 8px 12px,@color:@orange);
+                    }
+                }
+
+            }
+
+        }
+
+        &:nth-child(odd):hover{
+            border:2px solid @orange;
+        }
+
+    }
+    .ant-table-tbody>tr:hover td{
+        border-top:2px solid @orange;
+        border-bottom:2px solid @orange;
+        &:first-child{
+          border-left:2px solid @orange;
+        }
+        &:last-child{
+          border-right:2px solid @orange;
+        }
+    }
+
+  }
+
+  &.m-table-blue-small{
+      .ant-table{
+
+        .ant-table-tbody>tr{
+
+            &.active{
+
+                border:1px solid @head-bg !important;
+                td{
+                    border-top:1px solid @head-bg;
+                    border-bottom:1px solid @head-bg;
+                }
+                td:first-child{
+                    border-left:1px solid @head-bg;
+                }
+
+
+            }
+
+            &:nth-child(odd):hover{
+                border:1px solid @head-bg;
+            }
+
+        }
+        .ant-table-tbody>tr:hover td{
+            border-top:1px solid @head-bg;
+            border-bottom:1px solid @head-bg;
+            &:first-child{
+            border-left:1px solid @head-bg;
+            }
+            &:last-child{
+            border-right:1px solid @head-bg;
+            }
+        }
+
+    }
+  }
+
+
+}
+
+
+
+//m-table-customer
+// .m-table-customer{
+
+
+//   .ant-table{
+
+//     .ant-table-tbody{
+
+//         &>tr{
+
+//             &>td a{
+//                 color:@head-bg !important;
+//                 &:hover,&:visited,&:active{
+//                   color:@head-bg !important;
+//                 }
+//             }
+
+//             &.active{
+//                 border:1px solid @head-bg;
+
+//                 &>td{
+//                     background:#fff;
+//                     border-top:1px solid @head-bg;
+//                     border-bottom:1px solid @head-bg;
+//                     &:first-child{
+//                         border-left:1px solid @head-bg;
+//                     }
+//                     &:last-child{
+//                         border-right:1px solid @head-bg;
+//                     }
+
+//                 }
+//                 & + tr{
+//                     & >td{
+//                         border-top:1px solid transparent;
+//                     }
+//                     &:hover{
+//                         & >td{
+//                             border-top:1px solid #fff;
+//                         }
+//                     }
+//                 }
+//             }
+
+//             &:hover{
+//                 border:1px solid @orange;
+//                 background:#fff !important;
+//                 &>td{
+//                     background:#fff !important;
+//                     border-top:1px solid @orange;
+//                     border-bottom:1px solid @orange;
+//                     &:first-child{
+//                         border-left:1px solid @orange;
+//                     }
+//                     &:last-child{
+//                         border-right:1px solid @orange;
+//                     }
+//                 }
+//                 & + tr{
+
+//                     & >td{
+//                         border-top:1px solid transparent;
+//                     }
+
+//                     &.active{
+//                         & >td{
+//                             border-top:1px solid #fff;
+//                         }
+//                     }
+//                 }
+//             }
+
+//             >td{
+//                 .ant-radio-wrapper{
+
+//                     .ant-radio{
+
+//                         .ant-radio-inner{
+
+//                             &:after {
+
+//                                 background-color: @head-bg;
+//                             }
+//                         }
+//                         &.ant-radio-checked{
+
+//                             .ant-radio-inner {
+//                                 border-color:  @head-bg;
+//                             }
+
+//                         }
+//                         &:hover{
+
+//                             .ant-radio-inner{
+//                                 border-color:  @head-bg;
+//                             }
+
+//                         }
+
+//                     }
+
+//                 }
+//             }
+//         }
+
+//     }
+
+//   }
+
+//   .ant-table-scroll {
+//     .ant-table-fixed{
+//         .ant-table-tbody{
+//             > tr{
+//                 &:hover{
+//                     border:none;
+//                     &>td{
+//                         background:transparent;
+//                         border-top:none;
+//                         border-bottom:none;
+//                         &:first-child{
+//                             border-left:none;
+//                         }
+//                         &:last-child{
+//                             border-right:none;
+//                         }
+//                     }
+//                     & + tr{
+
+//                         & >td{
+//                             border-top:1px solid transparent;
+//                         }
+
+//                         &.active{
+//                             & >td{
+//                                 border-top:1px solid transparent;
+//                             }
+//                         }
+//                     }
+//                 }
+//                 &.ant-table-row-hover{
+//                     border:none;
+//                     &>td{
+//                         background:#fff;
+//                         border-top:1px solid @orange;
+//                         border-bottom:1px solid @orange;
+//                         &:first-child{
+//                             border-left:none;
+//                         }
+//                         &:last-child{
+//                             border-right:none;
+//                         }
+//                     }
+//                 }
+
+//             }
+
+//         }
+//       }
+//   }
+
+//   .ant-table-scroll + .ant-table-fixed-left{
+//     .ant-table-fixed{
+//         .ant-table-tbody{
+//             > tr{
+//                 &:hover{
+//                     border:none;
+//                     &>td{
+//                         background:transparent;
+//                         border-top:none;
+//                         border-bottom:none;
+//                         &:first-child{
+//                             border-left:none;
+//                         }
+//                         &:last-child{
+//                             border-right:none;
+//                         }
+//                     }
+//                     & + tr{
+
+//                         & >td{
+//                             border-top:1px solid transparent;
+//                         }
+
+//                         &.active{
+//                             & >td{
+//                                 border-top:1px solid transparent;
+//                             }
+//                         }
+//                     }
+//                 }
+//                 &.ant-table-row-hover{
+//                     border:none;
+//                     &>td{
+//                         background:#fff;
+//                         border-top:1px solid @orange;
+//                         border-bottom:1px solid @orange;
+//                         &:first-child{
+//                             border-left:none;
+//                         }
+//                         &:last-child{
+//                             border-right:none;
+//                         }
+//                     }
+//                 }
+
+
+//             }
+//         }
+//       }
+//   }
+
+// }
+
+
+//m-virtualized-table
+
+.m-virtualized-table{
+
+
+    .virtualized-multigrid-head{
+
+      >div{
+          &:first-child{
+            .virtualized-table-tr{
+
+                .virtualized-table-th{
+
+                    .ant-radio-wrapper{
+
+                        .ant-radio{
+
+                            .ant-radio-inner{
+
+                                &:after {
+
+                                    background-color: @head-bg;
+                                }
+                            }
+                            &.ant-radio-checked{
+
+                                .ant-radio-inner {
+                                    border-color:  @head-bg;
+                                }
+
+                            }
+                            &:hover{
+
+                                .ant-radio-inner{
+                                    border-color:  @head-bg;
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                    .ant-checkbox-input:focus + .ant-checkbox-inner {
+                        border-color: @head-bg;
+                    }
+
+                    .ant-checkbox-wrapper{
+
+                        .ant-checkbox-checked .ant-checkbox-inner,
+                        .ant-checkbox-indeterminate .ant-checkbox-inner
+                        {
+                            background-color: @head-bg;
+                            border-color: @head-bg;
+                        }
+
+                        .ant-checkbox{
+                            &:hover{
+                            .ant-checkbox-inner{
+                                border-color: @head-bg;
+                                }
+                            }
+                            &:focus{
+                            .ant-checkbox-inner{
+                                border-color: @head-bg;
+                                }
+                            }
+                        }
+                    }
+
+
+
+                }
+
+            }
+          }
+      }
+    }
+
+    .virtualized-multigrid-body{
+
+      >div{
+          &:first-child{
+                .virtualized-table-tr{
+
+                        .virtualized-table-td{
+
+                                .ant-radio-wrapper{
+
+                                    .ant-radio{
+
+                                        .ant-radio-inner{
+
+                                            &:after {
+
+                                                background-color: @head-bg;
+                                            }
+                                        }
+                                        &.ant-radio-checked{
+
+                                            .ant-radio-inner {
+                                                border-color:  @head-bg;
+                                            }
+
+                                        }
+                                        &:hover{
+
+                                            .ant-radio-inner{
+                                                border-color:  @head-bg;
+                                            }
+
+                                        }
+
+                                    }
+
+                                }
+
+                                .ant-checkbox-input:focus + .ant-checkbox-inner {
+                                    border-color: @head-bg;
+                                }
+
+                                .ant-checkbox-wrapper{
+
+                                    .ant-checkbox-checked .ant-checkbox-inner,
+                                    .ant-checkbox-indeterminate .ant-checkbox-inner
+                                    {
+                                        background-color: @head-bg;
+                                        border-color: @head-bg;
+                                    }
+
+                                    .ant-checkbox{
+                                        &:hover{
+                                        .ant-checkbox-inner{
+                                            border-color: @head-bg;
+                                            }
+                                        }
+                                        &:focus{
+                                        .ant-checkbox-inner{
+                                            border-color: @head-bg;
+                                            }
+                                        }
+                                    }
+                                }
+
+
+                        }
+
+                }
+          }
+      }
+
+      .virtualized-table-tr{
+
+              border:2px solid #fff;
+              border-left: none;
+              border-bottom:2px solid @table-border;
+
+              &.virtualized-table-tr-selected{
+                    border:2px solid @head-bg;
+                    border-left: none;
+
+              }
+
+              &.virtualized-table-tr-hovered{
+                    border:2px solid @head-bg;
+                    border-left: none;
+
+              }
+
+
+         }
+
+          .virtualized-table-tr-selected + .virtualized-table-tr-selected{
+                 border-top:2px solid transparent;
+
+                &:after{
+
+                   background: @head-bg;
+                }
+
+          }
+
+          .virtualized-table-tr-selected + .virtualized-table-tr-hovered{
+                border-top:2px solid transparent;
+
+                &:after{
+                   background: @head-bg;
+                }
+          }
+
+          .virtualized-table-tr-hovered + .virtualized-table-tr-selected{
+                border-top:2px solid transparent;
+
+                &:after{
+                   background: @head-bg;
+                }
+          }
+
+
+        >div{
+
+          &:first-child{
+
+              .virtualized-table-tr{
+
+                  border:2px solid #fff;
+                  border-right: none;
+                  border-bottom:2px solid @table-border;
+
+                  &.virtualized-table-tr-selected{
+                      border:2px solid @head-bg;
+                      border-right: none;
+
+                  }
+
+                  &.virtualized-table-tr-hovered{
+                      border:2px solid @head-bg;
+                      border-right: none;
+
+                  }
+
+              }
+
+              .virtualized-table-tr-selected + .virtualized-table-tr-selected{
+
+                      border-top:2px solid transparent;
+
+                      &:before{
+
+                        background: @head-bg;
+                      }
+
+              }
+
+              .virtualized-table-tr-selected + .virtualized-table-tr-hovered{
+
+                      border-top:2px solid transparent;
+
+                      &:before{
+
+                        background: @head-bg;
+                      }
+
+              }
+
+              .virtualized-table-tr-hovered + .virtualized-table-tr-selected{
+
+                      border-top:2px solid transparent;
+
+                      &:before{
+                        background: @head-bg;
+                      }
+
+              }
+
+          }
+
+
+        }
+
+
+    }
+
+}
+.react-resizable {
+  position: relative;
+}
+
+.react-resizable-handle {
+  position: absolute;
+  width: 10px;
+  height: 100%;
+  bottom: 0;
+  right: -5px;
+  cursor: col-resize;
+}
+
+
+.m-table-customer{
+
+    .ant-table {
+
+        .ant-table-tbody>tr{
+
+        //     &.active{
+        //         background: @hover-bg;
+        //         td{
+        //             background: @hover-bg;
+        //             // border-bottom-color:@table-border-bg;
+        //             // .box-shadow(@shadow: 0 -1px 0 @table-border-bg);
+        //             // z-index: 1;
+        //         }
+        //     } 
+            &>td a{
+                color:@head-bg;
+                &:hover,&:visited,&:active{
+                    color:@head-bg;
+                }
+            }
+            
+            &.active{
+                background: @hover-bg;
+                td{
+                    background: @hover-bg;
+   
+                }
+            }  
+        }
+        
+        .ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td, .ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td, .ant-table-thead > tr:hover:not(.ant-table-expanded-row) > td, .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
+            background: @hover-bg;
+        }
+    }
+}
+
+.m-table-allProducts {
+  th {
+    white-space: pre-wrap !important;
+    color: @tag-bg !important;
+    border-bottom: 0 !important;
+    background-color: @table-hr-bg !important;
+  }
+  table {
+    table-layout: fixed;
+    border: 0px !important;
+  }
+  td {
+    white-space: normal;
+    // border-bottom: 0 !important;
+  }
+}
+
+
+

@@ -1,0 +1,97 @@
+@charset "utf-8";
+
+/*m-paging*/
+.m-paging{
+	.fr();
+	.font-s0();
+	&.ant-pagination{
+		.ant-pagination-disabled a,
+		.ant-pagination-disabled:hover a,
+		.ant-pagination-disabled:focus a,
+		.ant-pagination-disabled .ant-pagination-item-link,
+		.ant-pagination-disabled:hover .ant-pagination-item-link,
+		.ant-pagination-disabled:focus .ant-pagination-item-link{
+			border-color: #d9d9d9 !important;
+			background: #fff !important;
+			color:#d9d9d9 !important;
+		}
+
+        .ant-pagination-item{
+			min-width: 2.666rem;
+			height: 2.666rem;
+			line-height: 2.666rem;
+			margin-right: .666rem;
+			.font-s14();
+			border: none;
+			.font-wb();
+		}
+
+		.ant-pagination-total-text{
+			min-width: 2.666rem;
+			height: 2.666rem;
+			line-height: 2.666rem;
+			text-align: center;
+			list-style: none;
+			display: inline-block;
+			vertical-align: middle;
+			border: 1px solid #d9d9d9;
+			background-color: #fff;
+			padding: 0 .916rem;
+			margin:0 0 0 0.666rem;
+			.fr();
+			.border-radius(@radius:0.333rem);
+			.font-s14();
+		}
+		.ant-pagination-options {
+			margin-left: 0.666rem;
+			.font-s14();
+		}
+
+		.ant-pagination-prev, .ant-pagination-next, .ant-pagination-jump-prev, .ant-pagination-jump-next{
+		    min-width: 2.666rem;
+			height: 2.666rem;
+			line-height: 2.666rem;
+			.font-s14();
+			border: none;
+		}
+
+		.ant-pagination-options-quick-jumper{
+		   margin-left: .666rem;
+		   line-height:2.666rem;
+
+		   input {
+		   		.font-s14();
+		   		height: 2.666rem;
+		      	margin:-0.25rem 0.25rem 0 0.25rem;
+		   }
+		}
+		.ant-pagination-prev .ant-pagination-item-link, .ant-pagination-next .ant-pagination-item-link{
+			border: none;
+		}
+		.ant-pagination-prev .ant-pagination-item-link::after, .ant-pagination-next .ant-pagination-item-link::after{
+			.font-s14();
+			height: 2.5rem;
+		}
+
+	}
+	.ant-pagination-options-size-changer.ant-select {
+		margin-right: 0;
+	}
+	.ant-select-selection--single{
+		height: 2.666rem;
+	}
+
+	//数字营销
+	&.m-paging-szyx{
+		padding: 1.166rem 0 !important;
+	}
+}
+/*新增样式*/
+.ant-pagination{
+	font-family: @all-family !important;
+	&.ant-table-pagination{
+		padding: 1.5rem 1.5rem;
+		margin:0 !important;
+	}
+}
+

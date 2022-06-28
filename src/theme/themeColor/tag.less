@@ -1,0 +1,175 @@
+@charset "utf-8";
+
+//m-tag-small
+.m-tag-small {
+
+    &.ant-tag{
+        &:hover{
+            background-color: @head-bg;
+            border:1px solid @head-bg;
+            color: #fff;
+        }
+    }
+
+
+    &.m-tag-blue{
+
+        background-color: @head-bg;
+        border:1px solid @head-bg;
+        color: #fff;
+
+        &:hover {
+            background-color: @head-bg;
+            border:1px solid @head-bg;
+            color: #fff;
+        }
+
+    }
+
+    &.ant-tag-checkable-checked {
+        background-color: @head-bg;
+        border:1px solid @head-bg;
+        color: #fff;
+
+        &:hover {
+            background-color: @head-bg;
+            border:1px solid @head-bg;
+            color: #fff;
+        }
+    }
+
+
+}
+
+
+//m-tag
+.m-tag{
+    &:hover {
+        color: @head-bg;
+        .m-badge{
+            &.ant-badge{
+                .ant-badge-count{
+                    color: @head-bg;
+                }
+            }
+        }
+    }
+    &:active {
+        background-color: @hover-bg;
+    }
+    &.ant-tag-checkable-checked {
+        background-color: @hover-bg;
+        border-color: @head-bg;
+        color: @head-bg;
+        .box-shadow(@shadow: -1px 0 0 @head-bg);
+        z-index: 1;
+        &:first-child {
+            .box-shadow(none);
+        }
+        .m-badge{
+            &.ant-badge{
+                .ant-badge-count{
+                    color:@head-bg;
+                }
+            }
+        }
+    }
+    &.m-tag-customer{
+        &.ant-tag-checkable-checked {
+            .box-shadow(none);
+        }
+    }
+    &.ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
+        color:@head-bg;
+    }
+}
+
+//m-tag-list-line
+.m-tag-list-line {
+
+    &.ant-tag-checkable-checked {
+       color:@head-bg;
+       border-bottom:2px solid @head-bg;
+    }
+    &.ant-tag-checkable:not(.ant-tag-checkable-checked):hover {
+        color:@head-bg;
+    }
+    &:hover,&:focus {
+        color:@head-bg;
+        border-bottom:2px solid @head-bg;
+    }
+
+}
+.m-info-tag{
+    .fl();
+    padding: 0 1rem;
+    height: 2rem;
+    line-height: 2rem;
+    background-color: #9aa6ac;
+    color: #fff;
+    border-radius: 2rem;
+    .font-s14();
+    margin: .25rem .5rem .25rem 0;
+}
+
+.m-tag-popup{
+    &.ant-tag{
+        &.m-tag-add {
+            border-color: @head-bg;
+            color: @head-bg;
+            .ant-tag-text{
+                i{
+                    color: @head-bg;
+                }
+            }
+        }
+        &.m-tag-add-input{
+            border-color: @head-bg;
+            .m-tag-add-input-right{
+                background: @head-bg;
+            }
+        }
+    }
+}
+
+.m-risk-tag{
+    &.tag-mcolor{
+        background-color: @tag-bg;
+    }
+}
+
+//m-tag-info
+.m-tag-info {
+    &.ant-tag-checkable-checked {
+       color: @head-bg;
+    }
+    &.ant-tag-checkable:not(.ant-tag-checkable-checked):hover{
+        color: @head-bg;
+    }
+    &:hover {
+        color: @head-bg;
+    }
+}
+//新数字营销
+.m-hd-line-tag{
+    &.m-tag-mcolor{
+        border-color: @head-bg;
+        color: @head-bg;
+    }
+}
+
+.m-pay-tag{
+  &.ant-tag{
+      background-color: @hover-bg2;
+      border-color: @hover-bg2;
+      &.m-tag-add {
+          background-color: #fff;
+          border: 1px dashed @c-gray;
+          &:hover{
+              border-color: @head-bg;
+              color: @head-bg;
+          }
+      }
+  }
+}
+

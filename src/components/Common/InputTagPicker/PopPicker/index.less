@@ -1,0 +1,42 @@
+.inputTagPicker {
+  // display: inline-block;
+  width: 100%;
+
+  :global(.ant-input) {
+    padding: .5rem 1rem;
+    width: 100%;
+    height: 38px;
+    font-size: 1.166rem;
+    color: #484747;
+    border-radius:.333rem !important;
+    // border-top-right-radius:4px !important;
+    // border-bottom-right-radius:4px !important;
+  }
+  &.hideDropBoxAndArrow {
+    :global(.ant-cascader-picker-arrow) {
+      display: none;
+    }
+  }
+  :global(.ant-cascader-menus) {
+    :global(.ant-cascader-menu) {
+      height: auto;
+      overflow: visible;
+      :global(.ant-cascader-menu-item) {
+        padding: 0;
+        background: #fff;
+        &:hover {
+          background: #fff;
+        }
+      }
+    }
+  }
+}
+.m_suffix{
+  position: absolute;
+  right: 0.5rem;
+  top: 0.8rem;
+  :global(.ant-input-search-icon) {
+    color: rgba(0, 0, 0, 0.65);
+  }
+  // font-size: 1.3rem;
+}

@@ -1,0 +1,35 @@
+.table {
+  :global(.ant-table) {
+    overflow-x: auto;
+
+    td {
+      white-space: nowrap;
+    }
+  }
+
+  :global(.ant-table-column-sorters) {
+    &:before {
+      width: 0;
+    }
+  }
+  // HT整合 --------------------------------------------------------------------------------
+  &.affixedTable {
+    display: none !important;
+    height: 3.62rem !important;
+    overflow: hidden !important;
+
+    &:global(.affixed) {
+      display: block !important;
+    }
+  }
+
+  &.mainTable {
+    &:global(.affixed) {
+      :global(.ant-table-thead) {
+        visibility: hidden !important;
+        // height: 0 !important;
+      }
+    }
+  }
+  // HT整合 --------------------------------------------------------------------------------
+}

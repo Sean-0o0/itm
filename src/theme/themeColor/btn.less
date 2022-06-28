@@ -1,0 +1,138 @@
+@charset "utf-8";
+
+//m-btn
+.m-btn {
+    &.m-btn-headColor{
+        background:@head-bg;
+        color:#fff;
+        border:1px solid @head-bg;
+
+        &.ant-btn:focus,
+        &.ant-btn:hover{
+            background:@head-bg;
+            color:#fff;
+            border:1px solid @head-bg;
+            opacity: 0.75;
+        }
+        &.ant-btn[disabled] {
+          color: #00000040;
+          border-color: #a99999;
+        }
+
+    }
+}
+
+
+//m-btn-border
+.m-btn-border {
+
+    &.m-btn-border-headColor{
+        color:@head-bg;
+        border:1px solid @head-bg;
+        &.ant-btn:focus,
+        &.ant-btn:hover{
+            color:@head-bg;
+            border:1px solid @head-bg;
+        }
+    }
+
+    &.m-btn-headColor{
+        background:@head-bg;
+        color:#fff;
+        border:1px solid @head-bg;
+
+        &.ant-btn:focus,
+        &.ant-btn:hover{
+            background: @head-bg;
+            opacity: 0.75;
+            color:#fff;
+            border:1px solid @head-bg;
+        }
+
+    }
+
+    &.btn-1c{
+
+        &.m-btn-border{
+            &:hover{
+                   color:#fff;
+
+                &:after{
+                    color:#fff;
+                }
+            }
+        }
+
+        &.m-btn-border-headColor{
+
+            &:after{
+                background: @head-bg;
+            }
+
+            &:hover{
+
+                   background: @head-bg;
+                   border:1px solid @head-bg;
+
+                &:after{
+                    background: @head-bg;
+                }
+
+            }
+
+        }
+
+    }
+
+}
+
+
+//m-btn-radius
+.m-btn-radius {
+    &.m-btn-headColor{
+        background:@head-bg;
+        color:#fff;
+        border:1px solid @head-bg;
+
+        &.ant-btn:focus,
+        &.ant-btn:hover{
+            background:@head-bg;
+            color:#fff;
+            border:1px solid @head-bg;
+            opacity: 0.75;
+        }
+
+    }
+
+    &.m-btn-headColor-line{
+        color:@pink;
+        border:1px solid @head-bg;
+
+        &.ant-btn:focus,
+        &.ant-btn:hover{
+            background:@head-bg;
+            color:#fff;
+            border:1px solid @head-bg;
+            opacity: 0.75;
+        }
+
+    }
+}
+
+//m-btn-tag
+.m-btn-tag {
+
+    &.m-btn-tag-headColor{
+        color:#fff;
+        background-color: @head-bg;
+        border:1px solid @head-bg;
+
+        &.ant-btn:focus,
+        &.ant-btn:hover{
+            color:#fff;
+            background-color: @head-bg;
+            border:1px solid @head-bg;
+        }
+
+    }
+}

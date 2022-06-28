@@ -1,0 +1,69 @@
+.basicTransfer {
+  .list {
+    border: 1px solid #d9d9d9;
+    border-radius: 4px;
+    vertical-align: middle;
+    // .leftList {
+
+    // }
+    // .rightList {
+
+    // }
+    :global(.ant-list-header) {
+      padding: 0;
+      border-bottom: 0;
+      .checkAllBox {
+        padding: 6px 12px;
+        border-bottom: 1px solid #e8e8e8;
+      }
+      :global(.ant-input-search) {
+        padding: 4px;
+      }
+    }
+    :global(.ant-spin-nested-loading) {
+      height: 320px;
+    }
+    :global(.ant-spin-container) {
+      height: 100%;
+      overflow: auto;
+      list-style: none;
+      padding: 0;
+      margin: 0;
+
+      >div {
+        height: 100% !important;
+      }
+    }
+    .listItem {
+      display: block;
+      width: 100%;
+      &:hover {
+        background-color: #e6f7ff;
+      }
+      :global(.ant-list-item) {
+        padding: 6px 12px;
+        :global(.ant-list-item-meta-avatar) {
+          margin-right: 8px;
+        }
+      }
+    }
+  }
+  :global(.ant-btn) {
+    display: block;
+    margin: 2px auto;
+  }
+}
+
+.helperClass {
+  background-color: hsla(0,0%,100%,.8);
+  box-shadow: 0 5px 5px -5px rgba(0,0,0,.2), 0 -5px 5px -5px rgba(0,0,0,.2);
+  cursor: row-resize;
+  display: block;
+  z-index: 10000;
+  :global(.ant-list-item) {
+    padding: 6px 12px;
+    :global(.ant-list-item-meta-avatar) {
+      margin-right: 8px;
+    }
+  }
+}

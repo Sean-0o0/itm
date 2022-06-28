@@ -1,0 +1,229 @@
+.blue{color: @blue !important;}
+.blueDark{color: @blueDark !important;}
+.green{color: @green !important;}
+.red{color: @red !important;}
+.orange{color: @orange !important;}
+.darkorange{
+  color:@darkorange;
+}
+.violet{color: @violet !important;}
+.pink{color: @pink !important;}
+.lightGray{color: @lightGray !important;}
+.darkgray{color: @title-color;}
+.gray{color: @tag-color !important;}
+.bg-violet{
+  background: @violet !important;
+}
+.bg-deep-violet{
+  background: @deepViolet !important;
+}
+.bg-pink{
+  background: @pink !important;
+}
+.bg-orange{
+  background: @orange !important;
+}
+.bg-blue{
+  background: @blue !important;
+}
+.bg-green{
+  background: @green !important;
+}
+.bg-gray{
+  background: @lightGray !important;
+}
+.bg-silvery{
+  background: @silvery !important;
+}
+.bg-light-blue{
+  background: @lightBlue !important;
+}
+.bg-light-pink{
+  background: @lightPink2 !important;
+}
+.bg-dark-pink{
+  background: @darkPink !important;
+}
+
+
+.m-hr{
+  border:none;
+  border-bottom:1px solid @border-color;
+  margin-bottom:2rem;
+}
+.txt-d{
+  text-decoration: underline !important;
+}
+
+//m-circles
+.m-circles{
+
+  width: 0.583rem;
+  height: 0.583rem;
+  margin-right: 0.5rem;
+  .border-radius(1.25rem);
+  .dib();
+  .pos(r);
+  top:-0.083rem;
+  background: @lightGray;
+
+  &.blue{
+    background: @blue;
+  }
+
+  &.pink{
+    background: @pink;
+  }
+  &.orange{
+    background: @orange;
+  }
+  &.gray{
+    background: @arrow-box-bg;
+  }
+
+  &.m-circles-big{
+    width: 1rem;
+    height: 1rem;
+  }
+
+}
+
+//m-square
+.m-rectangle{
+  width: 1.5rem;
+  height: 0.75rem;
+  margin-right: 0.666rem;
+  .dib();
+  .pos(r);
+  top:-0.083rem;
+  background: @lightGray;
+  &.blue{
+    background: @blue;
+  }
+  &.pink{
+    background: @pink;
+  }
+  &.orange{
+    background: @orange;
+  }
+  &.gray{
+    background: @arrow-box-bg;
+  }
+}
+
+//position
+.position{
+  .pos(r);
+}
+
+//flex
+.dis-fx{
+  .dis-fx();
+}
+
+.flex{
+  .flex();
+}
+.alc{
+  .alc();
+}
+
+//m-loading
+
+.m-loading{
+
+    .dib();
+    margin-right: 0.333rem;
+
+   img{
+     height: 1.666rem;
+     width:1.666rem;
+     -webkit-animation: rotate 2s linear infinite;
+    animation: rotate 2s linear infinite;
+
+   }
+
+}
+
+//float
+
+.right{
+  .fr();
+}
+.left{
+  .fl();
+}
+
+//对齐方式
+
+.tr{
+  .tr();
+}
+.tc{
+  .tc();
+}
+
+.fwb{
+  .font-wb();
+}
+
+//display
+
+.db{
+  .db() !important;
+}
+.dn{
+  .dn() !important;
+}
+.dib{
+  .dib() !important;
+}
+
+//pay
+.m-pt10 {
+  padding-top: .833rem;
+}
+.m-pt12 {
+  padding-top: 1rem;
+}
+.m-pt14 {
+  padding-top: 1.166rem;
+}
+.m-pb10 {
+  padding-bottom: .833rem;
+}
+.m-pb12 {
+  padding-bottom: 1rem;
+}
+.m-pb14 {
+  padding-bottom: 1.166rem;
+}
+.d-blue {
+  color: #1e9ee0;
+}
+.d-red {
+  color: #e65353;
+}
+.c-gray{
+  color: @c-gray
+}
+
+//运营分析
+.t-green{
+  color: #50ca4d;
+}
+//新数字营销
+.light-gray{
+  color: @light-gray;
+}
+
+//产品销售情况
+.m-pt16 {
+  padding-top: 1.333rem;
+}
+.m-pb20 {
+  padding-bottom: 1.666rem;
+}
+.m-mr20 {
+  margin-right: 1.666rem;
+}

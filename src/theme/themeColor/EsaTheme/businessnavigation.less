@@ -1,0 +1,288 @@
+@charset "utf-8";
+// 步骤条
+.esa-steps{
+    &.ant-steps{
+        .ant-steps-item:not(.ant-steps-item-active):not(.ant-steps-item-process) >
+        .ant-steps-item-container[role='button']:hover {
+            .ant-steps-item-icon{
+                border-color: @head-bg;
+                .ant-steps-icon {
+                    color: @head-bg;
+                }
+            }
+            .ant-steps-item-title,.ant-steps-item-description,.ant-steps-item-subtitle{
+                color: @head-bg;
+            }
+
+        }
+
+        .ant-steps-item{
+            &::before{
+                background-color: @head-bg;
+            }
+            &.ant-steps-item-active{
+                .ant-steps-item-icon{
+                    background:@head-bg;
+                    border-color:@head-bg;
+                }
+            }
+            &.ant-steps-item-finish{
+                .ant-steps-item-icon{
+                    border-color:@head-bg;
+                    span{
+                        color: @head-bg;
+                    }
+                }
+                .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title::after {
+                    background: @head-bg;
+                }
+            }
+        }
+
+    }
+}
+
+//考核导航页面适配主题色
+.esa-salaryNavigation-mokuai-list {
+  padding-top: 10px;
+  li {
+    padding: 8px 0;
+    a:hover{
+      color: @head-bg !important;
+    }
+  }
+}
+//导航进度条适配主题色
+.esa-salaryNavigation-progress {
+  .ant-progress-circle-path{
+    stroke: @head-bg !important;
+  }
+  .ant-progress-bg{
+    background-color: @head-bg !important;;
+  }
+}
+  /*试算完成信息*/
+.esa-salaryNavigation-result-linkarrow{
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    margin-left: -13px;
+    .iconfont{
+      font-size: 24px;
+      color: rgba(84,169,223,0.5);
+      background: -webkit-linear-gradient(top,rgba(84,169,223,0),@head-bg);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+}
+//导航计算薪酬步骤条
+.esa-salaryNavigation-steps{
+  &.ant-steps{
+    .ant-steps-item-active,.ant-steps-item-finish{
+      .ant-steps-item-title,.ant-steps-item-description,.ant-steps-item-subtitle{
+        color: @head-bg;
+      }
+    }
+  }
+}
+/* 单选按钮 */
+.esa-radio-group-inner{
+    .ant-radio-checked .ant-radio-inner{
+        border-color: @head-bg;
+    }
+    .ant-radio-inner::after{
+        background-color: @head-bg;
+    }
+}
+
+/* 开关 */
+.esa-switch-headColor{
+    &.ant-switch-checked{
+        background-color: @head-bg;
+    }
+}
+
+/* 透明背景按钮 */
+.esa-btn-opacity-bg{
+    color: @head-bg;
+    border-color: @head-bg;
+    background-color: @hover-bg;
+    &.ant-btn:hover, &.ant-btn:focus{
+        color: @head-bg;
+        border-color: @head-bg;
+        background-color: @hover-bg;
+        opacity: 0.8;
+    }
+}
+
+/* 树形连接线列表 */
+.esa-tree-list{
+    &.ant-tree li .ant-tree-node-content-wrapper.ant-tree-node-selected{
+        background-color: #fff;
+        color: @head-bg;
+    }
+    &.ant-tree li .ant-tree-node-content-wrapper:hover{
+        background-color: #fff;
+        color: @head-bg;
+    }
+    .esa-tree-list-node:before{
+        border-color: @head-bg;
+    }
+    .esa-tree-list-node:after{
+        border-color: @head-bg;
+    }
+}
+
+
+// 日期选择器
+.esa-datepick .ant-calendar-picker-icon{
+    color: @head-bg !important;
+}
+// 单选
+.esa-raido  {
+    .ant-radio-inner:after{
+        color: @head-bg !important;
+        background-color:@head-bg !important;
+    }
+    .ant-radio-inner{
+        color: @head-bg !important;
+        border-color:@head-bg !important;
+    }
+
+}
+
+//虚线边框按钮鼠标悬浮样式
+.esa-btn-dash-bg {
+    &.ant-btn:hover, &.ant-btn:focus{
+        color: @head-bg !important;
+        border-color: @head-bg !important;
+    }
+}
+
+
+
+// 计算规则定义-添加
+.esa-add :hover{
+    color: @head-bg !important;
+}
+
+.esa-xcxmgl-input :hover{
+    border-color: @head-bg !important;
+}
+.esa-xcxmgl-input :focus{
+    border-color: @head-bg !important;
+    outline-color:  @head-bg !important;
+    box-shadow:0 0 0 0px  @head-bg
+}
+
+
+.esa-xcxmgl-select{
+
+    :hover{
+        border-color: @head-bg !important;
+    // outline-color:  @head-bg !important;
+    box-shadow:0 0 0 0  @head-bg !important;
+    }
+    :focus {
+        border-color: @head-bg !important;
+        // outline-color:  @head-bg !important;
+        box-shadow:0 0 0 0px  @head-bg !important;
+    }
+
+}
+
+.esa-xcxmgl-table   {
+    :active{
+        & .ant-table-row-expand-icon {
+            border-color: @head-bg !important;
+            color:  @head-bg !important;
+        }
+    }
+    :focus{
+        & .ant-table-row-expand-icon {
+            border-color: @head-bg !important;
+            color:  @head-bg !important;
+        }
+    }
+    :hover{
+        .ant-table-row-expand-icon-cell + td a {
+           color:  @head-bg !important;
+        }
+        & .ant-table-row-expand-icon {
+            border-color: @head-bg !important;
+            color:  @head-bg !important;
+        }
+    }
+    & .ant-table-row-expand-icon {
+        border-color: @head-bg !important;
+        color:  @head-bg !important;
+    }
+    a:hover{
+        color:  @head-bg !important;
+    }
+
+
+}
+
+// 数字输入框
+.esa-input-number{
+  &.ant-input-number:hover {
+    border-color: @head-bg !important;
+  }
+}
+
+//下拉选择框
+.esa-select {
+  .ant-select-selection {
+    &:hover,&:active,&:focus {
+      border-color: @head-bg !important;
+    }
+  }
+}
+
+// 数字input框样式
+.esa-input-number{
+
+    &.ant-input-number-input {
+        &:hover{
+                border: 1px solid @head-bg !important;
+            }
+        }
+}
+
+// 周期-月选择器
+.esa-monthpick-no-head{
+    .ant-calendar-header a:hover{
+        color: @head-bg;
+    }
+    .ant-calendar-month-panel-month:hover{
+        background: @hover-bg;
+    }
+    .ant-calendar-month-panel-selected-cell .ant-calendar-month-panel-month{
+        color: #fff !important;;
+        background:@head-bg;
+    }
+}
+
+// 核对薪酬树
+.tree li .typeIsNotTwo a .name {
+  border: 1px solid @head-bg ;
+  color:  @head-bg;
+  background:  @hover-bg;
+}
+.typeIsNotTwo a:hover span,
+.typeIsNotTwo a:hover+ ul li a span {
+  color: @head-bg;
+  background:  @hover-bg;
+  border: 1px solid @head-bg;
+}
+
+// 考核评分列表======v2版本
+.esa-evaluate-tableMx-total {
+    color:@head-bg;
+    font-size: 1.666rem;
+    font-weight: 600;
+}
+.esa-evaluate-table-head-color {
+    color:@head-bg;
+}

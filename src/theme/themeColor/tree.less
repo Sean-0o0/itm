@@ -1,0 +1,20 @@
+@charset "utf-8";
+
+// m-tree style
+.m-tree{
+	&.ant-tree{
+		.ant-tree-checkbox-checked{
+			.ant-tree-checkbox-inner{
+				background-color: @head-bg;
+    				border-color: @head-bg;
+			}
+		}
+		.ant-tree-checkbox-indeterminate{
+			.ant-tree-checkbox-inner::after{
+				background-color: @head-bg;
+			}
+		}			
+	}
+}
+
+

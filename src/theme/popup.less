@@ -1,0 +1,41 @@
+@charset "utf-8";
+
+//m-popup style
+.m-popup{
+	.pos(a);
+	top:50%;
+	transform:translateY(-50%);
+	left:100%;
+	background: #fff;
+	z-index: 10;
+	.m-popup-positon{
+		.pos(r);
+		&:before{
+		    .triangle(right,@w:5px 9px 5px 9px,@color:#fff);
+		    content: '';
+		    .pos(a);
+		    top: 50%;
+		    left:-17px;
+		    transform:translateY(-50%);
+		    overflow: hidden;
+		    z-index:110;
+		}
+
+		&:after{
+		    content: '';
+		    .pos(a);
+		    top: 50%;
+		    left:-24px;
+		    transform:translateY(-50%);
+		    overflow: hidden;
+		}
+	}
+}
+
+
+
+
+
+
+
+

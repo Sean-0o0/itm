@@ -1,0 +1,48 @@
+@charset "utf-8";
+/*m-paging*/
+/*新增全局-20190307*/
+.ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon, .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-link-icon{
+	color: @head-bg;
+}
+.m-paging{
+	&.ant-pagination{
+		.ant-pagination-item-active,
+		.ant-pagination-item-active:focus,
+		.ant-pagination-item-active:hover,
+		.ant-pagination-item:focus,
+		.ant-pagination-item:hover,
+		.ant-pagination-prev:focus .ant-pagination-item-link,
+		.ant-pagination-next:focus .ant-pagination-item-link,
+		.ant-pagination-prev:hover .ant-pagination-item-link,
+		.ant-pagination-next:hover .ant-pagination-item-link{
+			// border-color: @head-bg;
+			// background:@head-bg;
+			color:@head-bg;
+			a{
+			  color:@head-bg;
+			}
+		}
+		.ant-pagination-options{
+			.ant-select-selection:focus,.ant-select-selection:hover,.ant-select-selection:active {
+			  border-color: @head-bg;
+			  -webkit-box-shadow: none !important;
+			          box-shadow: none !important;
+			}
+		}
+		.ant-pagination-jump-prev:focus::after,
+		.ant-pagination-jump-next:focus::after,
+		.ant-pagination-jump-prev:hover::after,
+		.ant-pagination-jump-next:hover::after{
+			color: @head-bg;
+		}
+		.ant-pagination-options-quick-jumper input:hover{
+			border-color: @head-bg;
+		}
+		.ant-pagination-options-quick-jumper input:focus {
+			border-color: @head-bg;
+			outline: 0;
+			-webkit-box-shadow:none !important;
+			        box-shadow:none !important;
+		}
+	}
+}

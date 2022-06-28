@@ -1,0 +1,316 @@
+@charset "utf-8";
+
+//m-tabs-block
+.m-tabs-block{
+    >.ant-tabs-bar{
+        .ant-tabs-nav{
+            .ant-tabs-tab {
+                    background:@head-bg;
+                }
+
+                .ant-tabs-tab-active:after{
+                    .triangle(top,@w:8px,@color:@head-bg)
+                }
+
+        }
+    }
+    &.noIcon{
+        >.ant-tabs-bar{
+            .ant-tabs-nav{
+                background:@head-bg;
+            }
+        }
+    }
+
+}
+
+
+//m-tabs-underline
+.m-tabs-underline{
+
+    .ant-tabs-nav {
+        .ant-tabs-tab{
+            &:hover{
+                color:@head-bg;
+            }
+        }
+        .ant-tabs-tab-active{
+            border-bottom:4px solid @head-bg;
+            color:@head-bg;
+            a{
+                color:@head-bg;
+            }
+            .m-spot{
+                &:before{
+                    background-color:  @head-bg;
+                }
+            }
+        }
+    }
+    .m-tabs-underline-second{
+        .ant-tabs-tab-active{
+            border-bottom:0;
+        }
+    }
+}
+
+//m-tabs-underline-second
+.m-tabs-underline-second{
+    .ant-tabs-nav {
+        .ant-tabs-tab{
+            &:hover{
+                color:@head-bg;
+            }
+        }
+        .ant-tabs-tab-active{
+            color:@head-bg;
+        }
+    }
+}
+
+.m-tabs-underline-thrid{
+  .ant-tabs-nav {
+      .ant-tabs-tab{
+          &:hover{
+              color:@head-bg;
+          }
+      }
+      .ant-tabs-tab-active{
+          border-bottom:2px solid @head-bg;
+          color:@head-bg;
+          a{
+              color:@head-bg;
+          }
+          .m-spot{
+              &:before{
+                  background-color:  @head-bg;
+              }
+          }
+      }
+      .m-tabs-underline-second{
+          .ant-tabs-tab-active{
+              border-bottom:0;
+          }
+      }
+  }
+}
+
+//m-tabs-underline2
+.m-tabs-underline2{
+
+    .ant-tabs-nav {
+        .ant-tabs-tab{
+            &:hover{
+                color:@head-bg;
+            }
+        }
+        .ant-tabs-tab-active{
+            border-bottom:4px solid @head-bg;
+            color:@head-bg;
+        }
+    }
+}
+
+
+//m-tabs-arrow
+.m-tabs-arrow{
+    .ant-tabs-bar{
+        border-bottom:1px solid @head-bg;
+    }
+    .ant-tabs-nav{
+        .ant-tabs-tab-active{
+            color:@head-bg;
+        }
+        .ant-tabs-tab-active:after{
+            .triangle(top,@w:6px,@color:@head-bg)
+        }
+    }
+
+}
+.m-tabs-popup{
+    .ant-tabs-nav {
+        .ant-tabs-tab{
+            &:hover{
+                color:@head-bg;
+            }
+        }
+        .ant-tabs-ink-bar{
+            background-color: @head-bg;
+        }
+        .ant-tabs-tab-active{
+            color:@head-bg;
+            a{
+                color:@head-bg;
+            }
+        }
+    }
+}
+.m-tabs-underline-task{
+    .ant-tabs-nav {
+        .ant-tabs-tab{
+            &:hover{
+                color:@head-bg;
+            }
+        }
+        .ant-tabs-ink-bar{
+            background-color: @head-bg;
+        }
+        .ant-tabs-tab-active{
+            color:@head-bg;
+            a{
+                color:@head-bg;
+            }
+        }
+    }
+}
+
+//m-radio-group
+.m-radio-group{
+
+   &.ant-radio-group{
+        .ant-radio-button-wrapper:hover, .ant-radio-button-wrapper-focused{
+            color:@head-bg;
+        }
+        .ant-radio-button-wrapper-checked{
+            border-color: @head-bg;
+            color: @head-bg;
+            box-shadow: -1px 0 0 0 @head-bg;
+        }
+        .ant-radio-button-wrapper-checked:first-child {
+            border-color: @head-bg;
+            box-shadow: none !important;
+        }
+        .ant-radio-button-wrapper-checked::before{
+            background-color: @head-bg !important;
+        }
+    }
+
+}
+
+//m-radio-group
+.m-product-radio-group{
+    &.ant-radio-group{
+        .ant-radio-button-wrapper:hover, .ant-radio-button-wrapper-focused{
+            color:@head-bg;
+        }
+        .ant-radio-button-wrapper-checked{
+            border-color: @head-bg;
+            background-color: @hover-bg;
+            color:@head-bg;
+            box-shadow: -1px 0 0 0 @head-bg;
+        }
+        .ant-radio-button-wrapper-checked:first-child {
+            border-color: @head-bg;
+            box-shadow: none !important;
+        }
+        .ant-radio-button-wrapper-checked::before{
+            background-color: @head-bg !important;
+        }
+    }
+}
+
+//m-radio-group
+.m-radio-group-mcolor{
+    .ant-radio-button-wrapper:hover, .ant-radio-button-wrapper-checked{
+        color:@head-bg;
+    }
+}
+
+.m-jrcp-tabs .ant-tabs-ink-bar{
+    background-color: @head-bg;
+}
+.m-jrcp-tabs .ant-tabs-nav .ant-tabs-tab:hover {
+    color: @head-bg;
+}
+.m-jrcp-tabs .ant-tabs-nav .ant-tabs-tab-active{
+    color: @head-bg;
+    border-bottom-color: @head-bg;
+}
+
+.ant-tabs.ant-tabs-card > .ant-tabs-bar .ant-tabs-tab-active {
+    color: @head-bg;
+}
+
+//数字营销
+.m-top-tabs{
+    &.ant-tabs{
+        .ant-tabs-tab{
+            &:hover{
+                color: @head-bg;
+            }
+            &.ant-tabs-tab-active{
+                background-color: @head-bg;
+            }
+        }
+    }
+}
+
+//竖直方向
+.m-tabs-ver{
+    &.ant-tabs{
+        .ant-tabs-tab{
+            &:hover{
+                color: @head-bg;
+            }
+        }
+    }
+}
+
+//新数字营销
+.m-zxr-tabs{
+    &.ant-tabs{
+        .ant-tabs-tab{
+            &:hover{
+                color: @head-bg;
+            }
+        }
+        .ant-tabs-tab-active{
+            background-color: @head-bg;
+        }
+    }
+}
+.m-tabs-sec{
+    &.m-tabs-sec-lhbd{
+        .ant-tabs-tab{
+            &.ant-tabs-tab-active{
+                color: @head-bg;
+            }
+        }
+    }
+}
+
+//m-tabs-screen2
+.m-tabs-screen2 {
+  .ant-tabs-nav {
+    .ant-tabs-tab {
+      padding: .5rem 1rem;
+      border-radius: .25rem;
+      margin-right: 2rem;
+      .font-s16();
+      line-height: 2rem;
+      transition: none;
+      -webkit-transition: none;
+
+    }
+
+    .ant-tabs-tab-active {
+      background: @head-bg;
+      border-bottom: none !important;
+      color: #fff !important;
+    }
+  }
+}
+
+.m-tabs-sec2{
+  &.ant-tabs{
+    .ant-tabs-tab{
+      &:hover{
+        color: @head-bg;
+      }
+      &.ant-tabs-tab-active{
+        .font-wb();
+        color:  @head-bg;
+      }
+    }
+  }
+}
