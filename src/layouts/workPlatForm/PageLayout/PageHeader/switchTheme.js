@@ -1,5 +1,5 @@
 import React from 'react';
-import { Link } from 'dva/router';
+import { Link } from 'umi';
 import { Button, List } from 'antd';
 import SendMessage from '../../../../components/WorkPlatForm/MainPage/Customer/MyCustomer/Buttons/SendMessage';
 import ServiceRecord from '../../../../components/WorkPlatForm/MainPage/Customer/MyCustomer/Buttons/ServiceRecord';

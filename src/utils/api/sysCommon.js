@@ -11,4 +11,10 @@ export default [
     url: '/dbfast/direct',
     dis: '通用对象数据查询接口',
   },
+  {
+    code: 'objectQuery',
+    key: 'objectQuery',
+    url: '/oprnintg/v1/objQuery',
+    dis: '通用对象查询接口',
+  },
 ];

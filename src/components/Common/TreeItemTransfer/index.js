@@ -1,20 +1,20 @@
 import React, { Component } from 'react';
 import classnames from 'classnames';
-import { Row, Col, Tree, List, Checkbox, Input } from 'antd';
+import { Row, Col, Tree, List, Checkbox, Input, Tooltip, Icon } from 'antd';
 import { SortableContainer, SortableElement, arrayMove } from 'react-sortable-hoc';
 import TreeUtils from '../../../utils/treeUtils';
 import styles from './index.less';
 
 const { TreeNode } = Tree;
 
-const SortableItem = SortableElement(({ item, selectedKeys, render, onRowClick }) => {
+const SortableItem = SortableElement(({ item, selectedKeys, render, onRowClick, renderListItemTitle }) => {
   const { key, title, disabled = false } = item;
   return (
     <a className={styles.listItem} herf="#" onClick={e => onRowClick(e, key)}>
       <List.Item>
         <List.Item.Meta
           avatar={<Checkbox key={key} disabled={disabled} checked={selectedKeys.includes(key)} />}
-          description={render ? render(item) : title}
+          description={render ? render(item) : renderListItemTitle(key, title)}
         />
       </List.Item>
     </a>
@@ -28,7 +28,7 @@ const SortableList = SortableContainer(({ items, rightClassName, renderHeader, .
       itemLayout="horizontal"
       header={renderHeader()}
     >
-      <div style={{ height: '380px', overflowY: 'auto' }}>
+      <div id="sortContainer" style={{ height: '380px', overflowY: 'auto' }}>
         {items.map((item, index) => (
           <SortableItem key={item.key} index={index} item={item} {...itemParams} />
         ))}
@@ -75,6 +75,10 @@ class TreeItemTransfer extends Component {
     // 默认不改动 state
     return null;
   }
+  getContainer = () => {
+    const Content = document.getElementById('sortContainer');
+    return Content;
+  }
   // 搜索
   onSearchChange = (e) => {
     const { value } = e.target;
@@ -114,6 +118,10 @@ class TreeItemTransfer extends Component {
     }
     this.setState({ selectedKeys, selectedTitles });
     this.triggerChange({ selectedKeys, selectedTitles });
+  }
+  clearAll = () => {
+    this.setState({ selectedKeys: [], selectedTitles: [] });
+    this.triggerChange({ selectedKeys: [], selectedTitles: [] });
   }
   onSortEnd = ({ oldIndex, newIndex }) => {
     const { selectedKeys, selectedTitles } = this.state;
@@ -171,11 +179,11 @@ class TreeItemTransfer extends Component {
       const { key, title, children } = node;
       // 叶子节点
       if (!children) {
-        return <TreeNode key={key} title={title} />;
+        return <TreeNode key={key} title={this.renderTitle(key, title)} />;
       }
       // 非叶子节点
       return (
-        <TreeNode key={key} title={title}>
+        <TreeNode key={key} title={this.renderTitle(key, title)}>
           {
             this.getTreeNode(children)
           }
@@ -183,6 +191,26 @@ class TreeItemTransfer extends Component {
       );
     });
   }
+
+  // 渲染口径说明(2020/7/17-新需求)
+  renderTitle = (key, title) => {
+    let node = title;
+    const { dataSource = [], keyName = 'jdid' } = this.props;
+    const data = dataSource.find(m => key === m[keyName]) || {};
+    const { kjsm = '' } = data;
+    if (kjsm) {
+      node = (
+        <React.Fragment>
+          <span>{title}</span>
+          <Tooltip placement="bottomLeft" title={<div dangerouslySetInnerHTML={{ __html: kjsm.replace(/(\r\n|\n|\r)/gm, "<br />") }} />}>
+            <Icon style={{ marginRight: '1.5rem', marginLeft: '0.333rem' }} type="question-circle" />
+          </Tooltip>
+        </React.Fragment>
+      )
+    }
+    return node;
+  }
+
   // 判断是否是叶子节点
   isLeaf = (key) => {
     const { pKeyName = 'pid', dataSource = [] } = this.props;
@@ -205,15 +233,18 @@ class TreeItemTransfer extends Component {
   }
   renderHeader = () => {
     const { selectedKeys } = this.state;
-    const { sortable = false } = this.props;
+    const { sortable = false, clearable = false } = this.props;
     return (
-      <div className={styles.listHeader}>
-        <div className={classnames(styles.checkAllBox, 'clearfix')}>
-          <span>
-            已选{selectedKeys.length }条
+      <div className={styles.listHeader} style={{ height: '100%' }}>
+        <div className={classnames(styles.checkAllBox, 'clearfix')} style={{ height: '100%' }}>
+          <span style={{ fontSize: '2.2rem', fontWeight: 'bold' }}>
+            已选项{selectedKeys.length}项
           </span>
           {
-            sortable && <span style={{ float: 'right', fontSize: '12px', color: '#9e9e9e' }}>提示: 按住可以拖拽排序</span>
+            sortable && <span className='flex1' style={{ textAlign: 'right', fontSize: '1.833rem', color: '#9e9e9e' }}>提示: 按住可以拖拽排序</span>
+          }
+          {
+            clearable && <span className='flex1' style={{ textAlign: 'right', fontSize: '1.833rem', color: '#54A9DF' }}><span style={{cursor: 'pointer'}} onClick={this.clearAll}>清空</span></span>
           }
         </div>
       </div>
@@ -228,7 +259,7 @@ class TreeItemTransfer extends Component {
         <List.Item>
           <List.Item.Meta
             avatar={<Checkbox key={key} disabled={disabled} checked={selectedKeys.includes(key)} />}
-            description={render ? render(item) : title}
+            description={render ? render(item) : this.renderTitle(key, title)}
           />
         </List.Item>
       </a>
@@ -248,13 +279,18 @@ class TreeItemTransfer extends Component {
       treeCheckedKeys = [...selectedKeys];
     }
     return (
-      <Row className={classnames(styles.treeItemTransfer, className)} type="flex" align="middle" gutter={2} style={{ paddingTop: '0.75rem', paddingLeft: '0.75rem', paddingRight: '0.75rem', paddingBottom: '0.75rem', height: '100%' }}>
-        <Col span={12}>
-          <div className={styles.treeContent} style={{ height: '30rem' }}>
-            <Input.Search style={{ display: 'block', width: '95%', height: '3rem', margin: '0.5rem auto' }} placeholder="搜索" onChange={this.onSearchChange} />
-            <div style={{ height: '25.8rem', padddingBottom: '0.2rem', overflowY: 'auto' }}>
-              { treeDatas.length === 0 && <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>暂无数据</div> }
-              { treeDatas.length > 0 && (
+      <Row className={classnames(styles.treeItemTransfer, className)} type="flex" align="middle" gutter={2} style={{ padding: '1.5rem', height: '100%' }}>
+        <Col span={12} style={{ padding: '0 1rem' }}>
+          <div className={styles.treeContent} style={{ height: '47rem' }}>
+            <div style={{ display: 'flex', alignItems: 'center', width: '100%', padding: '0rem 2rem', height: 'calc(8rem - 1px)', borderBottom: '1px solid #e8e8e8' }}>
+              <div style={{ fontSize: '2.2rem', fontWeight: 'bold' }}>可选项</div>
+              <div className='flex1' style={{ textAlign: 'right' }}>
+                <Input.Search style={{ height: '5rem', width: '50%' }} placeholder="搜索" onChange={this.onSearchChange} />
+              </div>
+            </div>
+            <div className='tranfer-scorll' style={{ height: '38.5rem', padddingBottom: '0.5rem', overflowY: 'auto' }}>
+              {treeDatas.length === 0 && <div style={{ textAlign: 'center', marginTop: '1.5rem' }}>暂无数据</div>}
+              {treeDatas.length > 0 && (
                 <Tree
                   showLine
                   checkable
@@ -265,7 +301,7 @@ class TreeItemTransfer extends Component {
                   defaultExpandedKeys={treeDatas[0] ? [treeDatas[0].key] : []}
                   // selectedKeys={selectedKeys}
                   className={classnames(styles.tree, leftClassName, treeClass)}
-                  // onSelect={this.handleTreeSelect}
+                // onSelect={this.handleTreeSelect}
                 >
                   {
                     this.getTreeNode(treeDatas)
@@ -275,7 +311,7 @@ class TreeItemTransfer extends Component {
             </div>
           </div>
         </Col>
-        <Col span={12}>
+        <Col span={12} style={{ padding: '0 1rem' }}>
           {
             sortable ? (
               <div>
@@ -289,6 +325,8 @@ class TreeItemTransfer extends Component {
                   selectedKeys={selectedKeys}
                   render={render}
                   onRowClick={this.onRowClick}
+                  getContainer={this.getContainer}
+                  renderListItemTitle={this.renderTitle}
                 />
               </div>
             ) : (

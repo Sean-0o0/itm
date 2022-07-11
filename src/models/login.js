@@ -23,15 +23,38 @@ export default {
   effects: {
     // 登录操作
     *login({ payload }, { call, put }) {
-      const { userName, password, verifyCode = '' } = payload;
+      const { userName, password, verifyCode = '', authCode = '' } = payload;
       const params = {
         mode: 'user',
         clientId: CLIENTID,
         signature: '',
         ext: '',
       };
-      const isCaptcha = sessionStorage.getItem('isCaptcha') === 'true';
-      params.ext = isCaptcha ? JSON.stringify({ verifyCode }) : '';
+      function isJSON(str) {
+        if (typeof str == 'string') {
+          try {
+            var obj = JSON.parse(str);
+            if (typeof obj == 'object' && obj) {
+              return true;
+            } else {
+              return false;
+            }
+
+          } catch (e) {
+            return false;
+          }
+        }
+      }
+      const isCaptchaStr = sessionStorage.getItem('isCaptcha');
+      if (isJSON(isCaptchaStr)) {
+        const isCaptchaOb = JSON.parse(isCaptchaStr);
+        const authCodeFlag = isCaptchaOb[CLIENTID]; // 0都不开，1开图形验证码，2开短信验证码
+        if (Number.parseInt(authCodeFlag, 10) === 1) {
+          params.ext = JSON.stringify({ verifyCode });
+        } else if (Number.parseInt(authCodeFlag, 10) === 2) {
+          params.ext = JSON.stringify({ verifyCode: authCode });
+        }
+      }
       // aas-aes加密
       AES.setSecret(APP_SECRET);
       const sigStr = JSON.stringify({ mode: params.mode, user: userName, password, timestamp: new Date().getTime() });
@@ -39,7 +62,6 @@ export default {
       // 清空session缓存
       sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
       sessionStorage.setItem('recentlyVisited', ''); // 清除历史记录
-      sessionStorage.setItem('projectIndex', ''); // 清除各个方案保存的首页
       try {
         const response = yield call(AccountLogin, params);
         const { code = 0, note = '', user = {} } = response || {};
@@ -51,6 +73,7 @@ export default {
             user,
           },
         });
+        yield put({ type: 'fetOperationLog' }); // 记录日志
         yield put({ type: 'global/resetAll' });
         yield put({ type: 'global/checkAuth' });
         yield put({ type: 'global/fetchUserBasicInfo', payload: { isFirst: true } });

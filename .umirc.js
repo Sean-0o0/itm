@@ -11,16 +11,20 @@ const mainPageRoutes = require('./src/routesConfig/workPlatForm/mainPage');
 const mainPageRoutesConfig = mainPageRoutes.routes;
 const IconFontRoutes = require('./src/routesConfig/IconFont');
 const IconFontRoutesConfig = IconFontRoutes.routes;
+const largeScreenRoutes = require('./src/routesConfig/largeScreen');
+const largeScreenRoutesConfig = largeScreenRoutes.routes;
+// const taskCenterRoutes = require('./src/routesConfig/taskCenter');
+// const taskCenterRoutesConfig = taskCenterRoutes.routes;
 const singlePageRoutes = require('./src/routesConfig/workPlatForm/singlePage');
 const singlePageRoutesConfig = singlePageRoutes.routes;
-const OrgVersionCfgDetailRoutes = require('./src/routesConfig/workPlatForm/EsaPage/OrgVersionCfgDetail');
-const OrgVersionCfgDetailRoutesConfig = OrgVersionCfgDetailRoutes.routes;
-const SalaryVersionDetailRoutes = require('./src/routesConfig/workPlatForm/EsaPage/SalaryVersionDetail');
-const SalaryVersionDetailRoutesConfig = SalaryVersionDetailRoutes.routes;
+// const motProductionRoutes = require('./src/routesConfig/motProduction');
+// const motProductionRoutesConfig = motProductionRoutes.routes;
+// const proCenterRoutes = require('./src/routesConfig/processCenter');
+// const proCenterRoutesConfig = proCenterRoutes.routes;
 
 export default {
   // publicPath: '/c5_basic/',
-  outputPath: './c5_esa',
+  outputPath: './c5_umi',
   hash: true, // 是否开启 hash 文件后缀
   history: 'hash', // hash|browser
   ignoreMomentLocale: true,
@@ -29,8 +33,8 @@ export default {
   uglifyJSOptions: {
     parallel: true,
   },
-  // devtool: 'source-map',
   devtool: 'eval',
+  // devtool: 'source-map',
   plugins: [
     [
       // https://umijs.org/plugin/umi-plugin-react.html
@@ -50,15 +54,9 @@ export default {
           antd: true,
           enable: true,
         },
-        // dll: true,
         dll: {
           include: ['dva', 'dva/router', 'dva/saga', 'dva/fetch', 'antd/es'],
         },
-        // pwa: {
-        //   manifestOptions: {
-        //     srcPath: 'manifest.json',
-        //   },
-        // },
       },
     ],
   ],
@@ -67,37 +65,43 @@ export default {
     ...loginRoutesConfig, // 登录页面相关路由信息
     ...testPageRoutesConfig, // 测试demo的相关路由信息
     ...IconFontRoutesConfig, // 图标库路由信息
+    ...largeScreenRoutesConfig, // 大屏页面路由信息
+    //...motProductionRoutesConfig, // MOT配置相关路由信息
+    //...taskCenterRoutesConfig, // 任务中心路由信息
     ...singlePageRoutesConfig, // 单页面的路由信息
-    ...OrgVersionCfgDetailRoutesConfig, // 营业部版本详情配置路由
-    ...SalaryVersionDetailRoutesConfig,// 版本详情路由
+    //...proCenterRoutesConfig,//流程中心路由信息
     ...mainPageRoutesConfig, // 主页面相关路由信息
   ],
   theme: './config/theme.config.js',
   // Webpack Configuration
   proxy: {
     '/api': {
-      // target: 'http://218.66.59.169:41621/',
-      target: 'http://192.168.4.159:8018/',
-      // target: 'http://192.168.0.86',
+      // target: 'http://218.66.59.169:41621',
+      // target: 'http://192.25.105.121:8011',
+      target: 'http://192.168.4.159:6011',
+      // target: 'http://192.168.4.175:8011',
       changeOrigin: true,
       pathRewrite: { '^/api': '/api' }
     },
     '/livebos': {
-      target: 'http://192.168.4.159:8018/',
-      // target: 'http://192.168.0.86',
+      // target: 'http://218.66.59.169:41621',
+      // target: 'http://192.25.105.121:8011',
+      target: 'http://192.168.4.159:8088',
+      // target: 'http://192.168.4.175:8011',
       changeOrigin: true,
       pathRewrite: { '^/livebos': '/livebos' }
-    },
+    }
   },
   alias: {
-    api: resolve(__dirname, './src/services/'),
-    components: resolve(__dirname, './src/components'),
-    config: resolve(__dirname, './src/utils/config'),
-    models: resolve(__dirname, './src/models'),
-    routes: resolve(__dirname, './src/routes'),
-    services: resolve(__dirname, './src/services'),
-    themes: resolve(__dirname, './src/themes'),
-    utils: resolve(__dirname, './src/utils'),
+    $services: resolve(__dirname, './src/services'),
+    $components: resolve(__dirname, './src/components'),
+    $config: resolve(__dirname, './src/utils/config'),
+    $models: resolve(__dirname, './src/models'),
+    $routes: resolve(__dirname, './src/routes'),
+    $themes: resolve(__dirname, './src/themes'),
+    $utils: resolve(__dirname, './src/utils'),
+    $pages: resolve(__dirname, './src/pages'),
+    $common: resolve(__dirname, './src/components/Common'),
   },
   extraBabelPresets: ['@lingui/babel-preset-react'],
   extraBabelPlugins: [
@@ -111,8 +115,8 @@ export default {
       'lodash',
     ],
   ],
-  chainWebpack: function(config, { webpack }) {
-    config.loader({ test: /\.js$/, loader: 'babel', query: {compact: false} });
+  chainWebpack: function (config, { webpack }) {
+    config.loader({ test: /\.js$/, loader: 'babel', query: { compact: false } });
     config.merge({
       optimization: {
         minimize: true,

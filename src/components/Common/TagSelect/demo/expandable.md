@@ -9,7 +9,7 @@ title: 可展开和收起
 import TagSelect from 'ant-design-pro/lib/TagSelect';
 
 function handleFormSubmit(checkedValue) {
-  //console.log(checkedValue);
+  console.log(checkedValue);
 }
 
 ReactDOM.render(

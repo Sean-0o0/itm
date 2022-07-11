@@ -13,5 +13,34 @@
             color: @blue;
             font-weight: bold;
         }
-    } 
+    }
+}
+
+//商机跟踪
+.m-steps-sjgz{
+  &.ant-steps{
+      .ant-steps-item-container{
+        .ant-steps-item-tail{
+          top:30px;
+          &::after{
+              background: url(../assets/commercialPanorama/sjgz-line-bg.png) repeat-x;
+          }
+        }
+        .ant-steps-item-icon{
+          width: 64px;
+          height: 64px;
+          .ant-steps-icon-dot{
+              background: transparent;
+          }
+        }
+        .ant-steps-item-content{
+          margin-left: 32px;
+          .ant-steps-item-title{
+              font-size: 1.167rem;
+              .font-wb();
+              color: #54a9df;
+          }
+        }
+      }
+  }
 }

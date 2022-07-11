@@ -28,20 +28,20 @@ class BetweenInput extends React.Component {
     });
   }
   handleLeft=(value) => {
-    if (value && value > 0) {
+    if (!isNaN(value)) {
       this.setState({
-        leftValue: value,
+        leftValue: Number(value),
       });
+      this.triggerChange({ leftValue: Number(value) });
     }
-    this.triggerChange({ leftValue: value });
   }
   handleRight=(value) => {
-    if (value && value > 0) {
+    if (!isNaN(value)) {
       this.setState({
-        rightValue: value,
+        rightValue: Number(value),
       });
+      this.triggerChange({ rightValue: Number(value) });
     }
-    this.triggerChange({ rightValue: value });
   }
   triggerChange = (changedValue) => {
     // 将值改变传递给form组件.

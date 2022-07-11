@@ -6,13 +6,13 @@
   "dependencies": {
     "@ant-design/compatible": "^0.0.1-alpha.7",
     "@ant-design/icons": "^4.0.0-alpha.11",
-    "@antv/g6": "3.3.0",
+    "@antv/g6": "^3.5.10",
     "@babel/polyfill": "7.7.0",
     "@hanyk/rc-viewer": "^0.0.3",
     "@lingui/react": "^2.8.0",
     "@tweenjs/tween.js": "18.5.0",
     "ant-design-pro": "^2.3.0",
-    "antd": "3.24.2",
+    "antd": "3.26.16",
     "array-move": "2.2.0",
     "axios": "^0.19.0",
     "classnames": "^2.2.6",
@@ -34,16 +34,17 @@
     "highcharts-more": "^0.1.7",
     "html2canvas": "1.0.0-rc.5",
     "immutable": "4.0.0-rc.12",
+    "insert-css": "^2.0.0",
     "json-format": "^1.0.1",
     "json5": "2.1.1",
     "jsonp": "0.2.1",
-    "livebos-frame": "git+http://chenjian1@apexsoft.com.cn:abc**123@git.apexsoft.top/package//livebos-frame.git#1d957b25563ba3534160ebbf060229f08739c8d0",
+    "livebos-frame": "git+http://chenjian1@apexsoft.com.cn:abc**123@git.apexsoft.top/package//livebos-frame.git#4a2adb6bbb1ebc23db98d8d1389eea9e82862838",
+    "livebos-bridge": "^1.0.9",
     "lodash": "^4.17.11",
     "md5": "^2.2.1",
     "nprogress": "^0.2.0",
     "path-to-regexp": "^3.1.0",
     "prop-types": "^15.7.0",
-    "pubsub-js": "^1.9.3",
     "qs": "^6.9.0",
     "quill-image-drop-module": "1.0.3",
     "react": "16.11.0",
@@ -59,7 +60,7 @@
     "react-id-swiper": "1.6.8",
     "react-iframe": "1.8.0",
     "react-infinite-scroller": "1.2.4",
-    "react-json-editor-ajrm": "^2.5.9",
+    "react-json-editor-ajrm": "2.5.9",
     "react-perfect-scrollbar": "^1.5.0",
     "react-quill": "1.3.3",
     "react-resizable": "1.9.0",
@@ -70,7 +71,6 @@
     "store": "^2.0.0",
     "typescript": "3.6.4",
     "umi-request": "^1.2.8",
-    "wangeditor": "^4.6.8",
     "xml2js": "0.4.22"
   },
   "devDependencies": {
@@ -102,8 +102,7 @@
     "stylelint-config-prettier": "^5.2.0",
     "stylelint-config-standard": "^18.3.0",
     "umi": "^2.7.7",
-    "umi-plugin-react": "^1.8.4",
-    "webpack": "^4.46.0"
+    "umi-plugin-react": "^1.8.4"
   },
   "lint-staged": {
     "src/**/*.js": [

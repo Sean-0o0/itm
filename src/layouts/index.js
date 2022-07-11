@@ -1,9 +1,8 @@
 import LoginPageLayout from './login';
 import MainPageLayout from './workPlatForm/PageLayout/index';
-import SinglePageLayout from './single/PageLayout/index';
 import IconFontLayouts from './iconFont/index';
 import TestPageLayout from './test/PageLayout/index';
-import TestPaper from '../components/WorkPlatForm/TestPaper/index';
+import LargeScreenPageLayout from './screen/PageLayout/index';
 
 function BasicLayout(props) {
   const { location: { pathname = '' } } = props;
@@ -11,12 +10,6 @@ function BasicLayout(props) {
     return (
       <div style={{ height: '100%' }}>
         <LoginPageLayout {...props} />
-      </div>
-    );
-  } else if (pathname.startsWith('/single')) {
-    return (
-      <div style={{ height: '100%' }}>
-        <SinglePageLayout {...props} />
       </div>
     );
   } else if (pathname.startsWith('/iconFont')) {
@@ -31,13 +24,15 @@ function BasicLayout(props) {
         <TestPageLayout {...props} />
       </div>
     );
-  } else if (pathname.startsWith('/testPaper')) {
-    return (
-      <div style={{ height: '100%' }}>
-        <TestPaper {...props} />
-      </div>
-    );
-  }else {
+  }
+  // else if (pathname.startsWith('/screen')) {
+  //   return (
+  //     <div style={{ height: '100%' }}>
+  //       <LargeScreenPageLayout {...props} />
+  //     </div>
+  //   );
+  // }
+   else {
     return (
       <div style={{ height: 'auto' }}>
         <MainPageLayout {...props} />

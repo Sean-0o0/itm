@@ -9,4 +9,5 @@ export default [
   { code: '', key: 'link', url: '/amslb/dynamic/link', dis: 'livebos扩展' },
   { code: '', key: 'todoCount', url: '/amslb/workflow/todo/count', dis: '查询待办流程数目' },
   { code: '', key: 'todo', url: '/amslb/workflow/todo', dis: '查询待办流程' },
+  { code: '', key: 'info', url: '/amslb/user/info', dis: '获取LiveBOS用户基础信息' },
 ];

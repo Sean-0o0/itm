@@ -1,19 +1,33 @@
 import React, { Fragment } from 'react';
 import { Card, Row, Col, Button, List, Tag, Spin, Modal, message } from 'antd';
+import { Link } from 'dva/router';
 import lodash from 'lodash';
+import { FetchTokenAuth } from '../../../../services/token';
+import { AES } from '../../../../utils/aes_utils';
+import { APP_SECRET, CLIENTID } from '../../../../utils/config';
 import styles from './userDrop.less';
-import avatorPng from '../../../../assets/blank.jpg';
+import avatorPng from '../../../../assets/headSculpture/cust-default-avater.png';
 import DropdownBox from '../../../../components/Common/DropdownBox';
 import ChangePwd from './ChangePwd';
 // import { SysVersionNum } from '../../../../../services/login'; // 查询当前版本 -废掉
 import BasicModal from '../../../../components/Common/BasicModal';
 import VersionInfoList from './versionInfoList';
 import Avator from './Avator';
+import { FetchQueryOtherUsers } from '../../../../services/commonbase';
+import { fetchUserBasicInfo } from '../../../../services/commonbase/userBasicInfo';
+// import { QuerySubAccountPub } from '../../../../services/commonbase/sysParam';
 // import VersionInfoList from './versionInfoList';
+import OtherUser from './OtherUser';
+import { FetchAes } from '../../../../services/tool';
+
+const { confirm } = Modal;
 
 export default class UserDrop extends React.Component {
   constructor(props) {
     super(props);
+    const { authUserInfo } = props;
+    const { photo = '' } = authUserInfo;
+    const showPic = photo ? `data:image/png;base64,${photo}` : avatorPng;
     this.state = {
       // sysVersionNum: {
       //   bbh: '',
@@ -22,7 +36,7 @@ export default class UserDrop extends React.Component {
       logoutData: [
         {
           key: 'logout',
-          title: '登出',
+          title: '退出登录',
           icon: 'icon-getOut',
         },
       ],
@@ -30,19 +44,177 @@ export default class UserDrop extends React.Component {
       roleVisible: false,
       otherusers: [], // 带条件查出来的其它用户
       allotherusers: [], // 登陆用户的可切换用户
-      total: 0, // 用户总数
+      total: 0, // 带条件查询的用户总数
+      allTotal: 0, // 登陆查询的用户总数
       loading: false, // 切换用户弹窗
       userId: '',
+      avatorShowPic: showPic,
     };
   }
 
+  componentDidMount() {
+    const { userBasicInfo = {} } = this.props;
+    const { loading } = userBasicInfo;
+    if (loading === false && Object.keys(userBasicInfo).length > 1) {
+      this.getAES();
+    }
+  }
+  componentWillReceiveProps(nextProps) {
+    const { userBasicInfo: newUserBasicInfo = {} } = nextProps;
+    const { loading: newloading } = newUserBasicInfo;
+    let newIsEnd = false;
+    if (newloading === false && Object.keys(newUserBasicInfo).length > 1) {
+      newIsEnd = true;
+    }
+
+    const { userBasicInfo = {} } = this.props;
+    const { loading } = userBasicInfo;
+    let IsEnd = false;
+    if (loading === false && Object.keys(userBasicInfo).length > 1) {
+      IsEnd = true;
+    }
+    // IsEnd|newIsEnd true 表示数据加载完毕
+    if (!IsEnd && newIsEnd) {
+      this.getAES();
+    }
+
+    this.forceRender();
+  }
+  getAES = () => {
+    // const userId = localStorage.getItem('firstUserID') || '';
+    const { authUserInfo = {} } = this.props;
+    const userId = lodash.get(authUserInfo, 'extAttr.OWNER', '');
+    const isSwitchUser = localStorage.getItem('isSwitchUser') || '';
+    if (isSwitchUser === 'false') {
+      return;
+    }
+    FetchAes({
+      optType: 'encode',
+      content: userId,
+    }).then((ret) => {
+      const { code = 0, note = '', data = '' } = ret;
+      if (code > 0) {
+        // this.setState({ userId: data }, () => this.getOtherUsers({}));
+      } else {
+        message.error(note);
+      }
+    });
+  }
+  // getOtherUsers = ({ userInfo = '', current = 1 }) => {
+  //   this.setState({ loading: true });
+  //   const { userId } = this.state;
+  //   FetchQueryOtherUsers({
+  //     userId,
+  //     paging: 1,
+  //     userInfo: userInfo || '',
+  //     pageSize: 5,
+  //     current,
+  //     sort: '',
+  //     total: -1,
+  //   }).then((response) => {
+  //     const { records = [], total = 0 } = response;
+  //     const arr = records.map((it) => {
+  //       const { roleName } = it;
+  //       const arrroleName = JSON.parse(roleName);
+  //       return { ...it, roleName: arrroleName };
+  //     });
+  //     if (!userInfo) {
+  //       this.setState({ allotherusers: arr, allTotal: total });
+  //     }
+  //     this.setState({ otherusers: arr, total, loading: false });
+  //   }).catch((error) => {
+  //     this.setState({ loading: false });
+  //     message.error(!error.success ? error.message : error.note);
+  //   });
+  // }
+
+  // showConfirm = () => {
+  //   // const userId = localStorage.getItem('firstUserID') || '';
+  //   const { authUserInfo = {}, theme } = this.props;
+  //   let userName = lodash.get(authUserInfo, 'extAttr.OWNER', '');
+  //   let userInfo = '';
+  //   let userId = '';
+  //   if(userName){
+  //     // aas-aes加密
+  //     AES.setSecret(APP_SECRET);
+  //     userId = AES.encryptBase64(userName);
+  //     // 请求返回账户的详细信息
+  //     QuerySubAccountPub({
+  //       userInfo: userName || '',
+  //       userId,
+  //     }).then(res => {
+  //       const { code, records = [] } = res || {};
+  //       if(code > 0){
+  //         records.forEach(item => {
+  //           const { loginName = '', orgName = '', roleName = '' } = item;
+  //           if(loginName === userName){
+  //             userInfo = `${orgName}-${loginName}-${roleName}`;
+  //           }
+  //         });
+  //         confirm({
+  //           className: theme,
+  //           title: '提示：',
+  //           content: `是否切回初始用户:{${userInfo}}？`,
+  //           okText: '确定',
+  //           cancelText: '取消',
+  //           okButtonProps: { className: 'm-btn-radius m-btn-headColor', style: { marginLeft: 0 } },
+  //           cancelButtonProps: { className: 'm-btn-radius m-btn-gray' },
+  //           onOk() {
+  //             const obj = { timestamp: new Date().getTime(), target: userName };
+  //             let objJson = '{}';
+  //             try {
+  //               objJson = JSON.stringify(obj);
+  //             } catch (e) {
+  //             // do not
+  //             }
+  //             AES.setSecret(APP_SECRET);
+  //             const config = {
+  //               headers: { 'X-Auth-Token': AES.encryptBase64(objJson) },
+  //             };
+  //             FetchTokenAuth({
+  //               CLIENTID,
+  //             }, config).then((result) => {
+  //               const { code = -1 } = result;
+  //               if (code) {
+  //                 window.location.href = '';
+  //               }
+  //             }).catch((error) => {
+  //               message.error(!error.success ? error.message : error.note);
+  //             });
+  //           },
+  //           onCancel() { },
+  //         });
+  //       }
+  //     }).catch((error) => {
+  //       message.error(!error.success ? error.message : error.note);
+  //     });
+  //   }
+  // }
+  // componentDidMount() {
+  //   SysVersionNum({}).then((ret = {}) => {
+  //     const { records = [] } = ret;
+  //     let data = {};
+  //     if (records && records.length > 0) {
+  //       [data] = records;
+  //       const { bbh = '', xqqx = '' } = data;
+  //       this.setState({
+  //         sysVersionNum: {
+  //           bbh,
+  //           xqqx,
+  //         },
+  //       });
+  //     }
+  //   }).catch((error) => {
+  //     message.error(!error.success ? error.message : error.note);
+  //   });
+  // }
   getDropdownBoxTitle = (authUserInfo, userBasicInfo, showPic) => {
     const { name = '' } = authUserInfo || {};
     return (
       <a href="#" onClick={(e) => { e.preventDefault(); }} style={{ display: 'inline-block', width: '100%', height: '100%' }}>
-        <img className="m-avatar" src={showPic} title="头像" alt="avator" onError={this.showDefaultImgError} />
+        {/* <img className="m-avatar" style={{width: '3rem', height: '3rem'}} src={showPic} title="头像" alt="avator" onError={this.showDefaultImgError} /> */}
         <span style={{ paddingLeft: '0.5rem' }}>
-          <span className="name">{name}</span>
+          <span className="name" style={{ fontSize: '1.888rem' }}>{name}</span>
           <i className="iconfont icon-down-solid-arrow" style={{ fontSize: '1rem', paddingLeft: '0.5rem' }} />
         </span>
       </a>
@@ -64,7 +236,8 @@ export default class UserDrop extends React.Component {
     const lastlogin = lodash.get(userBasicInfo, 'extAttr.LAST_LOGIN', '--');
     const loginmethod = lodash.get(userBasicInfo, 'extAttr.LOGIN_METHOD', '');
     lastlogin.replace(/-/g, '.');
-    const userId = localStorage.getItem('firstUserID') || '';
+    // const userId = localStorage.getItem('firstUserID') || '';
+    const userId = lodash.get(userBasicInfo, 'extAttr.OWNER', '');
     let span = 24;
     if (allotherusers.length > 0 && loginName !== userId) {
       span = 8;
@@ -78,10 +251,10 @@ export default class UserDrop extends React.Component {
         className="m-card m-user"
       >
         <Row>
-          <Col span={24}>
-            <div className="m-panel-img" style={{ paddingLeft: '0.583rem', paddingRight: '0.583rem' }}>
+          <Col span={24} style={{ paddingLeft: '2rem' }}>
+            {/* <div className="m-panel-img" style={{ paddingLeft: '0.583rem', paddingRight: '0.583rem' }}>
               <Avator dispatch={dispatch} avatorShowPic={showPic} userBasicInfo={userBasicInfo} forceRender={this.forceRender} />
-            </div>
+            </div> */}
             <div className="m-panel-introduce" style={{ float: 'unset' }}>
               <div className="m-panel-name">{name}</div>
               <div className="m-panel-id">上次登录时间 {lastlogin.replace(/-/g, '.')}</div>
@@ -92,7 +265,7 @@ export default class UserDrop extends React.Component {
                     <Button className="m-btn m-btn-small m-btn-headColor" onClick={() => { return this.cpForm && this.cpForm.showModal(); }}>
                       <span>修改密码</span>
                     </Button>
-                    <ChangePwd ref={(node) => { this.cpForm = node; }} />
+                    <ChangePwd ref={(node) => { this.cpForm = node; }} userBasicInfo={this.props.userBasicInfo} />
                   </React.Fragment>
                 )
               }
@@ -127,14 +300,14 @@ export default class UserDrop extends React.Component {
             </List.Item>
           )}
         /> */}
-                <List
+        <List
           className="m-list-icon-small"
           itemLayout="horizontal"
           style={{ padding: '0.833rem 0', marginTop: '0.833rem' }}
           dataSource={this.state.logoutData}
           renderItem={item => (
             <Row>
-              {
+              {/* {
                 allotherusers.length > 0 && (
                   <Col span={span}>
                     <List.Item
@@ -148,9 +321,9 @@ export default class UserDrop extends React.Component {
                     </List.Item>
                   </Col>
                 )
-              }
-              {
-                loginName !== userId && (
+              } */}
+              {/* {
+                (userId && loginName !== userId) && (
                   <Col span={span}>
                     <List.Item
                       style={{ borderBottom: 'none' }}
@@ -163,8 +336,21 @@ export default class UserDrop extends React.Component {
                     </List.Item>
                   </Col>
                 )
-              }
-              <Col span={span}>
+              } */}
+              <Col span={12}>
+                <Link to={`/UIProcessor?Table=lbSurrogate&hideTitlebar=true`}>
+                  <List.Item
+                    style={{ borderBottom: 'none' }}
+                  >
+                    <List.Item.Meta
+                      avatar={<i className='iconfont icon-follow' />}
+                      title={<span>流程委托</span>}
+                      style={{alignItems: 'center'}}
+                    />
+                  </List.Item>
+                </Link>
+              </Col>
+              <Col span={12}>
                 <List.Item
                   style={{ borderBottom: 'none' }}
                 >
@@ -172,6 +358,7 @@ export default class UserDrop extends React.Component {
                     onClick={() => this.handleLogout(dispatch)}
                     avatar={<i className={`iconfont ${item.icon}`} />}
                     title={<span>{item.title}</span>}
+                    style={{alignItems: 'center'}}
                   />
                 </List.Item>
               </Col>
@@ -180,12 +367,6 @@ export default class UserDrop extends React.Component {
         />
       </Card>
     );
-  }
-  checkPhoto = (photo) => {
-    if (photo === '') {
-      return avatorPng;
-    }
-    return `${localStorage.getItem('livebos') || ''}${photo}`;
   }
   showDefaultImgError = (e) => {
     e.target.src = avatorPng;
@@ -196,10 +377,11 @@ export default class UserDrop extends React.Component {
   }
 
   showRoleModal = () => {
-    const { allotherusers = [] } = this.state;
+    const { allotherusers = [], allTotal = 0 } = this.state;
     this.setState({
       roleVisible: true,
       otherusers: allotherusers,
+      total: allTotal,
     });
   }
 
@@ -222,21 +404,26 @@ export default class UserDrop extends React.Component {
 
   // 强制重新渲染
   forceRender = () => {
-    const { userBasicInfo } = this.props;
-    const { photo = '' } = userBasicInfo || {};
-    const showPic = photo ? `${localStorage.getItem('livebos') || ''}${photo}&t=${new Date().getTime()}` : avatorPng;
-    const userInfoAvatorImg = document.getElementById('userInfoAvatorImg');
-    if (userInfoAvatorImg) {
-      userInfoAvatorImg.src = showPic; // userInfo的头像
-    }
-    this.setState({ avatorShowPic: showPic }); // eslint-disable-line
+    fetchUserBasicInfo({
+    }).then((ret = {}) => {
+      const { code = 0, records = [] } = ret;
+      if (code > 0) {
+        const photo = records[0].extAttr.profileBase64;
+        const showPic = photo ? `data:image/png;base64,${photo}` : avatorPng;
+        let userInfoAvatorImg = document.getElementById('userInfoAvatorImg');
+        if (userInfoAvatorImg) {
+          userInfoAvatorImg.setAttribute('src', showPic); // userInfo的头像
+        }
+        this.setState({ avatorShowPic: showPic });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   render() {
-    const { otherusers = [], loading = false, total = 0 } = this.state;
+    const { otherusers = [], loading = false, total = 0, avatorShowPic: showPic = '' } = this.state;
     const { authUserInfo, userBasicInfo = {}, dispatch } = this.props;
-    const { photo = '' } = userBasicInfo;
-    const showPic = photo ? `${localStorage.getItem('livebos') || ''}${photo}&t=${new Date().getTime()}` : avatorPng;
     // const { sysVersionNum = {} } = this.state;
     // const { bbh = '', xqqx = '' } = sysVersionNum;
     // const listData = [
@@ -284,6 +471,15 @@ export default class UserDrop extends React.Component {
           >
             <VersionInfoList />
           </BasicModal>
+          {/* <BasicModal
+            visible={this.state.roleVisible}
+            onCancel={this.closeRoleModal}
+            footer={null}
+            width="60rem"
+            title="切换用户"
+          >
+            <OtherUser total={total} getOtherUserloading={loading} getOtherUsers={this.getOtherUsers} dispatch={dispatch} closeRoleModal={this.closeRoleModal} otherusers={otherusers} userBasicInfo={authUserInfo} />
+          </BasicModal> */}
         </Spin>
       </Fragment>
     );

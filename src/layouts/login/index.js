@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Layout } from 'antd';
 import classnames from 'classnames';
 import LoginForm from '../../components/WorkPlatForm/LoginPage';
-import mapLogo from '../../assets/apex-logo-login.png';
+import mapLogo from '../../assets/apex-logo-login1.png';
 import mapImg from '../../assets/map.png';
 import TrackCanvas from './TrackCanvas';
 // import testImg from '../../../../src/assets/dev_app_qrcode.png';

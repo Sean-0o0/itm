@@ -11,4 +11,35 @@
 
 }
 
-
+//m-color-popover
+.m-color-popover{
+	&.ant-popover-placement-top{
+		.ant-popover-inner{
+			border: 1px solid @head-bg;
+			box-shadow: 0 2px 8px @head-bg-tm;
+		}
+		.ant-popover-content >.ant-popover-arrow{
+			bottom: 0;
+			width: 0;
+			height: 0;
+			border-bottom: 0;
+			border-left: 10px solid transparent;
+			border-right: 10px solid transparent;
+			border-top: 10px solid @head-bg;
+			transform: none;
+			box-shadow: none;
+			margin-left: -6px;
+			&::after{
+				content: "";
+				.pos(a);
+				bottom: 1px;
+				left: -10px;
+				width: 0;
+				height: 0;
+				border-left: 10px solid transparent;
+				border-right: 10px solid transparent;
+				border-top: 10px solid #fff;
+			}
+		}
+	}
+}

@@ -20,15 +20,10 @@ export default class FetchDataTable extends React.Component {
     dataSource: [],
     chosenRowKey: '', // 单行选中记录的key
   }
-  
   componentDidMount() {
     const { fetch = {} } = this.props;
     this.fetchTableData({ fetch });
-    if(this.props.onRef){
-      this.props.onRef(this);
-    }
   }
-
   componentWillReceiveProps(nextProps) {
     const { pagination, fetch: { service, params = {} }, isPagination = true } = this.props;
     const { fetch: nextFetch = {} } = nextProps;
@@ -148,7 +143,7 @@ export default class FetchDataTable extends React.Component {
   }
   render() {
     const { rowClassName = true, chosenRowKey: chosenRowKeyInState, loading, pagination, selectDatas: selectDatasInstate, dataSource } = this.state;
-    const { rowKey = 'id', className = '', chosenRowKey = chosenRowKeyInState, rowSelection, isPagination = true, ...restProps } = this.props;
+    const { rowKey = 'id', className = '', chosenRowKey = chosenRowKeyInState, rowSelection, isPagination = true, pagerDefaultClassName = 0, ...restProps } = this.props; // pagerDefaultClassName 分页默认样式 0: 使用m-paging样式|1：使用蚂蚁默认样式
     const basicDataTableProps = {
       ...restProps,
       loading,
@@ -156,11 +151,11 @@ export default class FetchDataTable extends React.Component {
       className: classnames(className),
       dataSource,
       pagination: {
-        className: 'm-paging',
+        className: pagerDefaultClassName === 0 ? 'm-paging' : '',
         showTotal: total => `共${total}条`,
         showLessItems: true,
         showSizeChanger: true,
-        showQuickJumper: true,
+        showQuickJumper: false,
         showSinglePager: false,
         ...pagination,
       },

@@ -7,7 +7,7 @@ title: TagPicker 色块选择 单独使用时的简单demo
 import TagPicker from '../../TagPicker';
 
 function handleFormSubmit(checkedValue) {
-  //console.log(checkedValue);
+  console.log(checkedValue);
 }
 
 const tagPickerProps = {

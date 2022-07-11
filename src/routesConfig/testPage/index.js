@@ -13,6 +13,10 @@ exports.routes = [
         component: './testPage/dataTable',
       },
       {
+        path: `${prefix}/test1`,
+        component: './testPage/test1',
+      },
+      {
         path: `${prefix}/test2`,
         component: './testPage/test2',
       },
@@ -29,6 +33,7 @@ exports.routes = [
         models: () => [import('../models/testPage/test3')],
         component: './testPage/test3',
       },
+
       // {
       //   path: `${prefix}/test509`,
       //   models: () => [import('../../models/testPage/test509')],
@@ -43,9 +48,14 @@ exports.routes = [
       //   path: `${prefix}/getParams/:params`,
       //   component: './testPage/getParams',
       // },
+
       {
         path: `${prefix}/form`,
         component: './testPage/form',
+      },
+      {
+        path: `${prefix}/g6Combo`,
+        component: './testPage/g6Combo',
       },
     ],
   },

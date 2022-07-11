@@ -16,8 +16,30 @@ const { basicservices: {
   messageSndDtlDSC,
   messageBatchRvw,
   draftSend,
+  messageSndStandardDtl,
+  messageSndStandardNum,
   queryShortMessageChannel,
 } } = api;
+
+// 获取各个场景人员各渠道发送明细
+export async function FetchMessageSndStandardDtl(payload) {
+  const option = {
+    url: messageSndStandardDtl,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 获取各个场景各个人员各渠道有效数
+export async function FetchMessageSndStandardNum(payload) {
+  const option = {
+    url: messageSndStandardNum,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
 
 // 消息中心 获取发送策略列表
 export async function getMessageSendStrategy(payload) {

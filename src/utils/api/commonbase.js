@@ -59,12 +59,6 @@ export default [
     url: '/commonbase/v1/sysDescription',
     dis: '获取系统说明',
   },
-  {
-    code: '560001',
-    key: 'queryListDictionary',
-    url: '/wmbase/v1/queryListDictionary',
-    dis: '系统通用  获取数据字典',
-  },
   { code: '501025', key: 'sysParam', url: '/commonbase/v1/sysParam', dis: '获取几个平台rul' },
   { code: '501026', key: 'userMenuProject', url: '/commonbase/v1/userMenuProject', dis: '获取菜单方案' },
   { code: '501027', key: 'userDefaultProject', url: '/commonbase/v1/userDefaultProject', dis: '获取默认菜单' }, // 废弃
@@ -80,6 +74,12 @@ export default [
   { code: '501034', key: 'resetPassword', url: '/commonbase/v1/resetPassword', dis: '重置登录密码' },
   // HT整合 -----------------------------------------------------------------------------------------------
   { code: '', key: 'qryLoginPageConf', url: '/commonbase/v1/qryLoginPageConf', dis: '查询登录页面配置' },
-  // 查询薪酬公式配置项目,共用
-  { code: '516004', key: 'querySalaryFormulaConf', url: '/salaryManagement/v1/querySalaryFormulaConf', dis: '查询薪酬公式配置项目' },
+  { code: '', key: 'queryOtherUsers', url: '/commonbase/v1/queryOtherUsers', dis: '查询当前用户的其他用户' },
+  { code: '', key: 'uploadProto', url: '/commonbase/v1/uploadProto', dis: '上传头像' },
+  { code: '', key: 'checkWhtLstIP', url: '/commonbase/v1/checkWhtLstIP', dis: '判断IP是否在白名单' },
+  // 系统监控 start
+  { code: '', key: 'monitorTopologyInfoForEdit', url: '/commonbase/v1/monitorTopologyInfo', dis: '监控-查询拓扑图详情--编辑界面' },
+  { code: '', key: 'monitorTopologyInfoForView', url: '/commonbase/v2/monitorTopologyInfo', dis: '监控-查询拓扑图详情--视图界面' },
+  { code: '', key: 'saveMonitorTopologyInfo', url: '/commonbase/v1/saveMonitorTopologyInfo', dis: '监控-保存拓扑图信息' },
+  // 系统监控 end
 ];

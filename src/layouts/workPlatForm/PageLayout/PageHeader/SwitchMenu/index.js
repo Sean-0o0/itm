@@ -3,8 +3,9 @@ import { connect } from 'dva';
 import { Dropdown, Menu, message } from 'antd';
 import { FetcUserMenuProject, FetCuserProjectUpdate } from '../../../../../services/commonbase';
 import { FetchAes } from '../../../../../services/tool';
+import { clearCache } from 'react-router-cache-route';
 
-class SwitchMenu extends React.Component {
+class SwitchMenu extends React.PureComponent {
   state = {
     isHide: true,
     names: [],
@@ -25,13 +26,27 @@ class SwitchMenu extends React.Component {
         const notes = [];
         records1.forEach((item) => {
           const { name = '', describe = '', note } = item;
-          if (name && describe) {
+          // if (name === 'IRAA') {
+          //   names.splice(0, 0, name);
+          //   describes.splice(0, 0, describe);
+          //   notes.splice(0, 0, note);
+          // }
+          // if (name === 'C5FinanceManagementAgent') {
+          //   names.splice(1, 0, name);
+          //   describes.splice(1, 0, describe);
+          //   notes.splice(1, 0, note);
+          // }
+          if (name === 'IRAA' || name === 'C5FinanceManagementAgent') {
             names.push(name);
             describes.push(describe);
             notes.push(note);
           }
+          // if (name && describe) {
+          //   names.push(name);
+          //   describes.push(describe);
+          //   notes.push(note);
+          // }
         });
-        // this.handleChange(names[0] || '');
         const { location: { pathname, search } } = this.props;
         this.handleChange(names[0], pathname.concat(search), notes[0]);
         this.setState({
@@ -51,12 +66,13 @@ class SwitchMenu extends React.Component {
     });
   }
   handleChange = async (name, path = '', note = '') => {
+    clearCache(); // 切换方案时, 清除所有缓存
     const { fetchMenuDatas } = this.props;
     if (note !== '') {
       const linkObj = JSON.parse(note);
       const { WINDOWTYPE = 'SELF', URL = '', ISAUTH = '1' } = linkObj; // WINDOWTYPE 弹窗类型 SELF：当前页面打开|PAGE:新页面打开 ISAUTH 是否需要auth认证 0:需要|1:不需要
-      const { host } = window.location;
-      if (!URL.includes(host) && !host.includes('localhost') && !host.includes('127.0.0.1')) {
+      const { host, protocol } = window.location;
+      if (URL !== `${protocol}//${host}` && !host.includes('localhost') && !host.includes('127.0.0.1')) {
         await FetCuserProjectUpdate({
           zjfa: name,
         }).then((res) => {
@@ -111,45 +127,39 @@ class SwitchMenu extends React.Component {
   }
   render() {
     const { names, notes, describes, isHide, selectMenu } = this.state;
+    const len = names.length;
     return (
       <div>
         {
           names.length > 1 ? (
             <Dropdown
-              trigger={['click']}
+              trigger={['hover']}
               onClick={this.handleClick}
               overlay={
                 <Menu
                   onSelect={this.handleChange}
+                  style={{ columnCount: len > 20 ? 3 : len > 10 ? 2 : 1, padding: '.5rem 1rem' }}
                 >
                   {
-                    names.length > 0 ? names.map((name, index) => {
+                    names.map((name, index) => {
                       return (
-                        <Menu.Item key={`${name}-${index}`} className={this.state.selectMenu === name ? 'current' : ''} >
+                        <Menu.Item key={`${name}-${index}`} className={this.state.selectMenu === name ? 'current' : ''} style={{ height: '100%', overflow: 'auto' }}>
                           {/* <li className={`${this.state.selectMenu === name ? 'active' : ''} ant-menu-item`}> */}
-                          <a href="#" onClick={(e) => { e.preventDefault(); this.handleChange(name, '', notes[index]); }} style={{ color: '#666', textAlign: 'center', display: 'block', padding: '1rem 0' }}>
+                          <a className="gray" onClick={(e) => { e.preventDefault(); this.handleChange(name, '', notes[index]); }} style={{ textAlign: 'center', display: 'block', padding: '1rem 0' }}>
                             <span>{describes[index]}</span>
                           </a>
                           {/* </li> */}
                         </Menu.Item>
                       );
                     })
-                      : (
-                        <Menu.Item key="0">
-                          {/* <li className="ant-menu-item"> */}
-                          <a href="#" onClick={(e) => { e.preventDefault(); }} style={{ color: '#666', textAlign: 'center', display: 'block', padding: '1rem 0' }}>
-                            <span>暂无数据</span>
-                          </a>
-                          {/* </li> */}
-                        </Menu.Item>
-                      )}
+                  }
                 </Menu>
               }
             >
-              <ul className="m-menu-horizontal ant-menu ant-menu-dark ant-menu-root ant-menu-inline" style={{ padding: 0, background: 'transparent', width: 'auto', marginRight: '2rem' }}>
-                <li className="ant-menu-submenu ant-menu-submenu-inline">
+              <ul className="m-menu-horizontal ant-menu ant-menu-dark ant-menu-root ant-menu-inline" style={{ padding: 0, background: 'transparent', width: 'auto' }}>
+                <li className="ant-menu-submenu ant-menu-submenu-inline" style={{padding: '0 0.5rem'}}>
                   <div className="ant-menu-submenu-title" style={{ padding: ' 0 1rem' }}>
-                    <span style={{ color: '#FFF' }}>
+                    <span style={{ color: '#666' }}>
                       <span className="hide-menu">{describes[names.findIndex((temp) => { return temp === selectMenu; })] || '方案选择'}</span>
                       <i className={`iconfont ${isHide ? 'icon-down-solid-arrow' : 'icon-up-solid-arrow'}`} style={{ fontSize: '1rem', paddingLeft: '0.5rem' }} />
                     </span><div className="m-waves-ripple" />

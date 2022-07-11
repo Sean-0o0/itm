@@ -260,7 +260,7 @@ export default class BasicDataTable extends React.Component {
       return (
         <Table
           {...restProps}
-          className={`${classnames(styles.table, className)} m-table-customer`}
+          className={`${classnames(styles.table, className)} m-table-customer m-table-szyx`}
           rowKey={rowKey}
           columns={finalColumns}
           dataSource={dataSource}
@@ -272,16 +272,22 @@ export default class BasicDataTable extends React.Component {
     // 固定表头
     return (
       <div>
+        <Affix offsetTop={50} target={() => this.props.affixContainer || window}>
+          <div id="scrollTable"></div>
+        </Affix>
         <Affix offsetTop={affixOffsetTop} onChange={this.handleAffixChange} target={() => this.props.affixContainer || window}>
-          <Table
-            {...restProps}
-            className={`${classnames(styles.table, styles.affixedTable, `${styles.affixedTable}-${this.hashCode}`, affixed && 'affixed', className)} m-table-customer`}
-            rowKey={rowKey}
-            columns={finalColumns}
-            dataSource={dataSource.length > 0 ? [dataSource[0]] : []}
-            pagination={false}
-            rowSelection={confirmCrossPageSelect || dataSource.length === 0 ? null : rowSelection}
-          />
+          <div id="freezTable">
+            <Table
+              {...restProps}
+              getPopupContainer={() => affixed ? document.getElementById('scrollTable') : document.getElementById('freezTable')}
+              className={`${classnames(styles.table, styles.affixedTable, `${styles.affixedTable}-${this.hashCode}`, affixed && 'affixed', className)} m-table-customer m-table-szyx`}
+              rowKey={rowKey}
+              columns={finalColumns}
+              dataSource={dataSource.length > 0 ? [dataSource[0]] : []}
+              pagination={false}
+              rowSelection={confirmCrossPageSelect || dataSource.length === 0 ? null : rowSelection}
+            />
+          </div>
           {showBackTop && (
             <div
               className={classnames(backTopClassName)}
@@ -297,15 +303,19 @@ export default class BasicDataTable extends React.Component {
             </div>
           )}
         </Affix>
-        <Table
-          {...restProps}
-          className={`${classnames(styles.table, styles.mainTable, `${styles.mainTable}-${this.hashCode}`, affixed && 'affixed', className)} m-table-customer`}
-          rowKey={rowKey}
-          columns={finalColumns}
-          dataSource={dataSource}
-          pagination={pagination}
-          rowSelection={confirmCrossPageSelect || dataSource.length === 0 ? null : rowSelection}
-        />
+        <div id="">
+          <Table
+            {...restProps}
+            // getPopupContainer={() => affixed ? document.getElementById('scrollTable') : document.getElementById('freezTable')}
+            getPopupContainer={() => document.getElementById('scrollTable')}
+            className={`${classnames(styles.table, styles.mainTable, `${styles.mainTable}-${this.hashCode}`, affixed && 'affixed', className)} m-table-customer m-table-szyx`}
+            rowKey={rowKey}
+            columns={finalColumns}
+            dataSource={dataSource}
+            pagination={pagination}
+            rowSelection={confirmCrossPageSelect || dataSource.length === 0 ? null : rowSelection}
+          />
+        </div>
       </div>
     );
   }

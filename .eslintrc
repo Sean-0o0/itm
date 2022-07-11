@@ -1,9 +1,11 @@
 {
   "extends": "eslint-config-umi",
-  // "extends": "react-app",
   "rules": {
     "jsx-a11y/href-no-hash": "off",
     "no-console": "warn",
-    "valid-jsdoc": "warn"
+    "valid-jsdoc": "off",
+    "react/no-direct-mutation-state": "off",
+    "jsx-a11y/anchor-is-valid": "off",
+    "no-restricted-globals": [0]
   }
 }

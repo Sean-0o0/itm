@@ -1,0 +1,28 @@
+.textOverFlow {
+  white-space: nowrap;
+  overflow: hidden;
+  display: -webkit-box;
+  text-overflow: ellipsis;
+  -webkit-line-clamp: 1;
+  display: -moz-box;
+  display: block;
+  -webkit-box-orient: vertical;
+  -moz-box-orient: vertical;
+  width: 100%;
+  color: #1890ff !important;
+  &:hover {
+    color: #40a9ff !important;
+  }
+}
+
+.maxWidth {
+  max-width: 400px;
+}
+
+.pleaseCheck {
+  :global(a) {
+    color: #313131;
+    padding-left: .2rem;
+    text-decoration: underline !important;
+  }
+}

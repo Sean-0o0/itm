@@ -1,35 +1,77 @@
 import React from 'react';
-import { Layout, Row, Col } from 'antd';
+import { Divider } from 'antd';
+// import SwitchTheme from './switchTheme';
 import UserDrop from './userDrop';
-import TopMenu from './TopMenu';
+import VisitedRoutes from './VisitedRoutes';
+import MessagesDrop from './messagesDrop';
+import { Scrollbars } from 'react-custom-scrollbars';
 import SwitchMenu from './SwitchMenu';
-import HyperLink from '../../../../components/WorkPlatForm/MainPage/HomePage/HyperLink';
+import styles from './index.less';
+import LocalPathUtils from '../../../../utils/localPathUtils';
 
 export default class PageHeader extends React.PureComponent {
+
+  componentWillUnmount() {
+    LocalPathUtils.cleanRouterList();
+  }
   render() {
-    const { menuLangKey, menuTree, style = {}, authorities = {}, logo, userBusinessRole, location, theme, handleThemeChange, dispatch, userBasicInfo, dictionary, authUserInfo, fetchMenuDatas, name = '', menuSchemeName = '' } = this.props;
+    const { menuTree, authorities = {}, history, dispatch, location, userBasicInfo, authUserInfo, fetchMenuDatas, messageDrop, dictionary, userTodoWorkflowNum = 0, projectName, theme } = this.props;
+    const { globalSearch } = authorities;
+    // 引导
+    const guidesRecords = [
+      { key: '1', containerId: 'guideTrigger_userDrop', content: '您在这里可以‘更换头像’、‘修改密码’、‘切换岗位用户’、‘退出’系统。' },
+      { key: '2', containerId: 'guideTrigger_globalSearch', content: '您在这里可以进行‘全局搜索’（菜单、客户、产品）。' },
+      { key: '3', containerId: 'guideTrigger_switchMenu', content: '您在这里可以‘切换菜单方案’。' },
+      { key: '4', containerId: 'guideTrigger_messageDrop', content: '您在这里可以查看‘消息提醒’。' },
+    ];
+    const routerList = LocalPathUtils.getRoutesHaveName();
+    const sysName = localStorage.getItem('sysName');
     return (
-      <Layout.Header className="m-header" style={{ width: '100%', ...style }}>
-        <Row>
-          <Col>
-            <div className="m-logo">
-              <a href="/" className="m-logo-link" style={{ lineHeight: '5rem' }}>
-                <img src={logo} alt="logo" />
-              </a>
+      <div style={{ width: '100%' }}>
+        {/* <GuideCover data={guidesRecords} /> */}
+        <div className="zj-header">
+          <span><img className="logo" src={[require("../../../../assets/apex-logo.png")]} alt="" />
+          <Divider style={{height:'3rem'}} type="vertical" />
+            </span>
+          <span style={{fontSize:'2.333rem',color:'#333',fontWeight:'bold',padding:'0 3rem 0 0'}}>{sysName}</span>
+          <div id="visited_routes_container" style={{ flex: 1, overflow: 'hidden' }} className={`${styles.historyContainer}`} >
+            <span><Scrollbars
+              autoHide
+              style={{ width: '100%'}}
+            >
+              <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList} projectName={projectName} />
+            </Scrollbars>
+              </span>
+          </div>
+          <div id="fma_opertion_drops" className="dis-fx">
+            <div style={{ width: '4rem' }}></div>
+            {/* <div id="guideTrigger_switchMenu" className="ant-menu-item" style={{ position: 'relative', top: '3px' }}>
+              <a onClick={() => { window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`; }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-quota zj-ico-home' style={{ fontSize: '1.6rem' }}/></Badge></a>
+            </div> */}
+            {/* {
+              Object.keys(authorities).includes('remindBell') && ( */}
+            {/* <div id="guideTrigger_messageDrop">
+              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
+            </div> */}
+            {/* )
+            } */}
+            {/* <div id="guideTrigger_switchMenu">
+              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
+            </div> */}
+            {/* {
+              Object.keys(authorities).includes('globalSearch') && (
+                <div id="guideTrigger_globalSearch" style={{ margin: '0 1rem' }}>
+                  <SearchInput menuTree={menuTree} searchAuth={globalSearch} />
+                </div>
+              )
+            } */}
+
+            <div id="guideTrigger_userDrop">
+              <UserDrop theme={theme} dispatch={dispatch} userBasicInfo={userBasicInfo} authUserInfo={authUserInfo} />
             </div>
-          </Col>
-          <Col className="left">
-            <TopMenu location={location} dispatch={dispatch} menuLangKey={menuLangKey} menuTree={menuTree} />
-          </Col>
-          <Col className="right">
-            <UserDrop dispatch={dispatch} userBasicInfo={userBasicInfo} authUserInfo={authUserInfo} />
-          </Col>
-          <Col className="right">
-            <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
-          </Col>
-          <HyperLink name={name} menuTree={menuTree} handleThemeChange={handleThemeChange} theme={theme} userBusinessRole={userBusinessRole} dictionary={dictionary} dispatch={dispatch} authorities={authorities} menuSchemeName={menuSchemeName} />
-        </Row>
-      </Layout.Header>
+          </div>
+        </div>
+      </div>
     );
   }
 }

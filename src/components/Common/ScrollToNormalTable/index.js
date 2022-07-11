@@ -121,7 +121,7 @@ class ScrollToNormalTabl extends React.Component {
     const { columns } = this.state;
     // table父dom元素 isScrollY：是否需要Y轴滚动条 maxPageTotals: 最大页码数
     // isColumnDrag 是否需要列拉伸 -1否|1是   isCheckboxFrz checkbox是否需要列固定
-    const { dataSource = [], columns: columnsProp, isScrollY = -1, scrollHeight = 0, maxPageTotals = -1, fixedColumnCount = 0, rightFixedColumnCount = 0, scrollElement, pagination = {}, rowSelection, isColumnDrag = -1, isCheckboxFrz = -1, tableScrollWidth = 0, scroll, ...otherProps } = this.props;
+    const { dataSource = [], columns: columnsProp, isScrollY = -1, scrollHeight = 0, maxPageTotals = -1, fixedColumnCount = 0, rightFixedColumnCount = 0, scrollElement, pagination = {}, rowSelection, isColumnDrag = -1, isCheckboxFrz = -1, tableScrollWidth = 0, ...otherProps } = this.props;
     let isTableScrollX = false; // 是否需要X轴横向滚动
     let tableScrollX = tableScrollWidth; // 表格宽度
     let countWidthLength = this.countWidth(columns); // 计算表格总宽度
@@ -156,20 +156,20 @@ class ScrollToNormalTabl extends React.Component {
         components={(isColumnDrag === 1 && dataSource.length !== 0) ? this.components : {}}
         columns={tableColumns}
         dataSource={dataSource}
-        scroll={scroll? scroll:{ x: isTableScrollX ? tableScrollX : '', y: isScrollY === -1 ? '' : tableHeight }}
+        scroll={{ x: isTableScrollX ? tableScrollX : '', y: isScrollY === -1 ? '' : tableHeight }}
         pagination={pagination.current ? {
           className: pagination.className || 'm-paging',
           current: pagination.current,
           pageSize: pagination.pageSize,
           total: maxPagers,
-          showQuickJumper: true,
+          showQuickJumper: false,
           showTotal: () => `共${pagination.total}条`,
           onChange: pagination.onChange,
           style: { paddingBottom: '10px', paddingTop: '10px' },
         } :
         {
           className: pagination.className || 'm-paging',
-          showQuickJumper: true,
+          showQuickJumper: false,
           showTotal: total => `共${total}条`,
           style: { paddingBottom: '10px', paddingTop: '10px' },
         }

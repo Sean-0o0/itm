@@ -19,9 +19,11 @@ const { commonbase: { userMenuProject,
   resetPassword,
   qryLoginPageConf,
   userWorkflowList,
-  queryListDictionary,
-  querySalaryFormulaConf,
-  userAuthorityDepartment,
+  uploadProto,
+  queryOtherUsers,
+  monitorTopologyInfoForEdit,
+  monitorTopologyInfoForView,
+  saveMonitorTopologyInfo
 } } = api;
 
 // 首页 -- 获取公司公告
@@ -188,29 +190,51 @@ export async function FetchUserWorkflowList(payload) {
   };
   return request(option);
 }
-// 系统通用  获取数据字典
-export async function FetchQueryListDictionary(payload) {
+
+// 上传头像
+export async function FetchUploadProto(payload) {
   const option = {
-    url: queryListDictionary,
-    method: 'post',
-    data: payload,
-  };
-  return request(option);
-}
-// 系统通用  查询薪酬公式配置项目
-export async function FetchQuerySalaryFormulaConf(payload) {
-  const option = {
-    url: querySalaryFormulaConf,
+    url: uploadProto,
     method: 'post',
     data: payload,
   };
   return request(option);
 }
 
-// 获取用户数据权限营业部数据
-export async function FetchuserAuthorityDepartment(payload) {
+// 查询其它用户
+export async function FetchQueryOtherUsers(payload) {
   const option = {
-    url: userAuthorityDepartment,
+    url: queryOtherUsers,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 监控-查询拓扑图详情--编辑界面
+export async function FetchMonitorTopologyInfoForEdit(payload) {
+  const option = {
+    url: monitorTopologyInfoForEdit,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 监控-查询拓扑图详情--视图界面
+export async function FetchMonitorTopologyInfoForView(payload) {
+  const option = {
+    url: monitorTopologyInfoForView,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 监控-保存拓扑图信息
+export async function FetchSaveMonitorTopologyInfo(payload) {
+  const option = {
+    url: saveMonitorTopologyInfo,
     method: 'post',
     data: payload,
   };

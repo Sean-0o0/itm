@@ -20,6 +20,11 @@ const menuData = [
     path: '/testPage/dataTable',
   },
   {
+    key: 'testPage 1',
+    name: 'testPage 1',
+    path: '/testPage/test1',
+  },
+  {
     key: 'testPage 2',
     name: 'testPage 2',
     path: '/testPage/test2',
@@ -35,10 +40,20 @@ const menuData = [
     path: '/testPage/vTable',
   },
   {
+    key: 'cusGroup',
+    name: '客户群相关组件',
+    path: '/testPage/cusGroup',
+  },
+  {
     key: 'test3',
     name: 'test3',
     path: '/testPage/test3',
   },
+  {
+    key: 'g6Combo',
+    name: 'G6群组',
+    path: '/testPage/g6Combo',
+  }
 ];
 
 export default class TestPageLayout extends React.PureComponent {
@@ -46,7 +61,7 @@ export default class TestPageLayout extends React.PureComponent {
     const { route = {}, location } = this.props;
     const routes = lodash.get(route, 'routes', []);
     return (
-      <Layout className="default-dark-theme" style={{ height: '100%' }}>
+      <Layout className="blue-dark-theme" style={{ height: '100%' }}>
         <PageSider
           location={location}
           routes={routes}

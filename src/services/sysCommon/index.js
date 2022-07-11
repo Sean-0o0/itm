@@ -3,9 +3,19 @@ import config from '../../utils/config';
 import { getObjKey } from '../../utils/dictUtils';
 
 const { api } = config;
-const { sysCommon: { direct } } = api;
+const { sysCommon: { direct, objectQuery } } = api;
 
-// 通用对象数据查询接口
+// 通用对象查询接口（通过对象查询通用接口配置表tObjQuerySetting 来查询对应的对象数据）
+export async function FetchObjectQuery(payload) {
+  const option = {
+    url: objectQuery,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询LiveBOS对象的数据接口（C5标准direct接口，需要配置化微服务定义TC_DB_SERVICE_DEF配置）
 export async function FetchSysCommonTable(payload) {
   const { objectName = '', condition, queryOption = {} } = payload;
   const { orderBy = '' } = queryOption;
@@ -14,9 +24,6 @@ export async function FetchSysCommonTable(payload) {
     serviceId: tmplName,
     payload: { macro: '1', ...condition },
   };
-  if (orderBy) {
-    tmplPayload.orderBy = orderBy;
-  }
   const option = {
     url: direct,
     method: 'post',

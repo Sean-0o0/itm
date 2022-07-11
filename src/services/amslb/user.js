@@ -3,7 +3,7 @@ import config from '../../utils/config';
 
 const { api } = config;
 const { amslb: {
-  access, auths, pwd, menu, notifyCount, notifyNotices, notifyRead, link, todoCount, todo,
+  access, auths, pwd, menu, notifyCount, notifyNotices, notifyRead, link, todoCount, todo, info,
 } } = api;
 
 // 根据Livebos权限验证用户是否允许操作某功能
@@ -101,6 +101,16 @@ export async function FetchTodo(payload) {
   const option = {
     url: todo,
     method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 获取LiveBOS用户基础信息
+export async function FetchInfo(payload) {
+  const option = {
+    url: info,
+    method: 'get',
     data: payload,
   };
   return request(option);

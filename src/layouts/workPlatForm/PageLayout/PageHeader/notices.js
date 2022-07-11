@@ -66,7 +66,7 @@ export default class Notices extends React.Component {
             title={<Badge status="processing" text={<i className="iconfont icon-bell" />} />}
           >
             <Menu.Item key="bellContent">
-              <a href="#" style={{ color: '#666', textAlign: 'center', display: 'block', padding: '1rem 0' }}>
+              <a className="gray" style={{ textAlign: 'center', display: 'block', padding: '1rem 0' }}>
                 <span>暂无数据</span>
               </a>
             </Menu.Item>
@@ -147,7 +147,7 @@ export default class Notices extends React.Component {
             )}
           >
             <Menu.Item key="schemeContent">
-              <a href="#" style={{ color: '#666', textAlign: 'center', display: 'block', padding: '1rem 0' }}>
+              <a className="gray" style={{ textAlign: 'center', display: 'block', padding: '1rem 0' }}>
                 <span>暂无数据</span>
               </a>
             </Menu.Item>
@@ -168,9 +168,6 @@ export default class Notices extends React.Component {
             )}
           >
             <Menu.Item key="navigationContent" style={{ width: '100%' }}>
-              {/* <a href="#" style={{ color: '#666', textAlign: 'center', display: 'block', padding: '1rem 0' }}>
-                <span>暂无数据</span>
-              </a> */}
               <Row className="m-row-noPadding m-row-margin" style={{ marginLeft: '6.25rem' }}>
                 <Col xs={24} sm={12} md={8} lg={6} xl={3} >
                   <div className="m-tabs-menu">

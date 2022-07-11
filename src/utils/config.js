@@ -6,7 +6,6 @@ module.exports = {
   CLIENTID: 'c5::pc',
   prefix: '',
   suffix: '',
-  ESAprefix: '',
   ptlx: 'c5::pc',
   logo: '/logo.png',
   footerText: '武汉顶点软件有限公司 © 2018',

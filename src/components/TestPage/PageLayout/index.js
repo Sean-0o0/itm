@@ -18,7 +18,11 @@ const menuData = [
     name: 'dataTable',
     path: '/testPage/dataTable',
   },
-
+  {
+    key: 'testPage 1',
+    name: 'testPage 1',
+    path: '/testPage/test1',
+  },
   {
     key: 'testPage 2',
     name: 'testPage 2',
@@ -44,13 +48,18 @@ const menuData = [
     name: 'test3',
     path: '/testPage/test3',
   },
+  {
+    key: 'g6Combo',
+    name: 'G6群组',
+    path: '/testPage/g6Combo'
+  }
 ];
 
 export default class TestPageLayout extends React.PureComponent {
   render() {
     const { routes, location } = this.props;
     return (
-      <Layout className="default-dark-theme" style={{ height: '100%' }}>
+      <Layout className="blue-dark-theme" style={{ height: '100%' }}>
         <PageSider
           location={location}
           routes={routes}

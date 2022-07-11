@@ -2,7 +2,6 @@
 const dictionaryMap = {
   sf: 'SF', // 是否
   fwfs: 'FWFS', // 服务方式
-  fwlb: 'FWLB', // 服务类别
   zhlx: 'ZHLX', // 账户类型
   khlx: 'PUB_KHLX', // 客户类型
   khzt: 'KHZT', // 客户状态
@@ -69,7 +68,6 @@ const dictionaryMap = {
   jrcpzt: 'PIF_JRCPZT', // 金融产品状态
   motrwzt: 'CIS_MOTRWZT', // MOT任务状态
   motrwyq: 'RWYQ', // MOT任务要求
-  gxlx: 'CIS_GXLX', // 关系类型
   sjdj: 'SJDJ', // 事件等级
   tzzsdxfl: 'SDX_TZZFL', // 投资者适当性分类
   investor_type_name: 'SDX_TZZFL', // 投资者适当性分类
@@ -137,15 +135,23 @@ const dictionaryMap = {
   jglx: 'CIS_XXFSJGLX', // 消息发送 结果类型
   // HT整合 ---------------------------------------------
 
-  // 薪酬esa整合 ---
-  SYDQ: 'AREA', // 适用大区
-  BMLB: 'DEP_CLASS', // 部门类别
-  ZBLX: 'EXAM_TYPE', // 指标类型
-  PLANTYPE: 'PLAN_TYPE',//考核方案类型
-  PLANSTATUS: 'PLAN_STATUS',//考核方案状态
-  FALX: 'WFVIEW_TYPE'
+  // MOT预警(督导) ---------------------------------------------
+  tgtTp: 'MOT_TGT_TP', // 因子维护-目标类型
+  jsms: 'MOT_CMPT_MODE', // 因子维护-计算模式
+  sjlx: 'MOT_DATA_TP', // 因子维护-数据类型
+  kjlx: 'MOT_CTL_TP', // 因子维护-控件类型
+  zycd: 'MOT_IMPT', // 事件定义-重要程度
+  blx: 'MOT_TBL_TP', // 因子维护-表类型
+  sfzdy: 'MOT_WTHR', // 因子维护-是否自定义
+  fffw: 'MOT_DSTR_RNG', // 事件定义-分发范围
 
-  // 薪酬esa整合 ---
+  gxlx: 'CIS_GXLX', // 关系类型
+  rwfpgz: 'MOT_ALOT_RULE_TP', // 任务分配规则
+  sjyq: 'MOT_EXEC_TM_RQMT', // 事件定义-发布规则-时间要求
+  rwyq: 'MOT_TASK_RQMT', // 事件定义-发布规则-任务要求
+  fwlb: 'FWLB', // 服务类别
+
+  // MOT预警(督导) ---------------------------------------------
 
 };
 
@@ -161,19 +167,8 @@ const objectMap = {
   // BBB: 'RWYQ', // AAA
   // HT整合 ---------------------------------------------
   tccxfwlxObj: 'TC_CXFW_LX', // mot分析执行-服务类型
-  // 薪酬esa整合 ---
-  KHRY: 'TEMPLOYEE', // 考核人员
-  KHND: 'TYR_INFO', // 考核年度
-  RYLBDY: 'TEMP_CLASS_DEF', //人员类别定义
-  RYJBDY: 'TEMP_LEVEL_DEF', //人员级别定义
-  JXZB: 'TPRFM_INDI', //绩效指标
-  KHFZ: 'TPRFM_GRPS', //考核分组
-  SJMBPZ: 'TPRFM_IMP_TMPL', //数据模板配置
-  XCBBXX: 'TESA_VER_CONF', //薪酬版本信息
-  ZBK: 'TPRFM_INDI_LIB', //指标库
-  XTZB: 'TINDI_DEF', //系统指标
-  XCXMDY: 'TPAY_CODE_DEF', //系统指标
-  ZZJG: 'lborganization',//组织机构
+  // MOT预警 ---------------------------------------------
+  yzfl: 'TMOT_DIC', // 因子维护-因子分类
 };
 
 export function getDictKey(name) {

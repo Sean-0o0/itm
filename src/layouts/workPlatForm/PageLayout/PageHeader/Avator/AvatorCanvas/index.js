@@ -1,7 +1,7 @@
 import React from 'react';
 import AvatarEditor from 'react-avatar-editor';
 import { Button, Row, Col, Slider, Icon, message } from 'antd';
-import { FetchUploadProto } from '../../../../../../services/staffrelationship';
+import { FetchUploadProto } from '../../../../../../services/commonbase';
 
 class AvatorCanvas extends React.Component {
   state = {

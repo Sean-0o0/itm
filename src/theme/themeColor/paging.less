@@ -1,5 +1,39 @@
 @charset "utf-8";
 /*m-paging*/
+/*新增全局-20200608*/
+.ant-pagination-item:focus,
+.ant-pagination-item:hover {
+  border-color: @head-bg;
+}
+.ant-pagination-item:focus a,
+.ant-pagination-item:hover a {
+  color: @head-bg;
+}
+.ant-pagination-item-active,
+.ant-pagination-item-active:focus,
+.ant-pagination-item-active:hover {
+  border-color: @head-bg;
+}
+.ant-pagination-item-active a,
+.ant-pagination-item-active:focus a,
+.ant-pagination-item-active:hover a {
+  color: @head-bg;
+}
+.ant-pagination-prev:hover a,
+.ant-pagination-next:hover a {
+  border-color: @head-bg;
+}
+.ant-pagination-prev:focus .ant-pagination-item-link,
+.ant-pagination-next:focus .ant-pagination-item-link,
+.ant-pagination-prev:hover .ant-pagination-item-link,
+.ant-pagination-next:hover .ant-pagination-item-link {
+  color: @head-bg;
+  border-color: @head-bg;
+}
+.ant-pagination-disabled a, .ant-pagination-disabled:hover a, .ant-pagination-disabled:focus a, .ant-pagination-disabled .ant-pagination-item-link, .ant-pagination-disabled:hover .ant-pagination-item-link, .ant-pagination-disabled:focus .ant-pagination-item-link {
+    color: rgba(0, 0, 0, 0.25);
+    border-color: #d9d9d9;
+}
 /*新增全局-20190307*/
 .ant-pagination-jump-prev .ant-pagination-item-container .ant-pagination-item-link-icon, .ant-pagination-jump-next .ant-pagination-item-container .ant-pagination-item-link-icon{
 	color: @head-bg;

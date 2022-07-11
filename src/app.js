@@ -1,4 +1,3 @@
-import router from 'umi/router';
 import onSessionTimeout from 'livebos-frame/dist/session';
 
 export const dva = {

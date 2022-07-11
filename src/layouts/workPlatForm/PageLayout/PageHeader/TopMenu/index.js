@@ -1,6 +1,6 @@
 import React from 'react';
 import lodash from 'lodash';
-import { routerRedux } from 'dva/router';
+import { history as routerRedux } from 'umi';
 import { suffix } from '../../../../../utils/config';
 
 class TopMenu extends React.Component {
@@ -79,7 +79,7 @@ class TopMenu extends React.Component {
     } else if (url.startsWith('http')) {
       window.location.href = url;
     } else {
-      dispatch(routerRedux.push(url));
+      routerRedux.push(url)
     }
   }
   changeSelected = (url, menus) => {
@@ -122,7 +122,7 @@ class TopMenu extends React.Component {
             return false;
           }
           // 普通路由和iframe路由加问号参数的话，左边菜单栏要能显示出来
-          const excludePrefix = ['UIProcessor', 'OperateProcessor', 'ShowWorkflow'];
+          const excludePrefix = ['UIProcessor', 'OperateProcessor', 'ShowWorkflow','WorkProcessor'];
           let tmplFlag = false;
           excludePrefix.forEach((m) => {
             if (url.indexOf(m) === 0) {
@@ -165,8 +165,9 @@ class TopMenu extends React.Component {
     });
     return selectedKeys;
   }
-
-  // 路由后缀处理
+  /**
+   * 路由后缀处理
+   */
   concatSuffix = (menuData) => {
     const suffixWithDot = `${suffix ? `.${suffix}` : ''}`;
     return menuData.map((item) => {

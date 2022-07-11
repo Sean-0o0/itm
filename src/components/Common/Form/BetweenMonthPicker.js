@@ -36,9 +36,9 @@ class BetweenMonthPicker extends Component {
     };
     this.triggerChange({ leftValue, rightValue });
   }
-  static getDerivedStateFromProps(nextProps, prevState) {
+  componentWillReceiveProps(nextProps) {
     let { leftValue = '', rightValue = '' } = nextProps.value || {};
-    const { leftValue: leftValueInstate = '', rightValue: rightValueInstate = '' } = prevState || {};
+    const { leftValue: leftValueInstate = '', rightValue: rightValueInstate = '' } = this.state;
     // 开始月份
     if (leftValue !== '' && !moment.isMoment(leftValue)) { // 传入非moment对象,那么就解析一下
       leftValue = this.normalizeValue(leftValue);
@@ -56,13 +56,11 @@ class BetweenMonthPicker extends Component {
       changed = true;// 结束时间 如果都是moment对象,但是不是一样的,很显然发生了改变
     }
     if (changed) {
-      return {
+      this.setState({
         leftValue,
         rightValue,
-      };
+      });
     }
-    // 默认不改动 state
-    return null;
   }
   // 把日期格式化为moment格式,如果格式不正确,则设置为空字符串
   normalizeValue = (value) => {
@@ -113,7 +111,7 @@ class BetweenMonthPicker extends Component {
     const { leftValue = '', rightValue = '' } = this.state;
     const { className, allowClear = true } = this.props;
     return (
-      <InputGroup className={classnames(className)} >
+      <InputGroup style={{ lineHeight: '1rem' }} className={classnames(className)} >
         <MonthPicker
           style={{ width: '48%' }}
           allowClear={allowClear}
@@ -122,7 +120,7 @@ class BetweenMonthPicker extends Component {
           disabledDate={this.handleLeftDisabledDate}
           onChange={this.handleLeft}
         />
-        <span style={{ width: '4%', display: 'inline-block', position: 'relative', top: '-1.2rem', lineHeight: '2.5rem', textAlign: 'center' }}>-</span>
+        <span style={{ width: '4%', display: 'inline-block', position: 'relative', bottom: '.8rem', textAlign: 'center' }}>-</span>
         <MonthPicker
           style={{ width: '48%' }}
           allowClear={allowClear}

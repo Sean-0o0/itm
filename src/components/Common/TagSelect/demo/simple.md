@@ -9,7 +9,7 @@ title: 基础样例
 import TagSelect from 'ant-design-pro/lib/TagSelect';
 
 function handleFormSubmit(checkedValue) {
-  //console.log(checkedValue);
+  console.log(checkedValue);
 }
 
 ReactDOM.render(

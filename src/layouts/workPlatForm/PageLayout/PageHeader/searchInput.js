@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import lodash from 'lodash';
 import classnames from 'classnames';
 import { Input, AutoComplete, Icon, message } from 'antd';
-import { Link } from 'dva/router';
+import { Link } from 'umi';
 import debounce from 'lodash.debounce';
 import { FetchCustomerTips } from '../../../../services/customersenior/simpleCustomerList';
 import { FetchQueryProductTips } from '../../../../services/financialproducts';
@@ -55,15 +55,22 @@ class SearchInput extends React.Component {
 
   fetchDatas = (value) => {
     if (value !== '') {
-      this.handleSearchMenuList(value);
-      this.handleSearchCustomerList(value);
-      this.handleSearchProductList(value);
+      const { searchAuth } = this.props; // 权限点 (搜索菜单:searchMenu|搜索客户:searchCustomer|搜索产品:searchProduct)
+      if (searchAuth.includes('searchMenu')) {
+        this.handleSearchMenuList(value);
+      }
+      if (searchAuth.includes('searchCustomer')) {
+        this.handleSearchCustomerList(value);
+      }
+      if (searchAuth.includes('searchProduct')) {
+        this.handleSearchProductList(value);
+      }
     }
   }
 
   handleHighlightKeyword = (text) => {
     const { fillValue = '' } = this.state;
-    return HighLightKeyword(text, fillValue, true);
+    return HighLightKeyword(text.toString(), fillValue, true);
   }
 
   // 处理菜单数据
@@ -116,7 +123,7 @@ class SearchInput extends React.Component {
       keyword: value,
       customerQueryType: khfwDatas,
       queryItems: [
-        'customer_no', 'customer_name', 'customer_id',
+        'customer_no', 'customer_name', 'customer_id', 'department_name',
       ],
     }).then((response) => {
       const { data = [], count = 0 } = response;
@@ -140,6 +147,7 @@ class SearchInput extends React.Component {
             // value: tempObject.customer_id,
             title: tempObject.customer_name,
             dm: tempObject.customer_no,
+            org: tempObject.department_name,
             // counts: count,
             highLightKey: this.handleHighlightKeyword(tempObject.customer_no),
           });
@@ -198,6 +206,7 @@ class SearchInput extends React.Component {
         dm: item.dm,
         key: item.key,
         highLightKey: item.highLightKey,
+        org: item.org || '',
       });
     });
     return result;
@@ -238,6 +247,7 @@ class SearchInput extends React.Component {
   }
 
   render() {
+    const { searchAuth } = this.props; // 权限点 (搜索菜单:searchMenu|搜索客户:searchCustomer|搜索产品:searchProduct)
     const { menuCount = 0, customerCount = 0, productCount = 0, menuList = [], customerList = [], productList = [], isFirstSearch = true, fillValue = '' } = this.state;
     const { result0, result1, result2 } = this.renderListResult(menuCount, customerCount, productCount, menuList, customerList, productList);
     // 组建数据源 四种情况
@@ -296,6 +306,15 @@ class SearchInput extends React.Component {
           let linkUrl = '';
           if (group.key === 0) {
             linkUrl = `${opt.dm}`;
+            if (linkUrl.startsWith('{') && linkUrl.endsWith('}')) {
+              const urlObj = JSON.parse(linkUrl);
+              const { type, url } = urlObj;
+              if (type === 'ifm') {
+                linkUrl = `/iframe${url}`;
+              } else {
+                linkUrl = url;
+              }
+            }
           } else if (group.key === 1) {
             linkUrl = `/customerPanorama/index/${EncryptBase64(opt.key)}`;
           } else if (group.key === 2) {
@@ -309,18 +328,28 @@ class SearchInput extends React.Component {
                 </Link>
               </Option>
             ) : (
-                linkUrl && (
-                  <Option key={`${group.key}-${opt.key}-${opt.title}`} value={`${opt.dm}  ${opt.title}`.trim()}>
-                    <Link to={linkUrl} target="_blank" style={{ color: '#2daae4', width: '100%', display: 'block' }}>
-                      <span dangerouslySetInnerHTML={{ __html: opt.highLightKey }} />&nbsp;{opt.title}
-                    </Link>
-                  </Option>
-                )
+              linkUrl && (
+                <Option title={group.key === 1 ? `${opt.org}` : ''} key={`${group.key}-${opt.key}-${opt.title}`} value={`${opt.dm}  ${opt.title}`.trim()}>
+                  <Link to={linkUrl} target="_blank" style={{ color: '#2daae4', width: '100%', display: 'block' }}>
+                    <span dangerouslySetInnerHTML={{ __html: opt.highLightKey }} />&nbsp;{opt.title}
+                  </Link>
+                </Option>
+              )
             )
           );
         })}
       </OptGroup>
     ));
+    let placeholderStr = '';
+    if (searchAuth.includes('searchMenu')) {
+      placeholderStr += placeholderStr.length === 0 ? '菜单' : '/菜单';
+    }
+    if (searchAuth.includes('searchCustomer')) {
+      placeholderStr += placeholderStr.length === 0 ? '客户' : '/客户';
+    }
+    if (searchAuth.includes('searchProduct')) {
+      placeholderStr += placeholderStr.length === 0 ? '产品' : '/产品';
+    }
     return (
       <div id="SearchInput_pageheader" style={{ width: '100%' }} >
         <AutoComplete
@@ -331,7 +360,7 @@ class SearchInput extends React.Component {
           dropdownStyle={{ width: '17rem', zIndex: 999, top: '36px', position: 'fixed' }}
           style={{ width: '100%', color: '#6E6E6E' }}
           dataSource={options}
-          placeholder="菜单/客户/产品"
+          placeholder={placeholderStr}
           optionLabelProp="value"
           onChange={this.hanleChange}
           // getPopupContainer={hasFathter ? () => document.getElementById('SearchInput_pageheader') : () => document.body}

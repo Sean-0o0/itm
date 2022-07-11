@@ -532,13 +532,13 @@
     color: #fff;
     .border-right-radius(1.333rem);
     &.tag-orange{
-        background-color: #ffc426;
+        background: linear-gradient(270deg,#f7b832 0, #ff8941 85%,#ff8941 100%);
     }
     &.tag-blue{
-        background-color: #56c8fc;
+        background: linear-gradient(270deg,#84cffe 0, #54a9df 85%,#54a9df 100%);
     }
     &.tag-red{
-        background-color: #ed6332;
+        background: linear-gradient(270deg,#e86841 0, #ed1313 85%,#ed1313 100%);
     }
     &.tag-pink{
         background-color: @pink;
@@ -988,16 +988,10 @@
         min-width: 6.666rem;
         .tc();
         background-color: transparent;
-        &:hover{
-            color: @blue;
-            border-color: @blue;
-        }
         &:active {
             background-color: transparent;
         }
         &.ant-tag-checkable-checked{
-            background-color: @blue;
-            border-color: @blue;
             color: #fff;
         }
     }

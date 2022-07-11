@@ -2,23 +2,23 @@
 
 /*m-chartCard*/
 .m-chartCard{
-    margin: 1.5rem 1rem;
-    padding:0 1rem;
+    margin: 3rem 3rem;
+    padding:0 4rem;
     border-right: 1px solid #edf1f4;
     .m-chartLeft{
         .fl();
-        width: 5rem;
-        height: 5rem
+        width: 10rem;
+        height: 10rem;
     }
     .m-chartCenter{
         padding: 0.416rem 0 0 0;
-        margin: 0 6rem 2rem 6rem;
+        margin: 0 13rem 0rem 13rem;
         .tl();
         span {
-            .font-s18();
-            .font-w400();
+            font-size: 2.5rem;
+            font-weight: bold;
             .dib();
-            margin-bottom: 0.5rem;
+            margin-bottom: 2.5rem;
             color:@title-color;
 
         }
@@ -50,18 +50,18 @@
 //m-chartCard-rose
 .m-chartCard-rose{
      .pos(a);
-     bottom: 0.333rem;
+     bottom: 1.5rem;
      left:40%;
      .m-chartCard-roseMain{
         .border-radius(@radius:1rem);
         background: #e5e8eb;
-        padding:0 1rem;
+        padding:0 2rem;
      }
      span{
-        .font-s10();
+        font-size: 1.333rem;
         color: #575757;
         margin-bottom:0;
-        line-height: 0.833rem;
+        line-height: 1.333rem;
         padding:0.416rem 0;
         .dib();
      }
@@ -456,7 +456,7 @@
 /*m-contentFixed*/
 .m-contentFixed{
     .pos(r);
-    height: 0.416rem;
+    height: 0.75rem;
     width: 100%;
     left: 0;
     bottom: -0.416rem;
@@ -495,5 +495,79 @@
                  .font-s36();
             }
          }
+    }
+}
+
+//财富产品-20200712
+.m-cfcp-card{
+    &.ant-card-bordered{
+        background-repeat: no-repeat;
+        background-position: right top;
+    }
+}
+.m-cfcp-shadow{
+    &.ant-card-bordered{
+        border:1px solid;
+    }
+}
+.m-card-nodata{
+    &.ant-card-bordered{
+        border:1px solid;
+    }
+    .no-data-pt{
+        padding-top: 5.666rem;
+    }
+    .no-data-img{
+        width: 22.666rem;
+        height: 16rem;
+        margin: 0 auto;
+        background-repeat: no-repeat;
+    }
+}
+.m-tag-hang{
+    padding-top: 1rem;
+}
+.m-cfcp-bottom{
+    margin-top: 2rem;
+    border-top: 1px dashed #eee;
+    overflow: hidden;
+    .m-cfcp-shuom{
+        .font-s14();
+        line-height: 21px;
+        color: @title-color;
+        .fl();
+        padding: .833rem 0;
+    }
+}
+.m-fxdj-label{
+    .pos(a);
+    left: -.5rem;
+    top: 2rem;
+    color: #fff;
+    .tc();
+    padding: 0 .833rem;
+    min-width: 5.834rem;
+    &.label-blue{
+        background: #54a9df;
+        box-shadow: 2px 0 10px rgba(84,169,223,0.5);
+    }
+    &.label-orange{
+        background: #f09d54;
+        box-shadow: 2px 0 10px rgba(240,157,84,.5);
+    }
+    &.label-red{
+        background: #ed5b41;
+        box-shadow: 2px 0 10px rgba(237,91,65,.5);
+    }
+    .m-label-data{
+        .font-s16();
+        line-height: 2rem;
+        .font-wb();
+        padding-bottom: .416rem;
+    }
+    .m-label-name{
+        .font-s12();
+        line-height: 1.334rem;
+        padding-top: .416rem;
     }
 }

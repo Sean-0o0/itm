@@ -3,6 +3,9 @@
 .m-color{
 	color: @head-bg !important;
 }
+.m-border-color{
+	border-color: @head-bg !important;
+}
 .bg-mcolor{
 	background-color: @head-bg !important;
 }
@@ -199,4 +202,39 @@
   &:visited{
     color: @head-bg;
   }
+}
+
+//新客户全景-20200610
+.m-ktyw-square{
+  &.square-blue{
+    background-color: @head-bg;
+  }
+  &.square-blue-border{
+    background-color: @hover-bg2;
+    border-color: @head-bg;
+  }
+}
+.m-ktyw-list{
+  .m-ktyw-item{
+    &.item-blue{
+      background-color: @head-bg;
+      border-color: @head-bg;
+    }
+    &.item-blue-border{
+      border-color: @head-bg;
+      color: @head-bg;
+      background-color: @hover-bg2;
+    }
+  }
+}
+
+.m-sy-card{
+	.ant-card-body{
+		background-color:@hover-bg;
+	}
+}
+
+//新产品
+.m-xcp-title{
+  border-color: @head-bg;
 }

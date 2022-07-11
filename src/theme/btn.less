@@ -24,10 +24,10 @@
     }
 
     &.m-btn-small{
-        min-width:7rem;
+        min-width:10rem;
         padding: 0 1.25rem;
-        height: 2.5rem;
-        .font-s14();
+        height: 3.25rem;
+        .font-s24();
         &.ant-btn:focus,
         &.ant-btn:hover{
             background-color: #fff;
@@ -424,18 +424,20 @@
     &.ant-btn{
         border: 1px solid transparent;
         white-space: nowrap;
-        padding: 0 1.5rem;
-        height: 2.666rem;
+        padding: 0 2.8rem;
+        height: 4.6rem;
         color: @font-color;
         background-color: #fff;
         border-color:@border-btn-color;
-        .font-s14();
-        .border-radius(@radius:0.333rem);
+        font-size: 1.833rem;
+        .border-radius(@radius:0.5rem);
         margin-right:0.666rem;
         overflow: hidden;
         font-family: @all-family;
 
-        &:hover, &:focus{
+        &:hover
+        // , &:focus
+        {
             opacity: 0.8;
             color:@font-color;
             border-color: @border-btn-color;

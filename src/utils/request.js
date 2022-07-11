@@ -81,7 +81,7 @@ const fetch = (options, config = {}) => {
   //       name: `jsonp_${new Date().getTime()}`,
   //       timeout: 20000,
   //     }, (error, result) => {
-  //       //console.log(888, error, result);
+  //       console.log(888, error, result);
   //       if (error) {
   //         reject(error);
   //       }

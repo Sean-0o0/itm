@@ -187,7 +187,7 @@ export default class FetchDataTable extends React.Component {
         showTotal: total => `共${total}条`,
         showLessItems: true,
         showSizeChanger: true,
-        showQuickJumper: true,
+        showQuickJumper: false,
         showSinglePager: false,
         ...pagination,
       },

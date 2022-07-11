@@ -1,128 +1,13 @@
 @charset "utf-8";
-
-//m-table-blue
-.m-table-blue{
-
-    .ant-checkbox-input:focus + .ant-checkbox-inner {
-        border-color: @head-bg;
-    }
-
-    .ant-checkbox-wrapper{
-
-        .ant-checkbox-checked .ant-checkbox-inner,
-        .ant-checkbox-indeterminate .ant-checkbox-inner
-        {
-            background-color: @head-bg;
-            border-color: @head-bg;
-        }
-
-        .ant-checkbox{
-            &:hover{
-               .ant-checkbox-inner{
-                   border-color: @head-bg;
-                }
-            }
-            &:focus{
-               .ant-checkbox-inner{
-                   border-color: @head-bg;
-                }
-            }
-        }
-    }
-
-  .ant-table{
-
-    .ant-table-thead>tr>th {
-
-        i.icon-mark{
-          color: @head-bg;
-        }
-
-    }
-
-    .ant-table-tbody>tr{
-
-        &.active{
-
-            border:2px solid @orange !important;
-            td{
-                border-top:2px solid @orange;
-                border-bottom:2px solid @orange;
-              }
-              td:first-child{
-                border-left:2px solid @orange;
-              }
-
-            td:last-child{
-                border-right:2px solid @orange;
-                div{
-                    &:after{
-                    .triangle(left,@w:8px 12px 8px 12px,@color:@orange);
-                    }
-                }
-
-            }
-
-        }
-
-        &:nth-child(odd):hover{
-            border:2px solid @orange;
-        }
-
-    }
-    .ant-table-tbody>tr:hover td{
-        border-top:2px solid @orange;
-        border-bottom:2px solid @orange;
-        &:first-child{
-          border-left:2px solid @orange;
-        }
-        &:last-child{
-          border-right:2px solid @orange;
-        }
-    }
-
-  }
-
-  &.m-table-blue-small{
-      .ant-table{
-
-        .ant-table-tbody>tr{
-
-            &.active{
-
-                border:1px solid @head-bg !important;
-                td{
-                    border-top:1px solid @head-bg;
-                    border-bottom:1px solid @head-bg;
-                }
-                td:first-child{
-                    border-left:1px solid @head-bg;
-                }
-
-
-            }
-
-            &:nth-child(odd):hover{
-                border:1px solid @head-bg;
-            }
-
-        }
-        .ant-table-tbody>tr:hover td{
-            border-top:1px solid @head-bg;
-            border-bottom:1px solid @head-bg;
-            &:first-child{
-            border-left:1px solid @head-bg;
-            }
-            &:last-child{
-            border-right:1px solid @head-bg;
-            }
-        }
-
-    }
-  }
-
-
+/*新增全局-20200608*/
+.ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td,
+.ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td,
+.ant-table-thead > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td,
+.ant-table-tbody > tr:hover:not(.ant-table-expanded-row):not(.ant-table-row-selected) > td{
+    background: @hover-bg2;
 }
+
+
 
 
 
@@ -632,25 +517,24 @@
         //             // .box-shadow(@shadow: 0 -1px 0 @table-border-bg);
         //             // z-index: 1;
         //         }
-        //     } 
+        //     }
             &>td a{
                 color:@head-bg;
                 &:hover,&:visited,&:active{
                     color:@head-bg;
                 }
             }
-            
+
             &.active{
-                background: @hover-bg;
+                background: @hover-bg2;
                 td{
-                    background: @hover-bg;
-   
+                    background: @hover-bg2;
                 }
-            }  
+            }
         }
-        
+
         .ant-table-thead > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td, .ant-table-tbody > tr.ant-table-row-hover:not(.ant-table-expanded-row) > td, .ant-table-thead > tr:hover:not(.ant-table-expanded-row) > td, .ant-table-tbody > tr:hover:not(.ant-table-expanded-row) > td {
-            background: @hover-bg;
+            background: @hover-bg2;
         }
     }
 }
@@ -658,7 +542,8 @@
 .m-table-allProducts {
   th {
     white-space: pre-wrap !important;
-    color: @tag-bg !important;
+    // color: @tag-bg !important;
+    color: black !important;
     border-bottom: 0 !important;
     background-color: @table-hr-bg !important;
   }
@@ -672,5 +557,130 @@
   }
 }
 
+//m-table-blue
+.m-table-blue{
 
+    .ant-checkbox-input:focus + .ant-checkbox-inner {
+        border-color: @head-bg;
+    }
+
+    .ant-checkbox-wrapper{
+
+        .ant-checkbox-checked .ant-checkbox-inner,
+        .ant-checkbox-indeterminate .ant-checkbox-inner
+        {
+            background-color: @head-bg;
+            border-color: @head-bg;
+        }
+
+        .ant-checkbox{
+            &:hover{
+               .ant-checkbox-inner{
+                   border-color: @head-bg;
+                }
+            }
+            &:focus{
+               .ant-checkbox-inner{
+                   border-color: @head-bg;
+                }
+            }
+        }
+    }
+
+  .ant-table{
+
+    .ant-table-thead>tr>th {
+
+        i.icon-mark{
+          color: @head-bg;
+        }
+
+    }
+
+    .ant-table-tbody>tr{
+        background: #fff !important;
+
+        &.active{
+
+            border:2px solid @head-bg;
+            td{
+                border-top:2px solid @head-bg;
+                border-bottom:2px solid@head-bg;
+                background: #fff;
+              }
+              td:first-child{
+                border-left:2px solid @head-bg;
+              }
+
+            td:last-child{
+                border-right:2px solid @head-bg;
+                div{
+                    &:after{
+                    .triangle(left,@w:8px 12px 8px 12px,@color:@orange);
+                    }
+                }
+
+            }
+
+        }
+
+        &:nth-child(odd):hover{
+            border:2px solid @head-bg;
+        }
+
+    }
+    .ant-table-tbody>tr:hover td{
+        border-top:2px solid @head-bg;
+        border-bottom:2px solid @head-bg;
+        background: #fff !important;
+        &:first-child{
+          border-left:2px solid @head-bg;
+        }
+        &:last-child{
+          border-right:2px solid @head-bg;
+        }
+    }
+
+  }
+
+  &.m-table-blue-small{
+      .ant-table{
+
+        .ant-table-tbody>tr{
+
+            &.active{
+
+                border:1px solid @head-bg !important;
+                td{
+                    border-top:1px solid @head-bg;
+                    border-bottom:1px solid @head-bg;
+                }
+                td:first-child{
+                    border-left:1px solid @head-bg;
+                }
+
+
+            }
+
+            &:nth-child(odd):hover{
+                border:1px solid @head-bg;
+            }
+
+        }
+        .ant-table-tbody>tr:hover td{
+            border-top:1px solid @head-bg;
+            border-bottom:1px solid @head-bg;
+            &:first-child{
+            border-left:1px solid @head-bg;
+            }
+            &:last-child{
+            border-right:1px solid @head-bg;
+            }
+        }
+
+    }
+  }
+
+
+}
 

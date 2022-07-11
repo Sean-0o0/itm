@@ -107,7 +107,8 @@ class InputTagPicker extends Component {
           {lable !== '' && <div className="ant-input-group-addon">{lable}{hasButton ? (<span className="m-set-handle"><i className="m-color iconfont icon-set" onClick={this.handleManageClick} /><span /></span>) : '' }</div>}
           <Cascader
             onClick={this.handleButtonClick}
-            className="m-cascader-picker"
+            className={`${styles.m_cascader} m-cascader-picker`}
+            // className="m-cascader-picker"
             style={{ width: '100%' }}
             allowClear={allowClear}
             popupVisible={false}

@@ -30,3 +30,32 @@
         .triangle(bottom,@w:8px,@color:@head-bg)
     }
 }
+
+//财富产品-20200712
+.m-cfcp-card{
+    &.ant-card-bordered{
+        background-image: url("../../assets/theme/@{path}/cp-card-bg.png");
+    }
+}
+.m-cfcp-shadow{
+    &.ant-card-bordered{
+        border-color: @cp-card-border;
+    }
+    &:hover{
+        border-color: @rili-bg;
+        box-shadow: 0 3px 15px 0 @shadow-bg2;
+        -webkit-box-shadow: 0 3px 15px 0 @shadow-bg2;
+        -moz-box-shadow: 0 3px 15px 0 @shadow-bg2;
+    }
+}
+.m-card-nodata{
+    &.ant-card-bordered{
+        border-color: @cp-card-border;
+    }
+    .no-data-img{
+        background-image: url("../../assets/theme/@{path}/no-data.png");
+    }
+    .no-data-text{
+        color: @head-bg-tm;
+    }
+}

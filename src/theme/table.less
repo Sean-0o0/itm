@@ -1,169 +1,6 @@
 @charset "utf-8";
 
 
-//m-table-blue
-.m-table-blue{
-
-  padding:0;
-  .ant-radio-wrapper,.ant-checkbox-wrapper{
-        border-collapse: collapse;
-        border-collapse: separate\0\9;
-  }
-
-  //table中 form表单的重置
-  .ant-form-item-control{
-    &:before,&:after{
-        display: block;
-    }
-  }
-
-  .ant-table {
-    overflow: inherit;
-    font-family: @all-family;
-    table{
-        border-collapse: separate;
-        border-spacing:0 0.833rem;
-        overflow: inherit;
-    }
-
-    .ant-table-thead>tr>th {
-        background: transparent;
-        text-align: left;
-        border-bottom: none;
-        color:@table-th;
-        padding: 1rem;
-        .font-s16();
-        // .font-wb();
-        white-space: nowrap;
-
-        i.icon-diwn-solid-arrow{
-          .font-s14();
-        }
-
-        i.icon-mark{
-          display: inline;
-          color: @blue;
-          .font-s20();
-        }
-
-    }
-    .ant-table-tbody>tr{
-
-        border:2px solid #d8dcdf;
-        white-space: nowrap;
-
-
-
-    }
-    .ant-table-tbody>tr>td {
-
-        border-top:2px solid #d8dcdf;
-        border-bottom:2px solid #d8dcdf;
-        white-space: nowrap;
-
-        &:first-child{
-          border-left:2px solid #d8dcdf;
-        }
-        &:last-child{
-          border-right:2px solid #d8dcdf;
-        }
-
-        padding:1rem;
-        // background:#fff;
-        .font-s14();
-        color: @table-td;
-        height:64px;
-        text-align: left;
-        a{
-          display:inline-block;
-        }
-        >td{
-          color:#666666;
-        }
-    }
-
-  }
-  &.index{
-
-    .ant-table{
-
-      font-family: @all-family;
-
-      .ant-table-tbody>tr{
-
-        &.active{
-
-          td:last-child{
-
-            div{
-
-              .pos(r);
-              &:before{
-                .triangle(left,@w:5px 9px 5px 9px,@color:#fff);
-                content: '';
-                .pos(a);
-                top: 50%;
-                right:-29px;
-                transform:translateY(-50%);
-                overflow: hidden;
-                z-index:110;
-              }
-
-              &:after{
-                content: '';
-                .pos(a);
-                top: 50%;
-                right:-36px;
-                transform:translateY(-50%);
-                overflow: hidden;
-              }
-            }
-          }
-        }
-      }
-    }
-  }
-
-  &.m-table-blue-small{
-
-         .ant-table {
-
-          font-family: @all-family;
-
-            .ant-table-thead{
-              tr{
-                th{
-                  padding: 0.833rem 3rem;
-                }
-              }
-            }
-
-            .ant-table-tbody>tr{
-
-                border:1px solid #d8dcdf;
-                white-space: nowrap;
-
-            }
-            .ant-table-tbody>tr>td {
-
-                border-top:1px solid #d8dcdf;
-                border-bottom:1px solid #d8dcdf;
-                white-space: nowrap;
-                padding: 0.833rem 3rem;
-                height: 3.166rem;
-
-                &:first-child{
-                  border-left:1px solid #d8dcdf;
-                }
-                &:last-child{
-                  border-right:1px solid #d8dcdf;
-                }
-            }
-
-          }
-  }
-
-}
 
 .m-table-blue-footer{
 
@@ -197,7 +34,7 @@
         > th{
           background: #fff;
           .font-s16();
-          // .font-wb();
+          .font-wb();
           color:@title-color;
           border-bottom: 1px solid @border-color;
           white-space: nowrap;
@@ -1592,13 +1429,14 @@
   .ant-table {
     font-family: @all-family;
     .ant-table-thead>tr>th {
-      background: #fafafb;
+      background: #fafafa;
       text-align: left;
-      color: @view-color;
+      color: @title-color;
       padding: .916rem 0.833rem !important;
       line-height: 1.75rem;
       .font-s14();
       white-space: nowrap;
+      .font-wb();
       border-color: @border-color;
       &.small-ptb{
         padding-top: .333rem !important;
@@ -1638,39 +1476,6 @@
   }
 }
 
-.m-table-common{
-  .ant-table {
-    font-family: @all-family;
-    .ant-table-thead>tr>th {
-      background: #fafafb;
-      //text-align: center;
-      color: black;
-      padding: .916rem 0.833rem !important;
-      line-height: 1.75rem;
-      .font-s14();
-      white-space: nowrap;
-      border-color: #c6bdbd;
-      border-top-right-radius:0px !important;
-    }
-    .ant-table-tbody>tr{
-      //新数字营销
-      >td {
-        line-height: 1.75rem;
-        padding: .916rem 0.833rem !important;
-        .font-s14();
-        .pos(r);
-        border-right:1px solid #c6bdbd !important;
-        border-bottom:1px solid #c6bdbd !important;
-        //text-align: center;
-        color: @title-color;
-      }
-    }
-  }
-  .ant-table-empty .ant-table-body{
-    overflow-x: scroll\0\9 !important;
-  }
-}
-
 .m-table-mot{
   .ant-table {
     margin: 0 1.5rem;
@@ -1680,14 +1485,6 @@
 .m-table-bortop{
   .ant-table {
     border-top: 1px solid @border-color;
-  }
-}
-.m-table-common-bortop{
-  .ant-table {
-    border-top: 1px solid #797777;
-    border-left: 1px solid #797777;
-    border-right: 1px solid #797777;
-    border-bottom: 1px solid #797777;
   }
 }
 .m-table-border{
@@ -1743,6 +1540,172 @@
   }
 }
 
+//m-table-blue
+.m-table-blue{
+
+  padding: .166rem 1.667rem 0;
+  margin-bottom: .5rem;
+  .ant-radio-wrapper,.ant-checkbox-wrapper{
+        border-collapse: collapse;
+        border-collapse: separate\0\9;
+  }
+
+  //table中 form表单的重置
+  .ant-form-item-control{
+    &:before,&:after{
+        display: block;
+    }
+  }
+
+  .ant-table {
+    overflow: inherit;
+    font-family: @all-family;
+    table{
+        border-collapse: separate;
+        border-spacing:0 0.833rem;
+        overflow: inherit;
+    }
+
+    .ant-table-thead>tr>th {
+        background: transparent;
+        text-align: left;
+        border-bottom: none;
+        color:@title-color;
+        padding: 1rem !important;
+        .font-s16();
+        white-space: nowrap;
+
+        .ant-table-column-sorter{
+          display: inline;
+        }
+
+        i.icon-diwn-solid-arrow{
+          .font-s14();
+        }
+
+        i.icon-mark{
+          display: inline;
+          color: @blue;
+          .font-s20();
+        }
+
+    }
+    .ant-table-tbody>tr{
+
+        border:2px solid #d8dcdf;
+        white-space: nowrap;
+        background: #fff;
+
+    }
+    .ant-table-tbody>tr>td {
+
+        border-top:2px solid #d8dcdf;
+        border-bottom:2px solid #d8dcdf;
+        white-space: nowrap;
+
+        &:first-child{
+          border-left:2px solid #d8dcdf;
+        }
+        &:last-child{
+          border-right:2px solid #d8dcdf;
+        }
+
+        padding:1rem;
+        // background:#fff;
+        .font-s14();
+        color: @title-color;
+        height:64px;
+        text-align: left;
+        a{
+          display:inline-block;
+        }
+        >td{
+          color:#666666;
+        }
+    }
+
+  }
+  &.index{
+
+    .ant-table{
+
+      font-family: @all-family;
+
+      .ant-table-tbody>tr{
+
+        &.active{
+
+          td:last-child{
+
+            div{
+
+              .pos(r);
+              &:before{
+                .triangle(left,@w:5px 9px 5px 9px,@color:#fff);
+                content: '';
+                .pos(a);
+                top: 50%;
+                right:-29px;
+                transform:translateY(-50%);
+                overflow: hidden;
+                z-index:110;
+              }
+
+              &:after{
+                content: '';
+                .pos(a);
+                top: 50%;
+                right:-36px;
+                transform:translateY(-50%);
+                overflow: hidden;
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+
+  &.m-table-blue-small{
+
+         .ant-table {
+
+          font-family: @all-family;
+
+            .ant-table-thead{
+              tr{
+                th{
+                  padding: 0.833rem 3rem;
+                }
+              }
+            }
+
+            .ant-table-tbody>tr{
+
+                border:1px solid #d8dcdf;
+                white-space: nowrap;
+
+            }
+            .ant-table-tbody>tr>td {
+
+                border-top:1px solid #d8dcdf;
+                border-bottom:1px solid #d8dcdf;
+                white-space: nowrap;
+                padding: 0.833rem 3rem;
+                height: 3.166rem;
+
+                &:first-child{
+                  border-left:1px solid #d8dcdf;
+                }
+                &:last-child{
+                  border-right:1px solid #d8dcdf;
+                }
+            }
+
+          }
+  }
+
+}
 
 
 

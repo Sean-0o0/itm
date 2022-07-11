@@ -206,19 +206,20 @@ class ChangePwd extends React.Component {
     if (level === 1) {
       tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的一种';
     } else if (level === 2) {
-      tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的两种；不能以用户帐号，用户姓名作为开头；不能包含敏感字符';
+      tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的两种；不能以用户帐号，用户姓名作为开头';
     } else if (level === 3) {
-      tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的三种；不能以用户帐号，用户姓名作为开头；不能包含敏感字符';
+      tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的三种；不能以用户帐号，用户姓名作为开头';
     } else if (level === 4) {
-      tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的四种；不能以用户帐号，用户姓名作为开头；不能包含敏感字符';
+      tip = '必须包含数字、小写字母、大写字母或其它特殊符号当中的四种；不能以用户帐号，用户姓名作为开头';
     }
     return tip;
   }
 
   render() {
+    const { userBasicInfo = {} } = this.props;
     const modalProps = {
       width: '40%',
-      height: '30rem',
+      height: '50rem',
       title: '修改密码',
       visible: this.state.modalVisiable,
       onOk: this.handleOk,
@@ -226,7 +227,7 @@ class ChangePwd extends React.Component {
     };
     return (
       <BasicModal {...modalProps}>
-        <ChangePwdContent ref={(c) => { this.myForm = c; }} aqdjDic={this.aqdjDic} getPwdLevel={this.getPwdLevel} />
+        <ChangePwdContent ref={(c) => { this.myForm = c; }} aqdjDic={this.aqdjDic} getPwdLevel={this.getPwdLevel} getPwdStrengthTip={this.getPwdStrengthTip} userBasicInfo={userBasicInfo} />
       </BasicModal>
     );
   }

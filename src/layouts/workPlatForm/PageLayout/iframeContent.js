@@ -53,7 +53,7 @@ class IframeContent extends React.Component {
     // this.iframeHeight = iframeHeight;
   }
   handleExclude = (pathname = '') => {
-    const includes = ['/UIProcessor', '/OperateProcessor', '/ShowWorkflow'];
+    const includes = ['/UIProcessor', '/OperateProcessor', '/ShowWorkflow','/WorkProcessor'];
     let flag = true;
     includes.forEach((item) => {
       if (pathname.startsWith(item)) {
@@ -74,7 +74,7 @@ class IframeContent extends React.Component {
     const includeUrl = [];
     recentlyVisitedUrls.forEach((item) => {
       const itemUrl = item.split('|')[0];
-      if (itemUrl.startsWith('/UIProcessor') || itemUrl.startsWith('/OperateProcessor') || itemUrl.startsWith('/ShowWorkflow')) {
+      if (itemUrl.startsWith('/UIProcessor') || itemUrl.startsWith('/OperateProcessor') || itemUrl.startsWith('/ShowWorkflow') || itemUrl.startsWith('/WorkProcessor')) {
         includeUrl.push(itemUrl);
       }
     });
@@ -97,7 +97,7 @@ class IframeContent extends React.Component {
                   className=""
                   style={{ position: 'relative', display: 'initial', width: '100%' }}
                   allowFullScreen
-                  frameborder="no"
+                  frameBorder="no"
                   border="0"
                   onMessage={this.onMessage}
                 />

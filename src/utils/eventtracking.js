@@ -54,7 +54,7 @@ class CountAction {
             records: pageData
           }
         }, { headers: { func: this.pageFunc } }).catch((error) => {
-          //console.log(error);
+          console.log(error);
         }).then(() => {
           localStorage.removeItem(this.pageKey + "Old");
         });
@@ -66,7 +66,7 @@ class CountAction {
             records: eventData
           }
         }, { headers: { func: this.eventFunc } }).catch((error) => {
-          //console.log(error);
+          console.log(error);
         }).then(() => {
           localStorage.removeItem(this.eventKey + "Old");
         })
@@ -164,7 +164,7 @@ class CountAction {
   recordPage(url, ref_url, ext) {
     this.pageLabel = {};
     if (this.clientId == null || this.appSecret == null) {
-      //console.log("埋点未初始化");
+      console.log("埋点未初始化");
       return;
     }
     let pageData = JSON5.parse(localStorage.getItem("pageData"));
@@ -198,7 +198,7 @@ class CountAction {
      * */
   recordEvent(event, action, ext) {
     if (this.clientId == null || this.appSecret == null) {
-      //console.log("埋点未初始化");
+      console.log("埋点未初始化");
       return;
     }
     let eventData = JSON5.parse(localStorage.getItem("eventData"));
@@ -224,7 +224,7 @@ class CountAction {
   auth() {
     AES.setSecret(this.appSecret);
     if (this.clientId == null || this.appSecret == null) {
-      //console.log("埋点未初始化");
+      console.log("埋点未初始化");
       return;
     }
     let resolution = window.screen.width + "x" + window.screen.height;
@@ -242,7 +242,7 @@ class CountAction {
       mode: "count",
       ext: JSON5.stringify(ext)
     }).catch((error) => {
-      //console.log(error);
+      console.log(error);
     })
   }
 

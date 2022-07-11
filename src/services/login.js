@@ -2,11 +2,10 @@ import request from '../utils/request';
 import config from '../utils/config';
 
 const { api } = config;
-const { commonbase: { userSysRole, userBasicInfo, sysVersionNum, sysVersionList }, login: { auth, logout, user, tokenAuth } } = api;
+const { commonbase: { userSysRole, userBasicInfo, sysVersionNum, sysVersionList, checkWhtLstIP }, login: { auth, logout, user, tokenAuth, captchaFetchSms } } = api;
 
 // 登录接口
 export async function AccountLogin(params) {
-  //console.log(params);
   const option = {
     url: auth,
     method: 'post',
@@ -73,6 +72,26 @@ export async function SysVersionNum(params) {
 export async function SysVersionList(params) {
   const option = {
     url: sysVersionList,
+    method: 'post',
+    data: params,
+  };
+  return request(option);
+}
+
+// 获取短信验证码
+export async function FetchSmsCaptcha(params) {
+  const option = {
+    url: captchaFetchSms,
+    method: 'get',
+    data: params,
+  };
+  return request(option);
+}
+
+// 获取短信验证码
+export async function FetchCheckWhtLstIP(params) {
+  const option = {
+    url: checkWhtLstIP,
     method: 'post',
     data: params,
   };

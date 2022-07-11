@@ -34,7 +34,7 @@ class Export extends React.Component {
       exportPercentUtl = '/api/customerAggs/v2/exportPercent', // 点击导出后系统处理进度信息
       isPercent = false,
     } = this.props;
-    const { param, selectAll, selectedRowKeys = [], total, url } = this.props;
+    const { param, selectAll, selectedRowKeys = [], total = 0, url } = this.props;
     let selectedCount = 0;
     if (selectAll) {
       selectedCount = total - selectedRowKeys.length;
@@ -42,7 +42,7 @@ class Export extends React.Component {
       selectedCount = selectedRowKeys.length;
     }
     if (selectedCount <= 0) {
-      Modal.info({ content: '请至少选择一个客户!' });
+      Modal.info({ content: '暂无可导出数据!' });
       return;
     }
     let uuid = '';

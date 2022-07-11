@@ -1,0 +1,99 @@
+// 洞察分析tab样式
+.m-tabs-sec2{
+  &.ant-tabs{
+    .ant-tabs-bar{
+      margin: .666rem 0;
+      border-bottom: 0;
+    }
+    .ant-tabs-nav-container{
+      margin-bottom: 0;
+    }
+    .ant-tabs-tab{
+      .font-s15();
+      line-height: 1.833rem !important;
+      color: @view-color;
+      margin: 0;
+      padding: 0 2rem;
+      border-left: 1px solid @border-btn-color;
+      &:first-child{
+        border-left: 0;
+        padding-left: 0;
+      }
+      &:hover{
+        color: @head-bg;
+      }
+      &.ant-tabs-tab-active{
+        .font-wb();
+        border-bottom: 0 !important;
+        color: @head-bg;
+      }
+    }
+    .ant-tabs-ink-bar {
+      visibility: hidden;
+    }
+    .ant-tabs-extra-content {
+      line-height: 0 !important;
+    }
+  }
+}
+
+// 标签圈人专用
+.m-labelCircle-list {
+  cursor: pointer;
+  padding: 30px;
+}
+
+.m-labelCircle-list-checked {
+  padding: 30px;
+  cursor: pointer;
+  border: 1px solid @head-bg;
+}
+
+.m-indexNumber {
+  width: 20px;
+  background-color: @head-bg;
+  height: 20px;
+  text-align: center;
+  display: inline-block;
+  border-radius: 10px;
+}
+
+.m-label-indexNumber {
+  width: 20px;
+  background-color: @head-bg;
+  height: 20px;
+  text-align: center;
+  display: inline-block;
+  margin-top: 0.33rem;
+  line-height: 21px;
+  border-radius: 10px;
+}
+
+// 价值分析专用
+.m-worth-tag {
+  margin-top: 0.5rem;
+  line-height: 2.5;
+  border-radius: 2rem;
+  background-color: #f0f6fb;
+  color: @head-bg;
+  text-align: center;
+}
+
+// 洞察分析专用
+.m-cradTitle{
+  width: 100%;
+  font-size: 1.3rem;
+  font-weight: bold;
+  color: #000000;
+  padding: 0 1rem;
+  position: relative;
+  &::before{
+      content: '';
+      display: inline-block;
+      width: .5rem;
+      height: 1rem;
+      background-color: @head-bg;
+      margin-right: .5rem;
+  }
+}
+

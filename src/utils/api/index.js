@@ -1,29 +1,36 @@
-
 import commonbase from './commonbase';
 import login from './login';
 import basicservices from './basicservices';
 import sysCommon from './sysCommon';
 import amslb from './amslb';
+import recentaccessmenu from './recentaccessmenu';
 import tool from './tool';
 import token from './token';
-import staffrelationship from './staffrelationship';
-import esa from './EesApi/esa';
-import planning from './planning'
+import taskcenter from './taskcenter';
+import largescreen from './largescreen';
+import motProduction from './motProduction'; // MOT配置和督导执行
+import reportcenter from './reportcenter';
+import processCenter from './processCenter';
+import dataCenter from './dataCenter';
 
 const APIPrefix = '/api';
 
 const getAPIs = () => {
   const apisInfo = {
-    staffrelationship,
     commonbase, // 系统通用api
     login, // 登录相关接口
     basicservices, // 基础服务
     sysCommon, // 系统通用相关api
     amslb, // 平台GRPC用户类WS接口
+    recentaccessmenu, // 用户最近访问菜单
     tool,
     token,
-    esa,
-    planning, //企划平台模块接口
+    taskcenter,
+    largescreen,// 查询运作类指标状态
+    motProduction, // MOT配置和督导执行
+    reportcenter,//自定义报表
+    processCenter,//流程中心
+    dataCenter //数据中心
   };
   const apis = {};
 

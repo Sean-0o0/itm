@@ -7,6 +7,7 @@ import ChangePwdContent from '../../../layouts/workPlatForm/PageLayout/PageHeade
 // import SaveCheckbox from './SaveCheckbox';
 import FindPwd from './FindPwd';
 import { FetchResetPassword } from '../../../services/commonbase';
+import { FetchSmsCaptcha, FetchCheckWhtLstIP } from '../../../services/login';
 import { AES } from '../../../utils/aes_utils';
 import { APP_SECRET, CLIENTID } from '../../../utils/config';
 import styles from './index.less';
@@ -300,7 +301,7 @@ class LoginForm extends React.Component {
           {getFieldDecorator('password', {
             rules: [{ required: true, message: '请输入账号密码' }],
           })(<Input prefix={<i className="iconfont icon-mima" style={{ color: '#ddd7d7' }} />} type={inputType} style={{ height: '40px' }} autoComplete="off" onFocus={this.ChangeType} placeholder="账号密码" />)}
-        </FormItem>
+                </FormItem>
         {
           captcha === 'true' && (
             <Row>
@@ -355,8 +356,8 @@ class LoginForm extends React.Component {
               </Button>
             )
           }
-          <Checkbox style={{ color: sbjcolor }} className={classnames('left', styles.save)} onChange={e => this.onChangeRemember(e)} defaultChecked={localStorage.getItem('isRemeber') === '0' || false}>保存账号</Checkbox>
-          {/* <a style={{ color: sbjcolor }} className="right" onClick={this.showFindPwd}>忘记密码？</a> */}
+            <Checkbox style={{ color: sbjcolor }} className={classnames('left', styles.save)} onChange={e => this.onChangeRemember(e)} defaultChecked={localStorage.getItem('isRemeber') === '0' || false}>保存账号</Checkbox>
+            {/* <a style={{ color: sbjcolor }} className="right" onClick={this.showFindPwd}>忘记密码？</a> */}
         </FormItem>
         <ChangePwdContent getFieldValue={getFieldValue} dispatch={dispatch} login={this.props.login} ref={(node) => { this.cpForm = node; }} />
         {/* <BasicModal

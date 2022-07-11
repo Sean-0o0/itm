@@ -66,6 +66,7 @@ class FakeTable extends React.Component {
       pageSize: 20,
       total: 0,
     } } = this.state;
+    const { total } = this.state.pagination;
     const { loading = false, fixedHeaderEnabled = true, rowKey = 'rowKey', fixedColumnCount = 0, ...otherColumnsProps } = this.props;
     pagination.onChange = this.handlePagerChange;
     const tableProps = {
@@ -77,6 +78,7 @@ class FakeTable extends React.Component {
       dataSource: childrenData,
       pagination: {
         ...pagination,
+        total: total > 1000 ? 1000 : total,
         onChange: this.handlePagerChange,
       },
       scrollElement: this.state.scrollElement,
