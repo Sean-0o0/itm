@@ -1,5 +1,6 @@
 import {Row, Col, Card,} from 'antd';
 import React from 'react';
+import { Link } from 'dva/router';
 import OperationList from './OperationList';
 import weekNum from '../../../image/pms/week-num.png';
 import fund from '../../../image/pms/fund.png';
@@ -10,6 +11,10 @@ class WeeklyReportSummary extends React.Component {
   };
 
   componentDidMount() {
+  }
+
+  handleClick(){
+    window.location.href = `/#/pms/manage/WeeklyReportTable`
   }
 
   render() {
@@ -23,7 +28,7 @@ class WeeklyReportSummary extends React.Component {
           <div className="tabs">
             <Row>
               <Col span={8} style={{padding:'2rem'}}>
-                <Card className="card" hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }}>
+                <Card className="card" hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }} onClick={this.handleClick}>
                   <div className="cardTitle">
                     <div className="left">
                       <img src={weekNum} alt="" style={{width:'2rem',height:'2rem'}}/>
@@ -55,7 +60,7 @@ class WeeklyReportSummary extends React.Component {
                 </Card>
               </Col>
               <Col span={8} style={{padding:'2rem'}}>
-                <Card className="card"  hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }}>
+                <Card className="card"  hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }} onClick={this.handleClick}>
                   <div className="cardTitle">
                     <div className="left">
                       <img src={fund} alt="" style={{width:'2rem',height:'2rem'}}/>
@@ -87,7 +92,7 @@ class WeeklyReportSummary extends React.Component {
                 </Card>
               </Col>
               <Col span={8} style={{padding:'2rem'}}>
-                <Card className="card"  hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }}>
+                <Card className="card"  hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }} onClick={this.handleClick}>
                   <div className="cardTitle">
                     <div className="left">
                       <img src={project} alt="" style={{width:'2rem',height:'2rem'}}/>
@@ -119,7 +124,7 @@ class WeeklyReportSummary extends React.Component {
                 </Card>
               </Col>
               <Col span={8} style={{padding:'2rem'}}>
-                <Card className="card" hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }}>
+                <Card className="card" hoverable style={{ width: '100%'}} bodyStyle={{padding:'1rem' }} onClick={this.handleClick}>
                   <div className="cardTitle">
                     <div className="left">
                       <img src={main} alt="" style={{width:'2rem',height:'2rem'}}/>

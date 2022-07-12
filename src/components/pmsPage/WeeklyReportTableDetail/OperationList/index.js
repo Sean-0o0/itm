@@ -13,7 +13,7 @@ class OperationList extends React.Component {
 
         return (
             <Row style={{backgroundColor: 'white',height:'8rem'}}>
-              <Col span={16} style={{height:'100%',display:'flex',alignItems: 'center',paddingLeft: '2.5rem'}}>
+              <Col span={17} style={{height:'100%',display:'flex',alignItems: 'center',paddingLeft: '2.5rem'}}>
                 <Button
                   className='fcbtn m-btn-border m-btn-middle m-btn-border-headColor btn-1c'>修改提交
                 </Button>
@@ -22,7 +22,7 @@ class OperationList extends React.Component {
                   className='fcbtn m-btn-border m-btn-middle m-btn-border-headColor btn-1c'>删除
                 </Button>
               </Col>
-              <Col span={8} style={{height:'100%',display:'flex',alignItems: 'center',paddingRight: '3rem'}}>
+              <Col span={7} style={{height:'100%',display:'flex',alignItems: 'center'}}>
                 <div>选择日期&nbsp;&nbsp;<RangePicker /></div>
               </Col>
 
