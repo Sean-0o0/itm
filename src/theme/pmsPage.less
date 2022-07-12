@@ -1,0 +1,127 @@
+//生命周期
+.LifeCycleManage{
+  margin: 1rem;
+  .card{
+    display: flex;
+    .title{
+      width: 1%;
+      display: flex;
+      align-items: center;
+      .right{
+        display: flex;
+        align-items: center;
+      }
+    }
+    .cont{
+      width: 98%;
+      display: flex;
+      .cont-col{
+        margin-left: 2rem;
+        height: 56rem;
+        overflow-y: scroll;
+        .cont-col1{
+          display:flex;
+          align-items: center;
+          height: 3rem;
+          margin: 0 0 1rem 0;
+          .left{
+            width: .3rem;
+            height: 1.5rem;
+            background-color: red;
+          }
+          .right{
+            color: #333333;
+            font-weight: 500;
+            padding-left: 1rem;
+            //line-height: 20px;
+          }
+        }
+      }
+      .cont-row{
+        height: 7rem;
+        padding: 0 1.3rem;
+        margin: 0 0 1rem 0;
+        color: #666666;
+        font-weight: 400;
+        .cont-row1{
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.4rem;
+        color: #999999;
+        font-weight: 400;
+          .left{
+            padding-right: 1rem;
+          }
+          .center{
+            width: .3rem;
+            height: 1.5rem;
+            background-color: red;
+          }
+          .right{
+            padding-left: 1rem;
+          }
+        }
+      }
+    }
+  }
+}
+
+//周报
+.WeeklyReportSummary{
+  .OperationList{
+
+  }
+  .tabs{
+    margin: 1rem;
+    height: 100%;
+    background-color: white;
+    .card{
+      border-radius: 12px;
+    }
+    .cardTitle{
+      display: flex;
+      margin-top: 1rem;
+      margin-left: 1rem;
+      width: 100%;
+      font-size: 16px;
+      font-weight: 500;
+      color: #333333;
+      line-height: 22px;
+      .left{
+        align-items: center;
+        display: flex;
+        width: 50%;
+      }
+      .right{
+        width: 45%;
+        text-align: end;
+        height: 37px;
+        font-size: 26px;
+        font-weight: 500;
+        color: #3FAAFF;
+        line-height: 37px;
+      }
+    }
+    .cardCont{
+      display: flex;
+      margin: 0.8rem;
+      width: 100%;
+      font-size: 14px;
+      font-weight: 400;
+      color: #666666;
+      line-height: 20px;
+      .left{
+        width: 50%;
+      }
+      .right{
+        width: 45%;
+        text-align: end;
+        height: 20px;
+        font-size: 14px;
+        font-weight: 400;
+        color: #666666;
+        line-height: 20px;
+      }
+    }
+  }
+}

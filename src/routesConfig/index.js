@@ -20,8 +20,9 @@ const motProductionRoutes = require('./motProduction');
 const motProductionRoutesConfig = motProductionRoutes.routes;
 const processCenterRoutes = require('./processCenter');
 const processCenterRoutesConfig = processCenterRoutes.routes;
-const dataCenterRoutes = require('./dataCenter');
-const dataCenterRoutesConfig = dataCenterRoutes.routes;
+//pms
+const pmsPageRoutes = require('./pmsPage');
+const pmsPageRoutesConfig = pmsPageRoutes.routes;
 
 const getRoutes = () => {
   const routes = {
@@ -36,7 +37,7 @@ const getRoutes = () => {
     singlePageRoutesConfig, // 单页面的路由信息
     motProductionRoutesConfig, //MOT配置相关路由信息
     processCenterRoutesConfig, //工作流流程分析路由信息
-    dataCenterRoutesConfig //数据中心路由信息
+    pmsPageRoutesConfig
   };
   const suffix = '';
   const suffixWithDot = `${suffix ? `.${suffix}` : ''}`;

@@ -283,15 +283,15 @@ class MainPageLayout extends React.PureComponent {
 
   formatMenu = (menuData) => {
     let menuTree1 = [];
-    // menuTree1.push({
-    //   url: '/index',
-    //   title: '首页',
-    //   openType: 'self',
-    //   fid: '',
-    //   root: '/index',
-    //   icon: '',
-    //   children: [],
-    // });
+    menuTree1.push({
+      url: '/index',
+      title: '首页',
+      openType: 'self',
+      fid: '',
+      root: '/index',
+      icon: '',
+      children: [],
+    });
     menuData.forEach(element => {
       const { url = '', title = [], menu = {}, iconUrl = '', windowType = 0 } = element;
       const { text = '' } = title[0] || {};

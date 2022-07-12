@@ -8,10 +8,6 @@ exports.routes = [
         path: `${prefix}/jsonDatas/:optTp`,
         component: './workPlatForm/singlePage/reportForm/jsonDatas',
       },
-      {
-        path: `${prefix}/superviseProDtl/:params`,
-        component:'./processCenter/superviseProDtl',
-      },
     ],
   },
 ];

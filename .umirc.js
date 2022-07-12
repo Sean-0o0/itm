@@ -11,16 +11,8 @@ const mainPageRoutes = require('./src/routesConfig/workPlatForm/mainPage');
 const mainPageRoutesConfig = mainPageRoutes.routes;
 const IconFontRoutes = require('./src/routesConfig/IconFont');
 const IconFontRoutesConfig = IconFontRoutes.routes;
-const largeScreenRoutes = require('./src/routesConfig/largeScreen');
-const largeScreenRoutesConfig = largeScreenRoutes.routes;
-// const taskCenterRoutes = require('./src/routesConfig/taskCenter');
-// const taskCenterRoutesConfig = taskCenterRoutes.routes;
 const singlePageRoutes = require('./src/routesConfig/workPlatForm/singlePage');
 const singlePageRoutesConfig = singlePageRoutes.routes;
-// const motProductionRoutes = require('./src/routesConfig/motProduction');
-// const motProductionRoutesConfig = motProductionRoutes.routes;
-// const proCenterRoutes = require('./src/routesConfig/processCenter');
-// const proCenterRoutesConfig = proCenterRoutes.routes;
 
 export default {
   // publicPath: '/c5_basic/',
@@ -65,11 +57,7 @@ export default {
     ...loginRoutesConfig, // 登录页面相关路由信息
     ...testPageRoutesConfig, // 测试demo的相关路由信息
     ...IconFontRoutesConfig, // 图标库路由信息
-    ...largeScreenRoutesConfig, // 大屏页面路由信息
-    //...motProductionRoutesConfig, // MOT配置相关路由信息
-    //...taskCenterRoutesConfig, // 任务中心路由信息
     ...singlePageRoutesConfig, // 单页面的路由信息
-    //...proCenterRoutesConfig,//流程中心路由信息
     ...mainPageRoutesConfig, // 主页面相关路由信息
   ],
   theme: './config/theme.config.js',

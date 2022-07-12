@@ -21,7 +21,6 @@ export function _onCreate() {
   });
   app.use(require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/node_modules/dva-immer/dist/index.js')());
   app.model({ namespace: 'global', ...(require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/models/global.js').default) });
-app.model({ namespace: 'largeScreen', ...(require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/models/largeScreen/largeScreen.js').default) });
 app.model({ namespace: 'login', ...(require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/models/login.js').default) });
 app.model({ namespace: 'test3', ...(require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/models/testPage/test3.js').default) });
 app.model({ namespace: 'mainPage', ...(require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/models/workPlatForm/mainPage/mainPage.js').default) });

@@ -204,222 +204,6 @@ const routes = [
     exact: true,
   },
   {
-    path: '/loading',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__Exception__loading" */ '../Exception/loading'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../Exception/loading').default,
-    exact: true,
-  },
-  {
-    path: '/clearingPlace',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__ClearingPlace__index" */ '../screen/ClearingPlace/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/ClearingPlace/index').default,
-    exact: true,
-  },
-  {
-    path: '/fundSettlement',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__FundSettlementV2__index" */ '../screen/FundSettlementV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/FundSettlementV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/futures',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__FuturesV2__index" */ '../screen/FuturesV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/FuturesV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/international',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__InternationalV2__index" */ '../screen/InternationalV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/InternationalV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/oprtRiskOfAsset',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__OprtRiskOfAssetV2__index" */ '../screen/OprtRiskOfAssetV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/OprtRiskOfAssetV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/capital',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__Capital__index" */ '../screen/Capital/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/Capital/index').default,
-    exact: true,
-  },
-  {
-    path: '/fund',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__FundV2__index" */ '../screen/FundV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/FundV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/investment',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__Investment__index" */ '../screen/Investment/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/Investment/index').default,
-    exact: true,
-  },
-  {
-    path: '/bond',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__BondV2__index" */ '../screen/BondV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/BondV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/runManage',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__RunManageV2__index" */ '../screen/RunManageV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/RunManageV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/centralOpert',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__CentralOpert__index" */ '../screen/CentralOpert/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/CentralOpert/index').default,
-    exact: true,
-  },
-  {
-    path: '/callCenter',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__callCenter__index" */ '../screen/callCenter/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/callCenter/index').default,
-    exact: true,
-  },
-  {
-    path: '/mainScreen',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__MainScreenV2__index" */ '../screen/MainScreenV2/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/MainScreenV2/index').default,
-    exact: true,
-  },
-  {
-    path: '/selfRun',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__SelfRun__index" */ '../screen/SelfRun/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/SelfRun/index').default,
-    exact: true,
-  },
-  {
-    path: '/businessUnit',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__BusinessUnit__index" */ '../screen/BusinessUnit/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/BusinessUnit/index').default,
-    exact: true,
-  },
-  {
-    path: '/subsidiary',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__Subsidiary__index" */ '../screen/Subsidiary/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/Subsidiary/index').default,
-    exact: true,
-  },
-  {
-    path: '/realNameMonitoring',
-    component: __IS_BROWSER
-      ? _dvaDynamic({
-          component: () =>
-            import(/* webpackChunkName: "p__screen__RealNameMonitoring__index" */ '../screen/RealNameMonitoring/index'),
-          LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-            .default,
-        })
-      : require('../screen/RealNameMonitoring/index').default,
-    exact: true,
-  },
-  {
     path: '/single/',
     component: __IS_BROWSER
       ? _dvaDynamic({
@@ -440,18 +224,6 @@ const routes = [
                 .default,
             })
           : require('../workPlatForm/singlePage/reportForm/jsonDatas').default,
-        exact: true,
-      },
-      {
-        path: '/single/superviseProDtl/:params',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__processCenter__superviseProDtl" */ '../processCenter/superviseProDtl'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../processCenter/superviseProDtl').default,
         exact: true,
       },
       {
@@ -600,27 +372,6 @@ const routes = [
         exact: true,
       },
       {
-        path: '/staffAdmission',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              app: require('@tmp/dva').getApp(),
-              models: () => [
-                import(/* webpackChunkName: 'p__workPlatForm__mainPage__businessNavigate__models__staffAdmission.js' */ '/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/pages/workPlatForm/mainPage/businessNavigate/models/staffAdmission.js').then(
-                  m => {
-                    return { namespace: 'staffAdmission', ...m.default };
-                  },
-                ),
-              ],
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__businessNavigate__staffAdmission" */ '../workPlatForm/mainPage/businessNavigate/staffAdmission'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/businessNavigate/staffAdmission')
-              .default,
-        exact: true,
-      },
-      {
         path: '/WarningPage',
         component: __IS_BROWSER
           ? _dvaDynamic({
@@ -633,274 +384,39 @@ const routes = [
         exact: true,
       },
       {
-        path: '/dataCenter/tradingUnitList',
+        path: '/pms/manage/LifeCycleManagement',
         component: __IS_BROWSER
           ? _dvaDynamic({
               component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__TradingUnitList" */ '../workPlatForm/mainPage/dataCenter/TradingUnitList'),
+                import(/* webpackChunkName: "p__pmsPage__LifeCycleManagement" */ '../pmsPage/LifeCycleManagement'),
               LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
                 .default,
             })
-          : require('../workPlatForm/mainPage/dataCenter/TradingUnitList')
-              .default,
+          : require('../pmsPage/LifeCycleManagement').default,
         exact: true,
       },
       {
-        path: '/dataCenter/tradingUnitCompare',
+        path: '/pms/manage/WeeklyReportSummary',
         component: __IS_BROWSER
           ? _dvaDynamic({
               component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__TradingUnitCompare" */ '../workPlatForm/mainPage/dataCenter/TradingUnitCompare'),
+                import(/* webpackChunkName: "p__pmsPage__WeeklyReportSummary" */ '../pmsPage/WeeklyReportSummary'),
               LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
                 .default,
             })
-          : require('../workPlatForm/mainPage/dataCenter/TradingUnitCompare')
-              .default,
+          : require('../pmsPage/WeeklyReportSummary').default,
         exact: true,
       },
       {
-        path: '/dataCenter/tradingUnitZLPanorama',
+        path: '/pms/manage/WeeklyReportTable',
         component: __IS_BROWSER
           ? _dvaDynamic({
               component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__TradingUnitZLPanorama" */ '../workPlatForm/mainPage/dataCenter/TradingUnitZLPanorama'),
+                import(/* webpackChunkName: "p__pmsPage__WeeklyReportTable" */ '../pmsPage/WeeklyReportTable'),
               LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
                 .default,
             })
-          : require('../workPlatForm/mainPage/dataCenter/TradingUnitZLPanorama')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/dataCenter/tradingUnitZYPanorama',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__TradingUnitZYPanorama" */ '../workPlatForm/mainPage/dataCenter/TradingUnitZYPanorama'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/dataCenter/TradingUnitZYPanorama')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/dataCenter/tradingUnitAnalyze',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__TradingUnitAnalyze" */ '../workPlatForm/mainPage/dataCenter/TradingUnitAnalyze'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/dataCenter/TradingUnitAnalyze')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/dataCenter/tradingUnitCalculate',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__tradingUnitCalculate" */ '../workPlatForm/mainPage/dataCenter/tradingUnitCalculate'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/dataCenter/tradingUnitCalculate')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/dataCenter/tradingUnitApportion',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__dataCenter__tradingUnitApportion" */ '../workPlatForm/mainPage/dataCenter/tradingUnitApportion'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/dataCenter/tradingUnitApportion')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/motFactorIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTFactorIndex" */ '../workPlatForm/mainPage/motProduction/MOTFactorIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTFactorIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/motEventIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTEventIndex" */ '../workPlatForm/mainPage/motProduction/MOTEventIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTEventIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/dispatchIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__DISPatchIndex" */ '../workPlatForm/mainPage/motProduction/DISPatchIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/DISPatchIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/distributeStreamTableConfig',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__DIStributeStreamTableConfig" */ '../workPlatForm/mainPage/motProduction/DIStributeStreamTableConfig'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/DIStributeStreamTableConfig')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/yybMotDefineIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__YybMotDefineIndex" */ '../workPlatForm/mainPage/motProduction/YybMotDefineIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/YybMotDefineIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/ryMotDefineIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__RyMotDefineIndex" */ '../workPlatForm/mainPage/motProduction/RyMotDefineIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/RyMotDefineIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/groupDefinedIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTGroupDefinedIndex" */ '../workPlatForm/mainPage/motProduction/MOTGroupDefinedIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTGroupDefinedIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/motMonitoring',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTMonitoring" */ '../workPlatForm/mainPage/motProduction/MOTMonitoring'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTMonitoring')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/supervisorListIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTSupervisorListIndex" */ '../workPlatForm/mainPage/motProduction/MOTSupervisorListIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTSupervisorListIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/supervisorTaskIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTSupervisorTaskIndex" */ '../workPlatForm/mainPage/motProduction/MOTSupervisorTaskIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTSupervisorTaskIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/employeeExecutionOneIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTEmployeeExecutionOneIndex" */ '../workPlatForm/mainPage/motProduction/MOTEmployeeExecutionOneIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTEmployeeExecutionOneIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/motcfg/employeeExecutionTwoIndex',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__workPlatForm__mainPage__motProduction__MOTEmployeeExecutionTwoIndex" */ '../workPlatForm/mainPage/motProduction/MOTEmployeeExecutionTwoIndex'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../workPlatForm/mainPage/motProduction/MOTEmployeeExecutionTwoIndex')
-              .default,
-        exact: true,
-      },
-      {
-        path: '/processCenter/proAnalysis',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__processCenter__ProAnalysis" */ '../processCenter/ProAnalysis'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../processCenter/ProAnalysis').default,
-        exact: true,
-      },
-      {
-        path: '/processCenter/accountList',
-        component: __IS_BROWSER
-          ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__processCenter__AccountList" */ '../processCenter/AccountList'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
-          : require('../processCenter/AccountList').default,
+          : require('../pmsPage/WeeklyReportTable').default,
         exact: true,
       },
       {

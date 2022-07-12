@@ -36,6 +36,6 @@ class LargeScreenPageLayout extends React.PureComponent {
 }
 
 export default connect(({ global, largeScreen }) => ({
-  theme: global.theme || 'blue-dark-theme',
+  theme: global.theme || '',
   largeScreen,
 }))(LargeScreenPageLayout);

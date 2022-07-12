@@ -36,6 +36,6 @@ class SinglePageLayout extends React.PureComponent {
 }
 
 export default connect(({ global, singlePage }) => ({
-  theme: global.theme || 'blue-dark-theme',
+  theme: global.theme || 'default-dark-theme',
   singlePage,
 }))(SinglePageLayout);

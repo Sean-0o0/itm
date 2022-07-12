@@ -1,8 +1,6 @@
 const Intergration = require('./Intergration');
 const Others = require('./Others');
-const dataCenter =require('../../dataCenter')
-const Mot =require('../../motProduction')
-const processCenter =require('../../processCenter')
+const pmsPage =require('../../pmsPage')
 const prefix = '';
 exports.routes = [
   {
@@ -28,12 +26,8 @@ exports.routes = [
       ...Intergration.routes,
       // 集成业务导航路由定义
       ...Others.routes,
-	  // 数据中心路由
-      ...dataCenter.routes,
-      // mot路由
-      ...Mot.routes,
-      //流程中心路由
-      ...processCenter.routes
+	    // 数据中心路由
+      ...pmsPage.routes,
     ],
   },
 ];
