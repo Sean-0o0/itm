@@ -33,7 +33,7 @@ export default class PageHeader extends React.PureComponent {
           <span><img className="logo" src={[require("../../../../assets/apex-logo.png")]} alt="" />
           <Divider style={{height:'3rem'}} type="vertical" />
             </span>
-          <span style={{fontSize:'2.333rem',color:'#333',fontWeight:'bold',padding:'0 3rem 0 0'}}>{"项目管理平台【测】"}</span>
+          <span style={{fontSize:'2.333rem',color:'#333',fontWeight:'bold',padding:'0 3rem 0 0'}}>{"项目信息综合管理系统【测】"}</span>
           <div id="visited_routes_container" style={{ flex: 1, overflow: 'hidden' }} className={`${styles.historyContainer}`} >
             <span><Scrollbars
               autoHide
