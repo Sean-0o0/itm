@@ -96,7 +96,7 @@ class LifeCycleManagementTabs extends React.Component {
                             </div>
                           </div>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -115,7 +115,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -126,25 +126,25 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -163,7 +163,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -174,20 +174,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -205,25 +205,25 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -242,7 +242,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -264,25 +264,25 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -301,86 +301,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
-                              </div>
-                            </div>
-                          </Row>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-                                来自项目信息管理系统
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-                                来自项目信息管理系统
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -398,25 +319,80 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
+                              上传
+                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                {/*2022.06.17上传*/}
+                              </div>
+                              <div className='center'>
+                              </div>
+                              <div className='right'>
+
                               </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
                             <Col span={15} style={{}}>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
+                              上传
+                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                {/*2022.06.17上传*/}
+                              </div>
+                              <div className='center'>
+                              </div>
+                              <div className='right'>
+
+                              </div>
+                            </div>
+                          </Row>
+                          <div className='cont-col1'>
+                            <div className='left'>
+                            </div>
+                            <div className='right'>
+                              标前会议
+                            </div>
+                          </div>
+                          <Row className='cont-row'>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -435,7 +411,31 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={15} style={{}}>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
+                              上传
+                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                {/*2022.06.17上传*/}
+                              </div>
+                              <div className='center'>
+                              </div>
+                              <div className='right'>
+
                               </div>
                             </div>
                           </Row>
@@ -451,26 +451,26 @@ class LifeCycleManagementTabs extends React.Component {
                             </div>
                           </div>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -481,20 +481,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -505,20 +505,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -540,25 +540,49 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
                             <Col span={15} style={{}}>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
+                              上传
+                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                {/*2022.06.17上传*/}
+                              </div>
+                              <div className='center'>
+                              </div>
+                              <div className='right'>
+
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -577,7 +601,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -588,44 +612,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -641,7 +641,7 @@ class LifeCycleManagementTabs extends React.Component {
                             </div>
                           </div>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -660,7 +660,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -671,20 +671,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -695,20 +695,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -719,20 +719,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -748,26 +748,26 @@ class LifeCycleManagementTabs extends React.Component {
                             </div>
                           </div>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -778,25 +778,49 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
                             <Col span={15} style={{}}>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
+                              上传
+                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                {/*2022.06.17上传*/}
+                              </div>
+                              <div className='center'>
+                              </div>
+                              <div className='right'>
+
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
                               标前会议纪要扫描件
                             </Col>
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
@@ -815,7 +839,7 @@ class LifeCycleManagementTabs extends React.Component {
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -826,20 +850,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
@@ -850,44 +874,20 @@ class LifeCycleManagementTabs extends React.Component {
                             <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
                               上传
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  下载*/}
+                            {/*</Col>*/}
+                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
+                            {/*  详情*/}
+                            {/*</Col>*/}
                             <div className='cont-row1'>
                               <div className='left'>
-                                2022.06.17上传
+                                {/*2022.06.17上传*/}
                               </div>
                               <div className='center'>
                               </div>
                               <div className='right'>
-                                来自项目信息管理系统
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-                                来自项目信息管理系统
+
                               </div>
                             </div>
                           </Row>
