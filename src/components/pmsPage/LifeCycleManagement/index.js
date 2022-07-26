@@ -79,7 +79,7 @@ class LifeCycleManagementTabs extends React.Component {
         </Col>
         <Col span={24} style={{height:'92%'}}>
           <div className='LifeCycleManage'>
-            <Collapse defaultActiveKey={['1']} onChange={this.onChange}>
+            <Collapse ghost defaultActiveKey={['1']} onChange={this.onChange}>
               <Panel header={headText} key="1" extra={text}>
                 <Col className='card'>
                   <Col span={1} className='title'>
