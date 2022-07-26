@@ -300,7 +300,7 @@ class LoginForm extends React.Component {
         >
           {getFieldDecorator('password', {
             rules: [{ required: true, message: '请输入账号密码' }],
-          })(<Input prefix={<i className="iconfont icon-mima" style={{ color: '#ddd7d7' }} />} type={inputType} style={{ height: '40px' }} autoComplete="off" onFocus={this.ChangeType} placeholder="账号密码" />)}
+          })(<Input prefix={<i className="iconfont icon-password" style={{ color: '#ddd7d7' }} />} type={inputType} style={{ height: '40px' }} autoComplete="off" onFocus={this.ChangeType} placeholder="账号密码" />)}
                 </FormItem>
         {
           captcha === 'true' && (

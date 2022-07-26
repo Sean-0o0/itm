@@ -45,7 +45,7 @@ export default class BackUser extends React.PureComponent {
       <span className="m-dropdown">
         <div className="m-dropdown-title ant-dropdown-trigger">
           <a onClick={this.showConfirm} title="切回初始账户" style={{ display: 'inline-block', width: '100%', height: '100%' }}>
-            <i className="iconfont icon-addressee" style={{ color: '#fff' }}/>
+            <i className="iconfont icon-down-solid-arrow"/>
           </a>
         </div>
       </span>

@@ -116,7 +116,7 @@ function VisitedRoutes(props) {
     <div style={{ width: visitedScroll }} className='clearfix' id='visited-scroll' >
       <div  className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
-          <i className="iconfont icon-shouye" style={{ display: 'inline-block', height: '3.286rem' }} />
+          <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
           <span style={{ margin: '0 1rem' }}>首页</span>
         </Link>
       </div>
@@ -137,7 +137,7 @@ function VisitedRoutes(props) {
           return (
             <div key={url} className={`cur-tabs ${styles.tagview} ${newPathname === url && styles.isActive}`}>
               <Link to={url}>{title}</Link>
-              <i className="iconfont icon-delete zy-ico-del" onClick={() => { closePage(url); }} />
+              <i className="iconfont icon-fill-clear zy-ico-del" onClick={() => { closePage(url); }} />
               {/* <Icon type="close-circle" theme="twoTone" twoToneColor="#ec6057"  /> */}
             </div>
           );

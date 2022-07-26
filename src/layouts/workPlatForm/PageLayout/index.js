@@ -263,6 +263,7 @@ class MainPageLayout extends React.PureComponent {
 
   formatSideMenu = (data, fid, root) => {
     const children = [];
+    console.log(data,'datadatadatadata');
     data.forEach(element => {
       const { url = '', title = [], menu = {}, iconUrl = '', windowType = 0 } = element;
       const { text = '' } = title[0] || {};
@@ -296,14 +297,31 @@ class MainPageLayout extends React.PureComponent {
       const { url = '', title = [], menu = {}, iconUrl = '', windowType = 0 } = element;
       const { text = '' } = title[0] || {};
       const { item = [] } = menu;
+      let icon = '';
       const { code, openType = 'self' } = this.parseUrl(url);
+      //使用浙商管理平台的图标
+      if(text === "首页"){
+        icon = 'icon-home';
+      }if(text === "项目信息"){
+        icon = 'icon-detail';
+      }if(text === "项目预算"){
+        icon = 'icon-cash';
+      }if(text === "生命周期"){
+        icon = 'icon-time';
+      }if(text === "外包项目"){
+        icon = 'icon-system';
+      }if(text === "系统管理"){
+        icon = 'icon-set';
+      }if(text === "统计分析"){
+        icon = 'icon-barchart';
+      }
       menuTree1.push({
         url: code,
         title: text,
         openType: windowType?'_blank':'_self',
         fid: '',
         root: url,
-        icon: iconUrl,
+        icon: icon,
         children: item && item.length > 0 ? this.formatSideMenu(item, code, code) : [],
       });
     });
@@ -404,9 +422,9 @@ class MainPageLayout extends React.PureComponent {
                 collapsed={collapsed}
               >
                 <PageSider menuTree={menuTree} collapsed={collapsed} location={location} history={history}></PageSider>
-                {/* <div style={{ transform: !collapsed && 'rotate(180deg)' }} className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
+                { <div style={{ transform: !collapsed && 'rotate(180deg)' }} className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
                 {collapsed?<Icon type="menu-unfold" className='menu-sider-icon' />:<Icon type="menu-fold" className='menu-sider-icon' />}
-              </div> */}
+              </div> }
               </Sider>
               <Content id="htmlContent" style={{ borderRadius: '0 0 0 1rem', height: '100%', overflowY: 'auto', overflowX: 'hidden', width:'100%' }} className="m-layout-content" >
                 {/* <TopMenu></TopMenu> */}

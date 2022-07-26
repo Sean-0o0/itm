@@ -17,8 +17,8 @@ export default class PageSider extends React.Component {
   };
 
   componentDidUpdate(prevProps, prevState) {
-    const { history } = this.props;
-    const { location: { pathname = '', search = '' } } = history;
+    const {history} = this.props;
+    const {location: {pathname = '', search = ''}} = history;
     const oldPathname = prevState.selectedKeys[0] || '';
     const newPathname = pathname + search;
     if (oldPathname !== newPathname) {
@@ -44,8 +44,8 @@ export default class PageSider extends React.Component {
   }
 
   render() {
-    const { menuTree = [], collapsed } = this.props;
-    const { selectedKeys = [], openKeys = [] } = this.state;
+    const {menuTree = [], collapsed} = this.props;
+    const {selectedKeys = [], openKeys = []} = this.state;
     const sysName = localStorage.getItem('sysName');
     // const arr = [];
     // for (let i = 0; i < 25; i++) {
@@ -78,10 +78,10 @@ export default class PageSider extends React.Component {
         {/*}*/}
         <Scrollbars
           autoHide
-          style={{ width: '100%', height: 'calc(100% - 19rem)' }}
+          style={{width: '100%', height: 'calc(100% - 19rem)'}}
         >
           <Menu
-            theme='dark'
+            theme='light'
             selectedKeys={selectedKeys}
             mode='inline'
 
@@ -92,23 +92,24 @@ export default class PageSider extends React.Component {
           >
             {
               menuTree.map(item => {
-                const { children = [], url = '' } = item;
+                const {children = [], url = ''} = item;
                 if (children.length > 0) {
                   return (
                     <SubMenu
                       key={item.title}
+                      popupClassName = 'ant-menu-submenu-title-sub'
                       // key={item.url}
                       title={
                         collapsed ?
                           (
-                            <div style={{ textAlign: 'center', lineHeight: '1.3' }}>
+                            <div style={{textAlign: 'center', lineHeight: '1.3',margin: '2rem',}}>
                               <i className={`zj-submenu-ico iconfont ${item.icon || ' icon-productK'}`}></i>
-                              <div className='zj-submenu-txt'>{item.title}</div>
+                              {/*<div className='zj-submenu-txt'>{item.title}</div>*/}
                             </div>
                           )
                           :
                           (
-                            <span>
+                            <span >
                               <i className={`iconfont ${item.icon || ' icon-productK'}`}></i>
                               <span>{item.title}</span>
                             </span>
@@ -117,7 +118,7 @@ export default class PageSider extends React.Component {
                     >
                       {
                         children.map(element => {
-                          const { children: menus = [] } = element;
+                          const {children: menus = []} = element;
                           if (menus.length > 0) {
                             return (
                               <SubMenu
@@ -125,7 +126,7 @@ export default class PageSider extends React.Component {
                                 // key={element.url}
                                 title={
                                   <span>
-                                    <span><i className={`iconfont ${element.icon || ' icon-productK'}`}></i></span>
+                                    {/*<span><i className={`iconfont ${element.icon || ' icon-productK'}`}></i></span>*/}
                                     <span>{element.title}</span>
                                   </span>
                                 }
@@ -133,7 +134,7 @@ export default class PageSider extends React.Component {
                                 {/*第三级菜单*/}
                                 {
                                   menus.map(item => {
-                                    const { children = [], url = '' } = item;
+                                    const {children = [], url = ''} = item;
                                     // 四级菜单数量
                                     if (children.length > 0) {
                                       return (
@@ -143,14 +144,14 @@ export default class PageSider extends React.Component {
                                           className={children.length > 10 ? children.length > 20 ? children.length > 30 ? 'third-sub-menu-fourline' : 'third-sub-menu-threeline' : 'third-sub-menu-line' : ''}
                                           title={
                                             <span>
-                                              <i className={`iconfont ${item.icon || ' icon-productK'}`}></i>
+                                              {/*<i className={`iconfont ${item.icon || ' icon-productK'}`}></i>*/}
                                               <span>{item.title}</span>
                                             </span>
                                           }
                                         >
                                           {
                                             children.map(element => {
-                                              const { children: menus = [] } = element;
+                                              const {children: menus = []} = element;
                                               if (menus.length > 0) {
                                                 return (
                                                   <SubMenu
@@ -158,7 +159,7 @@ export default class PageSider extends React.Component {
                                                     // key={element.url}
                                                     title={
                                                       <span>
-                                                        <span><i className={`iconfont ${element.icon || ' icon-productK'}`}></i></span>
+                                                        {/*<span><i className={`iconfont ${element.icon || ' icon-productK'}`}></i></span>*/}
                                                         <span>{element.title}</span>
                                                       </span>
                                                     }
@@ -166,8 +167,9 @@ export default class PageSider extends React.Component {
                                                     {
                                                       menus.map(menu => {
                                                         return <Menu.Item key={menu.url}><Link target={menu.openType}
-                                                          to={menu.url}><i
-                                                            className={`iconfont ${menu.icon || ' icon-productK'}`} />{menu.title}
+                                                                                               to={menu.url}>
+                                                          {/*<i className={`iconfont ${menu.icon || ' icon-productK'}`}/>*/}
+                                                          {menu.title}
                                                         </Link></Menu.Item>;
                                                       })
                                                     }
@@ -176,13 +178,15 @@ export default class PageSider extends React.Component {
                                               }
                                               if (_.toString(element.url).slice(0, 1) !== '/') {
                                                 return <Menu.Item key={element.url}><a target={element.openType}
-                                                  href={element.url}><i
-                                                    className={`iconfont ${element.icon || ' icon-productK'}`} />{element.title}
+                                                                                       href={element.url}>
+                                                  {/*<i className={`iconfont ${element.icon || ' icon-productK'}`}/>*/}
+                                                  {element.title}
                                                 </a></Menu.Item>;
                                               }
                                               return <Menu.Item key={element.url}><Link target={element.openType}
-                                                to={element.url}><i
-                                                  className={`iconfont ${element.icon || ' icon-productK'}`} />{element.title}
+                                                                                        to={element.url}>
+                                                {/*<i className={`iconfont ${element.icon || ' icon-productK'}`}/>*/}
+                                                {element.title}
                                               </Link></Menu.Item>;
                                             })
                                           }
@@ -191,12 +195,14 @@ export default class PageSider extends React.Component {
                                     }
                                     //没有四级菜单,三级菜单的展示
                                     if (_.toString(item.url).slice(0, 1) !== '/') {
-                                      return <Menu.Item key={item.url}><a target={item.openType} href={item.url}><i
-                                        className={`iconfont ${item.icon || ' icon-productK'}`} />{item.title}
+                                      return <Menu.Item key={item.url}><a target={item.openType} href={item.url}>
+                                        {/*<i className={`iconfont ${item.icon || ' icon-productK'}`}/>*/}
+                                        {item.title}
                                       </a></Menu.Item>;
                                     }
-                                    return <Menu.Item key={item.url}><Link target={item.openType} to={item.url}><i
-                                      className={`iconfont ${item.icon || ' icon-productK'}`} />{item.title}
+                                    return <Menu.Item key={item.url}><Link target={item.openType} to={item.url}>
+                                      {/*<i className={`iconfont ${item.icon || ' icon-productK'}`}/>*/}
+                                      {item.title}
                                     </Link></Menu.Item>;
                                   })
                                 }
@@ -204,12 +210,14 @@ export default class PageSider extends React.Component {
                             );
                           }
                           if (_.toString(element.url).slice(0, 1) !== '/') {
-                            return <Menu.Item key={item.url}><a target={element.openType} href={element.url}><i
-                              className={`iconfont ${element.icon || ' icon-productK'}`} />{element.title}
+                            return <Menu.Item key={item.url}><a target={element.openType} href={element.url}>
+                              {/*<i className={`iconfont ${element.icon || ' icon-productK'}`}/>*/}
+                              {element.title}
                             </a></Menu.Item>;
                           }
-                          return <Menu.Item key={element.url}><Link target={element.openType} to={element.url}><i
-                            className={`iconfont ${element.icon || ' icon-productK'}`} />{element.title}
+                          return <Menu.Item key={element.url}><Link target={element.openType} to={element.url}>
+                            {/*<i className={`iconfont ${element.icon || ' icon-productK'}`}/>*/}
+                            {element.title}
                           </Link></Menu.Item>;
                         })
                       }
@@ -217,8 +225,9 @@ export default class PageSider extends React.Component {
                   );
                 }
                 return url !== '/noTabsPage' ? <Menu.Item key={item.url}><Link target={item.openType} to={item.url}><i
-                  className={`zj-submenu-ico iconfont ${item.icon || ' icon-productK'}`} /><span
-                    className='zj-submenu-txt'>{item.title}</span></Link></Menu.Item> : null;
+                  className={`zj-submenu-ico iconfont ${item.icon || ' icon-productK'}`}/>
+                  {collapsed ?'':<span className='zj-submenu-txt'>{item.title}</span>}
+                </Link></Menu.Item> : null;
               })
             }
           </Menu>
