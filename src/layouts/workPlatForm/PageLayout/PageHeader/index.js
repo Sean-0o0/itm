@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider } from 'antd';
+import { Divider,Badge } from 'antd';
 // import SwitchTheme from './switchTheme';
 import UserDrop from './userDrop';
 import VisitedRoutes from './VisitedRoutes';
@@ -45,26 +45,26 @@ export default class PageHeader extends React.PureComponent {
           </div>
           <div id="fma_opertion_drops" className="dis-fx">
             <div style={{ width: '4rem' }}></div>
-            {/* <div id="guideTrigger_switchMenu" className="ant-menu-item" style={{ position: 'relative', top: '3px' }}>
-              <a onClick={() => { window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`; }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-quota zj-ico-home' style={{ fontSize: '1.6rem' }}/></Badge></a>
-            </div> */}
-            {/* {
-              Object.keys(authorities).includes('remindBell') && ( */}
-            {/* <div id="guideTrigger_messageDrop">
+            { <div id="guideTrigger_switchMenu" className="ant-menu-item" style={{ position: 'relative', top: '8px' }}>
+              <a onClick={() => { window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`; }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-message' style={{ fontSize: '3.6rem' }}/></Badge></a>
+            </div> }
+            {
+              Object.keys(authorities).includes('remindBell') && (
+             <div id="guideTrigger_messageDrop">
               <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
-            </div> */}
-            {/* )
-            } */}
-            {/* <div id="guideTrigger_switchMenu">
+            </div>
+             )
+            }
+            { <div id="guideTrigger_switchMenu">
               <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
-            </div> */}
-            {/* {
+            </div> }
+             {
               Object.keys(authorities).includes('globalSearch') && (
                 <div id="guideTrigger_globalSearch" style={{ margin: '0 1rem' }}>
                   <SearchInput menuTree={menuTree} searchAuth={globalSearch} />
                 </div>
               )
-            } */}
+            }
 
             <div id="guideTrigger_userDrop">
               <UserDrop theme={theme} dispatch={dispatch} userBasicInfo={userBasicInfo} authUserInfo={authUserInfo} />

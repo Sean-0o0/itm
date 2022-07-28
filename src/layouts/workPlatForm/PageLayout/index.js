@@ -112,16 +112,16 @@ class MainPageLayout extends React.PureComponent {
     });
   }
 
-  // fetchUserTodoWorkflowNum = () => {
-  //   // 流程中心
-  //   fetchUserTodoWorkflowNum().then((response) => {
-  //     const { records = [] } = response;
-  //     const numbers = records[0] ? (records[0].dblcs ? records[0].dblcs : 0) : 0; // eslint-disable-line
-  //     this.setState({ userTodoWorkflowNum: numbers });
-  //   }).catch((error) => {
-  //     message.error(!error.success ? error.message : error.note);
-  //   });
-  // }
+  fetchUserTodoWorkflowNum = () => {
+    // 流程中心
+    fetchUserTodoWorkflowNum().then((response) => {
+      const { records = [] } = response;
+      const numbers = records[0] ? (records[0].dblcs ? records[0].dblcs : 0) : 0; // eslint-disable-line
+      this.setState({ userTodoWorkflowNum: numbers });
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
 
   toggleCollapsed = () => {
     localStorage.setItem('menuExpansion', this.state.collapsed ? '1' : '0');
