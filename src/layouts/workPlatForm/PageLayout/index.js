@@ -263,7 +263,6 @@ class MainPageLayout extends React.PureComponent {
 
   formatSideMenu = (data, fid, root) => {
     const children = [];
-    console.log(data,'datadatadatadata');
     data.forEach(element => {
       const { url = '', title = [], menu = {}, iconUrl = '', windowType = 0 } = element;
       const { text = '' } = title[0] || {};

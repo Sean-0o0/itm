@@ -1,11 +1,20 @@
-import {Collapse, Row, Col, Icon, Empty} from 'antd';
+import {Collapse, Row, Col, Menu, Dropdown,Tooltip} from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
-import { CaretLeftOutlined,CaretRightOutlined } from '@ant-design/icons';
+import ProjectRisk from './ProjectRisk';
+import ProjectProgress from './ProjectProgress';
+import icon_normal from '../../../image/pms/icon_milepost_normal.png';
+import icon_wrong from '../../../image/pms/icon_milepost_wrong.png';
+import icon_waiting from '../../../image/pms/icon_milepost_waiting.png';
 const { Panel } = Collapse;
 class LifeCycleManagementTabs extends React.Component {
   state = {
-    num:2,
+    showMore: false,
+    extend1:false,
+    extend2:false,
+    extend3:true,
+    extend4:false,
+    extend5:false,
   };
 
   componentDidMount() {
@@ -15,19 +24,6 @@ class LifeCycleManagementTabs extends React.Component {
     console.log(key);
   };
 
-  handleClickLeft =()=>{
-    console.log('左左左左');
-    this.setState({
-      num:this.state.num-1,
-    })
-  }
-
-  handleClickRight =()=>{
-    console.log('右右右右');
-    this.setState({
-      num:this.state.num+1,
-    })
-  }
 
   text = ()=>{
     return <div style={{
@@ -41,879 +37,794 @@ class LifeCycleManagementTabs extends React.Component {
     </div>;
   }
 
-  headText = ()=>{
-    return <span style={{
-      fontSize: '16px',
-      fontWeight: 500,
-      color: '#333333'}}>
-      2.项目立项
-    </span>;
+  extend1 = () =>{
+    this.setState({
+      extend1:!this.state.extend1,
+    })
   }
-  headText2 = ()=>{
-    return <span style={{
-      fontSize: '16px',
-      fontWeight: 500,
-      color: '#333333'}}>
-      1.需求及市场调研
-    </span>;
+  extend2 = () =>{
+    this.setState({
+      extend2:!this.state.extend2,
+    })
   }
-  headText3 = ()=>{
-    return <span style={{
-      fontSize: '16px',
-      fontWeight: 500,
-      color: '#333333'}}>
-      3.项目招标
-    </span>;
+  extend3 = () =>{
+    this.setState({
+      extend3:!this.state.extend3,
+    })
+  }
+  extend4 = () =>{
+    this.setState({
+      extend4:!this.state.extend4,
+    })
+  }
+  extend5 = () =>{
+    this.setState({
+      extend5:!this.state.extend5,
+    })
   }
 
+  handleMore = (showMore) =>{
+    console.log("showMoreshowMoreshowMore",this.state.showMore)
+    this.setState({
+      showMore: showMore,
+    })
+    console.log("showMoreshowMoreshowMore",this.state.showMore)
+  }
   render() {
-    const { num } = this.state;
-    const headText = this.headText();
-    const headText2 = this.headText2();
-    const headText3 = this.headText3();
-    const text = this.text();
+    const {showMore,extend1,extend2,extend3,extend4,extend5 } = this.state;
+    let height1 = '8rem';
+    let height2 = '8rem';
+    let height3 = '8rem';
+    let height4 = '8rem';
+    let height5 = '8rem';
+    if(extend1){
+      height1 = '70rem';
+    }
+    if(extend2){
+      height2 = '70rem';
+    }
+    if(extend3){
+      height3 = '70rem';
+    }
+    if(extend4){
+      height4 = '70rem';
+    }
+    if(extend5){
+      height5 = '70rem';
+    }
+    const menu = (
+      <Menu>
+        <Menu.Item>
+          <a target="_blank" rel="noopener noreferrer" href="http://www.baidu.com/">
+            下载文件
+          </a>
+        </Menu.Item>
+        <Menu.Item>
+          <a target="_blank" rel="noopener noreferrer" href="http://www.baidu.com/">
+            历史记录
+          </a>
+        </Menu.Item>
+      </Menu>
+    );
     return (
       <Row style={{height: 'calc(100% - 4.5rem)'}}>
-        <Col span={24} style={{height:'8%'}}>
+        <Col span={24} style={{height:'8%',margin:'2rem 0'}}>
           <OperationList/>
         </Col>
         <Col span={24} style={{height:'92%'}}>
-          <div className='LifeCycleManage'>
-            <Collapse ghost defaultActiveKey={['1']} onChange={this.onChange}>
-              <Panel header={headText} key="1" extra={text}>
-                <Col className='card'>
-                  <Col span={1} className='title'>
-                    {num ===2?'':<CaretLeftOutlined className='right' onClick={this.handleClickLeft}/>}
-                  </Col>
-                  <Col span={22} className='cont'>
-                      {num === 2?<Col span={8}>
-                        <div className='cont-col'>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
+          <div className='LifeCycleManage' style={{height:height1}}>
+            <div className='head'>
+              <img src={icon_wrong} alt="" className='head-img'/>
+              <i className={extend1?'iconfont icon-down-solid-arrow head-icon':'iconfont icon-right head-icon'} onClick={this.extend1}/>&nbsp;
+              <div className='head1'>
+                1.需求及市场调研
+              </div>
+              <div className='head2'>
+                项目进度：<ProjectProgress state={"逾期"}/>
+              </div>
+              <div className='head3'>
+                时间范围：<div style={{color:'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
+              </div>
+              <div className='head4'>
+                项目风险：<ProjectRisk state={"存在"}/>
+              </div>
+              <div className='head5'>
+                <div className='head5-title'>
+                  <div className='head5-cont'>
+                    <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='LifeCycleManage' style={{height:height2}}>
+            <div className='head'>
+              <img src={icon_normal} alt="" className='head-img'/>
+              <i className={extend2?'iconfont icon-down-solid-arrow head-icon':'iconfont icon-right head-icon'} onClick={this.extend2}/>&nbsp;
+              <div className='head1'>
+                2.需求评审
+              </div>
+              <div className='head2'>
+                项目进度：<ProjectProgress state={"已完成"}/>
+              </div>
+              <div className='head3'>
+                时间范围：<div style={{color:'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
+              </div>
+              <div className='head4'>
+                项目风险：<ProjectRisk state={"暂无"}/>
+              </div>
+              <div className='head5'>
+                <div className='head5-title'>
+                  <div className='head5-cont'>
+                    <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div className='LifeCycleManage' style={{height:height3}}>
+            <div className='head'>
+              <img src={icon_normal} alt="" className='head-img'/>
+              <i className={extend3?'iconfont icon-down-solid-arrow head-icon':'iconfont icon-right head-icon'} onClick={this.extend3}/>&nbsp;
+              <div className='head1'>
+                3.项目立项
+              </div>
+              <div className='head2'>
+                项目进度：<ProjectProgress state={"进行中"}/>
+              </div>
+              <div className='head3'>
+                时间范围：<div style={{color:'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
+              </div>
+              <div className='head4'>
+                项目风险：<ProjectRisk state={"暂无"}/>
+              </div>
+              <div className='head5'>
+                <div className='head5-title'>
+                  <div className='head5-cont'>
+                    <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                  </div>
+                </div>
+              </div>
+            </div>
+            {
+              extend3?<Row style={{height:'80%',width:'100%',padding: '0 8rem'}} className='card'>
+                  <Col span={24} style={{width:'100%',padding: '3rem'}} className='cont'>
+                    <Col span={8}>
+                      <div className='cont-col'>
+                        <div className='cont-col1'>
+                          <div className='right'>
+                            标前会议(2/6)
                           </div>
+                        </div>
+                        <div style={{padding: '1.5rem 0'}}>
                           <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
                               标前会议纪要扫描件
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
                             </Col>
                             <div className='cont-row1'>
                               <div className='left'>
                                 2022.06.17上传
                               </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
                               标前会议纪要扫描件
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
                             </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
                             </Col>
                             <div className='cont-row1'>
                               <div className='left'>
                                 2022.06.17上传
                               </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
                               标前会议纪要扫描件
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
                             </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
                             </Col>
                             <div className='cont-row1'>
                               <div className='left'>
                                 2022.06.17上传
                               </div>
-                              <div className='center'>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
                               </div>
-                              <div className='right'>
-
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              信息录入
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="信息录入">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-file-fillout"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
                               </div>
                             </div>
                           </Row>
                         </div>
-                      </Col>:''}
-                      {num === 2||num === 3?<Col span={8}>
-                        <div className='cont-col'>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
+                        <div className='cont-col1'>
+                          <div className='right'>
+                            标前会议(2/6)
                           </div>
+                        </div>
+                        <div style={{padding: '1.5rem 0'}}>
                           <Row className='cont-row'>
-                            <Col span={15} style={{}}>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
                               标前会议纪要扫描件
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
                             </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
                             </Col>
                             <div className='cont-row1'>
                               <div className='left'>
                                 2022.06.17上传
                               </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
                             </div>
                           </Row>
                           <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
                               标前会议纪要扫描件
                             </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
                             </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
                             </Col>
                             <div className='cont-row1'>
                               <div className='left'>
                                 2022.06.17上传
                               </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
                             </div>
                           </Row>
                         </div>
-                      </Col>:''}
-                      {num === 2||num === 3||num === 4?<Col span={8}>
-                        <div className='cont-col'>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </Col>:''}
-                      {num === 3||num === 4?<Col span={8}>
-                        <div className='cont-col'>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </Col>:''}
-                      {num === 4||num === 5?<Col span={8}>
-                        <div className='cont-col'>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </Col>:''}
-                      {num === 5?<Col span={8}>
-                        <div className='cont-col'>
-                          <div className='cont-col1'>
-                            <div className='left'>
-                            </div>
-                            <div className='right'>
-                              标前会议
-                            </div>
-                          </div>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              下载
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              详情
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={15} style={{}}>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>
-                              上传
-                            </Col>
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  下载*/}
-                            {/*</Col>*/}
-                            {/*<Col span={3} style={{color:'rgba(63, 170, 255, 1)'}}>*/}
-                            {/*  详情*/}
-                            {/*</Col>*/}
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                {/*2022.06.17上传*/}
-                              </div>
-                              <div className='center'>
-                              </div>
-                              <div className='right'>
-
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </Col>:''}
+                      </div>
                     </Col>
-                  <Col span={1} style={{width:'1%',display:'flex',alignItems: 'center',}}>
-                    {num ===5?'':<CaretRightOutlined style={{display:'flex',alignItems: 'center'}}onClick={this.handleClickRight}/>}
+                    <Col span={8}>
+                      <div className='cont-col'>
+                        <div className='cont-col1'>
+                          <div className='right'>
+                            标前会议(2/6)
+                          </div>
+                        </div>
+                        <div style={{padding: '1.5rem 0'}}>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              信息录入
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="信息录入">
+                               <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-file-fillout"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                        </div>
+                        <div className='cont-col1'>
+                          <div className='right'>
+                            标前会议(2/6)
+                          </div>
+                        </div>
+                        <div style={{padding: '1.5rem 0'}}>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                        </div>
+                      </div>
+                    </Col>
+                    <Col span={8}>
+                      <div className='cont-col'>
+                        <div className='cont-col1'>
+                          <div className='right'>
+                            标前会议(2/6)
+                          </div>
+                        </div>
+                        <div style={{padding: '1.5rem 0'}}>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              信息录入
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="信息录入">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-file-fillout"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="上传">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-upload"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                        </div>
+                        <div className='cont-col1'>
+                          <div className='right'>
+                            标前会议(2/6)
+                          </div>
+                        </div>
+                        <div style={{padding: '1.5rem 0'}}>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                          <Row className='cont-row'>
+                            <Col span={17} style={{display:'flex'}}>
+                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                              标前会议纪要扫描件
+                            </Col>
+                            <Col span={3}>
+                              <Tooltip title="修改">
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                              </Tooltip>
+                            </Col>
+                            <Col span={3}>
+                              <Dropdown overlay={menu}>
+                                <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-more">
+                                </i>
+                              </Dropdown>
+                            </Col>
+                            <div className='cont-row1'>
+                              <div className='left'>
+                                2022.06.17上传
+                              </div>
+                            </div>
+                          </Row>
+                        </div>
+                      </div>
+                    </Col>
                   </Col>
-                </Col>
-              </Panel>
-            </Collapse>
+                </Row>
+                :''
+            }
           </div>
-          <div style={{margin:'1rem'}}>
-            <Collapse defaultActiveKey={[]} onChange={this.onChange}>
-              <Panel header={headText2} key="1">
-                <Empty></Empty>
-              </Panel>
-            </Collapse>
+          <div className='LifeCycleManage' style={{height:height4}}>
+            <div className='head'>
+              <img src={icon_waiting} alt="" className='head-img'/>
+              <i className={extend4?'iconfont icon-down-solid-arrow head-icon':'iconfont icon-right head-icon'} onClick={this.extend4}/>&nbsp;
+              <div className='head1'>
+                4.项目招标
+              </div>
+              <div className='head2'>
+                项目进度：<ProjectProgress state={"未开始"}/>
+              </div>
+              <div className='head3'>
+                时间范围：<div style={{color:'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
+              </div>
+              <div className='head4'>
+                项目风险：<ProjectRisk state={"暂无"}/>
+              </div>
+              <div className='head5'>
+                <div className='head5-title'>
+                  <div className='head5-cont'>
+                    <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
-          <div style={{margin:'1rem'}}>
-            <Collapse defaultActiveKey={[]} onChange={this.onChange}>
-              <Panel header={headText3} key="1">
-                <Empty></Empty>
-              </Panel>
-            </Collapse>
+          <div className='LifeCycleManage' style={{height:height5}}>
+            <div className='head'>
+              <img src={icon_waiting} alt="" className='head-img'/>
+              <i className={extend5?'iconfont icon-down-solid-arrow head-icon':'iconfont icon-right head-icon'} onClick={this.extend5}/>&nbsp;
+              <div className='head1'>
+                5.项目计划
+              </div>
+              <div className='head2'>
+                项目进度：<ProjectProgress state={"未开始"}/>
+              </div>
+              <div className='head3'>
+                时间范围：<div style={{color:'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
+              </div>
+              <div className='head4'>
+                项目风险：<ProjectRisk state={"暂无"}/>
+              </div>
+              <div className='head5'>
+                <div className='head5-title'>
+                  <div className='head5-cont'>
+                    <i style={{marginLeft: '0.6rem',color:'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+                  </div>
+                </div>
+              </div>
+            </div>
           </div>
         </Col>
       </Row>

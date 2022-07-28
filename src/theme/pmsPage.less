@@ -1,6 +1,116 @@
+//font weight
+.font-w700(){
+  font-weight: 700;
+}
+.font-wb(){
+  font-weight: bold;
+}
+.font-w400(){
+  font-weight: 400;
+}
+.font-w500(){
+  font-weight: 500;
+}
+.font-wn(){
+  font-weight: normal;
+}
+//font size
+.font-s(@p: 12px){
+  font-size: @p;
+}
+.font-s0(){font-size: 0;}
+.font-s12(){font-size: 12px;}
+.font-s14(){font-size: 14px;}
+.font-s16(){font-size: 16px;}
+
 //生命周期
 .LifeCycleManage{
-  margin: 1rem;
+  width: 100%;
+  background-color: white;
+  .head{
+    height:15%;
+    padding: 2rem;
+    display: flex;
+    .head-img{
+      width:4rem;
+      height:4rem;
+      margin-right: 2rem;
+    }
+    .head-icon{
+      line-height: 22px;
+      color: rgba(192, 196, 204, 1);
+    }
+    .head1{
+      display: flex;
+      margin-left: 1rem;
+      width: 25%;
+      .font-s16();
+      .font-w500();
+      line-height: 22px;
+      color: rgba(48, 49, 51, 1);
+    }
+    .head2{
+      display: flex;
+      width: 25%;
+      .font-s14();
+      .font-w400();
+      line-height: 20px;
+      color: rgba(96, 98, 102, 1);
+      .head2-title{
+        display: flex;
+        align-items: center;
+        border-radius: 12px;
+        height: 4rem;
+        .head2-cont{
+          margin-left: 1rem;
+          border-radius: 12px;
+          height: 1rem;
+          width: 1rem;
+        }
+      }
+    }
+    .head3{
+      display: flex;
+      width: 25%;
+      .font-s14();
+      .font-w400();
+      line-height: 20px;
+      color: rgba(96, 98, 102, 1);
+    }
+    .head4{
+      display: flex;
+      width: 20%;
+      .font-s14();
+      .font-w400();
+      line-height: 20px;
+      color: rgba(96, 98, 102, 1);
+    }
+    .head5{
+      display: flex;
+      width: 5%;
+      .font-s14();
+      .font-w400();
+      line-height: 20px;
+      color: rgba(96, 98, 102, 1);
+      .head5-title{
+        display:flex;
+        align-items: center;
+        border-radius: 50%;
+        height: 4.5rem;
+        width: 4.5rem;
+        background: rgba(51, 97, 255, 1);
+        .head5-cont{
+          display: flex;
+          align-items: center;
+          margin: 0.25rem;
+          border-radius: 50%;
+          height: 4rem;
+          width: 4rem;
+          background: white;
+        }
+      }
+    }
+  }
   .card{
     display: flex;
     .title{
@@ -13,12 +123,14 @@
       }
     }
     .cont{
+      background: rgba(20, 38, 98, 0.0400);
       width: 98%;
       display: flex;
+      overflow-y: scroll;
+      .font-s14();
       .cont-col{
         margin-left: 2rem;
         height: 56rem;
-        overflow-y: scroll;
         .cont-col1{
           display:flex;
           align-items: center;
@@ -41,14 +153,22 @@
         height: 7rem;
         padding: 0 1.3rem;
         margin: 0 0 1rem 0;
-        color: #666666;
+        color: #333333;
         font-weight: 400;
+        .cont-row-point{
+          margin-right: 1rem;
+          border-radius: 50%;
+          height: 1rem;
+          width: 1rem;
+        }
         .cont-row1{
-        display: inline-flex;
-        align-items: center;
-        font-size: 1.4rem;
-        color: #999999;
-        font-weight: 400;
+          margin: 1rem 0;
+          padding-left: 2rem;
+          display: inline-flex;
+          align-items: center;
+          .font-s12();
+          color: #909399;
+          font-weight: 400;
           .left{
             padding-right: 1rem;
           }
@@ -125,3 +245,4 @@
     }
   }
 }
+
