@@ -8,6 +8,7 @@ import Notification from '../../components/HomePage/Notification';
 import TodoBusiness from '../../components/HomePage/TodoBusiness';
 import CommonFunction from '../../components/HomePage/CommonFunction';
 import icon_normal from "../../image/pms/icon_milepost_normal.png";
+import PersonWorkBench from "../pmsPage/PersonWorkBench";
 class HomePage extends React.Component {
     render() {
         const { dispatch, BaseNewClass } = this.props;
@@ -19,7 +20,8 @@ class HomePage extends React.Component {
             {/*  title="建设中...敬请期待!"*/}
             {/*  // subTitle="Sorry, the page you visited does not exist."*/}
             {/*/>*/}
-            <img src={work} alt="" className='head-img'/>
+            <PersonWorkBench/>
+            {/*<img src={work} alt="" className='head-img'/>*/}
           </div>
         );
     }

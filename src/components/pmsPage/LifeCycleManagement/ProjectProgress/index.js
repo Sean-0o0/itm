@@ -27,13 +27,31 @@ class ProjectProgress extends React.Component {
           </div>
         }
         {
-          state === "进行中" && <div className='head2-title' style={{background: 'rgba(51, 97, 255, 0.1)',color: 'rgba(51, 97, 255, 1)',width: '12rem'}}>
+          state === "进行中" && <div className='head2-title' style={{
+            background: 'rgba(51, 97, 255, 0.1)',
+            color: 'rgba(51, 97, 255, 1)',
+            width: '12rem'
+          }}>
             <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
             <div style={{marginLeft: '1rem'}}>进行中</div>
           </div>
         }
         {
-          state === "未开始" && <div className='head2-title' style={{background: 'rgba(245, 247, 250, 1)',color: 'rgba(144, 147, 153, 1)',width: '12rem'}}>
+          state === "正常" && <div className='head2-title' style={{
+            background: 'rgba(51, 97, 255, 0.1)',
+            color: 'rgba(51, 97, 255, 1)',
+            width: '12rem'
+          }}>
+            <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+            <div style={{marginLeft: '1rem'}}>正常</div>
+          </div>
+        }
+        {
+          state === "未开始" && <div className='head2-title' style={{
+            background: 'rgba(245, 247, 250, 1)',
+            color: 'rgba(144, 147, 153, 1)',
+            width: '12rem'
+          }}>
             <div className='head2-cont' style={{background: 'rgba(144, 147, 153, 1)'}}/>
             <div style={{marginLeft: '1rem'}}>未开始</div>
           </div>

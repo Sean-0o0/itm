@@ -233,7 +233,8 @@
       .left{
         width: 50%;
       }
-      .right{
+
+      .right {
         width: 45%;
         text-align: end;
         height: 20px;
@@ -241,6 +242,300 @@
         font-weight: 400;
         color: #666666;
         line-height: 20px;
+      }
+    }
+  }
+}
+
+.workBench {
+  .fastFun {
+    .fastFun-head {
+      //padding-left: 1rem;
+      //padding-bottom: 0.5rem;
+      display: flex;
+      //width: 5%;
+      .font-s14();
+      .font-w400();
+      line-height: 20px;
+      color: rgba(96, 98, 102, 1);
+
+      .fastFun-head-title {
+        display: flex;
+        align-items: center;
+        border-radius: 50%;
+        height: 48px;
+        width: 48px;
+      }
+    }
+
+    .fastFun-head {
+      font-size: 14px;
+      font-weight: 400;
+      color: #333333;
+      line-height: 22px;
+    }
+  }
+
+  //首页项目进度
+  .LifeCycleManage {
+    width: 100%;
+    background-color: white;
+
+    .head {
+      //height:10rem;
+      padding: 2rem;
+      display: flex;
+
+      .head-img {
+        width: 4rem;
+        height: 4rem;
+        margin-right: 2rem;
+      }
+
+      .head-icon {
+        line-height: 22px;
+        color: rgba(192, 196, 204, 1);
+      }
+
+      .head1 {
+        display: flex;
+        margin-left: 1rem;
+        width: 25%;
+        .font-s14();
+        .font-w500();
+        line-height: 22px;
+        color: rgba(48, 49, 51, 1);
+      }
+
+      .head2 {
+        display: flex;
+        width: 25%;
+        .font-s14();
+        .font-w400();
+        line-height: 20px;
+        color: rgba(96, 98, 102, 1);
+
+        .head2-title {
+          display: flex;
+          align-items: center;
+          border-radius: 12px;
+          height: 4rem;
+
+          .head2-cont {
+            margin-left: 1rem;
+            border-radius: 12px;
+            height: 1rem;
+            width: 1rem;
+          }
+        }
+      }
+
+      .head3 {
+        display: flex;
+        width: 25%;
+        .font-s14();
+        .font-w400();
+        line-height: 20px;
+        color: rgba(96, 98, 102, 1);
+      }
+
+      .head4 {
+        display: flex;
+        width: 20%;
+        .font-s14();
+        .font-w400();
+        line-height: 20px;
+        color: rgba(96, 98, 102, 1);
+      }
+
+      .head5 {
+        display: flex;
+        width: 5%;
+        .font-s14();
+        .font-w400();
+        line-height: 20px;
+        color: rgba(96, 98, 102, 1);
+
+        .head5-title {
+          display: flex;
+          align-items: center;
+          border-radius: 50%;
+          height: 4.5rem;
+          width: 4.5rem;
+          background: rgba(51, 97, 255, 1);
+
+          .head5-cont {
+            display: flex;
+            align-items: center;
+            margin: 0.25rem;
+            border-radius: 50%;
+            height: 4rem;
+            width: 4rem;
+            background: white;
+          }
+        }
+      }
+    }
+
+    .card {
+      display: flex;
+
+      .title {
+        width: 1%;
+        display: flex;
+        align-items: center;
+
+        .right {
+          display: flex;
+          align-items: center;
+        }
+      }
+
+      .cont {
+        .head {
+          //height:10rem;
+          padding: 2rem;
+          display: flex;
+
+          .head1 {
+            display: flex;
+            margin-left: 1rem;
+            width: 35%;
+            .font-s14();
+            .font-w500();
+            line-height: 22px;
+            color: rgba(144, 147, 153, 1);
+          }
+
+          .head2 {
+            display: flex;
+            width: 45%;
+            .font-s14();
+            .font-w400();
+            line-height: 20px;
+            color: rgba(96, 98, 102, 1);
+          }
+        }
+
+        background: rgba(20, 38, 98, 0.0400);
+        width: 98%;
+        display: block;
+        overflow-y: scroll;
+        .font-s14();
+
+        .cont-col {
+          margin-left: 2rem;
+          //height: 56rem;
+          .cont-col1 {
+            display: flex;
+            align-items: center;
+            height: 3rem;
+            margin: 0 0 1rem 0;
+
+            .left {
+              width: .3rem;
+              height: 1.5rem;
+              background-color: red;
+            }
+
+            .right {
+              color: #000000;
+              font-weight: 800;
+              padding-left: 1rem;
+              //line-height: 20px;
+            }
+          }
+        }
+
+        .cont-row {
+          height: 7rem;
+          padding: 0 1.3rem;
+          margin: 0 0 1rem 0;
+          color: #333333;
+          font-weight: 400;
+
+          .cont-row-point {
+            margin-right: 1rem;
+            border-radius: 50%;
+            height: 1rem;
+            width: 1rem;
+          }
+
+          .cont-row1 {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            display: inline-flex;
+            align-items: center;
+            .font-s12();
+            color: #909399;
+            font-weight: 400;
+
+            .left {
+              padding-right: 1rem;
+            }
+
+            .center {
+              width: .3rem;
+              height: 1.5rem;
+              //background-color: red;
+            }
+
+            .right {
+              padding-left: 1rem;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  .ProcessStatus {
+    .ProcessStatus-Div {
+      .title {
+        font-size: 14px;
+        color: rgba(48, 49, 51, 1);
+        display: flex;
+        align-items: center;
+
+        .cont-row-point {
+          margin-right: 1rem;
+          border-radius: 50%;
+          height: 1rem;
+          width: 1rem;
+        }
+      }
+
+      .cont {
+        margin: 0.5rem;
+        display: flex;
+
+        .col1 {
+          font-size: 14px;
+          color: rgba(144, 147, 153, 1);
+
+          .span {
+            font-size: 14px;
+            color: rgba(48, 49, 51, 1);
+          }
+        }
+
+        .col2 {
+          display: flex;
+
+          .head-title {
+            display: flex;
+            align-items: center;
+            border-radius: 12px;
+            height: 4rem;
+
+            .head-cont {
+              margin-left: 1rem;
+              border-radius: 12px;
+              height: 1rem;
+              width: 1rem;
+            }
+          }
+        }
       }
     }
   }

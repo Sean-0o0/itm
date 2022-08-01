@@ -411,12 +411,24 @@ const routes = [
         path: '/pms/manage/WeeklyReportTable',
         component: __IS_BROWSER
           ? _dvaDynamic({
-              component: () =>
-                import(/* webpackChunkName: "p__pmsPage__WeeklyReportTable" */ '../pmsPage/WeeklyReportTable'),
-              LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
-                .default,
-            })
+            component: () =>
+              import(/* webpackChunkName: "p__pmsPage__WeeklyReportTable" */ '../pmsPage/WeeklyReportTable'),
+            LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
+              .default,
+          })
           : require('../pmsPage/WeeklyReportTable').default,
+        exact: true,
+      },
+      {
+        path: '/PersonWorkBench',
+        component: __IS_BROWSER
+          ? _dvaDynamic({
+            component: () =>
+              import(/* webpackChunkName: "p__pmsPage__PersonWorkBench" */ '../pmsPage/PersonWorkBench'),
+            LoadingComponent: require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/src/components/Loader/Loader')
+              .default,
+          })
+          : require('../pmsPage/PersonWorkBench').default,
         exact: true,
       },
       {
@@ -424,7 +436,7 @@ const routes = [
           React.createElement(
             require('/Applications/code/cxyw/zszq-pms/pro-pms-fe/node_modules/umi-build-dev/lib/plugins/404/NotFound.js')
               .default,
-            { pagesPath: 'src/pages', hasRoutesInConfig: true },
+            {pagesPath: 'src/pages', hasRoutesInConfig: true},
           ),
       },
     ],

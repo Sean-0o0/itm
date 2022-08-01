@@ -39,25 +39,33 @@ export default class PageHeader extends React.PureComponent {
               autoHide
               style={{ width: '100%'}}
             >
-              <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList} projectName={projectName} />
+              <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList}
+                             projectName={projectName}/>
             </Scrollbars>
               </span>
           </div>
           <div id="fma_opertion_drops" className="dis-fx">
-            <div style={{ width: '4rem' }}></div>
-            { <div id="guideTrigger_switchMenu" className="ant-menu-item" style={{ position: 'relative', top: '8px' }}>
-              <a onClick={() => { window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`; }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-message' style={{ fontSize: '3.6rem' }}/></Badge></a>
-            </div> }
+            <div style={{width: '4rem'}}></div>
+            {<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>
+              <a onClick={() => {
+                window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;
+              }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-message'
+                                                                style={{fontSize: '3.6rem'}}/></Badge></a>
+            </div>}
+            {<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>
+              <Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-work'
+                                                             style={{fontSize: '3.6rem'}}/></Badge>
+            </div>}
             {
               Object.keys(authorities).includes('remindBell') && (
-             <div id="guideTrigger_messageDrop">
-              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
-            </div>
-             )
+                <div id="guideTrigger_messageDrop">
+                  <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch}/>
+                </div>
+              )
             }
-            { <div id="guideTrigger_switchMenu">
-              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
-            </div> }
+            {<div id="guideTrigger_switchMenu">
+              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas}/>
+            </div>}
              {
               Object.keys(authorities).includes('globalSearch') && (
                 <div id="guideTrigger_globalSearch" style={{ margin: '0 1rem' }}>
