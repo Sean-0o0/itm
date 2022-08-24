@@ -20,9 +20,9 @@ class TodoBusiness extends React.Component {
       //         type: 'global/logout',
       //     });
       // }
-      this.fetchQueryBaseDblcs();
+      // this.fetchQueryBaseDblcs();
     }, Number.parseInt(refreshWebPage, 10) * 1000);
-    this.fetchQueryBaseDblcs();
+    // this.fetchQueryBaseDblcs();
   }
 
   fetchQueryBaseDblcs = () => {

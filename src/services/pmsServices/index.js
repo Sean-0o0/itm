@@ -1,0 +1,85 @@
+import request from '../../utils/request';
+import config from '../../utils/config';
+
+const {api} = config;
+const {
+  pmsServices: {
+    queryLiftcycleMilestone,
+    queryLifecycleStuff,
+    queryOwnerWorkflow,
+    createOperateHyperLink,
+    queryOwnerProjectList,
+    queryOwnerMessage,
+    updateMesaageReadState,
+  },
+} = api;
+
+// 查询生命周期里程碑执行情况
+export async function FetchQueryLiftcycleMilestone(payload) {
+  const option = {
+    url: queryLiftcycleMilestone,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询生命周期里程碑中的事项执行情况
+export async function FetchQueryLifecycleStuff(payload) {
+  const option = {
+    url: queryLifecycleStuff,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询登录用户发起的流程情况
+export async function FetchQueryOwnerWorkflow(payload) {
+  const option = {
+    url: queryOwnerWorkflow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 获取livebos加密url
+export async function CreateOperateHyperLink(payload) {
+  const option = {
+    url: createOperateHyperLink,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询当前登录用户的项目列表，查询下拉框用
+export async function FetchQueryOwnerProjectList(payload) {
+  const option = {
+    url: queryOwnerProjectList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询当前登录用户的消息列表
+export async function FetchQueryOwnerMessage(payload) {
+  const option = {
+    url: queryOwnerMessage,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 将待办事项的查看状态修改为已读
+export async function UpdateMesaageReadState(payload) {
+  const option = {
+    url: updateMesaageReadState,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}

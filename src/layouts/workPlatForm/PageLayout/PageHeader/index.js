@@ -37,7 +37,7 @@ export default class PageHeader extends React.PureComponent {
           <div id="visited_routes_container" style={{ flex: 1, overflow: 'hidden' }} className={`${styles.historyContainer}`} >
             <span><Scrollbars
               autoHide
-              style={{ width: '100%'}}
+              style={{width: '100%'}}
             >
               <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList}
                              projectName={projectName}/>
@@ -46,16 +46,16 @@ export default class PageHeader extends React.PureComponent {
           </div>
           <div id="fma_opertion_drops" className="dis-fx">
             <div style={{width: '4rem'}}></div>
-            {<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>
-              <a onClick={() => {
-                window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;
-              }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-message'
-                                                                style={{fontSize: '3.6rem'}}/></Badge></a>
-            </div>}
-            {<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>
-              <Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-work'
-                                                             style={{fontSize: '3.6rem'}}/></Badge>
-            </div>}
+            {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
+            {/*  <a onClick={() => {*/}
+            {/*    window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;*/}
+            {/*  }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-message'*/}
+            {/*                                                    style={{fontSize: '3.6rem'}}/></Badge></a>*/}
+            {/*</div>}*/}
+            {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
+            {/*  <Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-work'*/}
+            {/*                                                 style={{fontSize: '3.6rem'}}/></Badge>*/}
+            {/*</div>}*/}
             {
               Object.keys(authorities).includes('remindBell') && (
                 <div id="guideTrigger_messageDrop">

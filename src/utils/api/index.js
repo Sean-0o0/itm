@@ -12,6 +12,7 @@ import motProduction from './motProduction'; // MOT配置和督导执行
 import reportcenter from './reportcenter';
 import processCenter from './processCenter';
 import dataCenter from './dataCenter';
+import pmsServices from "./pmsServices";
 
 const APIPrefix = '/api';
 
@@ -30,7 +31,8 @@ const getAPIs = () => {
     motProduction, // MOT配置和督导执行
     reportcenter,//自定义报表
     processCenter,//流程中心
-    dataCenter //数据中心
+    dataCenter, //数据中心
+    pmsServices,//pms微服务
   };
   const apis = {};
 

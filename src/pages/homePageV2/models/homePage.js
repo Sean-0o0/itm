@@ -23,7 +23,7 @@ export default {
             ],
         },
     },
-    
+
     subscriptions: {
         setup({ dispatch, history }) {  // eslint-disable-line
 
@@ -46,31 +46,33 @@ export default {
             yield put({ type: 'getBaseNewClass', payload: {} });
         },
         *getLiquidfillDatas({ payload }, { call, put, select }) {
-            const states = yield select(state => state.homePage);
-            let { liquidfillDatas = {} } = states;
-            const { data = [] } = liquidfillDatas;
-            // 待办事项
-            const data1 = yield call(FetchQueryBaseDblcs, { ...payload });
-            const records1 = ((data1.records || [])[0]) || {};
-            data[0] = {
-                type: 'MOT',
-                name: '待办事项',
-                zs: Number.parseInt(records1.dblcs, 10) || 0,
-                wcs: Number.parseInt(records1.zlcs, 10) || 0,
-            };
-            liquidfillDatas = {
-                ...liquidfillDatas,
-                data,
+          const states = yield select(state => state.homePage);
+          let {liquidfillDatas = {}} = states;
+          const {data = []} = liquidfillDatas;
+          // 待办事项
+          // yield call(FetchQueryBaseDblcs, { ...payload })
+          const data1 = {};
+          const records1 = ((data1.records || [])[0]) || {};
+          data[0] = {
+            type: 'MOT',
+            name: '待办事项',
+            zs: Number.parseInt(records1.dblcs, 10) || 0,
+            wcs: Number.parseInt(records1.zlcs, 10) || 0,
+          };
+          liquidfillDatas = {
+            ...liquidfillDatas,
+            data,
             };
             yield put({ type: 'saveLiquidfillDatas', payload: { liquidfillDatas: { ...states.liquidfillDatas } } });
         },
         *getBaseNewClass({ payload }, { call, put }) {
-            const data = yield call(FetchQueryBaseNewClass, { ...payload });
-            const { code = 0, records = [] } = data || {};
-            if (code > 0) {
-              yield put({ type: 'saveBaseNewClass', payload: { BaseNewClass: records || [] } });
-            }
-          },
+          // yield call(FetchQueryBaseNewClass, { ...payload })
+          const data = {};
+          const {code = 0, records = []} = data || {};
+          if (code > 0) {
+            yield put({type: 'saveBaseNewClass', payload: {BaseNewClass: records || []}});
+          }
+        },
     },
 
     reducers: {
@@ -84,8 +86,8 @@ export default {
                 liquidfillDatas,
             }
         },
-        
-        saveBaseNewClass(state, { payload }) {
+
+      saveBaseNewClass(state, { payload }) {
             const { BaseNewClass = state.BaseNewClass } = payload;
             return {
                 ...state,

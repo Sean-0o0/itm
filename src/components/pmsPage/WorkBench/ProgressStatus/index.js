@@ -15,7 +15,7 @@ class ProgressStatus extends React.Component {
     return (
       <div>
         {
-          state === "逾期" && <div className='head-title' style={{
+          state === "4" && <div className='head-title' style={{
             background: 'rgba(215, 14, 25, 0.1)',
             color: 'rgba(215, 14, 25, 1)',
             width: '10rem'
@@ -25,7 +25,7 @@ class ProgressStatus extends React.Component {
           </div>
         }
         {
-          state === "已完成" && <div className='head-title' style={{
+          state === "3" && <div className='head-title' style={{
             background: 'rgba(245, 247, 250, 1)',
             color: 'rgba(48, 49, 51, 1)',
             width: '12rem'
@@ -35,7 +35,7 @@ class ProgressStatus extends React.Component {
           </div>
         }
         {
-          state === "进行中" && <div className='head-title' style={{
+          state === "2" && <div className='head-title' style={{
             background: 'rgba(51, 97, 255, 0.1)',
             color: 'rgba(51, 97, 255, 1)',
             width: '12rem'
@@ -55,7 +55,7 @@ class ProgressStatus extends React.Component {
           </div>
         }
         {
-          state === "未开始" && <div className='head-title' style={{
+          state === "1" && <div className='head-title' style={{
             background: 'rgba(245, 247, 250, 1)',
             color: 'rgba(144, 147, 153, 1)',
             width: '12rem'

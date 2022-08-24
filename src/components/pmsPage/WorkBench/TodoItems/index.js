@@ -1,6 +1,22 @@
-import {Collapse, Row, Col, Calendar, Select, Radio, Table, Badge, Tooltip} from 'antd';
+import {
+  Badge,
+  Calendar,
+  Col,
+  Collapse,
+  Card,
+  Radio,
+  Row,
+  Select,
+  Table,
+  Tooltip,
+  Empty,
+  Pagination,
+  message
+} from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import {Link} from 'dva/router';
+import {FetchQueryLifecycleStuff, UpdateMesaageReadState} from "../../../../services/pmsServices";
 
 const {Panel} = Collapse;
 const {Group, Button} = Radio;
@@ -15,6 +31,7 @@ class TodoItems extends React.Component {
     fillOutVisible: false,
     //信息录入url
     fillOutUrl: '',
+    page: 1,
   };
 
   componentDidMount() {
@@ -27,7 +44,7 @@ class TodoItems extends React.Component {
   handleUrl = (text) => {
     switch (text) {
       case "周报填写":
-        window.location.href = `/#/UIProcessor?Table=ZBTX&hideTitlebar=true`;
+        window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`;
         break;
       case "合同信息录入":
         this.handleFillOut(text);
@@ -55,30 +72,25 @@ class TodoItems extends React.Component {
   };
 
   getListData = (value) => {
-    let listData;
-    //可以获取月份
-    console.log("monthmonth22", value.month())
+    //表格数据
+    const {data} = this.props;
+    let listData = [];
 
-    if (value.month() === new Date().getMonth()) {
-      switch (value.date()) {
-        case 8:
+    //可以获取月份
+    // console.log("monthmonth22", value.month())
+    let content = '';
+    data.map((item = {}, index) => {
+      let date = item.jzrq.slice(0, 4).concat("-").concat(item.jzrq.slice(4, 6)).concat("-").concat(item.jzrq.slice(6, 8));
+      if (value.month() === new Date(date).getMonth()) {
+        if (value.date() === new Date(date).getDate()) {
+          content = <span>{content}<p>{item.txnr}</p></span>;
           listData = [
-            {type: 'warning', content: '周报填写'},
+            {type: 'warning', content: content},
           ];
-          break;
-        case 10:
-          listData = [
-            {type: 'warning', content: '合同信息录入'},
-          ];
-          break;
-        case 15:
-          listData = [
-            {type: 'warning', content: '合同签署流程发起'},
-          ];
-          break;
-        default:
+        }
       }
-    }
+    })
+
     return listData || [];
   };
 
@@ -127,67 +139,95 @@ class TodoItems extends React.Component {
     });
   };
 
-  render() {
-    const columns = [
+  handPageChange = (e) => {
+    this.setState({
+      page: e,
+    })
+    const {fetchQueryOwnerMessage} = this.props;
+    fetchQueryOwnerMessage(e)
+  }
+
+  updateState = (record) => {
+    console.log("recordrecord", record)
+    UpdateMesaageReadState({
+      sxmc: record.sxmc,
+      xmmc: record.xmid,
+    }).then((ret = {}) => {
+      const {code = 0, note = '', record = []} = ret;
+      if (code === 1) {
+        const {fetchQueryOwnerMessage} = this.props;
+        fetchQueryOwnerMessage(this.state.page)
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  // 表格当前的列
+  renderColumns = () => {
+    const cloums = [
       {
-        title: '时间',
-        dataIndex: 'sj',
-        key: 'sj',
+        title: '提醒日期',
+        dataIndex: 'txrq',
+        // key: 'txrq',
       },
       {
         title: '待办事项',
-        dataIndex: 'dbsx',
-        key: 'dbsx',
-        render: text => (
-          <Tooltip title={text}><a onClick={() => this.handleUrl(text)}>{text.slice(0, 8)}</a></Tooltip>
-        ),
-      },
-      {
-        title: '详情内容',
-        dataIndex: 'xqnr',
-        key: 'xqnr',
-        render: text => (
-          <Tooltip title={text}>{text.length > 8 ? text.slice(0, 8) + '...' : text}</Tooltip>
-        ),
+        dataIndex: 'sxmc',
+        // key: 'sxmc',
+        render: (text, record) => {
+          return <span>
+            <Tooltip title={record.txnr ? record.txnr : ''}>
+              <span style={{display: 'flex', alignItems: 'center'}}>
+                {
+                  record.ckzt === "2" && <span style={{
+                    height: '3rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    width: '2rem'
+                  }} onClick={() => this.updateState(record)}><div style={{
+                    background: 'rgba(215, 14, 25, 1)',
+                    marginRight: '1rem',
+                    borderRadius: '50%',
+                    height: '1rem',
+                    width: '1rem'
+                  }}/></span>
+                }
+                <a style={{color: '#1890ff', paddingRight: '1rem',}}
+                   onClick={() => this.handleUrl(text ? text : '')}>{text ? text : ''}</a>
+                <div style={{backgroundColor: 'rgba(252, 236, 237, 1)', borderRadius: '10px'}}>
+                  {record.xxlx === "1" && <span style={{padding: '0 1rem', color: 'rgba(204, 62, 69, 1)'}}>必做</span>}
+                </div>
+              </span>
+            </Tooltip>
+         </span>
+        },
       },
       {
         title: '相关项目',
-        dataIndex: 'xgxm',
-        key: 'xgxm',
-        render: text => <Tooltip title={text}><a>{text?.slice(0, 8)}</a></Tooltip>,
+        dataIndex: 'xmmc',
+        // key: 'xmmc',
+        render: (text, record) => {
+          return <Tooltip title={text ? text : ''}><Link style={{color: '#1890ff'}} to={{
+            pathname: '/pms/manage/LifeCycleManagement',
+            query: {xmid: record.xmid},
+          }}>{text}</Link></Tooltip>
+        },
+      },
+      {
+        title: '截止日期',
+        dataIndex: 'jzrq',
+        // key: 'jzrq',
+        render: (text) => {
+          return <Tooltip title={text ? text : ''}>{text ? text : ''}</Tooltip>
+        },
       },
     ];
+    return cloums;
+  };
 
-    const data = [
-      {
-        key: '1',
-        sj: '2022-04-15',
-        dbsx: '周报填写',
-        xqnr: '本周周报未填写',
-        xgxm: '项目信息管理系统',
-      },
-      {
-        key: '2',
-        sj: '2022-04-15',
-        dbsx: '合同信息录入',
-        xqnr: '上传文档',
-        xgxm: '项目信息管理系统',
-      },
-      {
-        key: '3',
-        sj: '2022-04-15',
-        dbsx: '合同签署流程发起',
-        xqnr: '项目信息管理系统合同签署流程发起',
-        xgxm: '项目信息管理系统',
-      },
-      {
-        key: '4',
-        sj: '2022-04-15',
-        dbsx: '立项申请流程发起',
-        xqnr: '项目信息管理系统立项申请流程发起',
-        xgxm: '项目信息管理系统',
-      },
-    ];
+  render() {
+    const {data, total} = this.props;
     const {sendVisible, sendUrl, fillOutVisible, fillOutUrl} = this.state;
     const sendModalProps = {
       isAllWindow: 1,
@@ -213,7 +253,7 @@ class TodoItems extends React.Component {
     const src_fillOut = localStorage.getItem('livebos') + fillOutUrl;
     return (
       <Row style={{height: '90%', margin: '3rem'}}>
-        <Col span={6} style={{height: '100%',}}>
+        <Col span={6} style={{height: '82%',}}>
           <div style={{border: '1px solid #d9d9d9', borderRadius: 4, height: '100%',}}>
             <Calendar
               // monthCellRender={this.monthCellRender}
@@ -288,7 +328,7 @@ class TodoItems extends React.Component {
             />
           </div>
         </Col>
-        <Col span={18} style={{height: '100%', padding: '0 2rem'}}>
+        <Col span={18} style={{height: '85%', padding: '0 2rem'}}>
           {/*立项流程发起弹窗*/}
           {sendVisible &&
           <BridgeModel modalProps={sendModalProps} onSucess={this.onSuccess} onCancel={this.closeSendModal}
@@ -297,7 +337,17 @@ class TodoItems extends React.Component {
           {fillOutVisible &&
           <BridgeModel modalProps={fillOutModalProps} onSucess={this.onSuccess} onCancel={this.closeFillOutModal}
                        src={src_fillOut}/>}
-          <Table bordered columns={columns} dataSource={data} style={{height: '100%'}}/>
+          <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
+                 locale={{emptyText: <Empty description={"暂无消息"}/>}} dataSource={data} style={{height: '100%'}}/>
+          <Pagination
+            style={{textAlign: 'end'}}
+            total={total}
+            showTotal={total => `共 ${total} 条`}
+            defaultPageSize={6}
+            onChange={this.handPageChange}
+            showQuickJumper={true}
+            defaultCurrent={1}
+          />
         </Col>
       </Row>
     );

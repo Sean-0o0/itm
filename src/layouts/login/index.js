@@ -27,7 +27,7 @@ class LoginPageLayout extends React.PureComponent {
   }
 
   componentDidMount() {
-    this.fetchData();
+    // this.fetchData();
     // 进入登录页面先获取用户ip保存起来
     this.getIp();
   }

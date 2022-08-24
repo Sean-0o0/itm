@@ -1,56 +1,114 @@
-import {Row, Col, Table, Collapse, Empty,} from 'antd';
+import {Row, Col, Table, Collapse, Empty, Button,} from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 const { Panel } = Collapse;
 import {CaretLeftOutlined, CaretRightOutlined} from "@ant-design/icons";
+import BasicIndexTable from "../../Common/BasicIndexTable";
 class WeeklyReportTableDetail extends React.Component {
   state = {
     num:2,
     data: [
       {
-        key: '1',
-        name: '自营运营平台基础信息化建设',
+        module: '零售专班',
+        name: '汇金谷APP',
         manage: '张三',
-        planTime: '2022年6月',
-        week: '1、生产问题排查和解决 2、场外期权和收益互换报表等待上游系统（根网）提供数据字段',
-        plan: '1、生产问题排查和解决 2、场外期权和收益互换报表等待上游系统（根网）提供数据字段',
-        month:'自营中台第一期主要对各业务数据进行整合，在自营业务快速增长阶段，通过数字化系统建设，为自营业务融合金融科技发展提质增效。9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。'
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: [1, 2],
       },
       {
-        key: '2',
-        name: '自营运营平台基础信息化建设',
-        manage: '李四',
-        planTime: '2022年6月',
-        week: '1、已完成项目开发，等待上游系统（根网）提供数据字段',
-        plan: '1、等待上游系统（根网）提供数据字段以后，进行测试',
-        month:''
-      },
-      {
-        key: '3',
-        name: '销交业务保证金系统',
+        module: '零售专班',
+        name: '展业宝APP',
         manage: '张三',
-        planTime: '2022年6月',
-        week: '提交信委会提案',
-        plan: '等待信委会纪要',
-        month:''
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: [1, 2],
       },
       {
-        key: '4',
-        name: '北交股转使用费',
-        manage: '张三',
-        planTime: '2022年6月',
-        week: '提交信委会提案',
-        plan: '等待信委会纪要',
-        month:''
+        module: '零售专班',
+        name: '理财商城项目',
+        manage: '张张三',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
       },
       {
-        key: '5',
-        name: '自营中台二期',
-        manage: '李四',
-        planTime: '2022年6月',
-        week: '提交信委会提案',
-        plan: '等待信委会纪要',
-        month:''
+        module: '零售专班',
+        name: '产品中心项目',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
+      },
+      {
+        module: '零售专班',
+        name: '网厅项目',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
+      },
+      {
+        module: '投资专班',
+        name: '自营信用模块开发',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
+      },
+      {
+        module: '投资专班',
+        name: '自营绩效管理二期',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
+      },
+      {
+        module: '投资专班',
+        name: '自营中台数据集市迭代',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
+      },
+      {
+        module: '机构专班',
+        name: '特定股份管理平台',
+        year: '【持续迭代】以"内容-工具-体验-品牌"为核心，通过APP建设迭代，包含直播、短视频、虚拟人、全局改版、运营活动、交易工具优化等，向客户提供全维度零售精细化服务',
+        planTime: '2022年12月',
+        plan1: '进行中',
+        plan2: '45%',
+        status: '低风险',
+        remark: '9月份完成了大部分业务报表和基础数据的交付，领导者驾驶舱正在开发中。',
+        operation: '',
       },
     ]
   };
@@ -62,77 +120,99 @@ class WeeklyReportTableDetail extends React.Component {
     console.log(key);
   };
 
-  renderContent = (value, row, index) => {
-    const obj = {
-      children: value,
-      props: {},
-    };
-    if (index === this.state.data.length) {
-      obj.props.colSpan = 0;
-    }
-    return obj;
-  };
-
   fetchColumns = () => {
     const columns = [
       {
-        title: '数字化建设项目',
+        columnName: '指标类别',
+        colSpan: 1,
+        dataIndex: 'module',
+        type: '1',
+        width: '7%',
+        columnAlign: 'center',
+      },
+      {
+        columnName: '系统建设',
         dataIndex: 'name',
-        width:'16%',
-        render: this.renderContent,
+        colSpan: 1,
+        type: '1',
+        width: '7%',
+        columnAlign: 'center',
       },
       {
-        title: '项目经理',
-        width:'6%',
+        columnName: '负责人',
         dataIndex: 'manage',
-        render: this.renderContent,
+        colSpan: 1,
+        type: '1',
+        width: '6%',
+        columnAlign: 'center',
       },
       {
-        title: '计划完成时间',
-        width:'10%',
+        columnName: '年度规划',
+        dataIndex: 'year',
+        colSpan: 1,
+        type: '1',
+        // width:'40%',
+        columnAlign: 'center',
+      },
+      {
+        columnName: '完成时间',
         dataIndex: 'planTime',
-        render: this.renderContent,
+        colSpan: 1,
+        type: '1',
+        width: '9%',
+        columnAlign: 'center',
       },
       {
-        title: '本周总结',
-        dataIndex: 'week',
-        width:'16%',
-        render: this.renderContent,
+        columnName: '当前进展',
+        dataIndex: 'plan1',
+        colSpan: 1,
+        type: '1',
+        width: '6%',
+        columnAlign: 'center',
       },
       {
-        title: '下周计划',
-        dataIndex: 'plan',
-        width:'16%',
-        render: this.renderContent,
+        columnName: '当前进度',
+        dataIndex: 'plan2',
+        colSpan: 1,
+        type: '1',
+        width: '4%',
+        columnAlign: 'center',
       },
       {
-        title: '月度总结',
-        colSpan: 2,
-        width:'16%',
-        dataIndex: 'month',
-        render: (value, row, index) => {
-          const obj = {
-            children: value,
-            props: {},
-          };
-          if (index === 0) {
-            //data.length
-            obj.props.rowSpan = this.state.data.length;
-          }
-          if (index >= 1) {
-            obj.props.rowSpan = 0;
-          }
-          return obj;
-        },
+        columnName: '当前状态',
+        dataIndex: 'status',
+        width: '6%',
+        colSpan: 1,
+        type: '1',
+        columnAlign: 'center',
       },
+      {
+        columnName: '风险说明',
+        dataIndex: 'remark',
+        colSpan: 1,
+        type: '1',
+        columnAlign: 'center',
+      },
+      // {
+      //   columnName: '操作',
+      //   dataIndex: 'operation',
+      //   colSpan: 1,
+      //   render: (text, row, index) => {
+      //     let node;
+      //     node =text === '1' &&<div>
+      //       <Button size="small" >修改</Button>
+      //       <Button size="small" >删除</Button>}
+      //     </div>
+      //     return node
+      //   },
+      // },
     ];
     return columns;
   }
 
 
   render() {
-    const { num,data } = this.state;
-    const columns = this.fetchColumns();
+    const {data = []} = this.state;
     return (
       <Row style={{height:'100%'}} className="WeeklyReportSummary">
         <Col span={24} style={{height:'8%'}}>
@@ -141,25 +221,32 @@ class WeeklyReportTableDetail extends React.Component {
         <Col span={24} style={{height:'92%'}}>
           <div style={{margin:'1rem'}}>
             <Collapse defaultActiveKey={['1']} onChange={this.onChange}>
-              <Panel header="自营业务   实现信息化、数字化、数智化三步走" key="1">
-                <Table columns={columns} dataSource={data} bordered pagination={false}/>
-              </Panel>
+              {/*<Panel header="自营业务   实现信息化、数字化、数智化三步走" key="1">*/}
+              <BasicIndexTable
+                data={data}
+                column={this.fetchColumns()}
+                bordered={true}
+                sortColumn={1}
+                operation={true}
+                onRef={(ref) => this.child1 = ref}
+              />
+              {/*</Panel>*/}
             </Collapse>
           </div>
-          <div style={{margin:'1rem'}}>
-            <Collapse defaultActiveKey={['1']} onChange={this.onChange}>
-              <Panel header="自营业务   实现信息化、数字化、数智化三步走" key="1">
-                <Table columns={columns} dataSource={data} bordered pagination={false}/>
-              </Panel>
-            </Collapse>
-          </div>
-          <div style={{margin:'1rem'}}>
-            <Collapse defaultActiveKey={['1']} onChange={this.onChange}>
-              <Panel header="自营业务   实现信息化、数字化、数智化三步走" key="1">
-                <Table columns={columns} dataSource={data} bordered pagination={false}/>
-              </Panel>
-            </Collapse>
-          </div>
+          {/*<div style={{margin:'1rem'}}>*/}
+          {/*  <Collapse defaultActiveKey={['1']} onChange={this.onChange}>*/}
+          {/*    <Panel header="自营业务   实现信息化、数字化、数智化三步走" key="1">*/}
+          {/*      /!*<Table columns={columns} dataSource={data} bordered pagination={false}/>*!/*/}
+          {/*    </Panel>*/}
+          {/*  </Collapse>*/}
+          {/*</div>*/}
+          {/*<div style={{margin:'1rem'}}>*/}
+          {/*  <Collapse defaultActiveKey={['1']} onChange={this.onChange}>*/}
+          {/*    <Panel header="自营业务   实现信息化、数字化、数智化三步走" key="1">*/}
+          {/*      /!*<Table columns={columns} dataSource={data} bordered pagination={false}/>*!/*/}
+          {/*    </Panel>*/}
+          {/*  </Collapse>*/}
+          {/*</div>*/}
         </Col>
       </Row>
     );

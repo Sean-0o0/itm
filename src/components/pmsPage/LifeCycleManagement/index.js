@@ -1,162 +1,354 @@
-import {Collapse, Row, Col, Menu, Dropdown,Tooltip} from 'antd';
+import {Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty} from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
+import Tooltips from './Tooltips';
+import Points from './Points';
+import Imgs from './Imgs';
 import ProjectProgress from './ProjectProgress';
-import icon_normal from '../../../image/pms/icon_milepost_normal.png';
-import icon_wrong from '../../../image/pms/icon_milepost_wrong.png';
-import icon_waiting from '../../../image/pms/icon_milepost_waiting.png';
 import BridgeModel from "../../Common/BasicModal/BridgeModel";
-const { Panel } = Collapse;
+import {FetchLivebosLink} from '../../../services/amslb/user';
+import {message} from 'antd';
+import {
+  CreateOperateHyperLink,
+  FetchQueryLifecycleStuff,
+  FetchQueryLiftcycleMilestone, FetchQueryOwnerProjectList
+} from "../../../services/pmsServices";
+
+const {Panel} = Collapse;
+
 class LifeCycleManagementTabs extends React.Component {
   state = {
+    //项目生命周期基本信息
+    basicData: [],
+    detailData: [],
     //上传弹窗
     uploadVisible: false,
     //上传url
-    uploadUrl: '/OperateProcessor?operate=TWD_XM_SMZQSC&Table=TWD_XM',
+    uploadUrl: '/OperateProcessor?operate=TWD_XM_INTERFACE_UPLODC&Table=TWD_XM',
+    uploadTitle: '',
     //修改弹窗
     editVisible: false,
     //修改url
     editUrl: '/OperateProcessor?operate=TWD_XM_XWHJY&Table=TWD_XM',
+    editTitle: '',
     //立项流程发起弹窗
     sendVisible: false,
     //立项流程发起url
-    sendUrl: '/OperateProcessor?operate=TLC_LCFQ_LXSQLCFQ&Table=TLC_LCFQ&GLXM=5&ParamAction=true',
+    sendUrl: '/OperateProcessor?operate=TLC_LCFQ_LXSQLCFQ&Table=TLC_LCFQ',
+    sendTitle: '',
     //信息录入
     fillOutVisible: false,
     //信息录入url
     fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
-    extend1: false,
-    extend2: false,
-    extend3: true,
-    extend4: false,
-    extend5: false,
-    extend6: false,
-    extend7: false,
+    fillOutTitle: '',
+    //信息修改
+    editMessageVisible: false,
+    //信息修改url
+    editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
+    editMessageTitle: '',
+    operationListData: [],
+    xmid: 0,
   };
 
   componentDidMount() {
+    this.fetchQueryOwnerProjectList();
+  }
+
+  componentWillReceiveProps(nextProps, nextContext) {
+    if (nextProps.params !== this.props.params) {
+      this.fetchQueryLiftcycleMilestone(nextProps.params.xmid)
+      this.fetchQueryLifecycleStuff(nextProps.params.xmid);
+    }
+  }
+
+  fetchQueryOwnerProjectList = () => {
+    FetchQueryOwnerProjectList(
+      {
+        paging: 1,
+        current: 1,
+        pageSize: 5,
+        total: -1,
+        sort: ''
+      }
+    ).then((ret = {}) => {
+      const {record, code} = ret;
+      if (code === 1) {
+        this.setState({
+          xmid: record[0].xmid,
+          operationListData: record,
+        });
+      }
+      // console.log("xmidxmid",this.state.xmid)
+      this.fetchQueryLiftcycleMilestone();
+      this.fetchQueryLifecycleStuff();
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  //流程发起url
+  getSendUrl = (e) => {
+    const params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "TLC_LCFQ",
+      "operateName": "TLC_LCFQ_LXSQLCFQ",
+      "parameter": [
+        {
+          "name": "GLXM",
+          "value": this.state.xmid
+        }
+      ],
+      "userId": ""
+    }
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const {code, message, url} = ret;
+      if (code === 1) {
+        this.setState({
+          sendTitle: e + '发起',
+          sendUrl: url,
+          sendVisible: true,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  //文档上传/修改url
+  getUploadUrl = (item) => {
+    const params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "TWD_XM",
+      "operateName": "TWD_XM_INTERFACE_UPLOD",
+      "parameter": [
+        {
+          "name": "XMMC",
+          "value": this.state.xmid
+        },
+        {
+          "name": "LCBMC",
+          "value": item.lcbid
+        },
+        {
+          "name": "SXID",
+          "value": item.sxid
+        }
+      ],
+      "userId": ""
+    }
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const {code, message, url} = ret;
+      if (code === 1) {
+        this.setState({
+          uploadUrl: url,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  //信息录入url
+  getFileOutUrl = (params) => {
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const {code, message, url} = ret;
+      if (code === 1) {
+        this.setState({
+          fillOutUrl: url,
+          fillOutVisible: true,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  //信息录入修改url
+  getEditMessageUrl = (params) => {
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const {code, message, url} = ret;
+      if (code === 1) {
+        this.setState({
+          editMessageUrl: url,
+          editMessageVisible: true,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  fetchQueryLiftcycleMilestone = (e) => {
+    FetchQueryLiftcycleMilestone({
+      cxlx: 'ALL',
+      xmmc: e ? e : this.state.xmid,
+    }).then((ret = {}) => {
+      const {record = [], code = 0} = ret;
+      // console.log("basicData",record);
+      if (code === 1) {
+        //zxxh排序
+        record.map((item = {}, index) => {
+          item.extend = item.zxxh === "1";
+        })
+        // console.log("basicData",record)
+        record.sort(this.compare('zxxh'))
+        this.setState({
+          basicData: record,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  compare = (property) => {
+    return function (a, b) {
+      var value1 = Number(a[property]);
+      var value2 = Number(b[property]);
+      return value1 - value2;
+    }
+  }
+
+  fetchQueryLifecycleStuff = (e) => {
+    FetchQueryLifecycleStuff({
+      cxlx: 'ALL',
+      xmmc: e ? e : this.state.xmid,
+    }).then((ret = {}) => {
+      const {code = 0, record = []} = ret;
+      // console.log("detailData",record);
+      if (code === 1) {
+        this.setState({
+          detailData: record,
+        });
+      }
+      if (e) {
+        this.setState({
+          xmid: e,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   onChange = (key) => {
     console.log(key);
   };
 
-
-  text = () => {
-    return <div style={{
-      fontSize: '14px',
-      fontWeight: 400,
-      color: '#666666',
-      lineHeight: '20px'
-    }}>
-      <span style={{color: 'rgba(102, 102, 102, 1)'}}>项目进度&nbsp;&nbsp;<span
-        style={{color: 'rgba(63, 170, 255, 1)'}}>正常</span></span>
-      <span style={{paddingLeft: '4rem', color: 'rgba(102, 102, 102, 1)'}}>时间范围&nbsp;&nbsp;<span
-        style={{color: 'rgba(63, 170, 255, 1)'}}>2022.05.10-2022.06.15</span></span>
-      <span style={{paddingLeft: '4rem', paddingRight: '4rem', color: 'rgba(102, 102, 102, 1)'}}>项目风险&nbsp;&nbsp;<span
-        style={{color: 'rgba(63, 170, 255, 1)'}}>暂无</span></span>
-    </div>;
-  }
-
-  extend1 = () => {
-    this.setState({
-      extend1: !this.state.extend1,
+  extend = (number) => {
+    const {basicData} = this.state;
+    basicData.map((item = {}, index) => {
+      if (index === number) {
+        item.extend = !item.extend;
+      }
     })
-  }
-  extend2 = () => {
     this.setState({
-      extend2: !this.state.extend2,
-    })
-  }
-  extend3 = () => {
-    this.setState({
-      extend3: !this.state.extend3,
-    })
-  }
-  extend4 = () => {
-    this.setState({
-      extend4: !this.state.extend4,
-    })
-  }
-  extend5 = () => {
-    this.setState({
-      extend5: !this.state.extend5,
-    })
-  }
-  extend6 = () => {
-    this.setState({
-      extend6: !this.state.extend6,
-    })
-  }
-  extend7 = () => {
-    this.setState({
-      extend7: !this.state.extend7,
+      basicData,
     })
   }
 
-  handleUpload = (name) => {
-    let uploadUrl = "";
-    switch (name) {
-      case "信委会议案原稿":
-        uploadUrl = "/OperateProcessor?operate=TWD_XM_XWHYG&Table=TWD_XM";
-        break;
-      case "信委会议案电子稿":
-        uploadUrl = "/OperateProcessor?operate=TWD_XM_SMZQSC&Table=TWD_XM";
-        break;
-      case "总办会原稿":
-        uploadUrl = "/OperateProcessor?operate=TWD_XM_ZBHYG&Table=TWD_XM";
-        break;
-      case "总办会提案":
-        uploadUrl = "/OperateProcessor?operate=TWD_XM_ZBHTA&Table=TWD_XM";
-        break;
-    }
-    this.setState({
-      uploadUrl: uploadUrl
-    })
+  //文档上传
+  handleUpload = (item) => {
+    this.getUploadUrl(item);
     this.setState({
       uploadVisible: true,
+      uploadTitle: item.sxmc + '上传',
     });
   };
 
-  handleEdit = (name) => {
-    let editUrl = "";
-    switch (name) {
-      case "信委会会议纪要":
-        editUrl = "/OperateProcessor?operate=TWD_XM_XWHJY&Table=TWD_XM";
-        break;
-      case "总办会会议纪要":
-        editUrl = "/OperateProcessor?operate=TWD_XM_ZBHJY&Table=TWD_XM";
-        break;
-    }
-    this.setState({
-      editUrl: editUrl
-    })
+  //文档上传的修改
+  handleEdit = (item) => {
+    this.getUploadUrl(item);
     this.setState({
       editVisible: true,
+      editTitle: item.sxmc + '修改',
     });
   };
 
-  handleSend = () => {
-    this.setState({
-      sendVisible: true,
-    });
+  //流程发起
+  handleSend = (name) => {
+    this.getSendUrl(name);
   };
 
+  //信息录入
   handleFillOut = (name) => {
-    let fillOutUrl = "";
+    let params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "V_HTXX",
+      "operateName": "V_HTXX_ADD",
+      "parameter": [
+        {
+          "name": "XMMC",
+          "value": this.state.xmid
+        },
+      ],
+      "userId": ""
+    }
     switch (name) {
       case "合同信息录入":
-        fillOutUrl = "/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX";
+        params = {
+          "attribute": 0,
+          "authFlag": 0,
+          "objectName": "V_HTXX",
+          "operateName": "V_HTXX_ADD",
+          "parameter": [
+            {
+              "name": "XMMC",
+              "value": this.state.xmid
+            },
+          ],
+          "userId": ""
+        };
         break;
     }
     this.setState({
-      fillOutUrl: fillOutUrl,
+      fillOutTitle: name,
     });
-    this.setState({
-      fillOutVisible: true,
-    });
+    this.getFileOutUrl(params)
   };
+
+
+  //信息录入修改
+  handleMessageEdit = (name) => {
+    let params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "V_HTXX",
+      "operateName": "V_HTXX_INTERFACE_MOD",
+      "parameter": [
+        {
+          "name": "XMMC",
+          "value": this.state.xmid
+        },
+      ],
+      "userId": ""
+    }
+    switch (name) {
+      case "合同信息录入":
+        params = {
+          "attribute": 0,
+          "authFlag": 0,
+          "objectName": "V_HTXX",
+          "operateName": "V_HTXX_INTERFACE_MOD",
+          "parameter": [
+            {
+              "name": "XMMC",
+              "value": this.state.xmid
+            },
+          ],
+          "userId": ""
+        };
+        break;
+    }
+    this.setState({
+      editMessageTitle: name + '修改',
+    });
+    this.getEditMessageUrl(params)
+  }
 
   closeUploadModal = () => {
     this.setState({
@@ -182,6 +374,48 @@ class LifeCycleManagementTabs extends React.Component {
     });
   };
 
+  closeMessageEditModal = () => {
+    this.setState({
+      editMessageVisible: false,
+    });
+  };
+
+  getUrl = (method, object, params) => {
+    FetchLivebosLink({
+      method: method,
+      object: object,
+      params: params
+    }).then((ret = {}) => {
+      const {data = ''} = ret;
+      if (data) {
+        return data;
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+    return null;
+  }
+
+  groupBy = (arr) => {
+    let dataArr = [];
+    arr.map(mapItem => {
+      if (dataArr.length === 0) {
+        dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+      } else {
+        let res = dataArr.some(item => {//判断相同swlx，有就添加到当前项
+          if (item.swlx === mapItem.swlx) {
+            item.List.push(mapItem)
+            return true
+          }
+        })
+        if (!res) {//如果没找相同swlx添加一个新对象
+          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+        }
+      }
+    })
+    return dataArr;
+  }
+
 
   //成功回调
   onSuccess = () => {
@@ -194,25 +428,27 @@ class LifeCycleManagementTabs extends React.Component {
       editVisible,
       sendVisible,
       fillOutVisible,
+      editMessageVisible,
       uploadUrl,
-      editUrl,
+      editMessageUrl,
       sendUrl,
       fillOutUrl,
-      extend1,
-      extend2,
-      extend3,
-      extend4,
-      extend5,
-      extend6,
-      extend7
+      uploadTitle,
+      editTitle,
+      sendTitle,
+      fillOutTitle,
+      editMessageTitle,
+      basicData,
+      detailData,
+      operationListData,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '100rem',
       height: '58rem',
-      title: '上传',
-      style: {top: '20rem'},
+      title: uploadTitle,
+      style: {top: '10rem'},
       visible: uploadVisible,
       footer: null,
     };
@@ -221,8 +457,8 @@ class LifeCycleManagementTabs extends React.Component {
       // defaultFullScreen: true,
       width: '100rem',
       height: '68rem',
-      title: '修改',
-      style: {top: '20rem'},
+      title: editTitle,
+      style: {top: '10rem'},
       visible: editVisible,
       footer: null,
     };
@@ -230,26 +466,32 @@ class LifeCycleManagementTabs extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '150rem',
-      height: '100rem',
-      title: '发起流程',
-      style: {top: '30rem'},
+      height: '80rem',
+      title: sendTitle,
+      style: {top: '10rem'},
       visible: sendVisible,
       footer: null,
     };
     const fillOutModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
-      height: '58rem',
-      title: '信息录入',
-      style: {top: '30rem'},
+      width: '150rem',
+      height: '80rem',
+      title: fillOutTitle,
+      style: {top: '10rem'},
       visible: fillOutVisible,
       footer: null,
     };
-    const src_upload = localStorage.getItem('livebos') + uploadUrl;
-    const src_edit = localStorage.getItem('livebos') + editUrl;
-    const src_send = localStorage.getItem('livebos') + sendUrl;
-    const src_fillOut = localStorage.getItem('livebos') + fillOutUrl;
+    const editMessageModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '150rem',
+      height: '80rem',
+      title: editMessageTitle,
+      style: {top: '10rem'},
+      visible: editMessageVisible,
+      footer: null,
+    };
     const menu = (
       <Menu>
         <Menu.Item>
@@ -266,1200 +508,233 @@ class LifeCycleManagementTabs extends React.Component {
     );
     return (
       <Row style={{height: 'calc(100% - 4.5rem)'}}>
-        {/*上传弹窗*/}
+        {/*文档上传弹窗*/}
         {uploadVisible &&
         <BridgeModel modalProps={uploadModalProps} onSucess={this.onSuccess} onCancel={this.closeUploadModal}
-                     src={src_upload}/>}
-        {/*修改弹窗*/}
+                     src={uploadUrl}/>}
+        {/*文档修改弹窗*/}
         {editVisible &&
         <BridgeModel modalProps={editModalProps} onSucess={this.onSuccess} onCancel={this.closeEditModal}
-                     src={src_edit}/>}
+                     src={uploadUrl}/>}
         {/*立项流程发起弹窗*/}
         {sendVisible &&
         <BridgeModel modalProps={sendModalProps} onSucess={this.onSuccess} onCancel={this.closeSendModal}
-                     src={src_send}/>}
+                     src={sendUrl}/>}
         {/*信息录入弹窗*/}
         {fillOutVisible &&
         <BridgeModel modalProps={fillOutModalProps} onSucess={this.onSuccess} onCancel={this.closeFillOutModal}
-                     src={src_fillOut}/>}
+                     src={fillOutUrl}/>}
+        {/*信息修改弹窗*/}
+        {editMessageVisible &&
+        <BridgeModel modalProps={editMessageModalProps} onSucess={this.onSuccess} onCancel={this.closeMessageEditModal}
+                     src={editMessageUrl}/>}
         <Col span={24} style={{height: '8%', margin: '2rem 0'}}>
-          <OperationList/>
+          <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
+                         fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                         data={operationListData}/>
         </Col>
         <Col span={24} style={{height: '92%'}}>
-          <div className='LifeCycleManage'>
-            <div className='head'>
-              <img src={icon_wrong} alt="" className='head-img'/>
-              <i className={extend1 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend1}/>&nbsp;
-              <div className='head1'>
-                1.需求及市场调研
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"逾期"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"存在"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
+          {
+            basicData.map((item = {}, index) => {
+              let detail = [];
+              detailData.map((childItem = {}, index) => {
+                if (childItem.lcbid === item.lcbid) {
+                  detail.push(childItem);
+                }
+              })
+              // console.log("detail",detail)
+              let sort = this.groupBy(detail);
+              // console.log("sort",sort)
+              return <div className='LifeCycleManage'>
+                <div className='head'>
+                  <Imgs status={item.zt}/>
+                  <i
+                    className={item.extend ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
+                    onClick={() => this.extend(index)}/>&nbsp;
+                  <div className='head1'>
+                    {item.lcbmc}
+                  </div>
+                  <div className='head6'>
+                    项目进度：{item.jd}
+                  </div>
+                  <div className='head3'>
+                    时间范围：
+                    <div style={{color: 'rgba(48, 49, 51, 1)'}}>{item.kssj} ~ {item.jssj}</div>
+                  </div>
+                  <div className='head2'>
+                    项目状态：<ProjectProgress state={item.zt}/>
+                  </div>
+                  <div className='head4'>
+                    项目风险：<ProjectRisk state={item.fxnr}/>
+                  </div>
+                  <div className='head5'>
+                    <div className='head5-title'>
+                      <div className='head5-cont'>
+                        <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                           className="iconfont icon-edit"/>
+                      </div>
+                    </div>
                   </div>
                 </div>
+                {
+                  item.extend ?
+                    <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
+                      <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
+                        {
+                          sort.length > 3 && sort.length < 7 ? (sort?.slice(0, 2).map((item = {}, index) => {
+                              let num = 0
+                              sort[index].List.map((item = {}, ind) => {
+                                if (item.zxqk !== " ") {
+                                  num = num + 1;
+                                }
+                              })
+                              return <Col span={8}>
+                                <div className='cont-col'>
+                                  <div className='cont-col1'>
+                                    <div className='right'>
+                                      {item.swlx}({num}/{sort[index].List.length})
+                                    </div>
+                                  </div>
+                                  <div style={{padding: '1.5rem 0'}}>
+                                    {sort[index].List.map((item = {}, ind) => {
+                                      return <Row className='cont-row'>
+                                        <Col span={17} style={{display: 'flex'}}>
+                                          <Points status={item.zxqk}/>
+                                          {item.sxmc}
+                                        </Col>
+                                        <Col span={3}>
+                                          <Tooltips type={item.swlx}
+                                                    sxmc={item.sxmc}
+                                                    status={item.zxqk}
+                                                    handleUpload={() => this.handleUpload(item)}
+                                                    handleSend={this.handleSend}
+                                                    handleFillOut={this.handleFillOut}
+                                                    handleEdit={() => this.handleEdit(item)}
+                                                    handleMessageEdit={this.handleMessageEdit}/>
+                                        </Col>
+                                        <Col span={3}>
+                                          <Dropdown overlay={menu}>
+                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                               className="iconfont icon-more">
+                                            </i>
+                                          </Dropdown>
+                                        </Col>
+                                        <div className='cont-row1'>
+                                          <div className='left'>
+                                            {/*//2022.06.17上传*/}
+                                          </div>
+                                        </div>
+                                      </Row>
+                                    })}
+                                  </div>
+                                </div>
+                              </Col>
+                            }) && sort?.slice(2, sort.length).map((item = {}, index) => {
+                              let num = 0
+                              sort[index].List.map((item = {}, ind) => {
+                                if (item.zxqk !== " ") {
+                                  num = num + 1;
+                                }
+                              })
+                              return <Col span={8}>
+                                <div className='cont-col'>
+                                  <div className='cont-col1'>
+                                    <div className='right'>
+                                      {item.swlx}({num}/{sort[index].List.length})
+                                    </div>
+                                  </div>
+                                  <div style={{padding: '1.5rem 0'}}>
+                                    {sort[index].List.map((item = {}, ind) => {
+                                      return <Row className='cont-row'>
+                                        <Col span={17} style={{display: 'flex'}}>
+                                          <Points status={item.zxqk}/>
+                                          {item.sxmc}
+                                        </Col>
+                                        <Col span={3}>
+                                          <Tooltips type={item.swlx}
+                                                    sxmc={item.sxmc}
+                                                    status={item.zxqk}
+                                                    handleUpload={() => this.handleUpload(item)}
+                                                    handleSend={this.handleSend}
+                                                    handleFillOut={this.handleFillOut}
+                                                    handleEdit={() => this.handleEdit(item)}
+                                                    handleMessageEdit={this.handleMessageEdit}/>
+                                        </Col>
+                                        <Col span={3}>
+                                          <Dropdown overlay={menu}>
+                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                               className="iconfont icon-more">
+                                            </i>
+                                          </Dropdown>
+                                        </Col>
+                                        <div className='cont-row1'>
+                                          <div className='left'>
+                                            {/*//2022.06.17上传*/}
+                                          </div>
+                                        </div>
+                                      </Row>
+                                    })}
+                                  </div>
+                                </div>
+                              </Col>
+                            }))
+                            : sort.map((item = {}, index) => {
+                              let num = 0
+                              sort[index].List.map((item = {}, ind) => {
+                                if (item.zxqk !== " ") {
+                                  num = num + 1;
+                                }
+                              })
+                              return <Col span={8}>
+                                <div className='cont-col'>
+                                  <div className='cont-col1'>
+                                    <div className='right'>
+                                      {item.swlx}({num}/{sort[index].List.length})
+                                    </div>
+                                  </div>
+                                  <div style={{padding: '1.5rem 0'}}>
+                                    {sort[index].List.map((item = {}, ind) => {
+                                      return <Row className='cont-row'>
+                                        <Col span={17} style={{display: 'flex'}}>
+                                          <Points status={item.zxqk}/>
+                                          {item.sxmc}
+                                        </Col>
+                                        <Col span={3}>
+                                          <Tooltips type={item.swlx}
+                                                    sxmc={item.sxmc}
+                                                    status={item.zxqk}
+                                                    handleUpload={() => this.handleUpload(item)}
+                                                    handleSend={this.handleSend}
+                                                    handleFillOut={this.handleFillOut}
+                                                    handleEdit={() => this.handleEdit(item)}
+                                                    handleMessageEdit={this.handleMessageEdit}/>
+                                        </Col>
+                                        <Col span={3}>
+                                          <Dropdown overlay={menu}>
+                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                               className="iconfont icon-more">
+                                            </i>
+                                          </Dropdown>
+                                        </Col>
+                                        <div className='cont-row1'>
+                                          <div className='left'>
+                                            {/*//2022.06.17上传*/}
+                                          </div>
+                                        </div>
+                                      </Row>
+                                    })}
+                                  </div>
+                                </div>
+                              </Col>
+                            })
+                        }
+                      </Col>
+                    </Row>
+                    : ''
+                }
               </div>
-            </div>
-            {
-              extend1 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            物料(1/2)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              调研报告
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              可执行方案
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
-          <div className='LifeCycleManage' >
-            <div className='head'>
-              <img src={icon_normal} alt="" className='head-img'/>
-              <i className={extend3 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend3}/>&nbsp;
-              <div className='head1'>
-                2.项目立项
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"进行中"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"暂无"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {
-              extend3 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            标前会议(0/1)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              标前会议纪要扫描件
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            立项申请(1/2)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              招标文件
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              立项申请流程
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="发起">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send" onClick={this.handleSend}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            信委会(1/3)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              信委会议案原稿
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={() => this.handleUpload("信委会议案原稿")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              信委会议案电子稿
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={() => this.handleUpload("信委会议案电子稿")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              信委会会议纪要
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="修改">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-edit" onClick={() => this.handleEdit("信委会会议纪要")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            总办会(1/3)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              总办会提案
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={() => this.handleUpload("总办会提案")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              总办会原稿
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={() => this.handleUpload("总办会原稿")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              总办会会议纪要
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="修改">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-edit" onClick={() => this.handleEdit("总办会会议纪要")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
-          <div className='LifeCycleManage'>
-            <div className='head'>
-              <img src={icon_waiting} alt="" className='head-img'/>
-              <i className={extend4 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend4}/>&nbsp;
-              <div className='head1'>
-                3.项目招标
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"未开始"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"暂无"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {
-              extend4 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            物料(1/3)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              评标报告
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              用印版合同
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              中标公告
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            事项(1/5)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              合同签署流程
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="发起">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send" onClick={this.handleSend}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              合同信息录入
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="填写">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-file-fillout" onClick={() => this.handleFillOut("合同信息录入")}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              招标方式变更
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="执行">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-file-fillout"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              付款流程
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="发起">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send" onClick={this.handleSend}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              招标信息录入
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="填写">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-file-fillout" onClick={this.handleSend}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
-          <div className='LifeCycleManage'>
-            <div className='head'>
-              <img src={icon_waiting} alt="" className='head-img'/>
-              <i className={extend5 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend5}/>&nbsp;
-              <div className='head1'>
-                4.项目开始
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"未开始"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"暂无"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {
-              extend5 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            事项(1/3)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              申请账号
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="修改">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-edit"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              申请设备
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              申请餐券
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
-          <div className='LifeCycleManage'>
-            <div className='head'>
-              <img src={icon_waiting} alt="" className='head-img'/>
-              <i className={extend2 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend2}/>&nbsp;
-              <div className='head1'>
-                5.项目实施
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"未开始"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"暂无"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {
-              extend2 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            物料(1/6)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              技术文档
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              需求文档
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              测试报告
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              功能清单
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload" onClick={this.handleUpload}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              需求录入
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="录入">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-file-fillout" onClick={this.handleFillOut}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                              周报填写
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="填写">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-file-fillout" onClick={this.handleFillOut}/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
-          <div className='LifeCycleManage'>
-            <div className='head'>
-              <img src={icon_waiting} alt="" className='head-img'/>
-              <i className={extend6 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend6}/>&nbsp;
-              <div className='head1'>
-                6.项目上线
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"未开始"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"暂无"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {
-              extend6 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            验收(0/1)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              验收报告
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="上传">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-upload"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            试运行(0/1)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              系统停用流程
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="发起">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            上线(0/1)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              系统上线流程
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="发起">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            事项(0/1)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              付款流程
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="发起">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
-          <div className='LifeCycleManage'>
-            <div className='head'>
-              <img src={icon_waiting} alt="" className='head-img'/>
-              <i className={extend7 ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                 onClick={this.extend7}/>&nbsp;
-              <div className='head1'>
-                7.项目结项
-              </div>
-              <div className='head2'>
-                项目进度：<ProjectProgress state={"未开始"}/>
-              </div>
-              <div className='head3'>
-                时间范围：
-                <div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>
-              </div>
-              <div className='head4'>
-                项目风险：<ProjectRisk state={"暂无"}/>
-              </div>
-              <div className='head5'>
-                <div className='head5-title'>
-                  <div className='head5-cont'>
-                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}} className="iconfont icon-edit"/>
-                  </div>
-                </div>
-              </div>
-            </div>
-            {
-              extend7 ? <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                  <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                    <Col span={8}>
-                      <div className='cont-col'>
-                        <div className='cont-col1'>
-                          <div className='right'>
-                            物料(0/1)
-                          </div>
-                        </div>
-                        <div style={{padding: '1.5rem 0'}}>
-                          <Row className='cont-row'>
-                            <Col span={17} style={{display: 'flex'}}>
-                              <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                              维保付款费
-                            </Col>
-                            <Col span={3}>
-                              <Tooltip title="执行">
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-send"/>
-                              </Tooltip>
-                            </Col>
-                            <Col span={3}>
-                              <Dropdown overlay={menu}>
-                                <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                   className="iconfont icon-more">
-                                </i>
-                              </Dropdown>
-                            </Col>
-                            <div className='cont-row1'>
-                              <div className='left'>
-                                2022.06.17上传
-                              </div>
-                            </div>
-                          </Row>
-                        </div>
-                      </div>
-                    </Col>
-                  </Col>
-                </Row>
-                : ''
-            }
-          </div>
+            })
+          }
         </Col>
       </Row>
     );
