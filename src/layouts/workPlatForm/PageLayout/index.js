@@ -421,21 +421,32 @@ class MainPageLayout extends React.PureComponent {
                 collapsed={collapsed}
               >
                 <PageSider menuTree={menuTree} collapsed={collapsed} location={location} history={history}></PageSider>
-                { <div style={{ transform: !collapsed && 'rotate(180deg)' }} className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
-                {collapsed?<Icon type="menu-unfold" className='menu-sider-icon' />:<Icon type="menu-fold" className='menu-sider-icon' />}
-              </div> }
+                {<div style={{transform: !collapsed && 'rotate(180deg)'}}
+                      className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
+                  {collapsed ? <Icon type="menu-unfold" className='menu-sider-icon'/> :
+                    <Icon type="menu-fold" className='menu-sider-icon'/>}
+                </div>}
               </Sider>
-              <Content id="htmlContent" style={{ borderRadius: '0 0 0 1rem', height: '100%', overflowY: 'auto', overflowX: 'hidden', width:'100%' }} className="m-layout-content" >
+              <Content id="htmlContent" style={{
+                borderRadius: '0 0 0 1rem',
+                height: '100%',
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                width: '100%'
+              }} className="m-layout-content">
                 {/* <TopMenu></TopMenu> */}
-                <TrackRouter history={history} onEnter={(loc, preLoc) => { this.pageTrack(loc, preLoc); }}>
+                <TrackRouter history={history} onEnter={(loc, preLoc) => {
+                  this.pageTrack(loc, preLoc);
+                }}>
                   {/* 水印 */}
                   { /* 系统监控/system/monitor页面不需要水印 */
-                    isOpenSecureMarker && userBasicInfo.userid && lodash.get(location, 'pathname', '').indexOf('/system/monitor/view') === -1 && <Watermark userBasicInfo={userBasicInfo} location={location} elementID='htmlContent' />
+                    isOpenSecureMarker && userBasicInfo.userid && lodash.get(location, 'pathname', '').indexOf('/system/monitor/view') === -1 &&
+                    <Watermark userBasicInfo={userBasicInfo} location={location} elementID='htmlContent'/>
                   }
                   <CacheSwitch>
                     {
                       // 路由
-                      routes.map(({ key, path, component, keepAlive = true }) => {
+                      routes.map(({key, path, component, keepAlive = true}) => {
                         return (
                           path && (
                             <CacheRoute

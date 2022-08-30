@@ -25,7 +25,8 @@ class OperationList extends React.Component {
 
   render() {
     const {} = this.state;
-    const {data} = this.props;
+    const {data, defaultValue} = this.props;
+    console.log("defaultValuedefaultValue", defaultValue);
     return (
       <Row style={{backgroundColor: 'white', height: '8rem'}}>
         <Col span={20}
@@ -36,8 +37,8 @@ class OperationList extends React.Component {
               showSearch
               placeholder="请输入项目名称"
               optionFilterProp="children"
-              key={data[0]?.xmmc}
-              defaultValue={data[0]?.xmmc}
+              key={defaultValue ? defaultValue : data[0]?.xmmc}
+              defaultValue={defaultValue ? defaultValue : data[0]?.xmmc}
               onChange={this.onChange}
               onSearch={this.onSearch}
               filterOption={(input, option) =>

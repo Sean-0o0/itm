@@ -16,6 +16,7 @@ import {
 } from "../../../services/pmsServices";
 
 const {Panel} = Collapse;
+const Loginname = localStorage.getItem("firstUserID");
 
 class LifeCycleManagementTabs extends React.Component {
   state = {
@@ -47,8 +48,12 @@ class LifeCycleManagementTabs extends React.Component {
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editMessageTitle: '',
+    editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
+    editModelTitle: '',
+    editModelVisible: false,
     operationListData: [],
     xmid: 0,
+    defaultValue: 0,
   };
 
   componentDidMount() {
@@ -57,12 +62,16 @@ class LifeCycleManagementTabs extends React.Component {
 
   componentWillReceiveProps(nextProps, nextContext) {
     if (nextProps.params !== this.props.params) {
+      this.setState({
+        defaultValue: nextProps.params.xmid,
+      });
       this.fetchQueryLiftcycleMilestone(nextProps.params.xmid)
       this.fetchQueryLifecycleStuff(nextProps.params.xmid);
     }
   }
 
   fetchQueryOwnerProjectList = () => {
+    const {params} = this.props;
     FetchQueryOwnerProjectList(
       {
         paging: 1,
@@ -75,13 +84,14 @@ class LifeCycleManagementTabs extends React.Component {
       const {record, code} = ret;
       if (code === 1) {
         this.setState({
+          defaultValue: params.xmid,
           xmid: record[0].xmid,
           operationListData: record,
         });
       }
       // console.log("xmidxmid",this.state.xmid)
-      this.fetchQueryLiftcycleMilestone();
-      this.fetchQueryLifecycleStuff();
+      this.fetchQueryLiftcycleMilestone(params.xmid);
+      this.fetchQueryLifecycleStuff(params.xmid);
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -100,15 +110,15 @@ class LifeCycleManagementTabs extends React.Component {
           "value": this.state.xmid
         }
       ],
-      "userId": ""
+      "userId": Loginname,
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
-          sendTitle: e + '发起',
+          // sendTitle: e + '发起',
           sendUrl: url,
-          sendVisible: true,
+          // sendVisible: true,
         });
       }
     }).catch((error) => {
@@ -137,7 +147,7 @@ class LifeCycleManagementTabs extends React.Component {
           "value": item.sxid
         }
       ],
-      "userId": ""
+      "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
@@ -152,13 +162,13 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   //信息录入url
-  getFileOutUrl = (params) => {
+  getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           fillOutUrl: url,
-          fillOutVisible: true,
+          // fillOutVisible: true,
         });
       }
     }).catch((error) => {
@@ -173,13 +183,28 @@ class LifeCycleManagementTabs extends React.Component {
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
-          editMessageVisible: true,
+          // editMessageVisible: true,
         });
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
+  //阶段信息修改url
+  getEditModelUrl = (params) => {
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const {code, message, url} = ret;
+      if (code === 1) {
+        this.setState({
+          editModelUrl: url,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
 
   fetchQueryLiftcycleMilestone = (e) => {
     FetchQueryLiftcycleMilestone({
@@ -271,6 +296,11 @@ class LifeCycleManagementTabs extends React.Component {
   //流程发起
   handleSend = (name) => {
     this.getSendUrl(name);
+    this.setState({
+      sendTitle: name + '发起',
+      // sendUrl: url,
+      sendVisible: true,
+    });
   };
 
   //信息录入
@@ -286,7 +316,7 @@ class LifeCycleManagementTabs extends React.Component {
           "value": this.state.xmid
         },
       ],
-      "userId": ""
+      "userId": Loginname
     }
     switch (name) {
       case "合同信息录入":
@@ -301,14 +331,15 @@ class LifeCycleManagementTabs extends React.Component {
               "value": this.state.xmid
             },
           ],
-          "userId": ""
+          "userId": Loginname
         };
         break;
     }
+    this.getFileOutUrl(params)
     this.setState({
       fillOutTitle: name,
+      fillOutVisible: true,
     });
-    this.getFileOutUrl(params)
   };
 
 
@@ -325,7 +356,7 @@ class LifeCycleManagementTabs extends React.Component {
           "value": this.state.xmid
         },
       ],
-      "userId": ""
+      "userId": Loginname
     }
     switch (name) {
       case "合同信息录入":
@@ -340,14 +371,40 @@ class LifeCycleManagementTabs extends React.Component {
               "value": this.state.xmid
             },
           ],
-          "userId": ""
+          "userId": Loginname
         };
         break;
     }
+    this.getEditMessageUrl(params);
     this.setState({
       editMessageTitle: name + '修改',
+      editMessageVisible: true,
     });
-    this.getEditMessageUrl(params)
+  }
+
+  handleEditModel = (item) => {
+    let params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "TXMXX_XMXX",
+      "operateName": "TXMXX_XMXX_INTERFACE_MODOTHERINFO",
+      "parameter": [
+        {
+          "name": "XMID",
+          "value": this.state.xmid,
+        },
+        {
+          "name": "LCBID",
+          "value": item.lcbid,
+        },
+      ],
+      "userId": Loginname
+    }
+    this.getEditModelUrl(params);
+    this.setState({
+      editModelTitle: '信息修改',
+      editModelVisible: true,
+    });
   }
 
   closeUploadModal = () => {
@@ -380,21 +437,12 @@ class LifeCycleManagementTabs extends React.Component {
     });
   };
 
-  getUrl = (method, object, params) => {
-    FetchLivebosLink({
-      method: method,
-      object: object,
-      params: params
-    }).then((ret = {}) => {
-      const {data = ''} = ret;
-      if (data) {
-        return data;
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+  closeModelEditModal = () => {
+    this.setState({
+      editModelVisible: false,
     });
-    return null;
-  }
+  };
+
 
   groupBy = (arr) => {
     let dataArr = [];
@@ -418,8 +466,14 @@ class LifeCycleManagementTabs extends React.Component {
 
 
   //成功回调
-  onSuccess = () => {
+  onSuccess = (name) => {
+    message.success(name + "成功");
+    this.reflush();
+  }
 
+  reflush = () => {
+    this.fetchQueryLiftcycleMilestone(this.state.xmid);
+    this.fetchQueryLifecycleStuff(this.state.xmid);
   }
 
   render() {
@@ -429,18 +483,22 @@ class LifeCycleManagementTabs extends React.Component {
       sendVisible,
       fillOutVisible,
       editMessageVisible,
+      editModelVisible,
       uploadUrl,
       editMessageUrl,
       sendUrl,
       fillOutUrl,
+      editModelUrl,
       uploadTitle,
       editTitle,
       sendTitle,
       fillOutTitle,
       editMessageTitle,
+      editModelTitle,
       basicData,
       detailData,
       operationListData,
+      defaultValue,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
@@ -492,6 +550,16 @@ class LifeCycleManagementTabs extends React.Component {
       visible: editMessageVisible,
       footer: null,
     };
+    const editModelModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '150rem',
+      height: '80rem',
+      title: editModelTitle,
+      style: {top: '10rem'},
+      visible: editModelVisible,
+      footer: null,
+    };
     const menu = (
       <Menu>
         <Menu.Item>
@@ -510,28 +578,38 @@ class LifeCycleManagementTabs extends React.Component {
       <Row style={{height: 'calc(100% - 4.5rem)'}}>
         {/*文档上传弹窗*/}
         {uploadVisible &&
-        <BridgeModel modalProps={uploadModalProps} onSucess={this.onSuccess} onCancel={this.closeUploadModal}
+        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+                     onCancel={this.closeUploadModal}
                      src={uploadUrl}/>}
         {/*文档修改弹窗*/}
         {editVisible &&
-        <BridgeModel modalProps={editModalProps} onSucess={this.onSuccess} onCancel={this.closeEditModal}
+        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+                     onCancel={this.closeEditModal}
                      src={uploadUrl}/>}
         {/*立项流程发起弹窗*/}
         {sendVisible &&
-        <BridgeModel modalProps={sendModalProps} onSucess={this.onSuccess} onCancel={this.closeSendModal}
+        <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
                      src={sendUrl}/>}
         {/*信息录入弹窗*/}
         {fillOutVisible &&
-        <BridgeModel modalProps={fillOutModalProps} onSucess={this.onSuccess} onCancel={this.closeFillOutModal}
+        <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+                     onCancel={this.closeFillOutModal}
                      src={fillOutUrl}/>}
         {/*信息修改弹窗*/}
         {editMessageVisible &&
-        <BridgeModel modalProps={editMessageModalProps} onSucess={this.onSuccess} onCancel={this.closeMessageEditModal}
+        <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+                     onCancel={this.closeMessageEditModal}
                      src={editMessageUrl}/>}
+        {/*阶段信息修改弹窗*/}
+        {editModelVisible &&
+        <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+                     onCancel={this.closeModelEditModal}
+                     src={editModelUrl}/>}
         <Col span={24} style={{height: '8%', margin: '2rem 0'}}>
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
                          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-                         data={operationListData}/>
+                         data={operationListData}
+                         defaultValue={defaultValue}/>
         </Col>
         <Col span={24} style={{height: '92%'}}>
           {
@@ -561,17 +639,19 @@ class LifeCycleManagementTabs extends React.Component {
                     时间范围：
                     <div style={{color: 'rgba(48, 49, 51, 1)'}}>{item.kssj} ~ {item.jssj}</div>
                   </div>
-                  <div className='head2'>
-                    项目状态：<ProjectProgress state={item.zt}/>
-                  </div>
                   <div className='head4'>
-                    项目风险：<ProjectRisk state={item.fxnr}/>
+                    项目风险：<ProjectRisk item={item} xmid={this.state.xmid}/>
+                  </div>
+                  <div className='head2'>
+                    状态：<ProjectProgress state={item.zt}/>
                   </div>
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
                         <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                           className="iconfont icon-edit"/>
+                           className="iconfont icon-edit" onClick={
+                          () => this.handleEditModel(item)
+                        }/>
                       </div>
                     </div>
                   </div>

@@ -306,6 +306,14 @@ class ProjectSchedule extends React.Component {
     extend(number);
   }
 
+  handPageChange = (e) => {
+    this.setState({
+      page: e,
+    })
+    const {fetchQueryOwnerProjectList} = this.props;
+    fetchQueryOwnerProjectList(e)
+  }
+
   render() {
     const {data, total, ProjectScheduleDetailData} = this.props;
     const {
@@ -315,11 +323,6 @@ class ProjectSchedule extends React.Component {
       uploadUrl,
       editUrl,
       sendUrl,
-      extend1,
-      extend2,
-      extend3,
-      extend4,
-      extend5,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
     const menu = (
@@ -370,7 +373,15 @@ class ProjectSchedule extends React.Component {
     const src_edit = localStorage.getItem('livebos') + editUrl;
     const src_send = localStorage.getItem('livebos') + sendUrl;
     return (
-      <Row className='workBench' style={{height: '100%', margin: '3rem'}}>
+      <Row className='workBench' style={{height: '70rem', padding: '2.5rem'}}>
+        <div style={{width: '100%'}}>
+          <div style={{display: 'flex', margin: '1rem 0 1.5rem 0',}}>
+            <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
+               className="iconfont icon-piechart"/>
+            <div style={{height: '10%', fontSize: '2.381rem', fontWeight: 700, color: '#303133',}}>项目进度
+            </div>
+          </div>
+        </div>
         {/*上传弹窗*/}
         {uploadVisible &&
         <BridgeModel modalProps={uploadModalProps} onSucess={this.onSuccess} onCancel={this.closeUploadModal}
@@ -383,210 +394,219 @@ class ProjectSchedule extends React.Component {
         {sendVisible &&
         <BridgeModel modalProps={sendModalProps} onSucess={this.onSuccess} onCancel={this.closeSendModal}
                      src={src_send}/>}
-        <Col span={24} style={{height: '74%', overflowY: 'auto'}}>
-          {
-            data.map((items = {}, index) => {
-              return <div className='LifeCycleManage'>
-                <div className='head'>
-                  <i
-                    className={items.extend ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
-                    onClick={() => this.extend(index)}/>&nbsp;
-                  <div className='head1'>
-                    <Link style={{color: '#1890ff'}} to={{
-                      pathname: '/pms/manage/LifeCycleManagement',
-                      query: {xmid: items.xmid},
-                    }}>{items.xmmc}</Link>
-                  </div>
-                  <div className='head3'>
-                    {/*时间范围：*/}
-                    {/*<div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>*/}
-                  </div>
-                  <div className='head2'>
-                    项目进度：<ProjectProgress state={items.zt}/>
-                  </div>
-                  <div className='head4'>
-                    项目风险：<ProjectRisk state={items.fxnr}/>
-                  </div>
-                </div>
-                {items.extend ?
-                  ProjectScheduleDetailData.map((item = {}, ind) => {
-                    let sort = this.groupBy(item);
-                    return items?.xmid === item[0]?.xmid &&
-                      <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                        <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
-                          <div className='head'>
-                            {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
-                            <div className='head1'>
-                              里程碑阶段：
-                              <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                 className="iconfont icon-fill-flag"/>&nbsp;
-                              <span style={{color: 'rgba(48, 49, 51, 1)'}}>{item[0].lcb}</span>
-                            </div>
-                            <div className='head2'>
-                              里程碑时间：
-                              <div style={{color: 'rgba(48, 49, 51, 1)'}}>{items.kssj} ~ {items.jssj}5</div>
-                            </div>
-                          </div>
-                          {
-                            sort.length > 3 && sort.length < 7 ? (sort?.slice(0, 2).map((item = {}, number) => {
-                              let num = 0
-                              sort[number].List.map((item = {}, ind) => {
-                                if (item.zxqk !== " ") {
-                                  num = num + 1;
-                                }
-                              })
-                              return <Col span={8}>
-                                <div className='cont-col'>
-                                  <div className='cont-col1'>
-                                    <div className='right'>
-                                      {item.swlx}({num}/{sort[index].List.length})
-                                    </div>
+        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
+          <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+            <div style={{height: '100%'}}>
+              <div style={{height: '70rem', overflowY: 'auto'}}>
+                {
+                  data.map((items = {}, index) => {
+                    return <div className='LifeCycleManage'>
+                      <div className='head'>
+                        <i
+                          className={items.extend ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
+                          onClick={() => this.extend(index)}/>&nbsp;
+                        <div className='head1'>
+                          <Link style={{color: '#1890ff'}} to={{
+                            pathname: '/pms/manage/LifeCycleManagement',
+                            query: {xmid: items.xmid},
+                          }}>{items.xmmc}</Link>
+                        </div>
+                        <div className='head3'>
+                          {/*时间范围：*/}
+                          {/*<div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>*/}
+                        </div>
+                        <div className='head2'>
+                          项目进度：<ProjectProgress state={items.zt}/>
+                        </div>
+                        <div className='head4'>
+                          项目风险：<ProjectRisk state={items.fxnr}/>
+                        </div>
+                      </div>
+                      {items.extend ?
+                        ProjectScheduleDetailData.map((item = {}, ind) => {
+                          let sort = this.groupBy(item);
+                          return items?.xmid === item[0]?.xmid &&
+                            <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
+                              <Col span={24} style={{width: '100%',}} className='cont'>
+                                <div className='head'>
+                                  {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
+                                  <div className='head1'>
+                                    里程碑阶段：
+                                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                       className="iconfont icon-fill-flag"/>&nbsp;
+                                    <span style={{color: 'rgba(48, 49, 51, 1)'}}>{item[0].lcb}</span>
                                   </div>
-                                  <div style={{padding: '1.5rem 0'}}>
-                                    {sort[number].List.map((item = {}, ind) => {
-                                      return <Row className='cont-row'>
-                                        <Col span={17} style={{display: 'flex'}}>
-                                          <div className='cont-row-point'
-                                               style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                                          {item.sxmc}
-                                        </Col>
-                                        <Col span={3}>
-                                          <Tooltips type={item.swlx}
-                                                    swmc={item.swmc}
-                                                    status={item.zxqk}
-                                                    handleUpload={() => this.handleUpload(item)}
-                                                    handleSend={this.handleSend}
-                                                    handleFillOut={this.handleFillOut}
-                                                    handleEdit={() => this.handleEdit(item)}
-                                                    handleMessageEdit={this.handleMessageEdit}/>
-                                        </Col>
-                                        <Col span={3}>
-                                          <Dropdown overlay={menu}>
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-more">
-                                            </i>
-                                          </Dropdown>
-                                        </Col>
-                                        {/*<div className='cont-row1'>*/}
-                                        {/*  <div className='left'>*/}
-                                        {/*    2022.06.17上传*/}
-                                        {/*  </div>*/}
-                                        {/*</div>*/}
-                                      </Row>
-                                    })
-                                    }
+                                  <div className='head2'>
+                                    里程碑时间：
+                                    <div style={{color: 'rgba(48, 49, 51, 1)'}}>{items.kssj} ~ {items.jssj}</div>
                                   </div>
                                 </div>
-                              </Col>
-                            })) && sort?.slice(2, sort.length).map((item = {}, number) => {
-                              let num = 0
-                              sort[number].List.map((item = {}, ind) => {
-                                if (item.zxqk !== " ") {
-                                  num = num + 1;
-                                }
-                              })
-                              return <Col span={8}>
-                                <div className='cont-col'>
-                                  <div className='cont-col1'>
-                                    <div className='right'>
-                                      {item.swlx}({num}/{sort[number].List.length})
-                                    </div>
-                                  </div>
-                                  <div style={{padding: '1.5rem 0'}}>
-                                    {sort[number].List.map((item = {}, ind) => {
-                                      return <Row className='cont-row'>
-                                        <Col span={17} style={{display: 'flex'}}>
-                                          <div className='cont-row-point'
-                                               style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                                          {item.sxmc}
-                                        </Col>
-                                        <Col span={3}>
-                                          <Tooltip title="上传">
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-upload"
-                                               onClick={() => this.handleUpload("标前会议纪要扫描件")}/>
-                                          </Tooltip>
-                                        </Col>
-                                        <Col span={3}>
-                                          <Dropdown overlay={menu}>
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-more">
-                                            </i>
-                                          </Dropdown>
-                                        </Col>
-                                        {/*<div className='cont-row1'>*/}
-                                        {/*  <div className='left'>*/}
-                                        {/*    2022.06.17上传*/}
-                                        {/*  </div>*/}
-                                        {/*</div>*/}
-                                      </Row>
+                                {
+                                  sort.length > 3 && sort.length < 7 ? (sort?.slice(0, 2).map((item = {}, number) => {
+                                    let num = 0
+                                    sort[number].List.map((item = {}, ind) => {
+                                      if (item.zxqk !== " ") {
+                                        num = num + 1;
+                                      }
                                     })
-                                    }
-                                  </div>
-                                </div>
-                              </Col>
-                            }) : sort.map((item = {}, number) => {
-                              let num = 0
-                              sort[number].List.map((item = {}, ind) => {
-                                if (item.zxqk !== " ") {
-                                  num = num + 1;
-                                }
-                              })
-                              return <Col span={8}>
-                                <div className='cont-col'>
-                                  <div className='cont-col1'>
-                                    <div className='right'>
-                                      {item.swlx}({num}/{sort[number].List.length})
-                                    </div>
-                                  </div>
-                                  <div style={{padding: '1.5rem 0'}}>
-                                    {sort[number].List.map((item = {}, ind) => {
-                                      return <Row className='cont-row'>
-                                        <Col span={17} style={{display: 'flex'}}>
-                                          <div className='cont-row-point'
-                                               style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                                          {item.sxmc}
-                                        </Col>
-                                        <Col span={3}>
-                                          <Tooltip title="上传">
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-upload"
-                                               onClick={() => this.handleUpload("标前会议纪要扫描件")}/>
-                                          </Tooltip>
-                                        </Col>
-                                        <Col span={3}>
-                                          <Dropdown overlay={menu}>
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-more">
-                                            </i>
-                                          </Dropdown>
-                                        </Col>
-                                      </Row>
+                                    return <Col span={8} style={{marginTop: '1.5rem'}}>
+                                      <div className='cont-col'>
+                                        <div className='cont-col1'>
+                                          <div className='right'>
+                                            {item.swlx}({num}/{sort[index].List.length})
+                                          </div>
+                                        </div>
+                                        <div style={{padding: '1.5rem 0'}}>
+                                          {sort[number].List.map((item = {}, ind) => {
+                                            return <Row className='cont-row'>
+                                              <Col span={17} style={{display: 'flex'}}>
+                                                <div className='cont-row-point'
+                                                     style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                                                {item.sxmc}
+                                              </Col>
+                                              <Col span={3}>
+                                                <Tooltips type={item.swlx}
+                                                          swmc={item.swmc}
+                                                          status={item.zxqk}
+                                                          handleUpload={() => this.handleUpload(item)}
+                                                          handleSend={this.handleSend}
+                                                          handleFillOut={this.handleFillOut}
+                                                          handleEdit={() => this.handleEdit(item)}
+                                                          handleMessageEdit={this.handleMessageEdit}/>
+                                              </Col>
+                                              <Col span={3}>
+                                                <Dropdown overlay={menu}>
+                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                                     className="iconfont icon-more">
+                                                  </i>
+                                                </Dropdown>
+                                              </Col>
+                                              {/*<div className='cont-row1'>*/}
+                                              {/*  <div className='left'>*/}
+                                              {/*    2022.06.17上传*/}
+                                              {/*  </div>*/}
+                                              {/*</div>*/}
+                                            </Row>
+                                          })
+                                          }
+                                        </div>
+                                      </div>
+                                    </Col>
+                                  })) && sort?.slice(2, sort.length).map((item = {}, number) => {
+                                    let num = 0
+                                    sort[number].List.map((item = {}, ind) => {
+                                      if (item.zxqk !== " ") {
+                                        num = num + 1;
+                                      }
                                     })
-                                    }
-                                  </div>
-                                </div>
+                                    return <Col span={8} style={{marginTop: '1.5rem'}}>
+                                      <div className='cont-col'>
+                                        <div className='cont-col1'>
+                                          <div className='right'>
+                                            {item.swlx}({num}/{sort[number].List.length})
+                                          </div>
+                                        </div>
+                                        <div style={{padding: '1.5rem 0'}}>
+                                          {sort[number].List.map((item = {}, ind) => {
+                                            return <Row className='cont-row'>
+                                              <Col span={17} style={{display: 'flex'}}>
+                                                <div className='cont-row-point'
+                                                     style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                                                {item.sxmc}
+                                              </Col>
+                                              <Col span={3}>
+                                                <Tooltip title="上传">
+                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                                     className="iconfont icon-upload"
+                                                     onClick={() => this.handleUpload("标前会议纪要扫描件")}/>
+                                                </Tooltip>
+                                              </Col>
+                                              <Col span={3}>
+                                                <Dropdown overlay={menu}>
+                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                                     className="iconfont icon-more">
+                                                  </i>
+                                                </Dropdown>
+                                              </Col>
+                                              {/*<div className='cont-row1'>*/}
+                                              {/*  <div className='left'>*/}
+                                              {/*    2022.06.17上传*/}
+                                              {/*  </div>*/}
+                                              {/*</div>*/}
+                                            </Row>
+                                          })
+                                          }
+                                        </div>
+                                      </div>
+                                    </Col>
+                                  }) : sort.map((item = {}, number) => {
+                                    let num = 0
+                                    sort[number].List.map((item = {}, ind) => {
+                                      if (item.zxqk !== " ") {
+                                        num = num + 1;
+                                      }
+                                    })
+                                    return <Col span={8} style={{marginTop: '1.5rem'}}>
+                                      <div className='cont-col'>
+                                        <div className='cont-col1'>
+                                          <div className='right'>
+                                            {item.swlx}({num}/{sort[number].List.length})
+                                          </div>
+                                        </div>
+                                        <div style={{padding: '1.5rem 0'}}>
+                                          {sort[number].List.map((item = {}, ind) => {
+                                            return <Row className='cont-row'>
+                                              <Col span={17} style={{display: 'flex'}}>
+                                                <div className='cont-row-point'
+                                                     style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                                                {item.sxmc}
+                                              </Col>
+                                              <Col span={3}>
+                                                <Tooltip title="上传">
+                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                                     className="iconfont icon-upload"
+                                                     onClick={() => this.handleUpload("标前会议纪要扫描件")}/>
+                                                </Tooltip>
+                                              </Col>
+                                              <Col span={3}>
+                                                <Dropdown overlay={menu}>
+                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                                     className="iconfont icon-more">
+                                                  </i>
+                                                </Dropdown>
+                                              </Col>
+                                            </Row>
+                                          })
+                                          }
+                                        </div>
+                                      </div>
+                                    </Col>
+                                  })
+                                }
                               </Col>
-                            })
-                          }
-                        </Col>
-                      </Row>
+                            </Row>
+                        })
+                        : ''
+                      }
+                      <Divider style={{margin: '10px 0'}}/>
+                    </div>
                   })
-                  : ''
                 }
-                <Divider/>
               </div>
-            })
-          }
+              <div style={{height: '10%', marginBottom: '1rem'}}>
+                <Pagination
+                  style={{textAlign: 'end'}}
+                  total={total}
+                  showTotal={total => `共 ${total} 条`}
+                  defaultPageSize={5}
+                  onChange={this.handPageChange}
+                  showQuickJumper={true}
+                  defaultCurrent={1}
+                />
+              </div>
+            </div>
+          </Col>
         </Col>
-        <Pagination
-          style={{textAlign: 'end'}}
-          total={5}
-          showTotal={total => `共 ${total} 条`}
-          defaultPageSize={5}
-          showQuickJumper={true}
-          defaultCurrent={1}
-        />
       </Row>
     );
   }

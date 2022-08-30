@@ -34,7 +34,7 @@ class Tooltips extends React.Component {
   render() {
 
     const {type, status, sxmc} = this.props;
-    console.log("sxmcsxmcsxmc", sxmc)
+    // console.log("sxmcsxmcsxmc", sxmc)
     return (
       <div>
         {

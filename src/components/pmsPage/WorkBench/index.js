@@ -10,6 +10,7 @@ import {
   FetchQueryOwnerProjectList,
   FetchQueryOwnerWorkflow
 } from "../../../services/pmsServices";
+import moment from "moment";
 
 const {Panel} = Collapse;
 
@@ -29,13 +30,17 @@ class WorkBench extends React.Component {
 
   componentDidMount() {
     this.fetchQueryOwnerMessage();
+    this.fetchQueryOwnerWorkflow();
   }
 
-  fetchQueryOwnerMessage = (e) => {
+  fetchQueryOwnerMessage = (page, date) => {
+    const defaultDate = moment(new Date())
+      .format('YYYYMMDD')
     FetchQueryOwnerMessage(
       {
+        date: date ? date : defaultDate,
         paging: 1,
-        current: e ? e : 1,
+        current: page ? page : 1,
         pageSize: 6,
         total: -1,
         sort: ''
@@ -56,7 +61,6 @@ class WorkBench extends React.Component {
           wzxsl: record[0]?.wzxsl,
         });
       }
-      this.fetchQueryOwnerWorkflow();
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -85,12 +89,12 @@ class WorkBench extends React.Component {
   }
 
   //查询当前用户项目列表
-  fetchQueryOwnerProjectList = () => {
+  fetchQueryOwnerProjectList = (e) => {
     FetchQueryOwnerProjectList(
       {
         cxlx: 'USER',
         paging: 1,
-        current: 1,
+        current: e ? e : 1,
         pageSize: 5,
         total: -1,
         sort: ''
@@ -118,6 +122,9 @@ class WorkBench extends React.Component {
           //zxxh排序
           e.map((item = {}, index) => {
             item.extend = false;
+            if (index === 0) {
+              item.extend = true;
+            }
             item.kssj = record[0].kssj
             item.jssj = record[0].jssj
             item.zt = record[0].zt
@@ -172,10 +179,6 @@ class WorkBench extends React.Component {
     })
   }
 
-  onclickdb = () => {
-    window.open("http://10.52.130.12/ZSZQOA/getURLSyncBPM.do?_BPM_FUNCCODE=C_FormSetFormData&_tf_file_id=1728341&_bpm_task_taskid=63336317");
-  }
-
   render() {
     const {
       wdsl,
@@ -189,52 +192,73 @@ class WorkBench extends React.Component {
       ProjectScheduleDetailData = []
     } = this.state;
     return (
-      <Row style={{height: 'calc(100% - 4.5rem)'}}>
-        <Row style={{height: '40%'}}>
-          <Col span={16} style={{background: 'white', margin: '2rem', height: '70rem', padding: '16px 0'}}>
-            <div style={{display: 'flex'}}>
+      <div style={{height: 'calc(100% - 4.5rem)'}}>
+        <div style={{height: '40%', marginBottom: '1rem'}}>
+          <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '2rem'}}>
+            <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
               <div style={{
-                width: '20%',
-                margin: '2rem',
-                fontSize: '16px',
-                fontWeight: 500,
-                color: '#303133',
-                height: '10%'
-              }} onClick={this.onclickdb}>待办事项
+                boxSizing: 'border-box',
+                boxShadow: '#ececec 0 3px 10px',
+                borderRadius: '10px',
+                width: '75%',
+                background: 'white'
+              }}>
+                <div style={{height: '100%'}}>
+                  <TodoItems wzxsl={wzxsl} data={TodoItemsData} total={TodoItemsTotal}
+                             fetchQueryOwnerMessage={this.fetchQueryOwnerMessage}/>
+                </div>
               </div>
-              <div style={{width: '70%', height: '10%', margin: '2rem', textAlign: 'end'}}>
-                <i style={{color: 'red', paddingRight: ".5rem", verticalAlign: 'middle'}}
-                   className="iconfont icon-message"/><span
-                style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span
-                style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>
-                <i style={{color: 'red', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
-                   className="iconfont icon-warning"/><span
-                style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成 <span
-                style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}</span></span>
+              <div style={{
+                marginLeft: '2rem',
+                boxSizing: 'border-box',
+                boxShadow: '#ececec 0 3px 10px',
+                borderRadius: '10px',
+                width: '25%',
+                background: 'white'
+              }}>
+                <div style={{height: '100%'}}>
+                  <FastFunction/>
+                </div>
               </div>
-            </div>
-            <TodoItems data={TodoItemsData} total={TodoItemsTotal}
-                       fetchQueryOwnerMessage={this.fetchQueryOwnerMessage}/>
-          </Col>
-          <Col span={7} style={{background: 'white', margin: '2rem 0', height: '70rem', padding: '16px 0'}}>
-            <div style={{margin: '2rem', fontSize: '16px', fontWeight: 500, color: '#303133'}}>快捷功能</div>
-            <FastFunction/>
-          </Col>
-        </Row>
-        <Row style={{height: '60%'}}>
-          <Col span={16} style={{background: 'white', margin: '2rem', height: '70rem'}}>
-            <div style={{margin: '2rem', fontSize: '16px', fontWeight: 500, color: '#303133', padding: '16px 0'}}>项目进度
-            </div>
-            <ProjectSchedule data={ProjectScheduleData} total={ProjectScheduleTotal}
-                             ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend}/>
-          </Col>
-          <Col span={7} style={{background: 'white', margin: '2rem 0', height: '70rem'}}>
-            {/*<div style={{margin: '2rem',fontSize:'16px',fontWeight: 500,color: '#303133'}}>流程情况</div>*/}
-            <ProcessSituation data={ProcessSituationData} fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
-                              total={ProcessSituationTotal}/>
-          </Col>
-        </Row>
-      </Row>
+            </Col>
+          </Row>
+        </div>
+        <div style={{height: '60%', marginBottom: '1rem'}}>
+          <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '2rem'}}>
+            <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
+              <div style={{
+                boxSizing: 'border-box',
+                boxShadow: '#ececec 0 3px 10px',
+                borderRadius: '10px',
+                width: '75%',
+                background: 'white'
+              }}>
+                <div style={{height: '100%'}}>
+                  <ProjectSchedule data={ProjectScheduleData} total={ProjectScheduleTotal}
+                                   fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+                                   ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend}/>
+                </div>
+              </div>
+              <div style={{
+                marginLeft: '2rem',
+                boxSizing: 'border-box',
+                boxShadow: '#ececec 0 3px 10px',
+                borderRadius: '10px',
+                width: '25%',
+                background: 'white'
+              }}>
+                <div style={{height: '100%'}}>
+                  {/*<div style={{display: 'flex'}}>*/}
+                  {/*  <div style={{margin: '2rem',fontSize:'16px',fontWeight: 700,color: '#303133'}}>流程情况</div>*/}
+                  {/*</div>*/}
+                  <ProcessSituation data={ProcessSituationData} fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
+                                    total={ProcessSituationTotal}/>
+                </div>
+              </div>
+            </Col>
+          </Row>
+        </div>
+      </div>
     );
   }
 }
