@@ -623,11 +623,11 @@ class LifeCycleManagementTabs extends React.Component {
               // console.log("detail",detail)
               let sort = this.groupBy(detail);
               // console.log("sort",sort)
-              return <div className='LifeCycleManage'>
+              return <div className='LifeCycleManage' style={{borderRadius: (index === 0 ? '8px 8px 0 0' : '')}}>
                 <div className='head'>
                   <Imgs status={item.zt}/>
                   <i
-                    className={item.extend ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
+                    className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                     onClick={() => this.extend(index)}/>&nbsp;
                   <div className='head1'>
                     {item.lcbmc}
@@ -659,7 +659,8 @@ class LifeCycleManagementTabs extends React.Component {
                 {
                   item.extend ?
                     <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                      <Col span={24} style={{width: '100%', padding: '3rem'}} className='cont'>
+                      <Col span={24} style={{width: '100%', padding: '3rem', borderRadius: '8px 8px 0 0'}}
+                           className='cont'>
                         {
                           sort.length > 3 && sort.length < 7 ? (sort?.slice(0, 2).map((item = {}, index) => {
                               let num = 0

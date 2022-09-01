@@ -90,17 +90,17 @@ class ProjectRisk extends React.Component {
         <BridgeModel modalProps={riskModalProps} onSucess={() => this.onSuccess("修改")} onCancel={this.closeRiskModal}
                      src={riskUrl}/>}
         {
-          item?.fxnr !== "-1" && <div style={{display: 'flex'}}><i style={{color: 'red', fontSize: '2.381rem'}}
-                                                                   className="iconfont icon-warning"/>
-            <div style={{color: 'rgba(215, 14, 25, 1)'}} onClick={() => {
+          item?.fxnr > "0" && <div style={{display: 'flex'}}><i style={{color: 'red', fontSize: '2.381rem'}}
+                                                                className="iconfont icon-warning"/>
+            <a style={{color: 'rgba(215, 14, 25, 1)'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`;
             }}>&nbsp;存在
-            </div>
+            </a>
           </div>
         }
         {
-          item?.fxnr === "-1" && <div style={{display: 'flex'}}>
-            <div style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, item)}>&nbsp;暂无</div>
+          item?.fxnr === "0" && <div style={{display: 'flex'}}>
+            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, item)}>&nbsp;暂无</a>
           </div>
         }
       </div>

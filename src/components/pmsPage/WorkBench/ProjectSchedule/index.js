@@ -400,10 +400,10 @@ class ProjectSchedule extends React.Component {
               <div style={{height: '70rem', overflowY: 'auto'}}>
                 {
                   data.map((items = {}, index) => {
-                    return <div className='LifeCycleManage'>
+                    return <div className='workBench-LifeCycleManage'>
                       <div className='head'>
                         <i
-                          className={items.extend ? 'iconfont icon-down-solid-arrow head-icon' : 'iconfont icon-right head-icon'}
+                          className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                           onClick={() => this.extend(index)}/>&nbsp;
                         <div className='head1'>
                           <Link style={{color: '#1890ff'}} to={{
@@ -416,7 +416,16 @@ class ProjectSchedule extends React.Component {
                           {/*<div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>*/}
                         </div>
                         <div className='head2'>
-                          项目进度：<ProjectProgress state={items.zt}/>
+                          项目进度：
+                          <div className='head2-title' style={{
+                            background: 'rgba(51, 97, 255, 0.1)',
+                            color: 'rgba(51, 97, 255, 1)',
+                            // width: '12rem'
+                          }}>
+                            <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                            <div style={{margin: '0.5rem 1rem'}}>{items.jd}%</div>
+                          </div>
+                          {/*<ProjectProgress state={items.zt}/>*/}
                         </div>
                         <div className='head4'>
                           项目风险：<ProjectRisk state={items.fxnr}/>
@@ -428,7 +437,7 @@ class ProjectSchedule extends React.Component {
                           return items?.xmid === item[0]?.xmid &&
                             <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
                               <Col span={24} style={{width: '100%',}} className='cont'>
-                                <div className='head'>
+                                <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
                                     里程碑阶段：
@@ -595,7 +604,7 @@ class ProjectSchedule extends React.Component {
               </div>
               <div style={{height: '10%', marginBottom: '1rem'}}>
                 <Pagination
-                  style={{textAlign: 'end'}}
+                  style={{textAlign: 'end', fontSize: '2.083rem'}}
                   total={total}
                   showTotal={total => `共 ${total} 条`}
                   defaultPageSize={5}

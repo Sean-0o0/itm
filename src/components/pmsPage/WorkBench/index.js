@@ -30,7 +30,6 @@ class WorkBench extends React.Component {
 
   componentDidMount() {
     this.fetchQueryOwnerMessage();
-    this.fetchQueryOwnerWorkflow();
   }
 
   fetchQueryOwnerMessage = (page, date) => {
@@ -61,6 +60,7 @@ class WorkBench extends React.Component {
           wzxsl: record[0]?.wzxsl,
         });
       }
+      this.fetchQueryOwnerWorkflow();
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });

@@ -89,13 +89,13 @@ class ProcessSituation extends React.Component {
                              onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</a>
                         </div>
                         <Row className='cont'>
-                          <Col span={18} className='col1' style={{fontSize: '2.083rem',}}>
+                          <Col span={17} className='col1' style={{fontSize: '2.083rem',}}>
                             项目：
                             <span className='span' style={{fontSize: '2.083rem',}}>
                                 {item.xmmc}
                               </span>
                           </Col>
-                          <Col span={6} className='col2' style={{fontSize: '2.083rem',}}>
+                          <Col span={7} className='col2' style={{fontSize: '2.083rem',}}>
                             <ProgressStatus state={item.state}/>
                           </Col>
                         </Row>
@@ -107,7 +107,7 @@ class ProcessSituation extends React.Component {
               </div>
               <div style={{height: '10%', marginBottom: '1rem'}}>
                 <Pagination
-                  style={{textAlign: 'end'}}
+                  style={{textAlign: 'end', fontSize: '2.083rem'}}
                   total={total}
                   showTotal={total => `共 ${total} 条`}
                   defaultPageSize={5}

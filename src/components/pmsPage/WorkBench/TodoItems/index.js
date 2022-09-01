@@ -11,19 +11,18 @@ import {
   Tooltip,
   Empty,
   Pagination,
-  message, Popconfirm
+  message, Popconfirm,
+  Icon,
 } from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import {Link} from 'dva/router';
 import {
   CreateOperateHyperLink,
-  FetchQueryLifecycleStuff,
-  UpdateMesaageReadState
+  FetchQueryLifecycleStuff, UpdateMessageState
 } from "../../../../services/pmsServices";
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import Icon, {BorderOutlined, CheckCircleOutlined, CheckSquareOutlined} from "@ant-design/icons";
 import FastFunction from "../FastFunction";
 
 const {Panel} = Collapse;
@@ -377,10 +376,10 @@ class TodoItems extends React.Component {
     })
   }
 
-  onconfirm = (e) => {
-    console.log(e);
-    message.success('Click on Yes');
-  }
+  // onconfirm = (e) => {
+  //   console.log(e);
+  //   message.success('Click on Yes');
+  // }
 
   oncancel = (e) => {
     console.log(e);
@@ -395,10 +394,11 @@ class TodoItems extends React.Component {
     fetchQueryOwnerMessage(e)
   }
 
-  updateState = (record) => {
+  updateState = (record, zxlx) => {
     console.log("recordrecord", record)
-    UpdateMesaageReadState({
-      sxmc: record.sxmc,
+    UpdateMessageState({
+      zxlx: zxlx,
+      sxid: record.sxid,
       xmmc: record.xmid,
     }).then((ret = {}) => {
       const {code = 0, note = '', record = []} = ret;
@@ -411,43 +411,51 @@ class TodoItems extends React.Component {
     });
   }
 
+
   // 表格当前的列
   renderColumns = () => {
     const cloums = [
       {
-        // width:'4%',
+        width: '4%',
         title: '',
         dataIndex: '',
         render: (text, record) => {
           const {flag} = this.state;
           return (flag ? <Popconfirm
-                title="确认已完成？"
-                onConfirm={this.onconfirm}
+                title={<span style={{fontSize: '2.083rem'}}>确认已完成？</span>}
+                onConfirm={() => this.updateState(record, 'EXECUTE')}
                 onCancel={this.oncancel}
-              ><a href="#" style={{color: 'grey'}}><CheckCircleOutlined/></a></Popconfirm> :
-              <CheckCircleOutlined style={{color: 'blue'}}/>
+                okText={<span style={{fontSize: '1.785rem'}}>确认</span>}
+                cancelText={<span style={{fontSize: '1.785rem'}}>取消</span>}
+              ><a href="#" style={{
+                color: 'grey',
+              }}>
+                <Icon type="check-circle"
+                      style={{color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem'}}/></a></Popconfirm> :
+              <Icon type="check-circle" style={{color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem'}}/>
           )
         }
       },
       {
-        title: '待办事项',
+        title: <span style={{textAlign: 'center'}}>待办事项</span>,
         dataIndex: 'sxmc',
+        align: 'center',
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text}>
-              <span style={{display: 'flex', alignItems: 'center'}}>
+            <Tooltip title={text.length > 4 ? text : ''} style={{fontSize: '2.381rem'}}>
+              <span style={{display: 'flex',}}>
                 {
                   record.ckzt === "2" && <span style={{
                     height: '3rem',
                     display: 'flex',
                     alignItems: 'center',
-                  }} onClick={() => this.updateState(record)}>
+                  }} onClick={() => this.updateState(record, 'READ')}>
                     <i style={{color: 'red', fontSize: '2.381rem'}} className="iconfont icon-fill-star"/>
                   </span>
                 }
                 <a style={{fontSize: '2.083rem', color: '#1890ff', paddingLeft: '0.5rem'}}
-                   onClick={() => this.handleUrl(record)}>{text ? text : ''}</a>
+                   onClick={() => this.handleUrl(record)}>{text.length > 4 ? text.slice(0, 20) + '...' : text}</a>
               </span>
             </Tooltip>
          </span>
@@ -456,29 +464,13 @@ class TodoItems extends React.Component {
       {
         title: '待办内容',
         dataIndex: 'txnr',
+        align: 'center',
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text}>
-              <span style={{fontSize: '2.083rem', display: 'flex', alignItems: 'center'}}>
-                {/*{*/}
-                {/*  record.ckzt === "2" && <span style={{*/}
-                {/*    height: '3rem',*/}
-                {/*    display: 'flex',*/}
-                {/*    alignItems: 'center',*/}
-                {/*    width: '2rem'*/}
-                {/*  }} onClick={() => this.updateState(record)}><div style={{*/}
-                {/*    background: 'rgba(215, 14, 25, 1)',*/}
-                {/*    marginRight: '1rem',*/}
-                {/*    borderRadius: '50%',*/}
-                {/*    height: '1rem',*/}
-                {/*    width: '1rem'*/}
-                {/*  }}/></span>*/}
-                {/*}*/}
+            <Tooltip title={text.length > 20 ? text : ''} style={{fontSize: '2.381rem'}}>
+              <span style={{fontSize: '2.083rem', display: 'flex',}}>
                 {text.length > 20 ? text.slice(0, 20) + '...' : text}
-                {/*<div style={{backgroundColor: 'rgba(252, 236, 237, 1)', borderRadius: '10px'}}>*/}
-                {/*  {record.xxlx === "1" && <span style={{padding: '0 1rem', color: 'rgba(204, 62, 69, 1)'}}>必做</span>}*/}
-                {/*</div>*/}
               </span>
             </Tooltip>
          </span>
@@ -487,21 +479,25 @@ class TodoItems extends React.Component {
       {
         title: '相关项目',
         dataIndex: 'xmmc',
+        align: 'center',
         // key: 'xmmc',
         render: (text, record) => {
-          return <Tooltip title={text ? text : ''}><Link style={{color: '#1890ff', fontSize: '2.083rem',}} to={{
-            pathname: '/pms/manage/LifeCycleManagement',
-            query: {xmid: record.xmid},
-          }}>{text}</Link></Tooltip>
+          return <span><Tooltip title={text.length > 8 ? text : ''} style={{fontSize: '2.381rem'}}>
+            <span style={{display: 'flex',}}><Link style={{color: '#1890ff', fontSize: '2.083rem',}} to={{
+              pathname: '/pms/manage/LifeCycleManagement',
+              query: {xmid: record.xmid},
+            }}>{text.length > 8 ? text.slice(0, 8) + '...' : text}</Link></span></Tooltip></span>
         },
       },
       {
         width: '15%',
         title: '日期',
+        align: 'center',
         dataIndex: 'jzrq',
         // key: 'jzrq',
         render: (text, record) => {
-          return record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)
+          return <span
+            style={{fontSize: '2.083rem',}}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
         },
       },
     ];
@@ -595,7 +591,7 @@ class TodoItems extends React.Component {
             <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
                className="iconfont icon-detail"/>
             <div style={{
-              width: '20%',
+              width: '25%',
               fontSize: '2.381rem',
               fontWeight: 700,
               color: '#303133',
@@ -614,12 +610,13 @@ class TodoItems extends React.Component {
             </div>
           </div>
         </div>
-        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
+        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row', height: '95%'}}>
           <div style={{width: '21%'}}>
-            <div style={{height: '100%', border: '1px solid #d9d9d9', borderRadius: 4,}}>
+            <div style={{border: '1px solid #d9d9d9', borderRadius: 4}}>
               <Calendar
                 // monthCellRender={this.monthCellRender}
                 dateCellRender={this.dateCellRender}
+                style={{fontSize: '2.083rem'}}
                 onSelect={this.handleDateChange}
                 fullscreen={false}
                 headerRender={({value, type, onChange, onTypeChange}) => {
@@ -695,7 +692,7 @@ class TodoItems extends React.Component {
           </div>
           <div style={{marginLeft: '2rem', width: '79%'}}>
             <div style={{height: '100%'}}>
-              <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
+              <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '97%'}}>
                 <div style={{height: '90%'}}>
                   {/*文档上传弹窗*/}
                   {uploadVisible &&
@@ -729,7 +726,7 @@ class TodoItems extends React.Component {
                 </div>
                 <div style={{height: '10%'}}>
                   <Pagination
-                    style={{textAlign: 'end'}}
+                    style={{textAlign: 'end', fontSize: '2.083rem'}}
                     total={total}
                     showTotal={total => `共 ${total} 条`}
                     defaultPageSize={6}

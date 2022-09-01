@@ -5,5 +5,5 @@ export default [
   {code: '', key: 'queryOwnerProjectList', url: '/projectManage/queryOwnerProjectList', dis: '查询当前登录用户的项目列表，查询下拉框用'},
   {code: '', key: 'queryOwnerMessage', url: '/projectManage/queryOwnerMessage', dis: '查询当前登录用户的消息列表'},
   {code: '', key: 'createOperateHyperLink', url: '/projectManage/v1/createOperateHyperLink', dis: '获取livebos加密url'},
-  {code: '', key: 'updateMesaageReadState', url: '/projectManage/updateMesaageReadState', dis: '将待办事项的查看状态修改为已读'},
+  {code: '', key: 'updateMessageState', url: '/projectManage/updateMessageState', dis: '将待办事项的查看状态修改为已读'},
 ];

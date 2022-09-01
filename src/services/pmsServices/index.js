@@ -10,7 +10,7 @@ const {
     createOperateHyperLink,
     queryOwnerProjectList,
     queryOwnerMessage,
-    updateMesaageReadState,
+    updateMessageState,
   },
 } = api;
 
@@ -75,9 +75,9 @@ export async function FetchQueryOwnerMessage(payload) {
 }
 
 // 将待办事项的查看状态修改为已读
-export async function UpdateMesaageReadState(payload) {
+export async function UpdateMessageState(payload) {
   const option = {
-    url: updateMesaageReadState,
+    url: updateMessageState,
     method: 'post',
     data: payload,
   };

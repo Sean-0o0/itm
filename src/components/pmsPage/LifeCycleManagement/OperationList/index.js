@@ -28,7 +28,7 @@ class OperationList extends React.Component {
     const {data, defaultValue} = this.props;
     console.log("defaultValuedefaultValue", defaultValue);
     return (
-      <Row style={{backgroundColor: 'white', height: '8rem'}}>
+      <Row style={{backgroundColor: 'white', height: '8rem', borderRadius: '8px'}}>
         <Col span={20}
              style={{
                height: '100%',
@@ -39,7 +39,7 @@ class OperationList extends React.Component {
              }}>
           <Input.Group compact>
             <Select
-              style={{width: '30rem'}}
+              style={{width: '30rem', borderRadius: '8px !important'}}
               showSearch
               placeholder="请输入项目名称"
               optionFilterProp="children"
@@ -59,12 +59,12 @@ class OperationList extends React.Component {
             </Select>
           </Input.Group>
         </Col>
-        <Col span={4}
-             style={{height: '100%', display: 'flex', alignItems: 'center', textAlign: 'end', fontSize: '2.083rem'}}>
-          <img src={icon_flag} alt="" style={{width: '2rem', height: '2rem'}}/>
-          &nbsp;<span style={{color: 'rgba(144, 147, 153, 1)'}}>当前处于：<span
-          style={{color: 'rgba(48, 49, 51, 1)'}}>项目立项阶段</span></span>
-        </Col>
+        {/*<Col span={4}*/}
+        {/*     style={{height: '100%', display: 'flex', alignItems: 'center', textAlign: 'end', fontSize: '2.083rem'}}>*/}
+        {/*  <img src={icon_flag} alt="" style={{width: '2rem', height: '2rem'}}/>*/}
+        {/*  &nbsp;<span style={{color: 'rgba(144, 147, 153, 1)'}}>当前处于：<span*/}
+        {/*  style={{color: 'rgba(48, 49, 51, 1)'}}>项目立项阶段</span></span>*/}
+        {/*</Col>*/}
       </Row>
         );
     }
