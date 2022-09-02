@@ -585,9 +585,9 @@ class TodoItems extends React.Component {
       footer: null,
     };
     return (
-      <Row style={{height: '100%', padding: '2.5rem'}}>
-        <div style={{width: '100%'}}>
-          <div style={{display: 'flex', margin: '1rem 0 1.5rem 0',}}>
+      <Row style={{height: '100%', padding: '3.571rem'}}>
+        <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
+          <div style={{display: 'flex',}}>
             <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
                className="iconfont icon-detail"/>
             <div style={{
@@ -595,23 +595,23 @@ class TodoItems extends React.Component {
               fontSize: '2.381rem',
               fontWeight: 700,
               color: '#303133',
-              height: '10%'
+              height: '100%'
             }} onClick={this.onclickdb}>待办事项
             </div>
-            <div style={{width: '75%', height: '10%', textAlign: 'end'}}>
+            <div style={{width: '75%', height: '100%', textAlign: 'end'}}>
               {/*<i style={{color: 'red', paddingRight: ".5rem", verticalAlign: 'middle'}}*/}
               {/*   className="iconfont icon-message"/><span*/}
               {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
               {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
               <i style={{color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
-                 className="iconfont icon-warning"/><span
+                 className="iconfont icon-time"/><span
               style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成 <span
               style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}</span></span>
             </div>
           </div>
         </div>
         <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row', height: '95%'}}>
-          <div style={{width: '21%'}}>
+          <div style={{width: '22%'}}>
             <div style={{border: '1px solid #d9d9d9', borderRadius: 4}}>
               <Calendar
                 // monthCellRender={this.monthCellRender}
@@ -690,7 +690,7 @@ class TodoItems extends React.Component {
               />
             </div>
           </div>
-          <div style={{marginLeft: '2rem', width: '79%'}}>
+          <div style={{marginLeft: '2rem', width: '78%'}}>
             <div style={{height: '100%'}}>
               <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '97%'}}>
                 <div style={{height: '90%'}}>
@@ -727,11 +727,12 @@ class TodoItems extends React.Component {
                 <div style={{height: '10%'}}>
                   <Pagination
                     style={{textAlign: 'end', fontSize: '2.083rem'}}
+                    size="small"
                     total={total}
                     showTotal={total => `共 ${total} 条`}
                     defaultPageSize={6}
                     onChange={this.handPageChange}
-                    showQuickJumper={true}
+                    // showQuickJumper={true}
                     defaultCurrent={1}
                   />
                 </div>

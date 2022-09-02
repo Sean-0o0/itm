@@ -2,7 +2,7 @@ import {Row, Col, Tooltip, Dropdown, Menu, Pagination, Divider, message,} from '
 import React from 'react';
 import icon_wrong from "../../../../image/pms/icon_milepost_wrong.png";
 import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
-import ProjectRisk from "../../LifeCycleManagement/ProjectRisk";
+import ProjectRisk from "./ProjectRisk";
 import icon_normal from "../../../../image/pms/icon_milepost_normal.png";
 import icon_waiting from "../../../../image/pms/icon_milepost_waiting.png";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
@@ -33,6 +33,7 @@ class ProjectSchedule extends React.Component {
     editMessageVisible: false,
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
+    color: '',
   };
 
   componentDidMount() {
@@ -314,6 +315,12 @@ class ProjectSchedule extends React.Component {
     fetchQueryOwnerProjectList(e)
   }
 
+  handleColorChange = (e) => {
+    this.setState({
+      color: e,
+    })
+  }
+
   render() {
     const {data, total, ProjectScheduleDetailData} = this.props;
     const {
@@ -323,6 +330,7 @@ class ProjectSchedule extends React.Component {
       uploadUrl,
       editUrl,
       sendUrl,
+      color,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
     const menu = (
@@ -373,9 +381,9 @@ class ProjectSchedule extends React.Component {
     const src_edit = localStorage.getItem('livebos') + editUrl;
     const src_send = localStorage.getItem('livebos') + sendUrl;
     return (
-      <Row className='workBench' style={{height: '70rem', padding: '2.5rem'}}>
-        <div style={{width: '100%'}}>
-          <div style={{display: 'flex', margin: '1rem 0 1.5rem 0',}}>
+      <Row className='workBench' style={{height: '70rem', padding: '3.571rem'}}>
+        <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
+          <div style={{display: 'flex',}}>
             <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
                className="iconfont icon-piechart"/>
             <div style={{height: '10%', fontSize: '2.381rem', fontWeight: 700, color: '#303133',}}>项目进度
@@ -405,11 +413,16 @@ class ProjectSchedule extends React.Component {
                         <i
                           className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                           onClick={() => this.extend(index)}/>&nbsp;
-                        <div className='head1'>
-                          <Link style={{color: '#1890ff'}} to={{
+                        <div className='head1' onMouseOver={() => this.handleColorChange("#3361FF")}
+                             onMouseLeave={() => this.handleColorChange('')}>
+                          <Link style={{color: color}} to={{
                             pathname: '/pms/manage/LifeCycleManagement',
                             query: {xmid: items.xmid},
-                          }}>{items.xmmc}</Link>
+                          }}>{items.xmmc}</Link>&nbsp;
+                          <i
+                            className={'iconfont icon-right'}
+                            style={{fontSize: '2.381rem', color: color}}
+                          />
                         </div>
                         <div className='head3'>
                           {/*时间范围：*/}
@@ -423,7 +436,7 @@ class ProjectSchedule extends React.Component {
                             // width: '12rem'
                           }}>
                             <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                            <div style={{margin: '0.5rem 1rem'}}>{items.jd}%</div>
+                            <div style={{margin: '0rem 2rem 0rem 1rem'}}>{items.jd}%</div>
                           </div>
                           {/*<ProjectProgress state={items.zt}/>*/}
                         </div>
@@ -435,19 +448,23 @@ class ProjectSchedule extends React.Component {
                         ProjectScheduleDetailData.map((item = {}, ind) => {
                           let sort = this.groupBy(item);
                           return items?.xmid === item[0]?.xmid &&
-                            <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
+                            <Row style={{height: '80%', width: '100%', padding: '0px 4.6rem 2rem 4.6rem'}}
+                                 className='card'>
                               <Col span={24} style={{width: '100%',}} className='cont'>
                                 <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
-                                    里程碑阶段：
                                     <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                                        className="iconfont icon-fill-flag"/>&nbsp;
+                                    里程碑阶段：
                                     <span style={{color: 'rgba(48, 49, 51, 1)'}}>{item[0].lcb}</span>
                                   </div>
                                   <div className='head2'>
+                                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                       className="iconfont icon-time"/>&nbsp;
                                     里程碑时间：
-                                    <div style={{color: 'rgba(48, 49, 51, 1)'}}>{items.kssj} ~ {items.jssj}</div>
+                                    <div
+                                      style={{color: 'rgba(48, 49, 51, 1)'}}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
                                   </div>
                                 </div>
                                 {
@@ -606,10 +623,11 @@ class ProjectSchedule extends React.Component {
                 <Pagination
                   style={{textAlign: 'end', fontSize: '2.083rem'}}
                   total={total}
+                  size="small"
                   showTotal={total => `共 ${total} 条`}
                   defaultPageSize={5}
                   onChange={this.handPageChange}
-                  showQuickJumper={true}
+                  // showQuickJumper={true}
                   defaultCurrent={1}
                 />
               </div>

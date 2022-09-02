@@ -21,7 +21,7 @@ class ProjectProgress extends React.Component {
             // width: '10rem'
           }}>
             <div className='head2-cont' style={{background: 'rgba(215, 14, 25, 1)'}}/>
-            <div style={{margin: '0.5rem 1rem'}}>逾期</div>
+            <div style={{margin: '0.5rem 2rem 0.5rem 1rem'}}>逾期</div>
           </div>
         }
         {
@@ -31,7 +31,7 @@ class ProjectProgress extends React.Component {
             // width: '12rem'
           }}>
             <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-            <div style={{margin: '0.5rem 1rem'}}>已完成</div>
+            <div style={{margin: '0.5rem 2rem 0.5rem 1rem'}}>已完成</div>
           </div>
         }
         {
@@ -41,7 +41,7 @@ class ProjectProgress extends React.Component {
             // width: '12rem'
           }}>
             <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-            <div style={{margin: '0.5rem 1rem'}}>进行中</div>
+            <div style={{margin: '0.5rem 2rem 0.5rem 1rem'}}>进行中</div>
           </div>
         }
         {
@@ -51,7 +51,7 @@ class ProjectProgress extends React.Component {
             // width: '12rem'
           }}>
             <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-            <div style={{margin: '0.5rem 1rem'}}>正常</div>
+            <div style={{margin: '0.5rem 2rem 0.5rem 1rem'}}>正常</div>
           </div>
         }
         {
@@ -61,7 +61,7 @@ class ProjectProgress extends React.Component {
             // width: '100%'
           }}>
             <div className='head2-cont' style={{background: 'rgba(144, 147, 153, 1)'}}/>
-            <div style={{margin: '0.5rem 1rem'}}>未开始</div>
+            <div style={{margin: '0.5rem 2rem 0.5rem 1rem'}}>未开始</div>
           </div>
         }
       </div>

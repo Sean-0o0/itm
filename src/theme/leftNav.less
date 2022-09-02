@@ -1,6 +1,6 @@
 @charset "utf-8";
 @menu-color: rgba(255, 255, 255, .55);
-@head-bg: #54a9df;
+@head-bg: rgba(51, 97, 255, 1);
 //m-sider
 .m-sider {
   .pos(f);
@@ -374,7 +374,7 @@
       line-height: 5rem;
       height: 5rem;
       .font-s16();
-      border-left: .333rem solid transparent;
+      border-left: 0 solid transparent;
 
       &:not(:last-child) {
         margin-bottom: 0;
@@ -403,7 +403,7 @@
 
           &:hover {
             //color: rgba(0, 0, 0, 0.7) !important;
-            color: #fff !important;
+            color: #303133 !important;
             font-weight: bold;
 
             .iconfont {
@@ -445,7 +445,7 @@
         //background-color: #ffffff;
         .ant-menu-item {
           margin: .333rem 0;
-          padding-left: 2rem !important;
+          //padding-left: 2rem !important;
           height: 6rem;
           .font-s23();
           //background-color: rgba(247, 248, 250, 1);
@@ -524,17 +524,18 @@
         >.ant-menu-submenu-title {
           //color: rgba(0, 0, 0, 0.7);
           //background-color: #fff;
-          color: rgba(51, 97, 255, 1) !important;
-          background: @head-bg;
+          color: #303133 !important;
+          background: rgba(51, 97, 255, 1);
           font-weight: bold;
+
           .iconfont {
-            color: rgba(51, 97, 255, 1) !important;
+            color: #303133 !important;
             font-weight: bold;
             //color: rgba(0, 0, 0, 0.7);
           }
 
           &:hover {
-            color: #fff !important;
+            color: #303133 !important;
             //color: rgba(0, 0, 0, 0.7) !important;
             font-weight: bold;
 
@@ -542,7 +543,7 @@
 
               &:after,
               &:before {
-                background: rgba(0, 0, 0, 0.7)!important;
+                background: rgba(0, 0, 0, 0.7) !important;
               }
             }
           }
@@ -589,7 +590,7 @@
       .ant-menu-item {
 
         margin: 0;
-        padding: 0 1rem 0 3.5rem !important;
+        padding: 0 !important;
         line-height: 6rem;
         height: 6rem;
         .font-s14();
@@ -668,7 +669,7 @@
 
         .ant-menu-sub {
           .ant-menu-item>a {
-            padding-left: 6rem;
+            padding-left: 7rem;
           }
         }
       }

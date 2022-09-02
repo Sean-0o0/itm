@@ -102,7 +102,7 @@ export default class PageSider extends React.Component {
                       title={
                         collapsed ?
                           (
-                            <div style={{textAlign: 'center', lineHeight: '1.3',margin: '2rem',}}>
+                            <div style={{textAlign: 'center', lineHeight: '1.3', margin: '2rem 0',}}>
                               <i className={`zj-submenu-ico iconfont ${item.icon || ' icon-productK'}`}></i>
                               {/*<div className='zj-submenu-txt'>{item.title}</div>*/}
                             </div>
@@ -225,7 +225,7 @@ export default class PageSider extends React.Component {
                   );
                 }
                 return url !== '/noTabsPage' ? <Menu.Item key={item.url}><Link target={item.openType} to={item.url}><i
-                  className={`zj-submenu-ico iconfont ${item.icon || ' icon-productK'}`}/>
+                  className={`zj-submenu-ico iconfont ${item.icon || ' icon-time'}`}/>
                   {collapsed ?'':<span className='zj-submenu-txt'>{item.title}</span>}
                 </Link></Menu.Item> : null;
               })

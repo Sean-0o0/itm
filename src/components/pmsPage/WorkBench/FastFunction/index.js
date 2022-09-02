@@ -67,9 +67,9 @@ class FastFunction extends React.Component {
     const src_fileAdd = localStorage.getItem('livebos') + fileAddUrl;
     const src_manage = localStorage.getItem('livebos') + manageUrl;
     return (
-      <Row className='workBench' style={{height: '100%', padding: '2.5rem'}}>
-        <div style={{width: '100%'}}>
-          <div style={{display: 'flex', margin: '1rem 0 1.5rem 0',}}>
+      <Row className='workBench' style={{height: '100%', padding: '3.571rem'}}>
+        <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
+          <div style={{display: 'flex',}}>
             <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
                className="iconfont icon-send"/>
             <div style={{fontSize: '2.381rem', fontWeight: 700, color: '#303133'}}>快捷功能</div>
@@ -88,10 +88,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_01} alt="" onClick={() => {
+            <div><img src={icon_01} alt="" onClick={() => {
               this.setState({fileAddVisible: true,})
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               this.setState({fileAddVisible: true,})
             }}>新建项目
             </div>
@@ -110,10 +111,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_02} alt="" onClick={() => {
+            <div><img src={icon_02} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=XMXX&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=XMXX&hideTitlebar=true`;
             }}>项目信息
             </div>
@@ -130,10 +132,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_03} alt="" onClick={() => {
+            <div><img src={icon_03} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;
             }}>流程中心
             </div>
@@ -152,12 +155,13 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_04} alt="" onClick={() => {
+            <div><img src={icon_04} alt="" onClick={() => {
               window.location.href = `/#/pms/manage/LifeCycleManagement`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/pms/manage/LifeCycleManagement`
-            }}>查询进度
+            }}>生命周期
             </div>
           </div>
         </Col>
@@ -174,10 +178,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_05} alt="" onClick={() => {
+            <div><img src={icon_05} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=ZBXYSLR&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=ZBXYSLR&hideTitlebar=true`
             }}>管理预算
             </div>
@@ -193,10 +198,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_06} alt="" onClick={() => {
+            <div><img src={icon_06} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_YSXMTJ&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_YSXMTJ&hideTitlebar=true`
             }}>预算开销
             </div>
@@ -213,10 +219,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_07} alt="" onClick={() => {
+            <div><img src={icon_07} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_XMFKXX&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_XMFKXX&hideTitlebar=true`
             }}>付款详情
             </div>
@@ -232,10 +239,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_08} alt="" onClick={() => {
+            <div><img src={icon_08} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_RYGSGL&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_RYGSGL&hideTitlebar=true`
             }}>工时登记
             </div>
@@ -254,10 +262,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_09} alt="" onClick={() => {
+            <div><img src={icon_09} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=ZBTX&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
             }}>周报填写
             </div>
@@ -273,10 +282,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_10} alt="" onClick={() => {
+            <div><img src={icon_10} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=YBGL&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=YBGL&hideTitlebar=true`
             }}>月报填写
             </div>
@@ -292,10 +302,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_11} alt="" onClick={() => {
+            <div><img src={icon_11} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_WDCX&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_WDCX&hideTitlebar=true`
             }}>项目文档
             </div>
@@ -311,10 +322,11 @@ class FastFunction extends React.Component {
             {/*    </div>*/}
             {/*  </div>*/}
             {/*</div>*/}
-            <img src={icon_12} alt="" onClick={() => {
+            <div><img src={icon_12} alt="" onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_RYXX`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
-            <div className='fastFun-head' style={{margin: '1rem 0', fontSize: '2.083rem'}} onClick={() => {
+            </div>
+            <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_RYXX`
             }}>外包人员
             </div>

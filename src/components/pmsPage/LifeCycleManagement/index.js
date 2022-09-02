@@ -98,8 +98,8 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   //流程发起url
-  getSendUrl = (e) => {
-    const params = {
+  getSendUrl = (name) => {
+    let params = {
       "attribute": 0,
       "authFlag": 0,
       "objectName": "TLC_LCFQ",
@@ -111,6 +111,36 @@ class LifeCycleManagementTabs extends React.Component {
         }
       ],
       "userId": Loginname,
+    }
+    if (name.includes("合同签署")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TLC_LCFQ",
+        "operateName": "TLC_LCFQ_HTLYY",
+        "parameter": [
+          {
+            "name": "",
+            "value": '',
+          }
+        ],
+        "userId": Loginname,
+      }
+    }
+    if (name.includes("付款")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TLC_LCFQ",
+        "operateName": "TLC_LCFQ_XMFKLCFQ",
+        "parameter": [
+          {
+            "name": "",
+            "value": '',
+          }
+        ],
+        "userId": Loginname,
+      }
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
@@ -170,6 +200,7 @@ class LifeCycleManagementTabs extends React.Component {
           fillOutUrl: url,
           // fillOutVisible: true,
         });
+        window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -185,6 +216,7 @@ class LifeCycleManagementTabs extends React.Component {
           editMessageUrl: url,
           // editMessageVisible: true,
         });
+        window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -216,7 +248,7 @@ class LifeCycleManagementTabs extends React.Component {
       if (code === 1) {
         //zxxh排序
         record.map((item = {}, index) => {
-          item.extend = item.zxxh === "1";
+          item.extend = item.zt === "2";
         })
         // console.log("basicData",record)
         record.sort(this.compare('zxxh'))
@@ -294,17 +326,17 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //流程发起
-  handleSend = (name) => {
-    this.getSendUrl(name);
+  handleSend = (item) => {
+    this.getSendUrl(item.sxmc);
     this.setState({
-      sendTitle: name + '发起',
+      sendTitle: item.sxmc + '发起',
       // sendUrl: url,
       sendVisible: true,
     });
   };
 
   //信息录入
-  handleFillOut = (name) => {
+  handleFillOut = (item) => {
     let params = {
       "attribute": 0,
       "authFlag": 0,
@@ -318,7 +350,7 @@ class LifeCycleManagementTabs extends React.Component {
       ],
       "userId": Loginname
     }
-    switch (name) {
+    switch (item.sxmc) {
       case "合同信息录入":
         params = {
           "attribute": 0,
@@ -334,17 +366,36 @@ class LifeCycleManagementTabs extends React.Component {
           "userId": Loginname
         };
         break;
+      case "招标信息录入":
+        params = {
+          "attribute": 0,
+          "authFlag": 0,
+          "objectName": "View_TBXX",
+          "operateName": "View_TBXX_ADD",
+          "parameter": [
+            {
+              "name": "XMMC",
+              "value": this.state.xmid
+            },
+            {
+              "name": "LCBMC",
+              "value": item.lcbid
+            },
+          ],
+          "userId": Loginname
+        };
+        break;
     }
     this.getFileOutUrl(params)
-    this.setState({
-      fillOutTitle: name,
-      fillOutVisible: true,
-    });
+    // this.setState({
+    //   fillOutTitle: item.sxmc,
+    //   fillOutVisible: true,
+    // });
   };
 
 
   //信息录入修改
-  handleMessageEdit = (name) => {
+  handleMessageEdit = (item) => {
     let params = {
       "attribute": 0,
       "authFlag": 0,
@@ -358,7 +409,7 @@ class LifeCycleManagementTabs extends React.Component {
       ],
       "userId": Loginname
     }
-    switch (name) {
+    switch (item.sxmc) {
       case "合同信息录入":
         params = {
           "attribute": 0,
@@ -375,11 +426,28 @@ class LifeCycleManagementTabs extends React.Component {
         };
         break;
     }
+    switch (item.sxmc) {
+      case "招标信息录入":
+        params = {
+          "attribute": 0,
+          "authFlag": 0,
+          "objectName": "View_TBXX",
+          "operateName": "View_TBXX_INTERFACE_MOD",
+          "parameter": [
+            {
+              "name": "XMMC2",
+              "value": this.state.xmid
+            },
+          ],
+          "userId": Loginname
+        };
+        break;
+    }
     this.getEditMessageUrl(params);
-    this.setState({
-      editMessageTitle: name + '修改',
-      editMessageVisible: true,
-    });
+    // this.setState({
+    //   editMessageTitle: item.sxmc + '修改',
+    //   editMessageVisible: true,
+    // });
   }
 
   handleEditModel = (item) => {
@@ -503,8 +571,8 @@ class LifeCycleManagementTabs extends React.Component {
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
-      height: '58rem',
+      width: '150rem',
+      height: '68rem',
       title: uploadTitle,
       style: {top: '10rem'},
       visible: uploadVisible,
@@ -513,7 +581,7 @@ class LifeCycleManagementTabs extends React.Component {
     const editModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
+      width: '150rem',
       height: '68rem',
       title: editTitle,
       style: {top: '10rem'},
@@ -524,7 +592,7 @@ class LifeCycleManagementTabs extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '150rem',
-      height: '80rem',
+      height: '100rem',
       title: sendTitle,
       style: {top: '10rem'},
       visible: sendVisible,
@@ -534,7 +602,7 @@ class LifeCycleManagementTabs extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '150rem',
-      height: '80rem',
+      height: '100rem',
       title: fillOutTitle,
       style: {top: '10rem'},
       visible: fillOutVisible,
@@ -586,7 +654,7 @@ class LifeCycleManagementTabs extends React.Component {
         <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
                      onCancel={this.closeEditModal}
                      src={uploadUrl}/>}
-        {/*立项流程发起弹窗*/}
+        {/*流程发起弹窗*/}
         {sendVisible &&
         <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
                      src={sendUrl}/>}
@@ -605,13 +673,13 @@ class LifeCycleManagementTabs extends React.Component {
         <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
                      onCancel={this.closeModelEditModal}
                      src={editModelUrl}/>}
-        <Col span={24} style={{height: '8%', margin: '2rem 0'}}>
+        <div style={{height: '8%', margin: '3.571rem 1.571rem 2.381rem 1.571rem'}}>
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
                          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
                          data={operationListData}
                          defaultValue={defaultValue}/>
-        </Col>
-        <Col span={24} style={{height: '92%'}}>
+        </div>
+        <div style={{height: '92%', margin: '0 1.571rem 3.571rem 1.571rem'}}>
           {
             basicData.map((item = {}, index) => {
               let detail = [];
@@ -622,8 +690,14 @@ class LifeCycleManagementTabs extends React.Component {
               })
               // console.log("detail",detail)
               let sort = this.groupBy(detail);
+              console.log("sort.length", sort.length);
               // console.log("sort",sort)
-              return <div className='LifeCycleManage' style={{borderRadius: (index === 0 ? '8px 8px 0 0' : '')}}>
+              return <div className='LifeCycleManage' style={{
+                borderTopLeftRadius: (index === 0 ? '8px' : ''),
+                borderTopRightRadius: (index === 0 ? '8px' : ''),
+                borderBottomLeftRadius: (index === basicData.length - 1 ? '8px' : ''),
+                borderBottomRightRadius: (index === basicData.length - 1 ? '8px' : '')
+              }}>
                 <div className='head'>
                   <Imgs status={item.zt}/>
                   <i
@@ -633,11 +707,12 @@ class LifeCycleManagementTabs extends React.Component {
                     {item.lcbmc}
                   </div>
                   <div className='head6'>
-                    项目进度：{item.jd}
+                    进度：<span style={{color: 'black'}}>{item.jd}</span>
                   </div>
                   <div className='head3'>
                     时间范围：
-                    <div style={{color: 'rgba(48, 49, 51, 1)'}}>{item.kssj} ~ {item.jssj}</div>
+                    <div
+                      style={{color: 'rgba(48, 49, 51, 1)'}}>{item.kssj.slice(0, 4) + '.' + item.kssj.slice(4, 6) + '.' + item.kssj.slice(6, 8)} ~ {item.jssj.slice(0, 4) + '.' + item.jssj.slice(4, 6) + '.' + item.jssj.slice(6, 8)} </div>
                   </div>
                   <div className='head4'>
                     项目风险：<ProjectRisk item={item} xmid={this.state.xmid}/>
@@ -648,7 +723,7 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                        <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                            className="iconfont icon-edit" onClick={
                           () => this.handleEditModel(item)
                         }/>
@@ -658,11 +733,19 @@ class LifeCycleManagementTabs extends React.Component {
                 </div>
                 {
                   item.extend ?
-                    <Row style={{height: '80%', width: '100%', padding: '0 8rem 2rem 8rem'}} className='card'>
-                      <Col span={24} style={{width: '100%', padding: '3rem', borderRadius: '8px 8px 0 0'}}
-                           className='cont'>
-                        {
-                          sort.length > 3 && sort.length < 7 ? (sort?.slice(0, 2).map((item = {}, index) => {
+                    <Row style={{
+                      height: '80%',
+                      width: '100%',
+                      padding: (index === basicData.length - 1 ? '0 3.571rem 3.571rem 3.571rem' : '0 3.571rem')
+                    }} className='card'>
+                      {
+                        <Col span={24} style={{width: '100%', padding: '3rem', borderRadius: '8px', maxHeight: '50rem'}}
+                             className='cont'>
+                          {
+                            sort.map((item = {}, index) => {
+                              console.log("index", index)
+                              console.log("sort.length", sort.length)
+                              console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                               let num = 0
                               sort[index].List.map((item = {}, ind) => {
                                 if (item.zxqk !== " ") {
@@ -676,126 +759,32 @@ class LifeCycleManagementTabs extends React.Component {
                                       {item.swlx}({num}/{sort[index].List.length})
                                     </div>
                                   </div>
-                                  <div style={{padding: '1.5rem 0'}}>
+                                  <div style={{padding: '1.5rem 0 0 0'}}>
                                     {sort[index].List.map((item = {}, ind) => {
-                                      return <Row className='cont-row'>
-                                        <Col span={17} style={{display: 'flex'}}>
+                                      return <Row className='cont-row' style={{
+                                        height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                        margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                      }}>
+                                        <Col span={17} style={{display: 'flex', alignItems: 'center'}}>
                                           <Points status={item.zxqk}/>
                                           {item.sxmc}
                                         </Col>
                                         <Col span={3}>
                                           <Tooltips type={item.swlx}
-                                                    sxmc={item.sxmc}
+                                                    item={item}
                                                     status={item.zxqk}
                                                     handleUpload={() => this.handleUpload(item)}
                                                     handleSend={this.handleSend}
-                                                    handleFillOut={this.handleFillOut}
+                                                    handleFillOut={() => this.handleFillOut(item)}
                                                     handleEdit={() => this.handleEdit(item)}
                                                     handleMessageEdit={this.handleMessageEdit}/>
                                         </Col>
                                         <Col span={3}>
-                                          <Dropdown overlay={menu}>
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-more">
-                                            </i>
-                                          </Dropdown>
-                                        </Col>
-                                        <div className='cont-row1'>
-                                          <div className='left'>
-                                            {/*//2022.06.17上传*/}
-                                          </div>
-                                        </div>
-                                      </Row>
-                                    })}
-                                  </div>
-                                </div>
-                              </Col>
-                            }) && sort?.slice(2, sort.length).map((item = {}, index) => {
-                              let num = 0
-                              sort[index].List.map((item = {}, ind) => {
-                                if (item.zxqk !== " ") {
-                                  num = num + 1;
-                                }
-                              })
-                              return <Col span={8}>
-                                <div className='cont-col'>
-                                  <div className='cont-col1'>
-                                    <div className='right'>
-                                      {item.swlx}({num}/{sort[index].List.length})
-                                    </div>
-                                  </div>
-                                  <div style={{padding: '1.5rem 0'}}>
-                                    {sort[index].List.map((item = {}, ind) => {
-                                      return <Row className='cont-row'>
-                                        <Col span={17} style={{display: 'flex'}}>
-                                          <Points status={item.zxqk}/>
-                                          {item.sxmc}
-                                        </Col>
-                                        <Col span={3}>
-                                          <Tooltips type={item.swlx}
-                                                    sxmc={item.sxmc}
-                                                    status={item.zxqk}
-                                                    handleUpload={() => this.handleUpload(item)}
-                                                    handleSend={this.handleSend}
-                                                    handleFillOut={this.handleFillOut}
-                                                    handleEdit={() => this.handleEdit(item)}
-                                                    handleMessageEdit={this.handleMessageEdit}/>
-                                        </Col>
-                                        <Col span={3}>
-                                          <Dropdown overlay={menu}>
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-more">
-                                            </i>
-                                          </Dropdown>
-                                        </Col>
-                                        <div className='cont-row1'>
-                                          <div className='left'>
-                                            {/*//2022.06.17上传*/}
-                                          </div>
-                                        </div>
-                                      </Row>
-                                    })}
-                                  </div>
-                                </div>
-                              </Col>
-                            }))
-                            : sort.map((item = {}, index) => {
-                              let num = 0
-                              sort[index].List.map((item = {}, ind) => {
-                                if (item.zxqk !== " ") {
-                                  num = num + 1;
-                                }
-                              })
-                              return <Col span={8}>
-                                <div className='cont-col'>
-                                  <div className='cont-col1'>
-                                    <div className='right'>
-                                      {item.swlx}({num}/{sort[index].List.length})
-                                    </div>
-                                  </div>
-                                  <div style={{padding: '1.5rem 0'}}>
-                                    {sort[index].List.map((item = {}, ind) => {
-                                      return <Row className='cont-row'>
-                                        <Col span={17} style={{display: 'flex'}}>
-                                          <Points status={item.zxqk}/>
-                                          {item.sxmc}
-                                        </Col>
-                                        <Col span={3}>
-                                          <Tooltips type={item.swlx}
-                                                    sxmc={item.sxmc}
-                                                    status={item.zxqk}
-                                                    handleUpload={() => this.handleUpload(item)}
-                                                    handleSend={this.handleSend}
-                                                    handleFillOut={this.handleFillOut}
-                                                    handleEdit={() => this.handleEdit(item)}
-                                                    handleMessageEdit={this.handleMessageEdit}/>
-                                        </Col>
-                                        <Col span={3}>
-                                          <Dropdown overlay={menu}>
-                                            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                               className="iconfont icon-more">
-                                            </i>
-                                          </Dropdown>
+                                          {/*<Dropdown overlay={menu}>*/}
+                                          {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
+                                          {/*     className="iconfont icon-more">*/}
+                                          {/*  </i>*/}
+                                          {/*</Dropdown>*/}
                                         </Col>
                                         <div className='cont-row1'>
                                           <div className='left'>
@@ -808,15 +797,16 @@ class LifeCycleManagementTabs extends React.Component {
                                 </div>
                               </Col>
                             })
-                        }
-                      </Col>
+                          }
+                        </Col>
+                      }
                     </Row>
                     : ''
                 }
               </div>
             })
           }
-        </Col>
+        </div>
       </Row>
     );
   }

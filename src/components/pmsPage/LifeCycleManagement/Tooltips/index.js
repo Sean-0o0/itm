@@ -8,50 +8,50 @@ const {Option} = Select;
 class Tooltips extends React.Component {
   state = {};
 
-  handleFillOut = (sxmc) => {
-    console.log("sxmc", sxmc);
-    this.props.handleFillOut(sxmc);
+  handleFillOut = (item) => {
+    console.log("item", item);
+    this.props.handleFillOut(item);
   }
 
   handleUpload = () => {
     this.props.handleUpload();
   }
 
-  handleSend = (sxmc) => {
-    console.log("sxmc", sxmc);
-    this.props.handleSend(sxmc);
+  handleSend = (item) => {
+    console.log("item", item);
+    this.props.handleSend(item);
   }
 
   handleEdit = () => {
     this.props.handleEdit();
   }
 
-  handleMessageEdit = (sxmc) => {
-    console.log("sxmc", sxmc);
-    this.props.handleMessageEdit(sxmc);
+  handleMessageEdit = (item) => {
+    console.log("item", item);
+    this.props.handleMessageEdit(item);
   }
 
   render() {
 
-    const {type, status, sxmc} = this.props;
+    const {type, status, item} = this.props;
     // console.log("sxmcsxmcsxmc", sxmc)
     return (
       <div>
         {
           type.includes("信息录入") ? (status === " " ? <Tooltip title="录入">
               <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                 className="iconfont icon-file-fillout" onClick={() => this.handleFillOut(sxmc)}/>
+                 className="iconfont icon-file-fillout" onClick={() => this.handleFillOut(item)}/>
             </Tooltip>
             : <Tooltip title="修改">
               <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                 className="iconfont icon-edit" onClick={() => this.handleMessageEdit(sxmc)}/>
+                 className="iconfont icon-edit" onClick={() => this.handleMessageEdit(item)}/>
             </Tooltip>) : ''
         }
         {
           type.includes("流程") &&
           <Tooltip title="发起">
             <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-               className="iconfont icon-send" onClick={() => this.handleSend(sxmc)}/>
+               className="iconfont icon-send" onClick={() => this.handleSend(item)}/>
           </Tooltip>
 
         }

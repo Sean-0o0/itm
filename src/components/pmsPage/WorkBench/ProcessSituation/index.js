@@ -4,7 +4,7 @@ import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
 import ProgressStatus from "../ProgressStatus";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import {FetchQueryLiftcycleMilestone, FetchQueryOwnerWorkflow} from "../../../../services/pmsServices";
-
+import {Link} from "dva/router";
 class ProcessSituation extends React.Component {
   state = {
     seeVisible: false,
@@ -46,9 +46,15 @@ class ProcessSituation extends React.Component {
 
   }
 
+  handleColorChange = (e) => {
+    this.setState({
+      color: e,
+    })
+  }
+
   render() {
     const {data = [], total = 0} = this.props;
-    const {seeVisible, seeUrl} = this.state;
+    const {seeVisible, seeUrl, color} = this.state;
     const src_see = localStorage.getItem('livebos') + seeUrl;
     const seeModalProps = {
       isAllWindow: 1,
@@ -61,9 +67,9 @@ class ProcessSituation extends React.Component {
       footer: null,
     };
     return (
-      <Row className='workBench' style={{height: '100%', padding: '2.5rem'}}>
-        <div style={{width: '100%'}}>
-          <div style={{display: 'flex', margin: '1rem 0 1.5rem 0',}}>
+      <Row className='workBench' style={{height: '100%', padding: '3.571rem'}}>
+        <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
+          <div style={{display: 'flex',}}>
             <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
                className="iconfont icon-procedure"/>
             <div style={{height: '10%', fontSize: '2.381rem', fontWeight: 700, color: '#303133',}}>流程情况
@@ -78,28 +84,34 @@ class ProcessSituation extends React.Component {
           <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
             <div style={{height: '100%'}}>
               <div style={{height: '70rem'}}>
-                <Card title='' bordered={false} className='ProcessStatus' headStyle={{padding: '1'}}
-                      style={{height: '100%',}} bodyStyle={{padding: '1rem', height: '100%',}}>
+                <Card title='' bordered={false} className='ProcessStatus' headStyle={{padding: '0'}}
+                      style={{height: '100%',}} bodyStyle={{padding: '0rem', height: '100%',}}>
                   {
                     data.map((item = {}, index) => {
                       return <div className='ProcessStatus-Div' style={{height: '90%',}}>
                         <div className='title'>
                           <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                          <a style={{color: '#1890ff', fontSize: '2.083rem',}}
-                             onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</a>
+                          <Link style={{color: color, fontSize: '2.083rem',}}
+                                onMouseOver={() => this.handleColorChange("#3361FF")}
+                                onMouseLeave={() => this.handleColorChange('')}
+                                onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</Link>&nbsp;
+                          <i
+                            className={'iconfont icon-right'}
+                            style={{fontSize: '2.381rem', color: color}}
+                          />
                         </div>
                         <Row className='cont'>
-                          <Col span={17} className='col1' style={{fontSize: '2.083rem',}}>
+                          <Col span={15} className='col1' style={{fontSize: '2.083rem',}}>
                             项目：
                             <span className='span' style={{fontSize: '2.083rem',}}>
                                 {item.xmmc}
                               </span>
                           </Col>
-                          <Col span={7} className='col2' style={{fontSize: '2.083rem',}}>
+                          <Col span={9} className='col2' style={{fontSize: '2.083rem',}}>
                             <ProgressStatus state={item.state}/>
                           </Col>
                         </Row>
-                        <Divider style={{margin: '10px 0'}}/>
+                        <Divider style={{margin: '2.381rem 0'}}/>
                       </div>
                     })
                   }
@@ -109,10 +121,11 @@ class ProcessSituation extends React.Component {
                 <Pagination
                   style={{textAlign: 'end', fontSize: '2.083rem'}}
                   total={total}
+                  size="small"
                   showTotal={total => `共 ${total} 条`}
                   defaultPageSize={5}
                   onChange={() => this.handPageChange(page, pagesize)}
-                  showQuickJumper={true}
+                  // showQuickJumper={true}
                   defaultCurrent={1}
                 />
               </div>

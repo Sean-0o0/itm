@@ -122,13 +122,13 @@ class WorkBench extends React.Component {
           //zxxh排序
           e.map((item = {}, index) => {
             item.extend = false;
-            if (index === 0) {
-              item.extend = true;
-            }
+            // if (index === 0) {
+            //   item.extend = true;
+            // }
             item.kssj = record[0].kssj
             item.jssj = record[0].jssj
             item.zt = record[0].zt
-            item.fxnr = record[0].fxnr
+            // item.fxnr = item.fxnr
           })
           // console.log("ProjectScheduleData",e)
           this.setState({
@@ -193,8 +193,8 @@ class WorkBench extends React.Component {
     } = this.state;
     return (
       <div style={{height: 'calc(100% - 4.5rem)'}}>
-        <div style={{height: '40%', marginBottom: '1rem'}}>
-          <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '2rem'}}>
+        <div style={{height: '40%', margin: '0 1.571rem 3.571rem 1.571rem'}}>
+          <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '3.571rem'}}>
             <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
               <div style={{
                 boxSizing: 'border-box',
@@ -209,7 +209,7 @@ class WorkBench extends React.Component {
                 </div>
               </div>
               <div style={{
-                marginLeft: '2rem',
+                marginLeft: '3.571rem',
                 boxSizing: 'border-box',
                 boxShadow: '#ececec 0 3px 10px',
                 borderRadius: '10px',
@@ -223,8 +223,8 @@ class WorkBench extends React.Component {
             </Col>
           </Row>
         </div>
-        <div style={{height: '60%', marginBottom: '1rem'}}>
-          <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '2rem'}}>
+        <div style={{height: '60%', margin: '0 1.571rem 3.571rem 1.571rem'}}>
+          <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '3.571rem'}}>
             <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
               <div style={{
                 boxSizing: 'border-box',
@@ -240,7 +240,7 @@ class WorkBench extends React.Component {
                 </div>
               </div>
               <div style={{
-                marginLeft: '2rem',
+                marginLeft: '3.571rem',
                 boxSizing: 'border-box',
                 boxShadow: '#ececec 0 3px 10px',
                 borderRadius: '10px',

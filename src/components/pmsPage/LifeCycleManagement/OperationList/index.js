@@ -28,13 +28,13 @@ class OperationList extends React.Component {
     const {data, defaultValue} = this.props;
     console.log("defaultValuedefaultValue", defaultValue);
     return (
-      <Row style={{backgroundColor: 'white', height: '8rem', borderRadius: '8px'}}>
+      <Row style={{backgroundColor: 'white', borderRadius: '8px'}}>
         <Col span={20}
              style={{
                height: '100%',
                display: 'flex',
                alignItems: 'center',
-               paddingLeft: '2.5rem',
+               padding: '2.381rem 3.571rem',
                fontSize: '2.083rem'
              }}>
           <Input.Group compact>

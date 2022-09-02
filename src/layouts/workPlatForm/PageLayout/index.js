@@ -306,7 +306,7 @@ class MainPageLayout extends React.PureComponent {
       }if(text === "项目预算"){
         icon = 'icon-cash';
       }if(text === "生命周期"){
-        icon = 'icon-time';
+        icon = 'icon-work';
       }if(text === "外包项目"){
         icon = 'icon-system';
       }if(text === "系统管理"){

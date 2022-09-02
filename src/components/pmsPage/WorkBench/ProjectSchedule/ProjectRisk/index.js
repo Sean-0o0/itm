@@ -1,9 +1,8 @@
 import React from 'react';
 import {Button, Input, Select, Row, Col, message} from 'antd';
 import {connect} from 'dva';
-import icon_flag from '../../../../image/pms/icon_flag.png';
-import {CreateOperateHyperLink} from "../../../../services/pmsServices";
-import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import {CreateOperateHyperLink} from "../../../../../services/pmsServices";
+import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
 
 const {Option} = Select;
 
@@ -71,7 +70,8 @@ class ProjectRisk extends React.Component {
 
   render() {
 
-    const {item, xmid} = this.props;
+    const {state, xmid} = this.props;
+    console.log("state", state)
     const {riskUrl, riskTitle, riskVisible,} = this.state;
     const riskModalProps = {
       isAllWindow: 1,
@@ -90,8 +90,8 @@ class ProjectRisk extends React.Component {
         <BridgeModel modalProps={riskModalProps} onSucess={() => this.onSuccess("修改")} onCancel={this.closeRiskModal}
                      src={riskUrl}/>}
         {
-          item?.fxnr !== "-1" && <div style={{display: 'flex'}}><i style={{color: 'red', fontSize: '2.381rem'}}
-                                                                   className="iconfont icon-warning"/>
+          Number(state) > 0 && <div style={{display: 'flex'}}><i style={{color: 'red', fontSize: '2.381rem'}}
+                                                                 className="iconfont icon-warning"/>
             <a style={{color: 'rgba(215, 14, 25, 1)'}} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`;
             }}>&nbsp;存在
@@ -99,14 +99,15 @@ class ProjectRisk extends React.Component {
           </div>
         }
         {
-          item?.fxnr === "-1" && <div style={{display: 'flex'}}>
-            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, item)}>&nbsp;暂无风险</a>
+          state === "0" && <div style={{display: 'flex'}}>
+            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, state)}>&nbsp;暂无风险</a>
           </div>
         }
       </div>
     );
   }
 }
-export default connect(({ global = {} }) => ({
+
+export default connect(({global = {}}) => ({
   authorities: global.authorities,
 }))(ProjectRisk);
