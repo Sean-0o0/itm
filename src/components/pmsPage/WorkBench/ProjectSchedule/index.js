@@ -588,7 +588,12 @@ class ProjectSchedule extends React.Component {
                                 </div>
                               </Col>
                               <Col span={24}
-                                   style={{width: '100%', padding: '3rem', borderRadius: '8px', maxHeight: '50rem'}}
+                                   style={{
+                                     width: '100%',
+                                     padding: '3rem',
+                                     borderRadius: '0 0 8px 8px',
+                                     maxHeight: '50rem'
+                                   }}
                                    className='cont2'>
                                 {
                                   sort.map((item = {}, index) => {
