@@ -1,4 +1,4 @@
-import {Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty} from 'antd';
+import {Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty, Divider} from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
@@ -198,9 +198,9 @@ class LifeCycleManagementTabs extends React.Component {
       if (code === 1) {
         this.setState({
           fillOutUrl: url,
-          // fillOutVisible: true,
+          fillOutVisible: true,
         });
-        window.location.href = url;
+        // window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -387,10 +387,10 @@ class LifeCycleManagementTabs extends React.Component {
         break;
     }
     this.getFileOutUrl(params)
-    // this.setState({
-    //   fillOutTitle: item.sxmc,
-    //   fillOutVisible: true,
-    // });
+    this.setState({
+      fillOutTitle: item.sxmc,
+      fillOutVisible: true,
+    });
   };
 
 
@@ -601,8 +601,8 @@ class LifeCycleManagementTabs extends React.Component {
     const fillOutModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '150rem',
-      height: '100rem',
+      width: '120rem',
+      height: '80rem',
       title: fillOutTitle,
       style: {top: '10rem'},
       visible: fillOutVisible,
@@ -679,7 +679,7 @@ class LifeCycleManagementTabs extends React.Component {
                          data={operationListData}
                          defaultValue={defaultValue}/>
         </div>
-        <div style={{height: '92%', margin: '0 1.571rem 3.571rem 1.571rem'}}>
+        <div style={{height: '92%', margin: '0 1.571rem 3.571rem 1.571rem', position: 'relative',}}>
           {
             basicData.map((item = {}, index) => {
               let detail = [];
@@ -731,6 +731,13 @@ class LifeCycleManagementTabs extends React.Component {
                     </div>
                   </div>
                 </div>
+                <Divider type='vertical' dashed={true} style={{
+                  position: 'absolute',
+                  height: '40rem',
+                  backgroundColor: 'red',
+                  marginLeft: '5.952rem',
+                  marginTop: '9.52rem'
+                }}/>
                 {
                   item.extend ?
                     <Row style={{

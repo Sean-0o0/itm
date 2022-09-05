@@ -118,7 +118,7 @@ class TodoItems extends React.Component {
   getListData = (value) => {
     //表格数据
     // console.log(value,"value")
-    const {data} = this.props;
+    const {allData} = this.props;
     let t = moment(value._d)
       .format('YY-MM-DD')
       .substring(0, 5)
@@ -131,8 +131,8 @@ class TodoItems extends React.Component {
     let content = '';
     if (curr_t) {
       // 过滤掉非本月的数据
-      data &&
-      data.forEach(item => {
+      allData &&
+      allData.forEach(item => {
         let date = item.jzrq.slice(0, 4).concat("-").concat(item.jzrq.slice(4, 6)).concat("-").concat(item.jzrq.slice(6, 8));
         if (value.month() === new Date(date).getMonth()) {
           if (value.date() === new Date(date).getDate()) {
@@ -443,19 +443,24 @@ class TodoItems extends React.Component {
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text.length > 4 ? text : ''} style={{fontSize: '2.381rem'}}>
+            <Tooltip title={text.length > 8 ? text : ''} style={{fontSize: '2.381rem'}}>
               <span style={{display: 'flex',}}>
                 {
-                  record.ckzt === "2" && <span style={{
+                  //onClick={() => this.updateState(record, 'READ')} 已读调用接口
+                  record.xxlx === "1" && <span style={{
                     height: '3rem',
                     display: 'flex',
                     alignItems: 'center',
-                  }} onClick={() => this.updateState(record, 'READ')}>
+                  }}>
                     <i style={{color: 'red', fontSize: '2.381rem'}} className="iconfont icon-fill-star"/>
                   </span>
                 }
                 <a style={{fontSize: '2.083rem', color: '#1890ff', paddingLeft: '0.5rem'}}
-                   onClick={() => this.handleUrl(record)}>{text.length > 4 ? text.slice(0, 20) + '...' : text}</a>
+                   onClick={() => this.handleUrl(record)}>{text.length > 8 ? text.slice(0, 8) + '...' : text}</a>
+                {/*必做标识*/}
+                {/*<div style={{backgroundColor: 'rgba(252, 236, 237, 1)', borderRadius: '10px'}}>*/}
+                {/*  {record.xxlx === "1" && <span style={{padding: '0 1rem', color: 'rgba(204, 62, 69, 1)'}}>必做</span>}*/}
+                {/*</div>*/}
               </span>
             </Tooltip>
          </span>

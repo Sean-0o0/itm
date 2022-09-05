@@ -19,6 +19,7 @@ class WorkBench extends React.Component {
     wdsl: 0,
     wzxsl: 0,
     TodoItemsData: [],
+    AllTodoItemsData: [],
     TodoItemsTotal: 0,
     ProcessSituationData: [],
     ProcessSituationTotal: 0,
@@ -29,6 +30,7 @@ class WorkBench extends React.Component {
   };
 
   componentDidMount() {
+    this.fetchQueryAllOwnerMessage();
     this.fetchQueryOwnerMessage();
   }
 
@@ -61,6 +63,35 @@ class WorkBench extends React.Component {
         });
       }
       this.fetchQueryOwnerWorkflow();
+    }).catch(error => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+  fetchQueryAllOwnerMessage = (page, date) => {
+    const defaultDate = moment(new Date())
+      .format('YYYYMMDD')
+    FetchQueryOwnerMessage(
+      {
+        date: 20220101,
+        paging: 0,
+        current: 0,
+        pageSize: 1000,
+        total: 1,
+        sort: 1
+      }
+    ).then(ret => {
+      const {code = 0, record = [], totalrows = 0} = ret;
+      // console.log("recordrecord",record)
+      if (code === 1) {
+        // if(0<record.length%6 <= 5){
+        //   for(let i=0;i<=record.length%6;i++){
+        //     record.push(record[0])
+        //   }
+        // }
+        this.setState({
+          AllTodoItemsData: record,
+        });
+      }
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -184,6 +215,7 @@ class WorkBench extends React.Component {
       wdsl,
       wzxsl,
       TodoItemsData = [],
+      AllTodoItemsData = [],
       TodoItemsTotal = 0,
       ProcessSituationData = [],
       ProcessSituationTotal = 0,
@@ -204,7 +236,7 @@ class WorkBench extends React.Component {
                 background: 'white'
               }}>
                 <div style={{height: '100%'}}>
-                  <TodoItems wzxsl={wzxsl} data={TodoItemsData} total={TodoItemsTotal}
+                  <TodoItems wzxsl={wzxsl} allData={AllTodoItemsData} data={TodoItemsData} total={TodoItemsTotal}
                              fetchQueryOwnerMessage={this.fetchQueryOwnerMessage}/>
                 </div>
               </div>

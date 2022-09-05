@@ -448,7 +448,7 @@ class ProjectSchedule extends React.Component {
                         ProjectScheduleDetailData.map((item = {}, ind) => {
                           let sort = this.groupBy(item);
                           return items?.xmid === item[0]?.xmid &&
-                            <Row style={{height: '80%', width: '100%', padding: '0px 4.6rem 2rem 4.6rem'}}
+                            <Row style={{height: '80%', width: '100%', padding: '2rem 4.6rem 0 4.6rem'}}
                                  className='card'>
                               <Col span={24} style={{width: '100%',}} className='cont'>
                                 <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
@@ -614,7 +614,7 @@ class ProjectSchedule extends React.Component {
                         })
                         : ''
                       }
-                      <Divider style={{margin: '10px 0'}}/>
+                      <Divider style={{margin: '2.381rem 0'}}/>
                     </div>
                   })
                 }
