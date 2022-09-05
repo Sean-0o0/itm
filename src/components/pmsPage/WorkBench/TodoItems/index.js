@@ -609,14 +609,14 @@ class TodoItems extends React.Component {
               {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
               {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
               <i style={{color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
-                 className="iconfont icon-time"/><span
+                 className="iconfont icon-shijian"/><span
               style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成 <span
               style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}</span></span>
             </div>
           </div>
         </div>
         <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row', height: '95%'}}>
-          <div style={{width: '22%'}}>
+          <div style={{width: '24%'}}>
             <div style={{border: '1px solid #d9d9d9', borderRadius: 4}}>
               <Calendar
                 // monthCellRender={this.monthCellRender}
@@ -695,7 +695,7 @@ class TodoItems extends React.Component {
               />
             </div>
           </div>
-          <div style={{marginLeft: '2rem', width: '78%'}}>
+          <div style={{marginLeft: '2rem', width: '76%'}}>
             <div style={{height: '100%'}}>
               <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '97%'}}>
                 <div style={{height: '90%'}}>

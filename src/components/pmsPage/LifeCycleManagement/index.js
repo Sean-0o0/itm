@@ -679,7 +679,8 @@ class LifeCycleManagementTabs extends React.Component {
                          data={operationListData}
                          defaultValue={defaultValue}/>
         </div>
-        <div style={{height: '92%', margin: '0 1.571rem 3.571rem 1.571rem', position: 'relative',}}>
+        {/*position: 'relative',*/}
+        <div style={{height: '92%', margin: '0 1.571rem 3.571rem 1.571rem',}}>
           {
             basicData.map((item = {}, index) => {
               let detail = [];
@@ -731,13 +732,13 @@ class LifeCycleManagementTabs extends React.Component {
                     </div>
                   </div>
                 </div>
-                <Divider type='vertical' dashed={true} style={{
-                  position: 'absolute',
-                  height: '40rem',
-                  backgroundColor: 'red',
-                  marginLeft: '5.952rem',
-                  marginTop: '9.52rem'
-                }}/>
+                {/*<Divider type='vertical' dashed={true} style={{*/}
+                {/*  position: 'absolute',*/}
+                {/*  height: '40rem',*/}
+                {/*  backgroundColor: 'red',*/}
+                {/*  marginLeft: '5.952rem',*/}
+                {/*  marginTop: '9.52rem'*/}
+                {/*}}/>*/}
                 {
                   item.extend ?
                     <Row style={{
