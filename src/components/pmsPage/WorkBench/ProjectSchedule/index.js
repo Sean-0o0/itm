@@ -10,6 +10,9 @@ import {Link} from "dva/router";
 import Tooltips from "../../LifeCycleManagement/Tooltips";
 import {FetchLivebosLink} from "../../../../services/amslb/user";
 import {CreateOperateHyperLink} from "../../../../services/pmsServices";
+import Points from "../../LifeCycleManagement/Points";
+
+const Loginname = localStorage.getItem("firstUserID");
 
 class ProjectSchedule extends React.Component {
   state = {
@@ -17,22 +20,30 @@ class ProjectSchedule extends React.Component {
     uploadVisible: false,
     //上传url
     uploadUrl: '/OperateProcessor?operate=TWD_XM_INTERFACE_UPLODC&Table=TWD_XM',
+    uploadTitle: '',
     //修改弹窗
     editVisible: false,
     //修改url
     editUrl: '/OperateProcessor?operate=TWD_XM_XWHJY&Table=TWD_XM',
+    editTitle: '',
     //立项流程发起弹窗
     sendVisible: false,
     //立项流程发起url
     sendUrl: '/OperateProcessor?operate=TLC_LCFQ_LXSQLCFQ&Table=TLC_LCFQ',
+    sendTitle: '',
     //信息录入
     fillOutVisible: false,
     //信息录入url
     fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
+    fillOutTitle: '',
     //信息修改
     editMessageVisible: false,
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
+    editMessageTitle: '',
+    editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
+    editModelTitle: '',
+    editModelVisible: false,
     color: '',
   };
 
@@ -41,9 +52,11 @@ class ProjectSchedule extends React.Component {
 
   //文档上传
   handleUpload = (item) => {
+    console.log("11111")
     this.getUploadUrl(item);
     this.setState({
       uploadVisible: true,
+      uploadTitle: item.sxmc + '上传',
     });
   };
 
@@ -52,19 +65,22 @@ class ProjectSchedule extends React.Component {
     this.getUploadUrl(item);
     this.setState({
       editVisible: true,
+      editTitle: item.sxmc + '修改',
     });
   };
 
   //流程发起
-  handleSend = () => {
-    this.getSendUrl();
+  handleSend = (item) => {
+    this.getSendUrl(item);
     this.setState({
+      sendTitle: item.sxmc + '发起',
+      // sendUrl: url,
       sendVisible: true,
     });
   };
 
   //信息录入
-  handleFillOut = (name) => {
+  handleFillOut = (item) => {
     let params = {
       "attribute": 0,
       "authFlag": 0,
@@ -73,12 +89,12 @@ class ProjectSchedule extends React.Component {
       "parameter": [
         {
           "name": "XMMC",
-          "value": this.state.xmid
+          "value": item.xmid
         },
       ],
-      "userId": ""
+      "userId": Loginname
     }
-    switch (name) {
+    switch (item.sxmc) {
       case "合同信息录入":
         params = {
           "attribute": 0,
@@ -88,22 +104,42 @@ class ProjectSchedule extends React.Component {
           "parameter": [
             {
               "name": "XMMC",
-              "value": this.state.xmid
+              "value": item.xmid
             },
           ],
-          "userId": ""
+          "userId": Loginname
+        };
+        break;
+      case "招标信息录入":
+        params = {
+          "attribute": 0,
+          "authFlag": 0,
+          "objectName": "View_TBXX",
+          "operateName": "View_TBXX_ADD",
+          "parameter": [
+            {
+              "name": "XMMC",
+              "value": item.xmid
+            },
+            {
+              "name": "LCBMC",
+              "value": item.lcbid
+            },
+          ],
+          "userId": Loginname
         };
         break;
     }
     this.getFileOutUrl(params)
     this.setState({
+      fillOutTitle: item.sxmc,
       fillOutVisible: true,
     });
   };
 
 
   //信息录入修改
-  handleMessageEdit = (name) => {
+  handleMessageEdit = (item) => {
     let params = {
       "attribute": 0,
       "authFlag": 0,
@@ -112,12 +148,12 @@ class ProjectSchedule extends React.Component {
       "parameter": [
         {
           "name": "XMMC",
-          "value": this.state.xmid
+          "value": item.xmid
         },
       ],
-      "userId": ""
+      "userId": Loginname
     }
-    switch (name) {
+    switch (item.sxmc) {
       case "合同信息录入":
         params = {
           "attribute": 0,
@@ -127,22 +163,40 @@ class ProjectSchedule extends React.Component {
           "parameter": [
             {
               "name": "XMMC",
-              "value": this.state.xmid
+              "value": item.xmid
             },
           ],
-          "userId": ""
+          "userId": Loginname
         };
         break;
     }
-    this.getEditMessageUrl(params)
-    this.setState({
-      editMessageVisible: true,
-    });
+    switch (item.sxmc) {
+      case "招标信息录入":
+        params = {
+          "attribute": 0,
+          "authFlag": 0,
+          "objectName": "View_TBXX",
+          "operateName": "View_TBXX_INTERFACE_MOD",
+          "parameter": [
+            {
+              "name": "XMMC2",
+              "value": item.xmid
+            },
+          ],
+          "userId": Loginname
+        };
+        break;
+    }
+    this.getEditMessageUrl(params);
+    // this.setState({
+    //   editMessageTitle: item.sxmc + '修改',
+    //   editMessageVisible: true,
+    // });
   }
 
   //流程发起url
-  getSendUrl = (e) => {
-    const params = {
+  getSendUrl = (item) => {
+    let params = {
       "attribute": 0,
       "authFlag": 0,
       "objectName": "TLC_LCFQ",
@@ -150,16 +204,48 @@ class ProjectSchedule extends React.Component {
       "parameter": [
         {
           "name": "GLXM",
-          "value": this.state.xmid
+          "value": item.xmid
         }
       ],
-      "userId": ""
+      "userId": Loginname,
+    }
+    if (item.sxmc.includes("合同签署")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TLC_LCFQ",
+        "operateName": "TLC_LCFQ_HTLYY",
+        "parameter": [
+          {
+            "name": "",
+            "value": '',
+          }
+        ],
+        "userId": Loginname,
+      }
+    }
+    if (item.sxmc.includes("付款")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TLC_LCFQ",
+        "operateName": "TLC_LCFQ_XMFKLCFQ",
+        "parameter": [
+          {
+            "name": "",
+            "value": '',
+          }
+        ],
+        "userId": Loginname,
+      }
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
+          // sendTitle: e + '发起',
           sendUrl: url,
+          // sendVisible: true,
         });
       }
     }).catch((error) => {
@@ -169,6 +255,7 @@ class ProjectSchedule extends React.Component {
 
   //文档上传/修改url
   getUploadUrl = (item) => {
+    console.log("itemitemitem", item)
     const params = {
       "attribute": 0,
       "authFlag": 0,
@@ -177,7 +264,7 @@ class ProjectSchedule extends React.Component {
       "parameter": [
         {
           "name": "XMMC",
-          "value": this.state.xmid
+          "value": item.xmid
         },
         {
           "name": "LCBMC",
@@ -188,7 +275,7 @@ class ProjectSchedule extends React.Component {
           "value": item.sxid
         }
       ],
-      "userId": ""
+      "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
@@ -203,13 +290,15 @@ class ProjectSchedule extends React.Component {
   }
 
   //信息录入url
-  getFileOutUrl = (params) => {
+  getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
       const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           fillOutUrl: url,
+          fillOutVisible: true,
         });
+        // window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -223,7 +312,9 @@ class ProjectSchedule extends React.Component {
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
+          // editMessageVisible: true,
         });
+        window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -278,7 +369,8 @@ class ProjectSchedule extends React.Component {
 
   //成功回调
   onSuccess = () => {
-
+    message.success(name + "成功");
+    // this.reflush();
   }
 
 
@@ -323,13 +415,26 @@ class ProjectSchedule extends React.Component {
 
   render() {
     const {data, total, ProjectScheduleDetailData} = this.props;
+    console.log("data", data);
+    console.log("ProjectScheduleDetailData", ProjectScheduleDetailData);
     const {
       uploadVisible,
       editVisible,
       sendVisible,
+      fillOutVisible,
+      editMessageVisible,
+      editModelVisible,
       uploadUrl,
-      editUrl,
+      editMessageUrl,
       sendUrl,
+      fillOutUrl,
+      editModelUrl,
+      uploadTitle,
+      editTitle,
+      sendTitle,
+      fillOutTitle,
+      editMessageTitle,
+      editModelTitle,
       color,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
@@ -352,7 +457,7 @@ class ProjectSchedule extends React.Component {
       // defaultFullScreen: true,
       width: '100rem',
       height: '58rem',
-      title: '上传',
+      title: uploadTitle,
       style: {top: '20rem'},
       visible: uploadVisible,
       footer: null,
@@ -362,7 +467,7 @@ class ProjectSchedule extends React.Component {
       // defaultFullScreen: true,
       width: '100rem',
       height: '68rem',
-      title: '修改',
+      title: editTitle,
       style: {top: '20rem'},
       visible: editVisible,
       footer: null,
@@ -372,14 +477,21 @@ class ProjectSchedule extends React.Component {
       // defaultFullScreen: true,
       width: '150rem',
       height: '100rem',
-      title: '发起流程',
+      title: sendTitle,
       style: {top: '10rem'},
       visible: sendVisible,
       footer: null,
     };
-    const src_upload = localStorage.getItem('livebos') + uploadUrl;
-    const src_edit = localStorage.getItem('livebos') + editUrl;
-    const src_send = localStorage.getItem('livebos') + sendUrl;
+    const fillOutModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '120rem',
+      height: '80rem',
+      title: fillOutTitle,
+      style: {top: '10rem'},
+      visible: fillOutVisible,
+      footer: null,
+    };
     return (
       <Row className='workBench' style={{height: '70rem', padding: '3.571rem'}}>
         <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
@@ -392,16 +504,23 @@ class ProjectSchedule extends React.Component {
         </div>
         {/*上传弹窗*/}
         {uploadVisible &&
-        <BridgeModel modalProps={uploadModalProps} onSucess={this.onSuccess} onCancel={this.closeUploadModal}
-                     src={src_upload}/>}
+        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+                     onCancel={this.closeUploadModal}
+                     src={uploadUrl}/>}
         {/*修改弹窗*/}
         {editVisible &&
-        <BridgeModel modalProps={editModalProps} onSucess={this.onSuccess} onCancel={this.closeEditModal}
-                     src={src_edit}/>}
+        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+                     onCancel={this.closeEditModal}
+                     src={uploadUrl}/>}
         {/*立项流程发起弹窗*/}
         {sendVisible &&
-        <BridgeModel modalProps={sendModalProps} onSucess={this.onSuccess} onCancel={this.closeSendModal}
-                     src={src_send}/>}
+        <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
+                     src={sendUrl}/>}
+        {/*信息录入弹窗*/}
+        {fillOutVisible &&
+        <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+                     onCancel={this.closeFillOutModal}
+                     src={fillOutUrl}/>}
         <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
             <div style={{height: '100%'}}>
@@ -450,7 +569,7 @@ class ProjectSchedule extends React.Component {
                           return items?.xmid === item[0]?.xmid &&
                             <Row style={{height: '80%', width: '100%', padding: '2rem 4.6rem 0 4.6rem'}}
                                  className='card'>
-                              <Col span={24} style={{width: '100%',}} className='cont'>
+                              <Col span={24} className='cont1'>
                                 <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
@@ -467,143 +586,62 @@ class ProjectSchedule extends React.Component {
                                       style={{color: 'rgba(48, 49, 51, 1)'}}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
                                   </div>
                                 </div>
+                              </Col>
+                              <Col span={24}
+                                   style={{width: '100%', padding: '3rem', borderRadius: '8px', maxHeight: '50rem'}}
+                                   className='cont2'>
                                 {
-                                  sort.length > 3 && sort.length < 7 ? (sort?.slice(0, 2).map((item = {}, number) => {
+                                  sort.map((item = {}, index) => {
+                                    console.log("index", index)
+                                    console.log("sort.length", sort.length)
+                                    console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                                     let num = 0
-                                    sort[number].List.map((item = {}, ind) => {
+                                    sort[index].List.map((item = {}, ind) => {
                                       if (item.zxqk !== " ") {
                                         num = num + 1;
                                       }
                                     })
-                                    return <Col span={8} style={{marginTop: '1.5rem'}}>
+                                    return <Col span={8}>
                                       <div className='cont-col'>
                                         <div className='cont-col1'>
                                           <div className='right'>
                                             {item.swlx}({num}/{sort[index].List.length})
                                           </div>
                                         </div>
-                                        <div style={{padding: '1.5rem 0'}}>
-                                          {sort[number].List.map((item = {}, ind) => {
-                                            return <Row className='cont-row'>
-                                              <Col span={17} style={{display: 'flex'}}>
-                                                <div className='cont-row-point'
-                                                     style={{background: 'rgba(192, 196, 204, 1)'}}/>
+                                        <div style={{padding: '1.5rem 0 0 0'}}>
+                                          {sort[index].List.map((item = {}, ind) => {
+                                            return <Row className='cont-row' style={{
+                                              height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                              margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                            }}>
+                                              <Col span={17} style={{display: 'flex', alignItems: 'center'}}>
+                                                <Points status={item.zxqk}/>
                                                 {item.sxmc}
                                               </Col>
                                               <Col span={3}>
                                                 <Tooltips type={item.swlx}
-                                                          swmc={item.swmc}
+                                                          item={item}
                                                           status={item.zxqk}
                                                           handleUpload={() => this.handleUpload(item)}
                                                           handleSend={this.handleSend}
-                                                          handleFillOut={this.handleFillOut}
+                                                          handleFillOut={() => this.handleFillOut(item)}
                                                           handleEdit={() => this.handleEdit(item)}
                                                           handleMessageEdit={this.handleMessageEdit}/>
                                               </Col>
                                               <Col span={3}>
-                                                <Dropdown overlay={menu}>
-                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                                     className="iconfont icon-more">
-                                                  </i>
-                                                </Dropdown>
+                                                {/*<Dropdown overlay={menu}>*/}
+                                                {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
+                                                {/*     className="iconfont icon-more">*/}
+                                                {/*  </i>*/}
+                                                {/*</Dropdown>*/}
                                               </Col>
-                                              {/*<div className='cont-row1'>*/}
-                                              {/*  <div className='left'>*/}
-                                              {/*    2022.06.17上传*/}
-                                              {/*  </div>*/}
-                                              {/*</div>*/}
+                                              <div className='cont-row1'>
+                                                <div className='left'>
+                                                  {/*//2022.06.17上传*/}
+                                                </div>
+                                              </div>
                                             </Row>
-                                          })
-                                          }
-                                        </div>
-                                      </div>
-                                    </Col>
-                                  })) && sort?.slice(2, sort.length).map((item = {}, number) => {
-                                    let num = 0
-                                    sort[number].List.map((item = {}, ind) => {
-                                      if (item.zxqk !== " ") {
-                                        num = num + 1;
-                                      }
-                                    })
-                                    return <Col span={8} style={{marginTop: '1.5rem'}}>
-                                      <div className='cont-col'>
-                                        <div className='cont-col1'>
-                                          <div className='right'>
-                                            {item.swlx}({num}/{sort[number].List.length})
-                                          </div>
-                                        </div>
-                                        <div style={{padding: '1.5rem 0'}}>
-                                          {sort[number].List.map((item = {}, ind) => {
-                                            return <Row className='cont-row'>
-                                              <Col span={17} style={{display: 'flex'}}>
-                                                <div className='cont-row-point'
-                                                     style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                                                {item.sxmc}
-                                              </Col>
-                                              <Col span={3}>
-                                                <Tooltip title="上传">
-                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                                     className="iconfont icon-upload"
-                                                     onClick={() => this.handleUpload("标前会议纪要扫描件")}/>
-                                                </Tooltip>
-                                              </Col>
-                                              <Col span={3}>
-                                                <Dropdown overlay={menu}>
-                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                                     className="iconfont icon-more">
-                                                  </i>
-                                                </Dropdown>
-                                              </Col>
-                                              {/*<div className='cont-row1'>*/}
-                                              {/*  <div className='left'>*/}
-                                              {/*    2022.06.17上传*/}
-                                              {/*  </div>*/}
-                                              {/*</div>*/}
-                                            </Row>
-                                          })
-                                          }
-                                        </div>
-                                      </div>
-                                    </Col>
-                                  }) : sort.map((item = {}, number) => {
-                                    let num = 0
-                                    sort[number].List.map((item = {}, ind) => {
-                                      if (item.zxqk !== " ") {
-                                        num = num + 1;
-                                      }
-                                    })
-                                    return <Col span={8} style={{marginTop: '1.5rem'}}>
-                                      <div className='cont-col'>
-                                        <div className='cont-col1'>
-                                          <div className='right'>
-                                            {item.swlx}({num}/{sort[number].List.length})
-                                          </div>
-                                        </div>
-                                        <div style={{padding: '1.5rem 0'}}>
-                                          {sort[number].List.map((item = {}, ind) => {
-                                            return <Row className='cont-row'>
-                                              <Col span={17} style={{display: 'flex'}}>
-                                                <div className='cont-row-point'
-                                                     style={{background: 'rgba(192, 196, 204, 1)'}}/>
-                                                {item.sxmc}
-                                              </Col>
-                                              <Col span={3}>
-                                                <Tooltip title="上传">
-                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                                     className="iconfont icon-upload"
-                                                     onClick={() => this.handleUpload("标前会议纪要扫描件")}/>
-                                                </Tooltip>
-                                              </Col>
-                                              <Col span={3}>
-                                                <Dropdown overlay={menu}>
-                                                  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                                     className="iconfont icon-more">
-                                                  </i>
-                                                </Dropdown>
-                                              </Col>
-                                            </Row>
-                                          })
-                                          }
+                                          })}
                                         </div>
                                       </div>
                                     </Col>

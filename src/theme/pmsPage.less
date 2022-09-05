@@ -425,7 +425,7 @@
     }
 
     .card {
-      display: flex;
+      //display: flex;
 
       .title {
         width: 1%;
@@ -438,7 +438,7 @@
         }
       }
 
-      .cont {
+      .cont1 {
 
         .head {
           background-color: rgba(240, 242, 245, 1);
@@ -470,10 +470,19 @@
 
         border-radius: 8px 8px 0 0;
         background: rgba(20, 38, 98, 0.0400);
-        width: 98%;
+        //width: 98%;
         display: block;
-        overflow-y: scroll;
+        //overflow-y: scroll;
         font-size: 2.083rem;
+      }
+
+      .cont2 {
+        background: rgba(20, 38, 98, 0.0400);
+        width: 98%;
+        display: flex;
+        flex-wrap: wrap;
+        overflow-y: scroll;
+        .font-s14();
 
         .cont-col {
           margin-left: 2rem;
@@ -498,12 +507,8 @@
             }
           }
         }
-
         .cont-row {
-          font-size: 2.083rem;
-          height: 5rem;
           padding: 0 1.3rem;
-          margin: 0 0 1rem 0;
           color: #333333;
           font-weight: 400;
 
@@ -519,7 +524,7 @@
             padding-left: 2rem;
             display: inline-flex;
             align-items: center;
-            font-size: 2.083rem;
+            .font-s12();
             color: #909399;
             font-weight: 400;
 
@@ -534,7 +539,6 @@
             }
 
             .right {
-              font-size: 2.083rem;
               padding-left: 1rem;
             }
           }

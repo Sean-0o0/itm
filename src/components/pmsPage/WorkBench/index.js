@@ -101,7 +101,7 @@ class WorkBench extends React.Component {
     FetchQueryOwnerWorkflow({
       paging: 1,
       current: page ? page : 1,
-      pageSize: pageSize ? pageSize : 5,
+      pageSize: 5,
       total: -1,
       sort: ''
     }).then(ret => {

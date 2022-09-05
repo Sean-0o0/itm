@@ -35,9 +35,9 @@ class ProcessSituation extends React.Component {
     });
   };
 
-  handPageChange = (page, pageSize) => {
+  handPageChange = (page) => {
     const {fetchQueryOwnerWorkflow} = this.props;
-    fetchQueryOwnerWorkflow(page, pageSize)
+    fetchQueryOwnerWorkflow(page)
   }
 
 
@@ -88,7 +88,7 @@ class ProcessSituation extends React.Component {
                       style={{height: '100%',}} bodyStyle={{padding: '0rem', height: '100%',}}>
                   {
                     data.map((item = {}, index) => {
-                      return <div className='ProcessStatus-Div' style={{height: '90%',}}>
+                      return <div className='ProcessStatus-Div' style={{}}>
                         <div className='title'>
                           <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
                           <Link style={{color: color, fontSize: '2.083rem',}}
@@ -124,7 +124,7 @@ class ProcessSituation extends React.Component {
                   size="small"
                   showTotal={total => `共 ${total} 条`}
                   defaultPageSize={5}
-                  onChange={() => this.handPageChange(page, pagesize)}
+                  onChange={this.handPageChange}
                   // showQuickJumper={true}
                   defaultCurrent={1}
                 />
