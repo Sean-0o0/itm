@@ -5,6 +5,7 @@ import ProgressStatus from "../ProgressStatus";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import {FetchQueryLiftcycleMilestone, FetchQueryOwnerWorkflow} from "../../../../services/pmsServices";
 import {Link} from "dva/router";
+import Points from "../../LifeCycleManagement/Points";
 class ProcessSituation extends React.Component {
   state = {
     seeVisible: false,
@@ -88,9 +89,10 @@ class ProcessSituation extends React.Component {
                       style={{height: '100%',}} bodyStyle={{padding: '0rem', height: '100%',}}>
                   {
                     data.map((item = {}, index) => {
+                      console.log('item****',item);
                       return <div className='ProcessStatus-Div' style={{}}>
                         <div className='title'>
-                          <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                          {/* <div className='cont-row-point' style={{borderColor: 'rgba(51, 97, 255, 1)'}}/> */}
                           {/* <Link style={{color: color, fontSize: '2.083rem',}}
                                 onMouseOver={() => this.handleColorChange("#3361FF")}
                                 onMouseLeave={() => this.handleColorChange('')}
@@ -99,7 +101,8 @@ class ProcessSituation extends React.Component {
                             className={'iconfont icon-right'}
                             style={{fontSize: '2.381rem', color: color}}
                           /> */}
-                          <Link className='title-link' style={{fontSize: '2.083rem',}}
+                          <Points status={item.state}/>
+                          <Link className='title-link' style={{fontSize: '2.083rem'}}
                             onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</Link>&nbsp;
                           <i
                             className={'iconfont icon-right'}

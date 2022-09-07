@@ -157,9 +157,25 @@
       width: 98%;
       display: flex;
       flex-wrap: wrap;
-      overflow-y: scroll;
-      .font-s14();
+      // overflow-y: scroll;
+      overflow: hidden;
+      overflow-y: auto;
+      // & ::-webkit-scrollbar-track{
+      //   border-radius: 8px;
+      //   background-color: #3FAAFF;
+      // }
+      // & ::-webkit-scrollbar-thumb{
+      //   border-radius: 8px;
+      // }
+      // .cont-col-self{
+      //   &:nth-child(3n+2){
+      //   border-left: 0.25rem dashed rgb(192, 196, 204);
+      //   border-right: 0.25rem dashed rgb(192, 196, 204);
+      // }
+      // }
 
+      .font-s14();
+      
       .cont-col {
         margin-left: 2rem;
         //height: 56rem;
@@ -174,7 +190,7 @@
             background-color: red;
           }
           .right{
-            color: #000000;
+            color: #303133;
             font-weight: 800;
             padding-left: 1rem;
             //line-height: 20px;
@@ -185,12 +201,16 @@
         padding: 0 1.3rem;
         color: #333333;
         font-weight: 400;
-
         .cont-row-point {
           margin-right: 1rem;
-          border-radius: 50%;
-          height: 1rem;
+          // border-radius: 50%;
+          // height: 1rem;
+          // width: 1rem;
           width: 1rem;
+          height: 1rem;
+          background-color: white;
+          border-radius: 50%;
+          border: 0.25rem solid rgb(192, 196, 204);
         }
         .cont-row1{
           margin: 1rem 0;
@@ -488,7 +508,9 @@
         width: 98%;
         display: flex;
         flex-wrap: wrap;
-        overflow-y: scroll;
+        // overflow-y: scroll;
+        overflow: hidden;
+        overflow-y: auto;
         .font-s14();
 
         .cont-col {
@@ -507,7 +529,7 @@
             }
 
             .right {
-              color: #000000;
+              color: #303133;
               font-weight: 800;
               padding-left: 1rem;
               //line-height: 20px;
@@ -520,10 +542,16 @@
           font-weight: 400;
 
           .cont-row-point {
+            // margin-right: 1rem;
+            // border-radius: 50%;
+            // height: 1rem;
+            // width: 1rem;
             margin-right: 1rem;
-            border-radius: 50%;
             height: 1rem;
             width: 1rem;
+            background-color: white;
+            border-radius: 50%;
+            border: 0.25rem solid rgb(192, 196, 204);
           }
 
           .cont-row1 {
@@ -558,15 +586,21 @@
     .ProcessStatus-Div {
       .title {
         font-size: 2.083rem;
-        color: rgba(48, 49, 51, 1);
+        // color: rgba(48, 49, 51, 1);
         display: flex;
         align-items: center;
 
         .cont-row-point {
           margin-right: 1rem;
-          border-radius: 50%;
           height: 1rem;
           width: 1rem;
+          background-color: white;
+          border-radius: 50%;
+          border: 0.25rem solid rgb(192, 196, 204);
+        }
+        .title-link {
+          color: #303133;
+          font-weight: 600;
         }
 
         &:hover{

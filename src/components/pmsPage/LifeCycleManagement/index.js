@@ -747,7 +747,7 @@ class LifeCycleManagementTabs extends React.Component {
                       padding: (index === basicData.length - 1 ? '0 3.571rem 3.571rem 3.571rem' : '0 3.571rem')
                     }} className='card'>
                       {
-                        <Col span={24} style={{width: '100%', padding: '3rem', borderRadius: '8px', maxHeight: '50rem'}}
+                        <Col span={24} style={{width: '100%', padding: '3rem 3rem 3.2rem 3rem', borderRadius: '8px', maxHeight: '50rem'}}
                              className='cont'>
                           {
                             sort.map((item = {}, index) => {
@@ -760,7 +760,7 @@ class LifeCycleManagementTabs extends React.Component {
                                   num = num + 1;
                                 }
                               })
-                              return <Col span={8}>
+                              return <Col span={8} className='cont-col-self'> 
                                 <div className='cont-col'>
                                   <div className='cont-col1'>
                                     <div className='right'>
@@ -777,7 +777,7 @@ class LifeCycleManagementTabs extends React.Component {
                                           <Points status={item.zxqk}/>
                                           {item.sxmc}
                                         </Col>
-                                        <Col span={3}>
+                                        <Col span={6}>
                                           <Tooltips type={item.swlx}
                                                     item={item}
                                                     status={item.zxqk}
@@ -787,13 +787,13 @@ class LifeCycleManagementTabs extends React.Component {
                                                     handleEdit={() => this.handleEdit(item)}
                                                     handleMessageEdit={this.handleMessageEdit}/>
                                         </Col>
-                                        <Col span={3}>
+                                        {/* <Col span={3}> */}
                                           {/*<Dropdown overlay={menu}>*/}
                                           {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
                                           {/*     className="iconfont icon-more">*/}
                                           {/*  </i>*/}
                                           {/*</Dropdown>*/}
-                                        </Col>
+                                        {/* </Col> */}
                                         <div className='cont-row1'>
                                           <div className='left'>
                                             {/*//2022.06.17上传*/}

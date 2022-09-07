@@ -4,7 +4,7 @@ import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
 import { FetchQueryOwnerProjectList } from "../../../../services/pmsServices";
 const { Option } = Select;
-const PASE_SIZE = 5;
+const PASE_SIZE = 10;
 const DEFAULT_CURRENT = 1;
 
 class OperationList extends React.Component {
@@ -52,10 +52,10 @@ class OperationList extends React.Component {
           }}
         >
           <Input.Group compact>
-            <div onMouseDown={(e) => { e.preventDefault(); return false; }}>
+            <div onMouseDown={(e) => { e.preventDefault(); return false; }} style={{position:'relative'}}>
               <Select
                 style={{ width: '34rem', borderRadius: '8px !important' }}
-                // showSearch
+                showSearch
                 placeholder="请输入项目名称"
                 optionFilterProp="children"
                 key={defaultValue ? defaultValue : optionsData[0]?.xmmc}
@@ -67,10 +67,11 @@ class OperationList extends React.Component {
                 }
                 open={open}
                 onDropdownVisibleChange={(visible) => { this.setState({ open: visible }); }}
+                dropdownStyle={{height: '355px'}}
                 dropdownRender={(options) => {
                   return (<>
                     {options}
-                    <div style={{ display: 'flex', height: '4.46rem', lineHeight:'4.46rem' }}>
+                    <div style={{ display: 'flex', height: '4.46rem', lineHeight:'4.46rem', position:'absolute', bottom: '0' }}>
                       <span style={{ padding: '0 2.381rem', lineHeight:'4.46rem' }}>共 {data.length} 条</span>
                       <Pagination size="small" simple defaultCurrent={DEFAULT_CURRENT} total={data.length} pageSize={PASE_SIZE} onChange={(pageNum) => {
                         FetchQueryOwnerProjectList({

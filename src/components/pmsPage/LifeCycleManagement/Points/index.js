@@ -15,11 +15,11 @@ class Points extends React.Component {
     return (
       <div>
         {
-          status !== " " && <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+          status !== " " && <div className='cont-row-point' style={{borderColor: 'rgba(51, 97, 255, 1)', backgroundColor: 'rgba(51, 97, 255, 1)'}}/>
         }
         {
           status === " " &&
-          <div className='cont-row-point' style={{background: 'rgba(192, 196, 204, 1)'}}/>
+          <div className='cont-row-point' style={{borderColor: 'rgba(192, 196, 204, 1)'}}/>
         }
       </div>
     );
