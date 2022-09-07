@@ -148,20 +148,14 @@ class WorkBench extends React.Component {
         xmmc: e[i].xmid,
       }).then((ret = {}) => {
         const {record = [], code = 0} = ret;
-        // console.log("basicData",record);
+        console.log("basicData", record);
         if (code === 1) {
           //zxxh排序
-          e.map((item = {}, index) => {
-            item.extend = false;
-            // if (index === 0) {
-            //   item.extend = true;
-            // }
-            item.kssj = record[0].kssj
-            item.jssj = record[0].jssj
-            item.zt = record[0].zt
-            // item.fxnr = item.fxnr
-          })
-          // console.log("ProjectScheduleData",e)
+          e[i].extend = false;
+          e[i].kssj = record[0].kssj
+          e[i].jssj = record[0].jssj
+          e[i].zt = record[0].zt
+          console.log("ProjectScheduleData", e)
           this.setState({
             ProjectScheduleTotal: total,
             ProjectScheduleData: e,
