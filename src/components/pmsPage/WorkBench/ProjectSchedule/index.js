@@ -532,7 +532,7 @@ class ProjectSchedule extends React.Component {
                         <i
                           className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                           onClick={() => this.extend(index)}/>&nbsp;
-                        <div className='head1' onMouseOver={() => this.handleColorChange("#3361FF")}
+                        {/* <div className='head1' onMouseOver={() => this.handleColorChange("#3361FF")}
                              onMouseLeave={() => this.handleColorChange('')}>
                           <Link style={{color: color}} to={{
                             pathname: '/pms/manage/LifeCycleManagement',
@@ -541,6 +541,16 @@ class ProjectSchedule extends React.Component {
                           <i
                             className={'iconfont icon-right'}
                             style={{fontSize: '2.381rem', color: color}}
+                          />
+                        </div> */}
+                       <div className='head1'>
+                          <Link className='head1-link' to={{
+                            pathname: '/pms/manage/LifeCycleManagement',
+                            query: {xmid: items.xmid},
+                          }}>{items.xmmc}</Link>&nbsp;
+                          <i
+                            className={'iconfont icon-right'}
+                            style={{fontSize: '2.381rem'}}
                           />
                         </div>
                         <div className='head3'>

@@ -85,8 +85,9 @@ export default class PageSider extends React.Component {
             selectedKeys={selectedKeys}
             mode='inline'
 
-            openKeys={openKeys}
-            onOpenChange={this.onOpenChange}
+            // openKeys={openKeys}    //导航收起后仍有浮层的bug
+            // onOpenChange={this.onOpenChange}
+
             // style={{ background: '#000' }}
             className={`${styles.m_menu} m-menu ${collapsed && styles.collapsedMenu}`}
           >

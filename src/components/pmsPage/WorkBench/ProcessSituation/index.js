@@ -91,13 +91,19 @@ class ProcessSituation extends React.Component {
                       return <div className='ProcessStatus-Div' style={{}}>
                         <div className='title'>
                           <div className='cont-row-point' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                          <Link style={{color: color, fontSize: '2.083rem',}}
+                          {/* <Link style={{color: color, fontSize: '2.083rem',}}
                                 onMouseOver={() => this.handleColorChange("#3361FF")}
                                 onMouseLeave={() => this.handleColorChange('')}
                                 onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</Link>&nbsp;
                           <i
                             className={'iconfont icon-right'}
                             style={{fontSize: '2.381rem', color: color}}
+                          /> */}
+                          <Link className='title-link' style={{fontSize: '2.083rem',}}
+                            onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</Link>&nbsp;
+                          <i
+                            className={'iconfont icon-right'}
+                            style={{fontSize: '2.381rem'}}
                           />
                         </div>
                         <Row className='cont'>
