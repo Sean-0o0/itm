@@ -94,8 +94,11 @@ class TodoItems extends React.Component {
     if (text.sxmc.includes("周报")) {
       window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
     }
-    if (text.sxmc.includes("预算")) {
-      window.location.href = `/#/UIProcessor?Table=ZBXYSLR&hideTitlebar=true`
+    if (text.sxmc.includes("预算年初")) {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    }
+    if (text.sxmc.includes("预算年中")) {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
     }
     if (text.sxmc.includes("月报")) {
       window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
@@ -395,7 +398,7 @@ class TodoItems extends React.Component {
   }
 
   updateState = (record, zxlx) => {
-    console.log("recordrecord", record)
+    // console.log("recordrecord", record)
     UpdateMessageState({
       zxlx: zxlx,
       sxid: record.sxid,
