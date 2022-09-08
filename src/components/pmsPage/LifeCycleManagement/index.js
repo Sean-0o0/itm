@@ -744,7 +744,7 @@ class LifeCycleManagementTabs extends React.Component {
                     <Row style={{
                       height: '80%',
                       width: '100%',
-                      padding: (index === basicData.length - 1 ? '0 3.571rem 3.571rem 3.571rem' : '0 3.571rem')
+                      padding: (index === basicData.length - 1 ? '0 3.571rem 3.571rem 10.333rem' : '0 3.571rem 0 10.333rem')
                     }} className='card'>
                       {
                         <Col span={24} style={{width: '100%', padding: '3rem 3rem 3.2rem 3rem', borderRadius: '8px', maxHeight: '50rem'}}
@@ -760,7 +760,7 @@ class LifeCycleManagementTabs extends React.Component {
                                   num = num + 1;
                                 }
                               })
-                              return <Col span={8} className='cont-col-self'> 
+                              return <Col span={8} className='cont-col-self'>
                                 <div className='cont-col'>
                                   <div className='cont-col1'>
                                     <div className='right'>
