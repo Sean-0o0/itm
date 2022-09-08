@@ -2,7 +2,6 @@ import React from 'react';
 import { Button, Input, Select, Row, Col, message, Pagination } from 'antd';
 import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
-import { FetchQueryOwnerProjectList } from "../../../../services/pmsServices";
 const { Option } = Select;
 const PASE_SIZE = 10;
 const DEFAULT_CURRENT = 1;
@@ -16,13 +15,6 @@ class OperationList extends React.Component {
   componentWillMount() {
   }
   componentDidMount() {
-    FetchQueryOwnerProjectList({
-      current: 1,
-      pageSize: PASE_SIZE,
-      paging: 1,
-      sort: "",
-      total: -1,
-    }).then(res => { this.setState({ optionsData: res.record }); });
   }
 
   onChange = (value) => {
@@ -38,8 +30,9 @@ class OperationList extends React.Component {
 
   render() {
     const { open, optionsData } = this.state;
-    const { defaultValue, data } = this.props;
+    const { defaultValue, data, fetchQueryOwnerProjectList } = this.props;
     console.log("defaultValuedefaultValue", defaultValue);
+    console.log('dataaaaaaa',data);
     return (
       <Row style={{ backgroundColor: 'white', borderRadius: '8px' }}>
         <Col span={20}
@@ -58,8 +51,8 @@ class OperationList extends React.Component {
                 showSearch
                 placeholder="请输入项目名称"
                 optionFilterProp="children"
-                key={defaultValue ? defaultValue : optionsData[0]?.xmmc}
-                defaultValue={defaultValue ? defaultValue : optionsData[0]?.xmmc}
+                key={defaultValue ? defaultValue : data[0]?.xmmc}
+                defaultValue={defaultValue ? defaultValue : data[0]?.xmmc}
                 onChange={this.onChange}
                 onSearch={this.onSearch}
                 filterOption={(input, option) =>
@@ -74,20 +67,14 @@ class OperationList extends React.Component {
                     <div style={{ display: 'flex', height: '4.46rem', lineHeight:'4.46rem', position:'absolute', bottom: '0' }}>
                       <span style={{ padding: '0 2.381rem', lineHeight:'4.46rem' }}>共 {data.length} 条</span>
                       <Pagination size="small" simple defaultCurrent={DEFAULT_CURRENT} total={data.length} pageSize={PASE_SIZE} onChange={(pageNum) => {
-                        FetchQueryOwnerProjectList({
-                          current: pageNum,
-                          pageSize: PASE_SIZE,
-                          paging: 1,
-                          sort: "",
-                          total: -1,
-                        }).then((res)=>{this.setState({ optionsData: res.record });});
+                        fetchQueryOwnerProjectList(pageNum, PASE_SIZE);
                       }} />
                     </div>
                   </>);
                 }}
               >
                 {
-                  optionsData?.map((item = {}, ind) => {
+                  data?.map((item = {}, ind) => {
                     return <Option key={ind} value={item.xmid}>{item.xmmc}</Option>
                   })
                 }

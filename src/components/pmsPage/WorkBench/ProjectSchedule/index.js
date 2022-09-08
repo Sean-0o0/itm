@@ -1,4 +1,4 @@
-import {Row, Col, Tooltip, Dropdown, Menu, Pagination, Divider, message,} from 'antd';
+import { Row, Col, Tooltip, Dropdown, Menu, Pagination, Divider, message, } from 'antd';
 import React from 'react';
 import icon_wrong from "../../../../image/pms/icon_milepost_wrong.png";
 import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
@@ -6,10 +6,10 @@ import ProjectRisk from "./ProjectRisk";
 import icon_normal from "../../../../image/pms/icon_milepost_normal.png";
 import icon_waiting from "../../../../image/pms/icon_milepost_waiting.png";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
-import {Link} from "dva/router";
+import { Link } from "dva/router";
 import Tooltips from "../../LifeCycleManagement/Tooltips";
-import {FetchLivebosLink} from "../../../../services/amslb/user";
-import {CreateOperateHyperLink} from "../../../../services/pmsServices";
+import { FetchLivebosLink } from "../../../../services/amslb/user";
+import { CreateOperateHyperLink } from "../../../../services/pmsServices";
 import Points from "../../LifeCycleManagement/Points";
 
 const Loginname = localStorage.getItem("firstUserID");
@@ -52,7 +52,7 @@ class ProjectSchedule extends React.Component {
 
   //文档上传
   handleUpload = (item) => {
-    // console.log("11111")
+    console.log("11111")
     this.getUploadUrl(item);
     this.setState({
       uploadVisible: true,
@@ -240,7 +240,7 @@ class ProjectSchedule extends React.Component {
       }
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           // sendTitle: e + '发起',
@@ -255,7 +255,7 @@ class ProjectSchedule extends React.Component {
 
   //文档上传/修改url
   getUploadUrl = (item) => {
-    // console.log("itemitemitem", item)
+    console.log("itemitemitem", item)
     const params = {
       "attribute": 0,
       "authFlag": 0,
@@ -278,7 +278,7 @@ class ProjectSchedule extends React.Component {
       "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           uploadUrl: url,
@@ -292,7 +292,7 @@ class ProjectSchedule extends React.Component {
   //信息录入url
   getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           fillOutUrl: url,
@@ -308,7 +308,7 @@ class ProjectSchedule extends React.Component {
   //信息录入修改url
   getEditMessageUrl = (params) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
@@ -357,7 +357,7 @@ class ProjectSchedule extends React.Component {
       object: object,
       params: params
     }).then((ret = {}) => {
-      const {data = ''} = ret;
+      const { data = '' } = ret;
       if (data) {
         return data;
       }
@@ -378,7 +378,7 @@ class ProjectSchedule extends React.Component {
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
-        dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+        dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
       } else {
         let res = dataArr.some(item => {//判断相同swlx，有就添加到当前项
           if (item.swlx === mapItem.swlx) {
@@ -387,7 +387,7 @@ class ProjectSchedule extends React.Component {
           }
         })
         if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
         }
       }
     })
@@ -395,7 +395,7 @@ class ProjectSchedule extends React.Component {
   }
 
   extend = (number) => {
-    const {extend} = this.props;
+    const { extend } = this.props;
     extend(number);
   }
 
@@ -403,7 +403,7 @@ class ProjectSchedule extends React.Component {
     this.setState({
       page: e,
     })
-    const {fetchQueryOwnerProjectList} = this.props;
+    const { fetchQueryOwnerProjectList } = this.props;
     fetchQueryOwnerProjectList(e)
   }
 
@@ -414,9 +414,9 @@ class ProjectSchedule extends React.Component {
   }
 
   render() {
-    const {data, total, ProjectScheduleDetailData} = this.props;
-    // console.log("data", data);
-    // console.log("ProjectScheduleDetailData", ProjectScheduleDetailData);
+    const { data, total, ProjectScheduleDetailData } = this.props;
+    console.log("data", data);
+    console.log("ProjectScheduleDetailData", ProjectScheduleDetailData);
     const {
       uploadVisible,
       editVisible,
@@ -458,7 +458,7 @@ class ProjectSchedule extends React.Component {
       width: '100rem',
       height: '58rem',
       title: uploadTitle,
-      style: {top: '20rem'},
+      style: { top: '20rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -468,7 +468,7 @@ class ProjectSchedule extends React.Component {
       width: '100rem',
       height: '68rem',
       title: editTitle,
-      style: {top: '20rem'},
+      style: { top: '20rem' },
       visible: editVisible,
       footer: null,
     };
@@ -478,7 +478,7 @@ class ProjectSchedule extends React.Component {
       width: '150rem',
       height: '100rem',
       title: sendTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -488,50 +488,50 @@ class ProjectSchedule extends React.Component {
       width: '120rem',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
     return (
-      <Row className='workBench' style={{height: '70rem', padding: '3.571rem'}}>
-        <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
-          <div style={{display: 'flex',}}>
-            <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
-               className="iconfont icon-piechart"/>
-            <div style={{height: '10%', fontSize: '2.381rem', fontWeight: 700, color: '#303133',}}>项目进度
+      <Row className='workBench' style={{ height: '70rem', padding: '3.571rem' }}>
+        <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
+          <div style={{ display: 'flex', }}>
+            <i style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem' }}
+              className="iconfont icon-piechart" />
+            <div style={{ height: '10%', fontSize: '2.381rem', fontWeight: 700, color: '#303133', }}>项目进度
             </div>
           </div>
         </div>
         {/*上传弹窗*/}
         {uploadVisible &&
-        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-                     onCancel={this.closeUploadModal}
-                     src={uploadUrl}/>}
+          <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+            onCancel={this.closeUploadModal}
+            src={uploadUrl} />}
         {/*修改弹窗*/}
         {editVisible &&
-        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
-                     onCancel={this.closeEditModal}
-                     src={uploadUrl}/>}
+          <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+            onCancel={this.closeEditModal}
+            src={uploadUrl} />}
         {/*立项流程发起弹窗*/}
         {sendVisible &&
-        <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
-                     src={sendUrl}/>}
+          <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
+            src={sendUrl} />}
         {/*信息录入弹窗*/}
         {fillOutVisible &&
-        <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
-                     onCancel={this.closeFillOutModal}
-                     src={fillOutUrl}/>}
-        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
-          <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '100%'}}>
-            <div style={{height: '100%'}}>
-              <div style={{height: '70rem', overflowY: 'auto'}}>
+          <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+            onCancel={this.closeFillOutModal}
+            src={fillOutUrl} />}
+        <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
+          <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
+            <div style={{ height: '100%' }}>
+              <div style={{ height: '70rem', overflowY: 'auto' }}>
                 {
                   data.map((items = {}, index) => {
                     return <div className='workBench-LifeCycleManage'>
                       <div className='head'>
                         <i
                           className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                          onClick={() => this.extend(index)}/>&nbsp;
+                          onClick={() => this.extend(index)} />&nbsp;
                         {/* <div className='head1' onMouseOver={() => this.handleColorChange("#3361FF")}
                              onMouseLeave={() => this.handleColorChange('')}>
                           <Link style={{color: color}} to={{
@@ -543,14 +543,14 @@ class ProjectSchedule extends React.Component {
                             style={{fontSize: '2.381rem', color: color}}
                           />
                         </div> */}
-                       <div className='head1'>
+                        <div className='head1'>
                           <Link className='head1-link' to={{
                             pathname: '/pms/manage/LifeCycleManagement',
-                            query: {xmid: items.xmid},
+                            query: { xmid: items.xmid },
                           }}>{items.xmmc}</Link>&nbsp;
                           <i
                             className={'iconfont icon-right'}
-                            style={{fontSize: '2.381rem'}}
+                            style={{ fontSize: '2.381rem' }}
                           />
                         </div>
                         <div className='head3'>
@@ -564,49 +564,50 @@ class ProjectSchedule extends React.Component {
                             color: 'rgba(51, 97, 255, 1)',
                             // width: '12rem'
                           }}>
-                            <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                            <div style={{margin: '0rem 2rem 0rem 1rem'}}>{items.jd}%</div>
+                            <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
+                            <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
                           </div>
                           {/*<ProjectProgress state={items.zt}/>*/}
                         </div>
                         <div className='head4'>
-                          项目风险：<ProjectRisk state={items.fxnr}/>
+                          项目风险：<ProjectRisk state={items.fxnr} />
                         </div>
                       </div>
                       {items.extend ?
                         ProjectScheduleDetailData.map((item = {}, ind) => {
                           let sort = this.groupBy(item);
                           return items?.xmid === item[0]?.xmid &&
-                            <Row style={{height: '80%', width: '100%', padding: '2rem 4.6rem 0 4.6rem'}}
-                                 className='card'>
+                            <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
+                              className='card'>
                               <Col span={24} className='cont1'>
-                                <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
+                                <div className='head' style={{ borderRadius: '8px 8px 0px 0px' }}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
-                                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                       className="iconfont icon-fill-flag"/>&nbsp;
+                                    <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                      className="iconfont icon-fill-flag" />&nbsp;
                                     里程碑阶段：
-                                    <span style={{color: 'rgba(48, 49, 51, 1)'}}>{item[0].lcb}</span>
+                                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item[0].lcb}</span>
                                   </div>
                                   <div className='head2'>
-                                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                       className="iconfont icon-time"/>&nbsp;
+                                    <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                      className="iconfont icon-time" />&nbsp;
                                     里程碑时间：
                                     <div
-                                      style={{color: 'rgba(48, 49, 51, 1)'}}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
+                                      style={{ color: 'rgba(48, 49, 51, 1)' }}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
                                   </div>
                                 </div>
                               </Col>
                               <Col span={24}
-                                   style={{
-                                     width: '100%',
-                                     padding: '3rem',
-                                     borderRadius: '0 0 8px 8px',
-                                     maxHeight: '50rem'
-                                   }}
-                                   className='cont2'>
+                                style={{
+                                  width: '100%',
+                                  padding: '3rem 3rem calc(3rem - 16px) 3rem',
+                                  borderRadius: '0 0 8px 8px',
+                                  maxHeight: '50rem'
+                                }}
+                                className='cont2'>
                                 {
                                   sort.map((item = {}, index) => {
+                                    console.log('item', item);
                                     // console.log("index", index)
                                     // console.log("sort.length", sort.length)
                                     // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
@@ -616,32 +617,36 @@ class ProjectSchedule extends React.Component {
                                         num = num + 1;
                                       }
                                     })
-                                    return <Col span={8}>
+                                    return <Col span={8} style={{marginBottom: '16px'}}> 
                                       <div className='cont-col'>
                                         <div className='cont-col1'>
                                           <div className='right'>
                                             {item.swlx}({num}/{sort[index].List.length})
                                           </div>
                                         </div>
-                                        <div style={{padding: '1.5rem 0 0 0'}}>
+                                        <div>
                                           {sort[index].List.map((item = {}, ind) => {
                                             return <Row className='cont-row' style={{
-                                              height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                              margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                              // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                              // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                              marginTop: ind === 0 ? '18px' : '16px'
                                             }}>
-                                              <Col span={17} style={{display: 'flex', alignItems: 'center'}}>
-                                                <Points status={item.zxqk}/>
-                                                {item.sxmc}
+                                              <Col span={17}>
+                                                <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                  <Points status={item.zxqk} />
+                                                  <span>{item.sxmc}</span>
+                                                </div>
+                                                <div className='cont-row-zxqk'>{item.zxqk}</div>
                                               </Col>
                                               <Col span={3}>
                                                 <Tooltips type={item.swlx}
-                                                          item={item}
-                                                          status={item.zxqk}
-                                                          handleUpload={() => this.handleUpload(item)}
-                                                          handleSend={this.handleSend}
-                                                          handleFillOut={() => this.handleFillOut(item)}
-                                                          handleEdit={() => this.handleEdit(item)}
-                                                          handleMessageEdit={this.handleMessageEdit}/>
+                                                  item={item}
+                                                  status={item.zxqk}
+                                                  handleUpload={() => this.handleUpload(item)}
+                                                  handleSend={this.handleSend}
+                                                  handleFillOut={() => this.handleFillOut(item)}
+                                                  handleEdit={() => this.handleEdit(item)}
+                                                  handleMessageEdit={this.handleMessageEdit} />
                                               </Col>
                                               <Col span={3}>
                                                 {/*<Dropdown overlay={menu}>*/}
@@ -667,14 +672,14 @@ class ProjectSchedule extends React.Component {
                         })
                         : ''
                       }
-                      <Divider style={{margin: '2.381rem 0'}}/>
+                      <Divider style={{ margin: '2.381rem 0' }} />
                     </div>
                   })
                 }
               </div>
-              <div style={{height: '10%', marginBottom: '1rem'}}>
+              <div style={{ height: '10%', marginBottom: '1rem' }}>
                 <Pagination
-                  style={{textAlign: 'end', fontSize: '2.083rem'}}
+                  style={{ textAlign: 'end', fontSize: '2.083rem' }}
                   total={total}
                   size="small"
                   showTotal={total => `共 ${total} 条`}

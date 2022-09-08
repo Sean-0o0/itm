@@ -1,4 +1,4 @@
-import {Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty, Divider} from 'antd';
+import { Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty, Divider } from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
@@ -7,15 +7,16 @@ import Points from './Points';
 import Imgs from './Imgs';
 import ProjectProgress from './ProjectProgress';
 import BridgeModel from "../../Common/BasicModal/BridgeModel";
-import {FetchLivebosLink} from '../../../services/amslb/user';
-import {message} from 'antd';
+import { FetchLivebosLink } from '../../../services/amslb/user';
+import { message } from 'antd';
 import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone, FetchQueryOwnerProjectList
 } from "../../../services/pmsServices";
 
-const {Panel} = Collapse;
+const { Panel } = Collapse;
+const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
 
 class LifeCycleManagementTabs extends React.Component {
@@ -57,7 +58,7 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   componentDidMount() {
-    this.fetchQueryOwnerProjectList();
+    this.fetchQueryOwnerProjectList(1, PASE_SIZE);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -70,18 +71,18 @@ class LifeCycleManagementTabs extends React.Component {
     }
   }
 
-  fetchQueryOwnerProjectList = () => {
-    const {params} = this.props;
+  fetchQueryOwnerProjectList = (current, pageSize) => {
+    const { params } = this.props;
     FetchQueryOwnerProjectList(
       {
         paging: 1,
-        current: 1,
-        pageSize: 5,
+        current,
+        pageSize,
         total: -1,
         sort: ''
       }
     ).then((ret = {}) => {
-      const {record, code} = ret;
+      const { record, code } = ret;
       if (code === 1) {
         this.setState({
           defaultValue: params.xmid,
@@ -143,7 +144,7 @@ class LifeCycleManagementTabs extends React.Component {
       }
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           // sendTitle: e + '发起',
@@ -180,7 +181,7 @@ class LifeCycleManagementTabs extends React.Component {
       "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           uploadUrl: url,
@@ -194,7 +195,7 @@ class LifeCycleManagementTabs extends React.Component {
   //信息录入url
   getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           fillOutUrl: url,
@@ -210,7 +211,7 @@ class LifeCycleManagementTabs extends React.Component {
   //信息录入修改url
   getEditMessageUrl = (params) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
@@ -226,7 +227,7 @@ class LifeCycleManagementTabs extends React.Component {
   //阶段信息修改url
   getEditModelUrl = (params) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editModelUrl: url,
@@ -243,7 +244,7 @@ class LifeCycleManagementTabs extends React.Component {
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const {record = [], code = 0} = ret;
+      const { record = [], code = 0 } = ret;
       // console.log("basicData",record);
       if (code === 1) {
         //zxxh排序
@@ -274,7 +275,7 @@ class LifeCycleManagementTabs extends React.Component {
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const {code = 0, record = []} = ret;
+      const { code = 0, record = [] } = ret;
       // console.log("detailData",record);
       if (code === 1) {
         this.setState({
@@ -296,7 +297,7 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   extend = (number) => {
-    const {basicData} = this.state;
+    const { basicData } = this.state;
     basicData.map((item = {}, index) => {
       if (index === number) {
         item.extend = !item.extend;
@@ -516,7 +517,7 @@ class LifeCycleManagementTabs extends React.Component {
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
-        dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+        dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
       } else {
         let res = dataArr.some(item => {//判断相同swlx，有就添加到当前项
           if (item.swlx === mapItem.swlx) {
@@ -525,7 +526,7 @@ class LifeCycleManagementTabs extends React.Component {
           }
         })
         if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
         }
       }
     })
@@ -574,7 +575,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '150rem',
       height: '68rem',
       title: uploadTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -584,7 +585,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '150rem',
       height: '68rem',
       title: editTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -594,7 +595,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '150rem',
       height: '100rem',
       title: sendTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -604,7 +605,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '120rem',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
@@ -614,7 +615,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '150rem',
       height: '80rem',
       title: editMessageTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editMessageVisible,
       footer: null,
     };
@@ -624,7 +625,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '150rem',
       height: '80rem',
       title: editModelTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editModelVisible,
       footer: null,
     };
@@ -643,44 +644,45 @@ class LifeCycleManagementTabs extends React.Component {
       </Menu>
     );
     return (
-      <Row style={{height: 'calc(100% - 4.5rem)'}}>
+      <Row style={{ height: 'calc(100% - 4.5rem)' }}>
         {/*文档上传弹窗*/}
         {uploadVisible &&
-        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-                     onCancel={this.closeUploadModal}
-                     src={uploadUrl}/>}
+          <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+            onCancel={this.closeUploadModal}
+            src={uploadUrl} />}
         {/*文档修改弹窗*/}
         {editVisible &&
-        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
-                     onCancel={this.closeEditModal}
-                     src={uploadUrl}/>}
+          <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+            onCancel={this.closeEditModal}
+            src={uploadUrl} />}
         {/*流程发起弹窗*/}
         {sendVisible &&
-        <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
-                     src={sendUrl}/>}
+          <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
+            src={sendUrl} />}
         {/*信息录入弹窗*/}
         {fillOutVisible &&
-        <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
-                     onCancel={this.closeFillOutModal}
-                     src={fillOutUrl}/>}
+          <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+            onCancel={this.closeFillOutModal}
+            src={fillOutUrl} />}
         {/*信息修改弹窗*/}
         {editMessageVisible &&
-        <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
-                     onCancel={this.closeMessageEditModal}
-                     src={editMessageUrl}/>}
+          <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+            onCancel={this.closeMessageEditModal}
+            src={editMessageUrl} />}
         {/*阶段信息修改弹窗*/}
         {editModelVisible &&
-        <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
-                     onCancel={this.closeModelEditModal}
-                     src={editModelUrl}/>}
-        <div style={{height: '8%', margin: '3.571rem 1.571rem 2.381rem 1.571rem'}}>
+          <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+            onCancel={this.closeModelEditModal}
+            src={editModelUrl} />}
+        <div style={{ height: '8%', margin: '3.571rem 1.571rem 2.381rem 1.571rem' }}>
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
-                         fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-                         data={operationListData}
-                         defaultValue={defaultValue}/>
+            fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+            fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+            data={operationListData}
+            defaultValue={defaultValue} />
         </div>
         {/*position: 'relative',*/}
-        <div style={{height: '92%', margin: '0 1.571rem 3.571rem 1.571rem',}}>
+        <div style={{ height: '92%', margin: '0 1.571rem 3.571rem 1.571rem', }}>
           {
             basicData.map((item = {}, index) => {
               let detail = [];
@@ -700,34 +702,34 @@ class LifeCycleManagementTabs extends React.Component {
                 borderBottomRightRadius: (index === basicData.length - 1 ? '8px' : '')
               }}>
                 <div className='head'>
-                  <Imgs status={item.zt}/>
+                  <Imgs status={item.zt} />
                   <i
                     className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                    onClick={() => this.extend(index)}/>&nbsp;
+                    onClick={() => this.extend(index)} />&nbsp;
                   <div className='head1'>
                     {item.lcbmc}
                   </div>
                   <div className='head6'>
-                    进度：<span style={{color: 'black'}}>{item.jd}</span>
+                    进度：<span style={{ color: 'black' }}>{item.jd}</span>
                   </div>
                   <div className='head3'>
                     时间范围：
                     <div
-                      style={{color: 'rgba(48, 49, 51, 1)'}}>{item.kssj.slice(0, 4) + '.' + item.kssj.slice(4, 6) + '.' + item.kssj.slice(6, 8)} ~ {item.jssj.slice(0, 4) + '.' + item.jssj.slice(4, 6) + '.' + item.jssj.slice(6, 8)} </div>
+                      style={{ color: 'rgba(48, 49, 51, 1)' }}>{item.kssj.slice(0, 4) + '.' + item.kssj.slice(4, 6) + '.' + item.kssj.slice(6, 8)} ~ {item.jssj.slice(0, 4) + '.' + item.jssj.slice(4, 6) + '.' + item.jssj.slice(6, 8)} </div>
                   </div>
                   <div className='head4'>
-                    项目风险：<ProjectRisk item={item} xmid={this.state.xmid}/>
+                    项目风险：<ProjectRisk item={item} xmid={this.state.xmid} />
                   </div>
                   <div className='head2'>
-                    状态：<ProjectProgress state={item.zt}/>
+                    状态：<ProjectProgress state={item.zt} />
                   </div>
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                           className="iconfont icon-edit" onClick={
-                          () => this.handleEditModel(item)
-                        }/>
+                        <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                          className="iconfont icon-edit" onClick={
+                            () => this.handleEditModel(item)
+                          } />
                       </div>
                     </div>
                   </div>
@@ -744,11 +746,11 @@ class LifeCycleManagementTabs extends React.Component {
                     <Row style={{
                       height: '80%',
                       width: '100%',
-                      padding: (index === basicData.length - 1 ? '0 3.571rem 3.571rem 10.333rem' : '0 3.571rem 0 10.333rem')
+                      padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0px 6.571rem 0 10.571rem')
                     }} className='card'>
                       {
-                        <Col span={24} style={{width: '100%', padding: '3rem 3rem 3.2rem 3rem', borderRadius: '8px', maxHeight: '50rem'}}
-                             className='cont'>
+                        <Col span={24} style={{ width: '100%', padding: '3rem 3rem calc(3rem - 16px) 3rem', borderRadius: '8px', maxHeight: '50rem' }}
+                          className='cont'>
                           {
                             sort.map((item = {}, index) => {
                               console.log("index", index)
@@ -760,45 +762,50 @@ class LifeCycleManagementTabs extends React.Component {
                                   num = num + 1;
                                 }
                               })
-                              return <Col span={8} className='cont-col-self'>
+                              return <Col span={8} className='cont-col-self' style={{marginBottom: '16px'}}>
                                 <div className='cont-col'>
                                   <div className='cont-col1'>
                                     <div className='right'>
                                       {item.swlx}({num}/{sort[index].List.length})
                                     </div>
                                   </div>
-                                  <div style={{padding: '1.5rem 0 0 0'}}>
+                                  <div>
                                     {sort[index].List.map((item = {}, ind) => {
                                       return <Row className='cont-row' style={{
-                                        height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                        margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                        // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                        // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                        marginTop: ind === 0 ? '18px' : '16px'
                                       }}>
-                                        <Col span={17} style={{display: 'flex', alignItems: 'center'}}>
-                                          <Points status={item.zxqk}/>
-                                          {item.sxmc}
+                                        <Col span={17} >
+                                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                                            <Points status={item.zxqk} />
+                                            <span>{item.sxmc}</span>
+                                          </div>
+                                          <div className='cont-row-zxqk'>{item.zxqk}</div>
                                         </Col>
-                                        <Col span={6}>
+                                        <Col span={6} style={{textAlign: 'right'}}>
                                           <Tooltips type={item.swlx}
-                                                    item={item}
-                                                    status={item.zxqk}
-                                                    handleUpload={() => this.handleUpload(item)}
-                                                    handleSend={this.handleSend}
-                                                    handleFillOut={() => this.handleFillOut(item)}
-                                                    handleEdit={() => this.handleEdit(item)}
-                                                    handleMessageEdit={this.handleMessageEdit}/>
+                                            item={item}
+                                            status={item.zxqk}
+                                            handleUpload={() => this.handleUpload(item)}
+                                            handleSend={this.handleSend}
+                                            handleFillOut={() => this.handleFillOut(item)}
+                                            handleEdit={() => this.handleEdit(item)}
+                                            handleMessageEdit={this.handleMessageEdit}
+                                            />
                                         </Col>
                                         {/* <Col span={3}> */}
-                                          {/*<Dropdown overlay={menu}>*/}
-                                          {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
-                                          {/*     className="iconfont icon-more">*/}
-                                          {/*  </i>*/}
-                                          {/*</Dropdown>*/}
+                                        {/*<Dropdown overlay={menu}>*/}
+                                        {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
+                                        {/*     className="iconfont icon-more">*/}
+                                        {/*  </i>*/}
+                                        {/*</Dropdown>*/}
                                         {/* </Col> */}
-                                        <div className='cont-row1'>
+                                        {/* <div className='cont-row1'>
                                           <div className='left'>
-                                            {/*//2022.06.17上传*/}
+                                            //2022.06.17上传
                                           </div>
-                                        </div>
+                                        </div> */}
                                       </Row>
                                     })}
                                   </div>
