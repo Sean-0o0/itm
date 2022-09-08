@@ -9,7 +9,7 @@ class Tooltips extends React.Component {
   state = {};
 
   handleFillOut = (item) => {
-    console.log("item", item);
+    // console.log("item", item);
     this.props.handleFillOut(item);
   }
 
@@ -18,7 +18,7 @@ class Tooltips extends React.Component {
   }
 
   handleSend = (item) => {
-    console.log("item", item);
+    // console.log("item", item);
     this.props.handleSend(item);
   }
 
@@ -27,7 +27,7 @@ class Tooltips extends React.Component {
   }
 
   handleMessageEdit = (item) => {
-    console.log("item", item);
+    // console.log("item", item);
     this.props.handleMessageEdit(item);
   }
 

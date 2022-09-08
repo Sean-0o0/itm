@@ -385,8 +385,8 @@ class TodoItems extends React.Component {
   // }
 
   oncancel = (e) => {
-    console.log(e);
-    message.error('Click on No');
+    // console.log(e);
+    // message.error('Click on No');
   }
 
   handPageChange = (e) => {
@@ -401,8 +401,7 @@ class TodoItems extends React.Component {
     // console.log("recordrecord", record)
     UpdateMessageState({
       zxlx: zxlx,
-      sxid: record.sxid,
-      xmmc: record.xmid,
+      xxid: record.xxid,
     }).then((ret = {}) => {
       const {code = 0, note = '', record = []} = ret;
       if (code === 1) {

@@ -52,7 +52,7 @@ class ProjectSchedule extends React.Component {
 
   //文档上传
   handleUpload = (item) => {
-    console.log("11111")
+    // console.log("11111")
     this.getUploadUrl(item);
     this.setState({
       uploadVisible: true,
@@ -255,7 +255,7 @@ class ProjectSchedule extends React.Component {
 
   //文档上传/修改url
   getUploadUrl = (item) => {
-    console.log("itemitemitem", item)
+    // console.log("itemitemitem", item)
     const params = {
       "attribute": 0,
       "authFlag": 0,
@@ -415,8 +415,8 @@ class ProjectSchedule extends React.Component {
 
   render() {
     const {data, total, ProjectScheduleDetailData} = this.props;
-    console.log("data", data);
-    console.log("ProjectScheduleDetailData", ProjectScheduleDetailData);
+    // console.log("data", data);
+    // console.log("ProjectScheduleDetailData", ProjectScheduleDetailData);
     const {
       uploadVisible,
       editVisible,
@@ -607,9 +607,9 @@ class ProjectSchedule extends React.Component {
                                    className='cont2'>
                                 {
                                   sort.map((item = {}, index) => {
-                                    console.log("index", index)
-                                    console.log("sort.length", sort.length)
-                                    console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
+                                    // console.log("index", index)
+                                    // console.log("sort.length", sort.length)
+                                    // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                                     let num = 0
                                     sort[index].List.map((item = {}, ind) => {
                                       if (item.zxqk !== " ") {

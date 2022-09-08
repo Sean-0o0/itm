@@ -71,7 +71,7 @@ class ProjectRisk extends React.Component {
   render() {
 
     const {state, xmid} = this.props;
-    console.log("state", state)
+    // console.log("state", state)
     const {riskUrl, riskTitle, riskVisible,} = this.state;
     const riskModalProps = {
       isAllWindow: 1,
