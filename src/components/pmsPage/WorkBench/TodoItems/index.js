@@ -394,7 +394,7 @@ class TodoItems extends React.Component {
       page: e,
     })
     const {fetchQueryOwnerMessage} = this.props;
-    fetchQueryOwnerMessage(e)
+    fetchQueryOwnerMessage(e, this.state.date)
   }
 
   updateState = (record, zxlx) => {
