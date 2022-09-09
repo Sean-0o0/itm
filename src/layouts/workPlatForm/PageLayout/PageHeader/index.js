@@ -1,5 +1,5 @@
 import React from 'react';
-import { Divider,Badge } from 'antd';
+import { Divider, Badge } from 'antd';
 // import SwitchTheme from './switchTheme';
 import UserDrop from './userDrop';
 import VisitedRoutes from './VisitedRoutes';
@@ -27,25 +27,27 @@ export default class PageHeader extends React.PureComponent {
     const routerList = LocalPathUtils.getRoutesHaveName();
     const sysName = localStorage.getItem('sysName');
     return (
-      <div style={{ width: '100%' }}>
+      <div style={{ width: '100%'}}>
         {/* <GuideCover data={guidesRecords} /> */}
         <div className="zj-header">
-          <span><img className="logo" src={[require("../../../../assets/apex-logo-zszq-login.png")]} alt="" />
-          <Divider style={{height:'3rem'}} type="vertical" />
+          <div style={{ width: '29.76rem', textAlign: 'center', borderRight: '1px solid #EBEEF5'}}>
+            <span><img className="logo" src={'https://lanhu.oss-cn-beijing.aliyuncs.com/SketchPng25f42f9cda92c99adaf12b490a85c9123626e4d45cd2239d10696bf6ec51df06'} alt="" /> 
             </span>
-          <span style={{fontSize:'2.333rem',color:'#333',fontWeight:'bold',padding:'0 3rem 0 0'}}>{"项目信息综合管理系统【测】"}</span>
+            <span style={{ fontSize: '2.333rem', color: '#333', fontWeight: 'bold', letterSpacing: '0.25rem', verticalAlign: 'middle' }}>{"项目管理平台"}</span>
+          </div>
+          {/* <Divider style={{height:'3rem'}} type="vertical" /> */}
           <div id="visited_routes_container" style={{ flex: 1, overflow: 'hidden' }} className={`${styles.historyContainer}`} >
             <span><Scrollbars
               autoHide
-              style={{width: '100%'}}
+              style={{ width: '100%' }}
             >
               <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList}
-                             projectName={projectName}/>
+                projectName={projectName} />
             </Scrollbars>
-              </span>
+            </span>
           </div>
           <div id="fma_opertion_drops" className="dis-fx">
-            <div style={{width: '4rem'}}></div>
+            <div style={{ width: '4rem' }}></div>
             {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
             {/*  <a onClick={() => {*/}
             {/*    window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;*/}
@@ -59,14 +61,14 @@ export default class PageHeader extends React.PureComponent {
             {
               Object.keys(authorities).includes('remindBell') && (
                 <div id="guideTrigger_messageDrop">
-                  <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch}/>
+                  <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
                 </div>
               )
             }
             {<div id="guideTrigger_switchMenu">
-              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas}/>
+              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
             </div>}
-             {
+            {
               Object.keys(authorities).includes('globalSearch') && (
                 <div id="guideTrigger_globalSearch" style={{ margin: '0 1rem' }}>
                   <SearchInput menuTree={menuTree} searchAuth={globalSearch} />
