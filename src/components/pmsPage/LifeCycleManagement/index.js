@@ -1,4 +1,4 @@
-import { Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty, Divider } from 'antd';
+import { Collapse, Row, Col, Menu, Dropdown, Tooltip, Empty, Divider, Modal, Form, Input, Table, DatePicker, Select } from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
@@ -14,6 +14,7 @@ import {
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone, FetchQueryOwnerProjectList
 } from "../../../services/pmsServices";
+import moment from 'moment';
 
 const { Panel } = Collapse;
 const PASE_SIZE = 10;
@@ -46,6 +47,9 @@ class LifeCycleManagementTabs extends React.Component {
     fillOutTitle: '',
     //信息修改
     editMessageVisible: false,
+    isModalFullScreen: false,
+    isTableFullScreen: false,
+    tableData: [],
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editMessageTitle: '',
@@ -217,7 +221,7 @@ class LifeCycleManagementTabs extends React.Component {
           editMessageUrl: url,
           // editMessageVisible: true,
         });
-        window.location.href = url;
+        // window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -445,10 +449,10 @@ class LifeCycleManagementTabs extends React.Component {
         break;
     }
     this.getEditMessageUrl(params);
-    // this.setState({
-    //   editMessageTitle: item.sxmc + '修改',
-    //   editMessageVisible: true,
-    // });
+    this.setState({
+      editMessageTitle: item.sxmc + '修改',
+      editMessageVisible: true,
+    });
   }
 
   handleEditModel = (item) => {
@@ -643,6 +647,69 @@ class LifeCycleManagementTabs extends React.Component {
         </Menu.Item>
       </Menu>
     );
+    let sortedInfo = sortedInfo || {};
+    let filteredInfo = filteredInfo || {};
+    const columns = [
+      {
+        title: '付款期数',
+        dataIndex: 'fkqs',
+        key: 'fkqs',
+        // filters: [{ text: 'Joe', value: 'Joe' }, { text: 'Jim', value: 'Jim' }],
+        // filteredValue: filteredInfo.name || null,
+        // onFilter: (value, record) => record.name.includes(value),
+        sorter: (a, b) => a.fkqs.length - b.fkqs.length,
+        sortOrder: sortedInfo.columnKey === 'fkqs' && sortedInfo.order,
+        ellipsis: true,
+      },
+      {
+        title: '占总金额百分比',
+        dataIndex: 'zzjebfb',
+        key: 'zzjebfb',
+        sorter: (a, b) => a.zzjebfb - b.zzjebfb,
+        sortOrder: sortedInfo.columnKey === 'zzjebfbe' && sortedInfo.order,
+        ellipsis: true,
+      },
+      {
+        title: '付款金额（元）',
+        dataIndex: 'fkje',
+        key: 'fkje',
+        // filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
+        // filteredValue: filteredInfo.address || null,
+        // onFilter: (value, record) => record.address.includes(value),
+        sorter: (a, b) => a.fkje.length - b.fkje.length,
+        sortOrder: sortedInfo.columnKey === 'fkje' && sortedInfo.order,
+        ellipsis: true,
+      },
+      {
+        title: '付款时间',
+        dataIndex: 'fksj',
+        key: 'fksj',
+        // filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
+        // filteredValue: filteredInfo.address || null,
+        // onFilter: (value, record) => record.address.includes(value),
+        sorter: (a, b) => a.fksj.length - b.fksj.length,
+        sortOrder: sortedInfo.columnKey === 'fksj' && sortedInfo.order,
+        ellipsis: true,
+      },
+      {
+        title: '操作',
+        dataIndex: 'operator',
+        key: 'operator',
+        ellipsis: true,
+      }
+    ];
+    //信息修改弹窗
+    let { isModalFullScreen, isTableFullScreen, tableData } = this.state;
+    const { getFieldDecorator } = this.props.form;
+    const rowSelection = {
+      onChange: (selectedRowKeys, selectedRows) => {
+        // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+      },
+      getCheckboxProps: record => ({
+        disabled: record.name === 'Disabled User', // Column configuration not to be checked
+        name: record.name,
+      }),
+    };
     return (
       <Row style={{ height: 'calc(100% - 4.5rem)' }}>
         {/*文档上传弹窗*/}
@@ -664,16 +731,137 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
+
         {/*信息修改弹窗*/}
-        {editMessageVisible &&
+        {isTableFullScreen &&
+          <Modal title={null} footer={null} width={'100vw'} visible={isTableFullScreen} onCancel={() => { this.setState({ isTableFullScreen: false }) }} style={{
+            maxWidth: "100vw",
+            top: 0,
+            paddingBottom: 0,
+            marginBottom: 0,
+          }}
+            bodyStyle={{
+              height: "100vh",
+              overflowY: "auto",
+              padding: '0 0 24px 0',
+            }}>
+            <div style={{ height: '55px', width: '100%', display: 'flex', alignItems: 'center', color: 'white', marginBottom: '16px', padding: '0 57px' }}>
+              <img src={isTableFullScreen ? require('../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
+                alt='' style={{ height: '20px', marginLeft: 'auto' }}
+                onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
+            </div>
+          </Modal>}
+        {editMessageVisible && <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1100px'} style={isModalFullScreen ? {
+          maxWidth: "100vw",
+          top: 0,
+          paddingBottom: 0,
+          marginBottom: 0
+        } : {}}
+          bodyStyle={isModalFullScreen ? {
+            height: "calc(100vh - 53px)",
+            overflowY: "auto",
+            padding: '0 0 24px 0'
+          } : { padding: '0 0 24px 0' }}
+          title={null} visible={editMessageVisible} onOk={() => { }} onCancel={() => { this.setState({ editMessageVisible: false }) }}>
+          <div style={{ height: '55px', width: '100%', display: 'flex', alignItems: 'center', backgroundColor: '#3361FF', color: 'white', marginBottom: '16px', padding: '0 24px' }}>
+            <strong>修改</strong>
+            <img src={isModalFullScreen ? require('../../../image/pms/LifeCycleManagement/full-screen-cancel.png') : require('../../../image/pms/LifeCycleManagement/full-screen.png')} alt='' style={{ height: '20px', marginLeft: 'auto', marginRight: '35px' }} onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
+          </div>
+          <Form name="nest-messages" onFinish={() => { }} validateMessages={''} style={{ padding: '0 24px' }}>
+            <Row>
+              <Col span={12}> <Form.Item name={['user', 'name']} label="项目名称" help="ZX123456 / 外采项目" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+                <div style={{width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9', borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px' }}><a style={{color: '#0073aa'}} href='javascript:;'>测试项目4</a></div>
+              </Form.Item></Col>
+              <Col span={12}><Form.Item name={['user', 'name']} label="合同金额（元）" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+                {getFieldDecorator('htje', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '合同金额（元）不允许空值',
+                    },
+                  ],
+                })(<Input placeholder="请输入合同金额（元）" />)}
+              </Form.Item> </Col>
+            </Row>
+            <Row>
+              <Col span={12}> <Form.Item name={['user', 'name']} label="签署日期" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+                {getFieldDecorator('qsrq', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '签署日期不允许空值',
+                    },
+                  ],
+                })(<DatePicker onChange={() => { }} style={{ width: '100%' }} />)}
+              </Form.Item></Col>
+              <Col span={12}><Form.Item name={['user', 'name']} label="付款方式" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+              <Select placeholder="请选择付款方式" style={{ width: '100%' }} onChange={() => { }}>
+                  <Select.Option value="1">无</Select.Option>
+                  <Select.Option value="2">首次付款</Select.Option>
+                  <Select.Option value="3">尾款付款</Select.Option>
+                </Select>
+              </Form.Item> </Col>
+            </Row>
+            <Row>
+              <Col span={12}> <Form.Item name={['user', 'name']} label="是否分期付款" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+                {getFieldDecorator('sffqfk', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '是否分期付款不允许空值',
+                    },
+                  ],
+                })(<Select placeholder="请选择是否分期付款" style={{ width: '100%' }} onChange={() => { }}>
+                  <Select.Option value="1">是</Select.Option>
+                  <Select.Option value="2">否</Select.Option>
+                </Select>)}
+              </Form.Item></Col>
+              <Col span={12}><Form.Item name={['user', 'name']} label="需付款次数" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+                {getFieldDecorator('xfkcs', {
+                  rules: [
+                    {
+                      required: true,
+                      message: '需付款次数不允许空值',
+                    },
+                  ],
+                })(<Input placeholder='请输入需付款次数'/>)}
+              </Form.Item> </Col>
+            </Row>
+            <Row>
+              <Col span={24}>
+                <Form.Item name={['user', 'name']} label="付款详情" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                  <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', padding: '10px 0' }}>
+                    <div style={{ display: 'flex', height: '30px', padding: '0 15px' }}>
+                      <div style={{ width: '80px', backgroundColor: 'tomato' }} onClick={()=>{
+                        let arrData = tableData;
+                        arrData.push({fkqs: '', zzjebfb: '', fkje: '', fksj: '', operator: '删除'});
+                        this.setState({tableData: arrData})}}>新增</div>
+                      <div style={{ width: '80px', backgroundColor: 'skyblue' }} onClick={()=>{}}>删除</div>
+                      <img src={isTableFullScreen ? require('../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../image/pms/LifeCycleManagement/full-screen-gray.png')} alt='' style={{ height: '20px', marginLeft: 'auto' }} 
+                      onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
+                    </div>
+                    <Table columns={columns} dataSource={tableData} rowSelection={rowSelection}></Table>
+                  </div>
+                </Form.Item>
+              </Col>
+            </Row>
+
+          </Form>
+        </Modal>}
+
+
+
+        {/* {editMessageVisible &&
           <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
             onCancel={this.closeMessageEditModal}
-            src={editMessageUrl} />}
+            src={editMessageUrl} />} */}
+
         {/*阶段信息修改弹窗*/}
         {editModelVisible &&
-          <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
-            onCancel={this.closeModelEditModal}
-            src={editModelUrl} />}
+          <div style={{ backgroundColor: 'tomato' }}>
+            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+              onCancel={this.closeModelEditModal}
+              src={editModelUrl} /></div>}
         <div style={{ height: '8%', margin: '3.571rem 1.571rem 2.381rem 1.571rem' }}>
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
             fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
@@ -693,7 +881,7 @@ class LifeCycleManagementTabs extends React.Component {
               })
               // console.log("detail",detail)
               let sort = this.groupBy(detail);
-              console.log("sort.length", sort.length);
+              // console.log("sort.length", sort.length);
               // console.log("sort",sort)
               return <div className='LifeCycleManage' style={{
                 borderTopLeftRadius: (index === 0 ? '8px' : ''),
@@ -762,7 +950,7 @@ class LifeCycleManagementTabs extends React.Component {
                                   num = num + 1;
                                 }
                               })
-                              return <Col span={8} className='cont-col-self' style={{marginBottom: '16px'}}>
+                              return <Col span={8} className='cont-col-self' style={{ marginBottom: '16px' }}>
                                 <div className='cont-col'>
                                   <div className='cont-col1'>
                                     <div className='right'>
@@ -783,7 +971,7 @@ class LifeCycleManagementTabs extends React.Component {
                                           </div>
                                           <div className='cont-row-zxqk'>{item.zxqk}</div>
                                         </Col>
-                                        <Col span={6} style={{textAlign: 'right'}}>
+                                        <Col span={6} style={{ textAlign: 'right' }}>
                                           <Tooltips type={item.swlx}
                                             item={item}
                                             status={item.zxqk}
@@ -792,7 +980,7 @@ class LifeCycleManagementTabs extends React.Component {
                                             handleFillOut={() => this.handleFillOut(item)}
                                             handleEdit={() => this.handleEdit(item)}
                                             handleMessageEdit={this.handleMessageEdit}
-                                            />
+                                          />
                                         </Col>
                                         {/* <Col span={3}> */}
                                         {/*<Dropdown overlay={menu}>*/}
@@ -827,4 +1015,4 @@ class LifeCycleManagementTabs extends React.Component {
   }
 }
 
-export default LifeCycleManagementTabs;
+export default Form.create()(LifeCycleManagementTabs);
