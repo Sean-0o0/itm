@@ -306,6 +306,14 @@ class LifeCycleManagementTabs extends React.Component {
       if (index === number) {
         item.extend = !item.extend;
       }
+      // if(item.extend){
+      //   console.log("index",index)
+      //   console.log("112222",document.getElementById(index.toString())?.clientHeight);
+      //   item.height = (((Number(document.getElementById(index.toString())?.clientHeight))/6.72)+Number(9.55)+ 'rem').toString();
+      //   console.log("number",item.height)
+      // }else{
+      //   item.height = '9.55rem'.toString();
+      // }
     })
     this.setState({
       basicData,
@@ -836,9 +844,15 @@ class LifeCycleManagementTabs extends React.Component {
                         let arrData = tableData;
                         arrData.push({fkqs: '', zzjebfb: '', fkje: '', fksj: '', operator: '删除'});
                         this.setState({tableData: arrData})}}>新增</div>
-                      <div style={{ width: '80px', backgroundColor: 'skyblue' }} onClick={()=>{}}>删除</div>
-                      <img src={isTableFullScreen ? require('../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../image/pms/LifeCycleManagement/full-screen-gray.png')} alt='' style={{ height: '20px', marginLeft: 'auto' }} 
-                      onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
+                      <div style={{width: '80px', backgroundColor: 'skyblue'}} onClick={() => {
+                      }}>删除
+                      </div>
+                      <img
+                        src={isTableFullScreen ? require('../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
+                        alt='' style={{height: '20px', marginLeft: 'auto'}}
+                        onClick={() => {
+                          this.setState({isTableFullScreen: !isTableFullScreen})
+                        }}/>
                     </div>
                     <Table columns={columns} dataSource={tableData} rowSelection={rowSelection}></Table>
                   </div>
@@ -879,10 +893,11 @@ class LifeCycleManagementTabs extends React.Component {
                   detail.push(childItem);
                 }
               })
-              // console.log("detail",detail)
+              // console.log("basicData",basicData)
               let sort = this.groupBy(detail);
               // console.log("sort.length", sort.length);
               // console.log("sort",sort)
+              // ,position: 'relative',
               return <div className='LifeCycleManage' style={{
                 borderTopLeftRadius: (index === 0 ? '8px' : ''),
                 borderTopRightRadius: (index === 0 ? '8px' : ''),
@@ -914,34 +929,47 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                          className="iconfont icon-edit" onClick={
-                            () => this.handleEditModel(item)
-                          } />
+                        <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                           className="iconfont icon-edit" onClick={
+                          () => this.handleEditModel(item)
+                        }/>
                       </div>
                     </div>
                   </div>
                 </div>
-                {/*<Divider type='vertical' dashed={true} style={{*/}
-                {/*  position: 'absolute',*/}
-                {/*  height: '40rem',*/}
-                {/*  backgroundColor: 'red',*/}
-                {/*  marginLeft: '5.952rem',*/}
-                {/*  marginTop: '9.52rem'*/}
-                {/*}}/>*/}
+                {/*<div>*/}
+                {/*  {*/}
+                {/*    index !== basicData.length - 1*/}
+                {/*    &&*/}
+                {/*    <Divider type='vertical' dashed={true} style={{*/}
+                {/*      position: 'absolute',*/}
+                {/*      height: item?.height?item?.height:'9.55rem',*/}
+                {/*      backgroundColor: 'red',*/}
+                {/*      marginLeft: '5.952rem',*/}
+                {/*      marginTop: '9.52rem',*/}
+                {/*      zIndex:999,*/}
+                {/*    }}/>*/}
+                {/*  }*/}
+
+                {/*</div>*/}
                 {
                   item.extend ?
                     <Row style={{
                       height: '80%',
                       width: '100%',
                       padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0px 6.571rem 0 10.571rem')
-                    }} className='card'>
+                    }} className='card' id={index}>
                       {
-                        <Col span={24} style={{ width: '100%', padding: '3rem 3rem calc(3rem - 16px) 3rem', borderRadius: '8px', maxHeight: '50rem' }}
-                          className='cont'>
+                        <Col span={24} style={{
+                          width: '100%',
+                          padding: '3rem 3rem calc(3rem - 16px) 3rem',
+                          borderRadius: '8px',
+                          maxHeight: '50rem'
+                        }}
+                             className='cont'>
                           {
                             sort.map((item = {}, index) => {
-                              console.log("index", index)
+                              // console.log("index", index)
                               console.log("sort.length", sort.length)
                               console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                               let num = 0

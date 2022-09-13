@@ -92,7 +92,7 @@ class TodoItems extends React.Component {
       this.handleUpload(text);
     }
     if (text.sxmc.includes("周报")) {
-      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
+      window.location.href = `/#/UIProcessor?Table=V_XSZHZBTX&hideTitlebar=true`
     }
     if (text.sxmc.includes("预算年初")) {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`

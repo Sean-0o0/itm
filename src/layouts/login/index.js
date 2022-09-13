@@ -8,8 +8,8 @@ import mapImg from '../../assets/map.png';
 import TrackCanvas from './TrackCanvas';
 // import testImg from '../../../../src/assets/dev_app_qrcode.png';
 import styles from './index.less';
-import { isAuthCode } from '../../utils/config';
-import { FetchQryLoginPageConf } from '../../services/commonbase';
+import {isAuthCode, isCas} from '../../utils/config';
+import {FetchQryLoginPageConf} from '../../services/commonbase';
 import { getUserIP } from '../../utils/getClientIp';
 
 const { Header, Content, Footer } = Layout;
@@ -30,6 +30,9 @@ class LoginPageLayout extends React.PureComponent {
     // this.fetchData();
     // 进入登录页面先获取用户ip保存起来
     this.getIp();
+    if (isCas) {
+      window.location.href = '/api/cas/login';
+    }
   }
 
   getIp = () => {

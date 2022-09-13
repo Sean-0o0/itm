@@ -6,7 +6,8 @@ import { AccountUser, AccountLogout, UserBusinessRole, UserBasicInfo } from '../
 import { FetchAuths } from '../services/amslb/user';
 import TreeUtils from '../utils/treeUtils';
 // import { fetchObject } from '../services/sysCommon';
-import { fetchUserAuthorityDepartment } from '../services/commonbase/userAuthorityDepartment';
+import {fetchUserAuthorityDepartment} from '../services/commonbase/userAuthorityDepartment';
+import {isCas} from "../utils/config";
 
 export default {
 
@@ -51,14 +52,11 @@ export default {
         try {
           data = yield call(AccountUser); // 此处不捕获异常,将异常抛到dva最外层的onError事件捕捉,如果过期就跳转到登录页面
         } catch (e) {
-          // console.log("window.location.href",window.location.href)
-          // if (window.location.href !== '/login') {
-          //   // 让提示停留0.5s
-          //   setTimeout(() => {
-          //     // location.reload(); // 为了重新实例化vue-router对象 避免bug
-          //     window.location.href = '/api/cas/login';
-          //   }, 500);
-          // }
+          console.log("window.location.href", window.location.href)
+          if (isCas) {
+            // 让提示停留0.5s
+            window.location.href = '/api/cas/login';
+          }
         }
         if (data.success) {
           yield put({
