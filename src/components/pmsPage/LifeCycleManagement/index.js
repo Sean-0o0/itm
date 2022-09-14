@@ -47,9 +47,10 @@ class LifeCycleManagementTabs extends React.Component {
     fillOutTitle: '',
     //信息修改
     editMessageVisible: false,
-    isModalFullScreen: false,
-    isTableFullScreen: false,
-    tableData: [],
+    // isModalFullScreen: false,
+    // isTableFullScreen: false,
+    // tableData: [],
+    // selectedRowKeys: [],
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editMessageTitle: '',
@@ -591,8 +592,8 @@ class LifeCycleManagementTabs extends React.Component {
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '150rem',
-      height: '68rem',
+      width: '110rem',
+      height: '58rem',
       title: uploadTitle,
       style: { top: '10rem' },
       visible: uploadVisible,
@@ -630,7 +631,7 @@ class LifeCycleManagementTabs extends React.Component {
     };
     const editMessageModalProps = {
       isAllWindow: 1,
-      // defaultFullScreen: true,
+      defaultFullScreen: true,
       width: '150rem',
       height: '80rem',
       title: editMessageTitle,
@@ -662,69 +663,71 @@ class LifeCycleManagementTabs extends React.Component {
         </Menu.Item>
       </Menu>
     );
-    let sortedInfo = sortedInfo || {};
-    let filteredInfo = filteredInfo || {};
-    const columns = [
-      {
-        title: '付款期数',
-        dataIndex: 'fkqs',
-        key: 'fkqs',
-        // filters: [{ text: 'Joe', value: 'Joe' }, { text: 'Jim', value: 'Jim' }],
-        // filteredValue: filteredInfo.name || null,
-        // onFilter: (value, record) => record.name.includes(value),
-        sorter: (a, b) => a.fkqs.length - b.fkqs.length,
-        sortOrder: sortedInfo.columnKey === 'fkqs' && sortedInfo.order,
-        ellipsis: true,
-      },
-      {
-        title: '占总金额百分比',
-        dataIndex: 'zzjebfb',
-        key: 'zzjebfb',
-        sorter: (a, b) => a.zzjebfb - b.zzjebfb,
-        sortOrder: sortedInfo.columnKey === 'zzjebfbe' && sortedInfo.order,
-        ellipsis: true,
-      },
-      {
-        title: '付款金额（元）',
-        dataIndex: 'fkje',
-        key: 'fkje',
-        // filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
-        // filteredValue: filteredInfo.address || null,
-        // onFilter: (value, record) => record.address.includes(value),
-        sorter: (a, b) => a.fkje.length - b.fkje.length,
-        sortOrder: sortedInfo.columnKey === 'fkje' && sortedInfo.order,
-        ellipsis: true,
-      },
-      {
-        title: '付款时间',
-        dataIndex: 'fksj',
-        key: 'fksj',
-        // filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
-        // filteredValue: filteredInfo.address || null,
-        // onFilter: (value, record) => record.address.includes(value),
-        sorter: (a, b) => a.fksj.length - b.fksj.length,
-        sortOrder: sortedInfo.columnKey === 'fksj' && sortedInfo.order,
-        ellipsis: true,
-      },
-      {
-        title: '操作',
-        dataIndex: 'operator',
-        key: 'operator',
-        ellipsis: true,
-      }
-    ];
-    //信息修改弹窗
-    let { isModalFullScreen, isTableFullScreen, tableData } = this.state;
-    const { getFieldDecorator } = this.props.form;
-    const rowSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {
-        // console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
-      },
-      getCheckboxProps: record => ({
-        disabled: record.name === 'Disabled User', // Column configuration not to be checked
-        name: record.name,
-      }),
-    };
+    // let sortedInfo = sortedInfo || {};
+    // let filteredInfo = filteredInfo || {};
+    // const columns = [
+    //   {
+    //     title: '付款期数',
+    //     dataIndex: 'fkqs',
+    //     key: 'fkqs',
+    //     // filters: [{ text: 'Joe', value: 'Joe' }, { text: 'Jim', value: 'Jim' }],
+    //     // filteredValue: filteredInfo.name || null,
+    //     // onFilter: (value, record) => record.name.includes(value),
+    //     sorter: (a, b) => a.fkqs.length - b.fkqs.length,
+    //     sortOrder: sortedInfo.columnKey === 'fkqs' && sortedInfo.order,
+    //     ellipsis: true,
+    //   },
+    //   {
+    //     title: '占总金额百分比',
+    //     dataIndex: 'zzjebfb',
+    //     key: 'zzjebfb',
+    //     sorter: (a, b) => a.zzjebfb - b.zzjebfb,
+    //     sortOrder: sortedInfo.columnKey === 'zzjebfbe' && sortedInfo.order,
+    //     ellipsis: true,
+    //   },
+    //   {
+    //     title: '付款金额（元）',
+    //     dataIndex: 'fkje',
+    //     key: 'fkje',
+    //     // filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
+    //     // filteredValue: filteredInfo.address || null,
+    //     // onFilter: (value, record) => record.address.includes(value),
+    //     sorter: (a, b) => a.fkje.length - b.fkje.length,
+    //     sortOrder: sortedInfo.columnKey === 'fkje' && sortedInfo.order,
+    //     ellipsis: true,
+    //   },
+    //   {
+    //     title: '付款时间',
+    //     dataIndex: 'fksj',
+    //     key: 'fksj',
+    //     // filters: [{ text: 'London', value: 'London' }, { text: 'New York', value: 'New York' }],
+    //     // filteredValue: filteredInfo.address || null,
+    //     // onFilter: (value, record) => record.address.includes(value),
+    //     sorter: (a, b) => a.fksj.length - b.fksj.length,
+    //     sortOrder: sortedInfo.columnKey === 'fksj' && sortedInfo.order,
+    //     ellipsis: true,
+    //   },
+    //   {
+    //     title: '操作',
+    //     dataIndex: 'operator',
+    //     key: 'operator',
+    //     render: () => <a>删除</a>,
+    //     ellipsis: true,
+    //   }
+    // ];
+    // //信息修改弹窗
+    // let { isModalFullScreen, isTableFullScreen, tableData } = this.state;
+    // const { getFieldDecorator } = this.props.form;
+    // const rowSelection = {
+    //   onChange: (selectedRowKeys, selectedRows) => {
+    //     console.log('selectedRowKeys',selectedRowKeys,'@@@@@selectedRows', selectedRows);
+    //     this.setState({ selectedRowKeys });
+    //   },
+    //   getCheckboxProps: record => ({
+    //     disabled: record.name === 'Disabled User', // Column configuration not to be checked
+    //     name: record.name,
+    //   }),
+    // };
     return (
       <Row style={{ height: 'calc(100% - 4.5rem)' }}>
         {/*文档上传弹窗*/}
@@ -746,9 +749,7 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
-
-        {/*信息修改弹窗*/}
-        {isTableFullScreen &&
+        {/* {isTableFullScreen &&
           <Modal title={null} footer={null} width={'100vw'} visible={isTableFullScreen} onCancel={() => { this.setState({ isTableFullScreen: false }) }} style={{
             maxWidth: "100vw",
             top: 0,
@@ -765,8 +766,8 @@ class LifeCycleManagementTabs extends React.Component {
                 alt='' style={{ height: '20px', marginLeft: 'auto' }}
                 onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
             </div>
-          </Modal>}
-        {editMessageVisible && <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1100px'} style={isModalFullScreen ? {
+          </Modal>} */}
+        {/* {editMessageVisible && <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1100px'} style={isModalFullScreen ? {
           maxWidth: "100vw",
           top: 0,
           paddingBottom: 0,
@@ -869,14 +870,13 @@ class LifeCycleManagementTabs extends React.Component {
             </Row>
 
           </Form>
-        </Modal>}
+        </Modal>} */}
 
-
-
-        {/* {editMessageVisible &&
+        {/*信息修改弹窗*/}
+        {editMessageVisible &&
           <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
             onCancel={this.closeMessageEditModal}
-            src={editMessageUrl} />} */}
+            src={editMessageUrl} />}
 
         {/*阶段信息修改弹窗*/}
         {editModelVisible &&

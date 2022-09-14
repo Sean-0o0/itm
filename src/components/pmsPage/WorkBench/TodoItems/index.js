@@ -92,13 +92,19 @@ class TodoItems extends React.Component {
       this.handleUpload(text);
     }
     if (text.sxmc.includes("周报")) {
-      window.location.href = `/#/UIProcessor?Table=V_XSZHZBTX&hideTitlebar=true`
+      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
     }
-    if (text.sxmc.includes("预算年初")) {
+    if (text.sxmc.includes("资本性预算年初")) {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc.includes("预算年中")) {
+    if (text.sxmc.includes("资本性预算年中")) {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    }
+    if (text.sxmc.includes("非资本性预算年初")) {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    }
+    if (text.sxmc.includes("非资本性预算年中")) {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
     if (text.sxmc.includes("月报")) {
       window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
