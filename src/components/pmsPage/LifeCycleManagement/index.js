@@ -59,6 +59,8 @@ class LifeCycleManagementTabs extends React.Component {
     operationListData: [],
     xmid: 0,
     defaultValue: 0,
+    //周报填写Url
+    weelyReportUrl: '/#/UIProcessor?Table=V_XSZHZBTX&hideTitlebar=true',
   };
 
   componentDidMount() {
@@ -397,6 +399,11 @@ class LifeCycleManagementTabs extends React.Component {
           ],
           "userId": Loginname
         };
+        break;
+      case "周报填写":
+        window.location.href = this.state.weelyReportUrl;
+        return;
+      default:
         break;
     }
     this.getFileOutUrl(params)
@@ -778,7 +785,7 @@ class LifeCycleManagementTabs extends React.Component {
           <Form name="nest-messages" onFinish={() => { }} validateMessages={''} style={{ padding: '0 24px' }}>
             <Row>
               <Col span={12}> <Form.Item name={['user', 'name']} label="项目名称" help="ZX123456 / 外采项目" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-                <div style={{width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9', borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px' }}><a style={{color: '#0073aa'}} href='javascript:;'>测试项目4</a></div>
+                <div style={{ width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9', borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px' }}><a style={{ color: '#0073aa' }} href='javascript:;'>测试项目4</a></div>
               </Form.Item></Col>
               <Col span={12}><Form.Item name={['user', 'name']} label="合同金额（元）" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
                 {getFieldDecorator('htje', {
@@ -803,7 +810,7 @@ class LifeCycleManagementTabs extends React.Component {
                 })(<DatePicker onChange={() => { }} style={{ width: '100%' }} />)}
               </Form.Item></Col>
               <Col span={12}><Form.Item name={['user', 'name']} label="付款方式" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-              <Select placeholder="请选择付款方式" style={{ width: '100%' }} onChange={() => { }}>
+                <Select placeholder="请选择付款方式" style={{ width: '100%' }} onChange={() => { }}>
                   <Select.Option value="1">无</Select.Option>
                   <Select.Option value="2">首次付款</Select.Option>
                   <Select.Option value="3">尾款付款</Select.Option>
@@ -832,7 +839,7 @@ class LifeCycleManagementTabs extends React.Component {
                       message: '需付款次数不允许空值',
                     },
                   ],
-                })(<Input placeholder='请输入需付款次数'/>)}
+                })(<Input placeholder='请输入需付款次数' />)}
               </Form.Item> </Col>
             </Row>
             <Row>
@@ -840,19 +847,20 @@ class LifeCycleManagementTabs extends React.Component {
                 <Form.Item name={['user', 'name']} label="付款详情" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
                   <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', padding: '10px 0' }}>
                     <div style={{ display: 'flex', height: '30px', padding: '0 15px' }}>
-                      <div style={{ width: '80px', backgroundColor: 'tomato' }} onClick={()=>{
+                      <div style={{ width: '80px', backgroundColor: 'tomato' }} onClick={() => {
                         let arrData = tableData;
-                        arrData.push({fkqs: '', zzjebfb: '', fkje: '', fksj: '', operator: '删除'});
-                        this.setState({tableData: arrData})}}>新增</div>
-                      <div style={{width: '80px', backgroundColor: 'skyblue'}} onClick={() => {
+                        arrData.push({ fkqs: '', zzjebfb: '', fkje: '', fksj: '', operator: '删除' });
+                        this.setState({ tableData: arrData })
+                      }}>新增</div>
+                      <div style={{ width: '80px', backgroundColor: 'skyblue' }} onClick={() => {
                       }}>删除
                       </div>
                       <img
                         src={isTableFullScreen ? require('../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                        alt='' style={{height: '20px', marginLeft: 'auto'}}
+                        alt='' style={{ height: '20px', marginLeft: 'auto' }}
                         onClick={() => {
-                          this.setState({isTableFullScreen: !isTableFullScreen})
-                        }}/>
+                          this.setState({ isTableFullScreen: !isTableFullScreen })
+                        }} />
                     </div>
                     <Table columns={columns} dataSource={tableData} rowSelection={rowSelection}></Table>
                   </div>
@@ -929,10 +937,10 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                           className="iconfont icon-edit" onClick={
-                          () => this.handleEditModel(item)
-                        }/>
+                        <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                          className="iconfont icon-edit" onClick={
+                            () => this.handleEditModel(item)
+                          } />
                       </div>
                     </div>
                   </div>
@@ -966,7 +974,7 @@ class LifeCycleManagementTabs extends React.Component {
                           borderRadius: '8px',
                           maxHeight: '50rem'
                         }}
-                             className='cont'>
+                          className='cont'>
                           {
                             sort.map((item = {}, index) => {
                               // console.log("index", index)
