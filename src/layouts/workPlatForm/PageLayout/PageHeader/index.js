@@ -31,7 +31,7 @@ export default class PageHeader extends React.PureComponent {
         {/* <GuideCover data={guidesRecords} /> */}
         <div className="zj-header">
           <div style={{ width: '29.76rem', textAlign: 'center', borderRight: '1px solid #EBEEF5'}}>
-            <span><img className="logo" src={'https://lanhu.oss-cn-beijing.aliyuncs.com/SketchPng25f42f9cda92c99adaf12b490a85c9123626e4d45cd2239d10696bf6ec51df06'} alt="" /> 
+            <span><img className="logo" src={require('../../../../assets/apex-logo-zszq-left.png')} alt="" /> 
             </span>
             <span style={{ fontSize: '2.333rem', color: '#333', fontWeight: 'bold', letterSpacing: '0.25rem', verticalAlign: 'middle' }}>{"项目管理平台"}</span>
           </div>
