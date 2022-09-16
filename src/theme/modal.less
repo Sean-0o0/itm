@@ -18,17 +18,19 @@
     overflow: hidden;
 
     .ant-modal-content {
-        .border-radius(@radius:0rem);
-        -webkit-box-shadow:none;
-        box-shadow: none;
-        .ant-modal-close,.m-modal-enlarge {
+      //.border-radius(@radius:0rem);
+      border-radius: 8px;
+      -webkit-box-shadow: none;
+      box-shadow: none;
 
-            color: #fff;
-            right:1.5rem;
+      .ant-modal-close, .m-modal-enlarge {
 
-            .ant-modal-close-x {
-                width: auto;
-                height: 6.083rem;
+        color: #fff;
+        right: 1.5rem;
+
+        .ant-modal-close-x {
+          width: auto;
+          height: 6.083rem;
                 line-height: 6.083rem;
                 font-size: 2.333rem;
 
@@ -47,17 +49,18 @@
         }
 
         .ant-modal-header {
-            padding:1.5rem 2rem;
-            .border-radius(@radius:0rem);
-            background: #fff;
-            color: #fff;
-            border-bottom: none;
+          padding: 1.5rem 2rem;
+          //.border-radius(@radius:0rem);
+          border-radius: 8px 8px 0 0;
+          background: #fff;
+          color: #fff;
+          border-bottom: none;
 
-            .ant-modal-title {
-                font-size:2.333rem;
-                line-height:3.333rem;
-                color: #fff;
-            }
+          .ant-modal-title {
+            font-size: 2.333rem;
+            line-height: 3.333rem;
+            color: #fff;
+          }
 
         }
 

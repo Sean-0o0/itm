@@ -39,18 +39,18 @@ class Tooltips extends React.Component {
       <div>
         {
           type.includes("信息录入") ? (status === " " ? <Tooltip title="录入">
-              <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                  className="iconfont icon-file-fillout" onClick={() => this.handleFillOut(item)}/>
             </Tooltip>
             : <Tooltip title="修改">
-              <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                  className="iconfont icon-edit" onClick={() => this.handleMessageEdit(item)}/>
             </Tooltip>) : ''
         }
         {
           type.includes("流程") &&
           <Tooltip title="发起">
-            <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+            <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                className="iconfont icon-send" onClick={() => this.handleSend(item)}/>
           </Tooltip>
 
@@ -66,10 +66,10 @@ class Tooltips extends React.Component {
           type.includes("外部系统对接") ||
           type.includes("系统测试") ? (status === " " ?
             <Tooltip title="上传">
-              <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                  className="iconfont icon-upload" onClick={this.handleUpload}/>
             </Tooltip> : <Tooltip title="修改">
-              <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                  className="iconfont icon-edit" onClick={this.handleEdit}/>
             </Tooltip>) : ''
         }

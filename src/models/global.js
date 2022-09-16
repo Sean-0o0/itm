@@ -49,12 +49,13 @@ export default {
     checkAuth: [
       function* (_, { call, put, all }) {  // eslint-disable-line
         let data = []
+        let loginname = JSON.parse(sessionStorage.getItem("user")).loginName;
         try {
           data = yield call(AccountUser); // 此处不捕获异常,将异常抛到dva最外层的onError事件捕捉,如果过期就跳转到登录页面
         } catch (e) {
-          console.log("window.location.href", window.location.href)
-          if (isCas) {
-            // 让提示停留0.5s
+          if (loginname === "admin") {
+            window.location.href = '/#/login';
+          } else {
             window.location.href = '/api/cas/login';
           }
         }
@@ -87,15 +88,22 @@ export default {
       // // 改变登录的状态
       yield call(AccountLogout);
       window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
+      // console.log("itemitem",JSON.parse(sessionStorage.getItem("user")));
+      let loginname = JSON.parse(sessionStorage.getItem("user")).loginName;
+      // console.log("loginname",loginname);
       sessionStorage.setItem('user', null); // 清除用户基本信息
       sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
       sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
-      localStorage.setItem('loginStatus','0');
+      localStorage.setItem('loginStatus', '0');
       // 重新加载页面,刷新页面会去掉各个model里面的数据
-      window.location.reload();
+      if (loginname === "admin") {
+        window.location.href = '/#/login';
+      } else {
+        window.location.href = '/api/cas/login';
+      }
       yield put({
         type: 'onAuthDataChange',
-        payload: { hasAuthed: false },
+        payload: {hasAuthed: false},
       });
     },
     // 获取用户基本信息
