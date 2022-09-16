@@ -21,7 +21,7 @@ class ProgressStatus extends React.Component {
             // width: '10rem'
           }}>
             <div className='head-cont' style={{background: 'rgba(215, 14, 25, 1)'}}/>
-            <div style={{margin: '0rem 2rem 0rem 1rem'}}>逾期</div>
+            <div style={{margin: '0rem 2rem 0rem 1rem'}}>已完成</div>
           </div>
         }
         {
@@ -61,7 +61,7 @@ class ProgressStatus extends React.Component {
             // width: '12rem'
           }}>
             <div className='head-cont' style={{background: 'rgba(144, 147, 153, 1)'}}/>
-            <div style={{margin: '0rem 2rem 0rem 1rem'}}>未开始</div>
+            <div style={{margin: '0rem 2rem 0rem 1rem'}}>进行中</div>
           </div>
         }
       </div>

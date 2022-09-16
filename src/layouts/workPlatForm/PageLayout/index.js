@@ -32,7 +32,7 @@ class MainPageLayout extends React.PureComponent {
     this.staticTimer = null; // 监听静止计时器
     this.state = {
       // collapsed: menuExpansion !== '1',
-      collapsed: true,
+      collapsed: false,
       selectedMenuKeys: [], // 菜单选中key
       menuTree: [], // 获取登录用户的所有菜单项
       menuTreeLoaded: false, // 菜单是否加载

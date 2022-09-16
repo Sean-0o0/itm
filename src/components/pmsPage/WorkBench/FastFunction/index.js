@@ -263,7 +263,7 @@ class FastFunction extends React.Component {
             {/*  </div>*/}
             {/*</div>*/}
             <div><img src={icon_09} alt="" onClick={() => {
-              window.location.href = `/#/UIProcessor?Table=ZBTX&hideTitlebar=true`
+              window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
             </div>
             <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
@@ -283,11 +283,11 @@ class FastFunction extends React.Component {
             {/*  </div>*/}
             {/*</div>*/}
             <div><img src={icon_10} alt="" onClick={() => {
-              window.location.href = `/#/UIProcessor?Table=YBGL&hideTitlebar=true`
+              window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
             </div>
             <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
-              window.location.href = `/#/UIProcessor?Table=YBGL&hideTitlebar=true`
+              window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
             }}>月报填写
             </div>
           </div>

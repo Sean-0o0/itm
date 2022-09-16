@@ -15,19 +15,8 @@ class ProcessSituation extends React.Component {
   componentDidMount() {
   }
 
-  handleSee = (name) => {
-    let seeUrl = "";
-    switch (name) {
-      case "项目信息管理系统立项申请":
-        seeUrl = "/UIProcessor?Table=WORKFLOW_TOTASKS&Token=4a62a93d0c13f6c312f811e684b33ce0&View=Detail&ID=94&HideCancelBtn=true";
-        break;
-    }
-    this.setState({
-      seeUrl: seeUrl
-    })
-    this.setState({
-      seeVisible: true,
-    });
+  handleSee = (url) => {
+    window.open("www.baidu.com");
   };
 
   closeSeeModal = () => {
@@ -102,8 +91,8 @@ class ProcessSituation extends React.Component {
                             style={{fontSize: '2.381rem', color: color}}
                           /> */}
                           <Points status={item.state}/>
-                          <Link className='title-link' style={{fontSize: '2.083rem'}}
-                            onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</Link>&nbsp;
+                          <a target="_blank" className='title-link' style={{fontSize: '2.083rem'}}
+                             rel="noopener noreferrer" href={item.url}>{item.subject}</a>&nbsp;
                           <i
                             className={'iconfont icon-right'}
                             style={{fontSize: '2.381rem'}}

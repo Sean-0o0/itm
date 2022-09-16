@@ -31,7 +31,6 @@ class WorkBench extends React.Component {
 
   componentDidMount() {
     this.fetchQueryAllOwnerMessage();
-    this.fetchQueryOwnerMessage();
   }
 
   fetchQueryOwnerMessage = (page, date) => {
@@ -92,6 +91,7 @@ class WorkBench extends React.Component {
           AllTodoItemsData: record,
         });
       }
+      this.fetchQueryOwnerMessage();
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });

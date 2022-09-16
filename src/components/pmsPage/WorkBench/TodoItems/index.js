@@ -445,6 +445,7 @@ class TodoItems extends React.Component {
         }
       },
       {
+        width: '25%',
         title: <span style={{textAlign: 'center'}}>待办事项</span>,
         dataIndex: 'sxmc',
         align: 'center',
@@ -464,7 +465,9 @@ class TodoItems extends React.Component {
                   </span>
                 }
                 <a style={{fontSize: '2.083rem', color: '#1890ff', paddingLeft: '0.5rem'}}
-                   onClick={() => this.handleUrl(record)}>{text.length > 8 ? text.slice(0, 8) + '...' : text}</a>
+                   onClick={() => this.handleUrl(record)}>
+                  {text.length > 8 ? text.slice(0, 8) + '...' : text}
+                </a>
                 {/*必做标识*/}
                 {/*<div style={{backgroundColor: 'rgba(252, 236, 237, 1)', borderRadius: '10px'}}>*/}
                 {/*  {record.xxlx === "1" && <span style={{padding: '0 1rem', color: 'rgba(204, 62, 69, 1)'}}>必做</span>}*/}
@@ -475,31 +478,35 @@ class TodoItems extends React.Component {
         },
       },
       {
+        width: '31%',
         title: '待办内容',
         dataIndex: 'txnr',
         align: 'center',
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text.length > 20 ? text : ''} style={{fontSize: '2.381rem'}}>
+            <Tooltip title={text.length > 13 ? text : ''} style={{fontSize: '2.381rem'}}>
               <span style={{fontSize: '2.083rem', display: 'flex',}}>
-                {text.length > 20 ? text.slice(0, 20) + '...' : text}
+                {text.length > 13 ? text.slice(0, 13) + '...' : text}
               </span>
             </Tooltip>
          </span>
         },
       },
       {
+        width: '25%',
         title: '相关项目',
         dataIndex: 'xmmc',
         align: 'center',
         // key: 'xmmc',
         render: (text, record) => {
-          return <span><Tooltip title={text.length > 8 ? text : ''} style={{fontSize: '2.381rem'}}>
+          return <span><Tooltip title={text.length > 10 ? text : ''} style={{fontSize: '2.381rem'}}>
             <span style={{display: 'flex',}}><Link style={{color: '#1890ff', fontSize: '2.083rem',}} to={{
               pathname: '/pms/manage/LifeCycleManagement',
               query: {xmid: record.xmid},
-            }}>{text.length > 8 ? text.slice(0, 8) + '...' : text}</Link></span></Tooltip></span>
+            }}>
+              {text.length > 10 ? text.slice(0, 10) + '...' : text}
+            </Link></span></Tooltip></span>
         },
       },
       {
