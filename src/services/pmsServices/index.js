@@ -1,7 +1,7 @@
 import request from '../../utils/request';
 import config from '../../utils/config';
 
-const {api} = config;
+const { api } = config;
 const {
   pmsServices: {
     queryLiftcycleMilestone,
@@ -11,6 +11,7 @@ const {
     queryOwnerProjectList,
     queryOwnerMessage,
     updateMessageState,
+    queryProjectInfoInCycle
   },
 } = api;
 
@@ -78,6 +79,17 @@ export async function FetchQueryOwnerMessage(payload) {
 export async function UpdateMessageState(payload) {
   const option = {
     url: updateMessageState,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询生命周期用到的项目信息
+export async function FetchQueryProjectInfoInCycle(payload) {
+  const option = {
+    url: queryProjectInfoInCycle,
+    // url: 'ftq/projectManage/queryProjectInfoInCycle',
     method: 'post',
     data: payload,
   };

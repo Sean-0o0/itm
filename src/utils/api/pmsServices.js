@@ -6,4 +6,5 @@ export default [
   {code: '', key: 'queryOwnerMessage', url: '/projectManage/queryOwnerMessage', dis: '查询当前登录用户的消息列表'},
   {code: '', key: 'createOperateHyperLink', url: '/projectManage/v1/createOperateHyperLink', dis: '获取livebos加密url'},
   {code: '', key: 'updateMessageState', url: '/projectManage/updateMessageState', dis: '将待办事项的查看状态修改为已读'},
+  {code: '', key: 'queryProjectInfoInCycle', url: '/projectManage/queryProjectInfoInCycle', dis: '查询生命周期用到的项目信息'},
 ];

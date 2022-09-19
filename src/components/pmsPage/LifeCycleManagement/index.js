@@ -12,7 +12,8 @@ import { message } from 'antd';
 import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff,
-  FetchQueryLiftcycleMilestone, FetchQueryOwnerProjectList
+  FetchQueryLiftcycleMilestone, 
+  FetchQueryOwnerProjectList,
 } from "../../../services/pmsServices";
 import moment from 'moment';
 
@@ -884,12 +885,14 @@ class LifeCycleManagementTabs extends React.Component {
             <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
               onCancel={this.closeModelEditModal}
               src={editModelUrl} /></div>}
-        <div style={{ height: '8%', margin: '3.571rem 1.571rem 2.381rem 1.571rem' }}>
+
+        <div style={{ height: '126px', margin: '3.571rem 1.571rem 2.381rem 1.571rem' }}>
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
             fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
             fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
             data={operationListData}
-            defaultValue={defaultValue} />
+            defaultValue={defaultValue}
+            xmid={this.props.params.xmid} />
         </div>
         {/*position: 'relative',*/}
         <div style={{ height: '92%', margin: '0 1.571rem 3.571rem 1.571rem', }}>
