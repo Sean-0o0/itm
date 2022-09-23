@@ -17,17 +17,16 @@ const EditableFormRow = Form.create()(EditableRow);
 class EditableCell extends React.Component {
     state = {
         editing: false,
-        isOpen: false
     };
 
-    toggleEdit = () => {
-        const editing = !this.state.editing;
-        this.setState({ editing }, () => {
-            if (editing) {
-                this.input.focus();
-            }
-        });
-    };
+    // toggleEdit = () => {
+    //     const editing = !this.state.editing;
+    //     this.setState({ editing }, () => {
+    //         if (editing) {
+    //             this.input.focus();
+    //         }
+    //     });
+    // };
 
     save = e => {
         const { record, handleSave } = this.props;
@@ -35,15 +34,9 @@ class EditableCell extends React.Component {
             if (error && error[e.currentTarget.id]) {
                 return;
             }
-            let newValue = {};
-            if (values.fksj) {
-                newValue = { fksj: values.fksj.format('YYYY-MM-DD') }
-                // this.toggleEdit(); 
-                handleSave({ ...record, ...newValue });
-            } else {
-                this.toggleEdit();
-                handleSave({ ...record, ...values });
-            }
+            console.log('values', values);
+            // this.toggleEdit();
+            handleSave({ ...record, ...values });
         });
     };
 
@@ -68,7 +61,8 @@ class EditableCell extends React.Component {
         this.form = form;
         const { children, dataIndex, record, title } = this.props;
         const { editing } = this.state;
-        return editing ? (
+        // console.log(record[dataIndex]);
+        return (
             <Form.Item style={{ margin: 0 }}>
                 {dataIndex === 'fksj' ? form.getFieldDecorator(dataIndex, {
                     rules: [
@@ -77,9 +71,13 @@ class EditableCell extends React.Component {
                             message: `${this.getTitle(dataIndex)}不允许空值`,
                         },
                     ],
-                    initialValue: moment(record[dataIndex]) || null,
-                })(<DatePicker ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save}/>)
-                    : form.getFieldDecorator(dataIndex, {
+                    initialValue: moment(record[dataIndex]),
+                    // initialValue: moment(record[dataIndex]),
+                })(<DatePicker ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
+                    : (dataIndex === 'bfb' ? form.getFieldDecorator(dataIndex, {
+                        initialValue: record[dataIndex],
+                    })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
+                     : form.getFieldDecorator(dataIndex, {
                         rules: [
                             {
                                 required: true,
@@ -87,16 +85,9 @@ class EditableCell extends React.Component {
                             },
                         ],
                         initialValue: record[dataIndex],
-                    })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)}
+                    })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
+                    )}
             </Form.Item>
-        ) : (
-            <div
-                className="editable-cell-value-wrap"
-                style={{ paddingRight: 24 }}
-                onClick={this.toggleEdit}
-            >
-                {children}
-            </div>
         );
     };
     render() {
@@ -143,7 +134,6 @@ class ContractInnfoUpdate extends React.Component {
             xmmc: currentXmid
         }).then(res => {
             let rec = res.record;
-            console.log('请求数据1：', rec[0]);
             this.setState({
                 contractInfo: { htje: Number(rec[0].htje), qsrq: rec[0].qsrq },
             });
@@ -160,8 +150,6 @@ class ContractInnfoUpdate extends React.Component {
             }
             this.setState({
                 tableData: [...this.state.tableData, ...arr]
-            }, () => {
-                console.log('请求数据2：', this.state.tableData);
             });
         });
     };
@@ -191,7 +179,7 @@ class ContractInnfoUpdate extends React.Component {
             ...row,
         });
         this.setState({ tableData: newData }, () => {
-            console.log(this.state.tableData);
+            console.log('tableData', this.state.tableData);
         });
     };
 
@@ -297,84 +285,6 @@ class ContractInnfoUpdate extends React.Component {
             },
         };
 
-        const columnConfigs = [
-            {
-                title: () => <><span style={{ color: 'red' }}>*</span>期数</>,
-                dataIndex: 'fkqs',
-                key: 'fkqs',
-                ellipsis: true,
-                render: () => {
-                    return <><Form.Item>
-                        {getFieldDecorator('fkqs', {
-                            initialValue: '',
-                            rules: [
-                                {
-                                    required: true,
-                                    message: '期数不允许空值',
-                                },
-                            ],
-                        })(<Input placeholder="请输入期数" />)}
-                    </Form.Item></>
-                }
-            },
-            {
-                title: '占比',
-                dataIndex: 'bfb',
-                key: 'bfb',
-                ellipsis: true,
-                render: () => {
-                    return <></>
-                }
-            },
-            {
-                title: <><span style={{ color: 'red' }}>*</span>付款金额（元）</>,
-                dataIndex: 'fkje',
-                key: 'fkje',
-                ellipsis: true,
-                render: () => {
-                    return <></>
-                }
-            },
-            {
-                title: <><span style={{ color: 'red' }}>*</span>付款时间</>,
-                dataIndex: 'fksj',
-                key: 'fksj',
-                ellipsis: true,
-                render: () => {
-                    return <></>
-                }
-            },
-            {
-                title: '状态',
-                dataIndex: 'zt',
-                key: 'zt',
-                ellipsis: true,
-                // editable: true,
-                render: (text) => {
-                    if (text === '1') {
-                        return this.state.tableData.length >= 1 ? <span>已付款</span> : null;
-                    }
-                    return this.state.tableData.length >= 1 ? <span>未付款</span> : null;
-                },
-            },
-            {
-                title: '操作',
-                dataIndex: 'operator',
-                key: 'operator',
-                // width: 200,
-                // fixed: 'right',
-                ellipsis: true,
-                render: (text, record) =>
-                    this.state.tableData.length >= 1 ? (
-                        <Popconfirm title="确定要删除吗?" onConfirm={() => {
-                            return this.handleSingleDelete(record.id)
-                        }}>
-                            <a>删除</a>
-                        </Popconfirm>
-                    ) : null,
-            }
-        ];
-
         return (<>
             {isTableFullScreen &&
                 <Modal title={null} footer={null} width={'100vw'} visible={isTableFullScreen} onCancel={() => { this.setState({ isTableFullScreen: false }) }} style={{
@@ -479,22 +389,22 @@ class ContractInnfoUpdate extends React.Component {
                                         }
                                     }
                                 })
-                                // console.log({
-                                //     xmmc: Number(currentXmid),
-                                //     json: JSON.stringify(arr),
-                                //     rowcount: tableData.length,
-                                //     htje: Number(getFieldValue('htje')),
-                                //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-                                // }, arr);
-                                UpdateHTXX({
+                                console.log({
                                     xmmc: Number(currentXmid),
                                     json: JSON.stringify(arr),
                                     rowcount: tableData.length,
                                     htje: Number(getFieldValue('htje')),
                                     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-                                })
-                                this.setState({ tableData: [] });
-                                closeMessageEditModal();
+                                }, arr);
+                                // UpdateHTXX({
+                                //     xmmc: Number(currentXmid),
+                                //     json: JSON.stringify(arr),
+                                //     rowcount: tableData.length,
+                                //     htje: Number(getFieldValue('htje')),
+                                //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
+                                // })
+                                // this.setState({ tableData: [] });
+                                // closeMessageEditModal();
                             }
                         }
                     });
