@@ -11,7 +11,9 @@ const {
     queryOwnerProjectList,
     queryOwnerMessage,
     updateMessageState,
-    queryProjectInfoInCycle
+    queryProjectInfoInCycle,
+    queryHTXXByXQTC,
+    updateHTXX
   },
 } = api;
 
@@ -89,7 +91,26 @@ export async function UpdateMessageState(payload) {
 export async function FetchQueryProjectInfoInCycle(payload) {
   const option = {
     url: queryProjectInfoInCycle,
-    // url: 'ftq/projectManage/queryProjectInfoInCycle',
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询合同信息修改弹窗需要的合同信息
+export async function FetchQueryHTXXByXQTC(payload) {
+  const option = {
+    url: queryHTXXByXQTC,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 更新合同信息
+export async function UpdateHTXX(payload) {
+  const option = {
+    url: updateHTXX,
     method: 'post',
     data: payload,
   };

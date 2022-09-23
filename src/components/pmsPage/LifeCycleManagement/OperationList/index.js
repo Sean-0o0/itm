@@ -17,10 +17,11 @@ class OperationList extends React.Component {
   }
 
   onChange = (value) => {
-    const { fetchQueryLiftcycleMilestone, fetchQueryLifecycleStuff } = this.props;
+    const { fetchQueryLiftcycleMilestone, fetchQueryLifecycleStuff, getCurrentXmid } = this.props;
     fetchQueryLiftcycleMilestone(value);
     fetchQueryLifecycleStuff(value);
     this.fetchQueryProjectInfoInCycle(value);
+    getCurrentXmid(value);//生命周期页取得最新xmid
   };
 
   onSearch = (value) => {
@@ -154,7 +155,7 @@ class OperationList extends React.Component {
           {this.getReactNode('项目进度',
             <div style={{ display: 'flex', minWidth: '170px' }}>
               {projectInfo && projectInfo.xmjd}%
-              <Progress style={{ marginLeft: '8px' }} percent={projectInfo && projectInfo.xmjd} strokeColor='#3361FF' showInfo={false} />
+              <Progress style={{ marginLeft: '8px' }} percent={projectInfo && Number(projectInfo.xmjd)} strokeColor='#3361FF' showInfo={false} />
             </div>, 'pie-chart')}
           {this.getReactNode('项目标签',
             <div style={{ display: 'flex', }}>

@@ -7,4 +7,6 @@ export default [
   {code: '', key: 'createOperateHyperLink', url: '/projectManage/v1/createOperateHyperLink', dis: '获取livebos加密url'},
   {code: '', key: 'updateMessageState', url: '/projectManage/updateMessageState', dis: '将待办事项的查看状态修改为已读'},
   {code: '', key: 'queryProjectInfoInCycle', url: '/projectManage/queryProjectInfoInCycle', dis: '查询生命周期用到的项目信息'},
+  {code: '', key: 'queryHTXXByXQTC', url: '/projectManage/queryHTXXByXQTC', dis: '查询合同信息修改弹窗需要的合同信息'},
+  {code: '', key: 'updateHTXX', url: '/projectManage/updateHTXX', dis: '更新合同信息'},
 ];
