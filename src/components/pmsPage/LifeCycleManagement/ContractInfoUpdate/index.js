@@ -71,21 +71,41 @@ class EditableCell extends React.Component {
                             message: `${this.getTitle(dataIndex)}不允许空值`,
                         },
                     ],
+                    // initialValue: moment(),
                     initialValue: moment(record[dataIndex]),
-                    // initialValue: moment(record[dataIndex]),
-                })(<DatePicker ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
+                })(<DatePicker ref={node => (this.input = node)}
+                    onChange={(data, dataString) => {
+                        const { record, handleSave } = this.props;
+                        this.form.validateFields((error, values) => {
+                            console.log('values', values);
+                            if (error && error[e.currentTarget.id]) {
+                                return;
+                            }
+                            let newValues = {};
+                            newValues = {...values};
+                            for(let i in newValues){
+                                if(i === 'fksj'){
+                                    newValues[i] = dataString;
+                                }
+                            }
+                            handleSave({ ...record, ...newValues });
+                        });
+                    }}
+                // onPressEnter={this.save} 
+                // onBlur={this.save} 
+                />)
                     : (dataIndex === 'bfb' ? form.getFieldDecorator(dataIndex, {
                         initialValue: record[dataIndex],
                     })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
-                     : form.getFieldDecorator(dataIndex, {
-                        rules: [
-                            {
-                                required: true,
-                                message: `${this.getTitle(dataIndex)}不允许空值`,
-                            },
-                        ],
-                        initialValue: record[dataIndex],
-                    })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
+                        : form.getFieldDecorator(dataIndex, {
+                            rules: [
+                                {
+                                    required: true,
+                                    message: `${this.getTitle(dataIndex)}不允许空值`,
+                                },
+                            ],
+                            initialValue: record[dataIndex],
+                        })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
                     )}
             </Form.Item>
         );
@@ -344,7 +364,8 @@ class ContractInnfoUpdate extends React.Component {
                     overflowY: "auto",
                     padding: '0 0 24px 0'
                 } : {
-                    padding: '0 0 24px 0'
+                    padding: '0 0 24px 0',
+                    borderRadius: '8px'
                 }}
                 title={null} visible={editMessageVisible} onOk={() => {
                     this.props.form.validateFields(err => {
@@ -389,22 +410,22 @@ class ContractInnfoUpdate extends React.Component {
                                         }
                                     }
                                 })
-                                console.log({
-                                    xmmc: Number(currentXmid),
-                                    json: JSON.stringify(arr),
-                                    rowcount: tableData.length,
-                                    htje: Number(getFieldValue('htje')),
-                                    qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-                                }, arr);
-                                // UpdateHTXX({
+                                // console.log({
                                 //     xmmc: Number(currentXmid),
                                 //     json: JSON.stringify(arr),
                                 //     rowcount: tableData.length,
                                 //     htje: Number(getFieldValue('htje')),
                                 //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-                                // })
-                                // this.setState({ tableData: [] });
-                                // closeMessageEditModal();
+                                // }, arr);
+                                UpdateHTXX({
+                                    xmmc: Number(currentXmid),
+                                    json: JSON.stringify(arr),
+                                    rowcount: tableData.length,
+                                    htje: Number(getFieldValue('htje')),
+                                    qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
+                                })
+                                this.setState({ tableData: [] });
+                                closeMessageEditModal();
                             }
                         }
                     });
@@ -416,7 +437,7 @@ class ContractInnfoUpdate extends React.Component {
                 <div style={{
                     height: '55px', width: '100%', display: 'flex',
                     alignItems: 'center', backgroundColor: '#3361FF', color: 'white',
-                    marginBottom: '16px', padding: '0 24px'
+                    marginBottom: '16px', padding: '0 24px', borderRadius: '4px 4px 0 0'
                 }}>
                     <strong>修改</strong>
                     <img src={isModalFullScreen
@@ -461,7 +482,7 @@ class ContractInnfoUpdate extends React.Component {
                     </Row>
                     <Row>
                         <Col span={24}>
-                            <Form.Item name={['user', 'name']} label="付款详情" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                            <Form.Item label={<span><span style={{ color: 'red' }}>*</span>付款详情</span>} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
                                 <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', padding: '10px 0' }}>
                                     <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
                                         <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
