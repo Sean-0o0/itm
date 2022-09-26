@@ -13,6 +13,7 @@ import {
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone,
   FetchQueryOwnerProjectList,
+  FetchQueryProjectInfoInCycle,
 } from "../../../services/pmsServices";
 import ContractInfoUpdate from './ContractInfoUpdate';
 
@@ -60,6 +61,8 @@ class LifeCycleManagementTabs extends React.Component {
     defaultValue: 0,
     //周报填写Url
     weelyReportUrl: '/#/UIProcessor?Table=V_XSZHZBTX&hideTitlebar=true',
+    //顶部项目信息
+    projectInfo: {},
   };
 
   componentDidMount() {
@@ -84,7 +87,8 @@ class LifeCycleManagementTabs extends React.Component {
         current,
         pageSize,
         total: -1,
-        sort: ''
+        sort: '',
+        cxlx: 'ALL',
       }
     ).then((ret = {}) => {
       const { record, code } = ret;
@@ -93,15 +97,27 @@ class LifeCycleManagementTabs extends React.Component {
           defaultValue: params.xmid,
           xmid: record[0].xmid,
           operationListData: record,
+        },()=>{
+          this.fetchQueryProjectInfoInCycle(this.props.params?.xmid || Number(this.state.operationListData[0]?.xmid));
         });
       }
-      // console.log("xmidxmid",this.state.xmid)
       this.fetchQueryLiftcycleMilestone(params.xmid);
       this.fetchQueryLifecycleStuff(params.xmid);
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
+  //获取项目展示信息
+  fetchQueryProjectInfoInCycle = (xmid) => {
+    FetchQueryProjectInfoInCycle({
+      xmmc: xmid,
+    }).then(res => {
+      this.setState({
+        projectInfo: res?.record[0]
+      });
+    });
+  };
 
   //流程发起url
   getSendUrl = (name) => {
@@ -590,7 +606,8 @@ class LifeCycleManagementTabs extends React.Component {
       detailData,
       operationListData,
       defaultValue,
-      currentXmmc
+      currentXmmc,
+      projectInfo,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
@@ -710,9 +727,10 @@ class LifeCycleManagementTabs extends React.Component {
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
             fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
             fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+            fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
             data={operationListData}
             defaultValue={defaultValue}
-            xmid={this.props.params.xmid}
+            projectInfo={projectInfo}
             getCurrentXmid={(xmid) => {
               this.setState({
                 currentXmid: xmid

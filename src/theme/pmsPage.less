@@ -31,15 +31,22 @@
 //信息修改弹窗
 .editMessage-modify { 
   & .ant-modal-content{
-    & .ant-modal-close-x{
+    border-radius: 8px;
+    & .ant-modal-close-x {
       color: white;
+      height: 42px;
+      width: 42px;
+      line-height: 42px;
+    }
+    .ant-btn-primary {
+      background-color: #54A9DF;
     }
   }
   .ant-table {
     // max-height: 255px;
-    height: 255px;
+    height: 242px;
     overflow: auto;
-    th, td{text-align: center;}
+    th, td{ text-align: center; }
   }
   .editable-cell {
     position: relative;
