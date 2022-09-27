@@ -13,7 +13,8 @@ const {
     updateMessageState,
     queryProjectInfoInCycle,
     queryHTXXByXQTC,
-    updateHTXX
+    updateHTXX,
+    queryOAUrl,
   },
 } = api;
 
@@ -111,6 +112,16 @@ export async function FetchQueryHTXXByXQTC(payload) {
 export async function UpdateHTXX(payload) {
   const option = {
     url: updateHTXX,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询oa返回的url
+export async function FetchQueryOAUrl(payload) {
+  const option = {
+    url: queryOAUrl,
     method: 'post',
     data: payload,
   };

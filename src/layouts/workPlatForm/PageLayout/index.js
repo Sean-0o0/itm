@@ -5,20 +5,23 @@ import { Route, Redirect, Switch } from 'umi';
 import CacheRoute, { CacheSwitch } from 'react-router-cache-route';
 import { Layout, ConfigProvider, message, Icon } from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
-import lodash, { debounce } from 'lodash';
+import lodash, {debounce} from 'lodash';
 import PageSider from './PageSider';
 import PageHeader from './PageHeader';
-import { FetcUserMenuProject } from '../../../services/commonbase/index';
+import {FetcUserMenuProject} from '../../../services/commonbase/index';
 import TrackRouter from '../../../components/Common/Router/TrackRouter';
 import RecentlyVisiteUtils from '../../../utils/recentlyVisiteUtils';
-import { FetchMenu } from '../../../services/amslb/user';
+import {FetchMenu} from '../../../services/amslb/user';
 import Watermark from './Watermark';
 import SpecialUrl from './specialUrl';
 import styles from './index.less';
+import ViewFile from "../../../components/pmsPage/ViewFile";
+import WpsUrl from "./WpsUrl";
 // import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
 
-const { Header, Sider, Content } = Layout;
+const {Header, Sider, Content} = Layout;
 const prefix = '';
+
 class MainPageLayout extends React.PureComponent {
   constructor(props) {
     super(props);
@@ -365,29 +368,38 @@ class MainPageLayout extends React.PureComponent {
     let toDefaultLink = {}; // eslint-disable-line
     if (menuTree.length > 0) {
       const itemPath = this.getFirstChildren(menuTree[0]);
-      toDefaultLink = { pathname: itemPath };
+      toDefaultLink = {pathname: itemPath};
     }
     // 是否开启水印
     const isOpenSecureMarker = localStorage.getItem('openSecureMarker') === '1';
     // 判断是否为特殊链接
     const specialUrl = SpecialUrl.filter(item => location.pathname.startsWith(item));
+    {/*WPS预览页面单独处理*/
+    }
+    const wpsUrl = WpsUrl.filter(item => location.pathname.startsWith(item));
     return (
-      specialUrl && specialUrl.length > 0 ? (
-        <React.Fragment>
-          <Switch>
-            {
-              // 路由
-              routes.map(({ key, path, component }) => {
-                return (
-                  <Route
-                    key={key || path}
-                    path={path}
-                    unmount={false}
-                    saveScrollPosition
-                    component={component}
-                  />
-                );
-              }
+      wpsUrl && wpsUrl.length > 0 ? (
+          <React.Fragment>
+            {/*WPS预览页面单独处理*/}
+            <ViewFile/>
+          </React.Fragment>
+        ) :
+        (specialUrl && specialUrl.length > 0 ? (
+          <React.Fragment>
+            <Switch>
+              {
+                // 路由
+                routes.map(({key, path, component}) => {
+                  return (
+                    <Route
+                      key={key || path}
+                      path={path}
+                      unmount={false}
+                      saveScrollPosition
+                      component={component}
+                    />
+                  );
+                }
               )}
           </Switch>
         </React.Fragment>
@@ -447,20 +459,22 @@ class MainPageLayout extends React.PureComponent {
                     {
                       // 路由
                       routes.map(({key, path, component, keepAlive = true}) => {
-                        return (
-                          path && (
-                            <CacheRoute
-                              key={key || path}
-                              when={() => { return keepAlive; }}
-                              cacheKey={key || path}
-                              path={path}
-                              unmount={false}
-                              saveScrollPosition
-                              component={component}
-                            />
-                          )
-                        );
-                      }
+                          return (
+                            path && (
+                              <CacheRoute
+                                key={key || path}
+                                when={() => {
+                                  return keepAlive;
+                                }}
+                                cacheKey={key || path}
+                                path={path}
+                                unmount={false}
+                                saveScrollPosition
+                                component={component}
+                              />
+                            )
+                          );
+                        }
                       )}
                     <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
                     {menuTree && menuTree.length > 0 && <Redirect exact from={`${prefix}/`} to={toDefaultLink} />}
@@ -471,11 +485,11 @@ class MainPageLayout extends React.PureComponent {
                   </CacheSwitch>
                 </TrackRouter>
               </Content>
-              <Content id="modalContent" />
+              <Content id="modalContent"/>
             </Layout>
           </Layout>
         </ConfigProvider>
-      )
+        ))
     );
   }
 }

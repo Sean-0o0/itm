@@ -1,7 +1,8 @@
 import React from 'react';
-import {Button, Input, Select, Row, Col, Tooltip} from 'antd';
+import {Button, Input, Select, Row, Col, Tooltip, message} from 'antd';
 import {connect} from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
+import {FetchQueryLifecycleStuff, FetchQueryOAUrl} from "../../../../services/pmsServices";
 
 const {Option} = Select;
 
@@ -31,9 +32,24 @@ class Tooltips extends React.Component {
     this.props.handleMessageEdit(item);
   }
 
+  getOAUrl = (item, xmid) => {
+    FetchQueryOAUrl({
+      sxid: item.sxid,
+      xmmc: xmid,
+    }).then((ret = {}) => {
+      const {code = 0, record = []} = ret;
+      if (code === 1) {
+        // console.log("record",record)
+        window.open(record.url)
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
   render() {
 
-    const {type, status, item} = this.props;
+    const {type, status, item, xmid} = this.props;
     // console.log("sxmcsxmcsxmc", sxmc)
     return (
       <div>
@@ -48,11 +64,15 @@ class Tooltips extends React.Component {
             </Tooltip>) : ''
         }
         {
-          type.includes("流程") &&
-          <Tooltip title="发起">
-            <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-               className="iconfont icon-send" onClick={() => this.handleSend(item)}/>
-          </Tooltip>
+          type.includes("流程") ? (status === " " ?
+            <Tooltip title="发起">
+              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                 className="iconfont icon-send" onClick={() => this.handleSend(item)}/>
+            </Tooltip> : <Tooltip title="查看">
+              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                 className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
+                 onClick={() => this.getOAUrl(item, xmid)}/>
+            </Tooltip>) : ''
 
         }
         {

@@ -29,15 +29,17 @@
 .font-s16(){font-size: 16px;}
 
 //信息修改弹窗
-.editMessage-modify { 
-  & .ant-modal-content{
+.editMessage-modify {
+  & .ant-modal-content {
     border-radius: 8px;
+
     & .ant-modal-close-x {
       color: white;
       height: 42px;
       width: 42px;
       line-height: 42px;
     }
+
     .ant-btn-primary {
       background-color: #54A9DF;
     }
@@ -46,7 +48,7 @@
     // max-height: 255px;
     height: 242px;
     // overflow: auto;
-    th, td { 
+    th, td {
       text-align: center;
       // overflow: hidden;
       // text-overflow: ellipsis;
@@ -56,12 +58,12 @@
   .editable-cell {
     position: relative;
   }
-  
+
   .editable-cell-value-wrap {
     padding: 5px 12px;
     cursor: pointer;
   }
-  
+
   .editable-row:hover .editable-cell-value-wrap {
     border: 1px solid #d9d9d9;
     border-radius: 4px;
@@ -81,7 +83,7 @@
       color: #303133;
       & .ant-select-arrow {
         display: none;
-      } 
+      }
     }
   }
 }
@@ -180,20 +182,22 @@
       color: rgba(96, 98, 102, 1);
 
       .head5-title {
-        display: flex;
-        align-items: center;
-        border-radius: 50%;
-        height: 4.5rem;
-        width: 4.5rem;
-        background: rgba(51, 97, 255, 1);
+        //display: flex;
+        //align-items: center;
+        //border-radius: 50%;
+        //height: 4.5rem;
+        //width: 4.5rem;
+        //background: rgba(51, 97, 255, 1);
 
         .head5-cont {
-          display: flex;
+          border: solid 2px rgba(51, 97, 255, 1);
+          display: grid;
           align-items: center;
-          margin: 0.25rem;
+          text-align: center;
+          //margin: 0.25rem;
           border-radius: 50%;
-          height: 4rem;
-          width: 4rem;
+          height: 4.762rem;
+          width: 4.762rem;
           background: white;
         }
       }
@@ -231,7 +235,7 @@
       }
 
       .font-s14();
-      
+
       .cont-col {
         margin-left: 2rem;
         //height: 56rem;
@@ -438,7 +442,7 @@
         line-height: 3.273rem;
         color: rgba(48, 49, 51, 1);
       }
-      
+
       .head1:hover{
         color: #3361FF;
         & .head1-link{

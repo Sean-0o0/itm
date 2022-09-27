@@ -7,7 +7,7 @@ import Points from './Points';
 import Imgs from './Imgs';
 import ProjectProgress from './ProjectProgress';
 import BridgeModel from "../../Common/BasicModal/BridgeModel";
-import { FetchLivebosLink } from '../../../services/amslb/user';
+import {FetchLivebosLink} from '../../../services/amslb/user';
 import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff,
@@ -17,7 +17,12 @@ import {
 } from "../../../services/pmsServices";
 import ContractInfoUpdate from './ContractInfoUpdate';
 
-const { Panel } = Collapse;
+import moment from 'moment';
+import WPSFrame from '../../../js/wps_general'
+import {WpsInvoke} from '../../../js/wpsjsrpcsdk'
+
+const wpsFrame = new WPSFrame;
+const {Panel} = Collapse;
 const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
 
@@ -583,6 +588,67 @@ class LifeCycleManagementTabs extends React.Component {
     this.fetchQueryLiftcycleMilestone(this.state.xmid);
     this.fetchQueryLifecycleStuff(this.state.xmid);
   }
+
+  //文件wps预览-勿删
+  handleClick = () => {
+    this._WpsInvoke({
+      Index: 'OpenFile',
+      // AppType:'wps',
+      filepath: 'http://27.151.112.178:8011/livebos/download?fileName=测试文件.docx&filePath=L2hvbWUvZnRxL2RhdGEvYXBwL0M1L0xDWllKWURZU1FMQy9GSi81OC8x',
+    })
+  }
+
+  //文件wps预览-勿删
+  _WpsInvoke(funcs, front, jsPluginsXml, isSilent) {
+    // var info = {};
+    // info.funcs = funcs;
+    if (isSilent) {//隐藏启动时，front必须为false
+      front = false;
+    }
+    /**
+     * 下面函数为调起WPS，并且执行加载项WpsOAAssist中的函数dispatcher,该函数的参数为业务系统传递过去的info
+     */
+    console.log("funcs", funcs)
+    this.singleInvoke(funcs, front, jsPluginsXml, isSilent)
+    // if (pluginsMode != 2) {//单进程
+    //   singleInvoke(info,front,jsPluginsXml,isSilent)
+    // } else {//多进程
+    //   multInvoke(info,front,jsPluginsXml,isSilent)
+    // }
+
+  }
+
+  singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
+    WpsInvoke.InvokeAsHttp("wps", // 组件类型
+      "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
+      "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
+      JSON.stringify(param), // 传递给插件的数据
+      function (result) { // 调用回调，status为0为成功，其他是错误
+        if (result.status) {
+          if (result.status === 100) {
+            console.log('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
+            // WpsInvoke.AuthHttpesCert('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
+            return;
+          }
+          alert(result.message)
+
+        } else {
+          console.log(result.response)
+          // showresult(result.response)
+        }
+      },
+      showToFront,
+      jsPluginsXml,
+      silentMode)
+
+
+    WpsInvoke.RegWebNotify("WpsOAAssist", "WpsOAAssist", this.handleOaMessage)
+  }
+
+  jumpTo = (url) => {
+    window.open(url, '_blank');
+  };
+
   render() {
     const {
       uploadVisible,
@@ -608,6 +674,7 @@ class LifeCycleManagementTabs extends React.Component {
       defaultValue,
       currentXmmc,
       projectInfo,
+      xmid,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
@@ -642,10 +709,10 @@ class LifeCycleManagementTabs extends React.Component {
     const fillOutModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '120rem',
+      width: '150rem',
       height: '80rem',
       title: fillOutTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: fillOutVisible,
       footer: null,
     };
@@ -737,6 +804,7 @@ class LifeCycleManagementTabs extends React.Component {
               });
             }} />
         </div>
+        {/*<button onClick={this.handleClick}>222</button>*/}
         {/*position: 'relative',*/}
         <div style={{ height: '92%', margin: '0 1.571rem 3.571rem 1.571rem', }}>
           {
@@ -783,10 +851,10 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                          className="iconfont icon-edit" onClick={
-                            () => this.handleEditModel(item)
-                          } />
+                        <a style={{color: 'rgba(51, 97, 255, 1)'}}
+                           className="iconfont icon-edit" onClick={
+                          () => this.handleEditModel(item)
+                        }/>
                       </div>
                     </div>
                   </div>
@@ -855,13 +923,14 @@ class LifeCycleManagementTabs extends React.Component {
                                         </Col>
                                         <Col span={6} style={{ textAlign: 'right' }}>
                                           <Tooltips type={item.swlx}
-                                            item={item}
-                                            status={item.zxqk}
-                                            handleUpload={() => this.handleUpload(item)}
-                                            handleSend={this.handleSend}
-                                            handleFillOut={() => this.handleFillOut(item)}
-                                            handleEdit={() => this.handleEdit(item)}
-                                            handleMessageEdit={this.handleMessageEdit}
+                                                    item={item}
+                                                    status={item.zxqk}
+                                                    xmid={this.state.xmid}
+                                                    handleUpload={() => this.handleUpload(item)}
+                                                    handleSend={this.handleSend}
+                                                    handleFillOut={() => this.handleFillOut(item)}
+                                                    handleEdit={() => this.handleEdit(item)}
+                                                    handleMessageEdit={this.handleMessageEdit}
                                           />
                                         </Col>
                                         {/* <Col span={3}> */}

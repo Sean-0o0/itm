@@ -22,4 +22,9 @@ exports.routes = [
     path: `/PersonWorkBench`,
     component: './pmsPage/PersonWorkBench',
   },
+  {
+    //WPS在线预览
+    path: `${prefix}/ViewFilePage`,
+    component: './pmsPage/ViewFilePage',
+  },
 ]

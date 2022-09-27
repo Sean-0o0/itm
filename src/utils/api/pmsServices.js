@@ -9,4 +9,5 @@ export default [
   {code: '', key: 'queryProjectInfoInCycle', url: '/projectManage/queryProjectInfoInCycle', dis: '查询生命周期用到的项目信息'},
   {code: '', key: 'queryHTXXByXQTC', url: '/projectManage/queryHTXXByXQTC', dis: '查询合同信息修改弹窗需要的合同信息'},
   {code: '', key: 'updateHTXX', url: '/projectManage/updateHTXX', dis: '更新合同信息'},
+  {code: '', key: 'queryOAUrl', url: '/projectManage/queryOAUrl', dis: '查询OAUrl'},
 ];

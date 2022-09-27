@@ -10,5 +10,5 @@ module.exports = {
   logo: '/logo.png',
   footerText: '武汉顶点软件有限公司 © 2018',
   api: getAPIs && getAPIs(),
-  // isCas: false // 否是开启单点登录
+  isCas: false // 否是开启单点登录
 };
