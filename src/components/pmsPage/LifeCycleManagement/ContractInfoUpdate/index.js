@@ -132,7 +132,7 @@ class EditableCell extends React.Component {
         );
     }
 }
-class ContractInnfoUpdate extends React.Component {
+class ContractInfoUpdate extends React.Component {
     state = {
         isModalFullScreen: false,
         isTableFullScreen: false,
@@ -203,25 +203,6 @@ class ContractInnfoUpdate extends React.Component {
         });
     };
 
-    //调用getRowHeightAndSetTop方法获取高亮行的index值后，通过setScrollTopValue设置滚动条位置
-    //data：table的datasource数据
-    //value：当前需要高亮的值
-    getRowHeightAndSetTop(data, value) {
-        data && data.forEach((item, index) => {
-            if (item.id == value) {
-                this.setTableScrollTop(index);
-            }
-        })
-    }
-    //设置滚动条位置的方法
-    setTableScrollTop(index, rowHieight) {
-        if (index != 0 || index != -1) {
-            //rowHieight是一行的高度，index*rowHieight就是滚动条要移动的位置
-            let currPosition = index * rowHieight;
-            $(`#list .ant-table-body`).scrollTop(currPosition);
-        }
-    }
-
     render() {
         const {
             isTableFullScreen,
@@ -244,7 +225,7 @@ class ContractInnfoUpdate extends React.Component {
             {
                 title: () => <><span style={{ color: 'red' }}>*</span>期数</>,
                 dataIndex: 'fkqs',
-                width: 100,
+                width: '13%',
                 key: 'fkqs',
                 ellipsis: true,
                 editable: true,
@@ -259,7 +240,7 @@ class ContractInnfoUpdate extends React.Component {
             {
                 title: <><span style={{ color: 'red' }}>*</span>付款金额（元）</>,
                 dataIndex: 'fkje',
-                width: 125,
+                width: '16%',
                 key: 'fkje',
                 ellipsis: true,
                 editable: true,
@@ -267,7 +248,7 @@ class ContractInnfoUpdate extends React.Component {
             {
                 title: <><span style={{ color: 'red' }}>*</span>付款时间</>,
                 dataIndex: 'fksj',
-                width: 226,
+                width: '29%',
                 key: 'fksj',
                 ellipsis: true,
                 editable: true,
@@ -275,7 +256,7 @@ class ContractInnfoUpdate extends React.Component {
             {
                 title: '状态',
                 dataIndex: 'zt',
-                width: 80,
+                width: '10%',
                 key: 'zt',
                 ellipsis: true,
                 // editable: true,
@@ -332,6 +313,7 @@ class ContractInnfoUpdate extends React.Component {
             {isTableFullScreen &&
                 <Modal title={null} footer={null} width={'100vw'}
                     visible={isTableFullScreen}
+                    wrapClassName='table-fullscreen'
                     maskClosable={false}
                     onCancel={() => { this.setState({ isTableFullScreen: false }) }}
                     style={{
@@ -342,7 +324,6 @@ class ContractInnfoUpdate extends React.Component {
                     }}
                     bodyStyle={{
                         height: "100vh",
-                        overflowY: "auto",
                         padding: '0 0 24px 0',
                     }}>
                     <div style={{ height: '55px', width: '100%', display: 'flex', alignItems: 'center', padding: '0 57px 0 22px' }}>
@@ -350,12 +331,11 @@ class ContractInnfoUpdate extends React.Component {
                             let arrData = tableData;
                             arrData.push({ id: Date.now(), fkqs: '', bfb: '0.5', fkje: '0.5', fksj: moment().format('YYYY-MM-DD'), zt: '2' });
                             this.setState({ tableData: arrData }, () => {
-                                let table2 = document.querySelectorAll(`.tableBox2 .ant-table`)[0];
-                                table2.scrollTop = table2.scrollHeight;
+                                let table1 = document.querySelectorAll(`.tableBox1 .ant-table-body`)[0];
+                                table1.scrollTop = table1.scrollHeight;
                             });
-                        }}><img
-                                src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                                alt='' style={{ height: '20px', marginRight: '6px' }}
+                        }}><img src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
+                            alt='' style={{ height: '20px', marginRight: '6px' }}
                             />新增</div>
                         <Popconfirm title="确定要删除吗?" onConfirm={() => {
                             if (selectedRowIds.length > 0) {
@@ -368,19 +348,23 @@ class ContractInnfoUpdate extends React.Component {
                                 src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
                                 alt='' style={{ height: '20px', marginRight: '6px' }}
                             />删除</div></Popconfirm>
-                        <img src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                            alt='' style={{ height: '20px', marginLeft: 'auto' }}
+                        <img src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
+                            : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
+                            alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
                             onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
                     </div>
-                    <Table columns={columns}
-                        rowKey='table'
-                        components={components}
-                        rowClassName={() => 'editable-row'}
-                        dataSource={tableData}
-                        rowSelection={rowSelection}
-                        pagination={false}
-                        bordered
-                    ></Table>
+                    <div className='tableBox1'>
+                        <Table columns={columns}
+                            rowKey={record => record.id}
+                            components={components}
+                            rowClassName={() => 'editable-row'}
+                            dataSource={tableData}
+                            scroll={{ y: 730 }}
+                            rowSelection={rowSelection}
+                            pagination={false}
+                            bordered
+                        ></Table>
+                    </div>
                 </Modal>}
             <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1000px'}
                 maskClosable={false}
@@ -398,7 +382,7 @@ class ContractInnfoUpdate extends React.Component {
                 } : {
                     padding: '0'
                 }}
-                title={null} visible={editMessageVisible} 
+                title={null} visible={editMessageVisible}
                 onOk={() => {
                     this.props.form.validateFields(err => {
                         if (!err) {
@@ -456,7 +440,7 @@ class ContractInnfoUpdate extends React.Component {
                         }
                     });
 
-                }} 
+                }}
                 onCancel={() => {
                     this.setState({ tableData: [] });
                     closeMessageEditModal();
@@ -470,7 +454,7 @@ class ContractInnfoUpdate extends React.Component {
                     <img src={isModalFullScreen
                         ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
                         : require('../../../../image/pms/LifeCycleManagement/full-screen.png')} alt=''
-                        style={{ height: '14px', marginLeft: 'auto', marginRight: '25px' }}
+                        style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
                         onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
                 </div>
                 <Form name="nest-messages" style={{ padding: '0 24px' }}>
@@ -516,7 +500,7 @@ class ContractInnfoUpdate extends React.Component {
                                             let arrData = tableData;
                                             arrData.push({ id: Date.now(), fkqs: '', bfb: 0.5, fkje: 0.5, fksj: moment().format('YYYY-MM-DD'), zt: '2' });
                                             this.setState({ tableData: arrData }, () => {
-                                                let table2 = document.querySelectorAll(`.tableBox2 .ant-table`)[0];
+                                                let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
                                                 table2.scrollTop = table2.scrollHeight;
                                             });
                                         }}><img
@@ -536,8 +520,9 @@ class ContractInnfoUpdate extends React.Component {
                                             />删除</div>
                                         </Popconfirm>
                                         <img
-                                            src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png') : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                                            alt='' style={{ height: '20px', marginLeft: 'auto' }}
+                                            src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
+                                                : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
+                                            alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
                                             onClick={() => {
                                                 this.setState({ isTableFullScreen: !isTableFullScreen })
                                             }} />
@@ -550,7 +535,7 @@ class ContractInnfoUpdate extends React.Component {
                                             rowClassName={() => 'editable-row'}
                                             dataSource={tableData}
                                             rowSelection={rowSelection}
-                                            // scroll={{ y: 200 }}
+                                            scroll={{ y: 195 }}
                                             pagination={false}
                                             bordered
                                             size='middle'
@@ -568,4 +553,4 @@ class ContractInnfoUpdate extends React.Component {
 
 
 }
-export default Form.create()(ContractInnfoUpdate);
+export default Form.create()(ContractInfoUpdate);

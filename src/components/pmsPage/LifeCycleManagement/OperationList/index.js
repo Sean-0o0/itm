@@ -90,13 +90,17 @@ class OperationList extends React.Component {
     return (
       <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px', fontSize: '2.083rem' }}>
         <Input.Group compact>
-          <div onMouseDown={(e) => { e.preventDefault(); return false; }} style={{ position: 'relative' }} className="operationListSelectBox">
-            <i
-              style={{ color: '#c0c4cc' }}
-              className={this.state.open ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-              onClick={() => {
-                this.setState({ open: !this.state.open });
-              }} />
+          <div onMouseDown={(e) => { 
+            e.preventDefault(); 
+            // return false;
+             }} style={{ position: 'relative' }} className="operationListSelectBox">
+            <span
+              style={{ backgroundColor: '#c0c4cc', width:'5px', height:'18px', borderRadius: '4px', display:'inline-block', verticalAlign: 'text-top' }}
+              // className={this.state.open ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
+              // onClick={() => {
+              //   this.setState({ open: !this.state.open });
+              // }} 
+            ></span>
             <Select
               style={{ width: '34rem', borderRadius: '8px !important' }}
               showSearch
