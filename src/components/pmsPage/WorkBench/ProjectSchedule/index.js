@@ -564,13 +564,14 @@ class ProjectSchedule extends React.Component {
                             color: 'rgba(51, 97, 255, 1)',
                             // width: '12rem'
                           }}>
-                            <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
-                            <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
+                            <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
+                            <div style={{margin: '0rem 2rem 0rem 1rem'}}>{items.jd}%</div>
                           </div>
                           {/*<ProjectProgress state={items.zt}/>*/}
                         </div>
                         <div className='head4'>
-                          项目风险：<ProjectRisk state={items.fxnr} />
+                          项目风险：<ProjectRisk state={items.fxnr} item={items}
+                                            lcbid={ProjectScheduleDetailData[0]?.lcbid}/>
                         </div>
                       </div>
                       {items.extend ?
@@ -617,7 +618,7 @@ class ProjectSchedule extends React.Component {
                                         num = num + 1;
                                       }
                                     })
-                                    return <Col span={8} style={{marginBottom: '16px'}}> 
+                                    return <Col span={8} style={{marginBottom: '16px'}}>
                                       <div className='cont-col'>
                                         <div className='cont-col1'>
                                           <div className='right'>

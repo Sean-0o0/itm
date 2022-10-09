@@ -10,4 +10,5 @@ export default [
   {code: '', key: 'queryHTXXByXQTC', url: '/projectManage/queryHTXXByXQTC', dis: '查询合同信息修改弹窗需要的合同信息'},
   {code: '', key: 'updateHTXX', url: '/projectManage/updateHTXX', dis: '更新合同信息'},
   {code: '', key: 'queryOAUrl', url: '/projectManage/queryOAUrl', dis: '查询OAUrl'},
+  {code: '', key: 'queryWpsWDXX', url: '/projectManage/queryWpsWDXX', dis: '查询预览所需的Url'},
 ];

@@ -15,6 +15,7 @@ const {
     queryHTXXByXQTC,
     updateHTXX,
     queryOAUrl,
+    queryWpsWDXX,
   },
 } = api;
 
@@ -122,6 +123,16 @@ export async function UpdateHTXX(payload) {
 export async function FetchQueryOAUrl(payload) {
   const option = {
     url: queryOAUrl,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询预览所需的url
+export async function FetchQueryWpsWDXX(payload) {
+  const option = {
+    url: queryWpsWDXX,
     method: 'post',
     data: payload,
   };

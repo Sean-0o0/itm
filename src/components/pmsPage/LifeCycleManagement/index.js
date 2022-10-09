@@ -14,6 +14,7 @@ import {
   FetchQueryLiftcycleMilestone,
   FetchQueryOwnerProjectList,
   FetchQueryProjectInfoInCycle,
+  FetchQueryWpsWDXX,
 } from "../../../services/pmsServices";
 import ContractInfoUpdate from './ContractInfoUpdate';
 
@@ -296,12 +297,32 @@ class LifeCycleManagementTabs extends React.Component {
     }
   }
 
+  fetchQueryWpsWDXX = (lcbid, sxid, xmmc) => {
+    FetchQueryWpsWDXX({
+      lcb: lcbid,
+      sxid: sxid,
+      xmmc: this.state.xmid
+    }).then((ret = {}) => {
+      const {code = 0, record = []} = ret;
+      console.log("WpsWDXXData", record);
+      if (code === 1) {
+        this._WpsInvoke({
+          Index: 'OpenFile',
+          // AppType:'wps',
+          filepath: record.url,
+        })
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
   fetchQueryLifecycleStuff = (e) => {
     FetchQueryLifecycleStuff({
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
+      const {code = 0, record = []} = ret;
       // console.log("detailData",record);
       if (code === 1) {
         this.setState({
@@ -590,12 +611,8 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   //文件wps预览-勿删
-  handleClick = () => {
-    this._WpsInvoke({
-      Index: 'OpenFile',
-      // AppType:'wps',
-      filepath: 'http://27.151.112.178:8011/livebos/download?fileName=测试文件.docx&filePath=L2hvbWUvZnRxL2RhdGEvYXBwL0M1L0xDWllKWURZU1FMQy9GSi81OC8x',
-    })
+  handleClick = (item) => {
+    this.fetchQueryWpsWDXX(item.lcbid, item.sxid, "");
   }
 
   //文件wps预览-勿删
@@ -915,9 +932,22 @@ class LifeCycleManagementTabs extends React.Component {
                                         marginTop: ind === 0 ? '18px' : '16px'
                                       }}>
                                         <Col span={17} >
-                                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <Points status={item.zxqk} />
-                                            <span>{item.sxmc}</span>
+                                          <div style={{display: 'flex', alignItems: 'center'}}>
+                                            <Points status={item.zxqk}/>
+                                            {/*根据事项类型判断是否是文档*/}
+                                            {
+                                              item.swlx.includes("文档") ||
+                                              item.swlx.includes("信委会") ||
+                                              item.swlx.includes("总办会") ||
+                                              item.swlx.includes("需求调研") ||
+                                              item.swlx.includes("产品设计") ||
+                                              item.swlx.includes("系统框架搭建") ||
+                                              item.swlx.includes("功能开发") ||
+                                              item.swlx.includes("外部系统对接") ||
+                                              item.swlx.includes("系统测试") ?
+                                                <a onClick={() => this.handleClick(item)}>{item.sxmc}</a> :
+                                                <span>{item.sxmc}</span>
+                                            }
                                           </div>
                                           <div className='cont-row-zxqk'>{item.zxqk}</div>
                                         </Col>

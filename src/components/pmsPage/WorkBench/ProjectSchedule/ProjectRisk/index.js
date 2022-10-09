@@ -15,7 +15,8 @@ class ProjectRisk extends React.Component {
     riskVisible: false,
   };
 
-  hanldeRisk = (xmid, item) => {
+  hanldeRisk = (item, lcbid) => {
+    console.log("itemitem", item)
     ///OperateProcessor?operate=TFX_JBXX_ADD&Table=TFX_JBXX&GLXM=5&GLLCB=18
     let params = {
       "attribute": 0,
@@ -25,11 +26,11 @@ class ProjectRisk extends React.Component {
       "parameter": [
         {
           "name": "GLXM",
-          "value": xmid,
+          "value": item.xmid,
         },
         {
           "name": "GLLCB",
-          "value": item.lcbid,
+          "value": lcbid,
         },
       ],
       "userId": Loginname
@@ -70,7 +71,7 @@ class ProjectRisk extends React.Component {
 
   render() {
 
-    const {state, xmid} = this.props;
+    const {state, item, lcbid} = this.props;
     // console.log("state", state)
     const {riskUrl, riskTitle, riskVisible,} = this.state;
     const riskModalProps = {
@@ -100,7 +101,7 @@ class ProjectRisk extends React.Component {
         }
         {
           state === "0" && <div style={{display: 'flex'}}>
-            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, state)}>&nbsp;暂无风险</a>
+            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(item, lcbid)}>&nbsp;暂无风险</a>
           </div>
         }
       </div>
