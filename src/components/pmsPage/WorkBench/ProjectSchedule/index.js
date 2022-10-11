@@ -217,9 +217,9 @@ class ProjectSchedule extends React.Component {
         "operateName": "TLC_LCFQ_HTLYY",
         "parameter": [
           {
-            "name": "",
-            "value": '',
-          }
+            "name": "XMMC",
+            "value": item.xmid
+          },
         ],
         "userId": Loginname,
       }
