@@ -16,6 +16,9 @@ const {
     updateHTXX,
     queryOAUrl,
     queryWpsWDXX,
+    queryZBXXByXQTC,
+    queryGysInZbxx,
+    updateZbxx,
   },
 } = api;
 
@@ -128,11 +131,39 @@ export async function FetchQueryOAUrl(payload) {
   };
   return request(option);
 }
+// 查询招标信息修改弹窗需要的招标信息
+export async function FetchQueryZBXXByXQTC(payload) {
+  const option = {
+    url: queryZBXXByXQTC,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
 
 //查询预览所需的url
 export async function FetchQueryWpsWDXX(payload) {
   const option = {
     url: queryWpsWDXX,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+// 查询招标信息修改时的供应商下拉列表
+export async function FetchQueryGysInZbxx(payload) {
+  const option = {
+    url: queryGysInZbxx,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 更新招标信息
+export async function UpdateZbxx(payload) {
+  const option = {
+    url: updateZbxx,
     method: 'post',
     data: payload,
   };

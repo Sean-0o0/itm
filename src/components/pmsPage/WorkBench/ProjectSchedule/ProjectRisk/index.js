@@ -101,7 +101,7 @@ class ProjectRisk extends React.Component {
         }
         {
           state === "0" && <div style={{display: 'flex'}}>
-            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(item, lcbid)}>&nbsp;暂无风险</a>
+            <a style={{color: 'rgb(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, state)}>&nbsp;暂无风险</a>
           </div>
         }
       </div>

@@ -1,4 +1,4 @@
-import { Collapse, Row, Col, Menu, Form, message } from 'antd';
+import { Collapse, Row, Col, Menu, Form, message, Modal } from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
@@ -17,6 +17,7 @@ import {
   FetchQueryWpsWDXX,
 } from "../../../services/pmsServices";
 import ContractInfoUpdate from './ContractInfoUpdate';
+import BidInfoUpdate from './BidInfoUpdate';
 
 import moment from 'moment';
 import WPSFrame from '../../../js/wps_general'
@@ -53,7 +54,8 @@ class LifeCycleManagementTabs extends React.Component {
     fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     fillOutTitle: '',
     //信息修改
-    editMessageVisible: false,
+    editMessageVisible: false,//合同
+    bidInfoModalVisible: false,//招标
     currentXmid: 0,
     currentXmmc: '',
     //信息修改url
@@ -63,6 +65,7 @@ class LifeCycleManagementTabs extends React.Component {
     editModelTitle: '',
     editModelVisible: false,
     operationListData: [],
+    operationListTotalRows: 0,
     xmid: 0,
     defaultValue: 0,
     //周报填写Url
@@ -89,7 +92,8 @@ class LifeCycleManagementTabs extends React.Component {
     const { params } = this.props;
     FetchQueryOwnerProjectList(
       {
-        paging: 1,
+        // paging: 1,
+        paging: -1,
         current,
         pageSize,
         total: -1,
@@ -97,13 +101,14 @@ class LifeCycleManagementTabs extends React.Component {
         cxlx: 'ALL',
       }
     ).then((ret = {}) => {
-      const { record, code } = ret;
+      const { record, code, totalrows } = ret;
       if (code === 1) {
         this.setState({
           defaultValue: params.xmid,
           xmid: record[0].xmid,
           operationListData: record,
-        },()=>{
+          operationListTotalRows: totalrows
+        }, () => {
           this.fetchQueryProjectInfoInCycle(this.props.params?.xmid || Number(this.state.operationListData[0]?.xmid));
         });
       }
@@ -120,7 +125,7 @@ class LifeCycleManagementTabs extends React.Component {
       xmmc: xmid,
     }).then(res => {
       this.setState({
-        projectInfo: res?.record[0]
+        projectInfo: res?.record,
       });
     });
   };
@@ -454,7 +459,7 @@ class LifeCycleManagementTabs extends React.Component {
     });
   };
 
-  //信息录入修改
+  //合同信息录入修改
   handleMessageEdit = (item) => {
     // let params = {
     //   "attribute": 0,
@@ -510,10 +515,21 @@ class LifeCycleManagementTabs extends React.Component {
       return Number(item.xmid) === (Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid || Number(this.state.operationListData[0].xmid)))
     })
     this.setState({
-      // editMessageTitle: item.sxmc + '修改',
-      editMessageVisible: true,
       currentXmmc: this.state.operationListData[index].xmmc
     });
+    if (item.sxmc.includes("合同信息录入")) {
+      this.setState({
+        // editMessageTitle: item.sxmc + '修改',
+        editMessageVisible: true,
+      });
+    }
+    if (item.sxmc.includes("招标信息录入")) {
+      this.setState({
+        bidInfoModalVisible: true,
+        currentXmmc: this.state.operationListData[index].xmmc
+      });
+    }
+
   }
 
   handleEditModel = (item) => {
@@ -568,6 +584,11 @@ class LifeCycleManagementTabs extends React.Component {
   closeMessageEditModal = () => {
     this.setState({
       editMessageVisible: false,
+    });
+  };
+  closeBidInfoModal = () => {
+    this.setState({
+      bidInfoModalVisible: false,
     });
   };
 
@@ -692,6 +713,8 @@ class LifeCycleManagementTabs extends React.Component {
       currentXmmc,
       projectInfo,
       xmid,
+      bidInfoModalVisible,
+      operationListTotalRows,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
@@ -788,13 +811,21 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
-        {/*信息修改弹窗*/}
+        {/*合同信息修改弹窗*/}
         {editMessageVisible && <ContractInfoUpdate
           currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
           currentXmmc={currentXmmc}
           editMessageVisible={editMessageVisible}
           closeMessageEditModal={this.closeMessageEditModal}
         ></ContractInfoUpdate>}
+
+        {/*招标信息修改弹窗*/}
+        {bidInfoModalVisible && <BidInfoUpdate
+          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmmc={currentXmmc}
+          bidInfoModalVisible={bidInfoModalVisible}
+          closeBidInfoModal={this.closeBidInfoModal}
+        ></BidInfoUpdate>}
 
         {/* {editMessageVisible &&
           <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
@@ -813,6 +844,7 @@ class LifeCycleManagementTabs extends React.Component {
             fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
             fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
             data={operationListData}
+            totalRows={operationListTotalRows}
             defaultValue={defaultValue}
             projectInfo={projectInfo}
             getCurrentXmid={(xmid) => {
@@ -838,10 +870,10 @@ class LifeCycleManagementTabs extends React.Component {
               // console.log("sort",sort)
               // ,position: 'relative',
               return <div className='LifeCycleManage' style={{
-                borderTopLeftRadius: (index === 0 ? '8px' : ''),
-                borderTopRightRadius: (index === 0 ? '8px' : ''),
-                borderBottomLeftRadius: (index === basicData.length - 1 ? '8px' : ''),
-                borderBottomRightRadius: (index === basicData.length - 1 ? '8px' : '')
+                borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
+                borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),
+                borderBottomLeftRadius: (index === basicData.length - 1 ? '1.1904rem' : ''),
+                borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
               }}>
                 <div className='head'>
                   <Imgs status={item.zt} />
@@ -860,7 +892,7 @@ class LifeCycleManagementTabs extends React.Component {
                       style={{ color: 'rgba(48, 49, 51, 1)' }}>{item.kssj.slice(0, 4) + '.' + item.kssj.slice(4, 6) + '.' + item.kssj.slice(6, 8)} ~ {item.jssj.slice(0, 4) + '.' + item.jssj.slice(4, 6) + '.' + item.jssj.slice(6, 8)} </div>
                   </div>
                   <div className='head4'>
-                    项目风险：<ProjectRisk item={item} xmid={this.state.xmid} />
+                    项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
                   </div>
                   <div className='head2'>
                     状态：<ProjectProgress state={item.zt} />
@@ -868,10 +900,16 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{color: 'rgba(51, 97, 255, 1)'}}
-                           className="iconfont icon-edit" onClick={
-                          () => this.handleEditModel(item)
-                        }/>
+                        <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                          className="iconfont icon-edit" onClick={() => {
+                              // const { userId, loginUserId } = this.props;
+                              if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
+                                this.handleEditModel(item);
+                              } else {
+                                message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                              }
+                            }
+                          } />
                       </div>
                     </div>
                   </div>
@@ -896,13 +934,13 @@ class LifeCycleManagementTabs extends React.Component {
                     <Row style={{
                       height: '80%',
                       width: '100%',
-                      padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0px 6.571rem 0 10.571rem')
+                      padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0 6.571rem 0 10.571rem')
                     }} className='card' id={index}>
                       {
                         <Col span={24} style={{
                           width: '100%',
-                          padding: '3rem 3rem calc(3rem - 16px) 3rem',
-                          borderRadius: '8px',
+                          padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                          borderRadius: '1.1904rem',
                           maxHeight: '50rem'
                         }}
                           className='cont'>
@@ -917,7 +955,7 @@ class LifeCycleManagementTabs extends React.Component {
                                   num = num + 1;
                                 }
                               })
-                              return <Col span={8} className='cont-col-self' style={{ marginBottom: '16px' }} key={index}>
+                              return <Col span={8} className='cont-col-self' style={{ marginBottom: '2.3808rem' }} key={index}>
                                 <div className='cont-col'>
                                   <div className='cont-col1'>
                                     <div className='right'>
@@ -929,7 +967,7 @@ class LifeCycleManagementTabs extends React.Component {
                                       return <Row key={ind} className='cont-row' style={{
                                         // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
                                         // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
-                                        marginTop: ind === 0 ? '18px' : '16px'
+                                        marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
                                       }}>
                                         <Col span={17} >
                                           <div style={{display: 'flex', alignItems: 'center'}}>
@@ -953,14 +991,16 @@ class LifeCycleManagementTabs extends React.Component {
                                         </Col>
                                         <Col span={6} style={{ textAlign: 'right' }}>
                                           <Tooltips type={item.swlx}
-                                                    item={item}
-                                                    status={item.zxqk}
-                                                    xmid={this.state.xmid}
-                                                    handleUpload={() => this.handleUpload(item)}
-                                                    handleSend={this.handleSend}
-                                                    handleFillOut={() => this.handleFillOut(item)}
-                                                    handleEdit={() => this.handleEdit(item)}
-                                                    handleMessageEdit={this.handleMessageEdit}
+                                            item={item}
+                                            status={item.zxqk}
+                                            xmid={this.state.xmid}
+                                            userId={projectInfo?.userid}
+                                            loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                            handleUpload={() => this.handleUpload(item)}
+                                            handleSend={this.handleSend}
+                                            handleFillOut={() => this.handleFillOut(item)}
+                                            handleEdit={() => this.handleEdit(item)}
+                                            handleMessageEdit={this.handleMessageEdit}
                                           />
                                         </Col>
                                         {/* <Col span={3}> */}

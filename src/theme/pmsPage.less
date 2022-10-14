@@ -41,7 +41,7 @@
     }
 
     .ant-btn-primary {
-      background-color: #54A9DF;
+      background-color: rgb(51, 97, 255);
     }
   }
   .ant-table {
@@ -57,11 +57,15 @@
   }
   .editable-cell {
     position: relative;
+    // height: 46px;
   }
 
   .editable-cell-value-wrap {
     padding: 5px 12px;
     cursor: pointer;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 
   .editable-row:hover .editable-cell-value-wrap {
@@ -312,7 +316,7 @@
   }
 }
 
-//周报
+//周报汇总
 .WeeklyReportSummary{
   .tabs{
     margin: 1rem;

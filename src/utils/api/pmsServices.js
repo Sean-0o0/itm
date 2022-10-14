@@ -11,4 +11,7 @@ export default [
   {code: '', key: 'updateHTXX', url: '/projectManage/updateHTXX', dis: '更新合同信息'},
   {code: '', key: 'queryOAUrl', url: '/projectManage/queryOAUrl', dis: '查询OAUrl'},
   {code: '', key: 'queryWpsWDXX', url: '/projectManage/queryWpsWDXX', dis: '查询预览所需的Url'},
+  {code: '', key: 'queryZBXXByXQTC', url: '/projectManage/queryZBXXByXQTC', dis: '查询招标信息修改弹窗需要的招标信息'},
+  {code: '', key: 'queryGysInZbxx', url: '/projectManage/queryGysInZbxx', dis: '查询招标信息修改时的供应商下拉列表'},
+  {code: '', key: 'updateZbxx', url: '/projectManage/UpdateTenderInformation', dis: '更新招标信息'},
 ];

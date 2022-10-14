@@ -6,13 +6,17 @@ import {
     UpdateHTXX,
 } from "../../../../services/pmsServices";
 import moment from 'moment';
+import TableFullScreen from './TableFullScreen';
+
 const EditableContext = React.createContext();
 
-const EditableRow = ({ form, index, ...props }) => (
-    <EditableContext.Provider value={form}>
-        <tr {...props} />
-    </EditableContext.Provider>
-);
+const EditableRow = ({ form, index, ...props }) => {
+    return (
+        <EditableContext.Provider value={form}>
+            <tr {...props} />
+        </EditableContext.Provider>
+    )
+};
 const EditableFormRow = Form.create()(EditableRow);
 class EditableCell extends React.Component {
     state = {
@@ -29,15 +33,18 @@ class EditableCell extends React.Component {
     // };
 
     save = e => {
-        const { record, handleSave } = this.props;
-        this.form.validateFields((error, values) => {
+        const { record, handleSave, formdecorate } = this.props;
+        formdecorate.validateFields(['fkqs' + record['id'], 'bfb' + record['id'], 'fksj' + record['id'], 'fkje' + record['id']], (error, values) => {
             if (error && error[e.currentTarget.id]) {
                 return;
             }
-            console.log('values', values);
             // this.toggleEdit();
-            handleSave({ ...record, ...values });
+            // console.log("🚀 ~ file: index.js ~ line 52 ~ EditableCell ~ formdecorate.validateFields ~  values", values)
+            if (values !== {} && values['fkqs' + record['id']] !== undefined && values['fkbfb' + record['id']] !== undefined && values['fksj' + record['id']] !== undefined && values['fkje' + record['id']] !== undefined) {
+                handleSave({ 'id': record['id'], ...values });
+            }
         });
+
     };
 
     getTitle = (dataIndex) => {
@@ -56,59 +63,111 @@ class EditableCell extends React.Component {
                 break;
         }
     }
-
-    renderCell = form => {
-        this.form = form;
-        const { children, dataIndex, record, title } = this.props;
-        const { editing } = this.state;
-        // console.log(record[dataIndex]);
-        return (
-            <Form.Item style={{ margin: 0 }}>
-                {dataIndex === 'fksj' ? form.getFieldDecorator(dataIndex, {
+    handleBfbChange = (form, id) => {
+        let obj = {};
+        obj['fkje' + id] = String(Number(form.getFieldValue('bfb' + id)) * Number(form.getFieldValue('htje')))
+        // console.log("🚀 ~ file: index.js ~ line 76 ~ EditableCell ~ Number(form.getFieldValue('bfb' + id)) * Number(this.state.htje)", Number(form.getFieldValue('bfb' + id)), Number(form.getFieldValue('htje')))
+        form.setFieldsValue({ ...obj });
+        this.save();
+    };
+    renderItem = (form, dataIndex, record) => {
+        switch (dataIndex) {
+            case 'fksj':
+                return form.getFieldDecorator(dataIndex + record['id'], {
                     rules: [
                         {
                             required: true,
                             message: `${this.getTitle(dataIndex)}不允许空值`,
                         },
                     ],
-                    // initialValue: moment(),
-                    initialValue: moment(record[dataIndex]),
+                    initialValue: moment(record[dataIndex + record['id']]) || null,
                 })(<DatePicker ref={node => (this.input = node)}
                     onChange={(data, dataString) => {
                         const { record, handleSave } = this.props;
-                        this.form.validateFields((error, values) => {
-                            console.log('values', values);
+                        form.validateFields(['fkqs' + record['id'], 'bfb' + record['id'], 'fksj' + record['id'], 'fkje' + record['id']], (error, values) => {
+                            // console.log('values', values);
                             if (error && error[e.currentTarget.id]) {
                                 return;
                             }
                             let newValues = {};
                             newValues = { ...values };
                             for (let i in newValues) {
-                                if (i === 'fksj') {
+                                if (i === 'fksj' + record['id']) {
                                     newValues[i] = dataString;
                                 }
                             }
-                            handleSave({ ...record, ...newValues });
+                            // this.toggleEdit();
+                            handleSave({ id: record['id'], ...newValues });
                         });
                     }}
-                // onPressEnter={this.save} 
-                // onBlur={this.save} 
-                />)
-                    : (dataIndex === 'bfb' ? form.getFieldDecorator(dataIndex, {
-                        initialValue: record[dataIndex],
-                    })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
-                        : form.getFieldDecorator(dataIndex, {
-                            rules: [
-                                {
-                                    required: true,
-                                    message: `${this.getTitle(dataIndex)}不允许空值`,
-                                },
-                            ],
-                            initialValue: record[dataIndex],
-                        })(<Input style={{ textAlign: 'center' }} ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
-                    )}
-            </Form.Item>
-        );
+                />);
+            case 'bfb':
+                return form.getFieldDecorator(dataIndex + record['id'], {
+                    rules: [
+                        {
+                            pattern: /^[1-9]\d{0,8}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                            message: '最多不超过10位数字且小数点后数字不超过2位'
+                        },
+                    ],
+                    initialValue: String(record[dataIndex + record['id']]),
+                })(<Input style={{ textAlign: 'center' }}
+                    ref={node => (this.input = node)}
+                    onPressEnter={this.save}
+                    onBlur={this.handleBfbChange.bind(this, form, record['id'])} />);
+            case 'fkje':
+                return form.getFieldDecorator(dataIndex + record['id'], {
+                    rules: [
+                        {
+                            required: true,
+                            message: `${this.getTitle(dataIndex)}不允许空值`,
+                        },
+                        {
+                            pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                            message: '最多不超过13位数字且小数点后数字不超过2位'
+                        },
+                    ],
+                    initialValue: String(record[dataIndex + record['id']]),
+                })(<Input style={{ textAlign: 'center' }}
+                    ref={node => (this.input = node)}
+                    onPressEnter={this.save}
+                    onBlur={this.save} />);
+            default:
+                return form.getFieldDecorator(dataIndex + record['id'], {
+                    rules: [
+                        {
+                            required: true,
+                            message: `${this.getTitle(dataIndex)}不允许空值`,
+                        },
+                        {
+                            max: 10,
+                            message: '数值不能超过10位',
+                        },
+                        {
+                            pattern: /^[0-9]*$/,
+                            message: '数值只能为整数'
+                        }
+                    ],
+                    initialValue: String(record[dataIndex + record['id']]),
+                })(<Input style={{ textAlign: 'center' }}
+                    ref={node => (this.input = node)}
+                    onPressEnter={this.save}
+                    onBlur={this.save} />);
+        }
+    }
+    renderCell = form => {
+        // this.form = form;
+        const { dataIndex, record, children, formdecorate } = this.props;
+        const { editing } = this.state;
+        return (true ? (
+            <Form.Item style={{ margin: 0 }}>
+                {this.renderItem(formdecorate, dataIndex, record)}
+            </Form.Item>) :
+            <div
+                className="editable-cell-value-wrap"
+            // onClick={this.toggleEdit}
+            >
+                {children}
+            </div>);
     };
     render() {
         const {
@@ -132,6 +191,7 @@ class EditableCell extends React.Component {
         );
     }
 }
+
 class ContractInfoUpdate extends React.Component {
     state = {
         isModalFullScreen: false,
@@ -147,6 +207,7 @@ class ContractInfoUpdate extends React.Component {
     componentDidMount() {
         this.fetchQueryHTXXByXQTC();
     }
+
     // 获取项目信息
     fetchQueryHTXXByXQTC = () => {
         const { currentXmid } = this.props;
@@ -161,10 +222,10 @@ class ContractInfoUpdate extends React.Component {
             for (let i = 0; i < rec.length; i++) {
                 arr.push({
                     id: rec[i].fkxqid,
-                    fkqs: Number(rec[i].fkqs),
-                    bfb: Number(rec[i].bfb),
-                    fkje: Number(rec[i].fkje),
-                    fksj: moment(rec[i].fksj).format('YYYY-MM-DD'),
+                    ['fkqs' + rec[i].fkxqid]: Number(rec[i].fkqs),
+                    ['bfb' + rec[i].fkxqid]: Number(rec[i].bfb),
+                    ['fkje' + rec[i].fkxqid]: Number(rec[i].fkje),
+                    ['fksj' + rec[i].fkxqid]: moment(rec[i].fksj).format('YYYY-MM-DD'),
                     zt: rec[i].zt
                 });
             }
@@ -176,6 +237,7 @@ class ContractInfoUpdate extends React.Component {
     //合同信息修改付款详情表格单行删除
     handleSingleDelete = (id) => {
         const dataSource = [...this.state.tableData];
+        // console.log(dataSource);
         this.setState({ tableData: dataSource.filter(item => item.id !== id) });
     };
     //合同信息修改付款详情表格多行删除
@@ -192,14 +254,36 @@ class ContractInfoUpdate extends React.Component {
     };
     handleTableSave = row => {
         const newData = [...this.state.tableData];
-        const index = newData.findIndex(item => row.id === item.id);
+
+        const index = newData.findIndex(item => {
+            // console.log("🚀 ~ file: index.js ~ line 266 ~ ContractInfoUpdate ~ index ~ row,item", row, item)
+            return row.id === item.id
+        });
         const item = newData[index];
         newData.splice(index, 1, {
-            ...item,
-            ...row,
+            ...item,//old row
+            ...row,//rew row
         });
         this.setState({ tableData: newData }, () => {
-            console.log('tableData', this.state.tableData);
+            // console.log('tableData', this.state.tableData);
+        });
+    };
+    setTableFullScreen = (visible) => {
+        this.setState({
+            isTableFullScreen: visible
+        });
+    };
+    setTableData = (data) => {
+        this.setState({
+            tableData: data
+        }, () => {
+            let table1 = document.querySelectorAll(`.tableBox1 .ant-table-body`)[0];
+            table1.scrollTop = table1.scrollHeight;
+        });
+    };
+    setSelectedRowIds = (data) => {
+        this.setState({
+            selectedRowIds: data
         });
     };
 
@@ -211,7 +295,7 @@ class ContractInfoUpdate extends React.Component {
             contractInfo,
             selectedRowIds } = this.state;
         const { currentXmid, currentXmmc, editMessageVisible, closeMessageEditModal } = this.props;
-        const { getFieldDecorator, getFieldValue } = this.props.form;
+        const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
                 let newSelectedRowIds = [];
@@ -297,6 +381,7 @@ class ContractInfoUpdate extends React.Component {
                         dataIndex: col.dataIndex,
                         handleSave: this.handleTableSave,
                         key: col.key,
+                        formdecorate: this.props.form,
                     })
                 },
             };
@@ -310,64 +395,20 @@ class ContractInfoUpdate extends React.Component {
         };
 
         return (<>
-            {isTableFullScreen &&
-                <Modal title={null} footer={null} width={'100vw'}
-                    visible={isTableFullScreen}
-                    wrapClassName='table-fullscreen'
-                    maskClosable={false}
-                    onCancel={() => { this.setState({ isTableFullScreen: false }) }}
-                    style={{
-                        maxWidth: "100vw",
-                        top: 0,
-                        paddingBottom: 0,
-                        marginBottom: 0,
-                    }}
-                    bodyStyle={{
-                        height: "100vh",
-                        padding: '0 0 24px 0',
-                    }}>
-                    <div style={{ height: '55px', width: '100%', display: 'flex', alignItems: 'center', padding: '0 57px 0 22px' }}>
-                        <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
-                            let arrData = tableData;
-                            arrData.push({ id: Date.now(), fkqs: '', bfb: '0.5', fkje: '0.5', fksj: moment().format('YYYY-MM-DD'), zt: '2' });
-                            this.setState({ tableData: arrData }, () => {
-                                let table1 = document.querySelectorAll(`.tableBox1 .ant-table-body`)[0];
-                                table1.scrollTop = table1.scrollHeight;
-                            });
-                        }}><img src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                            alt='' style={{ height: '20px', marginRight: '6px' }}
-                            />新增</div>
-                        <Popconfirm title="确定要删除吗?" onConfirm={() => {
-                            if (selectedRowIds.length > 0) {
-                                this.handleMultiDelete(selectedRowIds);
-                            } else {
-                                message.info('请选择需要删除的数据', 1);
-                            }
-                        }}>
-                            <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
-                                src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                                alt='' style={{ height: '20px', marginRight: '6px' }}
-                            />删除</div></Popconfirm>
-                        <img src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
-                            : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                            alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
-                            onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
-                    </div>
-                    <div className='tableBox1'>
-                        <Table columns={columns}
-                            rowKey={record => record.id}
-                            components={components}
-                            rowClassName={() => 'editable-row'}
-                            dataSource={tableData}
-                            scroll={{ y: 730 }}
-                            rowSelection={rowSelection}
-                            pagination={false}
-                            bordered
-                        ></Table>
-                    </div>
-                </Modal>}
+            {isTableFullScreen && <TableFullScreen isTableFullScreen={isTableFullScreen}
+                setTableFullScreen={this.setTableFullScreen}
+                setTableData={this.setTableData}
+                setSelectedRowIds={this.setSelectedRowIds}
+                handleMultiDelete={this.handleMultiDelete}
+                columns={columns}
+                components={components}
+                tableData={tableData}
+                rowSelection={rowSelection}
+                selectedRowIds={selectedRowIds}
+            ></TableFullScreen>}
             <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1000px'}
                 maskClosable={false}
+                // destroyOnClose
                 cancelText={'关闭'}
                 style={isModalFullScreen ? {
                     maxWidth: "100vw",
@@ -386,32 +427,33 @@ class ContractInfoUpdate extends React.Component {
                 onOk={() => {
                     this.props.form.validateFields(err => {
                         if (!err) {
-                            let emptyArr = [];
+                            // let emptyArr = [];
                             let fkjeSum = 0, bfbSum = 0;
                             tableData?.forEach(item => {
-                                for (const x in item) {
-                                    if (item[x] === null || String(item[x]).trim() === '' && x !== 'bfb') {
-                                        if (!emptyArr.includes(x)) { emptyArr.push(x); }
-                                    }
-                                }
-                                fkjeSum += Number(item.fkje);
-                                bfbSum += Number(item.bfb);
+                                // for (const x in item) {
+                                //     if (item[x] === null || String(item[x]).trim() === '' && x !== 'bfb'+item['id']) {
+                                //         if (!emptyArr.includes(x)) { emptyArr.push(x); }
+                                //     }
+                                // }
+                                fkjeSum += Number(item['fkje' + item.id]);
+                                bfbSum += Number(item['bfb' + item.id]);
                             });
-                            if (emptyArr.length > 0) {
-                                let arr = emptyArr.map(item => {
-                                    switch (item) {
-                                        case 'fkqs':
-                                            return '期数';
-                                        case 'fkje':
-                                            return '付款金额';
-                                        case 'fksj':
-                                            return '付款时间';
-                                        default:
-                                            return null;
-                                    }
-                                });
-                                message.error(`${arr.join('、')}不允许空值`, 1);
-                            } else if (bfbSum > 1) {
+                            // if (emptyArr.length > 0) {
+                            //     let arr = emptyArr.map(item => {
+                            //         switch (item) {
+                            //             case 'fkqs':
+                            //                 return '期数';
+                            //             case 'fkje':
+                            //                 return '付款金额';
+                            //             case 'fksj':
+                            //                 return '付款时间';
+                            //             default:
+                            //                 return null;
+                            //         }
+                            //     });
+                            //     message.error(`${arr.join('、')}不允许空值`, 1);
+                            // }else  
+                            if (bfbSum > 1) {
                                 message.error('占比总额不能超过1', 1);
                             } else if (fkjeSum > getFieldValue('htje')) {
                                 message.error('付款总额不能超过合同金额', 1);
@@ -419,21 +461,47 @@ class ContractInfoUpdate extends React.Component {
                                 let arr = [...tableData];
                                 arr.forEach(item => {
                                     for (let i in item) {
-                                        if (i === 'fksj') {
+                                        if (i === 'fksj' + item.id) {
                                             item[i] = moment(item[i]).format('YYYYMMDD');
                                         } else {
                                             item[i] = String(item[i]);
                                         }
                                     }
                                 })
+                                let newArr = [];
+                                arr.map((item) => {
+                                    let obj = {
+                                        ID: item.id,
+                                        FKQS: item['fkqs' + item.id],
+                                        BFB: item['bfb' + item.id],
+                                        FKJE: item['fkje' + item.id],
+                                        FKSJ: item['fksj' + item.id],
+                                        ZT: item.zt
+                                    };
+                                    newArr.push(obj);
+                                });
+                                newArr.push({});
+                                // console.log('submitData', {
+                                //     xmmc: Number(currentXmid),
+                                //     json: JSON.stringify(newArr),
+                                //     rowcount: tableData.length,
+                                //     htje: Number(getFieldValue('htje')),
+                                //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
+                                // });
                                 UpdateHTXX({
                                     xmmc: Number(currentXmid),
-                                    json: JSON.stringify(arr),
+                                    json: JSON.stringify(newArr),
                                     rowcount: tableData.length,
                                     htje: Number(getFieldValue('htje')),
                                     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
+                                }).then(res=>{
+                                    if(res?.code===1){
+                                        message.success('合同信息修改成功', 1);
+                                    }else{
+                                        message.error('合同信息修改失败', 1);
+                                    }
                                 })
-                                message.success('合同信息修改成功', 1);
+                                // this.props.form.resetFiled();
                                 this.setState({ tableData: [] });
                                 closeMessageEditModal();
                             }
@@ -468,11 +536,16 @@ class ContractInfoUpdate extends React.Component {
                         </Col>
                         <Col span={12}><Form.Item label="合同金额（元）" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
                             {getFieldDecorator('htje', {
-                                initialValue: contractInfo?.htje || '',
+                                initialValue: String(contractInfo?.htje) || '',
                                 rules: [
                                     {
                                         required: true,
                                         message: '合同金额（元）不允许空值',
+                                    },
+                                    {
+                                        pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                                        message: '最多不超过13位数字且小数点后数字不超过2位',
+                                        // trigger: 'blur',
                                     },
                                 ],
                             })(<Input placeholder="请输入合同金额（元）" />)}
@@ -481,14 +554,14 @@ class ContractInfoUpdate extends React.Component {
                     <Row>
                         <Col span={12}> <Form.Item label="签署日期" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
                             {getFieldDecorator('qsrq', {
-                                initialValue: moment(contractInfo?.qsrq) || null,
+                                initialValue: contractInfo?.qsrq === null ? null : moment(contractInfo?.qsrq),
                                 rules: [
                                     {
                                         required: true,
                                         message: '签署日期不允许空值',
                                     },
                                 ],
-                            })(<DatePicker onChange={() => { }} style={{ width: '100%' }} />)}
+                            })(<DatePicker style={{ width: '100%' }} />)}
                         </Form.Item></Col>
                     </Row>
                     <Row>
@@ -498,7 +571,7 @@ class ContractInfoUpdate extends React.Component {
                                     <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
                                         <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
                                             let arrData = tableData;
-                                            arrData.push({ id: Date.now(), fkqs: '', bfb: 0.5, fkje: 0.5, fksj: moment().format('YYYY-MM-DD'), zt: '2' });
+                                            arrData.push({ id: Date.now(), ['fkqs' + Date.now()]: '', ['bfb' + Date.now()]: 0.5, ['fkje' + Date.now()]: 0.5, ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'), zt: '2' });
                                             this.setState({ tableData: arrData }, () => {
                                                 let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
                                                 table2.scrollTop = table2.scrollHeight;
@@ -510,6 +583,9 @@ class ContractInfoUpdate extends React.Component {
                                         <Popconfirm title="确定要删除吗?" onConfirm={() => {
                                             if (selectedRowIds.length > 0) {
                                                 this.handleMultiDelete(selectedRowIds);
+                                                this.setState({
+                                                    selectedRowIds: []
+                                                });
                                             } else {
                                                 message.info('请选择需要删除的数据', 1);
                                             }
@@ -519,13 +595,15 @@ class ContractInfoUpdate extends React.Component {
                                                 alt='' style={{ height: '20px', marginRight: '6px' }}
                                             />删除</div>
                                         </Popconfirm>
-                                        <img
+
+                                        {/* 表格放大 */}
+                                        {/* <img
                                             src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
                                                 : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
                                             alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
                                             onClick={() => {
                                                 this.setState({ isTableFullScreen: !isTableFullScreen })
-                                            }} />
+                                            }} /> */}
                                     </div>
                                     <div className='tableBox2'>
                                         <Table

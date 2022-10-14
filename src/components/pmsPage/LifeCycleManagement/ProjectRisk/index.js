@@ -100,7 +100,14 @@ class ProjectRisk extends React.Component {
         }
         {
           item?.fxnr === "-1" && <div style={{display: 'flex'}}>
-            <a style={{color: 'rgba(48, 49, 51, 1)'}} onClick={() => this.hanldeRisk(xmid, item)}>&nbsp;暂无风险</a>
+            <a style={{color: 'rgb(51, 97, 255, 1)'}} onClick={() => {
+              const { userId, loginUserId } = this.props;
+              if (Number(userId) === Number(loginUserId)) {
+                this.hanldeRisk(xmid, item);
+              } else {
+                message.error(`抱歉，只有当前项目经理可以进行该操作`);
+              }
+              }}>&nbsp;暂无风险</a>
           </div>
         }
       </div>
