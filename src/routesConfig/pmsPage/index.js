@@ -18,6 +18,11 @@ exports.routes = [
     component: './pmsPage/WeeklyReportTable',
   },
   {
+    //需求管理页面
+    path: `${prefix}/EpibolyLifeCycle`,
+    component: './pmsPage/EpibolyLifeCycle',
+  },
+  {
     //个人工作台
     path: `/PersonWorkBench`,
     component: './pmsPage/PersonWorkBench',

@@ -1,13 +1,16 @@
 //font weight
-.font-w700(){
+.font-w700() {
   font-weight: 700;
 }
-.font-wb(){
+
+.font-wb() {
   font-weight: bold;
 }
-.font-w400(){
+
+.font-w400() {
   font-weight: 400;
 }
+
 .font-w500() {
   font-weight: 500;
 }
@@ -19,14 +22,196 @@
 .font-wn() {
   font-weight: normal;
 }
+
 //font size
-.font-s(@p: 12px){
+.font-s(@p: 12px) {
   font-size: @p;
 }
-.font-s0(){font-size: 0;}
-.font-s12(){font-size: 12px;}
-.font-s14(){font-size: 14px;}
-.font-s16(){font-size: 16px;}
+
+.font-s0() {
+  font-size: 0;
+}
+
+.font-s12() {
+  font-size: 12px;
+}
+
+.font-s14() {
+  font-size: 14px;
+}
+
+.font-s16() {
+  font-size: 16px;
+}
+
+//外包生命周期
+.epiboly-life-cycle {
+  overflow: hidden;
+
+  & .top-item {
+    height: 9.5232rem;
+    margin: 3.5712rem 3.5712rem 2.6784rem 3.5712rem;
+    background-color: white;
+    box-shadow: 0 0.1488rem 0.5952rem 0 rgba(20, 38, 98, 0.04);
+    border-radius: 1.1904rem;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    padding: 0 3.5712rem;
+  }
+
+  & .projects-box {
+    & .project-item {
+      height: 50.2944rem;
+      margin: 3.5712rem 3.5712rem 2.6784rem 3.5712rem;
+      background-color: white;
+      box-shadow: 0 0.1488rem 0.5952rem 0 rgba(20, 38, 98, 0.04);
+      border-radius: 1.1904rem;
+      padding: 0 3.5712rem;
+
+      & .item-header {
+        height: 10.7136rem;
+        border-radius: 1.1904rem 1.1904rem 0 0;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        & .header-icon {
+          height: 3.5712rem;
+          width: 3.5712rem;
+        }
+
+        & .header-txt {
+          font-size: 2.3808rem;
+          font-family: PingFangSC-Medium;
+          font-weight: 600;
+          color: #303133;
+          margin-left: 2.3808rem;
+        }
+      }
+
+      & .item-content {
+        height: 28.7184rem;
+        border-top: 0.29rem dashed #EBEEF5;
+        border-bottom: 0.29rem dashed #EBEEF5;
+        padding: 3.5712rem 0;
+
+        & .content-steps {
+          width: 169rem;
+        }
+
+        & .content-processes {
+          display: flex;
+          flex-direction: row;
+
+          & .process-box-wrapper {
+            margin-top: 1.3392rem;
+            margin-right: 3.5712rem;
+
+            & .triangle-up {
+              margin-left: 1rem;
+              width: 0;
+              height: 0;
+              border: 2rem solid;
+              border-color: transparent transparent #FAFAFB transparent;
+            }
+
+            & .process-box {
+              background: #FAFAFB;
+            border: 1px solid #EBEEF5;
+            border-radius: 0.5952rem;
+              width: 35.712rem;
+              // height: 16.8144rem;
+              height: 14.4336rem;
+              padding: 2.3808rem;
+              overflow: hidden;
+
+              &:nth-last-child(1) {
+                margin-right: 0;
+              }
+
+              .process {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                height: 2.232rem;
+                font-size: 2.0832rem;
+                font-family: PingFangSC-Regular;
+                font-weight: 400;
+                color: #333333;
+                margin-bottom: 2.3808rem;
+                overflow: hidden;
+
+                &:nth-last-child(1) {
+                  margin-bottom: 0;
+                }
+
+                & .point {
+                  margin-right: 1rem;
+                  height: 1rem;
+                  width: 1rem;
+                  background-color: white;
+                  border-radius: 50%;
+                  border: 0.25rem solid rgb(192, 196, 204);
+                }
+
+                // & .process-name {
+                //   margin-left: 1.3392rem;
+                // }
+                & .process-exe {
+                  margin-left: auto;
+                }
+              }
+            }
+          }
+
+        }
+
+      }
+
+      & .item-footer {
+        height: 10.5648rem;
+        border-radius: 0 0 1.1904rem 1.1904rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        & .footer-txt {
+          font-size: 2.0832rem;
+          font-family: PingFangSC-Regular;
+          font-weight: 600;
+          color: #303133;
+          margin-right: 3.5712rem;
+        }
+
+        & .daily-task {
+          height: 3.5712rem;
+          padding-right: 1.7856rem;
+          border-radius: 3.5712rem;
+          border: 0.1488rem solid #EBEEF5;
+          margin-right: 3.5712rem;
+
+          & .footer-icon {
+            height: 3.5712rem;
+            width: 3.5712rem;
+          }
+
+          & .footer-icon-txt {
+            font-size: 2.0832rem;
+            font-family: PingFangSC-Medium;
+            font-weight: 500;
+            color: #303133;
+            margin-left: 1.1904rem;
+          }
+
+          &:nth-last-child(1) {
+            margin-right: 0;
+          }
+        }
+      }
+    }
+  }
+}
 
 //信息修改弹窗
 .editMessage-modify {
@@ -44,17 +229,21 @@
       background-color: rgb(51, 97, 255);
     }
   }
+
   .ant-table {
     // max-height: 255px;
     height: 242px;
+
     // overflow: auto;
-    th, td {
+    th,
+    td {
       text-align: center;
       // overflow: hidden;
       // text-overflow: ellipsis;
       // white-space: nowrap;
     }
   }
+
   .editable-cell {
     position: relative;
     // height: 46px;
@@ -76,7 +265,7 @@
 }
 
 //OperationList
-.operationListSelectBox{
+.operationListSelectBox {
   :global {
     .ant-select-selection {
       border-color: transparent;
@@ -85,6 +274,7 @@
       font-family: PingFangSC-Medium;
       font-weight: 600;
       color: #303133;
+
       & .ant-select-arrow {
         display: none;
       }
@@ -93,10 +283,11 @@
 }
 
 //生命周期
-.LifeCycleManage{
+.LifeCycleManage {
   width: 100%;
   background-color: white;
-  .head{
+
+  .head {
     line-height: 9.52rem;
     padding: 2.381rem 3.571rem;
     display: flex;
@@ -113,6 +304,7 @@
       line-height: 3.273rem;
       color: rgba(192, 196, 204, 1);
     }
+
     .head1 {
       display: flex;
       align-items: center;
@@ -123,6 +315,7 @@
       line-height: 3.273rem;
       color: rgba(48, 49, 51, 1);
     }
+
     .head2 {
       display: flex;
       align-items: center;
@@ -146,6 +339,7 @@
         }
       }
     }
+
     .head3 {
       display: flex;
       align-items: center;
@@ -207,18 +401,22 @@
       }
     }
   }
-  .card{
+
+  .card {
     display: flex;
-    .title{
+
+    .title {
       width: 1%;
       display: flex;
       align-items: center;
-      .right{
+
+      .right {
         display: flex;
         align-items: center;
       }
     }
-    .cont{
+
+    .cont {
       background: rgba(20, 38, 98, 0.0400);
       width: 98%;
       display: flex;
@@ -227,13 +425,14 @@
       overflow: hidden;
       overflow-y: auto;
 
-      .cont-col-self{
+      .cont-col-self {
         border-right: 0.25rem dashed #DBDFE6;
 
-        &:nth-child(3n){
+        &:nth-child(3n) {
           border-right: 0;
         }
-        &:nth-last-child(1){
+
+        &:nth-last-child(1) {
           border-right: 0;
         }
       }
@@ -250,12 +449,14 @@
           align-items: center;
           height: 3rem;
           margin: 0 0 1rem 0;
-          .left{
+
+          .left {
             width: .3rem;
             height: 1.5rem;
             background-color: red;
           }
-          .right{
+
+          .right {
             color: #303133;
             font-weight: 800;
             padding-left: 1rem;
@@ -263,6 +464,7 @@
           }
         }
       }
+
       .cont-row {
         padding: 0 1.3rem;
         color: #333333;
@@ -280,7 +482,7 @@
           border: 0.25rem solid rgb(192, 196, 204);
         }
 
-        .cont-row-zxqk{
+        .cont-row-zxqk {
           // width: 100px;
           // height: 20px;
           font-size: 12px;
@@ -291,7 +493,7 @@
           margin: 5px 0 0 14px;
         }
 
-        .cont-row1{
+        .cont-row1 {
           margin: 1rem 0;
           padding-left: 2rem;
           display: inline-flex;
@@ -299,15 +501,18 @@
           .font-s12();
           color: #909399;
           font-weight: 400;
-          .left{
+
+          .left {
             padding-right: 1rem;
           }
-          .center{
+
+          .center {
             width: .3rem;
             height: 1.5rem;
             //background-color: red;
           }
-          .right{
+
+          .right {
             padding-left: 1rem;
           }
         }
@@ -317,14 +522,16 @@
 }
 
 //周报汇总
-.WeeklyReportSummary{
-  .tabs{
+.WeeklyReportSummary {
+  .tabs {
     margin: 1rem;
     height: 100%;
     background-color: white;
+
     .card {
       border-radius: 1.785rem;
     }
+
     .cardTitle {
       display: flex;
       margin-top: 1rem;
@@ -351,6 +558,7 @@
         line-height: 5.506rem;
       }
     }
+
     .cardCont {
       display: flex;
       margin: 0.8rem;
@@ -447,9 +655,10 @@
         color: rgba(48, 49, 51, 1);
       }
 
-      .head1:hover{
+      .head1:hover {
         color: #3361FF;
-        & .head1-link{
+
+        & .head1-link {
           color: #3361FF;
         }
       }
@@ -591,6 +800,7 @@
 
         .cont-col {
           margin-left: 2rem;
+
           //height: 56rem;
           .cont-col1 {
             display: flex;
@@ -612,6 +822,7 @@
             }
           }
         }
+
         .cont-row {
           padding: 0 1.3rem;
           color: #333333;
@@ -630,7 +841,7 @@
             border: 0.25rem solid rgb(192, 196, 204);
           }
 
-          .cont-row-zxqk{
+          .cont-row-zxqk {
             // width: 100px;
             // height: 20px;
             font-size: 12px;
@@ -685,14 +896,16 @@
           border-radius: 50%;
           border: 0.25rem solid rgb(192, 196, 204);
         }
+
         .title-link {
           color: #303133;
           font-weight: 600;
         }
 
-        &:hover{
+        &:hover {
           color: #3361FF;
-          & .title-link{
+
+          & .title-link {
             color: #3361FF;
           }
         }
@@ -737,8 +950,9 @@
 }
 
 .tableStyle {
-  .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+
+  .ant-table-thead>tr>th,
+  .ant-table-tbody>tr>td {
     padding: 1.19rem;
   }
 }
-
