@@ -39,10 +39,8 @@ class EditableCell extends React.Component {
                 return;
             }
             // this.toggleEdit();
-            // console.log("🚀 ~ file: index.js ~ line 52 ~ EditableCell ~ formdecorate.validateFields ~  values", values)
-            if (values !== {} && values['fkqs' + record['id']] !== undefined && values['fkbfb' + record['id']] !== undefined && values['fksj' + record['id']] !== undefined && values['fkje' + record['id']] !== undefined) {
-                handleSave({ 'id': record['id'], ...values });
-            }
+            // console.log("🚀 ~ file: index.js ~ line 52 ~ EditableCell ~ formdecorate.validateFields ~  values", values,record)
+            handleSave({ ...record, ...values });
         });
 
     };
@@ -97,7 +95,7 @@ class EditableCell extends React.Component {
                                 }
                             }
                             // this.toggleEdit();
-                            handleSave({ id: record['id'], ...newValues });
+                            handleSave({ ...record, ...newValues });
                         });
                     }}
                 />);
@@ -254,11 +252,7 @@ class ContractInfoUpdate extends React.Component {
     };
     handleTableSave = row => {
         const newData = [...this.state.tableData];
-
-        const index = newData.findIndex(item => {
-            // console.log("🚀 ~ file: index.js ~ line 266 ~ ContractInfoUpdate ~ index ~ row,item", row, item)
-            return row.id === item.id
-        });
+        const index = newData.findIndex(item => row.id === item.id);
         const item = newData[index];
         newData.splice(index, 1, {
             ...item,//old row
