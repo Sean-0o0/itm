@@ -38,23 +38,22 @@ class ZipFileModel extends React.Component {
       <Fragment>
         <div style={{
           height: '100%',
-          padding: '2.381rem 3.571rem',
+          padding: '2.381rem 3.571rem 0 2.381rem',
           backgroundColor: 'white',
           borderRadius: '8px',
           fontSize: '2.083rem'
         }}>
-          <Input.Group compact>
-            <div style={{position: 'relative', display: 'flex', alignItems: 'center'}}
-                 className="operationListSelectBox">
-            <span style={{fontSize: '2.381rem'}}>
+          <div style={{height: '100%', position: 'relative', display: 'flex', alignItems: 'center'}}
+               className="operationListSelectBox">
+            <span style={{fontSize: '2.381rem',}}>
               年份：&nbsp;&nbsp;
             </span>
-              <input style={{fontSize: '2.038rem'}} onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
-              {/*<div>*/}
-              {/*  <DatePicker*/}
-              {/*    value={time}*/}
-              {/*    open={open}*/}
-              {/*    mode="year"*/}
+            <Input style={{width: '30%', fontSize: '2.038rem'}} onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
+            {/*<div>*/}
+            {/*  <DatePicker*/}
+            {/*    value={time}*/}
+            {/*    open={open}*/}
+            {/*    mode="year"*/}
               {/*    placeholder="请选择年份"*/}
               {/*    format="YYYY"*/}
               {/*    onOpenChange={(status) => {*/}
@@ -64,18 +63,17 @@ class ZipFileModel extends React.Component {
               {/*        this.setState({open: false})*/}
               {/*      }*/}
               {/*    }}*/}
-              {/*    onPanelChange={(v) => {*/}
-              {/*      console.log(v)*/}
-              {/*      this.setState({*/}
-              {/*        time: v,*/}
-              {/*        open: false*/}
-              {/*      })*/}
-              {/*    }}*/}
-              {/*  />*/}
-              {/*</div>*/}
-            </div>
-          </Input.Group>
-          <div style={{textAlign: 'end'}}>
+            {/*    onPanelChange={(v) => {*/}
+            {/*      console.log(v)*/}
+            {/*      this.setState({*/}
+            {/*        time: v,*/}
+            {/*        open: false*/}
+            {/*      })*/}
+            {/*    }}*/}
+            {/*  />*/}
+            {/*</div>*/}
+          </div>
+          <div style={{textAlign: 'end', paddingTop: '8.9rem'}}>
             <button class="ant-btn">取消</button>
             &nbsp;&nbsp;
             <button class="ant-btn ant-btn-primary" onClick={this.getFile}>确定</button>
