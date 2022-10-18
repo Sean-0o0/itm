@@ -10,7 +10,7 @@ class LifeCycleManagement extends Component {
   render() {
     const {location: {query = {}}} = this.props;
     // const params = JSON.parse(DecryptBase64(encryptParams));
-    console.log("params", query);
+    // console.log("params", query);
     return (
       <React.Fragment>
         <LifeCycleManagementTabs params={query}/>

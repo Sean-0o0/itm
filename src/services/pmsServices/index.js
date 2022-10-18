@@ -16,6 +16,8 @@ const {
     updateHTXX,
     queryOAUrl,
     queryWpsWDXX,
+    zipLivebosFilesPost,
+    queryZBYSFJ,
     queryZBXXByXQTC,
     queryGysInZbxx,
     updateZbxx,
@@ -164,6 +166,26 @@ export async function FetchQueryGysInZbxx(payload) {
 export async function UpdateZbxx(payload) {
   const option = {
     url: updateZbxx,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询预览所需的url
+export async function ZipLivebosFilesPost(payload) {
+  const option = {
+    url: zipLivebosFilesPost,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询预览所需的url
+export async function QueryZBYSFJ(payload) {
+  const option = {
+    url: queryZBYSFJ,
     method: 'post',
     data: payload,
   };

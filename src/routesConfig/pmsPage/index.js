@@ -32,4 +32,8 @@ exports.routes = [
     path: `${prefix}/ViewFilePage`,
     component: './pmsPage/ViewFilePage',
   },
+  {
+    path: `${prefix}/`,
+    component: './workPlatForm/singlePage',
+  }
 ]
