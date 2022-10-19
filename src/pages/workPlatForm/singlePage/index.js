@@ -7,8 +7,8 @@ import React, {Component, Fragment} from 'react';
 import {connect} from 'dva';
 import LBDialog from 'livebos-frame/dist/LBDialog';
 import {Switch, Route} from 'dva/router';
-// import ZipFilePage from './../../pmsPage/ZipFilePage/index';
 import ZipFileModel from './ZipFileModel/index';
+import CapitalBudgetExport from "./CapitalBudgetExport";
 
 class SinglePage extends Component {
   componentDidMount() {
@@ -55,13 +55,17 @@ class SinglePage extends Component {
     const {
       match: {url: parentUrl = ''},
     } = this.props;
-    // console.log("urlurlurl",parentUrl);
+    console.log("urlurlurl", parentUrl);
     return (
       <Fragment>
         <Switch>
           <Route exact path={`${parentUrl}/ZipFilePage/:params`}
                  render={props => <ZipFileModel {...props} onSubmitOperate={this.onSubmitOperate}
                                                 onCancelOperate={this.onCancelOperate}/>}/>
+
+          <Route exact path={`${parentUrl}/CapitalBudgetExportPage`}
+                 render={props => <CapitalBudgetExport {...props} onSubmitOperate={this.onSubmitOperate}
+                                                       onCancelOperate={this.onCancelOperate}/>}/>
         </Switch>
       </Fragment>
     );

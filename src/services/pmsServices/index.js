@@ -21,6 +21,7 @@ const {
     queryZBXXByXQTC,
     queryGysInZbxx,
     updateZbxx,
+    exportExcel,
   },
 } = api;
 
@@ -186,6 +187,16 @@ export async function ZipLivebosFilesPost(payload) {
 export async function QueryZBYSFJ(payload) {
   const option = {
     url: queryZBYSFJ,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询预览所需的url
+export async function ExportExcel(payload) {
+  const option = {
+    url: exportExcel,
     method: 'post',
     data: payload,
   };

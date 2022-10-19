@@ -12,8 +12,9 @@ export default [
   {code: '', key: 'queryOAUrl', url: '/projectManage/queryOAUrl', dis: '查询OAUrl'},
   {code: '', key: 'queryWpsWDXX', url: '/projectManage/queryWpsWDXX', dis: '查询预览所需的Url'},
   {code: '', key: 'zipLivebosFilesPost', url: '/projectManage/zipLivebosFilesPost', dis: '查询预览所需的Url'},
-  {code: '', key: 'queryZBYSFJ', url: '/projectManage/queryZBYSFJ', dis: '查询预览所需的Url'},
+  {code: '', key: 'queryZBYSFJ', url: '/projectManage/queryZBYSFJ', dis: 'zip文件下载'},
   {code: '', key: 'queryZBXXByXQTC', url: '/projectManage/queryZBXXByXQTC', dis: '查询招标信息修改弹窗需要的招标信息'},
   {code: '', key: 'queryGysInZbxx', url: '/projectManage/queryGysInZbxx', dis: '查询招标信息修改时的供应商下拉列表'},
   {code: '', key: 'updateZbxx', url: '/projectManage/UpdateTenderInformation', dis: '更新招标信息'},
+  {code: '', key: 'exportExcel', url: '/projectManage/v1/CapitalBudgetExportExcel', dis: '资本性年初预算汇总导出EXCEL'},
 ];

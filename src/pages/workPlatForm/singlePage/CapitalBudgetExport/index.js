@@ -8,21 +8,19 @@ import {DecryptBase64} from '../../../../components/Common/Encrypt';
 import config from '../../../../utils/config';
 
 const {api} = config;
-const {pmsServices: {queryZBYSFJ}} = api;
+const {pmsServices: {exportExcel}} = api;
 
-class ZipFileModel extends React.Component {
+class CapitalBudgetExport extends React.Component {
   state = {
     open: false,
-    time: null,
-    type: '',
     year: '',
   };
 
   componentWillMount() {
-    const {type = '',} = this.getUrlParams();
-    this.setState({
-      type: type,
-    })
+    // const { type = '',} = this.getUrlParams();
+    // this.setState({
+    //   type:type,
+    // })
   }
 
   // 获取url参数
@@ -37,14 +35,10 @@ class ZipFileModel extends React.Component {
     this.props.onCancelOperate();
   }
 
-  getZipFile = () => {
-    const {time, type} = this.state;
-    const exportPayload = JSON.stringify({
-      nf: time,
-      type: type,
-    });
+  getExcelFile = () => {
+    const {year} = this.state;
     const iframe = this.ifile; // iframe的dom
-    const actionUrl = queryZBYSFJ;
+    const actionUrl = exportExcel;
     // 创建一个表单
     const downloadForm = document.createElement('form');
     downloadForm.id = 'downloadForm';
@@ -52,8 +46,8 @@ class ZipFileModel extends React.Component {
     // 创建一个输入框
     const input = document.createElement('input');
     input.type = 'text';
-    input.name = 'exportPayload';
-    input.value = exportPayload;
+    input.name = 'year';
+    input.value = year;
     // 将该输入框插入到 form 中
     downloadForm.appendChild(input);
     // form 的提交方式
@@ -66,12 +60,11 @@ class ZipFileModel extends React.Component {
     downloadForm.submit();
     // 删除该 form
     iframe.removeChild(downloadForm);
-    this.props.onSubmitOperate();
   }
 
   getYear = (e) => {
     this.setState({
-      time: e.target.value,
+      year: e.target.value,
     })
   }
 
@@ -95,7 +88,7 @@ class ZipFileModel extends React.Component {
           <div style={{textAlign: 'end', paddingTop: '8.9rem'}}>
             {/*<button class="ant-btn" onClick={this.hanleCancle}>取消</button>*/}
             {/*&nbsp;&nbsp;*/}
-            <button class="ant-btn ant-btn-primary" onClick={this.getZipFile}>导出</button>
+            <button class="ant-btn ant-btn-primary" onClick={this.getExcelFile}>导出Excel</button>
             <iframe title='下载' id='m_iframe' ref={(c) => {
               this.ifile = c;
             }} style={{display: 'none'}}/>
@@ -108,4 +101,4 @@ class ZipFileModel extends React.Component {
 
 export default connect(({global = {}}) => ({
   authorities: global.authorities,
-}))(ZipFileModel);
+}))(CapitalBudgetExport);
