@@ -22,6 +22,8 @@ const {
     queryGysInZbxx,
     updateZbxx,
     exportExcel,
+    queryEpibolyLifeCycleExeStatue,
+    queryDigitalSpecialClassWeeklyReport,
   },
 } = api;
 
@@ -183,10 +185,30 @@ export async function ZipLivebosFilesPost(payload) {
   return request(option);
 }
 
+// 查询外包事务生命周期执行情况
+export async function QueryEpibolyLifeCycleExeStatue(payload) {
+  const option = {
+    url: queryEpibolyLifeCycleExeStatue,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
 //查询预览所需的url
 export async function QueryZBYSFJ(payload) {
   const option = {
     url: queryZBYSFJ,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询新数字化专班周报
+export async function QueryDigitalSpecialClassWeeklyReport(payload) {
+  const option = {
+    url: queryDigitalSpecialClassWeeklyReport,
     method: 'post',
     data: payload,
   };

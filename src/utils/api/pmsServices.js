@@ -17,4 +17,6 @@ export default [
   {code: '', key: 'queryGysInZbxx', url: '/projectManage/queryGysInZbxx', dis: '查询招标信息修改时的供应商下拉列表'},
   {code: '', key: 'updateZbxx', url: '/projectManage/UpdateTenderInformation', dis: '更新招标信息'},
   {code: '', key: 'exportExcel', url: '/projectManage/v1/CapitalBudgetExportExcel', dis: '资本性年初预算汇总导出EXCEL'},
+  {code: '', key: 'queryEpibolyLifeCycleExeStatue', url: '/projectManage/QueryEpibolyLifeCycleExeStatue', dis: '查询外包事务生命周期执行情况'},
+  {code: '', key: 'queryDigitalSpecialClassWeeklyReport', url: '/projectManage/QueryDigitalSpecialClassWeeklyReport', dis: '查询新数字化专班周报'},
 ];
