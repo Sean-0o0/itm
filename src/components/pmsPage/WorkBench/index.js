@@ -33,12 +33,12 @@ class WorkBench extends React.Component {
     this.fetchQueryAllOwnerMessage();
   }
 
-  fetchQueryOwnerMessage = (page, date) => {
+  fetchQueryOwnerMessage = (page, date, cxlx) => {
     const defaultDate = moment(new Date())
       .format('YYYYMMDD')
     FetchQueryOwnerMessage(
       {
-        cxlx: 'UNDO',
+        cxlx: cxlx ? cxlx : "ALL",
         date: date ? date : defaultDate,
         paging: 1,
         current: page ? page : 1,
@@ -72,7 +72,7 @@ class WorkBench extends React.Component {
       .format('YYYYMMDD')
     FetchQueryOwnerMessage(
       {
-        cxlx: 'ALL',
+        cxlx: "ALL",
         date: 20220101,
         paging: 0,
         current: 0,
