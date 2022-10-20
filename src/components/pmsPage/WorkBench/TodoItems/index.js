@@ -109,6 +109,12 @@ class TodoItems extends React.Component {
     if (text.sxmc.includes("月报")) {
       window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
     }
+    if (text.sxmc.includes("资本性预算录入")) {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    }
+    if (text.sxmc.includes("非资本性预算录入")) {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    }
   }
 
   dateCellRender = (value) => {

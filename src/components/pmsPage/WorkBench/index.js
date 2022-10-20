@@ -38,6 +38,7 @@ class WorkBench extends React.Component {
       .format('YYYYMMDD')
     FetchQueryOwnerMessage(
       {
+        cxlx: 'UNDO',
         date: date ? date : defaultDate,
         paging: 1,
         current: page ? page : 1,
@@ -71,6 +72,7 @@ class WorkBench extends React.Component {
       .format('YYYYMMDD')
     FetchQueryOwnerMessage(
       {
+        cxlx: 'ALL',
         date: 20220101,
         paging: 0,
         current: 0,
