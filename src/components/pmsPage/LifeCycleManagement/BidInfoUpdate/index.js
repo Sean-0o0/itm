@@ -318,12 +318,12 @@ class BidInfoUpdate extends React.Component {
         });
     }
 
-    //合同信息修改付款详情表格单行删除
+    //招标信息表格单行删除
     handleSingleDelete = (id) => {
         const dataSource = [...this.state.tableData];
         this.setState({ tableData: dataSource.filter(item => item.id !== id) });
     };
-    //合同信息修改付款详情表格多行删除
+    //招标信息表格多行删除
     handleMultiDelete = (ids) => {
         const dataSource = [...this.state.tableData];
         for (let j = 0; j < dataSource.length; j++) {

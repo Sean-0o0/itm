@@ -7,7 +7,7 @@ export default function EpibolyLifeCycle() {
 
     return (
         <div className='epiboly-life-cycle'>
-            <div className='top-item'>
+            <div className='top-console'>
             <Select
               style={{ width: '34rem', borderRadius: '8px !important' }}
               showSearch
