@@ -60,6 +60,7 @@ class TodoItems extends React.Component {
     page: 1,
     date: moment(new Date()).format('YYYYMMDD'),
     flag: true,
+    cxlx: "ALL",
   };
 
   componentDidMount() {
@@ -400,7 +401,7 @@ class TodoItems extends React.Component {
       page: e,
     })
     const {fetchQueryOwnerMessage} = this.props;
-    fetchQueryOwnerMessage(e, this.state.date)
+    fetchQueryOwnerMessage(e, this.state.date, this.state.cxlx)
   }
 
   updateState = (record, zxlx) => {
@@ -412,7 +413,7 @@ class TodoItems extends React.Component {
       const {code = 0, note = '', record = []} = ret;
       if (code === 1) {
         const {fetchQueryOwnerMessage} = this.props;
-        fetchQueryOwnerMessage(this.state.page, this.state.date)
+        fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx)
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -527,9 +528,19 @@ class TodoItems extends React.Component {
   handleDateChange = (e) => {
     this.setState({
       date: moment(e).format('YYYYMMDD'),
+      cxlx: "ALL",
     })
     const {fetchQueryOwnerMessage} = this.props;
-    fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD'))
+    fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD', "ALL"))
+  }
+
+  getUndoItems = () => {
+    this.setState({
+      date: moment(new Date()).format('YYYYMMDD'),
+      cxlx: "UNDO",
+    })
+    const {fetchQueryOwnerMessage} = this.props;
+    fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), "UNDO")
   }
 
   onclickdb = () => {
@@ -624,9 +635,10 @@ class TodoItems extends React.Component {
               {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
               {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
               <i style={{color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
-                 className="iconfont icon-shijian"/><span
-              style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成 <span
-              style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}</span></span>
+                 className="iconfont icon-shijian"/><a
+              style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}
+              onClick={this.getUndoItems}>未完成 <span
+              style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}</span></a>
             </div>
           </div>
         </div>
