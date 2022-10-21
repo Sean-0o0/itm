@@ -533,82 +533,57 @@ class BidInfoUpdate extends React.Component {
                     validateFields(err => {
                         if (fileList.length !== 0) {//评标报告不为空
                             if (!err) {//表单部分必填不为空
-                                let emptyArr = [];
-                                tableData?.forEach(item => {
-                                    for (const x in item) {
-                                        if (item[x] === null || String(item[x]).trim() === '' && x !== 'glgys') {
-                                            if (!emptyArr.includes(x)) { emptyArr.push(x); }
-                                        }
+                                let arr = [...tableData];
+                                arr.forEach(item => {
+                                    for (let i in item) {
+                                        item[i] = String(item[i]);
                                     }
                                 });
-                                if (emptyArr.length > 0) {//表格部分必填不为空
-                                    let arr = emptyArr.map(item => {
-                                        switch (item) {
-                                            case 'gysmc':
-                                                return '供应商名称';
-                                            case 'gysfkzh':
-                                                return '供应商付款账号';
-                                            default:
-                                                return null;
-                                        }
-                                    });
-                                    message.error(`${arr.join('、')}不允许空值`, 1);
-                                } else {
-                                    let arr = [...tableData];
-                                    arr.forEach(item => {
-                                        for (let i in item) {
-                                            item[i] = String(item[i]);
-                                        }
-                                    });
-                                    let newArr = [];
-                                    arr.map((item) => {
-                                        let obj = {
-                                            GYSMC: item[`gysmc${item.id}`],
-                                            GYSFKZH: item[`gysfkzh${item.id}`]
-                                        };
-                                        newArr.push(obj);
-                                    });
-                                    newArr.push({});
-                                    // console.log('bgsj', newArr);
-                                    const { zbgys, tbbzj, lybzj, zbgysfkzh, pbbg } = bidInfo;
-                                    const { columnName, documentData, fileLength, fileName, filePath, id, objectName } = uploadFileParams;
-                                    let submitdata = {
-                                        columnName: 'PBBG',
-                                        czr_id: Number(id),
-                                        documentData,
-                                        fileLength,
-                                        glgys: 0,
-                                        gysfkzh: Number(getFieldValue('zbgysfkzh')),
-                                        ijson: JSON.stringify(newArr),
-                                        lybzj: Number(getFieldValue('lybzj')),
-                                        objectName: 'TXMXX_ZBXX',
-                                        pbbg: fileName,
-                                        rowcount: tableData.length,
-                                        tbbzj: Number(getFieldValue('tbbzj')),
-                                        xmmc: Number(currentXmid),
-                                        zbgys: getFieldValue('zbgys'),
+                                let newArr = [];
+                                arr.map((item) => {
+                                    let obj = {
+                                        GYSMC: item[`gysmc${item.id}`],
+                                        GYSFKZH: item[`gysfkzh${item.id}`]
                                     };
-                                    // console.log("🚀 ~ file: index.js ~ line 588 ~ BidInfoUpdate ~ render ~ submitdata", submitdata)
-                                    UpdateZbxx({
-                                        ...submitdata
-                                    }).then(res=>{
-                                        if(res?.code===1){
-                                            message.success('招标信息修改成功', 1);
-                                        }else{
-                                            message.error('招标信息修改失败', 1);
-                                        }
-                                    })
-                                    // this.props.form.resetFiled();
-                                    this.setState({ tableData: [] });
-                                    closeBidInfoModal();
-                                }
+                                    newArr.push(obj);
+                                });
+                                newArr.push({});
+                                // console.log('bgsj', newArr);
+                                const { zbgys, tbbzj, lybzj, zbgysfkzh, pbbg } = bidInfo;
+                                const { columnName, documentData, fileLength, fileName, filePath, id, objectName } = uploadFileParams;
+                                let submitdata = {
+                                    columnName: 'PBBG',
+                                    // czr_id: Number(id),
+                                    documentData,
+                                    fileLength,
+                                    glgys: 0,
+                                    gysfkzh: Number(getFieldValue('zbgysfkzh')),
+                                    ijson: JSON.stringify(newArr),
+                                    lybzj: Number(getFieldValue('lybzj')),
+                                    objectName: 'TXMXX_ZBXX',
+                                    pbbg: fileName,
+                                    rowcount: tableData.length,
+                                    tbbzj: Number(getFieldValue('tbbzj')),
+                                    xmmc: Number(currentXmid),
+                                    zbgys: getFieldValue('zbgys'),
+                                };
+                                // console.log("🚀 ~ file: index.js ~ line 588 ~ BidInfoUpdate ~ render ~ submitdata", submitdata)
+                                UpdateZbxx({
+                                    ...submitdata
+                                }).then(res => {
+                                    if (res?.code === 1) {
+                                        message.success('招标信息修改成功', 1);
+                                    } else {
+                                        message.error('招标信息修改失败', 1);
+                                    }
+                                });
+                                this.setState({ tableData: [] });
+                                closeBidInfoModal();
                             }
-
                         } else {
                             this.setState({
                                 pbbgTurnRed: true
                             });
-                            // message.error(`评标报告不允许空值`, 1); 
                         }
                     })
                 }}
