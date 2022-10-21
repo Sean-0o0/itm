@@ -45,7 +45,8 @@ const TableBox = (props) => {
             title: '模块',
             dataIndex: 'module',
             key: 'module',
-            width: '7%',
+            width: 200,
+            fixed: true,
             ellipsis: true,
             // editable: true,
         },
@@ -53,7 +54,8 @@ const TableBox = (props) => {
             title: '系统建设',
             dataIndex: 'sysBuilding',
             key: 'sysBuilding',
-            width: '14%',
+            width: 300,
+            fixed: 'left',
             ellipsis: true,
             // editable: true,
         },
@@ -61,7 +63,8 @@ const TableBox = (props) => {
             title: '负责人',
             dataIndex: 'manager',
             key: 'manager',
-            width: '8%',
+            width: 90,
+            fixed: 'left',
             ellipsis: true,
             // editable: true,
         },
@@ -69,7 +72,7 @@ const TableBox = (props) => {
             title: '年度规划',
             dataIndex: 'annualPlan',
             key: 'annualPlan',
-            width: '18%',
+            // width: 400,
             ellipsis: true,
             editable: true,
         },
@@ -77,7 +80,7 @@ const TableBox = (props) => {
             title: '完成时间',
             dataIndex: 'cplTime',
             key: 'cplTime',
-            width: '10%',
+            width: 120,
             ellipsis: true,
             editable: true,
         },
@@ -85,7 +88,7 @@ const TableBox = (props) => {
             title: '当前进展',
             dataIndex: 'curProgress',
             key: 'curProgress',
-            width: '8%',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -93,7 +96,7 @@ const TableBox = (props) => {
             title: '当前进度',
             dataIndex: 'curRate',
             key: 'curRate',
-            width: '7%',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -101,7 +104,7 @@ const TableBox = (props) => {
             title: '当前状态',
             dataIndex: 'curStatus',
             key: 'curStatus',
-            width: '8%',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -109,7 +112,7 @@ const TableBox = (props) => {
             title: '风险说明',
             dataIndex: 'riskDesc',
             key: 'riskDesc',
-            width: '14%',
+            // width: ,
             ellipsis: true,
             editable: true,
         },
@@ -117,7 +120,7 @@ const TableBox = (props) => {
             title: '状态',
             dataIndex: 'status',
             key: 'status',
-            width: '8%',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -125,10 +128,11 @@ const TableBox = (props) => {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
-            width: '6%',
+            width: 100,
+            fixed: 'right',
             render: (text, row, index) => {
                 return <div>
-                    <Button size="small" >退回</Button>
+                    <a>退回</a>
                 </div>
             },
         },
@@ -174,7 +178,7 @@ const TableBox = (props) => {
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
                     // bodyStyle={{ overflowY: 'scroll' }}
-                    scroll={{ y: 580 }}
+                    scroll={{ y: 580, x: 2000 }}
                     pagination={false}
                     bordered
                 ></Table>

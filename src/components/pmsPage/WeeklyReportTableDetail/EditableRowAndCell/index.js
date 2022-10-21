@@ -94,7 +94,7 @@ const EditableCell = (props) => {
     }
 
     const renderItem = (form, dataIndex, record) => {
-        const cplTimeNode = <MonthPicker ref={node => targetNode.current = node} placeholder="请选择月份" onChange={save}/>;
+        const cplTimeNode = <MonthPicker ref={node => targetNode.current = node} placeholder="请选择月份" allowClear={false} onChange={save}/>;
         // const cplTimeValue = record[dataIndex + record['id']] === null ? null : moment(record[dataIndex + record['id']]);
         const cplTimeValue = moment(String(record[dataIndex + record['id']]))||null;
         switch (dataIndex) {
