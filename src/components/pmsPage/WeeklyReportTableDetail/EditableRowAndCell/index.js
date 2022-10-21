@@ -118,7 +118,7 @@ const EditableCell = (props) => {
                     <div
                         className="editable-cell-value-wrap"
                         // style={edited ? { WebkitBoxOrient: 'vertical', backgroundColor: 'tomato' } : { WebkitBoxOrient: 'vertical' }}
-                        style={{ WebkitBoxOrient: 'vertical' }}
+                        // style={{ WebkitBoxOrient: 'vertical' }}
                         onClick={toggleEdit}
                     >
                         {String(record[dataIndex + record['id']])}
@@ -138,7 +138,7 @@ const EditableCell = (props) => {
             ) : (
                 <div
                     className="normal-cell-value-wrap"
-                    style={{ WebkitBoxOrient: 'vertical' }}
+                    // style={{ WebkitBoxOrient: 'vertical' }}
                     onClick={toggleEdit}
                 >
                     {children}

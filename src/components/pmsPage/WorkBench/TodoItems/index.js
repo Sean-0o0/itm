@@ -16,7 +16,7 @@ import {
 } from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
-import {Link} from 'dva/router';
+import { Link } from 'dva/router';
 import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff, UpdateMessageState
@@ -25,8 +25,8 @@ import moment from 'moment';
 import 'moment/locale/zh-cn';
 import FastFunction from "../FastFunction";
 
-const {Panel} = Collapse;
-const {Group, Button} = Radio;
+const { Panel } = Collapse;
+const { Group, Button } = Radio;
 
 const Loginname = localStorage.getItem("firstUserID");
 
@@ -92,39 +92,45 @@ class TodoItems extends React.Component {
       text.sxmc.includes("原型图")) {
       this.handleUpload(text);
     }
-    if (text.sxmc.includes("周报")) {
+    if (text.sxmc === "周报填写") {
       window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
     }
-    if (text.sxmc.includes("资本性预算年初")) {
+    if (text.sxmc === "资本性预算年初录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc.includes("资本性预算年中")) {
+    if (text.sxmc === "资本性预算年中录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
     }
-    if (text.sxmc.includes("非资本性预算年初")) {
+    if (text.sxmc === "非资本性预算年初录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc.includes("非资本性预算年中")) {
+    if (text.sxmc === "非资本性预算年中录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
-    if (text.sxmc.includes("月报")) {
+    if (text.sxmc === "月报填写") {
       window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
     }
-    if (text.sxmc.includes("资本性预算录入")) {
+    if (text.sxmc === "资本性年初预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc.includes("非资本性预算录入")) {
+    if (text.sxmc === "资本性年中预算录入") {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    }
+    if (text.sxmc === "非资本性年初预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    }
+    if (text.sxmc === "非资本性年中预算录入") {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
   }
 
   dateCellRender = (value) => {
     const listData = this.getListData(value);
     return (
-      <ul style={{margin: '0.1rem', paddingLeft: '1rem'}}>
+      <ul style={{ margin: '0.1rem', paddingLeft: '1rem' }}>
         {listData.map(item => (
           <li key={item.content}>
-            <Tooltip title={item.content}><Badge status={item.type}/></Tooltip>
+            <Tooltip title={item.content}><Badge status={item.type} /></Tooltip>
           </li>
         ))}
       </ul>
@@ -134,7 +140,7 @@ class TodoItems extends React.Component {
   getListData = (value) => {
     //表格数据
     // console.log(value,"value")
-    const {allData} = this.props;
+    const { allData } = this.props;
     let t = moment(value._d)
       .format('YY-MM-DD')
       .substring(0, 5)
@@ -148,17 +154,17 @@ class TodoItems extends React.Component {
     if (curr_t) {
       // 过滤掉非本月的数据
       allData &&
-      allData.forEach(item => {
-        let date = item.jzrq.slice(0, 4).concat("-").concat(item.jzrq.slice(4, 6)).concat("-").concat(item.jzrq.slice(6, 8));
-        if (value.month() === new Date(date).getMonth()) {
-          if (value.date() === new Date(date).getDate()) {
-            content = <span>{content}<p>{item.txnr}</p></span>;
-            listData = [
-              {type: 'warning', content: content},
-            ]
+        allData.forEach(item => {
+          let date = item.jzrq.slice(0, 4).concat("-").concat(item.jzrq.slice(4, 6)).concat("-").concat(item.jzrq.slice(6, 8));
+          if (value.month() === new Date(date).getMonth()) {
+            if (value.date() === new Date(date).getDate()) {
+              content = <span>{content}<p>{item.txnr}</p></span>;
+              listData = [
+                { type: 'warning', content: content },
+              ]
+            }
           }
-        }
-      })
+        })
     }
 
     return listData || [];
@@ -191,7 +197,7 @@ class TodoItems extends React.Component {
       "userId": Loginname,
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           // sendTitle: e + '发起',
@@ -246,7 +252,7 @@ class TodoItems extends React.Component {
       "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           uploadUrl: url,
@@ -339,7 +345,7 @@ class TodoItems extends React.Component {
   //信息录入url
   getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           fillOutUrl: url,
@@ -406,7 +412,7 @@ class TodoItems extends React.Component {
     this.setState({
       page: e,
     })
-    const {fetchQueryOwnerMessage} = this.props;
+    const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(e, this.state.date, this.state.cxlx)
   }
 
@@ -416,9 +422,9 @@ class TodoItems extends React.Component {
       zxlx: zxlx,
       xxid: record.xxid,
     }).then((ret = {}) => {
-      const {code = 0, note = '', record = []} = ret;
+      const { code = 0, note = '', record = [] } = ret;
       if (code === 1) {
-        const {fetchQueryOwnerMessage} = this.props;
+        const { fetchQueryOwnerMessage } = this.props;
         fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx)
       }
     }).catch((error) => {
@@ -435,32 +441,32 @@ class TodoItems extends React.Component {
         title: '',
         dataIndex: '',
         render: (text, record) => {
-          const {flag} = this.state;
+          const { flag } = this.state;
           return (flag ? <Popconfirm
-                title={<span style={{fontSize: '2.083rem'}}>确认已完成？</span>}
-                onConfirm={() => this.updateState(record, 'EXECUTE')}
-                onCancel={this.oncancel}
-                okText={<span style={{fontSize: '1.785rem'}}>确认</span>}
-                cancelText={<span style={{fontSize: '1.785rem'}}>取消</span>}
-              ><a href="#" style={{
-                color: 'grey',
-              }}>
-                <Icon type="check-circle"
-                      style={{color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem'}}/></a></Popconfirm> :
-              <Icon type="check-circle" style={{color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem'}}/>
+            title={<span style={{ fontSize: '2.083rem' }}>确认已完成？</span>}
+            onConfirm={() => this.updateState(record, 'EXECUTE')}
+            onCancel={this.oncancel}
+            okText={<span style={{ fontSize: '1.785rem' }}>确认</span>}
+            cancelText={<span style={{ fontSize: '1.785rem' }}>取消</span>}
+          ><a href="#" style={{
+            color: 'grey',
+          }}>
+              <Icon type="check-circle"
+                style={{ color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem' }} /></a></Popconfirm> :
+            <Icon type="check-circle" style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem' }} />
           )
         }
       },
       {
         width: '25%',
-        title: <span style={{textAlign: 'center'}}>待办事项</span>,
+        title: <span style={{ textAlign: 'center' }}>待办事项</span>,
         dataIndex: 'sxmc',
         align: 'center',
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text.length > 8 ? text : ''} style={{fontSize: '2.381rem'}}>
-              <span style={{display: 'flex',}}>
+            <Tooltip title={text.length > 8 ? text : ''} style={{ fontSize: '2.381rem' }}>
+              <span style={{ display: 'flex', }}>
                 {
                   //onClick={() => this.updateState(record, 'READ')} 已读调用接口
                   record.xxlx === "1" && <span style={{
@@ -468,11 +474,11 @@ class TodoItems extends React.Component {
                     display: 'flex',
                     alignItems: 'center',
                   }}>
-                    <i style={{color: 'red', fontSize: '2.381rem'}} className="iconfont icon-fill-star"/>
+                    <i style={{ color: 'red', fontSize: '2.381rem' }} className="iconfont icon-fill-star" />
                   </span>
                 }
-                <a style={{fontSize: '2.083rem', color: '#1890ff', paddingLeft: '0.5rem'}}
-                   onClick={() => this.handleUrl(record)}>
+                <a style={{ fontSize: '2.083rem', color: '#1890ff', paddingLeft: '0.5rem' }}
+                  onClick={() => this.handleUrl(record)}>
                   {text.length > 8 ? text.slice(0, 8) + '...' : text}
                 </a>
                 {/*必做标识*/}
@@ -481,7 +487,7 @@ class TodoItems extends React.Component {
                 {/*</div>*/}
               </span>
             </Tooltip>
-         </span>
+          </span>
         },
       },
       {
@@ -492,12 +498,12 @@ class TodoItems extends React.Component {
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text.length > 13 ? text : ''} style={{fontSize: '2.381rem'}}>
-              <span style={{fontSize: '2.083rem', display: 'flex',}}>
+            <Tooltip title={text.length > 13 ? text : ''} style={{ fontSize: '2.381rem' }}>
+              <span style={{ fontSize: '2.083rem', display: 'flex', }}>
                 {text.length > 13 ? text.slice(0, 13) + '...' : text}
               </span>
             </Tooltip>
-         </span>
+          </span>
         },
       },
       {
@@ -507,10 +513,10 @@ class TodoItems extends React.Component {
         align: 'center',
         // key: 'xmmc',
         render: (text, record) => {
-          return <span><Tooltip title={text.length > 10 ? text : ''} style={{fontSize: '2.381rem'}}>
-            <span style={{display: 'flex',}}><Link style={{color: '#1890ff', fontSize: '2.083rem',}} to={{
+          return <span><Tooltip title={text.length > 10 ? text : ''} style={{ fontSize: '2.381rem' }}>
+            <span style={{ display: 'flex', }}><Link style={{ color: '#1890ff', fontSize: '2.083rem', }} to={{
               pathname: '/pms/manage/LifeCycleManagement',
-              query: {xmid: record.xmid},
+              query: { xmid: record.xmid },
             }}>
               {text.length > 10 ? text.slice(0, 10) + '...' : text}
             </Link></span></Tooltip></span>
@@ -524,7 +530,7 @@ class TodoItems extends React.Component {
         // key: 'jzrq',
         render: (text, record) => {
           return <span
-            style={{fontSize: '2.083rem',}}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
+            style={{ fontSize: '2.083rem', }}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
         },
       },
     ];
@@ -536,7 +542,7 @@ class TodoItems extends React.Component {
       date: moment(e).format('YYYYMMDD'),
       cxlx: "ALL",
     })
-    const {fetchQueryOwnerMessage} = this.props;
+    const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD', "ALL"))
   }
 
@@ -545,7 +551,7 @@ class TodoItems extends React.Component {
       date: moment(new Date()).format('YYYYMMDD'),
       cxlx: "UNDO",
     })
-    const {fetchQueryOwnerMessage} = this.props;
+    const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), "UNDO")
   }
 
@@ -554,7 +560,7 @@ class TodoItems extends React.Component {
   }
 
   render() {
-    const {data, total, wzxsl} = this.props;
+    const { data, total, wzxsl } = this.props;
     const {
       uploadVisible,
       editVisible,
@@ -577,7 +583,7 @@ class TodoItems extends React.Component {
       width: '100rem',
       height: '58rem',
       title: uploadTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -587,7 +593,7 @@ class TodoItems extends React.Component {
       width: '100rem',
       height: '68rem',
       title: editTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -597,7 +603,7 @@ class TodoItems extends React.Component {
       width: '150rem',
       height: '80rem',
       title: sendTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -607,7 +613,7 @@ class TodoItems extends React.Component {
       width: '150rem',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
@@ -617,16 +623,16 @@ class TodoItems extends React.Component {
       width: '150rem',
       height: '80rem',
       title: editMessageTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editMessageVisible,
       footer: null,
     };
     return (
-      <Row style={{height: '100%', padding: '3.571rem'}}>
-        <div style={{width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem'}}>
-          <div style={{display: 'flex',}}>
-            <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem'}}
-               className="iconfont icon-detail"/>
+      <Row style={{ height: '100%', padding: '3.571rem' }}>
+        <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
+          <div style={{ display: 'flex', }}>
+            <i style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem' }}
+              className="iconfont icon-detail" />
             <div style={{
               width: '25%',
               fontSize: '2.381rem',
@@ -635,29 +641,29 @@ class TodoItems extends React.Component {
               height: '100%'
             }} onClick={this.onclickdb}>待办事项
             </div>
-            <div style={{width: '75%', height: '100%', textAlign: 'end'}}>
+            <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
               {/*<i style={{color: 'red', paddingRight: ".5rem", verticalAlign: 'middle'}}*/}
               {/*   className="iconfont icon-message"/><span*/}
               {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
               {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
-              <i style={{color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
-                 className="iconfont icon-shijian"/><a
-              style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}
-              onClick={this.getUndoItems}>未完成 <span
-              style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}</span></a>
+              <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
+                className="iconfont icon-shijian" /><a
+                  style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}
+                  onClick={this.getUndoItems}>未完成 <span
+                    style={{ color: 'rgba(215, 14, 25, 1)' }}>{wzxsl}</span></a>
             </div>
           </div>
         </div>
-        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row', height: '95%'}}>
-          <div style={{width: '24%'}}>
-            <div style={{border: '1px solid #d9d9d9', borderRadius: 4}}>
+        <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', height: '95%' }}>
+          <div style={{ width: '24%' }}>
+            <div style={{ border: '1px solid #d9d9d9', borderRadius: 4 }}>
               <Calendar
                 // monthCellRender={this.monthCellRender}
                 dateCellRender={this.dateCellRender}
-                style={{fontSize: '2.083rem'}}
+                style={{ fontSize: '2.083rem' }}
                 onSelect={this.handleDateChange}
                 fullscreen={false}
-                headerRender={({value, type, onChange, onTypeChange}) => {
+                headerRender={({ value, type, onChange, onTypeChange }) => {
                   const start = 0;
                   const end = 12;
                   const monthOptions = [];
@@ -689,11 +695,11 @@ class TodoItems extends React.Component {
                     );
                   }
                   return (
-                    <div style={{padding: 10}}>
+                    <div style={{ padding: 10 }}>
                       <Row type="flex" justify="space-between">
                         <Col>
                           <Select
-                            style={{fonsSize: '2.083rem',}}
+                            style={{ fonsSize: '2.083rem', }}
                             size="small"
                             dropdownMatchSelectWidth={false}
                             className="my-year-select"
@@ -708,7 +714,7 @@ class TodoItems extends React.Component {
                           &nbsp;
                           <Select
                             size="small"
-                            style={{fonsSize: '2.083rem',}}
+                            style={{ fonsSize: '2.083rem', }}
                             dropdownMatchSelectWidth={false}
                             value={String(month)}
                             onChange={selectedMonth => {
@@ -728,43 +734,43 @@ class TodoItems extends React.Component {
               />
             </div>
           </div>
-          <div style={{marginLeft: '2rem', width: '76%'}}>
-            <div style={{height: '100%'}}>
-              <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '97%'}}>
-                <div style={{height: '90%'}}>
+          <div style={{ marginLeft: '2rem', width: '76%' }}>
+            <div style={{ height: '100%' }}>
+              <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '97%' }}>
+                <div style={{ height: '90%' }}>
                   {/*文档上传弹窗*/}
                   {uploadVisible &&
-                  <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-                               onCancel={this.closeUploadModal}
-                               src={uploadUrl}/>}
+                    <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+                      onCancel={this.closeUploadModal}
+                      src={uploadUrl} />}
                   {/*文档修改弹窗*/}
                   {editVisible &&
-                  <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
-                               onCancel={this.closeEditModal}
-                               src={uploadUrl}/>}
+                    <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+                      onCancel={this.closeEditModal}
+                      src={uploadUrl} />}
                   {/*立项流程发起弹窗*/}
                   {sendVisible &&
-                  <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")}
-                               onCancel={this.closeSendModal}
-                               src={sendUrl}/>}
+                    <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")}
+                      onCancel={this.closeSendModal}
+                      src={sendUrl} />}
                   {/*信息录入弹窗*/}
                   {fillOutVisible &&
-                  <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
-                               onCancel={this.closeFillOutModal}
-                               src={fillOutUrl}/>}
+                    <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+                      onCancel={this.closeFillOutModal}
+                      src={fillOutUrl} />}
                   {/*信息修改弹窗*/}
                   {editMessageVisible &&
-                  <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
-                               onCancel={this.closeMessageEditModal}
-                               src={editMessageUrl}/>}
+                    <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+                      onCancel={this.closeMessageEditModal}
+                      src={editMessageUrl} />}
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
-                         locale={{emptyText: <Empty description={"暂无消息"}/>}} dataSource={data}
-                         style={{height: '100%'}}/>
+                    locale={{ emptyText: <Empty description={"暂无消息"} /> }} dataSource={data}
+                    style={{ height: '100%' }} />
 
                 </div>
-                <div style={{height: '10%'}}>
+                <div style={{ height: '10%' }}>
                   <Pagination
-                    style={{textAlign: 'end', fontSize: '2.083rem'}}
+                    style={{ textAlign: 'end', fontSize: '2.083rem' }}
                     size="small"
                     total={total}
                     showTotal={total => `共 ${total} 条`}
