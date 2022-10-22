@@ -551,13 +551,14 @@ class BidInfoUpdate extends React.Component {
                                 // console.log('bgsj', newArr);
                                 const { zbgys, tbbzj, lybzj, zbgysfkzh, pbbg } = bidInfo;
                                 const { columnName, documentData, fileLength, fileName, filePath, id, objectName } = uploadFileParams;
+                                // console.log('doc',documentData);
                                 let submitdata = {
                                     columnName: 'PBBG',
                                     // czr_id: Number(id),
                                     documentData,
                                     fileLength,
                                     glgys: 0,
-                                    gysfkzh: Number(getFieldValue('zbgysfkzh')),
+                                    gysfkzh: String(getFieldValue('zbgysfkzh')),
                                     ijson: JSON.stringify(newArr),
                                     lybzj: Number(getFieldValue('lybzj')),
                                     objectName: 'TXMXX_ZBXX',
