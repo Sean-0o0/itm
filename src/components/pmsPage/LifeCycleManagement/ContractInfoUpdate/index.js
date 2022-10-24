@@ -446,7 +446,7 @@ class ContractInfoUpdate extends React.Component {
                             //         }
                             //     });
                             //     message.error(`${arr.join('、')}不允许空值`, 1);
-                            // }else  
+                            // }else
                             if (bfbSum > 1) {
                                 message.error('占比总额不能超过1', 1);
                             } else if (fkjeSum > getFieldValue('htje')) {
