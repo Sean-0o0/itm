@@ -18,16 +18,7 @@ export default function WeeklyReportDetail() {
         queryTableData( 20220901, 20220930, -1);
         setDateRange(p => [...getCurrentWeek(new Date())]);
     }, []);
-    // const handleTableSave = row => {
-    //     const newData = [...tableData];
-    //     const index = newData.findIndex(item => row.id === item.id);
-    //     const item = newData[index];
-    //     newData.splice(index, 1, {
-    //         ...item,
-    //         ...row,
-    //     });
-    //     setTableData(preState => [...newData]);
-    // };
+
     const queryTableData = (startTime, endTime, xmid)=>{
         QueryDigitalSpecialClassWeeklyReport({
             kssj: startTime,
@@ -50,20 +41,26 @@ export default function WeeklyReportDetail() {
                 };
             })
             setTableData(preState => [...newArr]);
+            // setTableLoading(false);
         });
     };
     const getCurrentWeek = (date) => {
         let timeStamp = date.getTime();
         let currentDay = date.getDay();
-        let monday = new Date(timeStamp - (currentDay - 1) * 60 * 60 * 24 * 1000)
-        let sunday = new Date(timeStamp + (7 - currentDay) * 60 * 60 * 24 * 1000)
-        // console.log(timeStamp, currentDay, moment(monday), sunday);
+        let monday = 0, sunday = 0;
+        if (currentDay !== 0) {
+            monday = new Date(timeStamp - (currentDay - 1) * 60 * 60 * 24 * 1000);
+            sunday = new Date(timeStamp + (7 - currentDay) * 60 * 60 * 24 * 1000);
+        } else {
+            monday = new Date(timeStamp - (7 - 1) * 60 * 60 * 24 * 1000);
+            sunday = new Date(timeStamp + (7 - 7) * 60 * 60 * 24 * 1000);
+        }
         return [moment(monday), moment(sunday)];
     };
     return (
         <div className='weekly-report-detail'>
             <TopConsole dateRange={dateRange} setDateRange={setDateRange} queryTableData={queryTableData}></TopConsole>
-            <TableBox tableData={tableData} setTableData={setTableData} currentWeek={getCurrentWeek(new Date())}></TableBox>
+            <TableBox tableData={tableData} setTableData={setTableData} dateRange={dateRange}></TableBox>
         </div>
     )
 }

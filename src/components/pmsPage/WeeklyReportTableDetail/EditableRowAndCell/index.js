@@ -7,6 +7,8 @@ const { TextArea } = Input;
 const EditableContext = React.createContext();
 
 const EditableRow = ({ form, index, ...props }) => {
+    // let obj = {...props,style: {height: 51}}
+    // console.log(obj);
     return (
         <EditableContext.Provider value={form}>
             <tr {...props} />
@@ -54,10 +56,10 @@ const EditableCell = (props) => {
                 console.log('有错误，不予保存');
                 return;
             }
-            toggleEdit();setEdited(true);
+            toggleEdit(); setEdited(true);
             handleSave({ ...record, ...values });
         });
-        
+
     };
 
     const getTitle = (dataIndex) => {
@@ -94,9 +96,9 @@ const EditableCell = (props) => {
     }
 
     const renderItem = (form, dataIndex, record) => {
-        const cplTimeNode = <MonthPicker ref={node => targetNode.current = node} placeholder="请选择月份" allowClear={false} onChange={save}/>;
+        const cplTimeNode = <MonthPicker ref={node => targetNode.current = node} placeholder="请选择月份" allowClear={false} onChange={save} />;
         // const cplTimeValue = record[dataIndex + record['id']] === null ? null : moment(record[dataIndex + record['id']]);
-        const cplTimeValue = moment(String(record[dataIndex + record['id']]))||null;
+        const cplTimeValue = moment(String(record[dataIndex + record['id']])) || null;
         switch (dataIndex) {
             case 'cplTime':
                 return getFormDec(form, dataIndex, record, cplTimeValue, cplTimeNode);
@@ -131,21 +133,21 @@ const EditableCell = (props) => {
     };
     return (
         <>
-        <td {...restProps}>
-        {edited&&<img className='edited-img' src={require('../../../../image/pms/WeeklyReportDetail/edited.png')} alt=''></img>}
-            {editable ? (
-                <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
-            ) : (
-                <div
-                    className="normal-cell-value-wrap"
-                    // style={{ WebkitBoxOrient: 'vertical' }}
-                    onClick={toggleEdit}
-                >
-                    {children}
-                </div>)}
-        </td>
+            <td {...restProps}>
+                {edited && <img className='edited-img' src={require('../../../../image/pms/WeeklyReportDetail/edited.png')} alt=''></img>}
+                {editable ? (
+                    <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
+                ) : (
+                    <div
+                        className="normal-cell-value-wrap"
+                        // style={{ WebkitBoxOrient: 'vertical' }}
+                        onClick={toggleEdit}
+                    >
+                        {children}
+                    </div>)}
+            </td>
         </>
-        
+
     );
 }
 export { EditableFormRow, EditableCell };

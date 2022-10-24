@@ -5,31 +5,17 @@ import { QueryDigitalSpecialClassWeeklyReport } from '../../../../services/pmsSe
 import Scrollbars from 'react-custom-scrollbars';
 
 const TableBox = (props) => {
-    const {form, tableData, currentWeek, setTableData} = props;
+    const { form, tableData, dateRange, setTableData } = props;
+    const [edited, setEdited] = useState(false);
+    const [tableLoading, setTableLoading] = useState(false);
     useEffect(() => {
-        // QueryDigitalSpecialClassWeeklyReport({
-        //     kssj: 0,
-        //     jssj: 99999999,
-        //     xmmc: ""
-        // }).then(res=>{
-        //     console.log(res);
-        // })
-        // const newArr = arr.map(item => {
-        //     return {
-        //         id: item.id,
-        //         ['module']: item.module,
-        //         ['sysBuilding']: item.sysBuilding,
-        //         ['manager']: item.manager,
-        //         ['annualPlan' + item.id]: item.annualPlan,
-        //         ['cplTime' + item.id]: item.cplTime,
-        //         ['curProgress' + item.id]: item.curProgress,
-        //         ['curRate' + item.id]: item.curRate,
-        //         ['curStatus' + item.id]: item.curStatus,
-        //         ['riskDesc' + item.id]: item.riskDesc,
-        //     };
-        // })
-        // setTableData(preState => [...preState, ...newArr])
+        setTableLoading(true);
     }, []);
+    useEffect(() => {
+        if (tableData.length !== 0) {
+            setTableLoading(false);
+        }
+    }, [tableData]);
     const handleTableSave = row => {
         const newData = [...tableData];
         const index = newData.findIndex(item => row.id === item.id);
@@ -38,6 +24,7 @@ const TableBox = (props) => {
             ...item,
             ...row,
         });
+        setEdited(true);
         setTableData(preState => [...newData]);
     };
     const tableColumns = [
@@ -132,7 +119,7 @@ const TableBox = (props) => {
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
-                    <a>退回</a>
+                    <a style={{color: '#1890ff'}}>退回</a>
                 </div>
             },
         },
@@ -150,7 +137,7 @@ const TableBox = (props) => {
                     dataIndex: col.dataIndex,
                     handleSave: handleTableSave,
                     key: col.key,
-                    formdecorate: props.form,
+                    formdecorate: form,
                 })
             },
         };
@@ -165,20 +152,20 @@ const TableBox = (props) => {
         <div className='table-box'>
             <div className='table-console'>
                 <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
-                <div className='console-txt'>{currentWeek.length!==0&&currentWeek[0].format('YYYY-MM-DD')} 至 {currentWeek.length!==0&&currentWeek[1].format('YYYY-MM-DD')}</div>
-                <Button style={{ marginLeft: 'auto' }}>保存</Button>
+                <div className='console-txt'>{dateRange.length !== 0 && dateRange[0]?.format('YYYY-MM-DD') || ''} 至 {dateRange.length !== 0 && dateRange[1]?.format('YYYY-MM-DD') || ''}</div>
+                <Button style={{ marginLeft: 'auto' }} disabled={!edited}>保存</Button>
                 <Button style={{ margin: '0 1.1904rem' }}>导出</Button>
                 <Button>跳过本周</Button>
             </div>
             <div className='table-content'>
                 <Table
+                    loading={tableLoading}
                     columns={columns}
                     components={components}
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    // bodyStyle={{ overflowY: 'scroll' }}
-                    scroll={{ y: 580, x: 2000 }}
+                    scroll={tableData.length > 11 ? { y: 580, x: 2000 } : { x: 2000 }}
                     pagination={false}
                     bordered
                 ></Table>

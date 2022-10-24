@@ -357,7 +357,7 @@ class ContractInfoUpdate extends React.Component {
                         <Popconfirm title="确定要删除吗?" onConfirm={() => {
                             return this.handleSingleDelete(record.id)
                         }}>
-                            <a>删除</a>
+                            <a style={{color: '#1890ff'}}>删除</a>
                         </Popconfirm>
                     ) : null,
             }
@@ -607,7 +607,7 @@ class ContractInfoUpdate extends React.Component {
                                             rowClassName={() => 'editable-row'}
                                             dataSource={tableData}
                                             rowSelection={rowSelection}
-                                            scroll={{ y: 195 }}
+                                            scroll={tableData.length > 3 ? { y: 195 } : {}}
                                             pagination={false}
                                             bordered
                                             size='middle'
