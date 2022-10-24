@@ -38,9 +38,11 @@ class ZipFileModel extends React.Component {
   }
 
   getZipFile = () => {
+    const myDate = new Date();
+    const nextYear = myDate.getFullYear() + 1;
     const {time, type} = this.state;
     const exportPayload = JSON.stringify({
-      nf: time,
+      nf: time ? time : nextYear,
       type: type,
     });
     const iframe = this.ifile; // iframe的dom
@@ -67,6 +69,8 @@ class ZipFileModel extends React.Component {
     // 删除该 form
     iframe.removeChild(downloadForm);
     this.props.onSubmitOperate();
+    //TODO 需获取表单回调后显示导出成功
+    setTimeout(message.success("导出成功"), 3000)
   }
 
   getYear = (e) => {
@@ -76,6 +80,8 @@ class ZipFileModel extends React.Component {
   }
 
   render() {
+    const myDate = new Date();
+    const nextYear = myDate.getFullYear() + 1;
     return (
       <Fragment>
         <div style={{
@@ -90,7 +96,8 @@ class ZipFileModel extends React.Component {
             <span style={{fontSize: '2.381rem',}}>
               年份：&nbsp;&nbsp;
             </span>
-            <Input style={{width: '30%', fontSize: '2.038rem'}} onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
+            <Input defaultValue={nextYear} style={{width: '30%', fontSize: '2.038rem'}}
+                   onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
           </div>
           <div style={{textAlign: 'end', paddingTop: '8.9rem'}}>
             {/*<button class="ant-btn" onClick={this.hanleCancle}>取消</button>*/}

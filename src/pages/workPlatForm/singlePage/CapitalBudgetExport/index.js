@@ -31,11 +31,13 @@ class CapitalBudgetExport extends React.Component {
     return params;
   }
 
-  hanleCancle = () => {
+  handleCancel = () => {
     this.props.onCancelOperate();
   }
 
   getExcelFile = () => {
+    const myDate = new Date();
+    const nextYear = myDate.getFullYear() + 1;
     const {year} = this.state;
     const iframe = this.ifile; // iframe的dom
     const actionUrl = exportExcel;
@@ -47,7 +49,7 @@ class CapitalBudgetExport extends React.Component {
     const input = document.createElement('input');
     input.type = 'text';
     input.name = 'year';
-    input.value = year;
+    input.value = year ? year : nextYear;
     // 将该输入框插入到 form 中
     downloadForm.appendChild(input);
     // form 的提交方式
@@ -60,6 +62,9 @@ class CapitalBudgetExport extends React.Component {
     downloadForm.submit();
     // 删除该 form
     iframe.removeChild(downloadForm);
+    this.props.onSubmitOperate();
+    //TODO 需获取表单回调后显示导出成功
+    setTimeout(message.success("导出成功"), 3000)
   }
 
   getYear = (e) => {
@@ -69,6 +74,8 @@ class CapitalBudgetExport extends React.Component {
   }
 
   render() {
+    const myDate = new Date();
+    const nextYear = myDate.getFullYear() + 1;
     return (
       <Fragment>
         <div style={{
@@ -83,10 +90,11 @@ class CapitalBudgetExport extends React.Component {
             <span style={{fontSize: '2.381rem',}}>
               年份：&nbsp;&nbsp;
             </span>
-            <Input style={{width: '30%', fontSize: '2.038rem'}} onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
+            <Input defaultValue={nextYear} style={{width: '30%', fontSize: '2.038rem'}}
+                   onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
           </div>
           <div style={{textAlign: 'end', paddingTop: '8.9rem'}}>
-            {/*<button class="ant-btn" onClick={this.hanleCancle}>取消</button>*/}
+            {/*<button class="ant-btn" onClick={this.handleCancel}>取消</button>*/}
             {/*&nbsp;&nbsp;*/}
             <button class="ant-btn ant-btn-primary" onClick={this.getExcelFile}>导出Excel</button>
             <iframe title='下载' id='m_iframe' ref={(c) => {
