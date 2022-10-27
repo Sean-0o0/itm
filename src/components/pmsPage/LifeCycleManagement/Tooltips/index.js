@@ -35,7 +35,7 @@ class Tooltips extends React.Component {
   getOAUrl = (item, xmid) => {
     FetchQueryOAUrl({
       sxid: item.sxid,
-      xmmc: xmid,
+      xmmc: item.xmid,
     }).then((ret = {}) => {
       const {code = 0, record = []} = ret;
       if (code === 1) {
@@ -46,7 +46,7 @@ class Tooltips extends React.Component {
       message.error(!error.success ? error.message : error.note);
     });
   }
-    
+
   handleAuthority = (fn, txt, arg) => {
     const { userId, loginUserId } = this.props;
     if (Number(userId) === Number(loginUserId)) {
@@ -62,8 +62,7 @@ class Tooltips extends React.Component {
 
   render() {
     const {type, status, item, xmid} = this.props;
-    // console.log("sxmcsxmcsxmc", sxmc)
-
+    item.xmid = xmid;
     return (
       <div>
         {
@@ -84,7 +83,7 @@ class Tooltips extends React.Component {
             </Tooltip> : <Tooltip title="查看">
               <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                  className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-                 onClick={this.handleAuthority.bind(this, this.getOAUrl, '发起', item, xmid)}/>
+                 onClick={this.handleAuthority.bind(this, this.getOAUrl, '发起', item)}/>
             </Tooltip>) : ''
         }
         {

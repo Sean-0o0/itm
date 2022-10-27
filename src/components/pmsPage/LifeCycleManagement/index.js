@@ -21,10 +21,9 @@ import BidInfoUpdate from './BidInfoUpdate';
 
 import moment from 'moment';
 import WPSFrame from '../../../js/wps_general'
-import {WpsInvoke} from '../../../js/wpsjsrpcsdk'
+import {WpsInvoke, WpsClientOpen} from '../../../js/wpsjsrpcsdk';
+import {PluginsUrl} from "../../../utils/config";
 
-const wpsFrame = new WPSFrame;
-const {Panel} = Collapse;
 const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
 
@@ -638,8 +637,6 @@ class LifeCycleManagementTabs extends React.Component {
 
   //文件wps预览-勿删
   _WpsInvoke(funcs, front, jsPluginsXml, isSilent) {
-    // var info = {};
-    // info.funcs = funcs;
     if (isSilent) {//隐藏启动时，front必须为false
       front = false;
     }
@@ -648,44 +645,30 @@ class LifeCycleManagementTabs extends React.Component {
      */
     console.log("funcs", funcs)
     this.singleInvoke(funcs, front, jsPluginsXml, isSilent)
-    // if (pluginsMode != 2) {//单进程
-    //   singleInvoke(info,front,jsPluginsXml,isSilent)
-    // } else {//多进程
-    //   multInvoke(info,front,jsPluginsXml,isSilent)
-    // }
-
   }
 
   singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
-    WpsInvoke.InvokeAsHttp("wps", // 组件类型
-      "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
+    const WpsClient = new WpsClientOpen.WpsClient(WpsInvoke.ClientType.wps);
+    //打包时修改config.js文件里的插件地址PluginsUrl。
+    WpsClient.jsPluginsXml = PluginsUrl;
+    WpsClient.InvokeAsHttp(
+      "HelloWps", // 组件类型
+      // "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
       "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
       JSON.stringify(param), // 传递给插件的数据
       function (result) { // 调用回调，status为0为成功，其他是错误
         if (result.status) {
           if (result.status === 100) {
-            console.log('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
-            // WpsInvoke.AuthHttpesCert('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
+            message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
             return;
           }
-          alert(result.message)
-
+          message.info(result.message)
         } else {
-          console.log(result.response)
-          // showresult(result.response)
+          message.info(result.response)
         }
       },
-      showToFront,
-      jsPluginsXml,
-      silentMode)
-
-
-    WpsInvoke.RegWebNotify("WpsOAAssist", "WpsOAAssist", this.handleOaMessage)
+      true,)
   }
-
-  jumpTo = (url) => {
-    window.open(url, '_blank');
-  };
 
   render() {
     const {
@@ -716,6 +699,7 @@ class LifeCycleManagementTabs extends React.Component {
       bidInfoModalVisible,
       operationListTotalRows,
     } = this.state;
+    console.log("xmidxmid000", xmid)
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
@@ -991,16 +975,16 @@ class LifeCycleManagementTabs extends React.Component {
                                         </Col>
                                         <Col span={6} style={{ textAlign: 'right' }}>
                                           <Tooltips type={item.swlx}
-                                            item={item}
-                                            status={item.zxqk}
-                                            xmid={this.state.xmid}
-                                            userId={projectInfo?.userid}
-                                            loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                                            handleUpload={() => this.handleUpload(item)}
-                                            handleSend={this.handleSend}
-                                            handleFillOut={() => this.handleFillOut(item)}
-                                            handleEdit={() => this.handleEdit(item)}
-                                            handleMessageEdit={this.handleMessageEdit}
+                                                    item={item}
+                                                    status={item.zxqk}
+                                                    xmid={xmid}
+                                                    userId={projectInfo?.userid}
+                                                    loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                                    handleUpload={() => this.handleUpload(item)}
+                                                    handleSend={this.handleSend}
+                                                    handleFillOut={() => this.handleFillOut(item)}
+                                                    handleEdit={() => this.handleEdit(item)}
+                                                    handleMessageEdit={this.handleMessageEdit}
                                           />
                                         </Col>
                                         {/* <Col span={3}> */}

@@ -840,6 +840,10 @@
     IsClientRunning: IsClientRunning
   }
 
+  var WpsClientOpen = {
+    WpsClient: WpsClient,
+  }
+
   window.wpsclients = [];
 
   /**
@@ -1171,6 +1175,7 @@
 
   if (typeof noGlobal === "undefined") {
     window.WpsInvoke = WpsInvoke;
+    window.WpsClientOpen = WpsClientOpen;
     window.WpsClient = WpsClient;
     window.WebNotifyUseTimeout = WebNotifyUseTimeout;
     window.EnableMultiUser = EnableMultiUser;
@@ -1359,5 +1364,5 @@
     window.WpsAddonMgr = WpsAddonMgr;
   }
 
-  return {WpsInvoke: WpsInvoke, WpsAddonMgr: WpsAddonMgr, version: "1.0.21"};
+  return {WpsInvoke: WpsInvoke, WpsClientOpen: WpsClientOpen, WpsAddonMgr: WpsAddonMgr, version: "1.0.21"};
 });
