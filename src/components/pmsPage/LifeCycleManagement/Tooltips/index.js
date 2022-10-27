@@ -32,7 +32,8 @@ class Tooltips extends React.Component {
     this.props.handleMessageEdit(item);
   }
 
-  getOAUrl = (item, xmid) => {
+  getOAUrl = (item) => {
+    console.log(item);
     FetchQueryOAUrl({
       sxid: item.sxid,
       xmmc: item.xmid,
@@ -83,7 +84,7 @@ class Tooltips extends React.Component {
             </Tooltip> : <Tooltip title="查看">
               <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
                  className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-                 onClick={this.handleAuthority.bind(this, this.getOAUrl, '发起', item)}/>
+                 onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}/>
             </Tooltip>) : ''
         }
         {
