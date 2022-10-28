@@ -221,7 +221,7 @@ class WorkBench extends React.Component {
     } = this.state;
     return (
       <div style={{height: 'calc(100% - 4.5rem)'}}>
-        <div style={{height: '40%', margin: '0 1.571rem 3.571rem 1.571rem'}}>
+        <div style={{height: '40%', margin: '0 3.571rem 3.571rem 3.571rem'}}>
           <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '3.571rem'}}>
             <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
               <div style={{
@@ -251,7 +251,7 @@ class WorkBench extends React.Component {
             </Col>
           </Row>
         </div>
-        <div style={{height: '60%', margin: '0 1.571rem 3.571rem 1.571rem'}}>
+        <div style={{height: '60%', margin: '0 3.571rem 3.571rem 3.571rem'}}>
           <Row style={{height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '3.571rem'}}>
             <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row',}}>
               <div style={{

@@ -5,17 +5,13 @@ import { QueryDigitalSpecialClassWeeklyReport } from '../../../../services/pmsSe
 import Scrollbars from 'react-custom-scrollbars';
 
 const TableBox = (props) => {
-    const { form, tableData, dateRange, setTableData } = props;
+    const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading } = props;
     const [edited, setEdited] = useState(false);
-    const [tableLoading, setTableLoading] = useState(false);
+
     useEffect(() => {
         setTableLoading(true);
     }, []);
-    useEffect(() => {
-        if (tableData.length !== 0) {
-            setTableLoading(false);
-        }
-    }, [tableData]);
+
     const handleTableSave = row => {
         const newData = [...tableData];
         const index = newData.findIndex(item => row.id === item.id);
@@ -25,6 +21,7 @@ const TableBox = (props) => {
             ...row,
         });
         setEdited(true);
+        console.log('TableData',newData);
         setTableData(preState => [...newData]);
     };
     const tableColumns = [
@@ -119,7 +116,7 @@ const TableBox = (props) => {
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
-                    <a style={{color: '#1890ff'}}>退回</a>
+                    <a style={{ color: '#1890ff' }}>退回</a>
                 </div>
             },
         },
