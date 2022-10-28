@@ -68,7 +68,6 @@ export default function TopConsole(props) {
                 <Icon type="left" />
                 上周
             </Button>
-            {/* <RangePicker disabled style={{ margin: '0 1.488rem' }} value={dateRange} onChange={(d, ds) => { handleDateChange(d, ds); }} disabledDate={handleDisabledDate} /> */}
             <WeekPicker
                 value={dateRange[1]}
                 onChange={handleDateChange}

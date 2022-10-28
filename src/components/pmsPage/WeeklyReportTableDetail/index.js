@@ -5,7 +5,6 @@ import TableBox from './TableBox';
 const { RangePicker } = DatePicker;
 import { FetchQueryOwnerProjectList, QueryDigitalSpecialClassWeeklyReport } from '../../../services/pmsServices';
 import moment from 'moment';
-import { fn } from 'moment';
 
 export default function WeeklyReportDetail() {
     const [open, setOpen] = useState(false);
@@ -49,16 +48,16 @@ export default function WeeklyReportDetail() {
                 const newArr = res.record.map(item => {
                     return {
                         id: item.id,
-                        ['module']: item.mk,
-                        ['sysBuilding']: item.xtjs,
-                        ['manager']: item.fzr,
-                        ['annualPlan' + item.id]: item.ndgh,
+                        ['module']: item.mk.trim(),
+                        ['sysBuilding']: item.xtjs.trim(),
+                        ['manager']: item.fzr.trim(),
+                        ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
-                        ['curProgress' + item.id]: item.dqjz,
-                        ['curRate' + item.id]: item.dqjzszhzb,
-                        ['curStatus' + item.id]: item.dqzt,
-                        ['riskDesc' + item.id]: item.fxsm,
-                        ['status' + item.id]: item.zt,
+                        ['curProgress' + item.id]: item.dqjz.trim(),
+                        ['curRate' + item.id]: item.dqjzszhzb.trim(),
+                        ['curStatus' + item.id]: item.dqzt.trim(),
+                        ['riskDesc' + item.id]: item.fxsm.trim(),
+                        ['status' + item.id]: item.zt.trim(),
                     };
                 })
                 setTableData(preState => [...newArr]);

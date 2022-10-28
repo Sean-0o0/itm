@@ -1,8 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Button, Icon, DatePicker, Input, Table, Select, Form } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
-import { QueryDigitalSpecialClassWeeklyReport } from '../../../../services/pmsServices';
-import Scrollbars from 'react-custom-scrollbars';
 
 const TableBox = (props) => {
     const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading } = props;
@@ -16,14 +14,36 @@ const TableBox = (props) => {
         const newData = [...tableData];
         const index = newData.findIndex(item => row.id === item.id);
         const item = newData[index];
+        const keys = Object.keys(row);
+        //去空格
+        const newRow = {
+            "id": row.id,
+            "module": row.module,
+            "sysBuilding": row.sysBuilding,
+            "manager": row.manager,
+            [keys[4]]: row[keys[4]].trim(),
+            [keys[5]]: row[keys[5]],
+            [keys[6]]: row[keys[6]].trim(),
+            [keys[7]]: row[keys[7]].trim(),
+            [keys[8]]: row[keys[8]].trim(),
+            [keys[9]]: row[keys[9]].trim(),
+            [keys[10]]: row[keys[10]].trim(),
+        };
         newData.splice(index, 1, {
-            ...item,
-            ...row,
+            ...item,//old row data
+            ...newRow,//new row data
         });
         setEdited(true);
-        console.log('TableData',newData);
+        console.log('TableData', newData);
         setTableData(preState => [...newData]);
     };
+    const handleSubmit = ()=>{
+        form.validateFields(err=>{
+            if(!err){
+                console.log('dd');
+            }
+        })
+    }
     const tableColumns = [
         {
             title: '模块',
@@ -150,7 +170,7 @@ const TableBox = (props) => {
             <div className='table-console'>
                 <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
                 <div className='console-txt'>{dateRange.length !== 0 && dateRange[0]?.format('YYYY-MM-DD') || ''} 至 {dateRange.length !== 0 && dateRange[1]?.format('YYYY-MM-DD') || ''}</div>
-                <Button style={{ marginLeft: 'auto' }} disabled={!edited}>保存</Button>
+                <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
                 <Button style={{ margin: '0 1.1904rem' }}>导出</Button>
                 <Button>跳过本周</Button>
             </div>
@@ -162,7 +182,7 @@ const TableBox = (props) => {
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    scroll={tableData.length > 11 ? { y: 580, x: 2000 } : { x: 2000 }}
+                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 2020 }}
                     pagination={false}
                     bordered
                 ></Table>
