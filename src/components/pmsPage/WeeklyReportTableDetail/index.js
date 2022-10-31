@@ -10,6 +10,7 @@ export default function WeeklyReportDetail() {
     const [open, setOpen] = useState(false);
     const [dateRange, setDateRange] = useState([null, null]);
     const [tableData, setTableData] = useState([]);
+    const [groupData, setGroupData] = useState({});
     const [tableLoading, setTableLoading] = useState(false);
     const [projectData, setProjectData] = useState([]);
     const [currentXmid, setCurrentXmid] = useState(-1);
@@ -34,7 +35,7 @@ export default function WeeklyReportDetail() {
                 let defaultETime = Number(getCurrentWeek(new Date())[1].format('YYYYMMDD'));
                 defaultSTime = 20220901;
                 defaultETime = 20221001;
-                queryTableData(defaultSTime, defaultETime, curXmid);
+                queryTableData(defaultSTime, defaultETime, -1);
             }
         });
     };
@@ -59,8 +60,33 @@ export default function WeeklyReportDetail() {
                         ['riskDesc' + item.id]: item.fxsm.trim(),
                         ['status' + item.id]: item.zt.trim(),
                     };
-                })
-                setTableData(preState => [...newArr]);
+                });
+                let groupObj = newArr.reduce((pre, current, index) => {
+                    pre[current.module] = pre[current.module] || [];
+                    pre[current.module].push({
+                        id: current.id,
+                        ['sysBuilding']: current['sysBuilding'],
+                        ['manager']: current['manager'],
+                        ['annualPlan' + current.id]: current['annualPlan' + current.id],
+                        ['cplTime' + current.id]: current['cplTime' + current.id],
+                        ['curProgress' + current.id]: current['curProgress' + current.id],
+                        ['curRate' + current.id]: current['curRate' + current.id],
+                        ['curStatus' + current.id]: current['curStatus' + current.id],
+                        ['riskDesc' + current.id]: current['riskDesc' + current.id],
+                        ['status' + current.id]: current['status' + current.id],
+                    });
+                    return pre;
+                }, {});
+                setGroupData({...groupObj});
+                let finalArr = [];
+                let arrLength = 0;
+                for( let item in groupObj){
+                    arrLength += groupObj[item].length;
+                    groupObj[item].forEach(x=>{
+                        finalArr.push({module: item, ...x})
+                    })
+                }
+                setTableData(preState => [...finalArr]);
                 setTableLoading(false);
             }
         })
@@ -90,6 +116,7 @@ export default function WeeklyReportDetail() {
                 setCurrentXmid={setCurrentXmid}>
             </TopConsole>
             <TableBox tableData={tableData}
+                groupData={groupData}
                 setTableData={setTableData}
                 tableLoading={tableLoading}
                 setTableLoading={setTableLoading}
