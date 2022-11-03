@@ -722,9 +722,9 @@ class LifeCycleManagementTabs extends React.Component {
     };
     const sendModalProps = {
       isAllWindow: 1,
-      // defaultFullScreen: true,
-      width: '150rem',
-      height: '100rem',
+      defaultFullScreen: true,
+      // width: '150rem',
+      // height: '100rem',
       title: sendTitle,
       style: { top: '10rem' },
       visible: sendVisible,

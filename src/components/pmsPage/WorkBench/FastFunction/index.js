@@ -46,9 +46,9 @@ class FastFunction extends React.Component {
     const {fileAddVisible, fileAddUrl, manageVisible, manageUrl} = this.state;
     const fileAddModalProps = {
       isAllWindow: 1,
-      // defaultFullScreen: true,
-      width: '180rem',
-      height: '100rem',
+      defaultFullScreen: true,
+      // width: '180rem',
+      // height: '100rem',
       title: '新建项目',
       style: {top: '10rem'},
       visible: fileAddVisible,
@@ -183,7 +183,7 @@ class FastFunction extends React.Component {
             }} style={{width: '7.143rem', height: '7.143rem'}}/>
             </div>
             <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}} onClick={() => {
-              window.location.href = `/#/UIProcessor?Table=ZBXYSLR&hideTitlebar=true`
+              window.location.href = `/#/UIProcessor?Table=ZBXYSHZ&hideTitlebar=true`
             }}>管理预算
             </div>
           </div>
