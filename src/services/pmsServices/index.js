@@ -24,6 +24,12 @@ const {
     exportExcel,
     queryEpibolyLifeCycleExeStatue,
     queryDigitalSpecialClassWeeklyReport,
+    operateSZHZBWeekly,
+    queryMonthlyList,
+    operateMonthly,
+    digitalSpecialClassWeeklyReportExcel,
+    digitalSpecialClassMonthReportExcel,
+    queryUserInfo,
   },
 } = api;
 
@@ -219,6 +225,66 @@ export async function QueryDigitalSpecialClassWeeklyReport(payload) {
 export async function ExportExcel(payload) {
   const option = {
     url: exportExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//更新、退回、删除、跳过本周数字化专班周报信息
+export async function OperateSZHZBWeekly(payload) {
+  const option = {
+    url: operateSZHZBWeekly,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询月报信息
+export async function QueryMonthlyList(payload) {
+  const option = {
+    url: queryMonthlyList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//更新、退回、删除月报信息
+export async function OperateMonthly(payload) {
+  const option = {
+    url: operateMonthly,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//数字化专班周报导出EXCELL
+export async function DigitalSpecialClassWeeklyReportExcel(payload) {
+  const option = {
+    url: digitalSpecialClassWeeklyReportExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//数字化专班月报导出EXCELL
+export async function DigitalSpecialClassMonthReportExcel(payload) {
+  const option = {
+    url: digitalSpecialClassMonthReportExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//月报查询用户信息,填报人下拉列表使用
+export async function QueryUserInfo(payload) {
+  const option = {
+    url: queryUserInfo,
     method: 'post',
     data: payload,
   };

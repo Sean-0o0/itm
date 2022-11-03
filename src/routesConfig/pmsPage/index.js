@@ -13,12 +13,17 @@ exports.routes = [
     component: './pmsPage/WeeklyReportSummary',
   },
   {
-    //周报详情页面
+    //周报汇总-数字化专报
     path: `${prefix}/WeeklyReportTable`,
     component: './pmsPage/WeeklyReportTable',
   },
   {
-    //需求管理页面
+    //月报汇总
+    path: `${prefix}/MonthlyReportTable`,
+    component: './pmsPage/MonthlyReportTable',
+  },
+  {
+    //外包生命周期页面
     path: `${prefix}/EpibolyLifeCycle`,
     component: './pmsPage/EpibolyLifeCycle',
   },

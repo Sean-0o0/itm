@@ -1,8 +1,6 @@
 import React, { Component } from 'react';
-import { Row, Col, Tabs } from 'antd';
 import { connect } from 'dva';
-import WeeklyReportTableDetail
-  from '../../../components/pmsPage/WeeklyReportTableDetail/index';
+import WeeklyReportTableDetail from '../../../components/pmsPage/WeeklyReportTableDetail/index';
 class WeeklyReportTable extends Component {
   render() {
     return (

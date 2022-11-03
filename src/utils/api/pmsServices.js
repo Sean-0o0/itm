@@ -19,4 +19,10 @@ export default [
   {code: '', key: 'exportExcel', url: '/projectManage/v1/CapitalBudgetExportExcel', dis: '资本性年初预算汇总导出EXCEL'},
   {code: '', key: 'queryEpibolyLifeCycleExeStatue', url: '/projectManage/QueryEpibolyLifeCycleExeStatue', dis: '查询外包事务生命周期执行情况'},
   {code: '', key: 'queryDigitalSpecialClassWeeklyReport', url: '/projectManage/QueryDigitalSpecialClassWeeklyReport', dis: '查询新数字化专班周报'},
+  {code: '', key: 'operateSZHZBWeekly', url: '/projectManage/operateSZHZBWeekly', dis: '更新、退回、删除、跳过本周数字化专班周报信息'},
+  {code: '', key: 'operateMonthly', url: '/projectManage/operateMonthly', dis: '更新、退回、删除月报信息'},
+  {code: '', key: 'queryMonthlyList', url: '/projectManage/queryMonthlyList', dis: '查询月报信息'},
+  {code: '', key: 'digitalSpecialClassWeeklyReportExcel', url: '/projectManage/v1/DigitalSpecialClassWeeklyReportExcel', dis: '数字化专班周报导出EXCELL'},
+  {code: '', key: 'digitalSpecialClassMonthReportExcel', url: '/projectManage/v1/DigitalSpecialClassMonthReportExcel', dis: '数字化专班月报导出EXCELL'},
+  {code: '', key: 'queryUserInfo', url: '/projectManage/queryUserInfo', dis: '数字化专班月报查询用户信息,填报人下拉列表使用'},
 ];

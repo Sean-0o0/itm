@@ -14,6 +14,8 @@ export default function WeeklyReportDetail() {
     const [tableLoading, setTableLoading] = useState(false);
     const [projectData, setProjectData] = useState([]);
     const [currentXmid, setCurrentXmid] = useState(-1);
+    const [edited, setEdited] = useState(false);
+    
 
     useEffect(() => {
         queryProjectData();
@@ -28,14 +30,10 @@ export default function WeeklyReportDetail() {
             cxlx: 'ALL',
         }).then(res => {
             if (res.code === 1) {
-                let curXmid = Number(res?.record[0]?.xmid);
                 setProjectData(p => [...res.record]);
-                setCurrentXmid(curXmid);
                 let defaultSTime = Number(getCurrentWeek(new Date())[0].format('YYYYMMDD'));
                 let defaultETime = Number(getCurrentWeek(new Date())[1].format('YYYYMMDD'));
-                defaultSTime = 20220901;
-                defaultETime = 20221001;
-                queryTableData(defaultSTime, defaultETime, -1);
+                queryTableData(defaultSTime, defaultETime, currentXmid);
             }
         });
     };
@@ -46,6 +44,34 @@ export default function WeeklyReportDetail() {
             xmmc: xmid
         }).then(res => {
             if (res.code === 1) {
+                const getCurP = (num) => {
+                    switch (num) {
+                        case '1':
+                            return '规划中';
+                        case '2':
+                            return '进行中';
+                        case '3':
+                            return '已完成'
+                    }
+                };
+                const getCurS = (num) => {
+                    switch (num) {
+                        case '1':
+                            return '低风险';
+                        case '2':
+                            return '进度正常';
+                    }
+                };
+                const getStatus = (num) => {
+                    switch (num) {
+                        case '1':
+                            return '填写中';
+                        case '2':
+                            return '已提交';
+                        case '3':
+                            return '被退回'
+                    }
+                };
                 const newArr = res.record.map(item => {
                     return {
                         id: item.id,
@@ -54,11 +80,11 @@ export default function WeeklyReportDetail() {
                         ['manager']: item.fzr.trim(),
                         ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
-                        ['curProgress' + item.id]: item.dqjz.trim(),
+                        ['curProgress' + item.id]: getCurP(item.dqjz.trim()),
                         ['curRate' + item.id]: item.dqjzszhzb.trim(),
-                        ['curStatus' + item.id]: item.dqzt.trim(),
+                        ['curStatus' + item.id]: getCurS(item.dqzt.trim()),
                         ['riskDesc' + item.id]: item.fxsm.trim(),
-                        ['status' + item.id]: item.zt.trim(),
+                        ['status']: getStatus(item.zt.trim()),
                     };
                 });
                 let groupObj = newArr.reduce((pre, current, index) => {
@@ -73,7 +99,7 @@ export default function WeeklyReportDetail() {
                         ['curRate' + current.id]: current['curRate' + current.id],
                         ['curStatus' + current.id]: current['curStatus' + current.id],
                         ['riskDesc' + current.id]: current['riskDesc' + current.id],
-                        ['status' + current.id]: current['status' + current.id],
+                        ['status']: current['status'],
                     });
                     return pre;
                 }, {});
@@ -113,14 +139,22 @@ export default function WeeklyReportDetail() {
                 queryTableData={queryTableData}
                 projectData={projectData}
                 currentXmid={currentXmid}
-                setCurrentXmid={setCurrentXmid}>
+                setCurrentXmid={setCurrentXmid}
+                setEdited={setEdited}
+                >
             </TopConsole>
             <TableBox tableData={tableData}
+                queryTableData={queryTableData}
                 groupData={groupData}
                 setTableData={setTableData}
                 tableLoading={tableLoading}
                 setTableLoading={setTableLoading}
-                dateRange={dateRange}>
+                dateRange={dateRange}
+                edited={edited}
+                setEdited={setEdited}
+                getCurrentWeek={getCurrentWeek}
+                currentXmid={currentXmid}
+                >
             </TableBox>
         </div>
     )

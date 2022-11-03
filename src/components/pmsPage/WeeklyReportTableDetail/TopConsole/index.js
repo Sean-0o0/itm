@@ -12,7 +12,8 @@ export default function TopConsole(props) {
         currentXmid,
         setCurrentXmid,
         getCurrentWeek,
-        setTableLoading
+        setTableLoading,
+        setEdited
     } = props;
 
     const [open, setOpen] = useState(false);
@@ -35,6 +36,7 @@ export default function TopConsole(props) {
         } else {
             return;
         }
+        setEdited(false);
         setDateRange(pre => [...[moment(newStart), moment(newEnd)]]);
         setTableLoading(true);
         queryTableData(Number(moment(newStart).format('YYYYMMDD')), Number(moment(newEnd).format('YYYYMMDD')), currentXmid);
@@ -51,14 +53,20 @@ export default function TopConsole(props) {
             sunday = new Date(timeStamp + (7 - 7) * 60 * 60 * 24 * 1000);
         }
         let currentWeek = [moment(monday), moment(sunday)];
+        setEdited(false);
         setDateRange(pre => [...currentWeek]);
         setTableLoading(true);
         queryTableData(Number(currentWeek[0].format('YYYYMMDD')), Number(currentWeek[1].format('YYYYMMDD')), currentXmid);
     };
     const handleProjectChange = (value) => {
-        setCurrentXmid(Number(value));
+        if (value) {
+            setCurrentXmid(Number(value));
+            queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(value));
+        } else {
+            queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), -1);
+        }
         setTableLoading(true);
-        queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(value));
+        setEdited(false);
     };
     return (
         <div className='top-console'>
@@ -79,10 +87,11 @@ export default function TopConsole(props) {
             <Select
                 style={{ width: '34rem', borderRadius: '8px !important', marginLeft: '2.3808rem' }}
                 showSearch
+                allowClear
                 placeholder="请选择项目名称"
                 optionFilterProp="children"
-                key={projectData.length !== 0 && projectData[0]?.xmid || ''}
-                defaultValue={projectData.length !== 0 && projectData[0]?.xmmc || ''}
+                // key={projectData.length !== 0 && projectData[0]?.xmid || ''}
+                // defaultValue={projectData.length !== 0 && projectData[0]?.xmmc || ''}
                 onChange={handleProjectChange}
                 filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
