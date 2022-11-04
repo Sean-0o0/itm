@@ -375,6 +375,7 @@ class ProjectSchedule extends React.Component {
 
 
   groupBy = (arr) => {
+    console.log("arrarr", arr);
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
@@ -387,10 +388,11 @@ class ProjectSchedule extends React.Component {
           }
         })
         if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
+          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
         }
       }
     })
+    console.log("dataArrdataArr", dataArr);
     return dataArr;
   }
 
@@ -416,7 +418,7 @@ class ProjectSchedule extends React.Component {
   render() {
     const { data, total, ProjectScheduleDetailData } = this.props;
     console.log("data", data);
-    console.log("ProjectScheduleDetailData", ProjectScheduleDetailData);
+    console.log("DetailData", ProjectScheduleDetailData);
     const {
       uploadVisible,
       editVisible,
@@ -571,23 +573,23 @@ class ProjectSchedule extends React.Component {
                         </div>
                         <div className='head4'>
                           项目风险：<ProjectRisk state={items.fxnr} item={items}
-                                            lcbid={ProjectScheduleDetailData[0]?.lcbid}/>
+                                            lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid}/>
                         </div>
                       </div>
                       {items.extend ?
                         ProjectScheduleDetailData.map((item = {}, ind) => {
-                          let sort = this.groupBy(item);
-                          return items?.xmid === item[0]?.xmid &&
-                            <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
-                              className='card'>
+                          let sort = this.groupBy(item?.List);
+                          return items?.xmid === item?.xmid &&
+                            <Row style={{height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem'}}
+                                 className='card'>
                               <Col span={24} className='cont1'>
-                                <div className='head' style={{ borderRadius: '8px 8px 0px 0px' }}>
+                                <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
-                                    <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                                      className="iconfont icon-fill-flag" />&nbsp;
+                                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
+                                       className="iconfont icon-fill-flag"/>&nbsp;
                                     里程碑阶段：
-                                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item[0].lcb}</span>
+                                    <span style={{color: 'rgba(48, 49, 51, 1)'}}>{item?.List[0]?.lcb}</span>
                                   </div>
                                   <div className='head2'>
                                     <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}

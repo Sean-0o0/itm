@@ -31,6 +31,9 @@ class WorkBench extends React.Component {
 
   componentDidMount() {
     this.fetchQueryAllOwnerMessage();
+    this.fetchQueryOwnerMessage();
+    this.fetchQueryOwnerWorkflow();
+    this.fetchQueryOwnerProjectList();
   }
 
   fetchQueryOwnerMessage = (page, date, cxlx) => {
@@ -62,7 +65,6 @@ class WorkBench extends React.Component {
           wzxsl: record[0]?.wzxsl,
         });
       }
-      this.fetchQueryOwnerWorkflow();
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -93,7 +95,6 @@ class WorkBench extends React.Component {
           AllTodoItemsData: record,
         });
       }
-      this.fetchQueryOwnerMessage();
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -115,7 +116,6 @@ class WorkBench extends React.Component {
           ProcessSituationData: record,
         });
       }
-      this.fetchQueryOwnerProjectList();
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -136,8 +136,8 @@ class WorkBench extends React.Component {
       const {record, code, totalrows = 0} = ret;
       if (code === 1) {
         this.fetchQueryLiftcycleMilestone(record, totalrows)
+        this.fetchQueryLifecycleStuff(record)
       }
-      this.fetchQueryLifecycleStuff(record)
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -150,14 +150,12 @@ class WorkBench extends React.Component {
         xmmc: e[i].xmid,
       }).then((ret = {}) => {
         const {record = [], code = 0} = ret;
-        console.log("basicData", record);
         if (code === 1) {
           //zxxh排序
           e[i].extend = false;
           e[i].kssj = record[0].kssj
           e[i].jssj = record[0].jssj
           e[i].zt = record[0].zt
-          console.log("ProjectScheduleData", e)
           this.setState({
             ProjectScheduleTotal: total,
             ProjectScheduleData: e,
@@ -172,6 +170,7 @@ class WorkBench extends React.Component {
   fetchQueryLifecycleStuff = (e = []) => {
     const recordList = [];
     for (let i = 0; i < e.length; i++) {
+      const xmid = e[i].xmid;
       FetchQueryLifecycleStuff({
         cxlx: 'SINGLE',
         xmmc: e[i].xmid,
@@ -179,10 +178,11 @@ class WorkBench extends React.Component {
         const {code = 0, record = []} = ret;
         if (code === 1) {
           // console.log("recordList",recordList)
-          record.map((item = {}, index) => {
-            item.xmid = e[i].xmid;
-          })
-          recordList.push(record)
+          // record.map((item = {}, index) => {
+          //   item.xmid = e[i].xmid;
+          // })
+          recordList.push({xmid: xmid, List: record});
+          console.log("recordList", recordList);
           this.setState({
             ProjectScheduleDetailData: recordList,
           })
