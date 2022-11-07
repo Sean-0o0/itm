@@ -1,7 +1,9 @@
-import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message } from 'antd';
+import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Select } from 'antd';
 // import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
+const { Option } = Select;
 import React from 'react';
 import {
+    FetchQueryGysInZbxx,
     FetchQueryHTXXByXQTC,
     UpdateHTXX,
 } from "../../../../services/pmsServices";
@@ -200,10 +202,14 @@ class ContractInfoUpdate extends React.Component {
         },
         tableData: [],    //付款详情表格
         selectedRowIds: [],
+        isSelectorOpen: false,
+        gysData: [],
+        gys: '',
+        currentGysId: '', 
     }
 
     componentDidMount() {
-        this.fetchQueryHTXXByXQTC();
+        this.fetchQueryGysInZbxx();
     }
 
     // 获取项目信息
@@ -215,6 +221,11 @@ class ContractInfoUpdate extends React.Component {
             let rec = res.record;
             this.setState({
                 contractInfo: { htje: Number(rec[0].htje), qsrq: rec[0].qsrq },
+                gys: rec[0].gys,
+            },()=>{
+               this.setState({
+                   currentGysId: this.state.gysData?.filter(x=>x.gysmc===rec[0].gys)[0]?.id
+               });
             });
             let arr = [];
             for (let i = 0; i < rec.length; i++) {
@@ -232,6 +243,26 @@ class ContractInfoUpdate extends React.Component {
             });
         });
     };
+    // 查询供应商下拉列表
+    fetchQueryGysInZbxx = (current, pageSize) => {
+        FetchQueryGysInZbxx({
+            // paging: 1,
+            paging: -1,
+            sort: "",
+            current,
+            pageSize,
+            total: -1,
+        }).then(res => {
+            if (res.success) {
+                let rec = res.record;
+                this.setState({
+                    gysData: [...rec]
+                },()=>{
+                    this.fetchQueryHTXXByXQTC();
+                });
+            }
+        });
+    }
     //合同信息修改付款详情表格单行删除
     handleSingleDelete = (id) => {
         const dataSource = [...this.state.tableData];
@@ -280,6 +311,11 @@ class ContractInfoUpdate extends React.Component {
             selectedRowIds: data
         });
     };
+    handleGysChange = (id) => {
+        this.setState({
+            currentGysId: id
+        })
+    }
 
     render() {
         const {
@@ -287,6 +323,10 @@ class ContractInfoUpdate extends React.Component {
             isModalFullScreen,
             tableData,
             contractInfo,
+            gysData,
+            gys,
+            currentGysId,
+            isSelectorOpen,
             selectedRowIds } = this.state;
         const { currentXmid, currentXmmc, editMessageVisible, closeMessageEditModal } = this.props;
         const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
@@ -357,7 +397,7 @@ class ContractInfoUpdate extends React.Component {
                         <Popconfirm title="确定要删除吗?" onConfirm={() => {
                             return this.handleSingleDelete(record.id)
                         }}>
-                            <a style={{color: '#1890ff'}}>删除</a>
+                            <a style={{ color: '#1890ff' }}>删除</a>
                         </Popconfirm>
                     ) : null,
             }
@@ -421,32 +461,11 @@ class ContractInfoUpdate extends React.Component {
                 onOk={() => {
                     this.props.form.validateFields(err => {
                         if (!err) {
-                            // let emptyArr = [];
                             let fkjeSum = 0, bfbSum = 0;
                             tableData?.forEach(item => {
-                                // for (const x in item) {
-                                //     if (item[x] === null || String(item[x]).trim() === '' && x !== 'bfb'+item['id']) {
-                                //         if (!emptyArr.includes(x)) { emptyArr.push(x); }
-                                //     }
-                                // }
                                 fkjeSum += Number(item['fkje' + item.id]);
                                 bfbSum += Number(item['bfb' + item.id]);
                             });
-                            // if (emptyArr.length > 0) {
-                            //     let arr = emptyArr.map(item => {
-                            //         switch (item) {
-                            //             case 'fkqs':
-                            //                 return '期数';
-                            //             case 'fkje':
-                            //                 return '付款金额';
-                            //             case 'fksj':
-                            //                 return '付款时间';
-                            //             default:
-                            //                 return null;
-                            //         }
-                            //     });
-                            //     message.error(`${arr.join('、')}不允许空值`, 1);
-                            // }else
                             if (bfbSum > 1) {
                                 message.error('占比总额不能超过1', 1);
                             } else if (fkjeSum > getFieldValue('htje')) {
@@ -470,7 +489,8 @@ class ContractInfoUpdate extends React.Component {
                                         BFB: item['bfb' + item.id],
                                         FKJE: item['fkje' + item.id],
                                         FKSJ: item['fksj' + item.id],
-                                        ZT: item.zt
+                                        ZT: item.zt,
+                                        GYS: String(currentGysId)
                                     };
                                     newArr.push(obj);
                                 });
@@ -488,10 +508,10 @@ class ContractInfoUpdate extends React.Component {
                                     rowcount: tableData.length,
                                     htje: Number(getFieldValue('htje')),
                                     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-                                }).then(res=>{
-                                    if(res?.code===1){
+                                }).then(res => {
+                                    if (res?.code === 1) {
                                         message.success('合同信息修改成功', 1);
-                                    }else{
+                                    } else {
                                         message.error('合同信息修改失败', 1);
                                     }
                                 })
@@ -539,7 +559,6 @@ class ContractInfoUpdate extends React.Component {
                                     {
                                         pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
                                         message: '最多不超过13位数字且小数点后数字不超过2位',
-                                        // trigger: 'blur',
                                     },
                                 ],
                             })(<Input placeholder="请输入合同金额（元）" />)}
@@ -556,6 +575,31 @@ class ContractInfoUpdate extends React.Component {
                                     },
                                 ],
                             })(<DatePicker style={{ width: '100%' }} />)}
+                        </Form.Item></Col>
+                        <Col span={12}> <Form.Item label="供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+                            {getFieldDecorator('gys', {
+                                initialValue: gys,
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '供应商不允许空值',
+                                    },
+                                ],
+                            })(<Select
+                                style={{ width: '100%', borderRadius: '8px !important' }}
+                                placeholder="请选择供应商"
+                                showSearch
+                                allowClear
+                                onChange={this.handleGysChange}
+                                open={isSelectorOpen}
+                                onDropdownVisibleChange={(visible) => this.setState({ isSelectorOpen: visible })}
+                            >
+                                {
+                                    gysData?.map((item = {}, ind) => {
+                                        return <Option key={ind} value={item.id}>{item.gysmc}</Option>
+                                    })
+                                }
+                            </Select>)}
                         </Form.Item></Col>
                     </Row>
                     <Row>

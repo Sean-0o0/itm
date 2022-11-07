@@ -599,11 +599,11 @@ class TodoItems extends React.Component {
     };
     const sendModalProps = {
       isAllWindow: 1,
-      defaultFullScreen: true,
-      // width: '150rem',
-      // height: '80rem',
+      // defaultFullScreen: true,
       title: sendTitle,
-      style: { top: '10rem' },
+      width: '180rem',
+      height: '134.2rem',
+      style: {top: '2rem'},
       visible: sendVisible,
       footer: null,
     };

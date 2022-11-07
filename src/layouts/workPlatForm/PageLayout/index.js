@@ -308,14 +308,16 @@ class MainPageLayout extends React.PureComponent {
         icon = 'icon-detail';
       }if(text === "项目预算"){
         icon = 'icon-cash';
-      }if(text === "生命周期"){
-        icon = 'icon-work';
-      }if(text === "外包项目"){
-        icon = 'icon-system';
       }if(text === "系统管理"){
         icon = 'icon-set';
       }if(text === "统计分析"){
         icon = 'icon-barchart';
+      }
+      if(text === "生命周期管理"){
+        icon = 'icon-work';
+      }
+      if(text === "外包人员项目"){
+        icon = 'icon-system';
       }
       menuTree1.push({
         url: code,

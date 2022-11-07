@@ -69,9 +69,13 @@ const TableBox = (props) => {
                     count: tableData.length,
                     type: 'UPDATE'
                 };
-                // OperateMonthly({ ...submitData }).then(res => {
-                //     console.log(res);
-                // })
+                OperateMonthly({ ...submitData }).then(res => {
+                    if (res?.code === 1) {
+                        message.success('保存成功', 1);
+                    } else {
+                        message.error('保存失败', 1);
+                    }
+                })
                 console.log('submitData', submitData);
             }
         })

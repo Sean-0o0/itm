@@ -1,15 +1,17 @@
 import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Upload, Button, Icon, Select, Pagination } from 'antd';
-// import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import React from 'react';
 import {
     FetchQueryZBXXByXQTC,
     FetchQueryGysInZbxx,
     UpdateZbxx,
+    CreateOperateHyperLink,
+    QueryPaymentAccountList,
 } from "../../../../services/pmsServices";
-// import moment from 'moment';
-// import UploadDashBtn from './UploadDashBtn';
+const { Option } = Select;
 
 const PASE_SIZE = 10;  //关联供应商选择器分页长度
+const Loginname = localStorage.getItem("firstUserID");
 function getID() {
     function S4() {
         return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
@@ -29,7 +31,8 @@ const EditableFormRow = Form.create()(EditableRow);
 class EditableCell extends React.Component {
     state = {
         editing: false,
-        isSelectorOpen: false,
+        isGysOpen: false,
+        isSkzhOpen: false,
     };
 
     // toggleEdit = () => {
@@ -43,7 +46,7 @@ class EditableCell extends React.Component {
 
     save = e => {
         const { record, handleSave, formdecorate } = this.props;
-        formdecorate.validateFields(['glgys' + record['id'], 'gysmc' + record['id'], 'gysfkzh' + record['id']], (error, values) => {
+        formdecorate.validateFields(['glgys' + record['id'], 'gysmc' + record['id'], 'gysskzh' + record['id']], (error, values) => {
             if (error && error[e.currentTarget.id]) {
                 return;
             }
@@ -55,77 +58,33 @@ class EditableCell extends React.Component {
 
     getTitle = (dataIndex) => {
         switch (dataIndex) {
-            case 'glgys':
-                return '关联供应商';
             case 'gysmc':
                 return '供应商名称';
-            case 'gysfkzh':
-                return '供应商付款账号';
+            case 'gysskzh':
+                return '供应商收款账号';
             default:
                 break;
         }
     }
 
-    renderItem = (form, dataIndex, record, glgysdata, isSelectorOpen) => {
+    onGysChange = (v) => {
+        const { record, handleSave, formdecorate } = this.props;
+        let obj = {
+            ['gysmc' + record['id']]: v
+        }
+        handleSave({ 'id': record['id'], ...obj });
+    };
+    onSkzhChange = (v) => {
+        const { record, handleSave, formdecorate } = this.props;
+        let obj = {
+            ['gysskzh' + record['id']]: v
+        }
+        handleSave({ 'id': record['id'], ...obj });
+    };
+
+    getFormDec = (form, dataIndex, record) => {
+        const { skzhdata, gysdata } = this.props;
         switch (dataIndex) {
-            case 'glgys':
-                return form.getFieldDecorator(dataIndex + record['id'], {
-                    initialValue: record[dataIndex + record['id']],
-                })(
-                    <div onMouseDown={(e) => { e.preventDefault(); return false; }} style={{ position: 'relative' }}>
-                        <Select
-                            style={{ width: '100%', borderRadius: '8px !important' }}
-                            showSearch
-                            ref={node => (this.input = node)}
-                            placeholder="请输入关联供应商"
-                            optionFilterProp="children"
-                            key={record[dataIndex + record['id']]}
-                            defaultValue={record[dataIndex + record['id']]}
-                            onChange={(value) => {
-                                const { record, handleSave } = this.props;
-                                let arr = glgysdata?.filter((item) => item.gysmc === value);
-                                let obj = {};
-                                obj[`glgys${record['id']}`] = arr[0].gysmc;
-                                obj[`gysmc${record['id']}`] = arr[0].gysmc;
-                                obj[`gysfkzh${record['id']}`] = arr[0].fkzh;
-                                form.setFieldsValue({ ...obj });
-                                form.validateFields(['glgys' + record['id'], 'gysmc' + record['id'], 'gysfkzh' + record['id']], (error, values) => {
-                                    let newValues = {};
-                                    newValues = { ...values };
-                                    for (let i in newValues) {
-                                        if (i === 'glgys') {
-                                            newValues[i] = value;
-                                        }
-                                    }
-                                    // this.toggleEdit();
-                                    handleSave({ 'id': record['id'], ...newValues });
-                                });
-                            }}
-                            filterOption={(input, option) =>
-                                (option.props.children)?.toLowerCase().includes(input.toLowerCase())
-                            }
-                            open={isSelectorOpen}
-                            onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen: visible }); }}
-                        // dropdownStyle={{ height: '42.3rem' }}
-                        // dropdownRender={(options) => {
-                        //     return (<>
-                        //         {options}
-                        //         <div style={{ width: '100%', borderTop: '1px solid #E5E5E5', position: 'absolute', bottom: '5rem', }}></div>
-                        //         <div style={{ height: '4.46rem', lineHeight: '4.46rem', position: 'absolute', bottom: '0', right: '10px' }}>
-                        //             <Pagination size="small" simple defaultCurrent={1} total={totalRows} pageSize={PASE_SIZE} onChange={(pageNum) => {
-                        //                 fetchQueryGysInZbxx(pageNum, PASE_SIZE);
-                        //             }} />
-                        //         </div>
-                        //     </>);
-                        // }}
-                        >
-                            {
-                                glgysdata?.map((item = {}, ind) => {
-                                    return <Select.Option key={ind} value={item.gysmc}>{item.gysmc}</Select.Option>
-                                })
-                            }
-                        </Select>
-                    </div>);
             case 'gysmc':
                 return form.getFieldDecorator(dataIndex + record['id'], {
                     rules: [
@@ -133,56 +92,65 @@ class EditableCell extends React.Component {
                             required: true,
                             message: `${this.getTitle(dataIndex)}不允许空值`,
                         },
-                        {
-                            max: 100,
-                            message: '数值长度不能超过100位',
-                        },
                     ],
-                    initialValue: String(record[dataIndex + record['id']]),
-                })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
-            case 'gysfkzh':
+                    initialValue: record[dataIndex + record['id']],
+                })(
+                    <Select
+                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        placeholder="请选择供应商"
+                        onChange={this.onGysChange}
+                        showSearch
+                        open={this.state.isGysOpen}
+                        onDropdownVisibleChange={(visible) => this.setState({ isGysOpen: visible })}
+                    >
+                        {
+                            gysdata?.map((item = {}, ind) => {
+                                return <Option key={ind} value={item.gysmc}>{item.gysmc}</Option>
+                            })
+                        }
+                    </Select>
+                );
+            case 'gysskzh':
                 return form.getFieldDecorator(dataIndex + record['id'], {
                     rules: [
                         {
                             required: true,
                             message: `${this.getTitle(dataIndex)}不允许空值`,
                         },
-                        {
-                            max: 30,
-                            message: '数值长度不能超过30位',
-                        },
-                        {
-                            pattern: /^[0-9]*$/,
-                            message: '供应商付款账号只能为数字'
-                        },
                     ],
                     initialValue: String(record[dataIndex + record['id']]),
-                })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save} />)
+                })(
+                    <Select
+                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        placeholder="请选择供应商收款账号"
+                        onChange={this.onSkzhChange}
+                        showSearch
+                        open={this.state.isSkzhOpen}
+                        onDropdownVisibleChange={(visible) => this.setState({ isSkzhOpen: visible })}
+                    >
+                        {
+                            skzhdata?.map((item = {}, ind) => {
+                                return <Option key={ind} value={item.khmc}>
+                                    {item.khmc}
+                                    {this.state.isSkzhOpen && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>}
+                                </Option>
+                            })
+                        }
+                    </Select>
+                );
             default:
                 return <Input style={{ textAlign: 'center' }}
                     ref={node => (this.input = node)}
                     onPressEnter={this.save}
                     onBlur={this.save} />;
         }
-    }
+    };
 
     renderCell = form => {
-        // this.form = form;
-        const { children, dataIndex, record, glgysdata, formdecorate } = this.props;
-        // console.log("🚀 ~ file: index.js ~ line 62 ~ EditableCell ~ this.props", this.props)
-        const { editing, isSelectorOpen } = this.state;
-        return (true ? (
-            <Form.Item style={{ margin: 0 }}>
-                {this.renderItem(formdecorate, dataIndex, record, glgysdata, isSelectorOpen)}
-            </Form.Item>) : (
-            <div
-                className="editable-cell-value-wrap"
-            // onClick={this.toggleEdit}
-            >
-                {children}
-            </div>
-        )
-        );
+        const { children, dataIndex, record, formdecorate } = this.props;
+        return <Form.Item style={{ margin: 0 }}>
+            {this.getFormDec(formdecorate, dataIndex, record)}
+        </Form.Item>
     };
     render() {
         const {
@@ -216,7 +184,7 @@ class BidInfoUpdate extends React.Component {
             zbgys: '',
             tbbzj: '',
             lybzj: '',
-            zbgysfkzh: '',
+            zbgysskzh: '',
             pbbg: '',
         },
         glgys: [],
@@ -233,12 +201,17 @@ class BidInfoUpdate extends React.Component {
         pbbgTurnRed: false,
         tableData: [],    //其他供应商表格表格
         selectedRowIds: [],
-        isSelectorOpen: false,
+        isSelectorOpen1: false,
+        isSelectorOpen2: false,
+        addGysModalVisible: false,
+        addSkzhModalVisible: false,
+        addGysModalUrl: '',
+        addSkzhModal: '',
+        skzhData: [], //收款账号
     }
 
     componentDidMount() {
-        this.fetchQueryZBXXByXQTC();
-        this.fetchQueryGysInZbxx(1, PASE_SIZE);
+        this.fetchQueryPaymentAccountList();
     }
 
     // 获取招标信息
@@ -250,10 +223,10 @@ class BidInfoUpdate extends React.Component {
             let rec = res.record;
             this.setState({
                 bidInfo: {
-                    zbgys: rec[0].zbgys,
+                    zbgys: this.state.glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
                     tbbzj: Number(rec[0].tbbzj),
                     lybzj: Number(rec[0].lybzj),
-                    zbgysfkzh: rec[0].zbgysfkzh,
+                    zbgysskzh: this.state.skzhData.filter(x => x.id === rec[0].zbgysfkzh)[0]?.khmc || '',
                     pbbg: rec[0].pbbg,
                 },
                 uploadFileParams: {
@@ -285,9 +258,8 @@ class BidInfoUpdate extends React.Component {
                 let id = getID();
                 arr.push({
                     id,
-                    [`glgys${id}`]: rec[i].gysmc,
-                    [`gysmc${id}`]: rec[i].gysmc,
-                    [`gysfkzh${id}`]: rec[i].gysfkzh,
+                    [`gysmc${id}`]: this.state.glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+                    [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
                 });
             }
             this.setState({
@@ -306,15 +278,27 @@ class BidInfoUpdate extends React.Component {
             pageSize,
             total: -1,
         }).then(res => {
-            let rec = res.record;
-            this.setState({
-                // bidInfo: {
-                //     ...this.state.bidInfo,
-                //     glgys: rec,
-                //     totalRows: res.totalrows
-                // }
-                glgys: rec
-            });
+            if (res.success) {
+                let rec = res.record;
+                this.setState({
+                    glgys: [...rec]
+                });
+                this.fetchQueryZBXXByXQTC();
+            }
+        });
+    }
+
+    fetchQueryPaymentAccountList = () => {
+        QueryPaymentAccountList({
+            type: 'ALL',
+        }).then(res => {
+            if (res.success) {
+                let rec = res.record;
+                this.setState({
+                    skzhData: [...rec]
+                });
+                this.fetchQueryGysInZbxx(1, PASE_SIZE);
+            }
         });
     }
 
@@ -336,7 +320,7 @@ class BidInfoUpdate extends React.Component {
         this.setState({ tableData: dataSource });
     };
     handleTableSave = row => {
-        // console.log("🚀 ~ file: index.js ~ line 337 ~ BidInfoUpdate ~ row", row)
+        console.log("🚀row", row)
         const newData = [...this.state.tableData];
         const index = newData.findIndex(item => row.id === item.id);
         const item = newData[index];
@@ -345,18 +329,44 @@ class BidInfoUpdate extends React.Component {
             ...row,
         });
         this.setState({ tableData: newData }, () => {
-            // console.log("🚀 ~ file: index.js ~ line 297 ~ BidInfoUpdate ~ this.setState ~ this.state.tableData", this.state.tableData)
+            console.log('tableData', this.state.tableData);
         });
     };
 
-    handleGysChange = (name) => {
-        const { glgys } = this.state;
-        const { setFieldsValue } = this.props.form;
-        let arr = glgys.filter((item) => item.gysmc === name);
-        setFieldsValue({
-            'zbgys': arr[0].gysmc,
-            'zbgysfkzh': arr[0].fkzh
+    getUrl = (objName, optName, stateUrl) => {
+        const params = {
+            "attribute": 0,
+            "authFlag": 0,
+            "objectName": objName,
+            "operateName": optName,
+            "parameter": [],
+            "userId": Loginname
+        }
+        CreateOperateHyperLink(params).then((ret = {}) => {
+            const { code, url } = ret;
+            if (code === 1) {
+                this.setState({
+                    [stateUrl]: url,
+                }, () => {
+                    console.log(this.state[stateUrl]);
+                });
+            }
+        }).catch((error) => {
+            message.error(!error.success ? error.message : error.note);
         });
+    }
+
+    handleGysChange = (name) => {
+        // const { glgys } = this.state;
+        // const { setFieldsValue } = this.props.form;
+        // let arr = glgys.filter((item) => item.gysmc === name);
+        // setFieldsValue({
+        //     'zbgys': arr[0].gysmc,
+        //     'zbgysskzh': arr[0].fkzh
+        // });
+    }
+    handleSkzhChange = (id) => {
+        // console.log(id);
     }
     render() {
         const {
@@ -365,11 +375,17 @@ class BidInfoUpdate extends React.Component {
             tableData,
             bidInfo,
             selectedRowIds,
-            isSelectorOpen,
+            isSelectorOpen1,
+            isSelectorOpen2,
             uploadFileParams,
             fileList,
             pbbgTurnRed,
             glgys,
+            addGysModalVisible,
+            addSkzhModalVisible,
+            addGysModalUrl,
+            addSkzhModalUrl,
+            skzhData,
         } = this.state;
         const { currentXmid, currentXmmc, bidInfoModalVisible, closeBidInfoModal } = this.props;
         const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
@@ -384,26 +400,17 @@ class BidInfoUpdate extends React.Component {
         };
         const tableColumns = [
             {
-                title: '关联供应商',
-                dataIndex: 'glgys',
-                key: 'glgys',
-                // ellipsis: true,
-                editable: true,
-            },
-            {
                 title: <><span style={{ color: 'red' }}>*</span>供应商名称</>,
                 dataIndex: 'gysmc',
-                // width: 125,
                 key: 'gysmc',
-                // ellipsis: true,
+                ellipsis: true,
                 editable: true,
             },
             {
-                title: <><span style={{ color: 'red' }}>*</span>供应商付款账号</>,
-                dataIndex: 'gysfkzh',
-                // width: 226,
-                key: 'gysfkzh',
-                // ellipsis: true,
+                title: <><span style={{ color: 'red' }}>*</span>供应商收款账号</>,
+                dataIndex: 'gysskzh',
+                key: 'gysskzh',
+                ellipsis: true,
                 editable: true,
             },
             {
@@ -417,7 +424,7 @@ class BidInfoUpdate extends React.Component {
                         <Popconfirm title="确定要删除吗?" onConfirm={() => {
                             return this.handleSingleDelete(record.id)
                         }}>
-                            <a style={{color: '#1890ff'}}>删除</a>
+                            <a style={{ color: '#1890ff' }}>删除</a>
                         </Popconfirm>
                     ) : null,
             }
@@ -435,9 +442,8 @@ class BidInfoUpdate extends React.Component {
                         dataIndex: col.dataIndex,
                         handleSave: this.handleTableSave,
                         key: col.key,
-                        glgysdata: glgys,
-                        // totalrows: bidInfo?.totalRows,
-                        // fetchquerygysinzbxx: this.fetchQueryGysInZbxx,
+                        gysdata: [...glgys],
+                        skzhdata: [...skzhData],
                         formdecorate: this.props.form,
                     })
                 },
@@ -450,8 +456,35 @@ class BidInfoUpdate extends React.Component {
                 cell: EditableCell,
             },
         };
-        // console.log(bidInfo);
+        const addGysModalProps = {
+            isAllWindow: 1,
+            // defaultFullScreen: true,
+            title: '新增供应商',
+            width: '120rem',
+            height: '90rem',
+            style: { top: '20rem' },
+            visible: addGysModalVisible,
+            footer: null,
+        };
+        const addSkzhModalProps = {
+            isAllWindow: 1,
+            // defaultFullScreen: true,
+            title: '新增收款账号',
+            width: '120rem',
+            height: '90rem',
+            style: { top: '20rem' },
+            visible: addSkzhModalVisible,
+            footer: null,
+        };
         return (<>
+            {addGysModalVisible &&
+                <BridgeModel modalProps={addGysModalProps}
+                    onCancel={() => this.setState({ addGysModalVisible: false })}
+                    src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'} />}
+            {addSkzhModalVisible &&
+                <BridgeModel modalProps={addSkzhModalProps}
+                    onCancel={() => this.setState({ addSkzhModalVisible: false })}
+                    src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_SKZH_ADD&Table=View_SKZH '} />}
             {isTableFullScreen &&
                 <Modal title={null} footer={null} width={'100vw'}
                     visible={isTableFullScreen}
@@ -472,7 +505,7 @@ class BidInfoUpdate extends React.Component {
                         <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
                             let arrData = tableData;
                             let id = getID();
-                            arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysfkzh${id}`]: '' });
+                            arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysskzh${id}`]: '' });
                             this.setState({ tableData: arrData }, () => {
                                 let table1 = document.querySelectorAll(`.tableBox1 .ant-table-body`)[0];
                                 table1.scrollTop = table1.scrollHeight;
@@ -515,6 +548,7 @@ class BidInfoUpdate extends React.Component {
                 </Modal>}
             <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1000px'}
                 maskClosable={false}
+                zIndex={100}
                 cancelText={'关闭'}
                 style={isModalFullScreen ? {
                     maxWidth: "100vw",
@@ -535,31 +569,23 @@ class BidInfoUpdate extends React.Component {
                         if (fileList.length !== 0) {//评标报告不为空
                             if (!err) {//表单部分必填不为空
                                 let arr = [...tableData];
-                                arr.forEach(item => {
-                                    for (let i in item) {
-                                        item[i] = String(item[i]);
-                                    }
-                                });
                                 let newArr = [];
                                 arr.map((item) => {
                                     let obj = {
-                                        GYSMC: item[`gysmc${item.id}`],
-                                        GYSFKZH: item[`gysfkzh${item.id}`]
+                                        GYSMC: String(glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
+                                        GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
                                     };
                                     newArr.push(obj);
                                 });
                                 newArr.push({});
-                                // console.log('bgsj', newArr);
-                                const { zbgys, tbbzj, lybzj, zbgysfkzh, pbbg } = bidInfo;
+                                const { zbgys, tbbzj, lybzj, zbgysskzh, pbbg } = bidInfo;
                                 const { columnName, documentData, fileLength, fileName, filePath, id, objectName } = uploadFileParams;
-                                // console.log('doc',documentData);
                                 let submitdata = {
                                     columnName: 'PBBG',
-                                    // czr_id: Number(id),
                                     documentData,
                                     fileLength,
                                     glgys: 0,
-                                    gysfkzh: String(getFieldValue('zbgysfkzh')),
+                                    gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
                                     ijson: JSON.stringify(newArr),
                                     lybzj: Number(getFieldValue('lybzj')),
                                     objectName: 'TXMXX_ZBXX',
@@ -567,9 +593,9 @@ class BidInfoUpdate extends React.Component {
                                     rowcount: tableData.length,
                                     tbbzj: Number(getFieldValue('tbbzj')),
                                     xmmc: Number(currentXmid),
-                                    zbgys: getFieldValue('zbgys'),
+                                    zbgys: Number(glgys?.filter(x => x.gysmc === getFieldValue('zbgys'))[0]?.id || ''),
                                 };
-                                // console.log("🚀 ~ file: index.js ~ line 588 ~ BidInfoUpdate ~ render ~ submitdata", submitdata)
+                                console.log("🚀submitdata", submitdata);
                                 UpdateZbxx({
                                     ...submitdata
                                 }).then(res => {
@@ -613,75 +639,45 @@ class BidInfoUpdate extends React.Component {
                                 borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px'
                             }}>{currentXmmc}</div>
                         </Form.Item> </Col>
-                        <Col span={12}> <Form.Item label="关联供应商" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            <div style={{ position: 'relative' }}>
+                        <Col span={11}> <Form.Item label="中标供应商" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                            {getFieldDecorator('zbgys', {
+                                initialValue: String(bidInfo?.zbgys),
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '中标供应商不允许空值',
+                                    },
+                                ],
+                            })(
                                 <Select
                                     style={{ width: '100%', borderRadius: '8px !important' }}
                                     showSearch
-                                    placeholder="请输入关联供应商"
+                                    placeholder="请选择中标供应商"
                                     optionFilterProp="children"
-                                    key={bidInfo?.zbgys}
-                                    defaultValue={bidInfo?.zbgys}
                                     onChange={this.handleGysChange}
                                     filterOption={(input, option) =>
                                         (option.props.children)?.toLowerCase().includes(input.toLowerCase())
                                     }
-                                    open={isSelectorOpen}
-                                    onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen: visible }); }}
-                                // dropdownStyle={{ height: '42.3rem' }}
-                                // dropdownRender={(options) => {
-                                //     return (<>
-                                //         {options}
-                                //         <div style={{ width: '100%', borderTop: '1px solid #E5E5E5', position: 'absolute', bottom: '5rem', }}></div>
-                                //         <div style={{ height: '4.46rem', lineHeight: '4.46rem', position: 'absolute', bottom: '0', right: '10px' }} onMouseDown={e => e.preventDefault()}>
-                                //             <Pagination size="small" simple defaultCurrent={1} total={bidInfo?.totalRows} pageSize={PASE_SIZE} onChange={(pageNum) => {
-                                //                 this.fetchQueryGysInZbxx(pageNum, PASE_SIZE);
-                                //             }} />
-                                //         </div>
-                                //     </>);
-                                // }}
+                                    open={isSelectorOpen1}
+                                    onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen1: visible }); }}
                                 >
                                     {
                                         glgys.map((item = {}, ind) => {
                                             return <Select.Option key={ind} value={item.gysmc}>{item.gysmc}</Select.Option>
                                         })
                                     }
-                                </Select></div>
+                                </Select>)}
                         </Form.Item>
                         </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}> <Form.Item label="供应商名称" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('zbgys', {
-                                initialValue: bidInfo?.zbgys,
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '供应商名称不允许空值',
-                                    },
-                                    {
-                                        max: 100,
-                                        message: '数值长度不能超过100位',
-                                    },
-                                ],
-                            })(<Input placeholder="请输入供应商名称" />)}
-                        </Form.Item>
+                        <Col span={1} style={{}}>
+                            <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                                onClick={() => {
+                                    this.getUrl('View_GYSXX_ADD', 'View_GYSXX', 'addGysModalUrl');
+                                    this.setState({ addGysModalVisible: true });
+                                }}
+                                alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                            />
                         </Col>
-                        <Col span={12}><Form.Item label="投标保证金（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('tbbzj', {
-                                initialValue: String(bidInfo?.tbbzj),
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '投标保证金（元）不允许空值',
-                                    },
-                                    {
-                                        pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
-                                        message: '最多不超过13位数字且小数点后数字不超过2位'
-                                    },
-                                ],
-                            })(<Input placeholder="请输入投标保证金（元）" />)}
-                        </Form.Item> </Col>
                     </Row>
                     <Row>
                         <Col span={12}><Form.Item label="履约保证金金额（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
@@ -699,28 +695,65 @@ class BidInfoUpdate extends React.Component {
                                 ],
                             })(<Input placeholder="请输入履约保证金金额（元）" />)}
                         </Form.Item> </Col>
-                        <Col span={12}><Form.Item label="供应商付款账号" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('zbgysfkzh', {
-                                initialValue: String(bidInfo?.zbgysfkzh),
+                        <Col span={11}><Form.Item label="供应商收款账号" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                            {getFieldDecorator('zbgysskzh', {
+                                initialValue: String(bidInfo?.zbgysskzh),
                                 rules: [
                                     {
                                         required: true,
-                                        message: '供应商付款账号不允许空值',
-                                    },
-                                    {
-                                        max: 30,
-                                        message: '数值长度不能超过30位',
-                                    },
-                                    {
-                                        pattern: /^[0-9]*$/,
-                                        message: '供应商付款账号只能为数字'
+                                        message: '供应商收款账号不允许空值',
                                     },
                                 ],
-                            })(<Input placeholder="请输入供应商付款账号" />)}
+                            })(<Select
+                                style={{ width: '100%', borderRadius: '8px !important' }}
+                                showSearch
+                                placeholder="请选择供应商收款账号"
+                                optionFilterProp="children"
+                                onChange={this.handleSkzhChange}
+                                filterOption={(input, option) =>
+                                    (option.props.children)?.toLowerCase().includes(input.toLowerCase())
+                                }
+                                open={isSelectorOpen2}
+                                onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen2: visible }); }}
+                            >
+                                {
+                                    skzhData?.map((item = {}, ind) => {
+                                        return <Select.Option key={ind} value={item.khmc}>
+                                            {item.khmc}
+                                            {isSelectorOpen2 && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>}
+                                        </Select.Option>
+                                    })
+                                }
+                            </Select>)}
                         </Form.Item> </Col>
+                        <Col span={1}>
+                            <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                                onClick={() => {
+                                    this.getUrl('View_SKZH_ADD', 'View_SKZH', 'addSkzhModalUrl');
+                                    this.setState({ addSkzhModalVisible: true });
+                                }}
+                                alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                            />
+                        </Col>
                     </Row>
                     <Row>
-                        <Col span={12}> <Form.Item label="评标报告" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
+                        <Col span={12}><Form.Item label="投标保证金（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                            {getFieldDecorator('tbbzj', {
+                                initialValue: String(bidInfo?.tbbzj),
+                                rules: [
+                                    {
+                                        required: true,
+                                        message: '投标保证金（元）不允许空值',
+                                    },
+                                    {
+                                        pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                                        message: '最多不超过13位数字且小数点后数字不超过2位'
+                                    },
+                                ],
+                            })(<Input placeholder="请输入投标保证金（元）" />)}
+                        </Form.Item>
+                        </Col>
+                        <Col span={11}> <Form.Item label="评标报告" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
                             required
                             help={pbbgTurnRed ? '评标报告不允许空值' : ''}
                             validateStatus={pbbgTurnRed ? 'error' : 'success'}
@@ -800,7 +833,7 @@ class BidInfoUpdate extends React.Component {
                                         <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
                                             let arrData = tableData;
                                             let id = getID();
-                                            arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysfkzh${id}`]: '' });
+                                            arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysskzh${id}`]: '' });
                                             this.setState({ tableData: arrData }, () => {
                                                 let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
                                                 table2.scrollTop = table2.scrollHeight;

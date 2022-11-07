@@ -30,6 +30,7 @@ const {
     digitalSpecialClassWeeklyReportExcel,
     digitalSpecialClassMonthReportExcel,
     queryUserInfo,
+    queryPaymentAccountList,
   },
 } = api;
 
@@ -285,6 +286,16 @@ export async function DigitalSpecialClassMonthReportExcel(payload) {
 export async function QueryUserInfo(payload) {
   const option = {
     url: queryUserInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询收款账户
+export async function QueryPaymentAccountList(payload) {
+  const option = {
+    url: queryPaymentAccountList,
     method: 'post',
     data: payload,
   };

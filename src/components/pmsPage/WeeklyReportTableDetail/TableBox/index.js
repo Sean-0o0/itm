@@ -89,7 +89,11 @@ const TableBox = (props) => {
                     type: 'UPDATE'
                 };
                 OperateSZHZBWeekly({ ...submitData }).then(res => {
-                    console.log(res);
+                    if (res?.code === 1) {
+                        message.success('保存成功', 1);
+                    } else {
+                        message.error('保存失败', 1);
+                    }
                 })
                 console.log('submitData', submitData);
             }
@@ -111,7 +115,6 @@ const TableBox = (props) => {
         }).catch(e=>{
             message.error('操作失败', 1);
         })
-        // console.log('sendBackData', sendBackData);
     };
     const handleDelete = (id) => {
         let deleteData = {
@@ -153,7 +156,6 @@ const TableBox = (props) => {
                 }).catch(e=>{
                     message.error('操作失败', 1);
                 })
-                // console.log('skipCurWeekData', skipCurWeekData);
             }   
         });
     }

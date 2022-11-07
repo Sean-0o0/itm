@@ -722,11 +722,11 @@ class LifeCycleManagementTabs extends React.Component {
     };
     const sendModalProps = {
       isAllWindow: 1,
-      defaultFullScreen: true,
-      // width: '150rem',
-      // height: '100rem',
+      // defaultFullScreen: true,
       title: sendTitle,
-      style: { top: '10rem' },
+      width: '180rem',
+      height: '134.2rem',
+      style: {top: '2rem'},
       visible: sendVisible,
       footer: null,
     };
@@ -884,7 +884,7 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                        <a style={{ color: 'rgba(51, 97, 255, 1)' }}
                           className="iconfont icon-edit" onClick={() => {
                               // const { userId, loginUserId } = this.props;
                               if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {

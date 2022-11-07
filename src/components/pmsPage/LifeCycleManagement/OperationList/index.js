@@ -133,10 +133,11 @@ class OperationList extends React.Component {
       <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px', fontSize: '2.083rem' }}>
         <Input.Group compact>
           <div onMouseDown={(e) => { e.preventDefault() }} style={{ position: 'relative' }} className="operationListSelectBox">
-            <span
-              style={{ backgroundColor: '#c0c4cc', width:'5px', height:'18px', borderRadius: '4px', display:'inline-block', verticalAlign: 'text-top' }}
-            ></span>
+            <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}
+              alt='' style={{ marginBottom: '4px', height: '18px', cursor: 'pointer' }}
+            />
             <Select
+              ref={this.selectRef}
               style={{ width: '34rem', borderRadius: '8px !important' }}
               showSearch
               placeholder="请选择项目名称"
@@ -149,22 +150,22 @@ class OperationList extends React.Component {
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               open={open}
-              onDropdownVisibleChange={(visible) => { this.setState({ open: visible }); }}
-              // dropdownStyle={{ height: '355px' }}
-              // dropdownRender={(options) => {
-              //   return (<>
-              //     {options}
-              //     <div style={{ display: 'flex', height: '4.46rem', lineHeight: '4.46rem', position: 'absolute', bottom: '0' }}>
-              //       <span style={{ padding: '0 2.381rem', lineHeight: '4.46rem' }}>共 {totalRows} 条</span>
-              //       <Pagination size="small" simple current={currentPageNum} defaultCurrent={DEFAULT_CURRENT} total={totalRows} pageSize={PASE_SIZE} onChange={(pageNum) => {
-              //         this.setState({
-              //           currentPageNum: pageNum,
-              //         });
-              //         fetchQueryOwnerProjectList(pageNum, PASE_SIZE);
-              //       }} />
-              //     </div>
-              //   </>);
-              // }}
+              onDropdownVisibleChange={(visible) => { this.setState({ open: visible }) }}
+            // dropdownStyle={{ height: '355px' }}
+            // dropdownRender={(options) => {
+            //   return (<>
+            //     {options}
+            //     <div style={{ display: 'flex', height: '4.46rem', lineHeight: '4.46rem', position: 'absolute', bottom: '0' }}>
+            //       <span style={{ padding: '0 2.381rem', lineHeight: '4.46rem' }}>共 {totalRows} 条</span>
+            //       <Pagination size="small" simple current={currentPageNum} defaultCurrent={DEFAULT_CURRENT} total={totalRows} pageSize={PASE_SIZE} onChange={(pageNum) => {
+            //         this.setState({
+            //           currentPageNum: pageNum,
+            //         });
+            //         fetchQueryOwnerProjectList(pageNum, PASE_SIZE);
+            //       }} />
+            //     </div>
+            //   </>);
+            // }}
             >
               {
                 data?.map((item = {}, ind) => {
@@ -187,7 +188,7 @@ class OperationList extends React.Component {
               <Progress style={{ marginLeft: '8px' }} percent={Number(projectInfo?.xmjd)} strokeColor='#3361FF' showInfo={false} />
             </div>, 'pie-chart')}
           {this.getReactNode('项目标签',
-            <div style={{ display: 'flex'}}>
+            <div style={{ display: 'flex' }}>
               {(projectInfo?.zdxm === '1') && this.getTag('重点项目')}
               {(projectInfo?.zyxm === '1') && this.getTag('自研项目')}
               {(projectInfo?.ddxm === '1') && this.getTag('迭代项目')}

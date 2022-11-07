@@ -245,7 +245,7 @@ class WorkBench extends React.Component {
                 background: 'white'
               }}>
                 <div style={{height: '100%'}}>
-                  <FastFunction/>
+                  <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}/>
                 </div>
               </div>
             </Col>
