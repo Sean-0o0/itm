@@ -1,4 +1,4 @@
-import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Upload, Button, Icon, Select, Pagination } from 'antd';
+import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Upload, Button, Icon, Select, Pagination, Spin, Radio } from 'antd';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import React from 'react';
 import {
@@ -8,6 +8,7 @@ import {
     CreateOperateHyperLink,
     QueryPaymentAccountList,
 } from "../../../../services/pmsServices";
+import RadioGroup from 'antd/lib/radio/group';
 const { Option } = Select;
 
 const PASE_SIZE = 10;  //关联供应商选择器分页长度
@@ -208,6 +209,9 @@ class BidInfoUpdate extends React.Component {
         addGysModalUrl: '',
         addSkzhModal: '',
         skzhData: [], //收款账号
+        staticSkzhData: [],
+        isSpinning: true, //弹窗加载状态
+        radioValue: 1, //单选，默认1->公共账户
     }
 
     componentDidMount() {
@@ -263,7 +267,8 @@ class BidInfoUpdate extends React.Component {
                 });
             }
             this.setState({
-                tableData: [...this.state.tableData, ...arr]
+                tableData: [...this.state.tableData, ...arr],
+                isSpinning: false
             });
         });
     };
@@ -295,7 +300,8 @@ class BidInfoUpdate extends React.Component {
             if (res.success) {
                 let rec = res.record;
                 this.setState({
-                    skzhData: [...rec]
+                    skzhData: [...rec],
+                    staticSkzhData: [...rec]
                 });
                 this.fetchQueryGysInZbxx(1, PASE_SIZE);
             }
@@ -333,40 +339,48 @@ class BidInfoUpdate extends React.Component {
         });
     };
 
-    getUrl = (objName, optName, stateUrl) => {
-        const params = {
-            "attribute": 0,
-            "authFlag": 0,
-            "objectName": objName,
-            "operateName": optName,
-            "parameter": [],
-            "userId": Loginname
-        }
-        CreateOperateHyperLink(params).then((ret = {}) => {
-            const { code, url } = ret;
-            if (code === 1) {
+    OnGysSuccess = () => {
+        this.setState({ addGysModalVisible: false });
+        FetchQueryGysInZbxx({
+            // paging: 1,
+            paging: -1,
+            sort: "",
+            current: 1,
+            pageSize: 10,
+            total: -1,
+        }).then(res => {
+            if (res.success) {
+                let rec = res.record;
                 this.setState({
-                    [stateUrl]: url,
-                }, () => {
-                    console.log(this.state[stateUrl]);
+                    glgys: [...rec]
                 });
             }
-        }).catch((error) => {
-            message.error(!error.success ? error.message : error.note);
         });
     }
-
-    handleGysChange = (name) => {
-        // const { glgys } = this.state;
-        // const { setFieldsValue } = this.props.form;
-        // let arr = glgys.filter((item) => item.gysmc === name);
-        // setFieldsValue({
-        //     'zbgys': arr[0].gysmc,
-        //     'zbgysskzh': arr[0].fkzh
-        // });
+    OnSkzhSuccess = () => {
+        this.setState({ addSkzhModalVisible: false });
+        QueryPaymentAccountList({
+            type: 'ALL',
+        }).then(res => {
+            if (res.success) {
+                let rec = res.record;
+                this.setState({
+                    skzhData: [...rec]
+                });
+            }
+        });
     }
-    handleSkzhChange = (id) => {
-        // console.log(id);
+    OnRadioChange = (e) => {
+        let rec = [...this.state.staticSkzhData];
+        let tempArr = rec.filter(x => {
+            let arr = x.ssr?.split(';');
+            return arr?.includes(String(this.props.loginUserId));
+        })
+        let finalArr = Number(e.target.value) === 1 ? [...rec] : [...tempArr];
+        this.setState({
+            radioValue: e.target.value,
+            skzhData: [...finalArr]
+        })
     }
     render() {
         const {
@@ -386,6 +400,8 @@ class BidInfoUpdate extends React.Component {
             addGysModalUrl,
             addSkzhModalUrl,
             skzhData,
+            isSpinning,
+            radioValue,
         } = this.state;
         const { currentXmid, currentXmmc, bidInfoModalVisible, closeBidInfoModal } = this.props;
         const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
@@ -480,10 +496,12 @@ class BidInfoUpdate extends React.Component {
             {addGysModalVisible &&
                 <BridgeModel modalProps={addGysModalProps}
                     onCancel={() => this.setState({ addGysModalVisible: false })}
+                    onSucess={this.OnGysSuccess}
                     src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'} />}
             {addSkzhModalVisible &&
                 <BridgeModel modalProps={addSkzhModalProps}
                     onCancel={() => this.setState({ addSkzhModalVisible: false })}
+                    onSucess={this.OnSkzhSuccess}
                     src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_SKZH_ADD&Table=View_SKZH '} />}
             {isTableFullScreen &&
                 <Modal title={null} footer={null} width={'100vw'}
@@ -631,261 +649,272 @@ class BidInfoUpdate extends React.Component {
                         style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
                         onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
                 </div>
-                <Form name="nest-messages" style={{ padding: '0 24px' }}>
-                    <Row>
-                        <Col span={12}><Form.Item label="项目名称" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            <div style={{
-                                width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
-                                borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px'
-                            }}>{currentXmmc}</div>
-                        </Form.Item> </Col>
-                        <Col span={11}> <Form.Item label="中标供应商" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('zbgys', {
-                                initialValue: String(bidInfo?.zbgys),
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '中标供应商不允许空值',
-                                    },
-                                ],
-                            })(
-                                <Select
+                <Spin spinning={isSpinning}>
+                    <Form name="nest-messages" style={{ padding: '0 24px' }}>
+                        <Row>
+                            <Col span={12}><Form.Item label="项目名称" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                                <div style={{
+                                    width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
+                                    borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px', fontSize: '1.867rem'
+                                }}>{currentXmmc}</div>
+                            </Form.Item> </Col>
+                            <Col span={11}> <Form.Item label="中标供应商" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                                {getFieldDecorator('zbgys', {
+                                    initialValue: String(bidInfo?.zbgys),
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '中标供应商不允许空值',
+                                        },
+                                    ],
+                                })(
+                                    <Select
+                                        style={{ width: '100%', borderRadius: '8px !important' }}
+                                        showSearch
+                                        placeholder="请选择中标供应商"
+                                        optionFilterProp="children"
+                                        onChange={this.handleGysChange}
+                                        filterOption={(input, option) =>
+                                            (option.props.children)?.toLowerCase().includes(input.toLowerCase())
+                                        }
+                                        open={isSelectorOpen1}
+                                        onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen1: visible }); }}
+                                    >
+                                        {
+                                            glgys.map((item = {}, ind) => {
+                                                return <Select.Option key={ind} value={item.gysmc}>{item.gysmc}</Select.Option>
+                                            })
+                                        }
+                                    </Select>)}
+                            </Form.Item>
+                            </Col>
+                            <Col span={1} style={{}}>
+                                <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                                    onClick={() => {
+                                        this.setState({ addGysModalVisible: true });
+                                    }}
+                                    alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}>
+                                <Form.Item label="账户范围" required labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                                    <Radio.Group value={radioValue} onChange={this.OnRadioChange}>
+                                        <Radio value={1}>公共账户</Radio>
+                                        <Radio value={2}>个人账户</Radio>
+                                    </Radio.Group>
+                                </Form.Item>
+                            </Col>
+                            <Col span={11}><Form.Item label="供应商收款账号" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                                {getFieldDecorator('zbgysskzh', {
+                                    initialValue: String(bidInfo?.zbgysskzh),
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '供应商收款账号不允许空值',
+                                        },
+                                    ],
+                                })(<Select
                                     style={{ width: '100%', borderRadius: '8px !important' }}
                                     showSearch
-                                    placeholder="请选择中标供应商"
+                                    placeholder="请选择供应商收款账号"
                                     optionFilterProp="children"
-                                    onChange={this.handleGysChange}
+                                    onChange={this.handleSkzhChange}
                                     filterOption={(input, option) =>
                                         (option.props.children)?.toLowerCase().includes(input.toLowerCase())
                                     }
-                                    open={isSelectorOpen1}
-                                    onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen1: visible }); }}
+                                    open={isSelectorOpen2}
+                                    onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen2: visible }); }}
                                 >
                                     {
-                                        glgys.map((item = {}, ind) => {
-                                            return <Select.Option key={ind} value={item.gysmc}>{item.gysmc}</Select.Option>
+                                        skzhData?.map((item = {}, ind) => {
+                                            return <Select.Option key={ind} value={item.khmc}>
+                                                {item.khmc}
+                                                {isSelectorOpen2 && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>}
+                                            </Select.Option>
                                         })
                                     }
                                 </Select>)}
-                        </Form.Item>
-                        </Col>
-                        <Col span={1} style={{}}>
-                            <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                                onClick={() => {
-                                    this.getUrl('View_GYSXX_ADD', 'View_GYSXX', 'addGysModalUrl');
-                                    this.setState({ addGysModalVisible: true });
-                                }}
-                                alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}><Form.Item label="履约保证金金额（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('lybzj', {
-                                initialValue: String(bidInfo?.lybzj),
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '履约保证金金额（元）不允许空值',
-                                    },
-                                    {
-                                        pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
-                                        message: '最多不超过13位数字且小数点后数字不超过2位'
-                                    },
-                                ],
-                            })(<Input placeholder="请输入履约保证金金额（元）" />)}
-                        </Form.Item> </Col>
-                        <Col span={11}><Form.Item label="供应商收款账号" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('zbgysskzh', {
-                                initialValue: String(bidInfo?.zbgysskzh),
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '供应商收款账号不允许空值',
-                                    },
-                                ],
-                            })(<Select
-                                style={{ width: '100%', borderRadius: '8px !important' }}
-                                showSearch
-                                placeholder="请选择供应商收款账号"
-                                optionFilterProp="children"
-                                onChange={this.handleSkzhChange}
-                                filterOption={(input, option) =>
-                                    (option.props.children)?.toLowerCase().includes(input.toLowerCase())
-                                }
-                                open={isSelectorOpen2}
-                                onDropdownVisibleChange={(visible) => { this.setState({ isSelectorOpen2: visible }); }}
+                            </Form.Item> </Col>
+                            <Col span={1}>
+                                <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                                    onClick={() => {
+                                        this.setState({ addSkzhModalVisible: true });
+                                    }}
+                                    alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}><Form.Item label="履约保证金金额（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                                {getFieldDecorator('lybzj', {
+                                    initialValue: String(bidInfo?.lybzj),
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '履约保证金金额（元）不允许空值',
+                                        },
+                                        {
+                                            pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                                            message: '最多不超过13位数字且小数点后数字不超过2位'
+                                        },
+                                    ],
+                                })(<Input placeholder="请输入履约保证金金额（元）" />)}
+                            </Form.Item> </Col>
+                            <Col span={11}><Form.Item label="投标保证金（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                                {getFieldDecorator('tbbzj', {
+                                    initialValue: String(bidInfo?.tbbzj),
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '投标保证金（元）不允许空值',
+                                        },
+                                        {
+                                            pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                                            message: '最多不超过13位数字且小数点后数字不超过2位'
+                                        },
+                                    ],
+                                })(<Input placeholder="请输入投标保证金（元）" />)}
+                            </Form.Item>
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}> <Form.Item label="评标报告" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
+                                required
+                                help={pbbgTurnRed ? '评标报告不允许空值' : ''}
+                                validateStatus={pbbgTurnRed ? 'error' : 'success'}
                             >
-                                {
-                                    skzhData?.map((item = {}, ind) => {
-                                        return <Select.Option key={ind} value={item.khmc}>
-                                            {item.khmc}
-                                            {isSelectorOpen2 && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>}
-                                        </Select.Option>
-                                    })
-                                }
-                            </Select>)}
-                        </Form.Item> </Col>
-                        <Col span={1}>
-                            <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                                onClick={() => {
-                                    this.getUrl('View_SKZH_ADD', 'View_SKZH', 'addSkzhModalUrl');
-                                    this.setState({ addSkzhModalVisible: true });
-                                }}
-                                alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}><Form.Item label="投标保证金（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
-                            {getFieldDecorator('tbbzj', {
-                                initialValue: String(bidInfo?.tbbzj),
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '投标保证金（元）不允许空值',
-                                    },
-                                    {
-                                        pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
-                                        message: '最多不超过13位数字且小数点后数字不超过2位'
-                                    },
-                                ],
-                            })(<Input placeholder="请输入投标保证金（元）" />)}
-                        </Form.Item>
-                        </Col>
-                        <Col span={11}> <Form.Item label="评标报告" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
-                            required
-                            help={pbbgTurnRed ? '评标报告不允许空值' : ''}
-                            validateStatus={pbbgTurnRed ? 'error' : 'success'}
-                        >
-                            <Upload
-                                onDownload={(file) => {
-                                    if (!file.url) {
-                                        let reader = new FileReader();
-                                        reader.readAsDataURL(file.originFileObj);
-                                        reader.onload = (e) => {
+                                <Upload
+                                    onDownload={(file) => {
+                                        if (!file.url) {
+                                            let reader = new FileReader();
+                                            reader.readAsDataURL(file.originFileObj);
+                                            reader.onload = (e) => {
+                                                var link = document.createElement('a');
+                                                link.href = e.target.result;
+                                                link.download = file.name;
+                                                link.click();
+                                                window.URL.revokeObjectURL(link.href);
+                                            }
+                                        } else {
+                                            // window.location.href=file.url;
                                             var link = document.createElement('a');
-                                            link.href = e.target.result;
+                                            link.href = file.url;
                                             link.download = file.name;
                                             link.click();
                                             window.URL.revokeObjectURL(link.href);
                                         }
-                                    } else {
-                                        // window.location.href=file.url;
-                                        var link = document.createElement('a');
-                                        link.href = file.url;
-                                        link.download = file.name;
-                                        link.click();
-                                        window.URL.revokeObjectURL(link.href);
-                                    }
 
-                                }}
-                                showUploadList={{
-                                    showDownloadIcon: true,
-                                    showRemoveIcon: true,
-                                    showPreviewIcon: true,
-                                }}
-                                onChange={(info) => {
-                                    let fileList = [...info.fileList];
-                                    fileList = fileList.slice(-1);
-                                    this.setState({ fileList }, () => {
-                                        // console.log('目前fileList', this.state.fileList);
-                                    });
-                                    if (fileList.length === 0) {
-                                        this.setState({
-                                            pbbgTurnRed: true
+                                    }}
+                                    showUploadList={{
+                                        showDownloadIcon: true,
+                                        showRemoveIcon: true,
+                                        showPreviewIcon: true,
+                                    }}
+                                    onChange={(info) => {
+                                        let fileList = [...info.fileList];
+                                        fileList = fileList.slice(-1);
+                                        this.setState({ fileList }, () => {
+                                            // console.log('目前fileList', this.state.fileList);
                                         });
-                                    } else {
-                                        this.setState({
-                                            pbbgTurnRed: false
-                                        });
-                                    }
-                                }}
-                                beforeUpload={(file, fileList) => {
-                                    // console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
-                                    let reader = new FileReader(); //实例化文件读取对象
-                                    reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                                    reader.onload = (e) => { //文件读取成功完成时触发
-                                        // console.log('文件读取成功完成时触发', e.target.result.split(','));
-                                        let urlArr = e.target.result.split(',');
-                                        this.setState({
-                                            uploadFileParams: {
-                                                ...this.state.uploadFileParams,
-                                                documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
-                                                fileName: file.name,
-                                            }
-                                        });
-                                    }
-                                }}
-                                accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
-                                fileList={[...fileList]}>
-                                <Button type="dashed">
-                                    <Icon type="upload" />点击上传
-                                </Button>
-                            </Upload>
-                        </Form.Item></Col>
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <Form.Item label={'其他投标供应商'} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-                                <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', paddingTop: '10px' }}>
-                                    <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
-                                        <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
-                                            let arrData = tableData;
-                                            let id = getID();
-                                            arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysskzh${id}`]: '' });
-                                            this.setState({ tableData: arrData }, () => {
-                                                let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
-                                                table2.scrollTop = table2.scrollHeight;
+                                        if (fileList.length === 0) {
+                                            this.setState({
+                                                pbbgTurnRed: true
                                             });
-                                        }}><img
-                                                src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                                                alt='' style={{ height: '20px', marginRight: '6px' }}
-                                            />新增</div>
-                                        <Popconfirm title="确定要删除吗?" onConfirm={() => {
-                                            if (selectedRowIds.length > 0) {
-                                                this.handleMultiDelete(selectedRowIds);
-                                                this.setState({
-                                                    selectedRowIds: []
+                                        } else {
+                                            this.setState({
+                                                pbbgTurnRed: false
+                                            });
+                                        }
+                                    }}
+                                    beforeUpload={(file, fileList) => {
+                                        // console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
+                                        let reader = new FileReader(); //实例化文件读取对象
+                                        reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
+                                        reader.onload = (e) => { //文件读取成功完成时触发
+                                            // console.log('文件读取成功完成时触发', e.target.result.split(','));
+                                            let urlArr = e.target.result.split(',');
+                                            this.setState({
+                                                uploadFileParams: {
+                                                    ...this.state.uploadFileParams,
+                                                    documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
+                                                    fileName: file.name,
+                                                }
+                                            });
+                                        }
+                                    }}
+                                    accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
+                                    fileList={[...fileList]}>
+                                    <Button type="dashed">
+                                        <Icon type="upload" />点击上传
+                                    </Button>
+                                </Upload>
+                            </Form.Item></Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <Form.Item label={'其他投标供应商'} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                                    <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', paddingTop: '10px' }}>
+                                        <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
+                                            <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
+                                                let arrData = tableData;
+                                                let id = getID();
+                                                arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysskzh${id}`]: '' });
+                                                this.setState({ tableData: arrData }, () => {
+                                                    let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
+                                                    table2.scrollTop = table2.scrollHeight;
                                                 });
-                                            } else {
-                                                message.info('请选择需要删除的数据', 1);
-                                            }
-                                        }}>
-                                            <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
-                                                src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                                                alt='' style={{ height: '20px', marginRight: '6px' }}
-                                            />删除</div>
-                                        </Popconfirm>
-                                        {/* 表格放大 */}
-                                        {/* <img
+                                            }}><img
+                                                    src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
+                                                    alt='' style={{ height: '20px', marginRight: '6px' }}
+                                                />新增</div>
+                                            <Popconfirm title="确定要删除吗?" onConfirm={() => {
+                                                if (selectedRowIds.length > 0) {
+                                                    this.handleMultiDelete(selectedRowIds);
+                                                    this.setState({
+                                                        selectedRowIds: []
+                                                    });
+                                                } else {
+                                                    message.info('请选择需要删除的数据', 1);
+                                                }
+                                            }}>
+                                                <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
+                                                    src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
+                                                    alt='' style={{ height: '20px', marginRight: '6px' }}
+                                                />删除</div>
+                                            </Popconfirm>
+                                            {/* 表格放大 */}
+                                            {/* <img
                                             src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
                                                 : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
                                             alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
                                             onClick={() => {
                                                 this.setState({ isTableFullScreen: !isTableFullScreen })
                                             }} /> */}
+                                        </div>
+                                        <div className='tableBox2'>
+                                            <Table
+                                                columns={columns}
+                                                components={components}
+                                                rowKey={record => record.id}
+                                                rowClassName={() => 'editable-row'}
+                                                dataSource={tableData}
+                                                rowSelection={rowSelection}
+                                                scroll={tableData.length > 3 ? { y: 195 } : {}}
+                                                pagination={false}
+                                                bordered
+                                                size='middle'
+                                            ></Table>
+                                        </div>
                                     </div>
-                                    <div className='tableBox2'>
-                                        <Table
-                                            columns={columns}
-                                            components={components}
-                                            rowKey={record => record.id}
-                                            rowClassName={() => 'editable-row'}
-                                            dataSource={tableData}
-                                            rowSelection={rowSelection}
-                                            scroll={tableData.length > 3 ? { y: 195 } : {}}
-                                            pagination={false}
-                                            bordered
-                                            size='middle'
-                                        ></Table>
-                                    </div>
-                                </div>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
+                </Spin>
             </Modal>
+
         </>);
     }
 

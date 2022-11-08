@@ -48,9 +48,9 @@ class FastFunction extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新建项目',
-      width: '180rem',
-      height: '134.2rem',
-      style: { top: '2rem' },
+      width: '70%',
+      height: '125rem',
+      style: { top: '5%' },
       visible: fileAddVisible,
       footer: null,
     };

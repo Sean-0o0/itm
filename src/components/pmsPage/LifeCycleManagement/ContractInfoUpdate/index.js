@@ -1,4 +1,4 @@
-import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Select } from 'antd';
+import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Select, Spin } from 'antd';
 // import { EditableProTable, ProCard, ProFormField, ProFormRadio } from '@ant-design/pro-components';
 const { Option } = Select;
 import React from 'react';
@@ -9,6 +9,7 @@ import {
 } from "../../../../services/pmsServices";
 import moment from 'moment';
 import TableFullScreen from './TableFullScreen';
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 
 const EditableContext = React.createContext();
 
@@ -205,7 +206,9 @@ class ContractInfoUpdate extends React.Component {
         isSelectorOpen: false,
         gysData: [],
         gys: '',
-        currentGysId: '', 
+        currentGysId: '',
+        addGysModalVisible: false,
+        isSpinning: true,
     }
 
     componentDidMount() {
@@ -222,10 +225,10 @@ class ContractInfoUpdate extends React.Component {
             this.setState({
                 contractInfo: { htje: Number(rec[0].htje), qsrq: rec[0].qsrq },
                 gys: rec[0].gys,
-            },()=>{
-               this.setState({
-                   currentGysId: this.state.gysData?.filter(x=>x.gysmc===rec[0].gys)[0]?.id
-               });
+            }, () => {
+                this.setState({
+                    currentGysId: this.state.gysData?.filter(x => x.gysmc === rec[0].gys)[0]?.id
+                });
             });
             let arr = [];
             for (let i = 0; i < rec.length; i++) {
@@ -239,7 +242,8 @@ class ContractInfoUpdate extends React.Component {
                 });
             }
             this.setState({
-                tableData: [...this.state.tableData, ...arr]
+                tableData: [...this.state.tableData, ...arr],
+                isSpinning: false,
             });
         });
     };
@@ -257,7 +261,7 @@ class ContractInfoUpdate extends React.Component {
                 let rec = res.record;
                 this.setState({
                     gysData: [...rec]
-                },()=>{
+                }, () => {
                     this.fetchQueryHTXXByXQTC();
                 });
             }
@@ -316,6 +320,10 @@ class ContractInfoUpdate extends React.Component {
             currentGysId: id
         })
     }
+    OnGysSuccess = () => {
+        this.setState({ addGysModalVisible: false });
+        this.fetchQueryGysInZbxx();
+    }
 
     render() {
         const {
@@ -327,6 +335,8 @@ class ContractInfoUpdate extends React.Component {
             gys,
             currentGysId,
             isSelectorOpen,
+            addGysModalVisible,
+            isSpinning,
             selectedRowIds } = this.state;
         const { currentXmid, currentXmmc, editMessageVisible, closeMessageEditModal } = this.props;
         const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
@@ -427,8 +437,23 @@ class ContractInfoUpdate extends React.Component {
                 cell: EditableCell,
             },
         };
+        const addGysModalProps = {
+            isAllWindow: 1,
+            // defaultFullScreen: true,
+            title: '新增供应商',
+            width: '120rem',
+            height: '90rem',
+            style: { top: '20rem' },
+            visible: addGysModalVisible,
+            footer: null,
+        };
 
         return (<>
+            {addGysModalVisible &&
+                <BridgeModel modalProps={addGysModalProps}
+                    onCancel={() => this.setState({ addGysModalVisible: false })}
+                    onSucess={this.OnGysSuccess}
+                    src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'} />}
             {isTableFullScreen && <TableFullScreen isTableFullScreen={isTableFullScreen}
                 setTableFullScreen={this.setTableFullScreen}
                 setTableData={this.setTableData}
@@ -443,6 +468,7 @@ class ContractInfoUpdate extends React.Component {
             <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1000px'}
                 maskClosable={false}
                 // destroyOnClose
+                zIndex={100}
                 cancelText={'关闭'}
                 style={isModalFullScreen ? {
                     maxWidth: "100vw",
@@ -539,16 +565,17 @@ class ContractInfoUpdate extends React.Component {
                         style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
                         onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
                 </div>
+                <Spin spinning={isSpinning}>
                 <Form name="nest-messages" style={{ padding: '0 24px' }}>
                     <Row>
                         <Col span={12}> <Form.Item label="项目名称" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
                             <div style={{
                                 width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
-                                borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px'
+                                borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px', fontSize: '1.867rem'
                             }}>{currentXmmc}</div>
                         </Form.Item>
                         </Col>
-                        <Col span={12}><Form.Item label="合同金额（元）" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+                        <Col span={11}><Form.Item label="合同金额（元）" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
                             {getFieldDecorator('htje', {
                                 initialValue: String(contractInfo?.htje) || '',
                                 rules: [
@@ -576,7 +603,7 @@ class ContractInfoUpdate extends React.Component {
                                 ],
                             })(<DatePicker style={{ width: '100%' }} />)}
                         </Form.Item></Col>
-                        <Col span={12}> <Form.Item label="供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+                        <Col span={11}> <Form.Item label="供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
                             {getFieldDecorator('gys', {
                                 initialValue: gys,
                                 rules: [
@@ -600,7 +627,16 @@ class ContractInfoUpdate extends React.Component {
                                     })
                                 }
                             </Select>)}
-                        </Form.Item></Col>
+                        </Form.Item>
+                        </Col>
+                        <Col span={1}>
+                            <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                                onClick={() => {
+                                    this.setState({ addGysModalVisible: true });
+                                }}
+                                alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                            />
+                        </Col>
                     </Row>
                     <Row>
                         <Col span={24}>
@@ -662,6 +698,7 @@ class ContractInfoUpdate extends React.Component {
                         </Col>
                     </Row>
                 </Form>
+                </Spin>
             </Modal>
         </>);
     }

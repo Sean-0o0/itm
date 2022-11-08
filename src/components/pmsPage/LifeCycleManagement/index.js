@@ -809,6 +809,7 @@ class LifeCycleManagementTabs extends React.Component {
           currentXmmc={currentXmmc}
           bidInfoModalVisible={bidInfoModalVisible}
           closeBidInfoModal={this.closeBidInfoModal}
+          loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
         ></BidInfoUpdate>}
 
         {/* {editMessageVisible &&
