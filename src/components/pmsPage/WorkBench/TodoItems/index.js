@@ -57,6 +57,9 @@ class TodoItems extends React.Component {
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editMessageTitle: '',
+    //人员新增提醒
+    ryxztxVisible: false,
+    ryxztxUrl: '',
     page: 1,
     date: moment(new Date()).format('YYYYMMDD'),
     flag: true,
@@ -77,6 +80,9 @@ class TodoItems extends React.Component {
     }
     if (text.sxmc.includes("流程")) {
       this.handleSend(text);
+    }
+    if (text.sxmc.includes('人员新增提醒')){
+      this.handleRyxztx(text);
     }
     if (text.sxmc.includes("文档") ||
       text.sxmc.includes("信委会") ||
@@ -122,6 +128,37 @@ class TodoItems extends React.Component {
     if (text.sxmc === "非资本性年中预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
+  }
+
+  handleRyxztx = (record)=>{
+    const params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "V_RYXXGL",
+      "operateName": "TRY_XMRY_COMFIRM",
+      "parameter": [
+        {
+          "name": "SSXM",
+          "value": record.xmid
+        },
+        {
+          "name": "RYMC",
+          "value": String(JSON.parse(sessionStorage.getItem("user")).id)
+        }
+      ],
+      "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
+    }
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const { code, message, url } = ret;
+      if (code === 1) {
+        this.setState({
+          ryxztxUrl: url,
+          ryxztxVisible: true,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   dateCellRender = (value) => {
@@ -576,6 +613,8 @@ class TodoItems extends React.Component {
       sendTitle,
       fillOutTitle,
       editMessageTitle,
+      ryxztxVisible,
+      ryxztxUrl,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
@@ -625,6 +664,16 @@ class TodoItems extends React.Component {
       title: editMessageTitle,
       style: { top: '10rem' },
       visible: editMessageVisible,
+      footer: null,
+    };
+    const ryxztxModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '40%',
+      height: '45rem',
+      title: '人员新增提醒',
+      style: { top: '10rem' },
+      visible: ryxztxVisible,
       footer: null,
     };
     return (
@@ -763,6 +812,11 @@ class TodoItems extends React.Component {
                     <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
                       onCancel={this.closeMessageEditModal}
                       src={editMessageUrl} />}
+                  {/*人员新增提醒弹窗*/}
+                  {ryxztxVisible &&
+                    <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("123")}
+                      onCancel={()=>this.setState({ryxztxVisible: false})}
+                      src={ryxztxUrl} />}
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
                     locale={{ emptyText: <Empty description={"暂无消息"} /> }} dataSource={data}
                     style={{ height: '100%' }} />
