@@ -417,8 +417,8 @@ class ProjectSchedule extends React.Component {
 
   render() {
     const { data, total, ProjectScheduleDetailData } = this.props;
-    console.log("data", data);
-    console.log("DetailData", ProjectScheduleDetailData);
+    // console.log("data", data);
+    // console.log("DetailData", ProjectScheduleDetailData);
     const {
       uploadVisible,
       editVisible,

@@ -15,6 +15,11 @@ import moment from "moment";
 const {Panel} = Collapse;
 
 class WorkBench extends React.Component {
+  constructor(props) {
+    super(props)
+    props.cacheLifecycles.didCache(this.componentDidCache)
+    props.cacheLifecycles.didRecover(this.componentDidRecover)
+  }
   state = {
     wdsl: 0,
     wzxsl: 0,
@@ -29,6 +34,16 @@ class WorkBench extends React.Component {
     ProjectScheduleTotal: 0,
   };
 
+  componentDidCache = () => {
+    // console.log('List cached')
+  }
+
+  componentDidRecover = () => {
+    this.fetchQueryAllOwnerMessage();
+    this.fetchQueryOwnerMessage();
+    this.fetchQueryOwnerWorkflow();
+    this.fetchQueryOwnerProjectList();
+  }
   componentDidMount() {
     this.fetchQueryAllOwnerMessage();
     this.fetchQueryOwnerMessage();
@@ -182,7 +197,7 @@ class WorkBench extends React.Component {
           //   item.xmid = e[i].xmid;
           // })
           recordList.push({xmid: xmid, List: record});
-          console.log("recordList", recordList);
+          // console.log("recordList", recordList);
           this.setState({
             ProjectScheduleDetailData: recordList,
           })
@@ -244,7 +259,7 @@ class WorkBench extends React.Component {
                 width: '25%',
                 background: 'white'
               }}>
-                <div style={{height: '100%'}}>
+                <div style={{height: '100%'}}> 
                   <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}/>
                 </div>
               </div>

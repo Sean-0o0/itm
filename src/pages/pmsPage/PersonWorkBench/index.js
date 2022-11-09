@@ -5,10 +5,13 @@ import WorkBench
   from '../../../components/pmsPage/WorkBench/index';
 
 class PersonWorkBench extends Component {
+  constructor(props) {
+    super(props)
+  }
   render() {
     return (
       <React.Fragment>
-        <WorkBench/>
+        <WorkBench {...this.props}/>
       </React.Fragment>
     );
   }

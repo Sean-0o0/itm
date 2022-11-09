@@ -17,6 +17,7 @@ import SpecialUrl from './specialUrl';
 import styles from './index.less';
 import ViewFile from "../../../components/pmsPage/ViewFile";
 import WpsUrl from "./WpsUrl";
+import PersonWorkBench from '../../../pages/pmsPage/PersonWorkBench';
 // import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
 
 const {Header, Sider, Content} = Layout;
@@ -461,12 +462,13 @@ class MainPageLayout extends React.PureComponent {
                     {
                       // 路由
                       routes.map(({key, path, component, keepAlive = true}) => {
+                        if( path && !path.includes('/index')){
                           return (
                             path && (
                               <CacheRoute
                                 key={key || path}
                                 when={() => {
-                                  return keepAlive;
+                                    return keepAlive;
                                 }}
                                 cacheKey={key || path}
                                 path={path}
@@ -475,7 +477,17 @@ class MainPageLayout extends React.PureComponent {
                                 component={component}
                               />
                             )
-                          );
+                          );}
+                          return  <CacheRoute key={key || path}
+                          when={() => {
+                              return keepAlive;
+                          }}
+                          cacheKey={key || path}
+                          path={path}
+                          unmount={false}
+                          saveScrollPosition
+                          render={p=><PersonWorkBench {...p}></PersonWorkBench>}
+                          />
                         }
                       )}
                     <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
