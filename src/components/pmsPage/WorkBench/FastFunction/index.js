@@ -1,4 +1,4 @@
-import { Row, Col, Carousel } from 'antd';
+import { Row, Col, Carousel, Empty, } from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import icon_01 from "../../../../image/pms/fastFunction/icon_01.png";
@@ -101,7 +101,7 @@ class FastFunction extends React.Component {
               预算提醒
             </div>
             {curSliderKey !== 0 && <img className='last-icon' onClick={() => this.sliderRef.current.prev()} src={require('../../../../image/pms/fastFunction/last@2x.png')} alt=''></img>}
-            {curSliderKey !== (sliderData?.length - 1) && <img className='next-icon' onClick={() => this.sliderRef.current.next()} src={require('../../../../image/pms/fastFunction/next@2x.png')} alt=''></img>}
+            {sliderData?.length !== 0 && curSliderKey !== (sliderData?.length - 1) && <img className='next-icon' onClick={() => this.sliderRef.current.next()} src={require('../../../../image/pms/fastFunction/next@2x.png')} alt=''></img>}
             <Carousel ref={this.sliderRef} afterChange={(e) => this.setState({ curSliderKey: e })}>
               {sliderData?.map((item, index) => {
                 return (<div className='slider-box' key={index}>
@@ -113,6 +113,7 @@ class FastFunction extends React.Component {
                 </div>)
               })}
             </Carousel>
+            {sliderData?.length === 0 && <Empty description={"暂无提醒"} imageStyle={{ height: '56px' }} />}
           </div>
           <div className='bottom-box'>
             {fileAddVisible &&
@@ -149,13 +150,13 @@ class FastFunction extends React.Component {
                 </div>
               </Col>
               <Col xs={24} sm={24} lg={24} xl={24} className='fastFun' style={{ display: 'flex', marginTop: '3.3688rem' }}>
-              <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-              onClick={() => window.location.href = `/#/UIProcessor?Table=V_YSXMTJ&hideTitlebar=true`}>
+                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
+                  onClick={() => window.location.href = `/#/UIProcessor?Table=V_YSXMTJ&hideTitlebar=true`}>
                   <div><img src={icon_08} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
                   </div>
                   <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>预算开销</div>
                 </div>
-              <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
+                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
                   onClick={() => window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`}>
                   <div><img src={icon_04} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
                   </div>
@@ -167,12 +168,11 @@ class FastFunction extends React.Component {
                   <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>周报汇总</div>
                 </div>
                 <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                onClick={() => window.location.href = `/#/UIProcessor?Table=KHJFY&hideTitlebar=true`}>
+                  onClick={() => window.location.href = `/#/UIProcessor?Table=KHJFY&hideTitlebar=true`}>
                   <div><img src={icon_07} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
                   </div>
                   <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>外包费用</div>
                 </div>
-                
               </Col>
             </Row>
           </div>
