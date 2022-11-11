@@ -1,4 +1,4 @@
-import { Collapse, Row, Col, Menu, Form, message, Modal } from 'antd';
+import {Collapse, Row, Col, Menu, Form, message, Modal, Dropdown, Popover} from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
@@ -71,6 +71,9 @@ class LifeCycleManagementTabs extends React.Component {
     weelyReportUrl: '/#/UIProcessor?Table=V_XSZHZBTX&hideTitlebar=true',
     //顶部项目信息
     projectInfo: {},
+    //多文档文件列表
+    fileList: [],
+    fileListVisible: false,
   };
 
   componentDidMount() {
@@ -301,20 +304,29 @@ class LifeCycleManagementTabs extends React.Component {
     }
   }
 
-  fetchQueryWpsWDXX = (lcbid, sxid, xmmc) => {
+  fetchQueryWpsWDXX = (item) => {
     FetchQueryWpsWDXX({
-      lcb: lcbid,
-      sxid: sxid,
+      lcb: item.lcbid,
+      sxid: item.sxid,
       xmmc: this.state.xmid
     }).then((ret = {}) => {
       const {code = 0, record = []} = ret;
       console.log("WpsWDXXData", record);
       if (code === 1) {
-        this._WpsInvoke({
-          Index: 'OpenFile',
-          // AppType:'wps',
-          filepath: record.url,
-        })
+        if (record.url.includes("[")) {
+          let obj = JSON.parse(record.url);
+          obj.push([item.sxmc])
+          this.setState({
+            fileList: obj,
+            fileListVisible: true,
+          })
+        } else {
+          this._WpsInvoke({
+            Index: 'OpenFile',
+            // AppType:'wps',
+            filepath: record.url,
+          })
+        }
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -632,7 +644,7 @@ class LifeCycleManagementTabs extends React.Component {
 
   //文件wps预览-勿删
   handleClick = (item) => {
-    this.fetchQueryWpsWDXX(item.lcbid, item.sxid, "");
+    this.fetchQueryWpsWDXX(item);
   }
 
   //文件wps预览-勿删
@@ -648,11 +660,27 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
-    const WpsClient = new WpsClientOpen.WpsClient(WpsInvoke.ClientType.wps);
+    let clientType = WpsInvoke.ClientType.wps;
+    let name = "HelloWps";
+    if (param.filepath.includes(".docx") || param.filepath.includes(".doc")) {
+      clientType = WpsInvoke.ClientType.wps;
+      name = "HelloWps";
+    }
+    if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
+      clientType = WpsInvoke.ClientType.et;
+      name = "HelloWp s-et";
+    }
+    if (param.filepath.includes(".pdf")) {
+      // clientType = WpsInvoke.ClientType.wpp;
+      // name = "HelloWps-wpp";
+      window.open(param.filepath)
+      return;
+    }
+    const WpsClient = new WpsClientOpen.WpsClient(clientType);
     //打包时修改config.js文件里的插件地址PluginsUrl。
     WpsClient.jsPluginsXml = PluginsUrl;
     WpsClient.InvokeAsHttp(
-      "HelloWps", // 组件类型
+      name, // 组件类型
       // "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
       "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
       JSON.stringify(param), // 传递给插件的数据
@@ -669,6 +697,10 @@ class LifeCycleManagementTabs extends React.Component {
       },
       true,)
   }
+
+  handleVisibleChange = visible => {
+    this.setState({fileListVisible: visible});
+  };
 
   render() {
     const {
@@ -698,6 +730,8 @@ class LifeCycleManagementTabs extends React.Component {
       xmid,
       bidInfoModalVisible,
       operationListTotalRows,
+      fileList,
+      fileListVisible,
     } = this.state;
     console.log("xmidxmid000", xmid)
     const uploadModalProps = {
@@ -774,16 +808,30 @@ class LifeCycleManagementTabs extends React.Component {
         </Menu.Item>
       </Menu>
     );
+    const content = (
+      <div>
+        {
+          fileList.map(item => item.length === 3 &&
+            <div key={item.index}>
+              <a onClick={() => this._WpsInvoke({
+                Index: 'OpenFile',
+                // AppType:'wps',
+                filepath: item[2],
+              })}>{item[1]}</a>
+            </div>
+          )}
+      </div>
+    );
     return (
-      <Row style={{ height: 'calc(100% - 4.5rem)' }}>
+      <Row style={{height: 'calc(100% - 4.5rem)'}}>
         {/*文档上传弹窗*/}
         {uploadVisible &&
-          <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-            onCancel={this.closeUploadModal}
-            src={uploadUrl} />}
+        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+                     onCancel={this.closeUploadModal}
+                     src={uploadUrl}/>}
         {/*文档修改弹窗*/}
         {editVisible &&
-          <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
             onCancel={this.closeEditModal}
             src={uploadUrl} />}
         {/*流程发起弹窗*/}
@@ -954,7 +1002,7 @@ class LifeCycleManagementTabs extends React.Component {
                                         // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
                                         marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
                                       }}>
-                                        <Col span={17} >
+                                        <Col span={17}>
                                           <div style={{display: 'flex', alignItems: 'center'}}>
                                             <Points status={item.zxqk}/>
                                             {/*根据事项类型判断是否是文档*/}
@@ -967,14 +1015,26 @@ class LifeCycleManagementTabs extends React.Component {
                                               item.swlx.includes("系统框架搭建") ||
                                               item.swlx.includes("功能开发") ||
                                               item.swlx.includes("外部系统对接") ||
-                                              item.swlx.includes("系统测试") ?
-                                                <a onClick={() => this.handleClick(item)}>{item.sxmc}</a> :
+                                              item.swlx.includes("系统测试") ? (
+                                                  fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
+                                                    <Popover
+                                                      content={content}
+                                                      title="文件列表"
+                                                      trigger="hover"
+                                                      visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
+                                                      onVisibleChange={this.handleVisibleChange}
+                                                    >
+                                                      <a>{item.sxmc}</a>
+                                                    </Popover> :
+                                                    <a onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                )
+                                                :
                                                 <span>{item.sxmc}</span>
                                             }
                                           </div>
                                           <div className='cont-row-zxqk'>{item.zxqk}</div>
                                         </Col>
-                                        <Col span={6} style={{ textAlign: 'right' }}>
+                                        <Col span={6} style={{textAlign: 'right'}}>
                                           <Tooltips type={item.swlx}
                                                     item={item}
                                                     status={item.zxqk}
