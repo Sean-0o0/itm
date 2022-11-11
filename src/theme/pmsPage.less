@@ -526,21 +526,25 @@
 .popover-filelist {
 
   // :global {
-    .ant-popover-content {
-      .ant-popover-inner {
-        .ant-popover-inner-content {
-          padding: 8px 16px;
+  .ant-popover-content {
+    .ant-popover-inner {
+      .ant-popover-inner-content {
+        padding: 8px 16px;
+        max-height: 240px;
+        overflow: hidden;
+        overflow-y: auto;
 
-          & .file-item {
-            margin-bottom: 8px;
+        & .file-item {
+          margin-bottom: 8px;
 
-            &:nth-last-child(1) {
-              margin-bottom: 0;
-            }
+          &:nth-last-child(1) {
+            margin-bottom: 0;
           }
         }
       }
     }
+  }
+
   // }
 }
 
