@@ -827,6 +827,109 @@
 }
 
 .workBench {
+  .fast-function {
+    height: 100%;
+
+    & .top-box {
+      height: 26.784rem;
+      background-color: #fff;
+      box-sizing: border-box;
+      box-shadow: #ececec 0 0.4464rem 1.488rem;
+      border-radius: 1.488rem;
+      margin-bottom: 2.232rem;
+      padding: 1.6368rem 3.712rem 0 3.5712rem;
+      position: relative;
+
+      & .title-box {
+        height: 8.3328rem;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-size: 2.3808rem;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: 600;
+        color: #303133;
+
+        & .title-icon {
+          height: 3.5712rem;
+          margin-right: 1.1904rem;
+        }
+        
+      }
+      & .last-icon {
+        height: 3.5712rem;
+        position: absolute;
+        top: 14.88rem;
+        left: 1.9344rem;
+        z-index: 2;
+      }
+      & .next-icon {
+        height: 3.5712rem;
+        position: absolute;
+        top: 14.88rem;
+        left: 48.0624rem;
+        z-index: 2;
+      }
+      & .slider-box {
+        height: 13.2432rem;
+        background-color: #FAFAFB;
+        border-radius: 1.1904rem;
+        padding: 2.3808rem;
+        z-index: 1;
+        & .title {
+          font-size: 2.0832rem;
+          font-weight: 500;
+          margin-bottom: 2.0832rem;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-weight: 600;
+          color: #333333;
+          & .title-time {
+            margin-left: auto;
+            color: #999999;
+            font-weight: 500;
+          }
+        }
+        & .content-box {
+          font-weight: 600;
+          color: #D70E19;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+        }
+      }
+
+      .ant-carousel .slick-slide {
+        overflow: hidden;
+        height: 16.8144rem;
+      }
+
+      .ant-carousel .slick-dots li button{
+        background-color: #3361FF;
+        height: 6px;
+        border-radius: 3px;
+        opacity: 0.2;
+      }
+      
+      .ant-carousel .slick-dots .slick-active button {
+        background-color: #3361FF;
+        height: 6px;
+        border-radius: 3px;
+        opacity: 1;
+      }
+    }
+
+    & .bottom-box {
+      height: 212px;
+      background-color: #fff;
+      box-sizing: border-box;
+      box-shadow: #ececec 0 3px 10px;
+      border-radius: 10px;
+      padding: 2.976rem 3.5712rem;
+    }
+  }
+
   .fastFun {
     .fastFun-head {
       //padding-left: 1rem;

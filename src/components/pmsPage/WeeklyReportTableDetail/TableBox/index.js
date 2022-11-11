@@ -1,27 +1,43 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { Button, Icon, DatePicker, Input, Table, Select, Form, message, Modal, Popconfirm } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
-import BridgeModel from "../../../Common/BasicModal/BridgeModel";
-import { CreateOperateHyperLink, DigitalSpecialClassWeeklyReportExcel, OperateSZHZBWeekly } from '../../../../services/pmsServices';
+import { OperateSZHZBWeekly, CreateOperateHyperLink, QueryUserInfo } from '../../../../services/pmsServices';
 import moment from 'moment';
 import config from '../../../../utils/config';
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 
 const { api } = config;
 const { pmsServices: { digitalSpecialClassWeeklyReportExcel } } = api;
+const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
     const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading, groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, } = props;
     // const [edited, setEdited] = useState(false);
-    const [sendBackVisable, setSendBackVisable] = useState(false);
-    const [skipCurWeekVisable, setSkipCurWeekVisable] = useState(false);
-    const [sendBackUrl, setSendBackUrl] = useState('');
-    const [skipCurWeekUrl, setSkipCurWeekUrl] = useState('');
+    const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
+    const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
+    const [authIdAData, setAuthIdData] = useState([]);//权限用户id
+
     const downloadRef = useRef(null);
 
     useEffect(() => {
         setTableLoading(true);
+        getAutnIdData();
     }, []);
 
+    const getAutnIdData = () => {
+        QueryUserInfo({
+            type: 'ZBAUTH',
+        }).then(res => {
+            if (res.success) {
+                let idArr = res.record?.map(item => {
+                    return item.id;
+                });
+                setAuthIdData(p => [...idArr]);
+            }
+        }).catch(e => {
+            // message.error('查询失败', 1);
+        })
+    };
     const handleTableSave = row => {
         const newData = [...tableData];
         const index = newData.findIndex(item => row.id === item.id);
@@ -108,11 +124,11 @@ const TableBox = (props) => {
             type: 'BACK'
         }
         OperateSZHZBWeekly({ ...sendBackData }).then(res => {
-            if(res.success){
+            if (res.success) {
                 message.success('操作成功', 1);
                 queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
             }
-        }).catch(e=>{
+        }).catch(e => {
             message.error('操作失败', 1);
         })
     };
@@ -125,11 +141,11 @@ const TableBox = (props) => {
             type: 'DELETE'
         }
         OperateSZHZBWeekly({ ...deleteData }).then(res => {
-            if(res.success){
+            if (res.success) {
                 message.success('操作成功', 1);
                 queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
             }
-        }).catch(e=>{
+        }).catch(e => {
             message.error('操作失败', 1);
         })
     };
@@ -149,14 +165,14 @@ const TableBox = (props) => {
                     type: 'SKIP'
                 }
                 OperateSZHZBWeekly({ ...skipCurWeekData }).then(res => {
-                    if(res.success){
+                    if (res.success) {
                         message.success('操作成功', 1);
                         queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
                     }
-                }).catch(e=>{
+                }).catch(e => {
                     message.error('操作失败', 1);
                 })
-            }   
+            }
         });
     }
     const handleExport = () => {
@@ -224,6 +240,19 @@ const TableBox = (props) => {
             ellipsis: true,
         },
         {
+            title: '里程碑情况',
+            dataIndex: 'lcbqk',
+            key: 'lcbqk',
+            width: 120,
+            ellipsis: true,
+            render: (text, row, index) => {
+                return <div>
+                    <a style={{ color: '#1890ff' }}
+                        onClick={() => getLcbqkModalUrl(row.id)}>详细信息</a>
+                </div>
+            },
+        },
+        {
             title: '年度规划',
             dataIndex: 'annualPlan',
             key: 'annualPlan',
@@ -280,16 +309,19 @@ const TableBox = (props) => {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
-            width: 120,
+            width: 180,
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
-                    <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
-                        <a style={{ color: '#1890ff' }}>退回</a>
-                    </Popconfirm>
-                    <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
-                        <a style={{ color: '#1890ff', marginLeft: '10px' }}>删除</a>
-                    </Popconfirm>
+                    {authIdAData?.includes(CUR_USER_ID) && (<>
+                        <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
+                            <a style={{ color: '#1890ff', marginRight: '10px' }}>退回</a>
+                        </Popconfirm>
+                        <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
+                            <a style={{ color: '#1890ff', marginRight: '10px' }}>删除</a>
+                        </Popconfirm>
+                    </>)}
+                    <a style={{ color: '#1890ff' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
                 </div>
             },
         },
@@ -318,7 +350,45 @@ const TableBox = (props) => {
             cell: EditableCell,
         },
     };
+    const lcbqkModalProps = {
+        isAllWindow: 1,
+        // defaultFullScreen: true,
+        title: '详细信息',
+        width: '60%',
+        height: '102rem',
+        style: { top: '5%' },
+        visible: lcbqkModalVisible,
+        footer: null,
+    };
+    const getLcbqkModalUrl = (id) => {
+        const params = {
+            "attribute": 0,
+            "authFlag": 0,
+            "objectName": "V_XSZHZBHZ",
+            "operateName": "V_XSZHZBHZ_VIEW",
+            "parameter": [
+                {
+                    "name": "ZBID",
+                    "value": String(id)
+                },
+            ],
+            "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
+        }
+        CreateOperateHyperLink(params).then((ret = {}) => {
+            const { code, message, url } = ret;
+            if (code === 1) {
+                setLcbqkModalUrl(url);
+                setLcbqkModalVisible(true);
+            }
+        }).catch((error) => {
+            message.error(!error.success ? error.message : error.note);
+        });
+    };
     return (<>
+        {lcbqkModalVisible &&
+            <BridgeModel modalProps={lcbqkModalProps} onSucess={() => setLcbqkModalVisible(false)}
+                onCancel={() => setLcbqkModalVisible(false)}
+                src={lcbqkModalUrl} />}
         <div className='table-box'>
             <div ref={downloadRef} style={{ display: 'none' }}></div>
             <div className='table-console'>
@@ -326,7 +396,7 @@ const TableBox = (props) => {
                 <div className='console-txt'>{dateRange.length !== 0 && dateRange[0]?.format('YYYY-MM-DD') || ''} 至 {dateRange.length !== 0 && dateRange[1]?.format('YYYY-MM-DD') || ''}</div>
                 <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
                 <Button style={{ margin: '0 1.1904rem' }} onClick={handleExport}>导出</Button>
-                <Button onClick={handleSkipCurWeek}>跳过本周</Button>
+                {authIdAData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>}
             </div>
             <div className='table-content'>
                 <Table

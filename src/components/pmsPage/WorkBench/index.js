@@ -253,15 +253,11 @@ class WorkBench extends React.Component {
               </div>
               <div style={{
                 marginLeft: '3.571rem',
-                boxSizing: 'border-box',
-                boxShadow: '#ececec 0 3px 10px',
-                borderRadius: '10px',
                 width: '25%',
-                background: 'white'
               }}>
-                <div style={{height: '100%'}}> 
+                {/* <div style={{height: '100%'}}>  */}
                   <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}/>
-                </div>
+                {/* </div> */}
               </div>
             </Col>
           </Row>

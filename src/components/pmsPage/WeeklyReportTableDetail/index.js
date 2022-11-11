@@ -117,6 +117,7 @@ export default function WeeklyReportDetail() {
             }
         })
     };
+    
     const getCurrentWeek = (date) => {
         let timeStamp = date.getTime();
         let currentDay = date.getDay();

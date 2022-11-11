@@ -3,26 +3,38 @@ import { Button, Icon, DatePicker, Input, Table, Select, Form, message, Modal, P
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import { CreateOperateHyperLink, OperateMonthly, QueryUserInfo } from '../../../../services/pmsServices';
-import moment from 'moment';
 import config from '../../../../utils/config';
 
 const { api } = config;
 const { pmsServices: { digitalSpecialClassMonthReportExcel } } = api;
+const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
     const { form, tableData, setTableData, tableLoading, setTableLoading, groupData, edited, setEdited, getCurrentWeek, monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
-    const [editingId, setEditingId] = useState('');
-    const [sendBackVisable, setSendBackVisable] = useState(false);
-    const [skipCurWeekVisable, setSkipCurWeekVisable] = useState(false);
-    const [sendBackUrl, setSendBackUrl] = useState('');
-    const [skipCurWeekUrl, setSkipCurWeekUrl] = useState('');
+    const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
+    const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
+    const [authIdAData, setAuthIdData] = useState([]);//权限用户id
     const downloadRef = useRef(null);
 
     useEffect(() => {
+        getAutnIdData();
         setTableLoading(true);
     }, []);
 
-    
+    const getAutnIdData = () => {
+        QueryUserInfo({
+            type: 'YBAUTH',
+        }).then(res => {
+            if (res.success) {
+                let idArr = res.record?.map(item => {
+                    return item.id;
+                });
+                setAuthIdData(p => [...idArr]);
+            }
+        }).catch(e => {
+            // message.error('查询失败', 1);
+        })
+    };
     const handleTableSave = row => {
         const newData = [...tableData];
         const index = newData.findIndex(item => row.id === item.id);
@@ -53,17 +65,26 @@ const TableBox = (props) => {
     const handleSubmit = () => {
         form.validateFields(err => {
             if (!err) {
-                let submitTable = tableData.map(item => {
+                let submitTable = tableData.map((item, index) => {
+                    let rowspan = getgetRowSpanCount(tableData, 'rwfl', index);
+                    if(rowspan===0){
+                        console.log('txr1',item['txr' + item.id]);
+                        item['txr' + item.id] = [...tableData[index]['txr' + item.id]];
+                    }
+                    console.log('txr2',iitem['txr' + item.id]);
+                    //填写人数据替换
+                    let txrArr = item['txr' + item.id]?.map(el=>{
+                        return txrData?.filter(x=>x.name === el)[0]?.id;
+                    })
                     return {
                         V_ID: String(item.id),
                         V_BYWCQK: String(item['bywcqk' + item.id]),
                         V_XYGZJH: String(item['xygzjh' + item.id]),
                         V_LDYJ: String(item['ldyj' + item.id]),
-                        V_TXR: item['txr' + item.id].join(';'),
+                        V_TXR: txrArr?.join(';'),
                     }
                 });
                 submitTable.push({});
-                console.log('submitTable', submitTable);
                 let submitData = {
                     json: JSON.stringify(submitTable),
                     count: tableData.length,
@@ -262,16 +283,19 @@ const TableBox = (props) => {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
-            width: 120,
+            width: 180,
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
-                    <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
-                        <a style={{ color: '#1890ff' }}>退回</a>
-                    </Popconfirm>
-                    <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
-                        <a style={{ color: '#1890ff', marginLeft: '10px' }}>删除</a>
-                    </Popconfirm>
+                    {authIdAData?.includes(CUR_USER_ID) && (<>
+                        <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
+                            <a style={{ color: '#1890ff', marginRight: '10px' }}>退回</a>
+                        </Popconfirm>
+                        <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
+                            <a style={{ color: '#1890ff', marginRight: '10px' }}>删除</a>
+                        </Popconfirm>
+                    </>)}
+                    <a style={{ color: '#1890ff' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
                 </div>
             },
         },
@@ -301,8 +325,46 @@ const TableBox = (props) => {
             cell: EditableCell,
         },
     };
+    const lcbqkModalProps = {
+        isAllWindow: 1,
+        // defaultFullScreen: true,
+        title: '详细信息',
+        width: '60%',
+        height: '80rem',
+        style: { top: '5%' },
+        visible: lcbqkModalVisible,
+        footer: null,
+    };
+    const getLcbqkModalUrl = (id) => {
+        const params = {
+            "attribute": 0,
+            "authFlag": 0,
+            "objectName": "V_YBHZ",
+            "operateName": "V_YBHZ_VIEW",
+            "parameter": [
+                {
+                    "name": "YBID",
+                    "value": String(id)
+                },
+            ],
+            "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
+        }
+        CreateOperateHyperLink(params).then((ret = {}) => {
+            const { code, message, url } = ret;
+            if (code === 1) {
+                setLcbqkModalUrl(url);
+                setLcbqkModalVisible(true);
+            }
+        }).catch((error) => {
+            message.error(!error.success ? error.message : error.note);
+        });
+    };
 
     return (<>
+    {lcbqkModalVisible &&
+            <BridgeModel modalProps={lcbqkModalProps} onSucess={() => setLcbqkModalVisible(false)}
+                onCancel={() => setLcbqkModalVisible(false)}
+                src={lcbqkModalUrl} />}
         <div className='table-box'>
             <div ref={downloadRef} style={{ display: 'none' }}></div>
             <div className='table-console'>
