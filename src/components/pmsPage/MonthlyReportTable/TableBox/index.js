@@ -66,25 +66,28 @@ const TableBox = (props) => {
         form.validateFields(err => {
             if (!err) {
                 let submitTable = tableData.map((item, index) => {
-                    let rowspan = getgetRowSpanCount(tableData, 'rwfl', index);
-                    if(rowspan===0){
-                        console.log('txr1',item['txr' + item.id]);
-                        item['txr' + item.id] = [...tableData[index]['txr' + item.id]];
+                    let rowspan = getRowSpanCount(tableData, 'rwfl', index);
+                    if (rowspan === 0) {
+                        if (index > 1) {
+                            let arr = tableData[index - 1];
+                            item['txr' + item.id] = [...arr['txr' + arr.id]];
+                            item['ldyj' + item.id] = arr['ldyj' + arr.id];
+                        }
                     }
-                    console.log('txr2',iitem['txr' + item.id]);
-                    //填写人数据替换
-                    let txrArr = item['txr' + item.id]?.map(el=>{
-                        return txrData?.filter(x=>x.name === el)[0]?.id;
-                    })
+                    // //填写人数据替换
+                    // let txrArr = item['txr' + item.id]?.map(el => {
+                    //     return txrData?.filter(x => x.name === el)[0]?.id;
+                    // })
                     return {
                         V_ID: String(item.id),
-                        V_BYWCQK: String(item['bywcqk' + item.id]),
-                        V_XYGZJH: String(item['xygzjh' + item.id]),
-                        V_LDYJ: String(item['ldyj' + item.id]),
-                        V_TXR: txrArr?.join(';'),
+                        V_BYWCQK: String(item['bywcqk' + item.id]).trim(),
+                        V_XYGZJH: String(item['xygzjh' + item.id]).trim(),
+                        V_LDYJ: String(item['ldyj' + item.id]).trim(),
+                        V_TXR: item['txr' + item.id]?.join(';'),
                     }
                 });
                 submitTable.push({});
+                console.log("🚀submitTable", submitTable)
                 let submitData = {
                     json: JSON.stringify(submitTable),
                     count: tableData.length,
@@ -110,11 +113,11 @@ const TableBox = (props) => {
             type: 'BACK'
         }
         OperateMonthly({ ...sendBackData }).then(res => {
-            if(res.success){
+            if (res.success) {
                 message.success('操作成功', 1);
-                queryTableData( Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
+                queryTableData(Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
             }
-        }).catch(e=>{
+        }).catch(e => {
             message.error('操作失败', 1);
         });
     };
@@ -127,11 +130,11 @@ const TableBox = (props) => {
             type: 'DELETE'
         }
         OperateMonthly({ ...deleteData }).then(res => {
-            if(res.success){
+            if (res.success) {
                 message.success('操作成功', 1);
-                queryTableData( Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
+                queryTableData(Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
             }
-        }).catch(e=>{
+        }).catch(e => {
             message.error('操作失败', 1);
         });
     };
@@ -361,7 +364,7 @@ const TableBox = (props) => {
     };
 
     return (<>
-    {lcbqkModalVisible &&
+        {lcbqkModalVisible &&
             <BridgeModel modalProps={lcbqkModalProps} onSucess={() => setLcbqkModalVisible(false)}
                 onCancel={() => setLcbqkModalVisible(false)}
                 src={lcbqkModalUrl} />}

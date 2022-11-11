@@ -63,9 +63,9 @@ export default function MonthlyReportTable() {
                         }
                     };
                     let arr = item.txr?.trim()===''?[]:item.txr?.trim()?.split(';');
-                    let txrArr = arr?.map(item => {
-                        return txrData?.filter(x => String(x?.id) === String(item))[0]?.name;
-                    });
+                    // let txrArr = arr?.map(item => {
+                    //     return txrData?.filter(x => String(x?.id) === String(item))[0]?.name;
+                    // });
                     return {
                         id: item.id,
                         zdgz: item.zdgz,
@@ -77,7 +77,7 @@ export default function MonthlyReportTable() {
                         ['bywcqk' + item.id]: item.bywcqk?.trim(),
                         ['xygzjh' + item.id]: item.xygzjh?.trim(),
                         ['ldyj' + item.id]: item.ldyj?.trim(),
-                        ['txr' + item.id]: [...txrArr],
+                        ['txr' + item.id]: [...arr],
                     };
                 })
                 setTableData(preState => [...newArr]);
