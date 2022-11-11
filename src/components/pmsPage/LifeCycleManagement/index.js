@@ -809,10 +809,10 @@ class LifeCycleManagementTabs extends React.Component {
       </Menu>
     );
     const content = (
-      <div>
+      <>
         {
           fileList.map(item => item.length === 3 &&
-            <div key={item.index}>
+            <div key={item.index} className="file-item">
               <a onClick={() => this._WpsInvoke({
                 Index: 'OpenFile',
                 // AppType:'wps',
@@ -820,7 +820,7 @@ class LifeCycleManagementTabs extends React.Component {
               })}>{item[1]}</a>
             </div>
           )}
-      </div>
+      </>
     );
     return (
       <Row style={{height: 'calc(100% - 4.5rem)'}}>
@@ -1021,6 +1021,7 @@ class LifeCycleManagementTabs extends React.Component {
                                                       content={content}
                                                       title="文件列表"
                                                       trigger="hover"
+                                                      overlayClassName="popover-filelist"
                                                       visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
                                                       onVisibleChange={this.handleVisibleChange}
                                                     >

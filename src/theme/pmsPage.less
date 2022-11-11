@@ -523,6 +523,27 @@
   }
 }
 
+.popover-filelist {
+
+  // :global {
+    .ant-popover-content {
+      .ant-popover-inner {
+        .ant-popover-inner-content {
+          padding: 8px 16px;
+
+          & .file-item {
+            margin-bottom: 8px;
+
+            &:nth-last-child(1) {
+              margin-bottom: 0;
+            }
+          }
+        }
+      }
+    }
+  // }
+}
+
 //生命周期
 .LifeCycleManage {
   width: 100%;
@@ -854,8 +875,9 @@
           height: 3.5712rem;
           margin-right: 1.1904rem;
         }
-        
+
       }
+
       & .last-icon {
         height: 3.5712rem;
         position: absolute;
@@ -863,6 +885,7 @@
         left: 1.9344rem;
         z-index: 2;
       }
+
       & .next-icon {
         height: 3.5712rem;
         position: absolute;
@@ -870,12 +893,14 @@
         left: 48.0624rem;
         z-index: 2;
       }
+
       & .slider-box {
         height: 13.2432rem;
         background-color: #FAFAFB;
         border-radius: 1.1904rem;
         padding: 2.3808rem;
         z-index: 1;
+
         & .title {
           font-size: 2.0832rem;
           font-weight: 500;
@@ -885,12 +910,14 @@
           align-items: center;
           font-weight: 600;
           color: #333333;
+
           & .title-time {
             margin-left: auto;
             color: #999999;
             font-weight: 500;
           }
         }
+
         & .content-box {
           font-weight: 600;
           color: #D70E19;
@@ -905,13 +932,13 @@
         height: 16.8144rem;
       }
 
-      .ant-carousel .slick-dots li button{
+      .ant-carousel .slick-dots li button {
         background-color: #3361FF;
         height: 6px;
         border-radius: 3px;
         opacity: 0.2;
       }
-      
+
       .ant-carousel .slick-dots .slick-active button {
         background-color: #3361FF;
         height: 6px;
