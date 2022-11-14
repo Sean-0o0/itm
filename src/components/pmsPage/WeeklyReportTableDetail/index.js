@@ -80,9 +80,9 @@ export default function WeeklyReportDetail() {
                         ['manager']: item.fzr.trim(),
                         ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
-                        ['curProgress' + item.id]: getCurP(item.dqjz.trim()),
+                        ['curProgress' + item.id]: item.dqjz.trim(),
                         ['curRate' + item.id]: item.dqjzszhzb.trim(),
-                        ['curStatus' + item.id]: getCurS(item.dqzt.trim()),
+                        ['curStatus' + item.id]: item.dqzt.trim(),
                         ['riskDesc' + item.id]: item.fxsm.trim(),
                         ['status']: getStatus(item.zt.trim()),
                     };

@@ -1,4 +1,4 @@
-import { Row, Col, Carousel, Empty, } from 'antd';
+import { Row, Col, Carousel, Empty, message, } from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import icon_01 from "../../../../image/pms/fastFunction/icon_01.png";
@@ -63,11 +63,6 @@ class FastFunction extends React.Component {
     });
   };
 
-  //成功回调
-  onSuccess = () => {
-
-  }
-
   render() {
     const { fileAddVisible, fileAddUrl, manageVisible, manageUrl, curSliderKey, sliderData } = this.state;
     const fileAddModalProps = {
@@ -100,9 +95,9 @@ class FastFunction extends React.Component {
               <img className='title-icon' src={require('../../../../image/pms/fastFunction/title-bell.png')} alt=''></img>
               预算提醒
             </div>
-            {curSliderKey !== 0 && <img className='last-icon' onClick={() => this.sliderRef.current.prev()} src={require('../../../../image/pms/fastFunction/last@2x.png')} alt=''></img>}
+            {sliderData?.length !== 0 && curSliderKey !== 0 && <img className='last-icon' onClick={() => this.sliderRef.current.prev()} src={require('../../../../image/pms/fastFunction/last@2x.png')} alt=''></img>}
             {sliderData?.length !== 0 && curSliderKey !== (sliderData?.length - 1) && <img className='next-icon' onClick={() => this.sliderRef.current.next()} src={require('../../../../image/pms/fastFunction/next@2x.png')} alt=''></img>}
-            <Carousel ref={this.sliderRef} afterChange={(e) => this.setState({ curSliderKey: e })}>
+            <Carousel ref={this.sliderRef} afterChange={(e) => this.setState({ curSliderKey: e })} autoplay={true}>
               {sliderData?.map((item, index) => {
                 return (<div className='slider-box' key={index}>
                   <div className='title'>
@@ -118,8 +113,8 @@ class FastFunction extends React.Component {
           <div className='bottom-box'>
             {fileAddVisible &&
               <BridgeModel modalProps={fileAddModalProps} onSucess={() => {
-                this.onSuccess();
                 this.props.fetchQueryOwnerProjectList();
+                message.success('执行成功', 1);
               }} onCancel={this.closeFileAddModal}
                 src={src_fileAdd} />}
             <Row className='workBench'>

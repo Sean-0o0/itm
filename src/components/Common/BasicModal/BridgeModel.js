@@ -1,6 +1,7 @@
 import React from 'react';
 import BasicModal from './';
-import Bridge from 'livebos-bridge'
+import Bridge from 'livebos-bridge';
+import { Spin } from 'antd';
 
 const { getThemeName, getUser } = Bridge.selectors
 
@@ -11,7 +12,8 @@ class BridgeModal extends React.Component {
     super(props);
     this.state = {
       allWindowProps: {},
-      bridge: null
+      bridge: null,
+      isSpinning: true,
     };
     this.iframeRef = React.createRef();
   }
@@ -37,13 +39,14 @@ class BridgeModal extends React.Component {
         if (cancelFlag === true) {
           this.close()
         }
-        if(success === true){
+        if (success === true) {
           onSucess();
           this.close()
         }
       })
       this.setState({
-        bridge
+        bridge,
+        isSpinning: false,
       })
     })
   }
@@ -68,7 +71,7 @@ class BridgeModal extends React.Component {
   }
 
   render() {
-    const { allWindowProps } = this.state;
+    const { allWindowProps, isSpinning } = this.state;
     const { modalProps = {}, src = '' } = this.props;
     const { isAllWindow, defaultFullScreen = false, height: defaultModalHeight } = modalProps;
     let frameHeight;
@@ -99,9 +102,12 @@ class BridgeModal extends React.Component {
       onCancel: this.close
     };
 
+    // diy-style-spin样式写于pmsPage.less里
     return (
       <BasicModal {...basicModalProps}>
-        <iframe style={{ width: '100%', borderColor: 'transparent', height: frameHeight }} ref={this.iframeRef} title='livebos' src={src} />
+        <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
+          <iframe style={{ width: '100%', borderColor: 'transparent', height: frameHeight }} ref={this.iframeRef} title='livebos' src={src} />
+        </Spin>
       </BasicModal>
     );
   }

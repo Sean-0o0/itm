@@ -649,7 +649,7 @@ class BidInfoUpdate extends React.Component {
                         style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
                         onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
                 </div>
-                <Spin spinning={isSpinning}>
+                <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
                     <Form name="nest-messages" style={{ padding: '0 24px' }}>
                         <Row>
                             <Col span={12}><Form.Item label="项目名称" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>

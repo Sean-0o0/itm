@@ -463,6 +463,7 @@ class TodoItems extends React.Component {
       if (code === 1) {
         const { fetchQueryOwnerMessage } = this.props;
         fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx)
+        message.success('执行成功', 1);
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -814,7 +815,7 @@ class TodoItems extends React.Component {
                       src={editMessageUrl} />}
                   {/*人员新增提醒弹窗*/}
                   {ryxztxVisible &&
-                    <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("123")}
+                    <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("执行")}
                       onCancel={()=>this.setState({ryxztxVisible: false})}
                       src={ryxztxUrl} />}
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"

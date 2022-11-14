@@ -565,139 +565,139 @@ class ContractInfoUpdate extends React.Component {
                         style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
                         onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
                 </div>
-                <Spin spinning={isSpinning}>
-                <Form name="nest-messages" style={{ padding: '0 24px' }}>
-                    <Row>
-                        <Col span={12}> <Form.Item label="项目名称" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
-                            <div style={{
-                                width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
-                                borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px', fontSize: '1.867rem'
-                            }}>{currentXmmc}</div>
-                        </Form.Item>
-                        </Col>
-                        <Col span={11}><Form.Item label="合同金额（元）" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-                            {getFieldDecorator('htje', {
-                                initialValue: String(contractInfo?.htje) || '',
-                                rules: [
+                <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
+                    <Form name="nest-messages" style={{ padding: '0 24px' }}>
+                        <Row>
+                            <Col span={12}> <Form.Item label="项目名称" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
+                                <div style={{
+                                    width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
+                                    borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px', fontSize: '1.867rem'
+                                }}>{currentXmmc}</div>
+                            </Form.Item>
+                            </Col>
+                            <Col span={11}><Form.Item label="合同金额（元）" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+                                {getFieldDecorator('htje', {
+                                    initialValue: String(contractInfo?.htje) || '',
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '合同金额（元）不允许空值',
+                                        },
+                                        {
+                                            pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
+                                            message: '最多不超过13位数字且小数点后数字不超过2位',
+                                        },
+                                    ],
+                                })(<Input placeholder="请输入合同金额（元）" />)}
+                            </Form.Item> </Col>
+                        </Row>
+                        <Row>
+                            <Col span={12}> <Form.Item label="签署日期" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
+                                {getFieldDecorator('qsrq', {
+                                    initialValue: contractInfo?.qsrq === null ? null : moment(contractInfo?.qsrq),
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '签署日期不允许空值',
+                                        },
+                                    ],
+                                })(<DatePicker style={{ width: '100%' }} />)}
+                            </Form.Item></Col>
+                            <Col span={11}> <Form.Item label="供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+                                {getFieldDecorator('gys', {
+                                    initialValue: gys,
+                                    rules: [
+                                        {
+                                            required: true,
+                                            message: '供应商不允许空值',
+                                        },
+                                    ],
+                                })(<Select
+                                    style={{ width: '100%', borderRadius: '8px !important' }}
+                                    placeholder="请选择供应商"
+                                    showSearch
+                                    allowClear
+                                    onChange={this.handleGysChange}
+                                    open={isSelectorOpen}
+                                    onDropdownVisibleChange={(visible) => this.setState({ isSelectorOpen: visible })}
+                                >
                                     {
-                                        required: true,
-                                        message: '合同金额（元）不允许空值',
-                                    },
-                                    {
-                                        pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
-                                        message: '最多不超过13位数字且小数点后数字不超过2位',
-                                    },
-                                ],
-                            })(<Input placeholder="请输入合同金额（元）" />)}
-                        </Form.Item> </Col>
-                    </Row>
-                    <Row>
-                        <Col span={12}> <Form.Item label="签署日期" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
-                            {getFieldDecorator('qsrq', {
-                                initialValue: contractInfo?.qsrq === null ? null : moment(contractInfo?.qsrq),
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '签署日期不允许空值',
-                                    },
-                                ],
-                            })(<DatePicker style={{ width: '100%' }} />)}
-                        </Form.Item></Col>
-                        <Col span={11}> <Form.Item label="供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-                            {getFieldDecorator('gys', {
-                                initialValue: gys,
-                                rules: [
-                                    {
-                                        required: true,
-                                        message: '供应商不允许空值',
-                                    },
-                                ],
-                            })(<Select
-                                style={{ width: '100%', borderRadius: '8px !important' }}
-                                placeholder="请选择供应商"
-                                showSearch
-                                allowClear
-                                onChange={this.handleGysChange}
-                                open={isSelectorOpen}
-                                onDropdownVisibleChange={(visible) => this.setState({ isSelectorOpen: visible })}
-                            >
-                                {
-                                    gysData?.map((item = {}, ind) => {
-                                        return <Option key={ind} value={item.id}>{item.gysmc}</Option>
-                                    })
-                                }
-                            </Select>)}
-                        </Form.Item>
-                        </Col>
-                        <Col span={1}>
-                            <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                                onClick={() => {
-                                    this.setState({ addGysModalVisible: true });
-                                }}
-                                alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
-                            />
-                        </Col>
-                    </Row>
-                    <Row>
-                        <Col span={24}>
-                            <Form.Item label={<span><span style={{ color: 'red' }}>*</span>付款详情</span>} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-                                <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', paddingTop: '10px' }}>
-                                    <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
-                                        <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
-                                            let arrData = tableData;
-                                            arrData.push({ id: Date.now(), ['fkqs' + Date.now()]: '', ['bfb' + Date.now()]: 0.5, ['fkje' + Date.now()]: 0.5, ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'), zt: '2' });
-                                            this.setState({ tableData: arrData }, () => {
-                                                let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
-                                                table2.scrollTop = table2.scrollHeight;
-                                            });
-                                        }}><img
-                                                src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                                                alt='' style={{ height: '20px', marginRight: '6px' }}
-                                            />新增</div>
-                                        <Popconfirm title="确定要删除吗?" onConfirm={() => {
-                                            if (selectedRowIds.length > 0) {
-                                                this.handleMultiDelete(selectedRowIds);
-                                                this.setState({
-                                                    selectedRowIds: []
+                                        gysData?.map((item = {}, ind) => {
+                                            return <Option key={ind} value={item.id}>{item.gysmc}</Option>
+                                        })
+                                    }
+                                </Select>)}
+                            </Form.Item>
+                            </Col>
+                            <Col span={1}>
+                                <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                                    onClick={() => {
+                                        this.setState({ addGysModalVisible: true });
+                                    }}
+                                    alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                                />
+                            </Col>
+                        </Row>
+                        <Row>
+                            <Col span={24}>
+                                <Form.Item label={<span><span style={{ color: 'red' }}>*</span>付款详情</span>} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                                    <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', paddingTop: '10px' }}>
+                                        <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
+                                            <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
+                                                let arrData = tableData;
+                                                arrData.push({ id: Date.now(), ['fkqs' + Date.now()]: '', ['bfb' + Date.now()]: 0.5, ['fkje' + Date.now()]: 0.5, ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'), zt: '2' });
+                                                this.setState({ tableData: arrData }, () => {
+                                                    let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
+                                                    table2.scrollTop = table2.scrollHeight;
                                                 });
-                                            } else {
-                                                message.info('请选择需要删除的数据', 1);
-                                            }
-                                        }}>
-                                            <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
-                                                src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                                                alt='' style={{ height: '20px', marginRight: '6px' }}
-                                            />删除</div>
-                                        </Popconfirm>
+                                            }}><img
+                                                    src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
+                                                    alt='' style={{ height: '20px', marginRight: '6px' }}
+                                                />新增</div>
+                                            <Popconfirm title="确定要删除吗?" onConfirm={() => {
+                                                if (selectedRowIds.length > 0) {
+                                                    this.handleMultiDelete(selectedRowIds);
+                                                    this.setState({
+                                                        selectedRowIds: []
+                                                    });
+                                                } else {
+                                                    message.info('请选择需要删除的数据', 1);
+                                                }
+                                            }}>
+                                                <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
+                                                    src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
+                                                    alt='' style={{ height: '20px', marginRight: '6px' }}
+                                                />删除</div>
+                                            </Popconfirm>
 
-                                        {/* 表格放大 */}
-                                        {/* <img
+                                            {/* 表格放大 */}
+                                            {/* <img
                                             src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
                                                 : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
                                             alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
                                             onClick={() => {
                                                 this.setState({ isTableFullScreen: !isTableFullScreen })
                                             }} /> */}
+                                        </div>
+                                        <div className='tableBox2'>
+                                            <Table
+                                                columns={columns}
+                                                components={components}
+                                                rowKey={record => record.id}
+                                                rowClassName={() => 'editable-row'}
+                                                dataSource={tableData}
+                                                rowSelection={rowSelection}
+                                                scroll={tableData.length > 3 ? { y: 195 } : {}}
+                                                pagination={false}
+                                                bordered
+                                                size='middle'
+                                            ></Table>
+                                        </div>
                                     </div>
-                                    <div className='tableBox2'>
-                                        <Table
-                                            columns={columns}
-                                            components={components}
-                                            rowKey={record => record.id}
-                                            rowClassName={() => 'editable-row'}
-                                            dataSource={tableData}
-                                            rowSelection={rowSelection}
-                                            scroll={tableData.length > 3 ? { y: 195 } : {}}
-                                            pagination={false}
-                                            bordered
-                                            size='middle'
-                                        ></Table>
-                                    </div>
-                                </div>
-                            </Form.Item>
-                        </Col>
-                    </Row>
-                </Form>
+                                </Form.Item>
+                            </Col>
+                        </Row>
+                    </Form>
                 </Spin>
             </Modal>
         </>);

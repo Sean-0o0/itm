@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Icon, DatePicker, Input, Table, Select, Form, message, Modal, Popconfirm } from 'antd';
+import { Button, Table, message, Modal, Popconfirm } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import { OperateSZHZBWeekly, CreateOperateHyperLink, QueryUserInfo } from '../../../../services/pmsServices';
 import moment from 'moment';
@@ -17,7 +17,7 @@ const TableBox = (props) => {
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
 
-    const downloadRef = useRef(null);
+    // const downloadRef = useRef(null);
 
     useEffect(() => {
         setTableLoading(true);
@@ -176,31 +176,54 @@ const TableBox = (props) => {
         });
     }
     const handleExport = () => {
-        const node = downloadRef.current;
-        const actionUrl = digitalSpecialClassWeeklyReportExcel;
-        const downloadForm = document.createElement('form');
-        downloadForm.id = 'downloadForm';
-        downloadForm.name = 'downloadForm';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.name = 'startTime';
-        input.value = Number(dateRange[0].format('YYYYMMDD'));
-        downloadForm.appendChild(input);
-        const input2 = document.createElement('input');
-        input2.type = 'text';
-        input2.name = 'endTime';
-        input2.value = Number(dateRange[1].format('YYYYMMDD'));
-        downloadForm.appendChild(input2);
-        const input3 = document.createElement('input');
-        input3.type = 'text';
-        input3.name = 'xmmc';
-        input3.value = Number(currentXmid);
-        downloadForm.appendChild(input3);
-        downloadForm.method = 'POST';
-        downloadForm.action = actionUrl;
-        node.appendChild(downloadForm);
-        downloadForm.submit();
-        node.removeChild(downloadForm);
+        let params = new URLSearchParams();
+        params.append("startTime", Number(dateRange[0].format('YYYYMMDD')));
+        params.append("endTime", Number(dateRange[1].format('YYYYMMDD')));
+        params.append("xmmc", Number(currentXmid));
+        fetch(digitalSpecialClassWeeklyReportExcel, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params
+        }).then(res => {
+            return res.blob();
+        }).then(blob => {
+            let fileName = `数字化专班周报(${new moment().format('YYYYMMDD')}).xlsx`;
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            window.URL.revokeObjectURL(link.href);
+            message.success('请求成功，正在导出中', 1);
+        }).catch(e => {
+            message.error('导出失败', 1);
+        });
+        // const node = downloadRef.current;
+        // const actionUrl = digitalSpecialClassWeeklyReportExcel;
+        // const downloadForm = document.createElement('form');
+        // downloadForm.id = 'downloadForm';
+        // downloadForm.name = 'downloadForm';
+        // const input = document.createElement('input');
+        // input.type = 'text';
+        // input.name = 'startTime';
+        // input.value = Number(dateRange[0].format('YYYYMMDD'));
+        // downloadForm.appendChild(input);
+        // const input2 = document.createElement('input');
+        // input2.type = 'text';
+        // input2.name = 'endTime';
+        // input2.value = Number(dateRange[1].format('YYYYMMDD'));
+        // downloadForm.appendChild(input2);
+        // const input3 = document.createElement('input');
+        // input3.type = 'text';
+        // input3.name = 'xmmc';
+        // input3.value = Number(currentXmid);
+        // downloadForm.appendChild(input3);
+        // downloadForm.method = 'POST';
+        // downloadForm.action = actionUrl;
+        // node.appendChild(downloadForm);
+        // downloadForm.submit();
+        // node.removeChild(downloadForm);
     };
     const tableColumns = [
         {
@@ -390,12 +413,15 @@ const TableBox = (props) => {
                 onCancel={() => setLcbqkModalVisible(false)}
                 src={lcbqkModalUrl} />}
         <div className='table-box'>
-            <div ref={downloadRef} style={{ display: 'none' }}></div>
+            {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
                 <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
                 <div className='console-txt'>{dateRange.length !== 0 && dateRange[0]?.format('YYYY-MM-DD') || ''} 至 {dateRange.length !== 0 && dateRange[1]?.format('YYYY-MM-DD') || ''}</div>
                 <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
-                <Button style={{ margin: '0 1.1904rem' }} onClick={handleExport}>导出</Button>
+                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                    <Button style={{ margin: '0 1.1904rem' }}>导出</Button>
+                </Popconfirm>
+
                 {authIdAData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>}
             </div>
             <div className='table-content'>

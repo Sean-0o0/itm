@@ -81,7 +81,6 @@ export default function MonthlyReportTable() {
                     };
                 })
                 setTableData(preState => [...newArr]);
-                console.log("🚀 ~ file: index.js ~ line 69 ~ queryTableData ~ newArr", newArr)
                 setTableLoading(false);
             }
         })

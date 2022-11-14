@@ -1,9 +1,10 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Icon, DatePicker, Input, Table, Select, Form, message, Modal, Popconfirm } from 'antd';
+import { Button, Table, Form, message, Popconfirm } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import { CreateOperateHyperLink, OperateMonthly, QueryUserInfo } from '../../../../services/pmsServices';
 import config from '../../../../utils/config';
+import moment from 'moment';
 
 const { api } = config;
 const { pmsServices: { digitalSpecialClassMonthReportExcel } } = api;
@@ -14,7 +15,7 @@ const TableBox = (props) => {
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
-    const downloadRef = useRef(null);
+    // const downloadRef = useRef(null);
 
     useEffect(() => {
         getAutnIdData();
@@ -140,31 +141,55 @@ const TableBox = (props) => {
     };
 
     const handleExport = () => {
-        const node = downloadRef.current;
-        const actionUrl = digitalSpecialClassMonthReportExcel;
-        const downloadForm = document.createElement('form');
-        downloadForm.id = 'downloadForm';
-        downloadForm.name = 'downloadForm';
-        const input = document.createElement('input');
-        input.type = 'text';
-        input.name = 'month';
-        input.value = Number(monthData.format('YYYYMM'));
-        downloadForm.appendChild(input);
-        const input2 = document.createElement('input');
-        input2.type = 'text';
-        input2.name = 'xmmc';
-        input2.value = Number(currentXmid);
-        downloadForm.appendChild(input2);
-        const input3 = document.createElement('input');
-        input3.type = 'text';
-        input3.name = 'czr';
-        input3.value = 0;
-        downloadForm.appendChild(input3);
-        downloadForm.method = 'POST';
-        downloadForm.action = actionUrl;
-        node.appendChild(downloadForm);
-        downloadForm.submit();
-        node.removeChild(downloadForm);
+        let params = new URLSearchParams();
+        params.append("month", Number(monthData.format('YYYYMM')));
+        params.append("xmmc", Number(currentXmid));
+        params.append("czr", 0);
+        fetch(digitalSpecialClassMonthReportExcel, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: params
+        }).then(res => {
+            return res.blob();
+        }).then(blob => {
+            let fileName = `数字化专班月报(${new moment().format('YYYYMMDD')}).xlsx`;
+            var link = document.createElement('a');
+            link.href = window.URL.createObjectURL(blob);
+            link.download = fileName;
+            link.click();
+            window.URL.revokeObjectURL(link.href);
+            message.success('请求成功，正在导出中', 1);
+        }).catch(e => {
+            message.error('导出失败', 1);
+            // console.error(e);
+        });
+        // const node = downloadRef.current;
+        // const actionUrl = digitalSpecialClassMonthReportExcel;
+        // const downloadForm = document.createElement('form');
+        // downloadForm.id = 'downloadForm';
+        // downloadForm.name = 'downloadForm';
+        // const input = document.createElement('input');
+        // input.type = 'text';
+        // input.name = 'month';
+        // input.value = Number(monthData.format('YYYYMM'));
+        // downloadForm.appendChild(input);
+        // const input2 = document.createElement('input');
+        // input2.type = 'text';
+        // input2.name = 'xmmc';
+        // input2.value = Number(currentXmid);
+        // downloadForm.appendChild(input2);
+        // const input3 = document.createElement('input');
+        // input3.type = 'text';
+        // input3.name = 'czr';
+        // input3.value = 0;
+        // downloadForm.appendChild(input3);
+        // downloadForm.method = 'POST';
+        // downloadForm.action = actionUrl;
+        // node.appendChild(downloadForm);
+        // downloadForm.submit();
+        // node.removeChild(downloadForm);
     };
     const tableColumns = [
         {
@@ -369,12 +394,14 @@ const TableBox = (props) => {
                 onCancel={() => setLcbqkModalVisible(false)}
                 src={lcbqkModalUrl} />}
         <div className='table-box'>
-            <div ref={downloadRef} style={{ display: 'none' }}></div>
+            {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
                 <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
                 <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
                 <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
-                <Button style={{ marginLeft: '1.1904rem' }} onClick={handleExport}>导出</Button>
+                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                    <Button style={{ marginLeft: '1.1904rem' }}>导出</Button>
+                </Popconfirm>
             </div>
             <div className='table-content'>
                 <Table
