@@ -20,6 +20,7 @@ const EditableCell = (props) => {
     const targetNode = useRef(null);
     const editingRef = useRef(false);
     const {
+        issaved,
         txrdata,
         editable,
         dataIndex,
@@ -76,14 +77,7 @@ const EditableCell = (props) => {
                 return '';
         }
     };
-    const getCurP = (num) => {
-        switch (num) {
-            case '1':
-                return '朱衎';
-            case '2':
-                return '管理员';
-        }
-    };
+
     const getSelect = (onChange, open, setOpen, data) => {
         return (
             <Select
@@ -121,20 +115,13 @@ const EditableCell = (props) => {
             (node ? node : <Input ref={targetNode} onPressEnter={save} onBlur={save} onChange={(e) => setEdited(true)} />)
     };
     const handleTxrChange = (arr) => {
-        const { record, handleSave, formdecorate } = props;
-        // formdecorate.validateFields(['txr' + record['id']], (error, values) => {
-            // if (error) {
-            //     console.log('有错误，不予保存');
-            //     return;
-            // }
+        const { record, handleSave } = props;
             toggleEdit();
-            console.log(arr);
             let newVal = {
                 ['txr' + record['id']]: [...arr],
             };
             setEdited(true);
             handleSave({ ...record, ...newVal });
-        // });
     };
 
     const renderItem = (form, dataIndex, record) => {
@@ -151,12 +138,6 @@ const EditableCell = (props) => {
 
     const renderCell = form => {
         const { children, dataIndex, record, formdecorate } = props;
-        // let txrValue = [];
-        // if (dataIndex === 'txr') {
-        //     txrValue = record[dataIndex + record['id']]?.map(item => {
-        //         return txrdata?.filter(x => String(x?.id) === String(item))[0]?.name;
-        //     });
-        // }
         return (editing ?
             (
                 <Form.Item style={{ margin: 0 }}>
@@ -186,7 +167,7 @@ const EditableCell = (props) => {
     return (
         <>
             <td {...restProps}>
-                {edited && <img className='edited-img' src={require('../../../../image/pms/WeeklyReportDetail/edited.png')} alt=''></img>}
+                {!issaved && edited && <img className='edited-img' src={require('../../../../image/pms/WeeklyReportDetail/edited.png')} alt=''></img>}
                 {editable ? (
                     <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
                 ) : (

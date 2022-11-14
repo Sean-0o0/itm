@@ -166,8 +166,8 @@ class LifeCycleManagementTabs extends React.Component {
       params = {
         "attribute": 0,
         "authFlag": 0,
-        "objectName": "TLC_LCFQ",
-        "operateName": "TLC_LCFQ_XMFKLCFQ",
+        "objectName": "LC_XMFKLC",
+        "operateName": "LC_XMFKLC_XMFKLCFQ",
         "parameter": [
           {
             "name": "",

@@ -23,6 +23,7 @@ const EditableCell = (props) => {
     const targetNode = useRef(null);
     const editingRef = useRef(false);
     const {
+        issaved,
         editable,
         dataIndex,
         title,
@@ -250,7 +251,7 @@ const EditableCell = (props) => {
     return (
         <>
             <td {...restProps}>
-                {edited && <img className='edited-img' src={require('../../../../image/pms/WeeklyReportDetail/edited.png')} alt=''></img>}
+                {!issaved && edited && <img className='edited-img' src={require('../../../../image/pms/WeeklyReportDetail/edited.png')} alt=''></img>}
                 {editable ? (
                     <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
                 ) : (

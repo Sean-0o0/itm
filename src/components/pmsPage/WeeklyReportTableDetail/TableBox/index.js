@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Table, message, Modal, Popconfirm } from 'antd';
+import { Button, Table, message, Modal, Popconfirm, Form } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import { OperateSZHZBWeekly, CreateOperateHyperLink, QueryUserInfo } from '../../../../services/pmsServices';
 import moment from 'moment';
@@ -12,7 +12,7 @@ const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
     const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading, groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, } = props;
-    // const [edited, setEdited] = useState(false);
+    const [isSaved, setIsSaved] = useState(false);
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
@@ -107,6 +107,7 @@ const TableBox = (props) => {
                 OperateSZHZBWeekly({ ...submitData }).then(res => {
                     if (res?.code === 1) {
                         message.success('保存成功', 1);
+                        setIsSaved(true);
                     } else {
                         message.error('保存失败', 1);
                     }
@@ -363,6 +364,7 @@ const TableBox = (props) => {
                     handleSave: handleTableSave,
                     key: col.key,
                     formdecorate: form,
+                    issaved: isSaved,
                 })
             },
         };

@@ -15,6 +15,8 @@ const TableBox = (props) => {
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
+    const [isSaved, setIsSaved] = useState(false);
+
     // const downloadRef = useRef(null);
 
     useEffect(() => {
@@ -97,6 +99,7 @@ const TableBox = (props) => {
                 OperateMonthly({ ...submitData }).then(res => {
                     if (res?.code === 1) {
                         message.success('保存成功', 1);
+                        setIsSaved(true);
                     } else {
                         message.error('保存失败', 1);
                     }
@@ -343,6 +346,7 @@ const TableBox = (props) => {
                     key: col.key,
                     formdecorate: form,
                     txrdata: txrData,
+                    issaved: isSaved,
                 })
             },
         };
