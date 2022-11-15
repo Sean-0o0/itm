@@ -28,7 +28,6 @@ class Tooltips extends React.Component {
   }
 
   handleMessageEdit = (item) => {
-    // console.log("item", item);
     this.props.handleMessageEdit(item);
   }
 
