@@ -38,7 +38,12 @@ exports.routes = [
     component: './pmsPage/ViewFilePage',
   },
   {
-    path: `${prefix}/`,
-    component: './workPlatForm/singlePage',
-  }
+    // 统计分析 - 领导看板页面
+    path: `${prefix}/StatisticAnalysis`,
+    component: './pmsPage/StatisticAnalysis',
+  },
+  // {
+  //   path: `${prefix}/`,
+  //   component: './workPlatForm/singlePage',
+  // },
 ]

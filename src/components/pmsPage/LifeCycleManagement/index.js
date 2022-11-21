@@ -170,8 +170,8 @@ class LifeCycleManagementTabs extends React.Component {
         "operateName": "LC_XMFKLC_XMFKLCFQ",
         "parameter": [
           {
-            "name": "",
-            "value": '',
+            "name": "XMMC",
+            "value": this.state.xmid
           }
         ],
         "userId": Loginname,
