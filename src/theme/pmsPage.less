@@ -379,6 +379,10 @@
               width: 50%;
               height: 100%;
               border: 0.1488rem solid #EBEEF5;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #303133;
 
               .xmbq-column {
                 height: 100%;
@@ -912,8 +916,158 @@
   }
 }
 
+//付款流程发起弹窗 - 费用明细
+.expense-detail-box {
+  padding: 20px 50px;
+
+  &>.expense-title {
+    font-size: 18px;
+    font-weight: 600;
+    border-bottom: 0.1488rem solid;
+    height: 40px;
+  }
+
+  &>.expense-add-btn {
+    margin: 2.3808rem 0;
+  }
+
+  &>.expense-content {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+
+    .receipt-box {
+      width: 49%;
+      height: 193px;
+      padding: 14px;
+      overflow: hidden;
+      // border: 1px solid;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+
+      &:last-child {
+        // border-left: 0;
+      }
+
+      .receipt-title {
+        font-size: 14px;
+        margin-bottom: 10px;
+      }
+
+      .receipt-list {
+        max-height: 133px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        justify-content: space-between;
+        align-items: center;
+        overflow: hidden;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 10px;
+          background-color: #f5f5f5;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: #c1c1c1;
+          border-radius: 9px;
+        }
+
+        .receipt-item {
+          width: 49%;
+          height: 36px;
+          margin-bottom: 2%;
+          background-color: #ffffff;
+          border-radius: 8px;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          line-height: 36px;
+          padding: 0 10px;
+          vertical-align: middle;
+          text-align: start;
+
+          &:hover {
+            cursor: pointer;
+            color: #3361ff;
+            border: 1px #3361ff solid;
+            transition: all 0.3s;
+          }
+
+          .receipt-icon {
+            color: #3361ff;
+            margin-right: 8px;
+            vertical-align: middle;
+          }
+        }
+      }
+    }
+  }
+
+  &>.attachment-box {
+    height: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    width: 100%;
+    margin-top: 16px;
+
+    .attachment-item {
+      width: 49%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      padding: 0 10px;
+      background-color: #f5f5f5;
+      border-radius: 8px;
+      height: 60px;
+
+      &:last-child {
+        // border-right: 0;
+      }
+
+      .file-item {
+        margin-left: 2px;
+        border-radius: 8px;
+        width: 88%;
+        background-color: #ffffff;
+        height: 36px;
+        line-height: 36px;
+        vertical-align: middle;
+        text-align: start;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        padding: 0 10px;
+
+        &:hover {
+          cursor: pointer;
+          color: #3361ff;
+          border: 1px #3361ff solid;
+          transition: all 0.3s;
+        }
+
+        .attachment-icon {
+          color: #3361ff;
+          margin-right: 8px;
+          vertical-align: middle;
+        }
+      }
+    }
+  }
+}
+
 //信息修改弹窗
 .editMessage-modify {
+  & .diy-style-spin {
+    padding-top: 16px;
+    max-height: 600px;
+    overflow: hidden;
+    overflow-y: auto;
+  }
+
   & .ant-modal-content {
     border-radius: 8px;
 

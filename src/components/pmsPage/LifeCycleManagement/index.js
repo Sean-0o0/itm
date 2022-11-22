@@ -23,6 +23,7 @@ import moment from 'moment';
 import WPSFrame from '../../../js/wps_general'
 import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../utils/config";
+import PaymentProcess from './PaymentProcess';
 
 const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
@@ -74,6 +75,8 @@ class LifeCycleManagementTabs extends React.Component {
     //多文档文件列表
     fileList: [],
     fileListVisible: false,
+    //付款流程发起弹窗显示
+    paymentModalVisible: false,
   };
 
   componentDidMount() {
@@ -400,6 +403,12 @@ class LifeCycleManagementTabs extends React.Component {
 
   //流程发起
   handleSend = (item) => {
+    if (item.sxmc.includes('付款流程')) {
+      this.setState({
+        paymentModalVisible: true,
+      });
+      return;
+    }
     this.getSendUrl(item.sxmc);
     this.setState({
       sendTitle: item.sxmc + '发起',
@@ -411,7 +420,7 @@ class LifeCycleManagementTabs extends React.Component {
   //信息录入
   handleFillOut = (item) => {
     let params = {};
-    if (item.sxmc.includes("周报填写")) { window.location.href = this.state.weelyReportUrl; return;}
+    if (item.sxmc.includes("周报填写")) { window.location.href = this.state.weelyReportUrl; return; }
     if (item.sxmc.includes("员工评价开启")) {
       params = {
         "attribute": 0,
@@ -427,8 +436,8 @@ class LifeCycleManagementTabs extends React.Component {
         "userId": Loginname
       };
     }
-    
-    if(item.sxmc.includes("合同信息录入")){
+
+    if (item.sxmc.includes("合同信息录入")) {
       params = {
         "attribute": 0,
         "authFlag": 0,
@@ -443,7 +452,7 @@ class LifeCycleManagementTabs extends React.Component {
         "userId": Loginname
       };
     }
-    if(item.sxmc.includes("招标信息录入")){
+    if (item.sxmc.includes("招标信息录入")) {
       params = {
         "attribute": 0,
         "authFlag": 0,
@@ -463,10 +472,10 @@ class LifeCycleManagementTabs extends React.Component {
       };
     }
     this.getFileOutUrl(params);
-      this.setState({
-        fillOutTitle: item.sxmc,
-        fillOutVisible: true,
-      });
+    this.setState({
+      fillOutTitle: item.sxmc,
+      fillOutVisible: true,
+    });
   };
 
   //信息修改
@@ -532,6 +541,12 @@ class LifeCycleManagementTabs extends React.Component {
       editModelVisible: true,
     });
   }
+
+  closePaymentProcessModal = () => {
+    this.setState({
+      paymentModalVisible: false,
+    });
+  };
 
   closeUploadModal = () => {
     this.setState({
@@ -697,6 +712,7 @@ class LifeCycleManagementTabs extends React.Component {
       operationListTotalRows,
       fileList,
       fileListVisible,
+      paymentModalVisible,
     } = this.state;
     console.log("xmidxmid000", xmid)
     const uploadModalProps = {
@@ -788,7 +804,7 @@ class LifeCycleManagementTabs extends React.Component {
       </>
     );
     return (
-      <Row style={{ height: '100%'}}>
+      <Row style={{ height: '100%' }}>
         {/*文档上传弹窗*/}
         {uploadVisible &&
           <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
@@ -808,6 +824,11 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
+            
+        {/* 付款流程发起弹窗 */}
+        {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible} 
+        closePaymentProcessModal={this.closePaymentProcessModal}/>}
+
         {/*合同信息修改弹窗*/}
         {editMessageVisible && <ContractInfoUpdate
           currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
@@ -979,9 +1000,9 @@ class LifeCycleManagementTabs extends React.Component {
                                                     visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
                                                     onVisibleChange={this.handleVisibleChange}
                                                   >
-                                                    <a style={item.zxqk === " "?{color: '#333'}:{color: 'rgb(51, 97, 255)'}}>{item.sxmc}</a>
+                                                    <a style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
                                                   </Popover> :
-                                                  <a style={item.zxqk === " "?{color: '#333'}:{color: 'rgb(51, 97, 255)'}} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                  <a style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
                                               )
                                                 :
                                                 <span>{item.sxmc}</span>
