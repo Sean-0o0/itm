@@ -714,7 +714,7 @@ class LifeCycleManagementTabs extends React.Component {
       fileListVisible,
       paymentModalVisible,
     } = this.state;
-    console.log("xmidxmid000", xmid)
+
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
@@ -826,7 +826,8 @@ class LifeCycleManagementTabs extends React.Component {
             src={fillOutUrl} />}
             
         {/* 付款流程发起弹窗 */}
-        {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible} 
+        {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
+        currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
         closePaymentProcessModal={this.closePaymentProcessModal}/>}
 
         {/*合同信息修改弹窗*/}

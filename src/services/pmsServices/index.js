@@ -31,6 +31,7 @@ const {
     digitalSpecialClassMonthReportExcel,
     queryUserInfo,
     queryPaymentAccountList,
+    queryPaymentFlowInfo,
   },
 } = api;
 
@@ -296,6 +297,16 @@ export async function QueryUserInfo(payload) {
 export async function QueryPaymentAccountList(payload) {
   const option = {
     url: queryPaymentAccountList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//创建单据时获取基本信息 -付款流程发起
+export async function QueryPaymentFlowInfo(payload) {
+  const option = {
+    url: queryPaymentFlowInfo,
     method: 'post',
     data: payload,
   };

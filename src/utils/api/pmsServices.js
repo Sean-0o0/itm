@@ -26,4 +26,5 @@ export default [
   {code: '', key: 'digitalSpecialClassMonthReportExcel', url: '/projectManage/v1/DigitalSpecialClassMonthReportExcel', dis: '数字化专班月报导出EXCELL'},
   {code: '', key: 'queryUserInfo', url: '/projectManage/queryUserInfo', dis: '数字化专班月报查询用户信息,填报人下拉列表使用'},
   {code: '', key: 'queryPaymentAccountList', url: '/projectManage/queryPaymentAccountList', dis: '查询收款账户'},
+  {code: '', key: 'queryPaymentFlowInfo', url: '/EKB/v1/queryPaymentFlowInfo', dis: '创建单据时获取基本信息'},
 ];
