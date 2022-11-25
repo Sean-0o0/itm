@@ -13,9 +13,8 @@ export default function ExpenseDetail(props) {
     //加载状态
     const [isExpenseSpinning, setIsExpenseSpinning] = useState(false);
 
-    //费用明细新增成功
+    //费用明细新增弹窗调用成功
     const handleAddExpenseSuccess = () => {
-        message.success('新增成功', 1);
         getExpenseDetailData(setIsExpenseSpinning);
         setIsExpenseSpinning(true);
         setAddExpenseModalVisiable(false);

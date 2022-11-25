@@ -125,7 +125,11 @@ const PaymentProcess = (props) => {
                 });
                 setExpenseDetailData(p => [...arr])
                 fn && fn(false); //关闭加载状态
+                message.success('新增成功', 1);
             }
+        }).catch(e=>{
+            message.error('新增失败', 1);
+            console.error(e);
         });
     };
 
