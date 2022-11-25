@@ -27,4 +27,7 @@ export default [
   {code: '', key: 'queryUserInfo', url: '/projectManage/queryUserInfo', dis: '数字化专班月报查询用户信息,填报人下拉列表使用'},
   {code: '', key: 'queryPaymentAccountList', url: '/projectManage/queryPaymentAccountList', dis: '查询收款账户'},
   {code: '', key: 'queryPaymentFlowInfo', url: '/EKB/v1/queryPaymentFlowInfo', dis: '创建单据时获取基本信息'},
+  {code: '', key: 'queryPaymentFlowDetail', url: '/EKB/v1/queryPaymentFlowDetail', dis: '创建单据时获取费用明细'},
+  {code: '', key: 'creatPaymentFlow', url: '/EKB/v1/creatPaymentFlow', dis: '创建单据'},
+  {code: '', key: 'queryPaymentFlowDetailFile', url: '/EKB/v1/queryPaymentFlowDetailFile', dis: '查询费用明细预览时需要的文档信息'},
 ];

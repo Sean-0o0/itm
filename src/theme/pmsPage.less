@@ -62,7 +62,7 @@
 
     & .contrast-item {
       overflow: hidden;
-      width: 41rem;
+      width: 46.4rem;
       background-color: #fff;
       padding: 2.3808rem 3.5712rem;
       border-radius: 1.1904rem;
@@ -292,7 +292,6 @@
 
         .tab-content-box {
           height: calc(100% - 7.1424rem);
-          ;
 
           .lcbjd-box {
             position: relative;
@@ -310,7 +309,7 @@
               position: absolute;
               font-size: 2.3808rem;
               color: #bacaff;
-              right: 16.6656rem;
+              right: 18.6656rem;
             }
 
             .lcb-item {
@@ -318,7 +317,7 @@
               position: relative;
               align-items: center;
               height: 8.4816rem;
-              width: 29.8284rem;
+              width: 34.22rem;
               background-color: #fff;
               box-shadow: 0 0 0.2976rem #b4b4b4;
               border-radius: 0.5952rem;
@@ -416,11 +415,74 @@
         }
       }
 
-      & .top-right-box {
+      &>.glory-profile-box {
         width: 50%;
         border-radius: 1.1904rem;
         background-color: #fff;
         padding: 2.3808rem 3.5712rem 3.5712rem 3.5712rem;
+
+        .title {
+          height: 3.5712rem;
+          max-width: 30%;
+          font-size: 2.6784rem;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: bold;
+          color: #303133;
+          line-height: 3.5712rem;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          margin-bottom: 3.5712rem;
+        }
+
+        .content-box {
+          width: 100%;
+          display: flex;
+          flex-direction: row;
+          height: calc(100% - 7.1424rem);
+
+          .glory-info {
+            width: 50%;
+            height: 100%;
+            box-shadow: 0 0 0.2976rem #ebf0ff;
+            background: linear-gradient(360deg, rgba(51, 97, 255, 0.05) 0%, rgba(98, 154, 255, 0) 100%);
+            padding: 2.3808rem;
+
+            .info-num {
+              display: flex;
+              flex-direction: row;
+              height: 2.976rem;
+              font-size: 2.0832rem;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #606266;
+              align-items: center;
+
+              .info-num-icon {
+                color: #3361FF;
+                margin-right: 0.8928rem;
+              }
+
+              .info-num-item1 {
+                width: 50%;
+                border-right: 2px solid;
+              }
+
+              .info-num-item2 {
+                width: 50%;
+                text-align: end;
+              }
+            }
+
+            .info-medal {}
+          }
+
+          .glory-graph {
+            width: 50%;
+            height: 100%;
+          }
+        }
+
       }
     }
 
@@ -929,10 +991,24 @@
     margin-bottom: 2.3808rem;
   }
 
+  .yfkje-input-number,
+  .htje-input-number {
+    width: 100%;
+  }
+
+  .ms-textarea {
+    padding-bottom: 2.976rem;
+  }
+
   .ms-count-txt {
+    width: 97%;
+    height: 2.976rem;
+    line-height: 2.976rem;
+    text-align: end;
     position: absolute;
-    top: -5px;
-    right: 15px;
+    top: 0.744rem;
+    right: 2.6128rem;
+    background-color: #ffffff;
   }
 
   //付款流程发起弹窗 - 费用明细
@@ -949,127 +1025,196 @@
 
     &>.expense-add-btn {
       margin: 2.3808rem 0;
+      transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
     }
 
-    &>.content-box {
-      background-color: rgba(246, 245, 245, 0.5);
-      padding-bottom: 1.1904r;
-      border-radius: 1.1904rem;
-      margin-bottom: 1.1904rem;
+    &>.expense-add-btn-help {
+      color: #f5222d;
+      font-size: 14px;
+      margin-left: 8px;
+      transition: color 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+      font-variant: tabular-nums;
+      font-feature-settings: 'tnum';
+    }
 
-      &>.expense-info {
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        padding: 2.0832rem;
-        color: black;
+    &>.expense-detail-spin {
+      max-height: none;
 
-        .info-icon-num {
-          height: 4.7616rem;
-          width: 4.7616rem;
-          line-height: 4.7616rem;
-          text-align: center;
-          background-color: #3361FF;
-          color: #fff;
-          font-size: 2.8272rem;
-          font-weight: bold;
-          border-radius: 1.1904rem;
-          margin-right: 1.1904rem;
-        }
+      .content-box {
+        background-color: rgba(246, 245, 245, 0.5);
+        padding-bottom: 1.1904r;
+        border-radius: 1.1904rem;
+        margin-bottom: 1.1904rem;
 
-        .info-type {
+        &>.expense-info {
           display: flex;
+          flex-direction: row;
           align-items: center;
-          width: 128.5632rem;
-
-          .info-type-divider {
-            background-color: black;
-          }
-
-          .info-bwb {
-            margin-left: auto;
-          }
-        }
-
-        .info-reason {
-          overflow: hidden;
-          width: 128.5632rem;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
-
-      &>.expense-content {
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        border-top: 0.4464rem solid #fff;
-
-        .receipt-box {
-          width: 49%;
-          height: 28.7184rem;
           padding: 2.0832rem;
-          overflow: hidden;
-          // border: 0.1488rem solid;
-          border-radius: 1.1904rem;
-          padding-top: 1.1904rem;
+          color: black;
 
-          &:last-child {
-            // border-left: 0;
+          .info-icon-num {
+            height: 4.7616rem;
+            width: 4.7616rem;
+            line-height: 4.7616rem;
+            text-align: center;
+            background-color: #3361FF;
+            color: #fff;
+            font-size: 2.8272rem;
+            font-weight: bold;
+            border-radius: 1.1904rem;
+            margin-right: 1.1904rem;
           }
 
-          .receipt-title {
-            font-size: 2.0832rem;
-            margin-bottom: 1.488rem;
-            color: black;
+          .info-type {
             display: flex;
-            flex-direction: row;
             align-items: center;
+            width: 128.5632rem;
 
-            &>.divider {
-              width: 0.4464rem;
-              height: 2.0832rem;
-              border-radius: 0.4464rem;
-              margin-right: 1.1904rem;
-              background-color: #3361ff;
+            .info-type-divider {
+              background-color: black;
+            }
+
+            .info-bwb {
+              margin-left: auto;
             }
           }
 
-          .receipt-list {
-            max-height: 19.7904rem;
-            display: flex;
-            flex-direction: row;
-            flex-wrap: wrap;
-            justify-content: flex-start;
-            align-items: center;
+          .info-reason {
             overflow: hidden;
-            overflow-y: auto;
+            width: 128.5632rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+          }
+        }
 
-            &::-webkit-scrollbar {
-              width: 1.488rem;
-              background-color: #f5f5f5;
-              border-radius: 1.3392rem;
+        &>.expense-content {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          border-top: 0.4464rem solid #fff;
+
+          .receipt-box {
+            width: 49%;
+            max-height: 28.7184rem;
+            padding: 2.0832rem;
+            overflow: hidden;
+            border-radius: 1.1904rem;
+            padding-top: 1.1904rem;
+
+            .receipt-title {
+              font-size: 2.0832rem;
+              margin-bottom: 1.488rem;
+              color: black;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+
+              &>.divider {
+                width: 0.4464rem;
+                height: 2.0832rem;
+                border-radius: 0.4464rem;
+                margin-right: 1.1904rem;
+                background-color: #3361ff;
+              }
             }
 
-            &::-webkit-scrollbar-thumb {
-              background-color: #c1c1c1;
-              border-radius: 1.3392rem;
+            .receipt-list {
+              max-height: 19.7904rem;
+              display: flex;
+              flex-direction: row;
+              flex-wrap: wrap;
+              justify-content: flex-start;
+              align-items: center;
+              overflow: hidden;
+              overflow-y: auto;
+
+              &::-webkit-scrollbar {
+                width: 1.488rem;
+                background-color: #f5f5f5;
+                border-radius: 1.3392rem;
+              }
+
+              &::-webkit-scrollbar-thumb {
+                background-color: #c1c1c1;
+                border-radius: 1.3392rem;
+              }
+
+              .receipt-item {
+                width: 48%;
+                height: 5.5056rem;
+                margin-bottom: 2%;
+                background-color: #ffffff;
+                border-radius: 1.1904rem;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                white-space: nowrap;
+                line-height: 5.3568rem;
+                padding: 0 1.488rem;
+                vertical-align: middle;
+                text-align: start;
+                margin-right: 2%;
+                color: #3361ff;
+
+                &:hover {
+                  cursor: pointer;
+                  color: #3361ff;
+                  border: 0.1488rem #3361ff solid;
+                  transition: all 0.3s;
+                }
+
+                .receipt-icon {
+                  height: 20px;
+                  margin-right: 0.2976rem;
+                  vertical-align: middle;
+                }
+
+                .attachment-icon {
+                  height: 3.2736rem;
+                  margin-right: 0.2976rem;
+                  vertical-align: middle;
+                }
+              }
+            }
+          }
+        }
+
+        &>.attachment-box {
+          height: 50px;
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          align-items: center;
+          width: 100%;
+          margin-top: 2.3808rem;
+
+          .attachment-item {
+            width: 49%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            padding: 0 1.488rem;
+            border-radius: 1.1904rem;
+            height: 60px;
+            color: black;
+
+            &:last-child {
+              // border-right: 0;
             }
 
-            .receipt-item {
-              width: 48%;
-              height: 5.5056rem;
-              margin-bottom: 2%;
-              background-color: #ffffff;
+            .file-item {
+              margin-left: 0.2976rem;
               border-radius: 1.1904rem;
+              width: 88%;
+              background-color: #ffffff;
+              height: 5.3568rem;
+              line-height: 5.3568rem;
+              vertical-align: middle;
+              text-align: start;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
-              line-height: 5.3568rem;
               padding: 0 1.488rem;
-              vertical-align: middle;
-              text-align: start;
-              margin-right: 2%;
               color: #3361ff;
 
               &:hover {
@@ -1079,85 +1224,25 @@
                 transition: all 0.3s;
               }
 
-              .receipt-icon {
-                height: 20px;
-                margin-right: 0.2976rem;
-                vertical-align: middle;
-              }
-
               .attachment-icon {
                 height: 3.2736rem;
                 margin-right: 0.2976rem;
                 vertical-align: middle;
               }
             }
-          }
-        }
-      }
 
-      &>.attachment-box {
-        height: 50px;
-        display: flex;
-        flex-direction: row;
-        justify-content: space-between;
-        align-items: center;
-        width: 100%;
-        margin-top: 2.3808rem;
-
-        .attachment-item {
-          width: 49%;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          padding: 0 1.488rem;
-          border-radius: 1.1904rem;
-          height: 60px;
-          color: black;
-
-          &:last-child {
-            // border-right: 0;
-          }
-
-          .file-item {
-            margin-left: 0.2976rem;
-            border-radius: 1.1904rem;
-            width: 88%;
-            background-color: #ffffff;
-            height: 5.3568rem;
-            line-height: 5.3568rem;
-            vertical-align: middle;
-            text-align: start;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            white-space: nowrap;
-            padding: 0 1.488rem;
-            color: #3361ff;
-
-            &:hover {
-              cursor: pointer;
-              color: #3361ff;
-              border: 0.1488rem #3361ff solid;
-              transition: all 0.3s;
+            &>.ht {
+              width: 79%;
             }
 
-            .attachment-icon {
-              height: 3.2736rem;
-              margin-right: 0.2976rem;
-              vertical-align: middle;
+            &>.ys {
+              width: 73%;
             }
           }
-
-          &>.ht {
-            width: 79%;
-          }
-
-          &>.ys {
-            width: 73%;
-          }
         }
+
       }
     }
-
   }
 }
 

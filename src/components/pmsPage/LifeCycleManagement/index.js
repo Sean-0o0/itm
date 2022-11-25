@@ -827,6 +827,7 @@ class LifeCycleManagementTabs extends React.Component {
             
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
+        fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
         currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
         closePaymentProcessModal={this.closePaymentProcessModal}/>}
 

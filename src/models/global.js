@@ -143,6 +143,7 @@ export default {
               const { userid } = userBasicInfoTemp;
               if (userid) {
                 localStorage.setItem('firstUserID', userid);
+                localStorage.setItem('orgName', userBasicInfoTemp?.orgname);
               }
             }
             yield put({

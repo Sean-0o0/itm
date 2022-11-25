@@ -1,29 +1,31 @@
-import React, { useEffect, useState } from 'react';
-import { Row, Col, Popconfirm, Modal, Form, Input, Table, DatePicker, message, Upload, Button, Icon, Select, Pagination, Spin, Radio } from 'antd';
-import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
+import React, { useState } from 'react';
+import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber } from 'antd';
 import moment from 'moment';
 const { TextArea } = Input;
 const LOGIN_USER = JSON.parse(sessionStorage.getItem("user"));
 const LOGIN_USER_ID = LOGIN_USER.id;
 const LOGIN_USER_NAME = LOGIN_USER.name;
+const LOGIN_USER_ORG_NAME = localStorage.getItem('orgName');
 
 
 export default function FormOperate(props) {
 
     const [isSkzhOpen, setIsSkzhOpen] = useState(false);
-
     const { form, formData, setAddSkzhModalVisible } = props;
     const {
-        bt, setBt, sfyht, setSfyht, htje, setHtje, yfkje, setYfkje, sqrq, setSqrq,
-        fjzs, setFjzs, zhfw, setZhfw, skzh, setSkzh, ms, setMs, dgskzh, setDgskzh,
-        fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
-        fileName, setFileName, bmName
+        sfyht, setSfyht, htje, yfkje, setSqrq,
+        zhfw, setZhfw, skzh, setSkzh, dgskzh,
+        // fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
+        // fileName, setFileName, 
+        setskzhId, setYkbSkzhId
     } = formData;
-    const { getFieldDecorator } = form;
+    const { getFieldDecorator, getFieldValue } = form;
 
+    //是否有合同变化
     const onSfyhtChange = (e) => {
         setSfyht(e.target.value);
     };
+    //账户范围变化
     const onZhfwChange = (e) => {
         let rec = [...dgskzh];
         let tempArr = rec.filter(x => {
@@ -34,11 +36,18 @@ export default function FormOperate(props) {
         setZhfw(e.target.value);
         setSkzh(p => [...finalArr]);
     };
-    const handleSkzhChange = () => {
+    //收款账户变化
+    const handleSkzhChange = (v) => {
+        const obj = skzh?.filter(x => x.khmc === v)[0];
+        setskzhId(obj?.id);
+        setYkbSkzhId(obj?.ykbid);
     };
-    const onSqrqChange = () => {
+    //申请日期变化
+    const onSqrqChange = (d, ds) => {
+        setSqrq(ds);
+    };
 
-    };
+
     //输入框 - 灰
     const getInputDisabled = (label, value, labelCol, wrapperCol) => {
         return (
@@ -53,58 +62,60 @@ export default function FormOperate(props) {
         );
     };
     //附件
-    const getFjUpload = () => {
-        return (
-            <Col span={12}>
-                <Form.Item label="附件" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
-                    required
-                    help={isFjTurnRed ? '附件不允许空值' : ''}
-                    validateStatus={isFjTurnRed ? 'error' : 'success'}
-                >
-                    <Upload
-                        showUploadList={{
-                            // showDownloadIcon: true,
-                            showRemoveIcon: true,
-                            showPreviewIcon: true,
-                        }}
-                        onChange={(info) => {
-                            let list = [...info.fileList];
-                            list = list.slice(-1);
-                            setFileList(p => [...list]);
-                            if (list.length === 0) {
-                                setIsFjTurnRed(true);
-                            } else {
-                                setIsFjTurnRed(false);
-                            }
-                        }}
-                        beforeUpload={(file, fileList) => {
-                            let reader = new FileReader(); //实例化文件读取对象
-                            reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                            reader.onload = (e) => { //文件读取成功完成时触发
-                                let urlArr = e.target.result.split(',');
-                                setFileUrl(urlArr[1]);
-                                setFileName(file.name);
-                            }
-                        }}
-                        accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
-                        fileList={[...fileList]}>
-                        <Button type="dashed">
-                            <Icon type="upload" />点击上传
-                        </Button>
-                    </Upload>
-                </Form.Item>
-            </Col>
-        );
-    };
+    // const getFjUpload = () => {
+    //     return (
+    //         <Col span={12}>
+    //             <Form.Item label="附件" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
+    //                 required
+    //                 help={isFjTurnRed ? '附件不允许空值' : ''}
+    //                 validateStatus={isFjTurnRed ? 'error' : 'success'}
+    //             >
+    //                 <Upload
+    //                     showUploadList={{
+    //                         // showDownloadIcon: true,
+    //                         showRemoveIcon: true,
+    //                         showPreviewIcon: true,
+    //                     }}
+    //                     onChange={(info) => {
+    //                         let list = [...info.fileList];
+    //                         list = list.slice(-1);
+    //                         setFileList(p => [...list]);
+    //                         if (list.length === 0) {
+    //                             setIsFjTurnRed(true);
+    //                         } else {
+    //                             setIsFjTurnRed(false);
+    //                         }
+    //                     }}
+    //                     beforeUpload={(file, fileList) => {
+    //                         let reader = new FileReader(); //实例化文件读取对象
+    //                         reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
+    //                         reader.onload = (e) => { //文件读取成功完成时触发
+    //                             let urlArr = e.target.result.split(',');
+    //                             setFileUrl(urlArr[1]);
+    //                             setFileName(file.name);
+    //                         }
+    //                     }}
+    //                     accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
+    //                     fileList={[...fileList]}>
+    //                     <Button type="dashed">
+    //                         <Icon type="upload" />点击上传
+    //                     </Button>
+    //                 </Upload>
+    //             </Form.Item>
+    //         </Col>
+    //     );
+    // };
     //输入框
-    const getInput = ({ label, labelCol, wrapperCol, dataIndex, initialValue, rules }) => {
+    const getInput = ({ label, labelCol, wrapperCol, dataIndex, initialValue, rules, maxLength, node }) => {
+        maxLength = maxLength || 150;
+        node = node || <Input maxLength={maxLength} placeholder={`请输入${label}`} />;
         return (
             <Col span={12}>
                 <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
                     {getFieldDecorator(dataIndex, {
                         initialValue,
                         rules,
-                    })(<Input placeholder={`请输入${label}`} />)}
+                    })(node)}
                 </Form.Item>
             </Col>
         );
@@ -128,7 +139,7 @@ export default function FormOperate(props) {
             <Col span={12}>
                 <Form.Item label="申请日期" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
                     {getFieldDecorator('sqrq', {
-                        initialValue: sqrq ? moment(sqrq) : moment(),
+                        initialValue: moment(),
                         rules: [
                             {
                                 required: true,
@@ -189,9 +200,11 @@ export default function FormOperate(props) {
         return (
             <Col span={24}>
                 <Form.Item label="描述" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-                    <TextArea placeholder='请输入描述' value={ms} maxLength={1000} autoSize={{ maxRows: 6, minRows: 3 }}>
-                    </TextArea>
-                    <span className='ms-count-txt'>{ms?.length}/{1000}</span>
+                    {getFieldDecorator('ms', {
+                        initialValue: '',
+                    })(<TextArea className='ms-textarea' placeholder='请输入描述' maxLength={1000} autoSize={{ maxRows: 6, minRows: 3 }}>
+                    </TextArea>)}
+                    <div className='ms-count-txt'>{String(getFieldValue('ms'))?.length}/{1000}</div>
                 </Form.Item>
             </Col>
         );
@@ -203,7 +216,7 @@ export default function FormOperate(props) {
         labelCol: 6,
         wrapperCol: 18,
         dataIndex: 'bt',
-        initialValue: bt,
+        initialValue: '',
         rules: [
             {
                 required: true,
@@ -222,7 +235,12 @@ export default function FormOperate(props) {
                 required: true,
                 message: '合同金额不允许空值',
             },
-        ]
+        ],
+        node: <InputNumber className='htje-input-number'
+            max={99999999999.99} min={0} step={0.01}
+            precision={2}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\$\s?|(,*)/g, '')} />,
     };
     const yfkjeInputProps = {
         label: '已付款金额(CNY)',
@@ -235,27 +253,37 @@ export default function FormOperate(props) {
                 required: true,
                 message: '已付款金额不允许空值',
             },
-        ]
+        ],
+        node: <InputNumber className='yfkje-input-number'
+            max={99999999999.99} min={0} step={0.01}
+            precision={2}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\$\s?|(,*)/g, '')} />,
     };
     const fjzsInputProps = {
         label: '附件张数',
         labelCol: 6,
         wrapperCol: 18,
         dataIndex: 'fjzs',
-        initialValue: fjzs,
+        initialValue: '',
         rules: [
             {
                 required: true,
                 message: '附件张数不允许空值',
             },
-        ]
+            {
+                pattern: /^\d{0,13}$/,
+                message: '只能输入整数',
+            },
+        ],
+        maxLength: 13,
     };
     return (
         <Form style={{ padding: '0 24px' }}>
             <div className='basic-info-title'>基本信息</div>
             <Row>
                 {getInputDisabled('提交人', LOGIN_USER_NAME, 6, 18)}
-                {getInputDisabled('部门', bmName, 9, 15)}
+                {getInputDisabled('部门', LOGIN_USER_ORG_NAME, 9, 15)}
             </Row>
             <Row>
                 {getInput(btInputProps)}
@@ -264,7 +292,7 @@ export default function FormOperate(props) {
             <div className='payment-info-title'>付款信息</div>
             <Row>
                 {getRadio('是否有合同', sfyht, onSfyhtChange, '是', '否')}
-                {getInputDisabled('法人实体', '红红火火恍恍惚惚', 9, 15)}
+                {getInputDisabled('法人实体', '浙商证券股份有限公司（ZSZQ）', 9, 15)}
             </Row>
             <Row>
                 {getInput(htjeInputProps)}
@@ -276,7 +304,7 @@ export default function FormOperate(props) {
             </Row>
             <Row>
                 {getInput(fjzsInputProps)}
-                {getFjUpload()}
+                {/* {getFjUpload()} */}
             </Row>
             <Row>
                 {getTextArea()}

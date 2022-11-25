@@ -32,6 +32,9 @@ const {
     queryUserInfo,
     queryPaymentAccountList,
     queryPaymentFlowInfo,
+    queryPaymentFlowDetail,
+    creatPaymentFlow,
+    queryPaymentFlowDetailFile,
   },
 } = api;
 
@@ -307,6 +310,36 @@ export async function QueryPaymentAccountList(payload) {
 export async function QueryPaymentFlowInfo(payload) {
   const option = {
     url: queryPaymentFlowInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//创建单据时获取费用明细 -付款流程发起
+export async function QueryPaymentFlowDetail(payload) {
+  const option = {
+    url: queryPaymentFlowDetail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//创建单据 -付款流程发起
+export async function CreatPaymentFlow(payload) {
+  const option = {
+    url: creatPaymentFlow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//创建单据 -付款流程发起
+export async function QueryPaymentFlowDetailFile(payload) {
+  const option = {
+    url: queryPaymentFlowDetailFile,
     method: 'post',
     data: payload,
   };
