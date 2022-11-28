@@ -309,7 +309,7 @@
               position: absolute;
               font-size: 2.3808rem;
               color: #bacaff;
-              right: 18.6656rem;
+              right: 16.6656rem;
             }
 
             .lcb-item {
@@ -317,7 +317,7 @@
               position: relative;
               align-items: center;
               height: 8.4816rem;
-              width: 34.22rem;
+              width: 29.699rem;
               background-color: #fff;
               box-shadow: 0 0 0.2976rem #b4b4b4;
               border-radius: 0.5952rem;
@@ -445,7 +445,7 @@
             width: 50%;
             height: 100%;
             box-shadow: 0 0 0.2976rem #ebf0ff;
-            background: linear-gradient(360deg, rgba(51, 97, 255, 0.05) 0%, rgba(98, 154, 255, 0) 100%);
+            background: linear-gradient(360deg, rgba(51, 97, 255, 27%) 0%, rgba(98, 154, 255, 0) 100%);
             padding: 2.3808rem;
 
             .info-num {
@@ -474,7 +474,45 @@
               }
             }
 
-            .info-medal {}
+            .info-medal {
+              margin-top: 1.7856rem;
+              display: flex;
+              flex-direction: row;
+
+              &>.medal-item {
+                padding: 2.3808rem;
+                font-size: 2.3808rem;
+                font-family: PingFangSC-Medium, PingFang SC;
+                font-weight: bold;
+                color: #606266;
+                width: 32%;
+                height: 14.5824rem;
+                margin-right: 2%;
+                background-color: #ffffff;
+                border-radius: 0.5952rem;
+                position: relative;
+                overflow: hidden;
+
+                &:last-child {
+                  margin-right: 0;
+                }
+
+                .medal-num {
+                  font-size: 3.5712rem;
+                  font-family: Roboto-Medium, Roboto;
+                  font-weight: bold;
+                  color: #3361FF;
+                  margin-top: 4.464rem;
+                }
+
+                .medal-bg {
+                  position: absolute;
+                  bottom: 0;
+                  right: 0;
+                  height: 6.696rem;
+                }
+              }
+            }
           }
 
           .glory-graph {
@@ -1006,7 +1044,7 @@
     line-height: 2.976rem;
     text-align: end;
     position: absolute;
-    top: 0.744rem;
+    top: 0.7rem;
     right: 2.6128rem;
     background-color: #ffffff;
   }
@@ -1197,10 +1235,6 @@
             border-radius: 1.1904rem;
             height: 60px;
             color: black;
-
-            &:last-child {
-              // border-right: 0;
-            }
 
             .file-item {
               margin-left: 0.2976rem;

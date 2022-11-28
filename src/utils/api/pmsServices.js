@@ -30,4 +30,5 @@ export default [
   {code: '', key: 'queryPaymentFlowDetail', url: '/EKB/v1/queryPaymentFlowDetail', dis: '创建单据时获取费用明细'},
   {code: '', key: 'creatPaymentFlow', url: '/EKB/v1/creatPaymentFlow', dis: '创建单据'},
   {code: '', key: 'queryPaymentFlowDetailFile', url: '/EKB/v1/queryPaymentFlowDetailFile', dis: '查询费用明细预览时需要的文档信息'},
+  {code: '', key: 'getApplyListProvisionalAuth', url: '/EKB/v1/getApplyListProvisionalAuth', dis: '获取预览付款单的url'},
 ];

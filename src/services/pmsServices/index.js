@@ -35,6 +35,7 @@ const {
     queryPaymentFlowDetail,
     creatPaymentFlow,
     queryPaymentFlowDetailFile,
+    getApplyListProvisionalAuth,
   },
 } = api;
 
@@ -340,6 +341,16 @@ export async function CreatPaymentFlow(payload) {
 export async function QueryPaymentFlowDetailFile(payload) {
   const option = {
     url: queryPaymentFlowDetailFile,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//获取预览付款单的url
+export async function GetApplyListProvisionalAuth(payload) {
+  const option = {
+    url: getApplyListProvisionalAuth,
     method: 'post',
     data: payload,
   };
