@@ -95,7 +95,7 @@ class WorkBench extends React.Component {
         current: 0,
         pageSize: 1000,
         total: 1,
-        sort: 1
+        sort: ''
       }
     ).then(ret => {
       const { code = 0, record = [], totalrows = 0 } = ret;
