@@ -23,33 +23,8 @@ class FastFunction extends React.Component {
     fileAddUrl: '/OperateProcessor?operate=TXMXX_XMXX_NEWPROGRAM&Table=TXMXX_XMXX',
     // manageUrl: '/OperateProcessor?operate=TFX_JBXX_ADD&Table=TFX_JBXX',
     curSliderKey: 0,
-    sliderData: [],
   };
   sliderRef = React.createRef(null);
-  componentDidMount() {
-    this.queryOverBudgetData();
-  }
-
-  queryOverBudgetData = () => {
-    FetchQueryOwnerMessage({
-      cxlx: "OVERBUDGET",
-      date: 20220101,
-      paging: -1,
-      current: 0,
-      pageSize: 1000,
-      total: 1,
-      sort: 1
-    }).then(res => {
-      if (res.success) {
-        console.log(res.record);
-        this.setState({
-          sliderData: [...res.record]
-        });
-      }
-    }).catch(error => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  };
 
   closeFileAddModal = () => {
     this.setState({
@@ -64,7 +39,8 @@ class FastFunction extends React.Component {
   };
 
   render() {
-    const { fileAddVisible, fileAddUrl, manageVisible, manageUrl, curSliderKey, sliderData } = this.state;
+    const { fileAddVisible, fileAddUrl, manageVisible, manageUrl, curSliderKey } = this.state;
+    const { sliderData } = this.props;
     const fileAddModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,

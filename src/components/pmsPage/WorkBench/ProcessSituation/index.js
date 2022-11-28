@@ -51,7 +51,7 @@ class ProcessSituation extends React.Component {
         id, userykbid,
       }).then(res => {
         window.open(res.url);
-      }).catch(e => console.log(e));
+      }).catch(e => console.error(e));
     }
   }
 

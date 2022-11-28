@@ -624,6 +624,7 @@ class LifeCycleManagementTabs extends React.Component {
 
   //文件wps预览-勿删
   handleClick = (item) => {
+    console.log(item);
     this.fetchQueryWpsWDXX(item);
   }
 

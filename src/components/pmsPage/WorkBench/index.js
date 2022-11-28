@@ -32,6 +32,7 @@ class WorkBench extends React.Component {
     ProjectScheduleStatusData: [],
     ProjectScheduleDetailData: [],
     ProjectScheduleTotal: 0,
+    sliderData: [],
   };
 
   componentDidCache = () => {
@@ -39,13 +40,11 @@ class WorkBench extends React.Component {
   }
 
   componentDidRecover = () => {
-    this.fetchQueryAllOwnerMessage();
     this.fetchQueryOwnerMessage();
     this.fetchQueryOwnerWorkflow();
     this.fetchQueryOwnerProjectList();
   }
   componentDidMount() {
-    this.fetchQueryAllOwnerMessage();
     this.fetchQueryOwnerMessage();
     this.fetchQueryOwnerWorkflow();
     this.fetchQueryOwnerProjectList();
@@ -57,7 +56,7 @@ class WorkBench extends React.Component {
     FetchQueryOwnerMessage(
       {
         cxlx: cxlx ? cxlx : "ALL",
-        date: date ? date : defaultDate,
+        date: Number(date ? date : defaultDate),
         paging: 1,
         current: page ? page : 1,
         pageSize: 6,
@@ -66,24 +65,20 @@ class WorkBench extends React.Component {
       }
     ).then(ret => {
       const { code = 0, record = [], totalrows = 0 } = ret;
-      // console.log("recordrecord",record)
       if (code === 1) {
-        // if(0<record.length%6 <= 5){
-        //   for(let i=0;i<=record.length%6;i++){
-        //     record.push(record[0])
-        //   }
-        // }
         this.setState({
           TodoItemsData: record,
           TodoItemsTotal: totalrows,
           wdsl: record[0]?.wdsl,
           wzxsl: record[0]?.wzxsl,
         });
+        this.fetchQueryAllOwnerMessage();
       }
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
   fetchQueryAllOwnerMessage = (page, date) => {
     const defaultDate = moment(new Date())
       .format('YYYYMMDD')
@@ -91,7 +86,7 @@ class WorkBench extends React.Component {
       {
         cxlx: "ALL",
         date: 20220101,
-        paging: 0,
+        paging: -1,
         current: 0,
         pageSize: 1000,
         total: 1,
@@ -109,11 +104,32 @@ class WorkBench extends React.Component {
         this.setState({
           AllTodoItemsData: record,
         });
+        this.queryOverBudgetData();
       }
     }).catch(error => {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
+  queryOverBudgetData = () => {
+    FetchQueryOwnerMessage({
+      cxlx: "OVERBUDGET",
+      date: 20220101,
+      paging: -1,
+      current: 0,
+      pageSize: 1000,
+      total: 1,
+      sort: 1
+    }).then(res => {
+      if (res.success) {
+        this.setState({
+          sliderData: [...res.record]
+        });
+      }
+    }).catch(error => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  };
 
   fetchQueryOwnerWorkflow = (page, pageSize) => {
     FetchQueryOwnerWorkflow({
@@ -232,7 +248,8 @@ class WorkBench extends React.Component {
       ProcessSituationTotal = 0,
       ProjectScheduleData = [],
       ProjectScheduleTotal = 0,
-      ProjectScheduleDetailData = []
+      ProjectScheduleDetailData = [],
+      sliderData,
     } = this.state;
     return (
       <div style={{ height: 'calc(100% - 4.5rem)' }}>
@@ -256,7 +273,7 @@ class WorkBench extends React.Component {
                 width: '25%',
                 overflow: 'hidden'
               }}>
-                <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList} />
+                <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList} sliderData={sliderData}/>
               </div>
             </Col>
           </Row>
