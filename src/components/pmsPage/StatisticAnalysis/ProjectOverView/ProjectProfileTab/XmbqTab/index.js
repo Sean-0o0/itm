@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
-import { format } from 'prettier';
+
 export default function XmbcTab() {
     const xmbqChartRef = useRef(null);
     useEffect(() => {
@@ -9,29 +9,15 @@ export default function XmbcTab() {
             { value: 102, name: '合作开发' },
         ];
         const xmbqChartOption = {
-            // tooltip: {
-            //     trigger: 'item'
-            // },
             legend: {
                 orient: 'vertical',
                 left: '50%',  //图例距离左的距离
                 y: 'center',  //图例上下居中
                 itemGap: 20,
-                // formatter: function (name) {
-                //     let target, percentage;
-                //     for (let i = 0; i < dataCake.length; i++) {
-                //         if (dataCake[i].name === name) {
-                //             target = dataCake[i].value
-                //             percentage = dataCake[i].percentage
-                //         }
-                //     }
-                //     let arr = [name + ' ', " " + target + "人 ", " " + percentage]
-                //     return arr.join(" ")
-                // },
             },
             series: [
                 {
-                    // name: 'Access From',
+                    name: 'Access From',
                     type: 'pie',
                     radius: ['40%', '70%'],
                     avoidLabelOverlap: false,
@@ -44,11 +30,6 @@ export default function XmbcTab() {
                                 params.name, `${params.percent}%`
                             ].join('\n');
                         },
-                        // rich: {
-                        //     a: {
-                        //         marginBottom: '3px'
-                        //     }
-                        // },
                         color: 'black',                   
                         fontFamily: 'PingFangSC-Regular, PingFang SC',
                     },
@@ -56,7 +37,6 @@ export default function XmbcTab() {
                         label: {
                             show: true,
                             fontSize: '14',
-                            // fontWeight: 'bold'
                         }
                     },
                     labelLine: {

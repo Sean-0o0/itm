@@ -7,12 +7,6 @@ export default function DigitalClassStatistic() {
   
     useEffect(() => {
       const digitalClassChartOption = {
-        // tooltip: {
-        //   trigger: 'axis',
-        //   axisPointer: {
-        //     type: 'shadow'
-        //   }
-        // },
         grid: {
           left: '3%',
           right: '4%',
