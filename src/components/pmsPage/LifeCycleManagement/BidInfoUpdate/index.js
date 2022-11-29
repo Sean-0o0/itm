@@ -263,7 +263,7 @@ class BidInfoUpdate extends React.Component {
                 arr.push({
                     id,
                     [`gysmc${id}`]: this.state.glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
-                    [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
+                    // [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
                 });
             }
             this.setState({
@@ -422,13 +422,13 @@ class BidInfoUpdate extends React.Component {
                 ellipsis: true,
                 editable: true,
             },
-            {
-                title: <><span style={{ color: 'red' }}>*</span>供应商收款账号</>,
-                dataIndex: 'gysskzh',
-                key: 'gysskzh',
-                ellipsis: true,
-                editable: true,
-            },
+            // {
+            //     title: <><span style={{ color: 'red' }}>*</span>供应商收款账号</>,
+            //     dataIndex: 'gysskzh',
+            //     key: 'gysskzh',
+            //     ellipsis: true,
+            //     editable: true,
+            // },
             {
                 title: '操作',
                 dataIndex: 'operator',
@@ -591,7 +591,8 @@ class BidInfoUpdate extends React.Component {
                                 arr.map((item) => {
                                     let obj = {
                                         GYSMC: String(glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
-                                        GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
+                                        GYSFKZH: "-1"
+                                        // GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
                                     };
                                     newArr.push(obj);
                                 });
@@ -603,7 +604,8 @@ class BidInfoUpdate extends React.Component {
                                     documentData,
                                     fileLength,
                                     glgys: 0,
-                                    gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
+                                    gysfkzh: -1,
+                                    // gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
                                     ijson: JSON.stringify(newArr),
                                     lybzj: Number(getFieldValue('lybzj')),
                                     objectName: 'TXMXX_ZBXX',
@@ -697,7 +699,7 @@ class BidInfoUpdate extends React.Component {
                                 />
                             </Col>
                         </Row>
-                        <Row>
+                        {/* <Row>
                             <Col span={12}>
                                 <Form.Item label="账户范围" required labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
                                     <Radio.Group value={radioValue} onChange={this.OnRadioChange}>
@@ -745,7 +747,7 @@ class BidInfoUpdate extends React.Component {
                                     alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
                                 />
                             </Col>
-                        </Row>
+                        </Row> */}
                         <Row>
                             <Col span={12}><Form.Item label="履约保证金金额（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
                                 {getFieldDecorator('lybzj', {

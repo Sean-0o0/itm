@@ -403,9 +403,10 @@ class LifeCycleManagementTabs extends React.Component {
   //流程发起
   handleSend = (item) => {
     if (item.sxmc.includes('付款流程')) {
-      this.setState({
-        paymentModalVisible: true,
-      });
+      // this.setState({
+      //   paymentModalVisible: true,
+      // });
+      message.info('功能开发中，暂时无法使用', 1);
       return;
     }
     this.getSendUrl(item.sxmc);
