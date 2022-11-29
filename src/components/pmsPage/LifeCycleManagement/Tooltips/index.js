@@ -1,13 +1,18 @@
 import React from 'react';
-import { Button, Input, Select, Row, Col, Tooltip, message } from 'antd';
+import { Button, Input, Select, Row, Col, Tooltip, message, Icon } from 'antd';
 import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
-import {FetchQueryLifecycleStuff, FetchQueryOAUrl} from "../../../../services/pmsServices";
+import { FetchQueryLifecycleStuff, FetchQueryOAUrl } from "../../../../services/pmsServices";
+import axios from 'axios'
+import config from '../../../../utils/config';
+
+const { api } = config;
+const { pmsServices: { getStreamByLiveBos } } = api;
 
 const { Option } = Select;
 
 class Tooltips extends React.Component {
-  state = {};
+  state = { src: '' };
 
   handleFillOut = (item) => {
     // console.log("item", item);
@@ -37,7 +42,7 @@ class Tooltips extends React.Component {
       sxid: item.sxid,
       xmmc: item.xmid,
     }).then((ret = {}) => {
-      const {code = 0, record = []} = ret;
+      const { code = 0, record = [] } = ret;
       if (code === 1) {
         // console.log("record",record)
         window.open(record.url)
@@ -60,11 +65,38 @@ class Tooltips extends React.Component {
     }
   }
 
+  print = async () => {
+    const { xmid } = this.props;
+    await axios({
+      method: 'GET',
+      url: getStreamByLiveBos,
+      params: {
+        xmid: xmid
+      },
+      responseType: 'blob' // 更改responseType类型为 blob
+    }).then(res => {
+      let blob = new Blob([res.data], { type: 'application/pdf' });
+      const src = URL.createObjectURL(blob);
+      this.setState({
+        src
+      }, () => {
+        const printIframe = document.getElementById("Iframe");
+        printIframe.onload = (() => {
+          printIframe.contentWindow.print();
+        })
+      })
+    }).catch(err => {
+      message.error(err)
+    })
+  }
+
   render() {
-    const {type, status, item, xmid} = this.props;
+    const { src } = this.state;
+    const { type, status, item, xmid } = this.props;
     item.xmid = xmid;
     return (
-      <div>
+      <div className={item.sxmc.includes('付款流程')?'rowline-cont':''}>
+        {item.sxmc.includes('付款流程') &&<iframe src={src} id='Iframe' style={{ display: 'none' }} />}
         {
           type.includes("信息录入") ? (status === " " ? <Tooltip title="录入">
             <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
@@ -78,13 +110,20 @@ class Tooltips extends React.Component {
         {
           type.includes("流程") ? (status === " " ?
             <Tooltip title="发起">
-              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                 className="iconfont icon-send" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}/>
-            </Tooltip> : <Tooltip title="查看">
-              <a style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                 className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-                 onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}/>
-            </Tooltip>) : ''
+              <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                className="iconfont icon-send" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} />
+            </Tooltip> : <>
+              {item.sxmc.includes('付款流程') && <Tooltip title="打印">
+                <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }} onClick={this.print}>
+                  <Icon type="printer" />
+                </a>
+              </Tooltip>}
+              <Tooltip title="查看">
+                <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                  className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
+                  onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)} />
+              </Tooltip>
+            </>) : ''
         }
         {
           type.includes("文档") ||

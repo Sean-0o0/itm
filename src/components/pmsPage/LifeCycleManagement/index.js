@@ -19,7 +19,6 @@ import {
 import ContractInfoUpdate from './ContractInfoUpdate';
 import BidInfoUpdate from './BidInfoUpdate';
 
-import moment from 'moment';
 import WPSFrame from '../../../js/wps_general'
 import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../utils/config";
@@ -76,7 +75,7 @@ class LifeCycleManagementTabs extends React.Component {
     fileList: [],
     fileListVisible: false,
     //付款流程发起弹窗显示
-    paymentModalVisible: false,
+    paymentModalVisible: false
   };
 
   componentDidMount() {
@@ -713,7 +712,7 @@ class LifeCycleManagementTabs extends React.Component {
       operationListTotalRows,
       fileList,
       fileListVisible,
-      paymentModalVisible,
+      paymentModalVisible
     } = this.state;
 
     const uploadModalProps = {
@@ -825,7 +824,7 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
-            
+
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
         fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
@@ -870,6 +869,7 @@ class LifeCycleManagementTabs extends React.Component {
               });
             }} />
         </div>
+
         <div className='lifecyclemanage-box'>
           {
             basicData.map((item = {}, index) => {
@@ -958,7 +958,7 @@ class LifeCycleManagementTabs extends React.Component {
                           {
                             sort.map((item = {}, index) => {
                               // console.log("index", index)
-                              // console.log("sort.length", sort.length)
+                              // console.log("item", item)
                               // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                               let num = 0
                               sort[index].List.map((item = {}, ind) => {
