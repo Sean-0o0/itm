@@ -50,7 +50,6 @@ const EditableCell = (props) => {
     const save = e => {
         const { record, handleSave, formdecorate } = props;
         let dataIndexArr = [
-            // 'cplTime' + record['id'],
             'annualPlan' + record['id'],
             'curProgress' + record['id'],
             'curRate' + record['id'],
@@ -63,6 +62,7 @@ const EditableCell = (props) => {
                 return;
             }
             toggleEdit();
+            // console.log(values);
             handleSave({ ...record, ...values });
         });
 

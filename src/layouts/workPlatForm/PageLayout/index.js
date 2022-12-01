@@ -461,12 +461,12 @@ class MainPageLayout extends React.PureComponent {
                   <CacheSwitch>
                     {
                       // 路由
-                      routes.map(({key, path, component, keepAlive = true}) => {
+                      routes.map(({key, path, component, keepAlive = true}, index) => {
                         if( path && !path.includes('/index')){
                           return (
                             path && (
                               <CacheRoute
-                                key={key || path}
+                                key={index}
                                 when={() => {
                                     return keepAlive;
                                 }}
@@ -478,7 +478,7 @@ class MainPageLayout extends React.PureComponent {
                               />
                             )
                           );}
-                          return  <CacheRoute key={key || path}
+                          return  <CacheRoute key={index}
                           when={() => {
                               return keepAlive;
                           }}

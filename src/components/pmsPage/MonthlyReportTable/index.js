@@ -16,13 +16,14 @@ export default function MonthlyReportTable() {
     const [currentXmid, setCurrentXmid] = useState(-1);
     const [edited, setEdited] = useState(false);
     const [txrData, setTxrData] = useState([]);
+    const [txrChange, setTxrChange] = useState(false);
 
     useEffect(() => {
         queryProjectData();
         getTxrData();
     }, []);
     
-
+    //填写人下拉框数据
     const getTxrData = () => {
         QueryUserInfo({
             type: '信息技术事业部'
@@ -33,6 +34,7 @@ export default function MonthlyReportTable() {
             }
         })
     };
+    //项目下拉框数据
     const queryProjectData = () => {
         FetchQueryOwnerProjectList({
             paging: -1,
@@ -45,6 +47,7 @@ export default function MonthlyReportTable() {
             }
         });
     };
+    //表格数据
     const queryTableData = (yf, xmid, txrData) => {
         QueryMonthlyList({
             month: Number(yf),
@@ -86,6 +89,7 @@ export default function MonthlyReportTable() {
         })
         setTableLoading(false);
     };
+    //表格跨行合并
     const getRowSpanCount = (data, key, target) => {
         if (!Array.isArray(data)) return 1;
         data = data.map(_ => _[key]); // 只取出筛选项

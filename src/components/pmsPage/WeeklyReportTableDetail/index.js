@@ -75,9 +75,12 @@ export default function WeeklyReportDetail() {
                 const newArr = res.record.map(item => {
                     return {
                         id: item.id,
-                        ['module']: item.mk.trim(),
-                        ['sysBuilding']: item.xtjs.trim(),
-                        ['manager']: item.fzr.trim(),
+                        module: item.mk.trim(),
+                        sysBuilding: item.xtjs.trim(),
+                        manager: item.fzr.trim(),
+                        lcbmc: item.lcbmc.trim(),
+                        lcbjd: item.lcbjd.trim(),
+                        lcbbz: item.lcbbz.trim(),
                         ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
                         ['curProgress' + item.id]: item.dqjz.trim(),
@@ -91,8 +94,11 @@ export default function WeeklyReportDetail() {
                     pre[current.module] = pre[current.module] || [];
                     pre[current.module].push({
                         id: current.id,
-                        ['sysBuilding']: current['sysBuilding'],
-                        ['manager']: current['manager'],
+                        sysBuilding: current.sysBuilding,
+                        manager: current.manager,
+                        lcbmc: current.lcbmc,
+                        lcbjd: current.lcbjd,
+                        lcbbz: current.lcbbz,
                         ['annualPlan' + current.id]: current['annualPlan' + current.id],
                         ['cplTime' + current.id]: current['cplTime' + current.id],
                         ['curProgress' + current.id]: current['curProgress' + current.id],

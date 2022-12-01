@@ -116,12 +116,15 @@ const EditableCell = (props) => {
     };
     const handleTxrChange = (arr) => {
         const { record, handleSave } = props;
-            toggleEdit();
-            let newVal = {
-                ['txr' + record['id']]: [...arr],
-            };
-            setEdited(true);
-            handleSave({ ...record, ...newVal });
+        toggleEdit();
+        let newVal = {
+            ['txr' + record['id']]: [...arr],
+        };
+        setEdited(true);
+        handleSave({ ...record, ...newVal });
+
+        window.dispatchEvent(new Event('resize'));//解决行高不对其的bug 
+        console.log('填写人数据改变');
     };
 
     const renderItem = (form, dataIndex, record) => {
@@ -143,25 +146,25 @@ const EditableCell = (props) => {
                 <Form.Item style={{ margin: 0 }}>
                     {renderItem(formdecorate, dataIndex, record)}
                 </Form.Item>
-            ) 
-            : 
-            dataIndex !== 'txr' ?
-             (
-                <Tooltip title={String(record[dataIndex + record['id']])}>
-                    <div
-                        className="editable-cell-value-wrap"
-                        onClick={toggleEdit}
-                    >
-                        {String(record[dataIndex + record['id']])}
-                        {/* {dataIndex === 'txr' ? txrValue.join('、') : String(record[dataIndex + record['id']])} */}
-                    </div>
-                </Tooltip>
-            ) 
-            : (
-                <Form.Item style={{ margin: 0 }}>
-                    {renderItem(formdecorate, dataIndex, record)}
-                </Form.Item>
             )
+            :
+            dataIndex !== 'txr' ?
+                (
+                    <Tooltip title={String(record[dataIndex + record['id']])}>
+                        <div
+                            className="editable-cell-value-wrap"
+                            onClick={toggleEdit}
+                        >
+                            {String(record[dataIndex + record['id']])}
+                            {/* {dataIndex === 'txr' ? txrValue.join('、') : String(record[dataIndex + record['id']])} */}
+                        </div>
+                    </Tooltip>
+                )
+                : (
+                    <Form.Item style={{ margin: 0 }}>
+                        {renderItem(formdecorate, dataIndex, record)}
+                    </Form.Item>
+                )
         );
     };
     return (

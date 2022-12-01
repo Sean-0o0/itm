@@ -11,11 +11,12 @@ const { pmsServices: { digitalSpecialClassWeeklyReportExcel } } = api;
 const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
-    const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading, groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, } = props;
+    const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading,
+        groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, } = props;
     const [isSaved, setIsSaved] = useState(false);
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
-    const [authIdAData, setAuthIdData] = useState([]);//权限用户id
+    const [authIdData, setAuthIdData] = useState([]);//权限用户id
 
     // const downloadRef = useRef(null);
 
@@ -45,17 +46,20 @@ const TableBox = (props) => {
         const keys = Object.keys(row);
         //去空格
         const newRow = {
-            "id": row.id,
-            "module": row.module,
-            "sysBuilding": row.sysBuilding,
-            "manager": row.manager,
-            [keys[4]]: row[keys[4]].trim(),
-            [keys[5]]: row[keys[5]],
-            [keys[6]]: row[keys[6]],
+            id: row.id,
+            module: row.module,
+            sysBuilding: row.sysBuilding,
+            manager: row.manager,
+            lcbmc: row.lcbmc,
+            lcbjd: row.lcbjd,
+            lcbbz: row.lcbbz,
             [keys[7]]: row[keys[7]].trim(),
             [keys[8]]: row[keys[8]],
-            [keys[9]]: row[keys[9]].trim(),
+            [keys[9]]: row[keys[9]],
             [keys[10]]: row[keys[10]].trim(),
+            [keys[11]]: row[keys[11]],
+            [keys[12]]: row[keys[12]].trim(),
+            [keys[13]]: row[keys[13]].trim(),
         };
         newData.splice(index, 1, {
             ...item,//old row data
@@ -200,38 +204,13 @@ const TableBox = (props) => {
         }).catch(e => {
             message.error('导出失败', 1);
         });
-        // const node = downloadRef.current;
-        // const actionUrl = digitalSpecialClassWeeklyReportExcel;
-        // const downloadForm = document.createElement('form');
-        // downloadForm.id = 'downloadForm';
-        // downloadForm.name = 'downloadForm';
-        // const input = document.createElement('input');
-        // input.type = 'text';
-        // input.name = 'startTime';
-        // input.value = Number(dateRange[0].format('YYYYMMDD'));
-        // downloadForm.appendChild(input);
-        // const input2 = document.createElement('input');
-        // input2.type = 'text';
-        // input2.name = 'endTime';
-        // input2.value = Number(dateRange[1].format('YYYYMMDD'));
-        // downloadForm.appendChild(input2);
-        // const input3 = document.createElement('input');
-        // input3.type = 'text';
-        // input3.name = 'xmmc';
-        // input3.value = Number(currentXmid);
-        // downloadForm.appendChild(input3);
-        // downloadForm.method = 'POST';
-        // downloadForm.action = actionUrl;
-        // node.appendChild(downloadForm);
-        // downloadForm.submit();
-        // node.removeChild(downloadForm);
     };
     const tableColumns = [
         {
             title: '模块',
             dataIndex: 'module',
             key: 'module',
-            width: 200,
+            width: 120,
             fixed: true,
             ellipsis: true,
             render: (value, row, index) => {
@@ -251,7 +230,7 @@ const TableBox = (props) => {
             title: '系统建设',
             dataIndex: 'sysBuilding',
             key: 'sysBuilding',
-            width: 300,
+            width: 200,
             fixed: 'left',
             ellipsis: true,
         },
@@ -264,17 +243,28 @@ const TableBox = (props) => {
             ellipsis: true,
         },
         {
-            title: '里程碑情况',
-            dataIndex: 'lcbqk',
-            key: 'lcbqk',
+            title: '里程碑名称',
+            dataIndex: 'lcbmc',
+            key: 'lcbmc',
             width: 120,
             ellipsis: true,
-            render: (text, row, index) => {
-                return <div>
-                    <a style={{ color: '#1890ff' }}
-                        onClick={() => getLcbqkModalUrl(row.id)}>详细信息</a>
-                </div>
+        },
+        {
+            title: '里程碑进度',
+            dataIndex: 'lcbjd',
+            key: 'lcbjd',
+            width: 120,
+            ellipsis: true,
+            render: (value, row, index) => {
+                return `${value}%`;
             },
+        },
+        {
+            title: '里程碑备注',
+            dataIndex: 'lcbbz',
+            key: 'lcbbz',
+            width: 120,
+            ellipsis: true,
         },
         {
             title: '年度规划',
@@ -337,7 +327,7 @@ const TableBox = (props) => {
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
-                    {authIdAData?.includes(CUR_USER_ID) && (<>
+                    {authIdData?.includes(CUR_USER_ID) && (<>
                         <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
                             <a style={{ color: '#1890ff', marginRight: '10px' }}>退回</a>
                         </Popconfirm>
@@ -424,7 +414,7 @@ const TableBox = (props) => {
                     <Button style={{ margin: '0 1.1904rem' }}>导出</Button>
                 </Popconfirm>
 
-                {authIdAData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>}
+                {authIdData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>}
             </div>
             <div className='table-content'>
                 <Table

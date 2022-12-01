@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Button, Table, Form, message, Popconfirm } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
@@ -11,13 +11,12 @@ const { pmsServices: { digitalSpecialClassMonthReportExcel } } = api;
 const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
-    const { form, tableData, setTableData, tableLoading, setTableLoading, groupData, edited, setEdited, getCurrentWeek, monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
+    const { form, tableData, setTableData, tableLoading, setTableLoading, edited, setEdited,
+         monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
     const [isSaved, setIsSaved] = useState(false);
-
-    // const downloadRef = useRef(null);
 
     useEffect(() => {
         getAutnIdData();
@@ -61,9 +60,9 @@ const TableBox = (props) => {
             ...item,//old row data
             ...newRow,//new row data
         });
-        console.log(newData);
+        console.log('newTable', newData);
         setEdited(true);
-        setTableData(preState => [...newData]);
+        setTableData(preState => [...newData]); 
     };
     const handleSubmit = () => {
         form.validateFields(err => {
@@ -168,31 +167,6 @@ const TableBox = (props) => {
             message.error('导出失败', 1);
             // console.error(e);
         });
-        // const node = downloadRef.current;
-        // const actionUrl = digitalSpecialClassMonthReportExcel;
-        // const downloadForm = document.createElement('form');
-        // downloadForm.id = 'downloadForm';
-        // downloadForm.name = 'downloadForm';
-        // const input = document.createElement('input');
-        // input.type = 'text';
-        // input.name = 'month';
-        // input.value = Number(monthData.format('YYYYMM'));
-        // downloadForm.appendChild(input);
-        // const input2 = document.createElement('input');
-        // input2.type = 'text';
-        // input2.name = 'xmmc';
-        // input2.value = Number(currentXmid);
-        // downloadForm.appendChild(input2);
-        // const input3 = document.createElement('input');
-        // input3.type = 'text';
-        // input3.name = 'czr';
-        // input3.value = 0;
-        // downloadForm.appendChild(input3);
-        // downloadForm.method = 'POST';
-        // downloadForm.action = actionUrl;
-        // node.appendChild(downloadForm);
-        // downloadForm.submit();
-        // node.removeChild(downloadForm);
     };
     const tableColumns = [
         {
@@ -412,7 +386,7 @@ const TableBox = (props) => {
                     loading={tableLoading}
                     columns={columns}
                     components={components}
-                    rowKey={record => record.id}
+                    rowKey={'id'}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
                     scroll={tableData.length > 11 ? { y: 573, x: 2200 } : { x: 2200 }}
