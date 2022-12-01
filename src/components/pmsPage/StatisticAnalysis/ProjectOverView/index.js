@@ -14,6 +14,8 @@ export default function ProjectOverView() {
     const getValue = (name) => dataCake?.filter(x => x.name === name)[0].value;
     const gloryChartOption = {
       legend: {
+        itemWidth: 7,
+        itemHeight: 7,
         orient: 'vertical',
         left: '50%',  //图例距离左的距离
         y: 'center',  //图例上下居中
@@ -73,23 +75,27 @@ export default function ProjectOverView() {
       gloryChart.dispose();
     };
   }, []);
-  const getContrastItem = (iconName) => {
+  const getContrastItem = (iconName = 'finance', dataTxt = '--', dataNum = '--', unit = '', contrastNum = '--') => {
+    dataNum = `${dataNum}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    contrastNum = contrastNum === 0 ? '--' : contrastNum;
+    const plusStr = contrastNum > 0 ? '+' : '';
+    const icon = contrastNum > 0 ? ' icon-rise' : contrastNum < 0 ? ' icon-fall' : '';
+    const color = contrastNum > 0 ? '#F06270' : contrastNum < 0 ? '#46CB9F' : '#909399';
     return (
       <div className='contrast-item'>
         <div className='contrast-item-left'>
           <i className={'iconfont icon-' + iconName} style={{ fontSize: '24px' }}></i>
         </div>
         <div className='contrast-item-right'>
-          <div className='contrast-item-txt'>资本性预算</div>
+          <div className='contrast-item-txt'>{dataTxt}</div>
           <div className='contrast-item-data'>
             <div className='data-txt'>
-              <span className='data-txt-num'>80000</span>
-              万
+              <span className='data-txt-num'>{dataNum}</span>
+              {unit}
             </div>
             <div className='data-contrast'>较去年:
-              {/*绿色 #46CB9F */}
-              <span className='data-contrast-num' style={{ color: '#F06270' }}>+200
-                <i className='iconfont icon-rise' style={{ fontSize: '2px' }}></i>
+              <span className='data-contrast-num' style={{ color }}>{plusStr}{contrastNum}
+                <i className={'iconfont' + icon} style={{ fontSize: '2px' }}></i>
               </span>
             </div>
           </div>
@@ -139,7 +145,7 @@ export default function ProjectOverView() {
       <div className='overview-bottom-box'>
         <div className='overview-bottom-title'>预算总体情况</div>
         <div className='overview-bottom-contrast-box'>
-          {getContrastItem('finance')}
+          {getContrastItem('finance', '总预算', 80000, '万', 500)}
           {getContrastItem('cash')}
           {getContrastItem('assets')}
         </div>

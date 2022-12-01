@@ -3,7 +3,7 @@ import XmbcTab from './xmbqTab';
 
 
 export default function ProjectProfileTab() {
-    const [currentTab, setCurrentTab] = useState('xmbq');
+    const [currentTab, setCurrentTab] = useState('lcbjd');
     
     const handleTabClick = (tab) => {
         console.log(tab);

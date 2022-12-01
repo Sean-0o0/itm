@@ -32,7 +32,7 @@ export default function PersonnelStatistic() {
         textStyle: {
           rich: {
             a: {
-              width: 100,
+              width: 80,
             },
             b: {
               fontSize: 14,
@@ -46,7 +46,7 @@ export default function PersonnelStatistic() {
               fontFamily: 'Roboto-Medium, Roboto',
               fontWeight: 'bold',
               color: '#222222',
-              width: 40,
+              width: 60,
             }
           }
         }

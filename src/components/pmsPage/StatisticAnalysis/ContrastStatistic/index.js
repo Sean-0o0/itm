@@ -1,20 +1,25 @@
 import React from 'react'
 
 export default function ContrastStatistic() {
-    const getContrastItem = () => {
+
+    const getContrastItem = (dataTxt = '--', dataNum = '--', unit = '', contrastNum = '--') => {
+        dataNum = `${dataNum}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+        contrastNum = contrastNum === 0 ? '--' : contrastNum;
+        const plusStr = contrastNum > 0 ? '+' : '';
+        const icon = contrastNum > 0 ? ' icon-rise' : contrastNum < 0 ? ' icon-fall' : '';
+        const color = contrastNum > 0 ? '#F06270' : contrastNum < 0 ? '#46CB9F' : '#909399';
         return (
             <div className='contrast-item'>
-                <div className='contrast-item-txt'>项目数量</div>
+                <div className='contrast-item-txt'>{dataTxt}</div>
                 <img className='trapezoid' src={require('../../../../image/pms/StatisticAnalysis/bg_trapezoid@2x.png')} alt=''></img>
                 <div className='contrast-item-data'>
-                    <div className='data-txt'>
-                        <div className='data-txt-num'>1028</div>
-                        个
+                    <div className='data-txt' style={dataNum === '--' ? { alignItems: 'center' } : {}}>
+                        <div className='data-txt-num'>{dataNum}</div>
+                        {unit}
                     </div>
                     <div className='data-contrast'>较去年:
-                        {/*绿色 #46CB9F */}
-                        <div className='data-contrast-num' style={{color: '#F06270'}}>+200
-                            <i className='iconfont icon-rise' style={{ fontSize: '2px' }}></i>
+                        <div className='data-contrast-num' style={{ color }}>{plusStr}{contrastNum}
+                            <i className={'iconfont' + icon} style={{ fontSize: '2px' }}></i>
                         </div>
                     </div>
                 </div>
@@ -23,10 +28,10 @@ export default function ContrastStatistic() {
     };
     return (
         <div className='contrast-box'>
-            {getContrastItem()}
-            {getContrastItem()}
-            {getContrastItem()}
-            {getContrastItem()}
+            {getContrastItem('项目数量', 1028, '个', 40, 1028, '个', 40)}
+            {getContrastItem('总预算', 50000000, '万', 200)}
+            {getContrastItem('队伍建设', 46, '人', -21)}
+            {getContrastItem('项目数量', 1028, '个', 40)}
             {getContrastItem()}
         </div>
     )

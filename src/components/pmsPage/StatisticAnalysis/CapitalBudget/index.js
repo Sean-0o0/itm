@@ -29,8 +29,19 @@ export default function CapitalBudget() {
         {
           type: 'category',
           data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
-          axisPointer: {
-            type: 'shadow'
+          axisLabel: {
+            color: '#858585',
+            align: 'left',
+            fontSize: 14,
+            fontFamily: 'Roboto-Regular, Roboto',
+            fontWeight: 400,
+            interval: 0,
+          },
+          axisLine: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
           }
         }
       ],
@@ -41,8 +52,26 @@ export default function CapitalBudget() {
           min: 0,
           max: 250,
           interval: 50,
+          nameTextStyle: {
+            // fontSize: 14,
+            fontFamily: 'PingFangSC-Regular, PingFang SC',
+            fontWeight: 400,
+            color: '#909399'
+          },
+          nameGap: 18,
           axisLabel: {
+            color: '#858585',
+            // fontSize: 14,
+            fontFamily: 'Roboto-Regular, Roboto',
+            fontWeight: 400,
+            showMaxLabel: true,
             formatter: '{value} ml'
+          },
+          axisLine: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
           }
         },
         {
@@ -52,7 +81,18 @@ export default function CapitalBudget() {
           max: 25,
           interval: 5,
           axisLabel: {
+            color: '#858585',
+            // fontSize: 14,
+            fontFamily: 'Roboto-Regular, Roboto',
+            fontWeight: 400,
+            showMaxLabel: true,
             formatter: '{value} °C'
+          },
+          axisLine: {
+            show: false,
+          },
+          axisTick: {
+            show: false,
           }
         }
       ],
@@ -70,7 +110,8 @@ export default function CapitalBudget() {
           yAxisIndex: 1,
           data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
         }
-      ]
+      ],
+      color: ['#3361FF', '#FDC041']
     };
     const pieChartOption = {
       legend: {
