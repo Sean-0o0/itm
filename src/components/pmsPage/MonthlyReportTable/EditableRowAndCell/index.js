@@ -24,9 +24,7 @@ const EditableCell = (props) => {
         txrdata,
         editable,
         dataIndex,
-        title,
         record,
-        index,
         handleSave,
         children,
         ...restProps
@@ -88,6 +86,11 @@ const EditableCell = (props) => {
                 open={open}
                 onDropdownVisibleChange={(visible) => setOpen(visible)}
                 ref={targetNode} onPressEnter={toggleEdit} onBlur={toggleEdit}
+                onDeselect={() => {
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
+                    }, 200);
+                }}
             >
                 {
                     data?.map((item = {}, ind) => {
@@ -114,17 +117,19 @@ const EditableCell = (props) => {
         return form.getFieldDecorator(idDataIndex, { rules, initialValue: value, })
             (node ? node : <Input ref={targetNode} onPressEnter={save} onBlur={save} onChange={(e) => setEdited(true)} />)
     };
-    const handleTxrChange = (arr) => {
-        const { record, handleSave } = props;
+    const handleTxrChange = (arr, a, b) => {
+        const { record, handleSave, tabledata, recordindex } = props;
         toggleEdit();
         let newVal = {
             ['txr' + record['id']]: [...arr],
         };
         setEdited(true);
         handleSave({ ...record, ...newVal });
-
-        window.dispatchEvent(new Event('resize'));//解决行高不对其的bug 
-        console.log('填写人数据改变');
+        // const cellHeight = Math.ceil(arr.length / 2) * 27;
+        const rowNode = document.querySelectorAll(`.ant-select-selection--multiple`);
+        const rowIndex = recordindex > rowNode.length-1 ? rowNode.length-1 : recordindex;
+        console.log(cellHeight, rowNode[rowIndex]);
+        rowNode[rowIndex].scrollIntoView(false);
     };
 
     const renderItem = (form, dataIndex, record) => {

@@ -12,7 +12,7 @@ const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
     const { form, tableData, setTableData, tableLoading, setTableLoading, edited, setEdited,
-         monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
+        monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
@@ -62,7 +62,7 @@ const TableBox = (props) => {
         });
         console.log('newTable', newData);
         setEdited(true);
-        setTableData(preState => [...newData]); 
+        setTableData(preState => [...newData]);
     };
     const handleSubmit = () => {
         form.validateFields(err => {
@@ -305,22 +305,23 @@ const TableBox = (props) => {
             },
         },
     ];
-    const columns = tableColumns.map(col => {
+    const columns = tableColumns.map((col) => {
         if (!col.editable) {
             return col;
         }
         return {
             ...col,
-            onCell: record => {
+            onCell: (record, index) => {
                 return ({
                     record,
                     editable: col.editable,
                     dataIndex: col.dataIndex,
                     handleSave: handleTableSave,
-                    key: col.key,
                     formdecorate: form,
                     txrdata: txrData,
                     issaved: isSaved,
+                    recordindex: index,
+                    tabledata: tableData,
                 })
             },
         };
@@ -389,7 +390,8 @@ const TableBox = (props) => {
                     rowKey={'id'}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    scroll={tableData.length > 11 ? { y: 573, x: 2200 } : { x: 2200 }}
+                    // scroll={tableData.length > 11 ? { y: 573, x: 2200 } : { x: 2200 }}
+                    scroll={{ y: 574, x: 2200 }}
                     pagination={false}
                     bordered
                 ></Table>
