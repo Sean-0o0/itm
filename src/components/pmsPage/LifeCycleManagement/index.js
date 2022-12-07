@@ -23,6 +23,7 @@ import WPSFrame from '../../../js/wps_general'
 import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../utils/config";
 import PaymentProcess from './PaymentProcess';
+import moment from 'moment';
 
 const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
@@ -828,9 +829,9 @@ class LifeCycleManagementTabs extends React.Component {
 
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
-        fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-        currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
-        closePaymentProcessModal={this.closePaymentProcessModal}/>}
+          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          closePaymentProcessModal={this.closePaymentProcessModal} />}
 
         {/*合同信息修改弹窗*/}
         {editMessageVisible && <ContractInfoUpdate
@@ -898,10 +899,16 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head6'>
                     进度：<span style={{ color: 'black' }}>{item.jd}</span>
                   </div>
-                  <div className='head3'>
-                    时间范围：
-                    <div
-                      style={{ color: 'rgba(48, 49, 51, 1)' }}>{item.kssj.slice(0, 4) + '.' + item.kssj.slice(4, 6) + '.' + item.kssj.slice(6, 8)} ~ {item.jssj.slice(0, 4) + '.' + item.jssj.slice(4, 6) + '.' + item.jssj.slice(6, 8)} </div>
+                  <div style={{
+                    lineHeight: '2.976rem',
+                    width: '32%',
+                    fontSize: '2.083rem',
+                    fontWeight: 400,
+                    color: '#606266',
+                    padding: item.yckssj !== '0' && item.ycjssj !== '0'?'1.7856rem 0':'3.2736rem 0'
+                  }}>
+                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>时间范围：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
+                    {item.yckssj !== '0' && item.ycjssj !== '0' && <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: '8.464rem' }}><span>延迟：{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天</span><span>原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}</span><span>修改：{item.xgcs}次</span></div>}
                   </div>
                   <div className='head4'>
                     项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
