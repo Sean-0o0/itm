@@ -55,7 +55,8 @@ class LifeCycleManagementTabs extends React.Component {
     fillOutTitle: '',
     //信息修改
     editMessageVisible: false,//合同
-    bidInfoModalVisible: false,//招标
+    bidInfoModalVisible: false,//中标
+    defMsgModifyModalVisible: false,//默认
     currentXmid: 0,
     currentXmmc: '',
     //信息修改url
@@ -246,14 +247,15 @@ class LifeCycleManagementTabs extends React.Component {
     });
   }
 
-  //信息录入修改url
-  getEditMessageUrl = (params) => {
+  //默认信息修改url
+  getEditMessageUrl = (params, msg = '修改') => {
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
-          // editMessageVisible: true,
+          defMsgModifyModalVisible: true,
+          editMessageTitle: msg,
         });
         // window.location.href = url;
       }
@@ -437,7 +439,6 @@ class LifeCycleManagementTabs extends React.Component {
         "userId": Loginname
       };
     }
-
     if (item.sxmc.includes("合同信息录入")) {
       params = {
         "attribute": 0,
@@ -453,7 +454,7 @@ class LifeCycleManagementTabs extends React.Component {
         "userId": Loginname
       };
     }
-    if (item.sxmc.includes("招标信息录入")) {
+    if (item.sxmc.includes("中标信息录入")) {
       params = {
         "attribute": 0,
         "authFlag": 0,
@@ -468,6 +469,21 @@ class LifeCycleManagementTabs extends React.Component {
             "name": "LCB",
             "value": item.lcbid
           },
+        ],
+        "userId": Loginname
+      };
+    }
+    if (item.sxmc.includes("中标公告")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TXMXX_ZBGG",
+        "operateName": "TXMXX_ZBGG_Add",
+        "parameter": [
+          {
+            "name": "XMMC2",
+            "value": this.state.xmid
+          }
         ],
         "userId": Loginname
       };
@@ -494,7 +510,7 @@ class LifeCycleManagementTabs extends React.Component {
         editMessageVisible: true,
       });
     }
-    if (item.sxmc.includes("招标信息录入")) {
+    if (item.sxmc.includes("中标信息录入")) {
       this.setState({
         bidInfoModalVisible: true,
         currentXmmc: this.state.operationListData[index].xmmc
@@ -515,6 +531,22 @@ class LifeCycleManagementTabs extends React.Component {
         "userId": Loginname
       }
       this.getEditMessageUrl(params);//livebos
+    }
+    if (item.sxmc.includes("中标公告")) {
+      let params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TXMXX_ZBGG",
+        "operateName": "TXMXX_ZBGG_MOD",
+        "parameter": [
+          {
+            "name": "XMMC2",
+            "value": this.state.xmid
+          }
+        ],
+        "userId": Loginname
+      }
+      this.getEditMessageUrl(params, "中标公告修改");//livebos
     }
   }
 
@@ -576,6 +608,11 @@ class LifeCycleManagementTabs extends React.Component {
   closeMessageEditModal = () => {
     this.setState({
       editMessageVisible: false,
+    });
+  };
+  closeDefMsgModifyModal = () => {
+    this.setState({
+      defMsgModifyModalVisible: false,
     });
   };
   closeBidInfoModal = () => {
@@ -714,7 +751,8 @@ class LifeCycleManagementTabs extends React.Component {
       operationListTotalRows,
       fileList,
       fileListVisible,
-      paymentModalVisible
+      paymentModalVisible,
+      defMsgModifyModalVisible
     } = this.state;
 
     const uploadModalProps = {
@@ -759,12 +797,12 @@ class LifeCycleManagementTabs extends React.Component {
     };
     const editMessageModalProps = {
       isAllWindow: 1,
-      defaultFullScreen: true,
+      // defaultFullScreen: true,
       width: '150rem',
       height: '80rem',
       title: editMessageTitle,
       style: { top: '10rem' },
-      visible: editMessageVisible,
+      visible: defMsgModifyModalVisible,
       footer: null,
     };
     const editModelModalProps = {
@@ -826,6 +864,11 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
+        {/*默认信息修改弹窗*/}
+        {defMsgModifyModalVisible &&
+          <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+            onCancel={this.closeDefMsgModifyModal}
+            src={editMessageUrl} />}
 
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
@@ -841,7 +884,7 @@ class LifeCycleManagementTabs extends React.Component {
           closeMessageEditModal={this.closeMessageEditModal}
         ></ContractInfoUpdate>}
 
-        {/*招标信息修改弹窗*/}
+        {/*中标信息修改弹窗*/}
         {bidInfoModalVisible && <BidInfoUpdate
           currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
           currentXmmc={currentXmmc}
@@ -901,14 +944,21 @@ class LifeCycleManagementTabs extends React.Component {
                   </div>
                   <div style={{
                     lineHeight: '2.976rem',
-                    width: '32%',
-                    fontSize: '2.083rem',
+                    width: '33%',
+                    fontSize: '2.232rem',
                     fontWeight: 400,
                     color: '#606266',
-                    padding: item.yckssj !== '0' && item.ycjssj !== '0'?'1.7856rem 0':'3.2736rem 0'
+                    padding: item.yckssj !== '0' && item.ycjssj !== '0' ? '1.7856rem 0' : '3.2736rem 0'
                   }}>
                     <span style={{ color: 'rgba(48, 49, 51, 1)' }}>时间范围：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
-                    {item.yckssj !== '0' && item.ycjssj !== '0' && <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: '8.464rem' }}><span>延迟：{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天</span><span>原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}</span><span>修改：{item.xgcs}次</span></div>}
+                    {item.yckssj !== '0' && item.ycjssj !== '0' &&
+                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: '8.464rem', fontSize: '2.0832rem', color: '#909399' }}>
+                        <span>
+                          原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
+                          （延迟{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天，修改{item.xgcs}次）
+                        </span>
+                      </div>
+                    }
                   </div>
                   <div className='head4'>
                     项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
@@ -919,7 +969,7 @@ class LifeCycleManagementTabs extends React.Component {
                   <div className='head5'>
                     <div className='head5-title'>
                       <div className='head5-cont'>
-                        <a style={{ color: 'rgba(51, 97, 255, 1)' }}
+                        <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
                           className="iconfont icon-edit" onClick={() => {
                             // const { userId, loginUserId } = this.props;
                             if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {

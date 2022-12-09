@@ -223,22 +223,22 @@ class ContractInfoUpdate extends React.Component {
         }).then(res => {
             let rec = res.record;
             this.setState({
-                contractInfo: { htje: Number(rec[0].htje), qsrq: rec[0].qsrq },
-                gys: rec[0].gys,
+                contractInfo: { htje: Number(rec[0]?.htje), qsrq: rec[0]?.qsrq },
+                gys: rec[0]?.gys,
             }, () => {
                 this.setState({
-                    currentGysId: this.state.gysData?.filter(x => x.gysmc === rec[0].gys)[0]?.id
+                    currentGysId: this.state.gysData?.filter(x => x?.gysmc === rec[0]?.gys)[0]?.id
                 });
             });
             let arr = [];
             for (let i = 0; i < rec.length; i++) {
                 arr.push({
-                    id: rec[i].fkxqid,
-                    ['fkqs' + rec[i].fkxqid]: Number(rec[i].fkqs),
-                    ['bfb' + rec[i].fkxqid]: Number(rec[i].bfb),
-                    ['fkje' + rec[i].fkxqid]: Number(rec[i].fkje),
-                    ['fksj' + rec[i].fkxqid]: moment(rec[i].fksj).format('YYYY-MM-DD'),
-                    zt: rec[i].zt
+                    id: rec[i]?.fkxqid,
+                    ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+                    ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+                    ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+                    ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+                    zt: rec[i]?.zt
                 });
             }
             this.setState({

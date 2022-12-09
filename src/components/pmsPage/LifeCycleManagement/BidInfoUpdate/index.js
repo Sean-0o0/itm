@@ -179,7 +179,7 @@ class BidInfoUpdate extends React.Component {
     state = {
         isModalFullScreen: false,
         isTableFullScreen: false,
-        bidInfo: {   //招标信息
+        bidInfo: {   //中标信息
             glgys: [],
             totalRows: 0,
             zbgys: '',
@@ -218,7 +218,7 @@ class BidInfoUpdate extends React.Component {
         this.fetchQueryPaymentAccountList();
     }
 
-    // 获取招标信息
+    // 获取中标信息
     fetchQueryZBXXByXQTC = () => {
         const { currentXmid } = this.props;
         FetchQueryZBXXByXQTC({
@@ -273,7 +273,7 @@ class BidInfoUpdate extends React.Component {
         });
     };
 
-    // 查询招标信息修改时的供应商下拉列表
+    // 查询中标信息修改时的供应商下拉列表
     fetchQueryGysInZbxx = (current, pageSize) => {
         FetchQueryGysInZbxx({
             // paging: 1,
@@ -308,12 +308,12 @@ class BidInfoUpdate extends React.Component {
         });
     }
 
-    //招标信息表格单行删除
+    //中标信息表格单行删除
     handleSingleDelete = (id) => {
         const dataSource = [...this.state.tableData];
         this.setState({ tableData: dataSource.filter(item => item.id !== id) });
     };
-    //招标信息表格多行删除
+    //中标信息表格多行删除
     handleMultiDelete = (ids) => {
         const dataSource = [...this.state.tableData];
         for (let j = 0; j < dataSource.length; j++) {
@@ -620,9 +620,9 @@ class BidInfoUpdate extends React.Component {
                                     ...submitdata
                                 }).then(res => {
                                     if (res?.code === 1) {
-                                        message.success('招标信息修改成功', 1);
+                                        message.success('中标信息修改成功', 1);
                                     } else {
-                                        message.error('招标信息修改失败', 1);
+                                        message.error('中标信息修改失败', 1);
                                     }
                                 });
                                 this.setState({ tableData: [] });

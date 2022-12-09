@@ -73,31 +73,31 @@ class OperationList extends React.Component {
     return (
       <div style={{ display: 'flex', marginRight: '100px' }}>
         <div style={{
-          height: '40px',
-          width: '40px',
-          borderRadius: '20px',
+          height: '42px',
+          width: '42px',
+          borderRadius: '21px',
           backgroundColor: '#3361FF',
           textAlign: 'center',
-          lineHeight: '40px',
+          lineHeight: '42px',
           color: 'white',
-          fontSize: '18px'
+          fontSize: '20px'
         }}>
           <Icon type={iconType} /></div>
         <div style={{
-          height: '40px',
+          height: '42px',
           marginLeft: '16px',
-          lineHeight: '20px',
+          lineHeight: '21px',
           fontFamily: 'PingFangSC-Regular',
         }}>
           <div style={{
-            height: '20px',
-            fontSize: '12px',
+            height: '21px',
+            fontSize: '14px',
             fontWeight: '400',
             color: '#606266',
           }}>{title}</div>
           <div style={{
-            height: '20px',
-            fontSize: '14px',
+            height: '21px',
+            fontSize: '16px',
             fontWeight: '600',
             color: '#303133',
           }}>{content}</div>
@@ -130,11 +130,11 @@ class OperationList extends React.Component {
     const { open, currentPageNum, listData } = this.state;
     const { defaultValue, data, fetchQueryOwnerProjectList, projectInfo, totalRows } = this.props;
     return (
-      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px', fontSize: '2.083rem' }}>
+      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px'}}>
         <Input.Group compact>
           <div onMouseDown={(e) => { e.preventDefault() }} style={{ position: 'relative' }} className="operationListSelectBox">
             <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}
-              alt='' style={{ marginBottom: '4px', height: '18px', cursor: 'pointer' }}
+              alt='' style={{ marginBottom: '0.5952rem', height: '2.976rem' }}
             />
             <Select
               ref={this.selectRef}

@@ -148,7 +148,7 @@ export async function FetchQueryOAUrl(payload) {
   };
   return request(option);
 }
-// 查询招标信息修改弹窗需要的招标信息
+// 查询中标信息修改弹窗需要的中标信息
 export async function FetchQueryZBXXByXQTC(payload) {
   const option = {
     url: queryZBXXByXQTC,
@@ -167,7 +167,7 @@ export async function FetchQueryWpsWDXX(payload) {
   };
   return request(option);
 }
-// 查询招标信息修改时的供应商下拉列表
+// 查询中标信息修改时的供应商下拉列表
 export async function FetchQueryGysInZbxx(payload) {
   const option = {
     url: queryGysInZbxx,
@@ -177,7 +177,7 @@ export async function FetchQueryGysInZbxx(payload) {
   return request(option);
 }
 
-// 更新招标信息
+// 更新中标信息
 export async function UpdateZbxx(payload) {
   const option = {
     url: updateZbxx,

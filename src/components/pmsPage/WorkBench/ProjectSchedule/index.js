@@ -110,7 +110,7 @@ class ProjectSchedule extends React.Component {
           "userId": Loginname
         };
         break;
-      case "招标信息录入":
+      case "中标信息录入":
         params = {
           "attribute": 0,
           "authFlag": 0,
@@ -171,7 +171,7 @@ class ProjectSchedule extends React.Component {
         break;
     }
     switch (item.sxmc) {
-      case "招标信息录入":
+      case "中标信息录入":
         params = {
           "attribute": 0,
           "authFlag": 0,
@@ -388,7 +388,7 @@ class ProjectSchedule extends React.Component {
           }
         })
         if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
         }
       }
     })
@@ -480,7 +480,7 @@ class ProjectSchedule extends React.Component {
       title: sendTitle,
       width: '180rem',
       height: '134.2rem',
-      style: {top: '2rem'},
+      style: { top: '2rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -566,30 +566,30 @@ class ProjectSchedule extends React.Component {
                             color: 'rgba(51, 97, 255, 1)',
                             // width: '12rem'
                           }}>
-                            <div className='head2-cont' style={{background: 'rgba(51, 97, 255, 1)'}}/>
-                            <div style={{margin: '0rem 2rem 0rem 1rem'}}>{items.jd}%</div>
+                            <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
+                            <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
                           </div>
                           {/*<ProjectProgress state={items.zt}/>*/}
                         </div>
                         <div className='head4'>
                           项目风险：<ProjectRisk state={items.fxnr} item={items}
-                                            lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid}/>
+                            lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
                         </div>
                       </div>
                       {items.extend ?
                         ProjectScheduleDetailData.map((item = {}, ind) => {
                           let sort = this.groupBy(item?.List);
                           return items?.xmid === item?.xmid &&
-                            <Row style={{height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem'}}
-                                 className='card'>
+                            <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
+                              className='card'>
                               <Col span={24} className='cont1'>
-                                <div className='head' style={{borderRadius: '8px 8px 0px 0px'}}>
+                                <div className='head' style={{ borderRadius: '8px 8px 0px 0px' }}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
-                                    <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}
-                                       className="iconfont icon-fill-flag"/>&nbsp;
+                                    <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                      className="iconfont icon-fill-flag" />&nbsp;
                                     里程碑阶段：
-                                    <span style={{color: 'rgba(48, 49, 51, 1)'}}>{item?.List[0]?.lcb}</span>
+                                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item?.List[0]?.lcb}</span>
                                   </div>
                                   <div className='head2'>
                                     <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
@@ -620,7 +620,7 @@ class ProjectSchedule extends React.Component {
                                         num = num + 1;
                                       }
                                     })
-                                    return <Col span={8} style={{marginBottom: '16px'}}>
+                                    return <Col span={8} style={{ marginBottom: '16px' }}>
                                       <div className='cont-col'>
                                         <div className='cont-col1'>
                                           <div className='right'>

@@ -110,6 +110,16 @@ class Tooltips extends React.Component {
             </Tooltip>) : ''
         }
         {
+          type.includes("其他")? (status === " " ? <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
+          <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
+            className="iconfont icon-file-fillout" />{getSpan('操作')}
+        </Tooltip>
+          : <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
+            <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
+              className="iconfont icon-edit" />{getSpan('操作')}
+          </Tooltip>) : ''
+        }
+        {
           type.includes("流程") ? (status === " " ?
             <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} >
               <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
@@ -136,7 +146,7 @@ class Tooltips extends React.Component {
             type.includes("系统框架搭建") ||
             type.includes("功能开发") ||
             type.includes("外部系统对接") ||
-            type.includes("系统测试") ? (status === " " ?
+            type.includes("系统测试")? (status === " " ?
               <Tooltip title="上传" onClick={this.handleAuthority.bind(this, this.handleUpload, '上传')}>
                 <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
                   className="iconfont icon-upload" />{getSpan('上传')}
