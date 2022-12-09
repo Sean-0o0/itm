@@ -7,8 +7,6 @@ import { FetchQueryOwnerProjectList, QueryUserInfo, QueryMonthlyList } from '../
 import moment from 'moment';
 
 export default function MonthlyReportTable() {
-    const [open, setOpen] = useState(false);
-    const [dateRange, setDateRange] = useState([null, null]);
     const [monthData, setMonthData] = useState(new moment());
     const [tableData, setTableData] = useState([]);
     const [tableLoading, setTableLoading] = useState(false);
@@ -74,7 +72,7 @@ export default function MonthlyReportTable() {
                         zdgz: item.zdgz,
                         rwfl: item.rwfl,
                         xmmc: item.xmmc,
-                        zmk: item.zmk,
+                        // zmk: item.zmk,
                         yf: item.yf,
                         zt: getStatus(item.zt),
                         ['bywcqk' + item.id]: item.bywcqk?.trim(),

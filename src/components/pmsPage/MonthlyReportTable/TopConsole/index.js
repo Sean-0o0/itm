@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Icon, DatePicker, Input, Table, Select } from 'antd';
+import React, { useState } from 'react';
+import { Button, Icon, DatePicker, Select } from 'antd';
 const { MonthPicker } = DatePicker;
 const { Option } = Select;
 import moment from 'moment';

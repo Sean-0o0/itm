@@ -173,8 +173,8 @@ const TableBox = (props) => {
             title: '重点工作',
             dataIndex: 'zdgz',
             key: 'zdgz',
-            width: 300,
-            fixed: true,
+            width: 150,
+            fixed: 'left',
             ellipsis: true,
             render: (value, row, index) => {
                 const obj = {
@@ -189,7 +189,7 @@ const TableBox = (props) => {
             title: '任务分类',
             dataIndex: 'rwfl',
             key: 'rwfl',
-            width: 250,
+            width: 150,
             fixed: 'left',
             ellipsis: true,
             render: (value, row, index) => {
@@ -206,7 +206,7 @@ const TableBox = (props) => {
             dataIndex: 'xmmc',
             key: 'xmmc',
             fixed: 'left',
-            width: 120,
+            width: 150,
             ellipsis: true,
             render: (value, row, index) => {
                 const obj = {
@@ -217,20 +217,21 @@ const TableBox = (props) => {
                 return obj;
             },
         },
-        {
-            title: '子模块',
-            dataIndex: 'zmk',
-            key: 'zmk',
-            width: 150,
-            fixed: 'left',
-            ellipsis: true,
-        },
+        // {
+        //     title: '子模块',
+        //     dataIndex: 'zmk',
+        //     key: 'zmk',
+        //     width: 150,
+        //     fixed: 'left',
+        //     ellipsis: true,
+        // },
         {
             title: '本月完成情况',
             dataIndex: 'bywcqk',
             key: 'annualPlan',
             ellipsis: true,
             editable: true,
+           
         },
         {
             title: '下月工作计划',
@@ -238,6 +239,7 @@ const TableBox = (props) => {
             key: 'xygzjh',
             ellipsis: true,
             editable: true,
+      
         },
         {
             title: '领导意见',

@@ -1,87 +1,69 @@
-import React, { useState, useEffect } from 'react';
-import { Button, Icon, DatePicker, Input, Table, Select } from 'antd';
-const { RangePicker, WeekPicker } = DatePicker;
+import React, { useState } from 'react';
+import { Button, Icon, DatePicker, Select } from 'antd';
+const { MonthPicker } = DatePicker;
 const { Option } = Select;
 import moment from 'moment';
 
 export default function TopConsole(props) {
     const { dateRange,
-        setDateRange,
         queryTableData,
         projectData,
         currentXmid,
         setCurrentXmid,
-        getCurrentWeek,
         setTableLoading,
-        setEdited
+        setEdited,
+        monthData,
+        setMonthData,
     } = props;
 
     const [open, setOpen] = useState(false);
 
     const handleWeekChange = (txt) => {
-        let startDayStamp = dateRange[0].valueOf();
-        let endDaystamp = Number(dateRange[1].endOf('day').format('x'));
-        const oneDayStamp = 86400000;//ms
-        let newStart = null, newEnd = null;
-        if (txt === 'last') {//上周
-            newStart = startDayStamp - oneDayStamp * 7;
-            newEnd = endDaystamp - oneDayStamp * 7;
-        } else if (txt === 'next') {//下周
-            newStart = startDayStamp + oneDayStamp * 7;
-            newEnd = endDaystamp + oneDayStamp * 7;
-        } else if (txt === 'current') {//当前周
-            let curWeekRange = getCurrentWeek(new Date());
-            newStart = curWeekRange[0];
-            newEnd = curWeekRange[1];
+        let time = new moment();
+        if (txt === 'last') {//上
+           time = monthData.subtract(1, "month");
+        } else if (txt === 'next') {//下
+            time = monthData.add(1, "month");
+        } else if (txt === 'current') {//当前
+            time = new moment();
         } else {
             return;
         }
-        setEdited(false);
-        setDateRange(pre => [...[moment(newStart), moment(newEnd)]]);
+        setMonthData(time);
         setTableLoading(true);
-        queryTableData(Number(moment(newStart).format('YYYYMMDD')), Number(moment(newEnd).format('YYYYMMDD')), currentXmid);
+        console.log('lklkl;',time);
+        queryTableData(Number(time.startOf('month').format('YYYYMMDD')), Number(time.endOf('month').format('YYYYMMDD')), currentXmid);
     };
     const handleDateChange = (d, ds) => {
-        let timeStamp = d.valueOf();
-        let currentDay = d.day();
-        let monday = 0, sunday = 0;
-        if (currentDay !== 0) {
-            monday = new Date(timeStamp - (currentDay - 1) * 60 * 60 * 24 * 1000);
-            sunday = new Date(timeStamp + (7 - currentDay) * 60 * 60 * 24 * 1000);
-        } else {
-            monday = new Date(timeStamp - (7 - 1) * 60 * 60 * 24 * 1000);
-            sunday = new Date(timeStamp + (7 - 7) * 60 * 60 * 24 * 1000);
-        }
-        let currentWeek = [moment(monday), moment(sunday)];
-        setEdited(false);
-        setDateRange(pre => [...currentWeek]);
+        setMonthData(d);
         setTableLoading(true);
-        queryTableData(Number(currentWeek[0].format('YYYYMMDD')), Number(currentWeek[1].format('YYYYMMDD')), currentXmid);
+        queryTableData(Number(d.startOf('month').format('YYYYMMDD')), Number(d.endOf('month').format('YYYYMMDD')), currentXmid);
     };
     const handleProjectChange = (value) => {
         if (value) {
             setCurrentXmid(Number(value));
-            queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(value));
+            queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')),Number(monthData.endOf('month').format('YYYYMMDD')), Number(value));
         } else {
-            queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), -1);
+            setCurrentXmid(-1);
+            queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), -1);
         }
         setTableLoading(true);
         setEdited(false);
     };
     return (
         <div className='top-console'>
-            <div className='console-title'>数字化专班周报</div>
-            <Button onClick={handleWeekChange.bind(this, 'current')} style={{ marginRight: '2.3808rem', marginLeft: 'auto' }}>回到本周</Button>
+            <div className='console-title'>数字化专班月报</div>
+            <Button onClick={handleWeekChange.bind(this, 'current')} style={{ marginRight: '2.3808rem', marginLeft: 'auto' }}>回到本月</Button>
             <Button onClick={handleWeekChange.bind(this, 'last')}>
                 <Icon type="left" />
-                上周
+                上月
             </Button>
-            <WeekPicker
-                value={dateRange[1]}
+            <MonthPicker
+                value={monthData}
                 onChange={handleDateChange}
                 style={{ margin: '0 1.488rem', width: '110px' }} />
             <Button onClick={handleWeekChange.bind(this, 'next')}>
-                下周
+                下月
                 <Icon type="right" />
             </Button>
             <Select

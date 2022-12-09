@@ -12,7 +12,7 @@ const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
     const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading,
-        groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, } = props;
+        groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, monthData } = props;
     const [isSaved, setIsSaved] = useState(false);
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
@@ -50,16 +50,16 @@ const TableBox = (props) => {
             module: row.module,
             sysBuilding: row.sysBuilding,
             manager: row.manager,
-            lcbmc: row.lcbmc,
-            lcbjd: row.lcbjd,
-            lcbbz: row.lcbbz,
-            [keys[7]]: row[keys[7]].trim(),
+            // lcbmc: row.lcbmc,
+            // lcbjd: row.lcbjd,
+            // lcbbz: row.lcbbz,
+            [keys[6]]: row[keys[6]].trim(),
+            [keys[7]]: row[keys[7]],
             [keys[8]]: row[keys[8]],
-            [keys[9]]: row[keys[9]],
-            [keys[10]]: row[keys[10]].trim(),
-            [keys[11]]: row[keys[11]],
+            [keys[9]]: row[keys[9]].trim(),
+            [keys[10]]: row[keys[10]],
+            [keys[11]]: row[keys[11]].trim(),
             [keys[12]]: row[keys[12]].trim(),
-            [keys[13]]: row[keys[13]].trim(),
         };
         newData.splice(index, 1, {
             ...item,//old row data
@@ -130,8 +130,8 @@ const TableBox = (props) => {
         }
         OperateSZHZBWeekly({ ...sendBackData }).then(res => {
             if (res.success) {
+                queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), Number(currentXmid));
                 message.success('操作成功', 1);
-                queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
             }
         }).catch(e => {
             message.error('操作失败', 1);
@@ -147,8 +147,8 @@ const TableBox = (props) => {
         }
         OperateSZHZBWeekly({ ...deleteData }).then(res => {
             if (res.success) {
+                queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), Number(currentXmid));
                 message.success('操作成功', 1);
-                queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
             }
         }).catch(e => {
             message.error('操作失败', 1);
@@ -182,8 +182,8 @@ const TableBox = (props) => {
     }
     const handleExport = () => {
         let params = new URLSearchParams();
-        params.append("startTime", Number(dateRange[0].format('YYYYMMDD')));
-        params.append("endTime", Number(dateRange[1].format('YYYYMMDD')));
+        params.append("startTime", Number(monthData.startOf('month').format('YYYYMMDD')));
+        params.append("endTime", Number(monthData.endOf('month').format('YYYYMMDD')));
         params.append("xmmc", Number(currentXmid));
         fetch(digitalSpecialClassWeeklyReportExcel, {
             method: 'POST',
@@ -194,7 +194,7 @@ const TableBox = (props) => {
         }).then(res => {
             return res.blob();
         }).then(blob => {
-            let fileName = `数字化专班周报(${new moment().format('YYYYMMDD')}).xlsx`;
+            let fileName = `数字化专班月报(${new moment().format('YYYYMMDD')}).xlsx`;
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = fileName;
@@ -242,32 +242,32 @@ const TableBox = (props) => {
             fixed: 'left',
             ellipsis: true,
         },
+        // {
+        //     title: '里程碑名称',
+        //     dataIndex: 'lcbmc',
+        //     key: 'lcbmc',
+        //     width: 120,
+        //     ellipsis: true,
+        // },
+        // {
+        //     title: '里程碑进度',
+        //     dataIndex: 'lcbjd',
+        //     key: 'lcbjd',
+        //     width: 120,
+        //     ellipsis: true,
+        //     render: (value, row, index) => {
+        //         return `${value}%`;
+        //     },
+        // },
+        // {
+        //     title: '里程碑备注',
+        //     dataIndex: 'lcbbz',
+        //     key: 'lcbbz',
+        //     width: 120,
+        //     ellipsis: true,
+        // },
         {
-            title: '里程碑名称',
-            dataIndex: 'lcbmc',
-            key: 'lcbmc',
-            width: 120,
-            ellipsis: true,
-        },
-        {
-            title: '里程碑进度',
-            dataIndex: 'lcbjd',
-            key: 'lcbjd',
-            width: 120,
-            ellipsis: true,
-            render: (value, row, index) => {
-                return `${value}%`;
-            },
-        },
-        {
-            title: '里程碑备注',
-            dataIndex: 'lcbbz',
-            key: 'lcbbz',
-            width: 120,
-            ellipsis: true,
-        },
-        {
-            title: '年度规划',
+            title: '项目说明',
             dataIndex: 'annualPlan',
             key: 'annualPlan',
             ellipsis: true,
@@ -408,13 +408,13 @@ const TableBox = (props) => {
             {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
                 <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
-                <div className='console-txt'>{dateRange.length !== 0 && dateRange[0]?.format('YYYY-MM-DD') || ''} 至 {dateRange.length !== 0 && dateRange[1]?.format('YYYY-MM-DD') || ''}</div>
+                <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
                 <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
                 <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
                     <Button style={{ margin: '0 1.1904rem' }}>导出</Button>
                 </Popconfirm>
 
-                {authIdData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>}
+                {/* {authIdData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>} */}
             </div>
             <div className='table-content'>
                 <Table

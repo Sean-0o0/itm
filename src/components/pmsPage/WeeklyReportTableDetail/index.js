@@ -7,7 +7,6 @@ import { FetchQueryOwnerProjectList, QueryDigitalSpecialClassWeeklyReport } from
 import moment from 'moment';
 
 export default function WeeklyReportDetail() {
-    const [open, setOpen] = useState(false);
     const [dateRange, setDateRange] = useState([null, null]);
     const [tableData, setTableData] = useState([]);
     const [groupData, setGroupData] = useState({});
@@ -15,11 +14,12 @@ export default function WeeklyReportDetail() {
     const [projectData, setProjectData] = useState([]);
     const [currentXmid, setCurrentXmid] = useState(-1);
     const [edited, setEdited] = useState(false);
+    const [monthData, setMonthData] = useState(new moment());
     
 
     useEffect(() => {
         queryProjectData();
-        setDateRange(p => [...getCurrentWeek(new Date())]);
+        // setDateRange(p => [...getCurrentWeek(new Date())]);
     }, []);
 
     const queryProjectData = () => {
@@ -31,8 +31,8 @@ export default function WeeklyReportDetail() {
         }).then(res => {
             if (res.code === 1) {
                 setProjectData(p => [...res.record]);
-                let defaultSTime = Number(getCurrentWeek(new Date())[0].format('YYYYMMDD'));
-                let defaultETime = Number(getCurrentWeek(new Date())[1].format('YYYYMMDD'));
+                let defaultSTime = Number(monthData.startOf('month').format('YYYYMMDD'));
+                let defaultETime = Number(monthData.endOf('month').format('YYYYMMDD'));
                 queryTableData(defaultSTime, defaultETime, currentXmid);
             }
         });
@@ -78,9 +78,9 @@ export default function WeeklyReportDetail() {
                         module: item.mk.trim(),
                         sysBuilding: item.xtjs.trim(),
                         manager: item.fzr.trim(),
-                        lcbmc: item.lcbmc.trim(),
-                        lcbjd: item.lcbjd.trim(),
-                        lcbbz: item.lcbbz.trim(),
+                        // lcbmc: item.lcbmc.trim(),
+                        // lcbjd: item.lcbjd.trim(),
+                        // lcbbz: item.lcbbz.trim(),
                         ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
                         ['curProgress' + item.id]: item.dqjz.trim(),
@@ -96,9 +96,9 @@ export default function WeeklyReportDetail() {
                         id: current.id,
                         sysBuilding: current.sysBuilding,
                         manager: current.manager,
-                        lcbmc: current.lcbmc,
-                        lcbjd: current.lcbjd,
-                        lcbbz: current.lcbbz,
+                        // lcbmc: current.lcbmc,
+                        // lcbjd: current.lcbjd,
+                        // lcbbz: current.lcbbz,
                         ['annualPlan' + current.id]: current['annualPlan' + current.id],
                         ['cplTime' + current.id]: current['cplTime' + current.id],
                         ['curProgress' + current.id]: current['curProgress' + current.id],
@@ -148,6 +148,8 @@ export default function WeeklyReportDetail() {
                 currentXmid={currentXmid}
                 setCurrentXmid={setCurrentXmid}
                 setEdited={setEdited}
+                monthData={monthData}
+                setMonthData={setMonthData}
                 >
             </TopConsole>
             <TableBox tableData={tableData}
@@ -161,6 +163,7 @@ export default function WeeklyReportDetail() {
                 setEdited={setEdited}
                 getCurrentWeek={getCurrentWeek}
                 currentXmid={currentXmid}
+                monthData={monthData}
                 >
             </TableBox>
         </div>
