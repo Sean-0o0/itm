@@ -53,6 +53,9 @@ class LifeCycleManagementTabs extends React.Component {
     //信息录入url
     fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     fillOutTitle: '',
+    //员工评价
+    ygpjVisible: false,
+    ygpjUrl: '#',
     //信息修改
     editMessageVisible: false,//合同
     bidInfoModalVisible: false,//中标
@@ -420,24 +423,56 @@ class LifeCycleManagementTabs extends React.Component {
     });
   };
 
+  //livebos弹窗配置，默认入参值为员工评价弹窗的
+  handleModalConfig = ({ objName = "View_XMRYPF",
+    oprName = "View_XMRYPF_OPENCOMMENT",
+    data = [
+      {
+        "name": "XMMC",
+        "value": this.state.xmid
+      },
+    ], userName = Loginname,
+    urlName = 'ygpjUrl',
+    visibleName = 'ygpjVisible'
+  }) => {
+    let params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": objName,
+      "operateName": oprName,
+      "parameter": data,
+      "userId": userName
+    };
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const { code, message, url } = ret;
+      console.log("🚀 ~ file: index.js ~ line 233 ~ LifeCycleManagementTabs ~ CreateOperateHyperLink ~ url", url)
+      if (code === 1) {
+        this.setState({
+          [urlName]: url,
+          [visibleName]: true
+        });
+        // window.location.href = url;
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+  //其他
+  // handleOther = (item) => {
+  //   if (item.sxmc.includes("员工评价开启")) {
+  //     this.handleModalConfig();
+  //     return;
+  //   }
+  // };
+
   //信息录入
   handleFillOut = (item) => {
     let params = {};
     if (item.sxmc.includes("周报填写")) { window.location.href = this.state.weelyReportUrl; return; }
+    //暂时放信息录入，以后多了放-其他
     if (item.sxmc.includes("员工评价开启")) {
-      params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "View_XMRYPF",
-        "operateName": "View_XMRYPF_OPENCOMMENT",
-        "parameter": [
-          {
-            "name": "XMMC",
-            "value": this.state.xmid
-          },
-        ],
-        "userId": Loginname
-      };
+      this.handleModalConfig();
+      return;
     }
     if (item.sxmc.includes("合同信息录入")) {
       params = {
@@ -453,6 +488,7 @@ class LifeCycleManagementTabs extends React.Component {
         ],
         "userId": Loginname
       };
+
     }
     if (item.sxmc.includes("中标信息录入")) {
       params = {
@@ -517,20 +553,8 @@ class LifeCycleManagementTabs extends React.Component {
       });
     }
     if (item.sxmc.includes("员工评价开启")) {
-      let params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "View_XMRYPF",
-        "operateName": "View_XMRYPF_OPENCOMMENT",
-        "parameter": [
-          {
-            "name": "XMMC",
-            "value": this.state.xmid
-          },
-        ],
-        "userId": Loginname
-      }
-      this.getEditMessageUrl(params);//livebos
+      this.handleModalConfig({});
+      return;
     }
     if (item.sxmc.includes("中标公告")) {
       let params = {
@@ -752,7 +776,9 @@ class LifeCycleManagementTabs extends React.Component {
       fileList,
       fileListVisible,
       paymentModalVisible,
-      defMsgModifyModalVisible
+      defMsgModifyModalVisible,
+      ygpjVisible,
+      ygpjUrl,
     } = this.state;
 
     const uploadModalProps = {
@@ -815,6 +841,17 @@ class LifeCycleManagementTabs extends React.Component {
       visible: editModelVisible,
       footer: null,
     };
+    //员工评价弹窗
+    const ygpjModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '75rem',
+      height: '38rem',
+      title: '操作',
+      style: { top: '10rem' },
+      visible: ygpjVisible,
+      footer: null,
+    };
     const menu = (
       <Menu>
         <Menu.Item>
@@ -864,6 +901,12 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
+
+        {ygpjVisible &&
+          <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+            onCancel={() => this.setState({ ygpjVisible: false })}
+            src={ygpjUrl} />}
+
         {/*默认信息修改弹窗*/}
         {defMsgModifyModalVisible &&
           <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
@@ -945,14 +988,21 @@ class LifeCycleManagementTabs extends React.Component {
                   <div style={{
                     lineHeight: '2.976rem',
                     width: '33%',
+                    minWidth: '59.52rem',
                     fontSize: '2.232rem',
                     fontWeight: 400,
                     color: '#606266',
-                    padding: item.yckssj !== '0' && item.ycjssj !== '0' ? '1.7856rem 0' : '3.2736rem 0'
+                    paddingTop: '3.2736rem'
                   }}>
-                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>时间范围：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
+                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
                     {item.yckssj !== '0' && item.ycjssj !== '0' &&
-                      <div style={{ display: 'flex', justifyContent: 'space-between', paddingRight: '8.464rem', fontSize: '2.0832rem', color: '#909399' }}>
+                      <div style={{
+                        display: 'flex',
+                        justifyContent: 'space-between',
+                        // paddingRight: '8.464rem', 
+                        fontSize: '2.0832rem',
+                        color: '#909399'
+                      }}>
                         <span>
                           原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
                           （延迟{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天，修改{item.xgcs}次）
@@ -1061,12 +1111,12 @@ class LifeCycleManagementTabs extends React.Component {
                                                     visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
                                                     onVisibleChange={this.handleVisibleChange}
                                                   >
-                                                    <a style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
+                                                    <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
                                                   </Popover> :
-                                                  <a style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                  <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
                                               )
                                                 :
-                                                <span>{item.sxmc}</span>
+                                                <span className='lifecycle-text-overflow'>{item.sxmc}</span>
                                             }
                                           </div>
                                           <div className='cont-row-zxqk'>{item.zxqk}</div>

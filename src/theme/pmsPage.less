@@ -1161,10 +1161,23 @@
         border-bottom: 0.29rem dashed #EBEEF5;
         padding: 3.5712rem 0;
         overflow: hidden;
-        // overflow-x: auto;
+        overflow-x: auto;
+
+        &::-webkit-scrollbar {
+          width: 1.488rem;
+          height: 1.488rem;
+          background-color: #f5f5f5;
+          border-radius: 1.3392rem;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: #c1c1c1;
+          border-radius: 1.3392rem;
+        }
+
 
         & .content-steps {
-          width: 171rem;
+          width: 168rem;
 
           .ant-steps-item-finish .ant-steps-item-icon {
             background-color: #fff;
@@ -1197,7 +1210,7 @@
 
           & .process-box-wrapper {
             margin-top: 1.3392rem;
-            margin-right: 3.8688rem;
+            margin-right: 2.976rem;
             position: relative;
 
             & .triangle-up img {
@@ -1740,15 +1753,15 @@
       font-size: 2.232rem;
 
       .head-img {
-        width: 5.952rem;
-        height: 5.952rem;
+        width: 4.762rem;
+        height: 4.762rem;
         margin-right: 2rem;
       }
 
       .head-icon {
         display: flex;
         align-items: center;
-        line-height: 3.273rem;
+        // line-height: 3.273rem;
         color: rgba(192, 196, 204, 1);
       }
 
@@ -1934,6 +1947,13 @@
             background-color: white;
             border-radius: 50%;
             border: 0.25rem solid rgb(192, 196, 204);
+          }
+          .lifecycle-text-overflow {
+            overflow: hidden;
+            height: 2.3808rem;
+            line-height: 2.3808rem;
+            text-overflow: ellipsis;
+            white-space: nowrap;
           }
 
           .cont-row-zxqk {

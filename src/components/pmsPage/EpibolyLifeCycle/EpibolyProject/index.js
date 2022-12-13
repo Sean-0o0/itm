@@ -149,7 +149,6 @@ export default function EpibolyProject() {
             <span className='header-txt'>{item.xmmc}</span>
           </div>
           <div className='item-content'>
-            <Scrollbars autoHide>
               <Steps className='content-steps' current={currentStep.length !== 0 && Number(currentStep[index][0]) - 1 || 0} size='small'>
                 <Step title="需求提出及确认" />
                 <Step title="简历管理" />
@@ -163,7 +162,6 @@ export default function EpibolyProject() {
               <div className='content-processes' >
                 {stepData.length !== 0 && stepData[index].map((x, i) => getProcess(x, i, index))}
               </div>
-            </Scrollbars>
           </div>
           <div className='item-footer'>
             <div className='footer-txt'>日常任务</div>
