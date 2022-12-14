@@ -41,10 +41,18 @@ export default function TeamStatistic() {
       yAxis: [
         {
           type: 'value',
-          name: 'Precipitation',
+          name: '人  ',
           min: 0,
           max: 100,
           interval: 25,
+          nameTextStyle: {
+            // fontSize: 14,
+            align: 'right',
+            fontFamily: 'PingFangSC-Regular, PingFang SC',
+            fontWeight: 400,
+            color: '#909399'
+          },
+          nameGap: 18,
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
@@ -73,6 +81,23 @@ export default function TeamStatistic() {
           data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
         }
       ],
+      dataZoom: [
+        {
+          type: "slider", //隐藏或显示（true）组件
+          show: false,
+          startValue: 0,
+          endValue: 9,
+          filterMode: "empty",
+          zoomLoxk: true, // 是否锁定选择区域（或叫做数据窗口）的大小
+        },
+        {
+          //没有下面这块的话，只能拖动滚动条，鼠标滚轮在区域内不能控制外部滚动条
+          type: "inside",
+          zoomOnMouseWheel: true, //滚轮是否触发缩放
+          moveOnMouseMove: true, //鼠标滚轮触发滚动
+          moveOnMouseWheel: true,
+        },
+      ],
       color: ['#3361FF', '#FDC041'],
     };
     const pieChartOption = {
@@ -85,12 +110,16 @@ export default function TeamStatistic() {
         y: 'center',  //图例上下居中
         itemGap: 20,
         formatter: (name) => {
-          return `{a|${name}}{b|${getValue(name)}%}{c|${getValue(name) * 2}人}`;
+          const nameStr = name.length>5?name.substr(0, 5)+'...':name;
+          return `{a|${nameStr}}{b|${getValue(name)}%}{c|${getValue(name) * 2}人}`;
         },
         textStyle: {
           rich: {
             a: {
-              width: 100,
+              width: 80,
+              fontSize: 12,
+              fontFamily: 'PingFangSC-Regular, PingFang SC',
+              color: '#9198A7',
             },
             b: {
               fontSize: 14,
@@ -104,7 +133,7 @@ export default function TeamStatistic() {
               fontFamily: 'Roboto-Medium, Roboto',
               fontWeight: 'bold',
               color: '#222222',
-              width: 40,
+              width: 60,
             }
           }
         }
@@ -121,7 +150,7 @@ export default function TeamStatistic() {
             position: 'center',
             formatter: (params) => {
               return [
-                params.name, `${params.percent}%`
+                params.name, `${getValue(params.name) * 2}人`
               ].join('\n');
             },
             color: 'black',
@@ -137,6 +166,11 @@ export default function TeamStatistic() {
             show: false
           },
           data: dataCake,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
         }
       ],
       color: ['#3361FF', '#FDC041', '#FF8D84', '#86E0FF', '#02E4DD', '#6B74FF', '#7392CA', '#9DBCFF']

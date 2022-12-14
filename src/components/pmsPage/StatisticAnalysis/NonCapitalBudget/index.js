@@ -25,7 +25,7 @@ export default function NonCapitalBudget() {
       xAxis: [
         {
           type: 'category',
-          data: ['零售业务专班1', '零售业务专班2', '零售业务专班3', '零售业务专班4', '零售业务专班', '零售业务专班', '零售业务专班', '零售业务专班', '零售业务专班', '零售业务专班', ''],
+          data: ['零售业务专班1', '零售业务专班2', '零售业务专班3', '零售业务专班4', '零售业务专班', '零售业务专班', '零售业务专班', '零售业务专班', '零售业务专班', '零售业务专班'],
           axisTick: {
             alignWithLabel: true
           },
@@ -49,9 +49,10 @@ export default function NonCapitalBudget() {
       yAxis: [
         {
           type: 'value',
-          name: '单位：人',
+          name: '万元',
           nameTextStyle: {
-            fontSize: 14,
+            // fontSize: 14,
+            align: 'right',
             fontFamily: 'PingFangSC-Regular, PingFang SC',
             fontWeight: 400,
             color: '#909399'
@@ -80,6 +81,29 @@ export default function NonCapitalBudget() {
           data: [10, 42, 20, 33, 39, 36, 22, 14, 25, 32],
         }
       ],
+      dataZoom: [
+        {
+          type: "slider", //隐藏或显示（true）组件
+          show: false,
+          startValue: 0,
+          endValue: 9,
+          filterMode: "empty",
+          zoomLoxk: true, // 是否锁定选择区域（或叫做数据窗口）的大小
+        },
+        {
+          //没有下面这块的话，只能拖动滚动条，鼠标滚轮在区域内不能控制外部滚动条
+          type: "inside",
+          zoomOnMouseWheel: true, //滚轮是否触发缩放
+          moveOnMouseMove: true, //鼠标滚轮触发滚动
+          moveOnMouseWheel: true,
+        },
+      ],
+      grid: {
+        left: '3%',
+        right: '9%',
+        bottom: '3%',
+        containLabel: true,
+      },
       color: '#3361FF',
     };
     const pieChartOption = {
@@ -92,12 +116,16 @@ export default function NonCapitalBudget() {
         y: 'center',  //图例上下居中
         itemGap: 20,
         formatter: (name) => {
-          return `{a|${name}}{b|${getValue(name)}%}{c|${getValue(name) * 1000000}}`;
+          const nameStr = name.length>9?name.substr(0, 9)+'...':name;
+          return `{a|${nameStr}}{b|${getValue(name)}%}{c|${getValue(name) * 1000000}}`;
         },
         textStyle: {
           rich: {
             a: {
-              width: 100,
+              width: 120,
+              fontSize: 12,
+              fontFamily: 'PingFangSC-Regular, PingFang SC',
+              color: '#9198A7',
             },
             b: {
               fontSize: 14,
@@ -126,11 +154,6 @@ export default function NonCapitalBudget() {
           label: {
             show: false,
             position: 'center',
-            formatter: (params) => {
-              return [
-                params.name, `${params.percent}%`
-              ].join('\n');
-            },
             color: 'black',
             fontFamily: 'PingFangSC-Regular, PingFang SC',
           },
@@ -144,6 +167,11 @@ export default function NonCapitalBudget() {
             show: false
           },
           data: dataCake,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          }
         }
       ],
       color: ['#3361FF', '#FDC041', '#FF8D84', '#86E0FF', '#02E4DD', '#6B74FF', '#7392CA', '#9DBCFF']

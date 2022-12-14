@@ -8,11 +8,11 @@ export default function CapitalBudget() {
 
   useEffect(() => {
     const dataCake = [
-      { value: 30, name: '行业指定标准' },
+      { value: 30, name: '行业指定标准行业指定标准' },
       { value: 20, name: '创新课题申报' },
-      { value: 16, name: '技术专利' },
+      { value: 16, name: '技术专利行业指定标准' },
       { value: 14, name: '软件著作' },
-      { value: 10, name: 'aaaa' },
+      { value: 10, name: 'aaaa行业指定标准' },
       { value: 10, name: 'bbbb' },
     ];
     const getValue = (name) => dataCake?.filter(x => x.name === name)[0].value;
@@ -23,7 +23,12 @@ export default function CapitalBudget() {
         data: ['Evaporation', {
           name: 'Temperature',
           icon: 'roundRect'
-        }]
+        }],
+        textStyle: {
+          fontSize: 12,
+          fontFamily: 'PingFangSC-Regular, PingFang SC',
+          color: '#9198A7',
+        }
       },
       xAxis: [
         {
@@ -48,7 +53,7 @@ export default function CapitalBudget() {
       yAxis: [
         {
           type: 'value',
-          name: 'Precipitation',
+          name: '亿元',
           min: 0,
           max: 250,
           interval: 50,
@@ -56,7 +61,8 @@ export default function CapitalBudget() {
             // fontSize: 14,
             fontFamily: 'PingFangSC-Regular, PingFang SC',
             fontWeight: 400,
-            color: '#909399'
+            align: 'right',
+            color: '#9198A7',
           },
           nameGap: 18,
           axisLabel: {
@@ -65,7 +71,7 @@ export default function CapitalBudget() {
             fontFamily: 'Roboto-Regular, Roboto',
             fontWeight: 400,
             showMaxLabel: true,
-            formatter: '{value} ml'
+            formatter: '{value}'
           },
           axisLine: {
             show: false,
@@ -76,17 +82,25 @@ export default function CapitalBudget() {
         },
         {
           type: 'value',
-          name: 'Temperature',
+          name: '   %',
           min: 0,
           max: 25,
           interval: 5,
+          nameTextStyle: {
+            // fontSize: 14,
+            align: 'left',
+            fontFamily: 'PingFangSC-Regular, PingFang SC',
+            fontWeight: 400,
+            color: '#9198A7',
+          },
+          nameGap: 18,
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
             fontFamily: 'Roboto-Regular, Roboto',
             fontWeight: 400,
             showMaxLabel: true,
-            formatter: '{value} °C'
+            formatter: '{value}'
           },
           axisLine: {
             show: false,
@@ -111,6 +125,23 @@ export default function CapitalBudget() {
           data: [2.0, 2.2, 3.3, 4.5, 6.3, 10.2, 20.3, 23.4, 23.0, 16.5, 12.0, 6.2]
         }
       ],
+      dataZoom: [
+        {
+          type: "slider", //隐藏或显示（true）组件
+          show: false,
+          startValue: 0,
+          endValue: 9,
+          filterMode: "empty",
+          zoomLoxk: true, // 是否锁定选择区域（或叫做数据窗口）的大小
+        },
+        {
+          //没有下面这块的话，只能拖动滚动条，鼠标滚轮在区域内不能控制外部滚动条
+          type: "inside",
+          zoomOnMouseWheel: true, //滚轮是否触发缩放
+          moveOnMouseMove: true, //鼠标滚轮触发滚动
+          moveOnMouseWheel: true,
+        },
+      ],
       color: ['#3361FF', '#FDC041']
     };
     const pieChartOption = {
@@ -118,17 +149,20 @@ export default function CapitalBudget() {
         itemWidth: 7,
         itemHeight: 7,
         orient: 'vertical',
-        // padding: [42, 0],
         left: '45%',  //图例距离左的距离
         y: 'center',  //图例上下居中
         itemGap: 20,
         formatter: (name) => {
-          return `{a|${name}}{b|${getValue(name)}%}{c|${getValue(name) * 1000000}}`;
+          const nameStr = name.length>9?name.substr(0, 9)+'...':name;
+          return `{a|${nameStr}}{b|${getValue(name)}%}{c|${getValue(name) * 1000000}}`;
         },
         textStyle: {
           rich: {
             a: {
-              width: 100,
+              width: 120,
+              fontSize: 12,
+              fontFamily: 'PingFangSC-Regular, PingFang SC',
+              color: '#9198A7',
             },
             b: {
               fontSize: 14,
@@ -157,11 +191,6 @@ export default function CapitalBudget() {
           label: {
             show: false,
             position: 'center',
-            formatter: (params) => {
-              return [
-                params.name, `${params.percent}%`
-              ].join('\n');
-            },
             color: 'black',
             fontFamily: 'PingFangSC-Regular, PingFang SC',
           },
@@ -175,6 +204,11 @@ export default function CapitalBudget() {
             show: false
           },
           data: dataCake,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          }
         }
       ],
       color: ['#3361FF', '#FDC041', '#FF8D84', '#86E0FF', '#02E4DD', '#6B74FF', '#7392CA', '#9DBCFF']

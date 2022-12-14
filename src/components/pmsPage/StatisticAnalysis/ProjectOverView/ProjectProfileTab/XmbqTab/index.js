@@ -19,7 +19,7 @@ export default function XmbcTab() {
                 y: 'center',  //图例上下居中
                 itemGap: 20,
                 formatter: (name) => {
-                    return `{a|${name}}\n{b|${getValue(name)}}`;
+                    return `{a|${name}}\n{b|${getValue(name)} 个}`;
                 },
                 textStyle: {
                     rich: {
@@ -63,6 +63,11 @@ export default function XmbcTab() {
                         show: false
                     },
                     data: dataCake,
+                    itemStyle: {
+                        borderRadius: 10,
+                        borderColor: '#fff',
+                        borderWidth: 2
+                    }
                 }
             ],
             color: ['#3361FF', '#FDC041']

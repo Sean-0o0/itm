@@ -31,17 +31,25 @@ export default function SupplierStatistic() {
       yAxis: [
         {
           type: 'value',
-          name: 'Precipitation',
+          name: '单位：万  ',
           min: 0,
           max: 250,
           interval: 50,
+          nameTextStyle: {
+            // fontSize: 14,
+            // align: 'right',
+            fontFamily: 'PingFangSC-Regular, PingFang SC',
+            fontWeight: 400,
+            color: '#909399'
+          },
+          nameGap: 18,
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
             fontFamily: 'Roboto-Regular, Roboto',
             fontWeight: 400,
             showMaxLabel: true,
-            formatter: '{value} ml'
+            formatter: '{value}'
           },
           axisLine: {
             show: false,
@@ -52,17 +60,25 @@ export default function SupplierStatistic() {
         },
         {
           type: 'value',
-          name: 'Temperature',
+          name: '单位：个',
           min: 0,
           max: 25,
           interval: 5,
+          nameTextStyle: {
+            // fontSize: 14,
+            // align: 'right',
+            fontFamily: 'PingFangSC-Regular, PingFang SC',
+            fontWeight: 400,
+            color: '#909399'
+          },
+          nameGap: 18,
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
             fontFamily: 'Roboto-Regular, Roboto',
             fontWeight: 400,
             showMaxLabel: true,
-            formatter: '{value} °C'
+            formatter: '{value}'
           },
           axisLine: {
             show: false,
@@ -88,6 +104,23 @@ export default function SupplierStatistic() {
         }
       ],
       color: ['#3361FF', '#FDC041'],
+      dataZoom: [
+        {
+          type: "slider", //隐藏或显示（true）组件
+          show: false,
+          startValue: 0,
+          endValue: 9,
+          filterMode: "empty",
+          zoomLoxk: true, // 是否锁定选择区域（或叫做数据窗口）的大小
+        },
+        {
+          //没有下面这块的话，只能拖动滚动条，鼠标滚轮在区域内不能控制外部滚动条
+          type: "inside",
+          zoomOnMouseWheel: true, //滚轮是否触发缩放
+          moveOnMouseMove: true, //鼠标滚轮触发滚动
+          moveOnMouseWheel: true,
+        },
+      ],
     };
     const leftBarChart = echarts.init(leftBarChartRef.current);
     const rightBarChart = echarts.init(rightBarChartRef.current);

@@ -47,11 +47,6 @@ export default function ProjectOverView() {
           label: {
             show: false,
             position: 'center',
-            formatter: (params) => {
-              return [
-                params.name, `${params.percent}%`
-              ].join('\n');
-            },
             color: 'black',
             fontFamily: 'PingFangSC-Regular, PingFang SC',
           },
@@ -65,6 +60,11 @@ export default function ProjectOverView() {
             show: false
           },
           data: dataCake,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
         }
       ],
       color: ['#3361FF', '#FDC041', '#FF8D84', '#86E0FF']

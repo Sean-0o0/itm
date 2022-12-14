@@ -266,7 +266,7 @@
 
           .tab-btn-box {
             margin-left: auto;
-            height: 3.5712rem;
+            // height: 3.5712rem;
             width: 30rem;
             display: flex;
             flex-direction: row;
@@ -318,7 +318,8 @@
               position: relative;
               align-items: center;
               height: 8.4816rem;
-              width: 31.6%;
+              // width: 31.6%;
+              flex: 1;
               background-color: #fff;
               box-shadow: 0 0 0.2976rem #b4b4b4;
               border-radius: 0.5952rem;
@@ -712,12 +713,12 @@
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 3.5712rem;
+        margin-bottom: 1.5rem;
       }
 
       .non-capital-top,
       .non-capital-bottom {
-        height: 29.76rem;
+        height: 31.832rem;
         width: 100%;
       }
 
@@ -864,7 +865,7 @@
     margin-top: 2.3808rem;
 
     &>.supplier-left,
-    .supplier-right {
+    &>.supplier-right {
       width: 50%;
       margin-right: 2.3808rem;
       background-color: #fff;
@@ -893,6 +894,9 @@
       }
     }
 
+    &>.supplier-right {
+      margin-right: 0;
+    }
   }
 
   &>.personnel-statistic-box {
@@ -901,7 +905,7 @@
     margin-top: 2.3808rem;
 
     &>.personnel-left,
-    .personnel-right {
+    &>.personnel-right {
       width: 50%;
       margin-right: 2.3808rem;
       background-color: #fff;
@@ -928,6 +932,10 @@
         height: 29.76rem;
         width: 100%;
       }
+    }
+
+    &>.personnel-right {
+      margin-right: 0;
     }
 
   }
@@ -1743,6 +1751,7 @@
     height: 100%;
     overflow: hidden;
     overflow-y: auto;
+
     &::-webkit-scrollbar {
       width: 1.488rem;
       background-color: #fafafa;

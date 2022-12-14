@@ -27,12 +27,16 @@ export default function PersonnelStatistic() {
         y: 'center',  //图例上下居中
         itemGap: 20,
         formatter: (name) => {
-          return `{a|${name}}{b|${getValue(name)}%}{c|${getValue(name)*2}人}`;
+          const nameStr = name.length>5?name.substr(0, 5)+'...':name;
+          return `{a|${nameStr}}{b|${getValue(name)}%}{c|${getValue(name) * 2}人}`;
         },
         textStyle: {
           rich: {
             a: {
               width: 80,
+              fontSize: 12,
+              fontFamily: 'PingFangSC-Regular, PingFang SC',
+              color: '#9198A7',
             },
             b: {
               fontSize: 14,
@@ -63,7 +67,7 @@ export default function PersonnelStatistic() {
             position: 'center',
             formatter: (params) => {
               return [
-                params.name, `${params.percent}%`
+                params.name, `${getValue(params.name) * 2}人`
               ].join('\n');
             },
             color: 'black',
@@ -79,6 +83,11 @@ export default function PersonnelStatistic() {
             show: false
           },
           data: dataCake,
+          itemStyle: {
+            borderRadius: 10,
+            borderColor: '#fff',
+            borderWidth: 2
+          },
         }
       ],
       color: ['#3361FF', '#FDC041', '#FF8D84', '#86E0FF', '#02E4DD', '#6B74FF', '#7392CA', '#9DBCFF']

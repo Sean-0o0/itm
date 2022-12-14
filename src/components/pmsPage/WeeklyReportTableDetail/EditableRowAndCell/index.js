@@ -167,6 +167,10 @@ const EditableCell = (props) => {
             case '1':
                 return '低风险';
             case '2':
+                return '中风险';
+            case '3':
+                return '高风险';
+            case '4':
                 return '进度正常';
         }
     };
@@ -187,8 +191,14 @@ const EditableCell = (props) => {
             txt: '低风险',
             num: '1'
         }, {
-            txt: '进度正常',
+            txt: '中风险',
             num: '2'
+        },{
+            txt: '高风险',
+            num: '3'
+        }, {
+            txt: '进度正常',
+            num: '4'
         }
     ];
     const getSelect = (onChange, open, setOpen, data) => {
