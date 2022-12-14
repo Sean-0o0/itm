@@ -957,211 +957,212 @@ class LifeCycleManagementTabs extends React.Component {
               });
             }} />
         </div>
-
-        <div className='lifecyclemanage-box'>
-          {
-            basicData.map((item = {}, index) => {
-              let detail = [];
-              detailData.map((childItem = {}, index) => {
-                if (childItem.lcbid === item.lcbid) {
-                  detail.push(childItem);
-                }
-              })
-              let sort = this.groupBy(detail);
-              return <div className='LifeCycleManage' style={{
-                borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
-                borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),
-                borderBottomLeftRadius: (index === basicData.length - 1 ? '1.1904rem' : ''),
-                borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
-              }}>
-                <div className='head'>
-                  <Imgs status={item.zt} />
-                  <i
-                    className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                    onClick={() => this.extend(index)} />&nbsp;
-                  <div className='head1'>
-                    {item.lcbmc}
-                  </div>
-                  <div className='head6'>
-                    进度：<span style={{ color: 'black' }}>{item.jd}</span>
-                  </div>
-                  <div style={{
-                    lineHeight: '2.976rem',
-                    width: '33%',
-                    minWidth: '59.52rem',
-                    fontSize: '2.232rem',
-                    fontWeight: 400,
-                    color: '#606266',
-                    paddingTop: '3.2736rem'
-                  }}>
-                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
-                    {item.yckssj !== '0' && item.ycjssj !== '0' &&
-                      <div style={{
-                        display: 'flex',
-                        justifyContent: 'space-between',
-                        // paddingRight: '8.464rem', 
-                        fontSize: '2.0832rem',
-                        color: '#909399'
-                      }}>
-                        <span>
-                          原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
-                          （延迟{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天，修改{item.xgcs}次）
-                        </span>
-                      </div>
-                    }
-                  </div>
-                  <div className='head4'>
-                    项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
-                  </div>
-                  <div className='head2'>
-                    状态：<ProjectProgress state={item.zt} />
-                  </div>
-                  <div className='head5'>
-                    <div className='head5-title'>
-                      <div className='head5-cont'>
-                        <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
-                          className="iconfont icon-edit" onClick={() => {
-                            // const { userId, loginUserId } = this.props;
-                            if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
-                              this.handleEditModel(item);
-                            } else {
-                              message.error(`抱歉，只有当前项目经理可以进行该操作`);
+        <div className='lifecyclemanage-box-wrapper'>
+          <div className='lifecyclemanage-box'>
+            {
+              basicData.map((item = {}, index) => {
+                let detail = [];
+                detailData.map((childItem = {}, index) => {
+                  if (childItem.lcbid === item.lcbid) {
+                    detail.push(childItem);
+                  }
+                })
+                let sort = this.groupBy(detail);
+                return <div className='LifeCycleManage' style={{
+                  borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
+                  borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),
+                  borderBottomLeftRadius: (index === basicData.length - 1 ? '1.1904rem' : ''),
+                  borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
+                }}>
+                  <div className='head'>
+                    <Imgs status={item.zt} />
+                    <i
+                      className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
+                      onClick={() => this.extend(index)} />&nbsp;
+                    <div className='head1'>
+                      {item.lcbmc}
+                    </div>
+                    <div className='head6'>
+                      进度：<span style={{ color: 'black' }}>{item.jd}</span>
+                    </div>
+                    <div style={{
+                      lineHeight: '2.976rem',
+                      width: '33%',
+                      minWidth: '59.52rem',
+                      fontSize: '2.232rem',
+                      fontWeight: 400,
+                      color: '#606266',
+                      paddingTop: '3.2736rem'
+                    }}>
+                      <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
+                      {item.yckssj !== '0' && item.ycjssj !== '0' &&
+                        <div style={{
+                          display: 'flex',
+                          justifyContent: 'space-between',
+                          // paddingRight: '8.464rem', 
+                          fontSize: '2.0832rem',
+                          color: '#909399'
+                        }}>
+                          <span>
+                            原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
+                            （延迟{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天，修改{item.xgcs}次）
+                          </span>
+                        </div>
+                      }
+                    </div>
+                    <div className='head4'>
+                      项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
+                    </div>
+                    <div className='head2'>
+                      状态：<ProjectProgress state={item.zt} />
+                    </div>
+                    <div className='head5'>
+                      <div className='head5-title'>
+                        <div className='head5-cont'>
+                          <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
+                            className="iconfont icon-edit" onClick={() => {
+                              // const { userId, loginUserId } = this.props;
+                              if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
+                                this.handleEditModel(item);
+                              } else {
+                                message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                              }
                             }
-                          }
-                          } />
+                            } />
+                        </div>
                       </div>
                     </div>
                   </div>
-                </div>
-                {/*<div>*/}
-                {/*  {*/}
-                {/*    index !== basicData.length - 1*/}
-                {/*    &&*/}
-                {/*    <Divider type='vertical' dashed={true} style={{*/}
-                {/*      position: 'absolute',*/}
-                {/*      height: item?.height?item?.height:'9.55rem',*/}
-                {/*      backgroundColor: 'red',*/}
-                {/*      marginLeft: '5.952rem',*/}
-                {/*      marginTop: '9.52rem',*/}
-                {/*      zIndex:999,*/}
-                {/*    }}/>*/}
-                {/*  }*/}
+                  {/*<div>*/}
+                  {/*  {*/}
+                  {/*    index !== basicData.length - 1*/}
+                  {/*    &&*/}
+                  {/*    <Divider type='vertical' dashed={true} style={{*/}
+                  {/*      position: 'absolute',*/}
+                  {/*      height: item?.height?item?.height:'9.55rem',*/}
+                  {/*      backgroundColor: 'red',*/}
+                  {/*      marginLeft: '5.952rem',*/}
+                  {/*      marginTop: '9.52rem',*/}
+                  {/*      zIndex:999,*/}
+                  {/*    }}/>*/}
+                  {/*  }*/}
 
-                {/*</div>*/}
-                {
-                  item.extend ?
-                    <Row style={{
-                      height: '80%',
-                      width: '100%',
-                      padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0 6.571rem 0 10.571rem')
-                    }} className='card' id={index}>
-                      {
-                        <Col span={24} style={{
-                          width: '100%',
-                          padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
-                          borderRadius: '1.1904rem',
-                          maxHeight: '50rem'
-                        }}
-                          className='cont'>
-                          {
-                            sort.map((item = {}, index) => {
-                              // console.log("index", index)
-                              // console.log("item", item)
-                              // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
-                              let num = 0
-                              sort[index].List.map((item = {}, ind) => {
-                                if (item.zxqk !== " ") {
-                                  num = num + 1;
-                                }
-                              })
-                              return <Col span={8} className='cont-col-self' style={{ marginBottom: '2.3808rem' }} key={index}>
-                                <div className='cont-col'>
-                                  <div className='cont-col1'>
-                                    <div className='right'>
-                                      {item.swlx}({num}/{sort[index].List.length})
+                  {/*</div>*/}
+                  {
+                    item.extend ?
+                      <Row style={{
+                        height: '80%',
+                        width: '100%',
+                        padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0 6.571rem 0 10.571rem')
+                      }} className='card' id={index}>
+                        {
+                          <Col span={24} style={{
+                            width: '100%',
+                            padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                            borderRadius: '1.1904rem',
+                            maxHeight: '50rem'
+                          }}
+                            className='cont'>
+                            {
+                              sort.map((item = {}, index) => {
+                                // console.log("index", index)
+                                // console.log("item", item)
+                                // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
+                                let num = 0
+                                sort[index].List.map((item = {}, ind) => {
+                                  if (item.zxqk !== " ") {
+                                    num = num + 1;
+                                  }
+                                })
+                                return <Col span={8} className='cont-col-self' style={{ marginBottom: '2.3808rem' }} key={index}>
+                                  <div className='cont-col'>
+                                    <div className='cont-col1'>
+                                      <div className='right'>
+                                        {item.swlx}({num}/{sort[index].List.length})
+                                      </div>
                                     </div>
-                                  </div>
-                                  <div>
-                                    {sort[index].List.map((item = {}, ind) => {
-                                      return <Row key={ind} className='cont-row' style={{
-                                        // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                        // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
-                                        marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
-                                      }}>
-                                        <Col span={17}>
-                                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                                            <Points status={item.zxqk} />
-                                            {/*根据事项类型判断是否是文档*/}
-                                            {
-                                              item.swlx.includes("文档") ||
-                                                item.swlx.includes("信委会") ||
-                                                item.swlx.includes("总办会") ||
-                                                item.swlx.includes("需求调研") ||
-                                                item.swlx.includes("产品设计") ||
-                                                item.swlx.includes("系统框架搭建") ||
-                                                item.swlx.includes("功能开发") ||
-                                                item.swlx.includes("外部系统对接") ||
-                                                item.swlx.includes("系统测试") ? (
-                                                fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
-                                                  <Popover
-                                                    content={content}
-                                                    title="文件列表"
-                                                    trigger="hover"
-                                                    overlayClassName="popover-filelist"
-                                                    visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
-                                                    onVisibleChange={this.handleVisibleChange}
-                                                  >
-                                                    <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
-                                                  </Popover> :
-                                                  <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
-                                              )
-                                                :
-                                                <span className='lifecycle-text-overflow'>{item.sxmc}</span>
-                                            }
-                                          </div>
-                                          <div className='cont-row-zxqk'>{item.zxqk}</div>
-                                        </Col>
-                                        <Col span={6} style={{ textAlign: 'right' }}>
-                                          <Tooltips type={item.swlx}
-                                            item={item}
-                                            status={item.zxqk}
-                                            xmid={xmid}
-                                            userId={projectInfo?.userid}
-                                            loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                                            handleUpload={() => this.handleUpload(item)}
-                                            handleSend={this.handleSend}
-                                            handleFillOut={() => this.handleFillOut(item)}
-                                            handleEdit={() => this.handleEdit(item)}
-                                            handleMessageEdit={this.handleMessageEdit}
-                                          />
-                                        </Col>
-                                        {/* <Col span={3}> */}
-                                        {/*<Dropdown overlay={menu}>*/}
-                                        {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
-                                        {/*     className="iconfont icon-more">*/}
-                                        {/*  </i>*/}
-                                        {/*</Dropdown>*/}
-                                        {/* </Col> */}
-                                        {/* <div className='cont-row1'>
+                                    <div>
+                                      {sort[index].List.map((item = {}, ind) => {
+                                        return <Row key={ind} className='cont-row' style={{
+                                          // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                          // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                          marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
+                                        }}>
+                                          <Col span={17}>
+                                            <div style={{ display: 'flex', alignItems: 'center' }}>
+                                              <Points status={item.zxqk} />
+                                              {/*根据事项类型判断是否是文档*/}
+                                              {
+                                                item.swlx.includes("文档") ||
+                                                  item.swlx.includes("信委会") ||
+                                                  item.swlx.includes("总办会") ||
+                                                  item.swlx.includes("需求调研") ||
+                                                  item.swlx.includes("产品设计") ||
+                                                  item.swlx.includes("系统框架搭建") ||
+                                                  item.swlx.includes("功能开发") ||
+                                                  item.swlx.includes("外部系统对接") ||
+                                                  item.swlx.includes("系统测试") ? (
+                                                  fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
+                                                    <Popover
+                                                      content={content}
+                                                      title="文件列表"
+                                                      trigger="hover"
+                                                      overlayClassName="popover-filelist"
+                                                      visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
+                                                      onVisibleChange={this.handleVisibleChange}
+                                                    >
+                                                      <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
+                                                    </Popover> :
+                                                    <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                )
+                                                  :
+                                                  <span className='lifecycle-text-overflow'>{item.sxmc}</span>
+                                              }
+                                            </div>
+                                            <div className='cont-row-zxqk'>{item.zxqk}</div>
+                                          </Col>
+                                          <Col span={6} style={{ textAlign: 'right' }}>
+                                            <Tooltips type={item.swlx}
+                                              item={item}
+                                              status={item.zxqk}
+                                              xmid={xmid}
+                                              userId={projectInfo?.userid}
+                                              loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                              handleUpload={() => this.handleUpload(item)}
+                                              handleSend={this.handleSend}
+                                              handleFillOut={() => this.handleFillOut(item)}
+                                              handleEdit={() => this.handleEdit(item)}
+                                              handleMessageEdit={this.handleMessageEdit}
+                                            />
+                                          </Col>
+                                          {/* <Col span={3}> */}
+                                          {/*<Dropdown overlay={menu}>*/}
+                                          {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
+                                          {/*     className="iconfont icon-more">*/}
+                                          {/*  </i>*/}
+                                          {/*</Dropdown>*/}
+                                          {/* </Col> */}
+                                          {/* <div className='cont-row1'>
                                           <div className='left'>
                                             //2022.06.17上传
                                           </div>
                                         </div> */}
-                                      </Row>
-                                    })}
+                                        </Row>
+                                      })}
+                                    </div>
                                   </div>
-                                </div>
-                              </Col>
-                            })
-                          }
-                        </Col>
-                      }
-                    </Row>
-                    : ''
-                }
-              </div>
-            })
-          }
+                                </Col>
+                              })
+                            }
+                          </Col>
+                        }
+                      </Row>
+                      : ''
+                  }
+                </div>
+              })
+            }
+          </div>
         </div>
       </Row>
     );
