@@ -47,7 +47,7 @@ export default function XmbcTab() {
                         position: 'center',
                         formatter: (params) => {
                             return [
-                                params.name, `${params.percent}%`
+                                params.name, `${getValue(params.name)} 个`
                             ].join('\n');
                         },
                         color: 'black',
