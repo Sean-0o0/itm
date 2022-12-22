@@ -141,48 +141,79 @@ class LifeCycleManagementTabs extends React.Component {
 
   //流程发起url
   getSendUrl = (name) => {
-    let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "TLC_LCFQ",
-      "operateName": "TLC_LCFQ_LXSQLCFQ",
-      "parameter": [
+    const getParams = (objName, oprName, data, userName) => {
+      return {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": objName,
+        "operateName": oprName,
+        "parameter": data,
+        "userId": userName,
+      }
+    }
+    let params = getParams("TLC_LCFQ", "TLC_LCFQ_LXSQLCFQ",
+      [
         {
           "name": "GLXM",
           "value": this.state.xmid
         }
       ],
-      "userId": Loginname,
-    }
+      Loginname
+    )
     if (name.includes("合同签署")) {
-      params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "TLC_LCFQ",
-        "operateName": "TLC_LCFQ_HTLYY",
-        "parameter": [
-          {
-            "name": "XMMC",
-            "value": this.state.xmid
-          },
-        ],
-        "userId": Loginname,
-      }
-    }
-    if (name.includes("付款")) {
-      params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "LC_XMFKLC",
-        "operateName": "LC_XMFKLC_XMFKLCFQ",
-        "parameter": [
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
+        [
           {
             "name": "XMMC",
             "value": this.state.xmid
           }
         ],
-        "userId": Loginname,
-      }
+        Loginname
+      )
+    }
+    if (name.includes("付款")) {
+      params = getParams("LC_XMFKLC", "LC_XMFKLC_XMFKLCFQ",
+        [
+          {
+            "name": "XMMC",
+            "value": this.state.xmid
+          }
+        ],
+        Loginname
+      )
+    }
+    if (name.includes("软件费用审批")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_SUBMIT_RJGMHT",
+        [
+          {
+            "name": "XMMC",
+            "value": Number(this.state.xmid)
+          }
+        ],
+        Loginname
+      )
+    }
+    if (name.includes("申请餐券")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_CQSQLC",
+        [
+          {
+            "name": "GLXM",
+            "value": this.state.xmid
+          }
+        ],
+        Loginname
+      )
+    }
+    if (name.includes("申请权限")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_VPNSQ",
+        [
+          {
+            "name": "GLXM",
+            "value": this.state.xmid
+          }
+        ],
+        Loginname
+      )
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
@@ -415,6 +446,7 @@ class LifeCycleManagementTabs extends React.Component {
       message.info('功能开发中，暂时无法使用', 1);
       return;
     }
+    // if()
     this.getSendUrl(item.sxmc);
     this.setState({
       sendTitle: item.sxmc + '发起',
@@ -1005,7 +1037,14 @@ class LifeCycleManagementTabs extends React.Component {
                         }}>
                           <span>
                             原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
-                            （延迟{moment(item.ycjssj).diff(moment(item.yckssj), 'day')}天，修改{item.xgcs}次）
+                            （{moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0 &&
+                              `${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') > 0
+                                ?
+                                '延迟' + moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day')
+                                :
+                                '提前' + moment(item.jssj).diff(moment(item.ycjssj), 'day') !== 0 ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day')
+                              }天，`}
+                            修改{item.xgcs}次）
                           </span>
                         </div>
                       }

@@ -124,7 +124,8 @@ class Tooltips extends React.Component {
             <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} >
               <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
                 className="iconfont icon-send" />{getSpan('发起')}
-            </Tooltip> : <>
+            </Tooltip> : 
+            <>
               {item.sxmc.includes('付款流程') && <Tooltip title="打印" onClick={this.print}>
                 <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }} >
                   <Icon type="printer" />{getSpan('打印')}
