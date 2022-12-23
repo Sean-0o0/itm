@@ -89,7 +89,7 @@ class Tooltips extends React.Component {
       message.error(err)
     })
   }
-  getSpan = txt => <span style={{ color: 'rgba(51, 97, 255, 1)' }}>{txt}</span>;
+  getSpan = txt => <span style={{ color: 'rgba(51, 97, 255, 1)', cursor: 'pointer' }}>{txt}</span>;
 
   render() {
     const { src } = this.state;
@@ -100,7 +100,7 @@ class Tooltips extends React.Component {
       <div className={item.sxmc.includes('付款流程') ? 'rowline-cont' : ''}>
         {item.sxmc.includes('付款流程') && <iframe src={src} id='Iframe' style={{ display: 'none' }} />}
         {
-          type.includes("信息录入") ? (status === " " ? <Tooltip title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
+          type.includes("信息录入") ? (status === " " ? <Tooltip  title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
             <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
               className="iconfont icon-file-fillout" />{getSpan('录入')}
           </Tooltip>
