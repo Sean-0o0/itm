@@ -1027,22 +1027,20 @@ class LifeCycleManagementTabs extends React.Component {
                       paddingTop: '3.2736rem'
                     }}>
                       <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
-                      {item.yckssj !== '0' && item.ycjssj !== '0' &&
+                      {(item.yckssj !== '0' && item.ycjssj !== '0' && (moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
                         <div style={{
                           display: 'flex',
                           justifyContent: 'space-between',
-                          // paddingRight: '8.464rem', 
                           fontSize: '2.0832rem',
                           color: '#909399'
                         }}>
                           <span>
                             原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
-                            （{moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0 &&
-                              `${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') > 0
+                            （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0
                                 ?
-                                '延迟' + moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day')
+                                '延迟' + (moment(item.ycjssj).diff(moment(item.jssj), 'day')>moment(item.yckssj).diff(moment(item.kssj), 'day')?moment(item.ycjssj).diff(moment(item.jssj), 'day'):moment(item.yckssj).diff(moment(item.kssj), 'day'))
                                 :
-                                '提前' + moment(item.jssj).diff(moment(item.ycjssj), 'day') !== 0 ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day')
+                                '提前' + (moment(item.jssj).diff(moment(item.ycjssj), 'day')>moment(item.kssj).diff(moment(item.yckssj), 'day')?moment(item.jssj).diff(moment(item.ycjssj), 'day'):moment(item.kssj).diff(moment(item.yckssj), 'day'))
                               }天，`}
                             修改{item.xgcs}次）
                           </span>
