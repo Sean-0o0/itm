@@ -29,7 +29,7 @@ export default function ContrastStatistic() {
     return (
         <div className='contrast-box'>
             {getContrastItem('项目数量', 1028, '个', 40, 1028, '个', 40)}
-            {getContrastItem('总预算', 50000000, '万', 200)}
+            {getContrastItem('总预算', 5000000, '万', 200)}
             {getContrastItem('队伍建设', 46, '人', -21)}
             {getContrastItem('项目数量', 1028, '个', 40)}
             {getContrastItem()}

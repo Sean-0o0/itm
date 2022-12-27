@@ -1,4 +1,4 @@
-import { Row, Col, Carousel, Empty, message, } from 'antd';
+import { Row, Col, Carousel, Empty, message, Tooltip } from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import icon_01 from "../../../../image/pms/fastFunction/icon_01.png";
@@ -80,7 +80,9 @@ class FastFunction extends React.Component {
                     <span className='title-txt'>{item.xmmc}</span>
                     <div className='title-time'>{moment(item.txrq).format('YYYY-MM')}</div>
                   </div>
-                  <div className='content-box'>{item.txnr}</div>
+                  <Tooltip title={item.txnr}>
+                    <div className='content-box'>{item.txnr}</div>
+                  </Tooltip>
                 </div>)
               })}
             </Carousel>
