@@ -440,10 +440,10 @@ class LifeCycleManagementTabs extends React.Component {
   //流程发起
   handleSend = (item) => {
     if (item.sxmc.includes('付款流程')) {
-      // this.setState({
-      //   paymentModalVisible: true,
-      // });
-      message.info('功能开发中，暂时无法使用', 1);
+      this.setState({
+        paymentModalVisible: true,
+      });
+      // message.info('功能开发中，暂时无法使用', 1);
       return;
     }
     // if()
@@ -1026,8 +1026,8 @@ class LifeCycleManagementTabs extends React.Component {
                       color: '#606266',
                       paddingTop: '3.2736rem'
                     }}>
-                      <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.yckssj === '0' && item.ycjssj === '0' ? item.kssj : item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.yckssj === '0' && item.ycjssj === '0' ? item.jssj : item.ycjssj).format('YYYY.MM.DD')} </span>
-                      {(item.yckssj !== '0' && item.ycjssj !== '0' && (moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
+                      <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
+                      {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
                         <div style={{
                           display: 'flex',
                           justifyContent: 'space-between',
@@ -1035,7 +1035,7 @@ class LifeCycleManagementTabs extends React.Component {
                           color: '#909399'
                         }}>
                           <span>
-                            原计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')}
+                            原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
                             （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0
                                 ?
                                 '延迟' + (moment(item.ycjssj).diff(moment(item.jssj), 'day')>moment(item.yckssj).diff(moment(item.kssj), 'day')?moment(item.ycjssj).diff(moment(item.jssj), 'day'):moment(item.yckssj).diff(moment(item.kssj), 'day'))
