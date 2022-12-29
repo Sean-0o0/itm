@@ -2,7 +2,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 import ProjectProfileTab from './ProjectProfileTab';
 
-export default function ProjectOverView() {
+export default function ProjectOverView(props) {
+  const { constrastData } = props;
+  const { zys, zysjqn, zbxys, zbxysjqn, fzbxys, fzbxysjqn } = constrastData
   const gloryChartRef = useRef(null);
   useEffect(() => {
     const dataCake = [
@@ -145,9 +147,9 @@ export default function ProjectOverView() {
       <div className='overview-bottom-box'>
         <div className='overview-bottom-title'>预算总体情况</div>
         <div className='overview-bottom-contrast-box'>
-          {getContrastItem('finance', '总预算', 80000, '万', 500)}
-          {getContrastItem('cash')}
-          {getContrastItem('assets')}
+          {getContrastItem('finance', '总预算', zys, '万', zysjqn)}
+          {getContrastItem('cash', '资本性预算', zbxys, '万', zbxysjqn)}
+          {getContrastItem('assets', '非资本性预算', fzbxys, '万', fzbxysjqn)}
         </div>
       </div>
     </div>

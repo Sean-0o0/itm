@@ -503,7 +503,7 @@ class LifeCycleManagementTabs extends React.Component {
     if (item.sxmc.includes("周报填写")) { window.location.href = this.state.weelyReportUrl; return; }
     //暂时放信息录入，以后多了放-其他
     if (item.sxmc.includes("员工评价开启")) {
-      this.handleModalConfig();
+      this.handleModalConfig({});
       return;
     }
     if (item.sxmc.includes("合同信息录入")) {
@@ -586,6 +586,7 @@ class LifeCycleManagementTabs extends React.Component {
     }
     if (item.sxmc.includes("员工评价开启")) {
       this.handleModalConfig({});
+      console.log('kkkk');
       return;
     }
     if (item.sxmc.includes("中标公告")) {
@@ -1038,9 +1039,9 @@ class LifeCycleManagementTabs extends React.Component {
                             原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
                             （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0
                                 ?
-                                '延迟' + (moment(item.ycjssj).diff(moment(item.jssj), 'day')>moment(item.yckssj).diff(moment(item.kssj), 'day')?moment(item.ycjssj).diff(moment(item.jssj), 'day'):moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                                '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day')>moment(item.yckssj).diff(moment(item.kssj), 'day')?moment(item.ycjssj).diff(moment(item.jssj), 'day'):moment(item.yckssj).diff(moment(item.kssj), 'day'))
                                 :
-                                '提前' + (moment(item.jssj).diff(moment(item.ycjssj), 'day')>moment(item.kssj).diff(moment(item.yckssj), 'day')?moment(item.jssj).diff(moment(item.ycjssj), 'day'):moment(item.kssj).diff(moment(item.yckssj), 'day'))
+                                '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day')>moment(item.kssj).diff(moment(item.yckssj), 'day')?moment(item.jssj).diff(moment(item.ycjssj), 'day'):moment(item.kssj).diff(moment(item.yckssj), 'day'))
                               }天，`}
                             修改{item.xgcs}次）
                           </span>

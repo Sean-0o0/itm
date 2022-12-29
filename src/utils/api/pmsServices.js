@@ -32,4 +32,5 @@ export default [
   { code: '', key: 'queryPaymentFlowDetailFile', url: '/EKB/v1/queryPaymentFlowDetailFile', dis: '查询费用明细预览时需要的文档信息' },
   { code: '', key: 'getApplyListProvisionalAuth', url: '/EKB/v1/getApplyListProvisionalAuth', dis: '获取预览付款单的url' },
   { code: '', key: 'getStreamByLiveBos', url: '/EKB/v1/getStreamByLiveBos', dis: '获取LiveBos文档流' },
+  { code: '', key: 'queryContrastStatisticInfo', url: '/projectManage/queryContrastStatisticInfo', dis: '查询领导看板页顶部较去年数据' },
 ];

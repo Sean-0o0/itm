@@ -1,6 +1,8 @@
-import React from 'react'
+import React, { useEffect, useRef, useState } from 'react';
 
-export default function ContrastStatistic() {
+export default function ContrastStatistic(props) {
+    const { constrastData } = props;
+    const { xmsl, xmsljqn, zys, zysjqn, kzxys, kzxysjqn, dwjs, dwjsjqn, wbry, wbryjqn } = constrastData
 
     const getContrastItem = (dataTxt = '--', dataNum = '--', unit = '', contrastNum = '--') => {
         dataNum = `${dataNum}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -28,11 +30,11 @@ export default function ContrastStatistic() {
     };
     return (
         <div className='contrast-box'>
-            {getContrastItem('项目数量', 1028, '个', 40, 1028, '个', 40)}
-            {getContrastItem('总预算', 5000000, '万', 200)}
-            {getContrastItem('队伍建设', 46, '人', -21)}
-            {getContrastItem('项目数量', 1028, '个', 40)}
-            {getContrastItem()}
+            {getContrastItem('项目数量', xmsl, '个', xmsljqn)}
+            {getContrastItem('总预算', zys, '万', zysjqn)}
+            {getContrastItem('可执行预算', kzxys, '万', kzxysjqn)}
+            {getContrastItem('队伍建设', dwjs, '人', dwjsjqn)}
+            {getContrastItem('外部人员', wbry, '人', wbryjqn)}
         </div>
     )
 }

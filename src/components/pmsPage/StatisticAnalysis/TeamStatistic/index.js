@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as echarts from 'echarts';
 
-export default function TeamStatistic() {
+export default function TeamStatistic(props) {
+  const { constrastData } = props;
+  const { kfbrs, kfbrsjqn, ybbrs, ybbrsjqn } = constrastData
   const barChartRef = useRef(null);
   const pieChartRef = useRef(null);
 
@@ -110,7 +112,7 @@ export default function TeamStatistic() {
         y: 'center',  //图例上下居中
         itemGap: 20,
         formatter: (name) => {
-          const nameStr = name.length>5?name.substr(0, 5)+'...':name;
+          const nameStr = name.length > 5 ? name.substr(0, 5) + '...' : name;
           return `{a|${nameStr}}{b|${getValue(name)}%}{c|${getValue(name) * 2}人}`;
         },
         textStyle: {
@@ -214,8 +216,8 @@ export default function TeamStatistic() {
         <div className='left-title'>科研人才队伍</div>
         <div className='left-content'>
           <div className='content-contrast'>
-            {getContrastItem('开发部人数', 83, '', 23)}
-            {getContrastItem()}
+            {getContrastItem('开发部人数', kfbrs, '', kfbrsjqn)}
+            {getContrastItem('运保部人数', ybbrs, '', ybbrsjqn)}
           </div>
           <div className='content-chart' ref={barChartRef} />
         </div>

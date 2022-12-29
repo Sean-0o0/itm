@@ -36,6 +36,7 @@ const {
     creatPaymentFlow,
     queryPaymentFlowDetailFile,
     getApplyListProvisionalAuth,
+    queryContrastStatisticInfo,
   },
 } = api;
 
@@ -351,6 +352,16 @@ export async function QueryPaymentFlowDetailFile(payload) {
 export async function GetApplyListProvisionalAuth(payload) {
   const option = {
     url: getApplyListProvisionalAuth,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询领导看板页顶部较去年数据
+export async function QueryContrastStatisticInfo(payload) {
+  const option = {
+    url: queryContrastStatisticInfo,
     method: 'post',
     data: payload,
   };
