@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Input, Select, Row, Col, Tooltip, message, Icon } from 'antd';
 import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
-import { FetchQueryLifecycleStuff, FetchQueryOAUrl } from "../../../../services/pmsServices";
+import { FetchQueryLifecycleStuff, FetchQueryOAUrl, FetchQueryOwnerWorkflow, GetApplyListProvisionalAuth } from "../../../../services/pmsServices";
 import axios from 'axios'
 import config from '../../../../utils/config';
 
@@ -37,14 +37,43 @@ class Tooltips extends React.Component {
   }
 
   getOAUrl = (item) => {
-    console.log(item);
+    if (item.sxmc.includes('付款流程')) {
+      FetchQueryOwnerWorkflow({
+        paging: 1,
+        current: 1,
+        pageSize: 5,
+        total: -1,
+        sort: ''
+      }).then(ret => {
+        const { code = 0, record = [] } = ret;
+        if (code === 1) {
+          record.forEach(x => {
+            if (x.xmid === item.xmid) {
+              if (x.url.includes('YKB:')) {
+                const arr = x.url.split(',');
+                const id = arr[0].split(':')[1];
+                const userykbid = arr[1];
+                GetApplyListProvisionalAuth({
+                  id, userykbid,
+                }).then(res => {
+                  window.open(res.url);
+                }).catch(e => console.error(e));
+              }
+            }
+          })
+          console.log(record, item);
+        }
+      }).catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+      return;
+    }
     FetchQueryOAUrl({
       sxid: item.sxid,
       xmmc: item.xmid,
     }).then((ret = {}) => {
       const { code = 0, record = [] } = ret;
       if (code === 1) {
-        // console.log("record",record)
         window.open(record.url)
       }
     }).catch((error) => {
@@ -100,7 +129,7 @@ class Tooltips extends React.Component {
       <div className={item.sxmc.includes('付款流程') ? 'rowline-cont' : ''}>
         {item.sxmc.includes('付款流程') && <iframe src={src} id='Iframe' style={{ display: 'none' }} />}
         {
-          type.includes("信息录入") ? (status === " " ? <Tooltip  title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
+          type.includes("信息录入") ? (status === " " ? <Tooltip title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
             <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
               className="iconfont icon-file-fillout" />{getSpan('录入')}
           </Tooltip>
@@ -110,25 +139,25 @@ class Tooltips extends React.Component {
             </Tooltip>) : ''
         }
         {
-          type.includes("其他")? (status === " " ? <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
-          <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-            className="iconfont icon-file-fillout" />{getSpan('操作')}
-        </Tooltip>
-          : <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
+          type.includes("其他") ? (status === " " ? <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
             <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-              className="iconfont icon-edit" />{getSpan('操作')}
-          </Tooltip>) : ''
+              className="iconfont icon-file-fillout" />{getSpan('操作')}
+          </Tooltip>
+            : <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
+              <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
+                className="iconfont icon-edit" />{getSpan('操作')}
+            </Tooltip>) : ''
         }
         {
           type.includes("流程") ? (status === " " ?
             <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} >
               <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
                 className="iconfont icon-send" />{getSpan('发起')}
-            </Tooltip> : 
+            </Tooltip> :
             <>
               {item.sxmc.includes('付款流程') && <Tooltip title="打印" onClick={this.print}>
-                <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }} >
-                  <Icon type="printer" />{getSpan('打印')}
+                <a style={{ marginLeft: '2.6rem', color: 'rgba(51, 97, 255, 1)' }} >
+                  <Icon type="printer" style={{ marginRight: '0.5952rem' }} />{getSpan('打印')}
                 </a>
               </Tooltip>}
               <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
@@ -147,7 +176,7 @@ class Tooltips extends React.Component {
             type.includes("系统框架搭建") ||
             type.includes("功能开发") ||
             type.includes("外部系统对接") ||
-            type.includes("系统测试")? (status === " " ?
+            type.includes("系统测试") ? (status === " " ?
               <Tooltip title="上传" onClick={this.handleAuthority.bind(this, this.handleUpload, '上传')}>
                 <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
                   className="iconfont icon-upload" />{getSpan('上传')}

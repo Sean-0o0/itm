@@ -186,7 +186,7 @@ class LifeCycleManagementTabs extends React.Component {
       params = getParams("TLC_LCFQ", "TLC_LCFQ_SUBMIT_RJGMHT",
         [
           {
-            "name": "XMMC",
+            "name": "GLXM",
             "value": Number(this.state.xmid)
           }
         ],
@@ -440,17 +440,15 @@ class LifeCycleManagementTabs extends React.Component {
   //流程发起
   handleSend = (item) => {
     if (item.sxmc.includes('付款流程')) {
-      this.setState({
-        paymentModalVisible: true,
-      });
-      // message.info('功能开发中，暂时无法使用', 1);
+      // this.setState({
+      //   paymentModalVisible: true,
+      // });
+      message.info('功能开发中，暂时无法使用', 1);
       return;
     }
-    // if()
     this.getSendUrl(item.sxmc);
     this.setState({
       sendTitle: item.sxmc + '发起',
-      // sendUrl: url,
       sendVisible: true,
     });
   };
@@ -477,7 +475,6 @@ class LifeCycleManagementTabs extends React.Component {
     };
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
-      console.log("🚀 ~ file: index.js ~ line 233 ~ LifeCycleManagementTabs ~ CreateOperateHyperLink ~ url", url)
       if (code === 1) {
         this.setState({
           [urlName]: url,
@@ -1038,10 +1035,10 @@ class LifeCycleManagementTabs extends React.Component {
                           <span>
                             原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
                             （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0
-                                ?
-                                '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day')>moment(item.yckssj).diff(moment(item.kssj), 'day')?moment(item.ycjssj).diff(moment(item.jssj), 'day'):moment(item.yckssj).diff(moment(item.kssj), 'day'))
-                                :
-                                '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day')>moment(item.kssj).diff(moment(item.yckssj), 'day')?moment(item.jssj).diff(moment(item.ycjssj), 'day'):moment(item.kssj).diff(moment(item.yckssj), 'day'))
+                              ?
+                              '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                              :
+                              '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
                               }天，`}
                             修改{item.xgcs}次）
                           </span>
@@ -1126,7 +1123,7 @@ class LifeCycleManagementTabs extends React.Component {
                                           // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
                                           marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
                                         }}>
-                                          <Col span={17}>
+                                          <Col span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 14 : 17}>
                                             <div style={{ display: 'flex', alignItems: 'center' }}>
                                               <Points status={item.zxqk} />
                                               {/*根据事项类型判断是否是文档*/}
@@ -1159,7 +1156,7 @@ class LifeCycleManagementTabs extends React.Component {
                                             </div>
                                             <div className='cont-row-zxqk'>{item.zxqk}</div>
                                           </Col>
-                                          <Col span={6} style={{ textAlign: 'right' }}>
+                                          <Col span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6} style={{ textAlign: 'right' }}>
                                             <Tooltips type={item.swlx}
                                               item={item}
                                               status={item.zxqk}
