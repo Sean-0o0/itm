@@ -37,6 +37,7 @@ const {
     queryPaymentFlowDetailFile,
     getApplyListProvisionalAuth,
     queryContrastStatisticInfo,
+    checkInvoice
   },
 } = api;
 
@@ -362,6 +363,16 @@ export async function GetApplyListProvisionalAuth(payload) {
 export async function QueryContrastStatisticInfo(payload) {
   const option = {
     url: queryContrastStatisticInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//对接易快报发票查验接口
+export async function CheckInvoice(payload) {
+  const option = {
+    url: checkInvoice,
     method: 'post',
     data: payload,
   };

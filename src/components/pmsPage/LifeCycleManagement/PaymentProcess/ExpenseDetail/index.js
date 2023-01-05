@@ -1,19 +1,21 @@
 import React, { useState } from 'react';
-import { message, Button, Spin, Divider } from 'antd';
+import { message, Button, Spin, Divider, Drawer, Col, Row, Input, Select, DatePicker, Icon, Form } from 'antd';
 import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
 import { CreateOperateHyperLink, QueryPaymentFlowDetailFile } from '../../../../../services/pmsServices';
 import { WpsInvoke, WpsClientOpen } from '../../../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../../../utils/config";
 import moment from 'moment';
+import AddExpense from './AddExpense';
+const { Option } = Select;
 
 const LOGIN_USER_ID = localStorage.getItem("firstUserID");
 
-export default function ExpenseDetail(props) {
-    const { currentXmid, getExpenseDetailData, expenseDetailData, setIsSpinning, isXzTurnRed, setIsXzTurnRed } = props;
+const ExpenseDetail = (props) => {
+    const { currentXmid, getExpenseDetailData, expenseDetailData, setIsSpinning, isXzTurnRed, setIsXzTurnRed, form, userykbid } = props;
     const [addExpenseModalVisiable, setAddExpenseModalVisiable] = useState(false);
-    const [addExpenseModalUrl, setAddExpenseModalUrl] = useState('#');
     //加载状态
     const [isExpenseSpinning, setIsExpenseSpinning] = useState(false);
+    const { getFieldDecorator } = form;
 
     //费用明细新增弹窗调用成功
     const handleAddExpenseSuccess = () => {
@@ -25,30 +27,7 @@ export default function ExpenseDetail(props) {
 
     //处理点击新增
     const handleAddExpense = () => {
-        setIsSpinning(true);
-        let params = {
-            "attribute": 0,
-            "authFlag": 0,
-            "objectName": "TYKBFYMX",
-            "operateName": "TYKBFYMX_ADD",
-            "parameter": [
-                {
-                    "name": "FKLCID",
-                    "value": -currentXmid,
-                },
-            ],
-            "userId": LOGIN_USER_ID,
-        };
-        CreateOperateHyperLink(params).then((ret = {}) => {
-            const { code, message, url } = ret;
-            if (code === 1) {
-                setAddExpenseModalUrl(url);
-                setAddExpenseModalVisiable(true);
-                setIsSpinning(false);
-            }
-        }).catch((error) => {
-            message.error(!error.success ? error.message : error.note);
-        });
+        setAddExpenseModalVisiable(true);
     };
 
     //唤起WPS
@@ -120,16 +99,13 @@ export default function ExpenseDetail(props) {
 
     return (
         <>
-            {addExpenseModalVisiable &&
-                <BridgeModel modalProps={addExpenseModalProps}
-                    onCancel={() => setAddExpenseModalVisiable(false)}
-                    onSucess={handleAddExpenseSuccess}
-                    src={addExpenseModalUrl} />}
             <div className='expense-detail-box'>
                 <div className='expense-title'>
                     费用明细
                 </div>
                 <Button className='expense-add-btn' style={isXzTurnRed ? { borderColor: '#f5222d' } : {}} onClick={handleAddExpense}>新增</Button>{isXzTurnRed && <span className='expense-add-btn-help'>费用明细不允许空值</span>}
+                {/* 费用明细新增弹窗 */}
+                <AddExpense visible={addExpenseModalVisiable} setVisible={setAddExpenseModalVisiable} userykbid={userykbid} />
                 <Spin spinning={isExpenseSpinning} tip='加载中' size='large' wrapperClassName='expense-detail-spin'>
                     {expenseDetailData?.map((item, index) => (
                         <div className='content-box' key={item.id}>
@@ -192,4 +168,5 @@ export default function ExpenseDetail(props) {
         </>
 
     )
-}
+};
+export default Form.create()(ExpenseDetail);

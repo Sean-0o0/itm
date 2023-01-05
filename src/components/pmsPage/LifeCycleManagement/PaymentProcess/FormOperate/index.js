@@ -47,7 +47,6 @@ export default function FormOperate(props) {
         setSqrq(ds);
     };
 
-
     //输入框 - 灰
     const getInputDisabled = (label, value, labelCol, wrapperCol) => {
         return (
@@ -61,50 +60,6 @@ export default function FormOperate(props) {
             </Col>
         );
     };
-    //附件
-    // const getFjUpload = () => {
-    //     return (
-    //         <Col span={12}>
-    //             <Form.Item label="附件" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}
-    //                 required
-    //                 help={isFjTurnRed ? '附件不允许空值' : ''}
-    //                 validateStatus={isFjTurnRed ? 'error' : 'success'}
-    //             >
-    //                 <Upload
-    //                     showUploadList={{
-    //                         // showDownloadIcon: true,
-    //                         showRemoveIcon: true,
-    //                         showPreviewIcon: true,
-    //                     }}
-    //                     onChange={(info) => {
-    //                         let list = [...info.fileList];
-    //                         list = list.slice(-1);
-    //                         setFileList(p => [...list]);
-    //                         if (list.length === 0) {
-    //                             setIsFjTurnRed(true);
-    //                         } else {
-    //                             setIsFjTurnRed(false);
-    //                         }
-    //                     }}
-    //                     beforeUpload={(file, fileList) => {
-    //                         let reader = new FileReader(); //实例化文件读取对象
-    //                         reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-    //                         reader.onload = (e) => { //文件读取成功完成时触发
-    //                             let urlArr = e.target.result.split(',');
-    //                             setFileUrl(urlArr[1]);
-    //                             setFileName(file.name);
-    //                         }
-    //                     }}
-    //                     accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
-    //                     fileList={[...fileList]}>
-    //                     <Button type="dashed">
-    //                         <Icon type="upload" />点击上传
-    //                     </Button>
-    //                 </Upload>
-    //             </Form.Item>
-    //         </Col>
-    //     );
-    // };
     //输入框
     const getInput = ({ label, labelCol, wrapperCol, dataIndex, initialValue, rules, maxLength, node }) => {
         maxLength = maxLength || 150;
@@ -304,7 +259,6 @@ export default function FormOperate(props) {
             </Row>
             <Row>
                 {getInput(fjzsInputProps)}
-                {/* {getFjUpload()} */}
             </Row>
             <Row>
                 {getTextArea()}

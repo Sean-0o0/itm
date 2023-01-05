@@ -1349,6 +1349,105 @@
   }
 }
 
+//新增费用明细
+//发票列表
+.addexpense-recepit-list {
+  position: relative;
+  margin-top: 0.2976rem;
+  margin-bottom: 3.5712rem;
+  overflow: hidden;
+  &>.recepit-hover-icon{
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 14.88rem;
+    display: none;
+    background-color: rgba(255, 255, 255, 0.8);
+    box-shadow: #ececec 0 0.4464rem 1.488rem;
+    color: #333;
+    &:hover{
+      display: block;
+    }
+  }
+
+  &>.recepit-item {
+    padding: 2.3808rem;
+    border-left: 0.2976rem solid #3361FF;
+    box-shadow: #ececec 0 0.4464rem 1.488rem;
+    margin-bottom: 2.3808rem;
+    overflow: hidden;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    &>.recepit-info {
+      display: flex;
+      flex-direction: row;
+      justify-content: space-between;
+
+      &>.item-top-left {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        &>.top-left-icon {
+          height: 5.952rem;
+          width: 5.952rem;
+          background-color: #3361FF;
+          line-height: 5.952rem;
+          text-align: center;
+          color: #fff;
+          margin-right: 1.488rem;
+          font-size: 3.2736rem;
+          border-radius: 0.5952rem;
+        }
+
+        &>.top-left-txt {
+          font-size: 2.0832rem;
+
+          &>.recepit-name {
+            font-weight: bold;
+            color: #142234;
+            cursor: pointer;
+          }
+
+          &>.recepit-time {
+            color: rgba(20, 34, 52, .5);
+          }
+        }
+      }
+
+      &>.item-top-right {
+        display: flex;
+        flex-direction: row;
+      }
+    }
+
+    &>.recepit-amount-sum,
+    &>.recepit-tax-rate,
+    &>.recepit-deductible-tax {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      margin-left: 7.44rem;
+    }
+
+    &>.recepit-amount-sum {
+      padding-top: 1.488rem;
+      padding-bottom: 1.4888rem;
+      border-bottom: 0.1488rem #c4c4c4 dashed;
+    }
+
+    &>.recepit-tax-rate {
+      padding-top: 1.488rem;
+      margin-bottom: 0.5952rem;
+    }
+  }
+}
+
+//描述，消费事由
 .ms-textarea,
 .consumeReason-textarea {
   padding-bottom: 2.976rem;
@@ -1380,6 +1479,38 @@
 
 .consumeReason-count-txt {
   width: 96%;
+}
+
+.bottom-tip-box {
+  max-width: 100%;
+  color: #595959;
+  background-color: #fafafa;
+  border-radius: 0.5952rem;
+  padding: 2.3808rem 3.5712rem;
+  margin: 3.5712rem;
+  line-height: 4.464rem;
+
+  & p {
+    margin: 0;
+  }
+}
+
+.upload-receipt-modal-content {
+  overflow: hidden;
+  overflow-y: auto;
+  // height: calc(100vh - 32rem);
+
+  &::-webkit-scrollbar {
+    width: 1.488rem;
+    height: 1.488rem;
+    background-color: #f5f5f5;
+    border-radius: 1.3392rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 1.3392rem;
+  }
 }
 
 //付款流程发起弹窗

@@ -204,7 +204,7 @@ class LifeCycleManagementTabs extends React.Component {
         Loginname
       )
     }
-    if (name.includes("申请权限")) {
+    if (name.includes("申请权限") || name.includes("VPN申请流程")) {
       params = getParams("TLC_LCFQ", "TLC_LCFQ_VPNSQ",
         [
           {
@@ -440,10 +440,10 @@ class LifeCycleManagementTabs extends React.Component {
   //流程发起
   handleSend = (item) => {
     if (item.sxmc.includes('付款流程')) {
-      // this.setState({
-      //   paymentModalVisible: true,
-      // });
-      message.info('功能开发中，暂时无法使用', 1);
+      this.setState({
+        paymentModalVisible: true,
+      });
+      // message.info('功能开发中，暂时无法使用', 1);
       return;
     }
     this.getSendUrl(item.sxmc);

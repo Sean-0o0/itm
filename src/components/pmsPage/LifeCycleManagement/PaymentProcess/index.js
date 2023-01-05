@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Form, message, Spin } from 'antd';
+import { Modal, Form, message, Spin, Drawer, Button, Col, Row, Input, Select, DatePicker, Icon } from 'antd';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import FormOperate from './FormOperate';
 import { QueryPaymentAccountList, QueryPaymentFlowDetail, QueryPaymentFlowInfo, CreatPaymentFlow } from '../../../../services/pmsServices';
@@ -108,9 +108,9 @@ const PaymentProcess = (props) => {
                         fylx: item.fylx,
                         je: item.je,
                         rq: item.rq,
-                        fplx: item.fplx===' '?'无':item.fplx,
+                        fplx: item.fplx === ' ' ? '无' : item.fplx,
                         fp: JSON.parse(item.fp),
-                        ysxm: item.ysxm===' '?'无':item.ysxm,
+                        ysxm: item.ysxm === ' ' ? '无' : item.ysxm,
                         se: item.se,
                         sl: item.sl,
                         xfsy: item.xfsy,
@@ -127,7 +127,7 @@ const PaymentProcess = (props) => {
                 fn && fn(false); //关闭加载状态
                 message.success('新增成功', 1);
             }
-        }).catch(e=>{
+        }).catch(e => {
             message.error('新增失败', 1);
             console.error(e);
         });
@@ -225,31 +225,32 @@ const PaymentProcess = (props) => {
                     onCancel={() => setAddSkzhModalVisible(false)}
                     onSucess={OnSkzhAddSuccess}
                     src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_SKZH_ADD&Table=View_SKZH'} />}
-            <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1000px'}
+            <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '180rem'}
                 maskClosable={false}
                 zIndex={100}
+                maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
                 cancelText={'关闭'}
                 style={isModalFullScreen ? {
                     maxWidth: "100vw",
                     top: 0,
                     paddingBottom: 0,
                     marginBottom: 0
-                } : {}}
+                } : {
+                    top: '2rem'
+                }}
                 bodyStyle={isModalFullScreen ? {
                     height: "calc(100vh - 53px)",
                     overflowY: "auto",
                     padding: '0'
                 } : {
-                    padding: '0'
+                    height: 'calc(100vh - 13.5rem)',
+                    padding: '0',
+                    overflow: 'hidden'
                 }}
                 title={null} visible={paymentModalVisible}
                 onOk={handleSubmit}
                 onCancel={closePaymentProcessModal}>
-                <div style={{
-                    height: '42px', width: '100%', display: 'flex',
-                    alignItems: 'center', backgroundColor: '#3361FF', color: 'white',
-                    padding: '0 24px', borderRadius: '8px 8px 0 0', fontSize: '2.333rem'
-                }}>
+                <div className='body-title-box'>
                     <strong>付款流程发起</strong>
                     <img src={isModalFullScreen
                         ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
@@ -261,7 +262,7 @@ const PaymentProcess = (props) => {
                     <FormOperate form={form} formData={formData} setAddSkzhModalVisible={setAddSkzhModalVisible} />
                     <ExpenseDetail currentXmid={currentXmid} getExpenseDetailData={getExpenseDetailData}
                         expenseDetailData={expenseDetailData} isSpinning={isSpinning} setIsSpinning={setIsSpinning}
-                        isXzTurnRed={isXzTurnRed} setIsXzTurnRed={setIsXzTurnRed} />
+                        isXzTurnRed={isXzTurnRed} setIsXzTurnRed={setIsXzTurnRed} userykbid={userykbid} />
                 </Spin>
             </Modal>
         </>
