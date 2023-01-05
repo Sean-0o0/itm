@@ -380,7 +380,7 @@ const TableBox = (props) => {
             "attribute": 0,
             "authFlag": 0,
             "objectName": "V_XSZHZBHZ",
-            "operateName": "V_XSZHZBHZ_VIEW",
+            "operateName": "V_XSZHZBHZ_VIEW_copy",
             "parameter": [
                 {
                     "name": "ZBID",
