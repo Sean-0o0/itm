@@ -563,8 +563,8 @@ class LifeCycleManagementTabs extends React.Component {
   //信息修改
   handleMessageEdit = (item) => {
     //获取当前项目名称，打开弹窗
-    let index = this.state.operationListData?.findIndex(item => {
-      return Number(item.xmid) === (Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid || Number(this.state.operationListData[0].xmid)))
+    let index = this.state.operationListData?.findIndex(x => {
+      return Number(x.xmid) === Number(item.xmid)
     })
     this.setState({
       currentXmmc: this.state.operationListData[index].xmmc
@@ -1012,7 +1012,8 @@ class LifeCycleManagementTabs extends React.Component {
                     <div className='head1'>
                       {item.lcbmc}
                     </div>
-                    <div className='head6'>
+                    {item.lcbmc!=='项目付款'?<>
+                      <div className='head6'>
                       进度：<span style={{ color: 'black' }}>{item.jd}</span>
                     </div>
                     <div style={{
@@ -1056,7 +1057,6 @@ class LifeCycleManagementTabs extends React.Component {
                         <div className='head5-cont'>
                           <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
                             className="iconfont icon-edit" onClick={() => {
-                              // const { userId, loginUserId } = this.props;
                               if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
                                 this.handleEditModel(item);
                               } else {
@@ -1067,22 +1067,8 @@ class LifeCycleManagementTabs extends React.Component {
                         </div>
                       </div>
                     </div>
+                    </>:''}
                   </div>
-                  {/*<div>*/}
-                  {/*  {*/}
-                  {/*    index !== basicData.length - 1*/}
-                  {/*    &&*/}
-                  {/*    <Divider type='vertical' dashed={true} style={{*/}
-                  {/*      position: 'absolute',*/}
-                  {/*      height: item?.height?item?.height:'9.55rem',*/}
-                  {/*      backgroundColor: 'red',*/}
-                  {/*      marginLeft: '5.952rem',*/}
-                  {/*      marginTop: '9.52rem',*/}
-                  {/*      zIndex:999,*/}
-                  {/*    }}/>*/}
-                  {/*  }*/}
-
-                  {/*</div>*/}
                   {
                     item.extend ?
                       <Row style={{
@@ -1100,9 +1086,6 @@ class LifeCycleManagementTabs extends React.Component {
                             className='cont'>
                             {
                               sort.map((item = {}, index) => {
-                                // console.log("index", index)
-                                // console.log("item", item)
-                                // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                                 let num = 0
                                 sort[index].List.map((item = {}, ind) => {
                                   if (item.zxqk !== " ") {
@@ -1161,8 +1144,6 @@ class LifeCycleManagementTabs extends React.Component {
                                               item={item}
                                               status={item.zxqk}
                                               xmid={xmid}
-                                              userId={projectInfo?.userid}
-                                              loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
                                               handleUpload={() => this.handleUpload(item)}
                                               handleSend={this.handleSend}
                                               handleFillOut={() => this.handleFillOut(item)}
@@ -1170,18 +1151,6 @@ class LifeCycleManagementTabs extends React.Component {
                                               handleMessageEdit={this.handleMessageEdit}
                                             />
                                           </Col>
-                                          {/* <Col span={3}> */}
-                                          {/*<Dropdown overlay={menu}>*/}
-                                          {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
-                                          {/*     className="iconfont icon-more">*/}
-                                          {/*  </i>*/}
-                                          {/*</Dropdown>*/}
-                                          {/* </Col> */}
-                                          {/* <div className='cont-row1'>
-                                          <div className='left'>
-                                            //2022.06.17上传
-                                          </div>
-                                        </div> */}
                                         </Row>
                                       })}
                                     </div>

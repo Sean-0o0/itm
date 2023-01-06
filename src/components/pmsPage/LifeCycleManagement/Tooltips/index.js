@@ -2,7 +2,7 @@ import React from 'react';
 import { Button, Input, Select, Row, Col, Tooltip, message, Icon } from 'antd';
 import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
-import { FetchQueryLifecycleStuff, FetchQueryOAUrl, FetchQueryOwnerWorkflow, GetApplyListProvisionalAuth } from "../../../../services/pmsServices";
+import { FetchQueryLifecycleStuff, FetchQueryOAUrl, FetchQueryOwnerWorkflow, FetchQueryProjectInfoInCycle, GetApplyListProvisionalAuth } from "../../../../services/pmsServices";
 import axios from 'axios'
 import config from '../../../../utils/config';
 
@@ -11,9 +11,24 @@ const { pmsServices: { getStreamByLiveBos } } = api;
 
 const { Option } = Select;
 
-class Tooltips extends React.Component {
-  state = { src: '' };
+const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
 
+class Tooltips extends React.Component {
+  state = { src: '', xmUserId: '' };
+  componentDidMount() {
+    this.fetchQueryProjectInfoInCycle(this.props.xmid);
+  }
+
+  //获取项目经理id
+  fetchQueryProjectInfoInCycle = (xmid) => {
+    FetchQueryProjectInfoInCycle({
+      xmmc: xmid,
+    }).then(res => {
+      this.setState({
+        xmUserId: Number(res?.record?.userid),
+      });
+    });
+  };
   handleFillOut = (item) => {
     // console.log("item", item);
     this.props.handleFillOut(item);
@@ -24,7 +39,6 @@ class Tooltips extends React.Component {
   }
 
   handleSend = (item) => {
-    // console.log("item", item);
     this.props.handleSend(item);
   }
 
@@ -82,8 +96,7 @@ class Tooltips extends React.Component {
   }
 
   handleAuthority = (fn, txt, arg) => {
-    const { userId, loginUserId } = this.props;
-    if (Number(userId) === Number(loginUserId)) {
+    if (this.state.xmUserId === LOGIN_USER_ID) {
       if (arg) {
         fn.call(this, arg);
       } else {

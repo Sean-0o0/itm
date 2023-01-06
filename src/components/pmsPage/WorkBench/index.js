@@ -36,7 +36,6 @@ class WorkBench extends React.Component {
   };
 
   componentDidCache = () => {
-    // console.log('List cached')
   }
 
   componentDidRecover = () => {
@@ -232,6 +231,7 @@ class WorkBench extends React.Component {
         item.extend = !item.extend;
       }
     })
+    console.log(ProjectScheduleData);
     this.setState({
       ProjectScheduleData,
     })

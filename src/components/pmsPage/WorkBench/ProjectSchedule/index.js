@@ -9,13 +9,71 @@ import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import { Link } from "dva/router";
 import Tooltips from "../../LifeCycleManagement/Tooltips";
 import { FetchLivebosLink } from "../../../../services/amslb/user";
-import { CreateOperateHyperLink } from "../../../../services/pmsServices";
+import {
+  CreateOperateHyperLink,
+  FetchQueryLifecycleStuff,
+  FetchQueryLiftcycleMilestone,
+  FetchQueryOwnerProjectList,
+  FetchQueryProjectInfoInCycle,
+  FetchQueryWpsWDXX,
+} from "../../../../services/pmsServices";
 import Points from "../../LifeCycleManagement/Points";
+import moment from 'moment';
+import { WpsInvoke, WpsClientOpen } from '../../../../js/wpsjsrpcsdk';
+import { PluginsUrl } from "../../../../utils/config";
+import ContractInfoUpdate from '../../LifeCycleManagement/ContractInfoUpdate';
+import BidInfoUpdate from '../../LifeCycleManagement/BidInfoUpdate';
+import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 
+const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
 
 class ProjectSchedule extends React.Component {
   state = {
+    // //上传弹窗
+    // uploadVisible: false,
+    // //上传url
+    // uploadUrl: '/OperateProcessor?operate=TWD_XM_INTERFACE_UPLODC&Table=TWD_XM',
+    // uploadTitle: '',
+    // //修改弹窗
+    // editVisible: false,
+    // //修改url
+    // editUrl: '/OperateProcessor?operate=TWD_XM_XWHJY&Table=TWD_XM',
+    // editTitle: '',
+    // //立项流程发起弹窗
+    // sendVisible: false,
+    // //立项流程发起url
+    // sendUrl: '/OperateProcessor?operate=TLC_LCFQ_LXSQLCFQ&Table=TLC_LCFQ',
+    // sendTitle: '',
+    // //信息录入
+    // fillOutVisible: false,
+    // //信息录入url
+    // fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
+    // fillOutTitle: '',
+    // //员工评价
+    // ygpjVisible: false,
+    // ygpjUrl: '#',
+    // //付款流程发起弹窗显示
+    // paymentModalVisible: false,
+    // //信息修改
+    // editMessageVisible: false,//合同
+    // bidInfoModalVisible: false,//中标
+    // defMsgModifyModalVisible: false,//默认
+    // currentXmid: 0,
+    // currentXmmc: '',
+    // //信息修改url
+    // editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
+    // editMessageTitle: '',
+    // editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
+    // editModelTitle: '',
+    // editModelVisible: false,
+    // color: '',
+    // userId: 0,
+    // currentXmid: 0,
+    // operationListData: [],
+    //项目生命周期基本信息
+    basicData: [],
+    detailData: [],
     //上传弹窗
     uploadVisible: false,
     //上传url
@@ -36,208 +94,150 @@ class ProjectSchedule extends React.Component {
     //信息录入url
     fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     fillOutTitle: '',
+    //员工评价
+    ygpjVisible: false,
+    ygpjUrl: '#',
     //信息修改
-    editMessageVisible: false,
+    editMessageVisible: false,//合同
+    bidInfoModalVisible: false,//中标
+    defMsgModifyModalVisible: false,//默认
+    currentXmid: 0,
+    currentXmmc: '',
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editMessageTitle: '',
     editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
     editModelTitle: '',
     editModelVisible: false,
+    operationListData: [],
+    operationListTotalRows: 0,
+    xmid: 0,
+    //周报填写Url
+    weelyReportUrl: '/#/UIProcessor?Table=V_XSZHZBTX&hideTitlebar=true',
+    //顶部项目信息
+    projectInfo: {},
+    //多文档文件列表
+    fileList: [],
+    fileListVisible: false,
+    //付款流程发起弹窗显示
+    paymentModalVisible: false,
     color: '',
   };
 
   componentDidMount() {
   }
 
-  //文档上传
-  handleUpload = (item) => {
-    console.log("11111")
-    this.getUploadUrl(item);
-    this.setState({
-      uploadVisible: true,
-      uploadTitle: item.sxmc + '上传',
+  fetchQueryOwnerProjectList = (current, pageSize) => {
+    FetchQueryOwnerProjectList(
+      {
+        // paging: 1,
+        paging: -1,
+        current,
+        pageSize,
+        total: -1,
+        sort: '',
+        cxlx: 'ALL',
+      }
+    ).then((ret = {}) => {
+      const { record, code, totalrows } = ret;
+      if (code === 1) {
+        this.setState({
+          xmid: record[0].xmid,
+          operationListData: record,
+          operationListTotalRows: totalrows
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
     });
-  };
-
-  //文档上传的修改
-  handleEdit = (item) => {
-    this.getUploadUrl(item);
-    this.setState({
-      editVisible: true,
-      editTitle: item.sxmc + '修改',
-    });
-  };
-
-  //流程发起
-  handleSend = (item) => {
-    this.getSendUrl(item);
-    this.setState({
-      sendTitle: item.sxmc + '发起',
-      // sendUrl: url,
-      sendVisible: true,
-    });
-  };
-
-  //信息录入
-  handleFillOut = (item) => {
-    let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "V_HTXX",
-      "operateName": "V_HTXX_ADD",
-      "parameter": [
-        {
-          "name": "XMMC",
-          "value": item.xmid
-        },
-      ],
-      "userId": Loginname
-    }
-    switch (item.sxmc) {
-      case "合同信息录入":
-        params = {
-          "attribute": 0,
-          "authFlag": 0,
-          "objectName": "V_HTXX",
-          "operateName": "V_HTXX_ADD",
-          "parameter": [
-            {
-              "name": "XMMC",
-              "value": item.xmid
-            },
-          ],
-          "userId": Loginname
-        };
-        break;
-      case "中标信息录入":
-        params = {
-          "attribute": 0,
-          "authFlag": 0,
-          "objectName": "View_TBXX",
-          "operateName": "View_TBXX_ADD",
-          "parameter": [
-            {
-              "name": "XMMC",
-              "value": item.xmid
-            },
-            {
-              "name": "LCBMC",
-              "value": item.lcbid
-            },
-          ],
-          "userId": Loginname
-        };
-        break;
-    }
-    this.getFileOutUrl(params)
-    this.setState({
-      fillOutTitle: item.sxmc,
-      fillOutVisible: true,
-    });
-  };
-
-
-  //信息录入修改
-  handleMessageEdit = (item) => {
-    let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "V_HTXX",
-      "operateName": "V_HTXX_INTERFACE_MOD",
-      "parameter": [
-        {
-          "name": "XMMC",
-          "value": item.xmid
-        },
-      ],
-      "userId": Loginname
-    }
-    switch (item.sxmc) {
-      case "合同信息录入":
-        params = {
-          "attribute": 0,
-          "authFlag": 0,
-          "objectName": "V_HTXX",
-          "operateName": "V_HTXX_INTERFACE_MOD",
-          "parameter": [
-            {
-              "name": "XMMC",
-              "value": item.xmid
-            },
-          ],
-          "userId": Loginname
-        };
-        break;
-    }
-    switch (item.sxmc) {
-      case "中标信息录入":
-        params = {
-          "attribute": 0,
-          "authFlag": 0,
-          "objectName": "View_TBXX",
-          "operateName": "View_TBXX_INTERFACE_MOD",
-          "parameter": [
-            {
-              "name": "XMMC2",
-              "value": item.xmid
-            },
-          ],
-          "userId": Loginname
-        };
-        break;
-    }
-    this.getEditMessageUrl(params);
-    // this.setState({
-    //   editMessageTitle: item.sxmc + '修改',
-    //   editMessageVisible: true,
-    // });
   }
+
+  //获取项目展示信息
+  // fetchQueryProjectInfoInCycle = (xmid) => {
+  //   FetchQueryProjectInfoInCycle({
+  //     xmmc: xmid,
+  //   }).then(res => {
+  //     this.setState({
+  //       projectInfo: res?.record,
+  //     });
+  //   });
+  // };
 
   //流程发起url
   getSendUrl = (item) => {
-    let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "TLC_LCFQ",
-      "operateName": "TLC_LCFQ_LXSQLCFQ",
-      "parameter": [
+    const getParams = (objName, oprName, data, userName) => {
+      return {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": objName,
+        "operateName": oprName,
+        "parameter": data,
+        "userId": userName,
+      }
+    }
+    let params = getParams("TLC_LCFQ", "TLC_LCFQ_LXSQLCFQ",
+      [
         {
           "name": "GLXM",
           "value": item.xmid
         }
       ],
-      "userId": Loginname,
-    }
+      Loginname
+    )
     if (item.sxmc.includes("合同签署")) {
-      params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "TLC_LCFQ",
-        "operateName": "TLC_LCFQ_HTLYY",
-        "parameter": [
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
+        [
           {
             "name": "XMMC",
             "value": item.xmid
-          },
-        ],
-        "userId": Loginname,
-      }
-    }
-    if (item.sxmc.includes("付款")) {
-      params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "TLC_LCFQ",
-        "operateName": "TLC_LCFQ_XMFKLCFQ",
-        "parameter": [
-          {
-            "name": "",
-            "value": '',
           }
         ],
-        "userId": Loginname,
-      }
+        Loginname
+      )
+    }
+    if (item.sxmc.includes("付款")) {
+      params = getParams("LC_XMFKLC", "LC_XMFKLC_XMFKLCFQ",
+        [
+          {
+            "name": "XMMC",
+            "value": item.xmid
+          }
+        ],
+        Loginname
+      )
+    }
+    if (item.sxmc.includes("软件费用审批")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_SUBMIT_RJGMHT",
+        [
+          {
+            "name": "GLXM",
+            "value": Number(item.xmid)
+          }
+        ],
+        Loginname
+      )
+    }
+    if (item.sxmc.includes("申请餐券")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_CQSQLC",
+        [
+          {
+            "name": "GLXM",
+            "value": item.xmid
+          }
+        ],
+        Loginname
+      )
+    }
+    if (item.sxmc.includes("申请权限") || item.sxmc.includes("VPN申请流程")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_VPNSQ",
+        [
+          {
+            "name": "GLXM",
+            "value": item.xmid
+          }
+        ],
+        Loginname
+      )
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
@@ -255,7 +255,6 @@ class ProjectSchedule extends React.Component {
 
   //文档上传/修改url
   getUploadUrl = (item) => {
-    console.log("itemitemitem", item)
     const params = {
       "attribute": 0,
       "authFlag": 0,
@@ -305,21 +304,359 @@ class ProjectSchedule extends React.Component {
     });
   }
 
-  //信息录入修改url
-  getEditMessageUrl = (params) => {
+  //默认信息修改url
+  getEditMessageUrl = (params, msg = '修改') => {
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
-          // editMessageVisible: true,
+          defMsgModifyModalVisible: true,
+          editMessageTitle: msg,
         });
-        window.location.href = url;
+        // window.location.href = url;
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
+  //阶段信息修改url
+  getEditModelUrl = (params) => {
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const { code, message, url } = ret;
+      if (code === 1) {
+        this.setState({
+          editModelUrl: url,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+
+  fetchQueryLiftcycleMilestone = (e) => {
+    FetchQueryLiftcycleMilestone({
+      cxlx: 'ALL',
+      xmmc: e ? e : this.state.xmid,
+    }).then((ret = {}) => {
+      const { record = [], code = 0 } = ret;
+      // console.log("basicData",record);
+      if (code === 1) {
+        //zxxh排序
+        record.map((item = {}, index) => {
+          item.extend = item.zt === "2";
+        })
+        // console.log("basicData",record)
+        record.sort(this.compare('zxxh'))
+        this.setState({
+          basicData: record,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  compare = (property) => {
+    return function (a, b) {
+      var value1 = Number(a[property]);
+      var value2 = Number(b[property]);
+      return value1 - value2;
+    }
+  }
+
+  fetchQueryWpsWDXX = (item) => {
+    FetchQueryWpsWDXX({
+      lcb: item.lcbid,
+      sxid: item.sxid,
+      xmmc: item.xmid
+    }).then((ret = {}) => {
+      const { code = 0, record = [] } = ret;
+      console.log("WpsWDXXData", record);
+      if (code === 1) {
+        if (record.url.includes("[")) {
+          let obj = JSON.parse(record.url);
+          obj.push([item.sxmc])
+          this.setState({
+            fileList: obj,
+            fileListVisible: true,
+          })
+        } else {
+          this._WpsInvoke({
+            Index: 'OpenFile',
+            // AppType:'wps',
+            filepath: record.url,
+          })
+        }
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  fetchQueryLifecycleStuff = (e) => {
+    FetchQueryLifecycleStuff({
+      cxlx: 'ALL',
+      xmmc: e ? e : this.state.xmid,
+    }).then((ret = {}) => {
+      const { code = 0, record = [] } = ret;
+      // console.log("detailData",record);
+      if (code === 1) {
+        this.setState({
+          detailData: record,
+        });
+      }
+      if (e) {
+        this.setState({
+          xmid: e,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  onChange = (key) => {
+    console.log(key);
+  };
+
+  //文档上传
+  handleUpload = (item) => {
+    this.getUploadUrl(item);
+    this.setState({
+      uploadVisible: true,
+      uploadTitle: item.sxmc + '上传',
+      currentXmid: item.xmid,
+    });
+  };
+
+  //文档上传的修改
+  handleEdit = (item) => {
+    this.getUploadUrl(item);
+    this.setState({
+      editVisible: true,
+      editTitle: item.sxmc + '修改',
+      currentXmid: item.xmid,
+    });
+  };
+
+  //流程发起
+  handleSend = (item) => {
+    if (item.sxmc.includes('付款流程')) {
+      this.setState({
+        paymentModalVisible: true,
+        currentXmid: item.xmid,
+      });
+      // message.info('功能开发中，暂时无法使用', 1);
+      return;
+    }
+    this.getSendUrl(item);
+    this.setState({
+      sendTitle: item.sxmc + '发起',
+      sendVisible: true,
+      currentXmid: item.xmid,
+    });
+  };
+
+  //livebos弹窗配置，默认入参值为员工评价弹窗的
+  handleModalConfig = ({ objName = "View_XMRYPF",
+    oprName = "View_XMRYPF_OPENCOMMENT",
+    data = [
+      {
+        "name": "XMMC",
+        "value": 0
+      },
+    ], userName = Loginname,
+    urlName = 'ygpjUrl',
+    visibleName = 'ygpjVisible'
+  }) => {
+    let params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": objName,
+      "operateName": oprName,
+      "parameter": data,
+      "userId": userName
+    };
+    CreateOperateHyperLink(params).then((ret = {}) => {
+      const { code, message, url } = ret;
+      if (code === 1) {
+        this.setState({
+          [urlName]: url,
+          [visibleName]: true
+        });
+        // window.location.href = url;
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+  //其他
+  // handleOther = (item) => {
+  //   if (item.sxmc.includes("员工评价开启")) {
+  //     this.handleModalConfig();
+  //     return;
+  //   }
+  // };
+
+  //信息录入
+  handleFillOut = (item) => {
+    let params = {};
+    if (item.sxmc.includes("周报填写")) { window.location.href = this.state.weelyReportUrl; return; }
+    //暂时放信息录入，以后多了放-其他
+    if (item.sxmc.includes("员工评价开启")) {
+      this.handleModalConfig({
+        data: [
+          {
+            "name": "XMMC",
+            "value": item.xmid
+          },
+        ]
+      });
+      return;
+    }
+    if (item.sxmc.includes("合同信息录入")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "V_HTXX",
+        "operateName": "V_HTXX_ADD",
+        "parameter": [
+          {
+            "name": "XMMC",
+            "value": item.xmid
+          },
+        ],
+        "userId": Loginname
+      };
+
+    }
+    if (item.sxmc.includes("中标信息录入")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "View_TBXX",
+        "operateName": "View_TBXX_ADD",
+        "parameter": [
+          {
+            "name": "XMMC",
+            "value": item.xmid
+          },
+          {
+            "name": "LCB",
+            "value": item.lcbid
+          },
+        ],
+        "userId": Loginname
+      };
+    }
+    if (item.sxmc.includes("中标公告")) {
+      params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TXMXX_ZBGG",
+        "operateName": "TXMXX_ZBGG_Add",
+        "parameter": [
+          {
+            "name": "XMMC2",
+            "value": item.xmid
+          }
+        ],
+        "userId": Loginname
+      };
+    }
+    this.getFileOutUrl(params);
+    this.setState({
+      fillOutTitle: item.sxmc,
+      fillOutVisible: true,
+      currentXmid: item.xmid,
+    });
+  };
+
+  //信息修改
+  handleMessageEdit = (item) => {
+    //获取当前项目名称，打开弹窗
+    let index = this.props.data?.findIndex(x => {
+      return (Number(x.xmid) === Number(item.xmid));
+    })
+    this.setState({
+      currentXmid: item.xmid,
+      currentXmmc: this.props.data[index].xmmc
+    });
+    if (item.sxmc.includes("合同信息录入")) {
+      this.setState({
+        // editMessageTitle: item.sxmc + '修改',
+        editMessageVisible: true,
+      });
+    }
+    if (item.sxmc.includes("中标信息录入")) {
+      this.setState({
+        bidInfoModalVisible: true,
+        currentXmmc: this.props.data[index].xmmc
+      });
+    }
+    if (item.sxmc.includes("员工评价开启")) {
+      this.handleModalConfig({
+        data: [
+          {
+            "name": "XMMC",
+            "value": item.xmid
+          },
+        ]
+      });
+      return;
+    }
+    if (item.sxmc.includes("中标公告")) {
+      let params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "TXMXX_ZBGG",
+        "operateName": "TXMXX_ZBGG_MOD",
+        "parameter": [
+          {
+            "name": "XMMC2",
+            "value": item.xmid
+          }
+        ],
+        "userId": Loginname
+      }
+      this.getEditMessageUrl(params, "中标公告修改");//livebos
+    }
+  }
+
+  handleEditModel = (item) => {
+    let params = {
+      "attribute": 0,
+      "authFlag": 0,
+      "objectName": "TXMXX_XMXX",
+      "operateName": "TXMXX_XMXX_INTERFACE_MODOTHERINFO",
+      "parameter": [
+        {
+          "name": "XMID",
+          "value": item.xmid,
+        },
+        {
+          "name": "LCBID",
+          "value": item.lcbid,
+        },
+      ],
+      "userId": Loginname
+    }
+    this.getEditModelUrl(params);
+    this.setState({
+      editModelTitle: '信息修改',
+      editModelVisible: true,
+      currentXmid: item.xmid,
+    });
+  }
+
+  closePaymentProcessModal = () => {
+    this.setState({
+      paymentModalVisible: false,
+    });
+  };
 
   closeUploadModal = () => {
     this.setState({
@@ -350,32 +687,25 @@ class ProjectSchedule extends React.Component {
       editMessageVisible: false,
     });
   };
-
-  getUrl = (method, object, params) => {
-    FetchLivebosLink({
-      method: method,
-      object: object,
-      params: params
-    }).then((ret = {}) => {
-      const { data = '' } = ret;
-      if (data) {
-        return data;
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+  closeDefMsgModifyModal = () => {
+    this.setState({
+      defMsgModifyModalVisible: false,
     });
-    return null;
-  }
+  };
+  closeBidInfoModal = () => {
+    this.setState({
+      bidInfoModalVisible: false,
+    });
+  };
 
-  //成功回调
-  onSuccess = () => {
-    message.success(name + "成功");
-    // this.reflush();
-  }
+  closeModelEditModal = () => {
+    this.setState({
+      editModelVisible: false,
+    });
+  };
 
 
   groupBy = (arr) => {
-    console.log("arrarr", arr);
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
@@ -392,15 +722,100 @@ class ProjectSchedule extends React.Component {
         }
       }
     })
-    console.log("dataArrdataArr", dataArr);
     return dataArr;
   }
 
+
+  //成功回调
+  onSuccess = (name) => {
+    message.success(name + "成功");
+    this.reflush();
+  }
+
+  reflush = () => {
+    // this.fetchQueryLiftcycleMilestone(this.state.xmid);
+    // this.fetchQueryLifecycleStuff(this.state.xmid);
+  }
+
+  //文件wps预览-勿删
+  handleClick = (item) => {
+    console.log(item);
+    this.fetchQueryWpsWDXX(item);
+  }
+
+  //文件wps预览-勿删
+  _WpsInvoke(funcs, front, jsPluginsXml, isSilent) {
+    if (isSilent) {//隐藏启动时，front必须为false
+      front = false;
+    }
+    /**
+     * 下面函数为调起WPS，并且执行加载项WpsOAAssist中的函数dispatcher,该函数的参数为业务系统传递过去的info
+     */
+    console.log("funcs", funcs)
+    this.singleInvoke(funcs, front, jsPluginsXml, isSilent)
+  }
+
+  singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
+    let clientType = WpsInvoke.ClientType.wps;
+    let name = "HelloWps";
+    if (param.filepath.includes(".docx") || param.filepath.includes(".doc")) {
+      clientType = WpsInvoke.ClientType.wps;
+      name = "HelloWps";
+    }
+    if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
+      clientType = WpsInvoke.ClientType.et;
+      name = "HelloWp s-et";
+    }
+    if (param.filepath.includes(".pdf")) {
+      // clientType = WpsInvoke.ClientType.wpp;
+      // name = "HelloWps-wpp";
+      window.open(param.filepath)
+      return;
+    }
+    const WpsClient = new WpsClientOpen.WpsClient(clientType);
+    //打包时修改config.js文件里的插件地址PluginsUrl。
+    WpsClient.jsPluginsXml = PluginsUrl;
+    WpsClient.InvokeAsHttp(
+      name, // 组件类型
+      // "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
+      "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
+      JSON.stringify(param), // 传递给插件的数据
+      function (result) { // 调用回调，status为0为成功，其他是错误
+        if (result.status) {
+          if (result.status === 100) {
+            message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
+            return;
+          }
+          message.info(result.message)
+        } else {
+          message.info(result.response)
+        }
+      },
+      true)
+  }
+
+  handleVisibleChange = visible => {
+    this.setState({ fileListVisible: visible });
+  };
+  getUrl = (method, object, params) => {
+    FetchLivebosLink({
+      method: method,
+      object: object,
+      params: params
+    }).then((ret = {}) => {
+      const { data = '' } = ret;
+      if (data) {
+        return data;
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+    return null;
+  }
   extend = (number) => {
     const { extend } = this.props;
     extend(number);
   }
-
   handPageChange = (e) => {
     this.setState({
       page: e,
@@ -408,7 +823,6 @@ class ProjectSchedule extends React.Component {
     const { fetchQueryOwnerProjectList } = this.props;
     fetchQueryOwnerProjectList(e)
   }
-
   handleColorChange = (e) => {
     this.setState({
       color: e,
@@ -417,8 +831,6 @@ class ProjectSchedule extends React.Component {
 
   render() {
     const { data, total, ProjectScheduleDetailData } = this.props;
-    // console.log("data", data);
-    // console.log("DetailData", ProjectScheduleDetailData);
     const {
       uploadVisible,
       editVisible,
@@ -437,40 +849,41 @@ class ProjectSchedule extends React.Component {
       fillOutTitle,
       editMessageTitle,
       editModelTitle,
+      basicData,
+      detailData,
+      operationListData,
+      currentXmmc,
+      projectInfo,
+      xmid,
+      bidInfoModalVisible,
+      operationListTotalRows,
+      fileList,
+      fileListVisible,
+      paymentModalVisible,
+      defMsgModifyModalVisible,
+      ygpjVisible,
+      ygpjUrl,
       color,
+      currentXmid,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
-    const menu = (
-      <Menu>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.baidu.com/">
-            下载文件
-          </a>
-        </Menu.Item>
-        <Menu.Item>
-          <a target="_blank" rel="noopener noreferrer" href="http://www.baidu.com/">
-            历史记录
-          </a>
-        </Menu.Item>
-      </Menu>
-    );
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
-      height: '58rem',
+      width: '150rem',
+      height: '68rem',
       title: uploadTitle,
-      style: { top: '20rem' },
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
     const editModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
+      width: '150rem',
       height: '68rem',
       title: editTitle,
-      style: { top: '20rem' },
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -487,13 +900,72 @@ class ProjectSchedule extends React.Component {
     const fillOutModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '120rem',
+      width: '150rem',
       height: '80rem',
       title: fillOutTitle,
       style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
+    const editMessageModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '150rem',
+      height: '80rem',
+      title: editMessageTitle,
+      style: { top: '10rem' },
+      visible: defMsgModifyModalVisible,
+      footer: null,
+    };
+    const editModelModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '150rem',
+      height: '80rem',
+      title: editModelTitle,
+      style: { top: '10rem' },
+      visible: editModelVisible,
+      footer: null,
+    };
+    //员工评价弹窗
+    const ygpjModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '75rem',
+      height: '38rem',
+      title: '操作',
+      style: { top: '10rem' },
+      visible: ygpjVisible,
+      footer: null,
+    };
+    const menu = (
+      <Menu>
+        <Menu.Item>
+          <a target="_blank" rel="noopener noreferrer" href="http://www.baidu.com/">
+            下载文件
+          </a>
+        </Menu.Item>
+        <Menu.Item>
+          <a target="_blank" rel="noopener noreferrer" href="http://www.baidu.com/">
+            历史记录
+          </a>
+        </Menu.Item>
+      </Menu>
+    );
+    const content = (
+      <>
+        {
+          fileList.map(item => item.length === 3 &&
+            <div key={item.index} className="file-item">
+              <a onClick={() => this._WpsInvoke({
+                Index: 'OpenFile',
+                // AppType:'wps',
+                filepath: item[2],
+              })}>{item[1]}</a>
+            </div>
+          )}
+      </>
+    );
     return (
       <Row className='workBench' style={{ height: '70rem', padding: '3.571rem' }}>
         <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
@@ -504,17 +976,17 @@ class ProjectSchedule extends React.Component {
             </div>
           </div>
         </div>
-        {/*上传弹窗*/}
+        {/*文档上传弹窗*/}
         {uploadVisible &&
           <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
             onCancel={this.closeUploadModal}
             src={uploadUrl} />}
-        {/*修改弹窗*/}
+        {/*文档修改弹窗*/}
         {editVisible &&
           <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
             onCancel={this.closeEditModal}
             src={uploadUrl} />}
-        {/*立项流程发起弹窗*/}
+        {/*流程发起弹窗*/}
         {sendVisible &&
           <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
             src={sendUrl} />}
@@ -523,6 +995,48 @@ class ProjectSchedule extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
+
+        {ygpjVisible &&
+          <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+            onCancel={() => this.setState({ ygpjVisible: false })}
+            src={ygpjUrl} />}
+
+        {/*默认信息修改弹窗*/}
+        {defMsgModifyModalVisible &&
+          <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+            onCancel={this.closeDefMsgModifyModal}
+            src={editMessageUrl} />}
+
+        {/* 付款流程发起弹窗 */}
+        {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
+          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+          currentXmid={Number(currentXmid)}
+          closePaymentProcessModal={this.closePaymentProcessModal} />}
+
+        {/*合同信息修改弹窗*/}
+        {editMessageVisible && <ContractInfoUpdate
+          currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
+          editMessageVisible={editMessageVisible}
+          closeMessageEditModal={this.closeMessageEditModal}
+        ></ContractInfoUpdate>}
+
+        {/*中标信息修改弹窗*/}
+        {bidInfoModalVisible && <BidInfoUpdate
+          currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
+          bidInfoModalVisible={bidInfoModalVisible}
+          closeBidInfoModal={this.closeBidInfoModal}
+          loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+        ></BidInfoUpdate>}
+
+        {/*阶段信息修改弹窗*/}
+        {editModelVisible &&
+          <div>
+            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+              onCancel={this.closeModelEditModal}
+              src={editModelUrl} /></div>}
+
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ height: '100%' }}>
@@ -534,17 +1048,6 @@ class ProjectSchedule extends React.Component {
                         <i
                           className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                           onClick={() => this.extend(index)} />&nbsp;
-                        {/* <div className='head1' onMouseOver={() => this.handleColorChange("#3361FF")}
-                             onMouseLeave={() => this.handleColorChange('')}>
-                          <Link style={{color: color}} to={{
-                            pathname: '/pms/manage/LifeCycleManagement',
-                            query: {xmid: items.xmid},
-                          }}>{items.xmmc}</Link>&nbsp;
-                          <i
-                            className={'iconfont icon-right'}
-                            style={{fontSize: '2.381rem', color: color}}
-                          />
-                        </div> */}
                         <div className='head1'>
                           <Link className='head1-link' to={{
                             pathname: '/pms/manage/LifeCycleManagement',
@@ -610,10 +1113,6 @@ class ProjectSchedule extends React.Component {
                                 className='cont2'>
                                 {
                                   sort.map((item = {}, index) => {
-                                    console.log('item', item);
-                                    // console.log("index", index)
-                                    // console.log("sort.length", sort.length)
-                                    // console.log("sort.length11", (sort.length - 3 <= index) && (index <= sort.length))
                                     let num = 0
                                     sort[index].List.map((item = {}, ind) => {
                                       if (item.zxqk !== " ") {
@@ -630,19 +1129,18 @@ class ProjectSchedule extends React.Component {
                                         <div>
                                           {sort[index].List.map((item = {}, ind) => {
                                             return <Row className='cont-row' style={{
-                                              // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                              // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
                                               marginTop: ind === 0 ? '18px' : '16px'
                                             }}>
-                                              <Col span={17}>
+                                              <Col span={18}>
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>
                                                   <Points status={item.zxqk} />
                                                   <span>{item.sxmc}</span>
                                                 </div>
                                                 <div className='cont-row-zxqk'>{item.zxqk}</div>
                                               </Col>
-                                              <Col span={3}>
+                                              <Col span={6}>
                                                 <Tooltips type={item.swlx}
+                                                  xmid={item.xmid}
                                                   item={item}
                                                   status={item.zxqk}
                                                   handleUpload={() => this.handleUpload(item)}
@@ -650,13 +1148,6 @@ class ProjectSchedule extends React.Component {
                                                   handleFillOut={() => this.handleFillOut(item)}
                                                   handleEdit={() => this.handleEdit(item)}
                                                   handleMessageEdit={this.handleMessageEdit} />
-                                              </Col>
-                                              <Col span={3}>
-                                                {/*<Dropdown overlay={menu}>*/}
-                                                {/*  <i style={{marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)'}}*/}
-                                                {/*     className="iconfont icon-more">*/}
-                                                {/*  </i>*/}
-                                                {/*</Dropdown>*/}
                                               </Col>
                                               <div className='cont-row1'>
                                                 <div className='left'>
