@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Form, Upload, Modal, Icon, Button, Spin } from 'antd';
+import { Form, Upload, Modal, Icon, Button, Spin, message } from 'antd';
 import { CheckInvoice } from '../../../../../../../services/pmsServices';
 const UploadReceipt = (props) => {
     //弹窗全屏
@@ -8,9 +8,10 @@ const UploadReceipt = (props) => {
     const [receiptFileName, setReceiptFileName] = useState([]);
     const [receiptFileList, setReceiptFileList] = useState([]);
     const [receiptIsTurnRed, setReceiptIsTurnRed] = useState(false);
+    const [receiptIsError, setReceiptIsError] = useState(false);
     //加载状态
     const [isSpinning, setIsSpinning] = useState(false);
-    const { visible, setVisible, form, userykbid } = props;
+    const { visible, setVisible, form, userykbid, setSelectReceiptVisible } = props;
     //防抖定时器
     let timer = null;
 
@@ -24,13 +25,22 @@ const UploadReceipt = (props) => {
     const handleSubmit = () => {
         if (receiptFileList.length === 0) {
             setReceiptIsTurnRed(true);
-        } else {
+        } else if (receiptIsError) {
+            message.error('存在不合法的发票', 1);
+        }
+        else {
             setVisible(false);
+            setSelectReceiptVisible(true);
+            setReceiptIsError(false);
         }
     };
     const handleClose = () => {
         setVisible(false);
         setReceiptIsTurnRed(false);
+        setReceiptIsError(false);
+        setReceiptFileList([]);
+        setReceiptFileName([]);
+        setReceiptFileUrl([]);
     };
     //防抖
     const debounce = (fn, waits) => {
@@ -48,7 +58,7 @@ const UploadReceipt = (props) => {
             width={isModalFullScreen ? '100vw' : '33vw'}
             maskClosable={false}
             maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-            zIndex={102}
+            zIndex={103}
             cancelText={'关闭'}
             style={isModalFullScreen ? {
                 maxWidth: "100vw",
@@ -124,13 +134,13 @@ const UploadReceipt = (props) => {
                                                 })
                                                 let list = [...fileList];
                                                 list.forEach((x, i) => {
-                                                    console.log(unCheckArr.includes(i));
                                                     if (unCheckArr.includes(i)) {
                                                         x.status = 'error';
-                                                        x.response = res?.result[i]?.message;
+                                                        // x.response = res?.result[i]?.message.replace('"','');
+                                                        setReceiptIsError(true);
                                                     }
                                                 })
-                                                setReceiptFileList(p => [...receiptFileList,...list]);
+                                                setReceiptFileList(p => [...receiptFileList, ...list]);
                                                 setIsSpinning(false);
                                             })
                                         }
@@ -140,12 +150,15 @@ const UploadReceipt = (props) => {
                             })
                             return false;
                         }}
-                        accept={'.ofd,.pdf'}
+                        accept={'.ofd,.pdf,.jpg,.jpeg,.png'}
                         fileList={[...receiptFileList]}>
                         <Button type="dashed">
                             <Icon type="upload" />点击上传
                         </Button>
-                        <span>（仅支持pdf、ofd格式文件）</span>
+                        <div style={{ marginTop: '1.1904rem' }} onClick={(e) => { e.stopPropagation(); }}>
+                            （仅支持jpg、jpeg、png、pdf、ofd格式文件）
+                        </div>
+
                     </Upload>
 
                 </Form.Item>

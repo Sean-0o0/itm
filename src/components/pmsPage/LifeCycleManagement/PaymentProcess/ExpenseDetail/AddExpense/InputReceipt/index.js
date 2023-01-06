@@ -4,6 +4,8 @@ import moment from 'moment';
 const InputReceipt = (props) => {
     //弹窗全屏
     const [isModalFullScreen, setIsModalFullScreen] = useState(false);
+    //发票类型
+    const [receiptType, setReceiptType] = useState(1);
     const { visible, setVisible, form } = props;
     const { getFieldDecorator, getFieldValue, validateFields } = form;
     const handleSubmit = () => {
@@ -19,6 +21,17 @@ const InputReceipt = (props) => {
     const handleDateChange = () => {
 
     };
+    //单选框
+    const getRadio = () => {
+        return (
+            <Form.Item label='发票类型' required labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                <Radio.Group value={receiptType} onChange={e => setReceiptType(e.target.value)}>
+                    <Radio value={1}>增值税发票</Radio>
+                    <Radio value={2}>区块链电子普通发票</Radio>
+                </Radio.Group>
+            </Form.Item>
+        );
+    }
 
     //输入框
     const getInput = ({ label, labelCol, wrapperCol, dataIndex, initialValue, rules, maxLength, node }) => {
@@ -39,7 +52,7 @@ const InputReceipt = (props) => {
         label: '金额',
         labelCol: 8,
         wrapperCol: 16,
-        dataIndex: 'htje',
+        dataIndex: 'amount',
         rules: [
             {
                 required: true,
@@ -47,6 +60,7 @@ const InputReceipt = (props) => {
             },
         ],
         node: <InputNumber style={{ width: '100%' }}
+            key='amount'
             max={99999999999.99} min={0} step={0.01}
             placeholder='请输入金额（不含税）'
             precision={2}
@@ -55,47 +69,47 @@ const InputReceipt = (props) => {
     };
     const codeInputProps = {
         label: '发票代码',
-        labelCol: 8,
+        labelCol: 6,
         wrapperCol: 16,
-        dataIndex: 'htje',
+        dataIndex: 'code',
         rules: [
             {
                 required: true,
                 message: '发票代码不允许空值',
             },
         ],
-        node: <Input style={{ width: '100%' }} placeholder='请输入12位发票代码' />,
+        node: <Input key='code' style={{ width: '100%' }} placeholder='请输入12位发票代码' />,
     };
     const numberInputProps = {
         label: '发票号码',
         labelCol: 8,
         wrapperCol: 16,
-        dataIndex: 'htje',
+        dataIndex: 'number',
         rules: [
             {
                 required: true,
                 message: '发票号码不允许空值',
             },
         ],
-        node: <Input style={{ width: '100%' }} placeholder='请输入8位发票号码' />,
+        node: <Input key='number' style={{ width: '100%' }} placeholder='请输入8位发票号码' />,
     };
     const checkInputProps = {
         label: '校验码',
-        labelCol: 4,
-        wrapperCol: 20,
-        dataIndex: 'htje',
+        labelCol: 3,
+        wrapperCol: 21,
+        dataIndex: 'check',
         rules: [
             {
                 required: true,
                 message: '校验码不允许空值',
             },
         ],
-        node: <Input style={{ width: '100%' }} placeholder='请输入20位校验码' />,
+        node: <Input key='check' style={{ width: '100%' }} placeholder='请输入20位校验码' />,
     };
     //日期
     const getDatePicker = () => {
         return (
-            <Form.Item label="日期" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+            <Form.Item label="日期" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
                 {getFieldDecorator('date', {
                     initialValue: moment(),
                     rules: [
@@ -113,6 +127,7 @@ const InputReceipt = (props) => {
     const FormOperate = () => {
         return (
             <Form style={{ padding: '3.5712rem 3.5712rem 0 3.5712rem' }}>
+                {getRadio()}
                 <Row>
                     <Col span={12}>{getInput(codeInputProps)}</Col>
                     <Col span={12}>{getInput(numberInputProps)}</Col>
@@ -128,25 +143,28 @@ const InputReceipt = (props) => {
 
     //底部提示信息
     const BottomTip = () => {
-        return (
-            <div className='bottom-tip-box'>
-                <p>1、可查验使用增值税发票管理新系统开具的发票，包括：</p>
-                <div style={{ paddingLeft: '1.1904rem' }}>
-                    <p>（1）增值税专用发票</p>
-                    <p>（2）增值税普通发票（含电子普通发票、卷式发票、通行费发票）</p>
-                    <p>（3）机动车销售统一发票</p>
-                    <p>（4）货物运输业增值税专用发票</p>
-                    <p>（5）二手车销售统一发票</p>
-                    <p>不在上述范围之内的发票，请按照原查验渠道进行查验。</p>
+        if (receiptType === 1)
+            return (
+                <div className='bottom-tip-box'>
+                    <p>1、可查验使用增值税发票管理新系统开具的发票，包括：</p>
+                    <div style={{ paddingLeft: '1.1904rem' }}>
+                        <p>（1）增值税专用发票</p>
+                        <p>（2）增值税普通发票（含电子普通发票、卷式发票、通行费发票）</p>
+                        <p>（3）机动车销售统一发票</p>
+                        <p>（4）货物运输业增值税专用发票</p>
+                        <p>（5）二手车销售统一发票</p>
+                        <p>不在上述范围之内的发票，请按照原查验渠道进行查验。</p>
+                    </div>
+                    <p>2、可查验的时间范围：</p>
+                    <div style={{ paddingLeft: '1.1904rem' }}>
+                        <p>（1）可查验最近1年内增值税发票管理新系统开具的发票</p>
+                        <p>（2）当日开具的发票如开票方已将发票数据上传税局，则当日可查验否则最快次日查验</p>
+                    </div>
+                    <p>3、每天每张发票可在线查询次数为5次，超过次数后请于次日再进行查验操作。</p>
                 </div>
-                <p>2、可查验的时间范围：</p>
-                <div style={{ paddingLeft: '1.1904rem' }}>
-                    <p>（1）可查验最近1年内增值税发票管理新系统开具的发票</p>
-                    <p>（2）当日开具的发票如开票方已将发票数据上传税局，则当日可查验否则最快次日查验</p>
-                </div>
-                <p>3、每天每张发票可在线查询次数为5次，超过次数后请于次日再进行查验操作。</p>
-            </div>
-        )
+            );
+        else
+            return '';
     };
 
 
@@ -154,7 +172,7 @@ const InputReceipt = (props) => {
         <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '45vw'}
             maskClosable={false}
             maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-            zIndex={102}
+            zIndex={103}
             cancelText={'关闭'}
             style={isModalFullScreen ? {
                 maxWidth: "100vw",

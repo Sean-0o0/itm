@@ -7,6 +7,7 @@ import {
 import moment from 'moment';
 import InputReceipt from './InputReceipt';
 import UploadReceipt from './UploadReceipt';
+import SelectReceipt from './SelectReceipt';
 const { TextArea } = Input;
 
 const AddExpense = (props) => {
@@ -41,9 +42,12 @@ const AddExpense = (props) => {
     });
     //是否尾款
     const [isFinalPay, setIsFinalPay] = useState(2);
+    //是否hover
+    const [isHover, setIsHover] = useState(false);
     //新增发票
     const [inputReceiptVisible, setInputReceiptVisible] = useState(false);
     const [uploadReceiptVisible, setUploadReceiptVisible] = useState(false);
+    const [selectReceiptVisible, setSelectReceiptVisible] = useState(false);
     //附件上传
     // const [receiptFileUrl, setReceiptFileUrl] = useState('');
     // const [receiptFileName, setReceiptFileName] = useState('');
@@ -79,6 +83,7 @@ const AddExpense = (props) => {
     const handleReceiptMenuClick = (e) => {
         if (e.key === '1') {
             setUploadReceiptVisible(true);
+            // setSelectReceiptVisible(true);
             return;
         }
         if (e.key === '2') {
@@ -99,19 +104,17 @@ const AddExpense = (props) => {
     //日期
     const getDatePicker = () => {
         return (
-            <Col span={12}>
-                <Form.Item label="日期" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
-                    {getFieldDecorator('date', {
-                        initialValue: moment(),
-                        rules: [
-                            {
-                                required: true,
-                                message: '日期不允许空值',
-                            },
-                        ],
-                    })(<DatePicker style={{ width: '100%' }} onChange={handleDateChange} />)}
-                </Form.Item>
-            </Col>
+            <Form.Item label="日期" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                {getFieldDecorator('date', {
+                    initialValue: moment(),
+                    rules: [
+                        {
+                            required: true,
+                            message: '日期不允许空值',
+                        },
+                    ],
+                })(<DatePicker style={{ width: '100%' }} onChange={handleDateChange} />)}
+            </Form.Item>
         );
     };
     //输入框
@@ -119,35 +122,31 @@ const AddExpense = (props) => {
         maxLength = maxLength || 150;
         node = node || <Input maxLength={maxLength} placeholder={`请输入${label}`} />;
         return (
-            <Col span={12}>
-                <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
-                    {getFieldDecorator(dataIndex, {
-                        initialValue,
-                        rules,
-                    })(node)}
-                </Form.Item>
-            </Col>
+            <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+                {getFieldDecorator(dataIndex, {
+                    initialValue,
+                    rules,
+                })(node)}
+            </Form.Item>
         );
     };
-    //描述
+    //消费事由
     const getTextArea = () => {
         return (
-            <Col span={24}>
-                <Form.Item label="消费事由" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
-                    {getFieldDecorator('csmReason', {
-                        initialValue: '',
-                    })(<TextArea className='consumeReason-textarea' placeholder='请输入消费事由' maxLength={1000} autoSize={{ maxRows: 6, minRows: 3 }}>
-                    </TextArea>)}
-                    <div className='consumeReason-count-txt'>{String(getFieldValue('csmReason'))?.length}/{1000}</div>
-                </Form.Item>
-            </Col>
+            <Form.Item label="消费事由" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+                {getFieldDecorator('csmReason', {
+                    initialValue: '',
+                })(<TextArea className='consumeReason-textarea' placeholder='请输入消费事由' maxLength={1000} autoSize={{ maxRows: 6, minRows: 3 }}>
+                </TextArea>)}
+                <div className='consumeReason-count-txt'>{String(getFieldValue('csmReason'))?.length}/{1000}</div>
+            </Form.Item>
         );
     }
     //单选框
     const getRadio = (label, value, onChange, txt1, txt2) => {
         return (
             <Col span={12}>
-                <Form.Item label={label} required labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+                <Form.Item label={label} required labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
                     <Radio.Group value={value} onChange={onChange}>
                         <Radio value={1}>{txt1}</Radio>
                         <Radio value={2}>{txt2}</Radio>
@@ -157,18 +156,18 @@ const AddExpense = (props) => {
         );
     }
     //普通下拉框
-    const getSelector = () => {
+    const getSelector = (label) => {
         return (
             <>
-                <Col span={12}><Form.Item label="费用类型" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+                <Form.Item label={label} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
                     {getFieldDecorator('skzh', {
                         initialValue: '',
-                        rules: [
-                            {
-                                required: true,
-                                message: '费用类型不允许空值',
-                            },
-                        ],
+                        // rules: [
+                        //     {
+                        //         required: true,
+                        //         message: '费用类型不允许空值',
+                        //     },
+                        // ],
                     })(<Select
                         style={{ width: '100%', borderRadius: '8px !important' }}
                         showSearch
@@ -190,7 +189,7 @@ const AddExpense = (props) => {
                             // })
                         }
                     </Select>)}
-                </Form.Item> </Col>
+                </Form.Item>
             </>
         );
     }
@@ -198,15 +197,9 @@ const AddExpense = (props) => {
     const getTreeSelector = () => {
         return (
             <>
-                <Col span={12}><Form.Item label="发票类型" labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}>
+                <Form.Item label="发票类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
                     {getFieldDecorator('skzh', {
                         initialValue: '',
-                        rules: [
-                            {
-                                required: true,
-                                message: '发票类型不允许空值',
-                            },
-                        ],
                     })(<Select
                         style={{ width: '100%', borderRadius: '8px !important' }}
                         showSearch
@@ -228,16 +221,16 @@ const AddExpense = (props) => {
                             // })
                         }
                     </Select>)}
-                </Form.Item> </Col>
+                </Form.Item>
             </>
         );
     };
     //附件
-    const getUpload = ({ label, formData, dataIndex, setFormData }) => {
+    const getUpload = ({ label, formData, dataIndex, setFormData, labelCol, wrapperCol }) => {
         return (
             <Col span={12}>
-                <Form.Item label={label} labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}
-                    required
+                <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}
+                    // required
                     help={formData[dataIndex + 'IsTurnRed'] ? `${label}不允许空值` : ''}
                     validateStatus={formData[dataIndex + 'IsTurnRed'] ? 'error' : 'success'}
                 >
@@ -304,27 +297,33 @@ const AddExpense = (props) => {
             </Menu>
         );
         return (
-            <Col span={12}>
-                <Form.Item label='发票' labelCol={{ span: 10 }} wrapperCol={{ span: 14 }}
-                    required
-                    help={formData.receiptIsTurnRed ? `${label}不允许空值` : ''}
-                    validateStatus={formData.receiptIsTurnRed ? 'error' : 'success'}
-                >
-                    <Dropdown overlay={menu}>
-                        <Button>
-                            <Icon type="upload" />新增发票
-                        </Button>
-                    </Dropdown>
-                </Form.Item>
-            </Col>
+            <Form.Item label='发票' labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}
+                // required
+                help={formData.receiptIsTurnRed ? `${label}不允许空值` : ''}
+                validateStatus={formData.receiptIsTurnRed ? 'error' : 'success'}
+            >
+                <Dropdown overlay={menu}>
+                    <Button>
+                        <Icon type="upload" />新增发票
+                    </Button>
+                </Dropdown>
+            </Form.Item>
         );
     };
     //发票展示
     const getRecepitList = () => {
         const getItem = () => {
             return (
-                <div className='recepit-item'>
-                    <div className='recepit-hover-icon'><Icon type="edit" /><Icon type="delete" /></div>
+                <div className='recepit-item' onMouseEnter={() => {
+                    // setIsHover(true);
+                    // console.log('hover');
+                }} onMouseLeave={() => {
+                    setIsHover(false);
+                    console.log('leave');
+                }}>
+                    {isHover && <div className='recepit-hover-icon'>
+                        <Icon type="delete" />
+                    </div>}
                     <div className='recepit-info'>
                         <div className='item-top-left'>
                             <div className='top-left-icon'><Icon type='file-pdf' /></div>
@@ -334,67 +333,69 @@ const AddExpense = (props) => {
                             </div>
                         </div>
                         <div className='item-top-right'>
-                            <div>电子发票文件</div>
-                            <div>其他票据</div>
+                            <div className='tag-checked'>已验真</div>
+                            <div className='tag-eltronic'>电子发票文件</div>
+                            <div className='tag-VAT'>增值税电子普通发票</div>
+                            {/* <div className='tag-other'>其他票据</div> */}
                         </div></div>
-                    <div className='recepit-amount-sum'>
-                        总金额<span>￥ 73.29</span>
-                    </div>
                     <div className='recepit-tax-rate'>
-                        税率<span>0%</span>
+                        价税合计<span>￥ 17.28</span>
                     </div>
                     <div className='recepit-deductible-tax'>
                         可抵扣税额<span>￥ 0.00</span>
+                    </div>
+                    <div className='recepit-bottom'>
+                        <a>查看PDF</a>
+                        <Button type='primary' style={{backgroundColor: '#3361ff'}}>重新查验</Button>
                     </div>
                 </div>
             );
         }
         return (
-            <div className='addexpense-recepit-list'>
-                {getItem()}
-                {getItem()}
-                {getItem()}
-                {getItem()}
-                {getItem()}
-                {getItem()}
-            </div>
+            <>
+                <Col span={3}></Col>
+                <Col span={21}>
+                    <div className='addexpense-recepit-list'>
+                        {getItem()}
+                        {getItem()}
+                        {getItem()}
+                        {getItem()}
+                    </div>
+                </Col>
+            </>
         );
     }
     //表单
     const FormOperate = () => {
         return (
             <Form>
+                {getSelector('费用类型')}
+                {getInput(amountInputProps)}
+                {getDatePicker()}
+                {getRecepit()}
                 <Row>
-                    {getDatePicker()}
-                    {getTreeSelector()}
+                    {getRecepitList()}
                 </Row>
+                {getInput(taxInputProps)}
+                {getTreeSelector()}
+                {getTextArea()}
+                {getSelector('预算项目')}
                 <Row>
-                    {getSelector()}
-                    {getRadio("是否尾款", isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}
-                </Row>
-                <Row>
-                    {getRecepit()}
-                </Row>
-                {getRecepitList()}
-                <Row>
-                    {getInput(amountInputProps)}
-                </Row>
-                <Row>
-                    {getTextArea()}
-                </Row>
-                <Row>
-                    {getUpload(OAProcessProps)}
                     {getUpload(contractProps)}
+                    {getUpload(OAProcessProps)}
                 </Row>
-                {isFinalPay === 1 && <Row>{getUpload(checkProps)}</Row>}
+                <Row>
+                    {getRadio("是否尾款", isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}
+                    {isFinalPay === 1 && getUpload(checkProps)}
+                </Row>
             </Form>
         )
     };
     //输入框入参
     const amountInputProps = {
-        label: '金额（本位币CN）',
-        labelCol: 10,
-        wrapperCol: 14,
+        label: '金额',
+        labelCol: 3,
+        wrapperCol: 21,
         dataIndex: 'htje',
         initialValue: 1,
         rules: [
@@ -409,33 +410,50 @@ const AddExpense = (props) => {
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             parser={value => value.replace(/\$\s?|(,*)/g, '')} />,
     };
-    //发票上传入参
-    const receiptProps = {
-        label: '发票',
-        dataIndex: 'receipt',
-        formData,
-        setFormData
+    const taxInputProps = {
+        label: '税额',
+        labelCol: 3,
+        wrapperCol: 21,
+        dataIndex: 'htje',
+        initialValue: 1,
+        rules: [
+            // {
+            //     required: true,
+            //     message: '税额不允许空值',
+            // },
+        ],
+        node: <InputNumber style={{ width: '100%' }}
+            max={99999999999.99} min={0} step={0.01}
+            precision={2}
+            formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+            parser={value => value.replace(/\$\s?|(,*)/g, '')} />,
     };
     //OA流程附件上传入参
     const OAProcessProps = {
         label: 'OA流程附件',
         dataIndex: 'OAProcess',
         formData,
-        setFormData
+        setFormData,
+        labelCol: 10,
+        wrapperCol: 14
     };
     //合同复印件上传入参
     const contractProps = {
         label: '合同复印件',
         dataIndex: 'contract',
         formData,
-        setFormData
+        setFormData,
+        labelCol: 6,
+        wrapperCol: 18
     };
     //验收复印件上传入参
     const checkProps = {
         label: '验收复印件',
         dataIndex: 'check',
         formData,
-        setFormData
+        setFormData,
+        labelCol: 10,
+        wrapperCol: 14
     };
     return (
         <>
@@ -444,13 +462,21 @@ const AddExpense = (props) => {
                 width={720}
                 onClose={() => setVisible(false)}
                 visible={visible}
-                bodyStyle={{ paddingBottom: 80 }}
+                className='add-expense-drawer'
                 maskClosable={false}
                 zIndex={101}
                 maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
             >
                 <InputReceipt visible={inputReceiptVisible} setVisible={setInputReceiptVisible} />
-                <UploadReceipt visible={uploadReceiptVisible} setVisible={setUploadReceiptVisible} userykbid={userykbid} />
+                <UploadReceipt visible={uploadReceiptVisible}
+                    setVisible={setUploadReceiptVisible}
+                    userykbid={userykbid}
+                    setSelectReceiptVisible={setSelectReceiptVisible} />
+                <SelectReceipt visible={selectReceiptVisible}
+                    setVisible={setSelectReceiptVisible}
+                    setUploadReceiptVisible={setUploadReceiptVisible}
+                    setInputReceiptVisible={setInputReceiptVisible}
+                />
                 <FormOperate />
                 <div
                     style={{

@@ -1012,62 +1012,62 @@ class LifeCycleManagementTabs extends React.Component {
                     <div className='head1'>
                       {item.lcbmc}
                     </div>
-                    {item.lcbmc!=='项目付款'?<>
+                    {item.lcbmc !== '项目付款' ? <>
                       <div className='head6'>
-                      进度：<span style={{ color: 'black' }}>{item.jd}</span>
-                    </div>
-                    <div style={{
-                      lineHeight: '2.976rem',
-                      width: '33%',
-                      minWidth: '59.52rem',
-                      fontSize: '2.232rem',
-                      fontWeight: 400,
-                      color: '#606266',
-                      paddingTop: '3.2736rem'
-                    }}>
-                      <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
-                      {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
-                        <div style={{
-                          display: 'flex',
-                          justifyContent: 'space-between',
-                          fontSize: '2.0832rem',
-                          color: '#909399'
-                        }}>
-                          <span>
-                            原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
-                            （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0
-                              ?
-                              '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
-                              :
-                              '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
-                              }天，`}
-                            修改{item.xgcs}次）
-                          </span>
-                        </div>
-                      }
-                    </div>
-                    <div className='head4'>
-                      项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
-                    </div>
-                    <div className='head2'>
-                      状态：<ProjectProgress state={item.zt} />
-                    </div>
-                    <div className='head5'>
-                      <div className='head5-title'>
-                        <div className='head5-cont'>
-                          <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
-                            className="iconfont icon-edit" onClick={() => {
-                              if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
-                                this.handleEditModel(item);
-                              } else {
-                                message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                        进度：<span style={{ color: 'black' }}>{item.jd}</span>
+                      </div>
+                      <div style={{
+                        lineHeight: '2.976rem',
+                        width: '33%',
+                        minWidth: '59.52rem',
+                        fontSize: '2.232rem',
+                        fontWeight: 400,
+                        color: '#606266',
+                        paddingTop: '3.2736rem'
+                      }}>
+                        <span style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
+                        {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
+                          <div style={{
+                            display: 'flex',
+                            justifyContent: 'space-between',
+                            fontSize: '2.0832rem',
+                            color: '#909399'
+                          }}>
+                            <span>
+                              原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
+                              （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                                ?
+                                '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                                :
+                                '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
+                                }天，`}
+                              修改{item.xgcs}次）
+                            </span>
+                          </div>
+                        }
+                      </div>
+                      <div className='head4'>
+                        项目风险：<ProjectRisk userId={projectInfo?.userid} loginUserId={JSON.parse(sessionStorage.getItem("user")).id} item={item} xmid={this.state.xmid} />
+                      </div>
+                      <div className='head2'>
+                        状态：<ProjectProgress state={item.zt} />
+                      </div>
+                      <div className='head5'>
+                        <div className='head5-title'>
+                          <div className='head5-cont'>
+                            <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
+                              className="iconfont icon-edit" onClick={() => {
+                                if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
+                                  this.handleEditModel(item);
+                                } else {
+                                  message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                                }
                               }
-                            }
-                            } />
+                              } />
+                          </div>
                         </div>
                       </div>
-                    </div>
-                    </>:''}
+                    </> : ''}
                   </div>
                   {
                     item.extend ?

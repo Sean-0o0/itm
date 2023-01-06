@@ -445,11 +445,11 @@ class ProjectSchedule extends React.Component {
   //流程发起
   handleSend = (item) => {
     if (item.sxmc.includes('付款流程')) {
-      this.setState({
-        paymentModalVisible: true,
-        currentXmid: item.xmid,
-      });
-      // message.info('功能开发中，暂时无法使用', 1);
+      // this.setState({
+      //   paymentModalVisible: true,
+      //   currentXmid: item.xmid,
+      // });
+      message.info('功能开发中，暂时无法使用', 1);
       return;
     }
     this.getSendUrl(item);

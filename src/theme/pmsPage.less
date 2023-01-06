@@ -1044,12 +1044,12 @@
   }
 
   .ant-table-fixed-right {
-    & ::-webkit-scrollbar {
+    &::-webkit-scrollbar {
       width: 10px;
       background-color: #fafafa;
     }
 
-    & ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
       border-radius: 1.3392rem;
     }
@@ -1060,13 +1060,13 @@
   }
 
   .ant-table-scroll {
-    & ::-webkit-scrollbar {
+    &::-webkit-scrollbar {
       height: 10px;
       width: 10px;
       background-color: #fafafa;
     }
 
-    & ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
       border-radius: 1.3392rem;
     }
@@ -1351,98 +1351,298 @@
 
 //新增费用明细
 //发票列表
-.addexpense-recepit-list {
-  position: relative;
-  margin-top: 0.2976rem;
-  margin-bottom: 3.5712rem;
-  overflow: hidden;
-  &>.recepit-hover-icon{
-    position: absolute;
-    top: 0;
-    right: 0;
-    width: 14.88rem;
-    display: none;
-    background-color: rgba(255, 255, 255, 0.8);
-    box-shadow: #ececec 0 0.4464rem 1.488rem;
-    color: #333;
-    &:hover{
-      display: block;
+.add-expense-drawer {
+  & .ant-drawer-body {
+    margin-bottom: 53px;
+    overflow: hidden;
+    overflow-y: auto;
+    height: calc(100vh - 108px);
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      background-color: #fafafa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 1.3392rem;
     }
   }
 
-  &>.recepit-item {
-    padding: 2.3808rem;
-    border-left: 0.2976rem solid #3361FF;
-    box-shadow: #ececec 0 0.4464rem 1.488rem;
-    margin-bottom: 2.3808rem;
+  .addexpense-recepit-list {
+    margin-top: 0.2976rem;
+    margin-bottom: 3.5712rem;
+    padding-bottom: 0.5952rem;
     overflow: hidden;
 
-    &:last-child {
-      margin-bottom: 0;
-    }
+    &>.recepit-item {
+      position: relative;
+      padding: 2.3808rem;
+      border-left: 0.2976rem solid #3361FF;
+      box-shadow: #ececec 0 0.4464rem 1.488rem;
+      margin: 0.5952rem 0.5952rem 2.3808rem 0;
+      overflow: hidden;
 
-    &>.recepit-info {
-      display: flex;
-      flex-direction: row;
-      justify-content: space-between;
+      &:last-child {
+        margin-bottom: 0;
+      }
 
-      &>.item-top-left {
+      &>.recepit-hover-icon {
+        position: absolute;
+        top: 0;
+        right: 0;
+        box-shadow: #ececec 0 0.4464rem 1.488rem;
+        color: #333;
+        height: 3.2736rem;
+        line-height: 3.2736rem;
+        border-radius: 0 0.744rem 0 0;
+        -webkit-box-shadow: 0 1px 8px 0 rgb(29 43 61 / 16%);
+        box-shadow: 0 1px 8px 0 rgb(29 43 61 / 16%);
+        background-color: hsla(0, 0%, 100%, .6);
+        padding: 0 1em;
+      }
+
+      &>.recepit-info {
+        display: flex;
+        flex-direction: row;
+        justify-content: space-between;
+
+        &>.item-top-left {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          &>.top-left-icon {
+            height: 5.952rem;
+            width: 5.952rem;
+            background-color: #3361FF;
+            line-height: 5.952rem;
+            text-align: center;
+            color: #fff;
+            margin-right: 1.488rem;
+            font-size: 3.2736rem;
+            border-radius: 0.5952rem;
+          }
+
+          &>.top-left-txt {
+            font-size: 2.0832rem;
+
+            &>.recepit-name {
+              font-weight: bold;
+              color: #142234;
+              cursor: pointer;
+            }
+
+            &>.recepit-time {
+              color: rgba(20, 34, 52, .5);
+            }
+          }
+        }
+
+        &>.item-top-right {
+          display: flex;
+          flex-direction: row;
+          font-size: 12px;
+          line-height: 20px;
+          height: 24px;
+
+          .tag-checked {
+            height: 24px;
+            padding: 4px 8px;
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            background: #f2faec;
+            border-radius: 4px;
+            color: #52c41a;
+          }
+
+          .tag-eltronic {
+            height: 24px;
+            padding: 4px 8px;
+            color: #be445e;
+            background-color: rgba(190, 68, 94, .1);
+            display: -webkit-flex;
+            display: -ms-flexbox;
+            display: flex;
+            -webkit-justify-content: center;
+            -ms-flex-pack: center;
+            justify-content: center;
+            -webkit-align-items: center;
+            -ms-flex-align: center;
+            align-items: center;
+            border-radius: 4px;
+            margin-left: 4px;
+          }
+
+          .tag-VAT {
+            height: 24px;
+            color: #d37b45;
+            background-color: rgba(211, 123, 69, .1);
+            padding: 1px 6px;
+            border-radius: 4px;
+            -webkit-flex-shrink: 0;
+            -ms-flex-negative: 0;
+            flex-shrink: 0;
+            margin-left: 4px;
+          }
+        }
+      }
+
+      &>.recepit-amount-sum,
+      &>.recepit-tax-rate,
+      &>.recepit-deductible-tax,
+      &>.recepit-bottom {
         display: flex;
         flex-direction: row;
         align-items: center;
+        justify-content: space-between;
+        margin-left: 7.44rem;
+      }
 
-        &>.top-left-icon {
-          height: 5.952rem;
-          width: 5.952rem;
-          background-color: #3361FF;
-          line-height: 5.952rem;
-          text-align: center;
-          color: #fff;
-          margin-right: 1.488rem;
-          font-size: 3.2736rem;
-          border-radius: 0.5952rem;
-        }
+      &>.recepit-amount-sum {
+        padding-top: 1.488rem;
+        padding-bottom: 1.4888rem;
+      }
 
-        &>.top-left-txt {
-          font-size: 2.0832rem;
+      &>.recepit-tax-rate {
+        padding-top: 1.488rem;
+        margin-bottom: 0.5952rem;
+      }
 
-          &>.recepit-name {
+      &>.recepit-deductible-tax {
+        border-bottom: 0.1488rem #c4c4c4 dashed;
+        padding-bottom: 1.4888rem;
+        margin-bottom: 1.4888rem;
+      }
+    }
+  }
+
+}
+
+//
+.select-receipt-content {
+  background-color: #f7f8fa;
+
+  &>.top-console {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+    height: 56px;
+    padding: 0 24px;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    background-color: #fff;
+  }
+
+  &>.receipt-list {
+    width: 100%;
+    height: 55vh;
+    overflow: hidden;
+    overflow-y: auto;
+    padding-bottom: 10px;
+
+    &::-webkit-scrollbar {
+      height: 10px;
+      width: 10px;
+      background-color: #fafafa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 1.3392rem;
+    }
+
+    &>.receipt-item {
+      padding: 14px;
+      background-color: #fff;
+      margin-bottom: 16px;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &>.item-title {
+        font-weight: bold;
+        padding-left: 10px;
+        margin-bottom: 24px;
+      }
+
+      .item-info.hover {
+        background: rgba(29, 43, 61, .06);
+        -webkit-box-shadow: 0 1px 0 0 rgb(29 43 61 / 6%);
+        box-shadow: 0 1px 0 0 rgb(29 43 61 / 6%);
+      }
+
+      &>.item-info {
+        padding: 16px 10px;
+
+        .info-title {
+          font-size: 15px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          margin-bottom: 16px;
+
+          .title-left {
             font-weight: bold;
-            color: #142234;
-            cursor: pointer;
-          }
+            display: flex;
+            flex-direction: row;
+            align-items: center;
 
-          &>.recepit-time {
-            color: rgba(20, 34, 52, .5);
+            .title-tag-icon {}
+
+            .title-tag {
+              font-size: 12px;
+              line-height: 20px;
+              height: 24px;
+              padding: 4px 8px;
+              display: -webkit-flex;
+              display: -ms-flexbox;
+              display: flex;
+              -webkit-justify-content: center;
+              -ms-flex-pack: center;
+              justify-content: center;
+              -webkit-align-items: center;
+              -ms-flex-align: center;
+              align-items: center;
+              border-radius: 4px;
+              background: #f2faec;
+              color: #52c41a;
+              margin-left: 0.5952rem;
+            }
+          }
+        }
+
+        .info-expand {
+
+          .expand-left {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            .type-tag {
+              line-height: 26px;
+              padding: 1px 6px;
+              font-size: 14px;
+              height: 26px;
+              color: #d37b45;
+              background-color: rgba(211, 123, 69, .1);
+              margin-right: 12px;
+              margin-left: 24px;
+              border-radius: 4px;
+            }
           }
         }
       }
-
-      &>.item-top-right {
-        display: flex;
-        flex-direction: row;
-      }
-    }
-
-    &>.recepit-amount-sum,
-    &>.recepit-tax-rate,
-    &>.recepit-deductible-tax {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: space-between;
-      margin-left: 7.44rem;
-    }
-
-    &>.recepit-amount-sum {
-      padding-top: 1.488rem;
-      padding-bottom: 1.4888rem;
-      border-bottom: 0.1488rem #c4c4c4 dashed;
-    }
-
-    &>.recepit-tax-rate {
-      padding-top: 1.488rem;
-      margin-bottom: 0.5952rem;
     }
   }
 }
@@ -1495,6 +1695,7 @@
   }
 }
 
+//
 .upload-receipt-modal-content {
   overflow: hidden;
   overflow-y: auto;
@@ -1825,12 +2026,12 @@
   }
 
   .ant-table-scroll {
-    & ::-webkit-scrollbar {
+    &::-webkit-scrollbar {
       width: 1.488rem;
       background-color: #fafafa;
     }
 
-    & ::-webkit-scrollbar-thumb {
+    &::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
       border-radius: 1.3392rem;
     }
