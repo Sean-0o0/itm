@@ -52,6 +52,8 @@ class ProcessSituation extends React.Component {
       }).then(res => {
         window.open(res.url);
       }).catch(e => console.error(e));
+    } else {//OA流程
+      window.open(url);
     }
   }
 

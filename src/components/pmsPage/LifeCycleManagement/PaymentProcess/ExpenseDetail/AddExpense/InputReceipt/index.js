@@ -6,6 +6,7 @@ const InputReceipt = (props) => {
     const [isModalFullScreen, setIsModalFullScreen] = useState(false);
     //发票类型
     const [receiptType, setReceiptType] = useState(1);
+    const [amount, setAmount] = useState(1);
     const { visible, setVisible, form } = props;
     const { getFieldDecorator, getFieldValue, validateFields } = form;
     const handleSubmit = () => {
@@ -53,6 +54,7 @@ const InputReceipt = (props) => {
         labelCol: 8,
         wrapperCol: 16,
         dataIndex: 'amount',
+        initialValue: amount,
         rules: [
             {
                 required: true,
@@ -64,6 +66,8 @@ const InputReceipt = (props) => {
             max={99999999999.99} min={0} step={0.01}
             placeholder='请输入金额（不含税）'
             precision={2}
+            onChange={(e)=>setAmount(e.target.value)}
+            onBlur={(e)=>setAmount(e.target.value)}
             formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
             parser={value => value.replace(/\$\s?|(,*)/g, '')} />,
     };
