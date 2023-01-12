@@ -403,7 +403,7 @@ class BidInfoUpdate extends React.Component {
             isSpinning,
             radioValue,
         } = this.state;
-        const { currentXmid, currentXmmc, bidInfoModalVisible, closeBidInfoModal } = this.props;
+        const { currentXmid, currentXmmc, bidInfoModalVisible, closeBidInfoModal, onSuccess } = this.props;
         const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
@@ -615,14 +615,15 @@ class BidInfoUpdate extends React.Component {
                                     xmmc: Number(currentXmid),
                                     zbgys: Number(glgys?.filter(x => x.gysmc === getFieldValue('zbgys'))[0]?.id || ''),
                                 };
-                                console.log("🚀submitdata", submitdata);
+                                // console.log("🚀submitdata", submitdata);
                                 UpdateZbxx({
                                     ...submitdata
                                 }).then(res => {
                                     if (res?.code === 1) {
-                                        message.success('中标信息修改成功', 1);
+                                        // message.success('中标信息修改成功', 1);
+                                        onSuccess();
                                     } else {
-                                        message.error('中标信息修改失败', 1);
+                                        message.error('信息修改失败', 1);
                                     }
                                 });
                                 this.setState({ tableData: [] });

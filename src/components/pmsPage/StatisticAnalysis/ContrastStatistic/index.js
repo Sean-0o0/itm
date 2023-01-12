@@ -30,8 +30,8 @@ export default function ContrastStatistic(props) {
     return (
         <div className='contrast-box'>
             {getContrastItem('项目数量', xmsl, '个', xmsljqn)}
-            {getContrastItem('总预算', zys / 10000, '万', zysjqn / 10000)}
-            {getContrastItem('可执行预算', kzxys / 10000, '万', kzxysjqn / 10000)}
+            {getContrastItem('总预算', zys, '万', zysjqn)}
+            {getContrastItem('可执行预算', kzxys, '万', kzxysjqn)}
             {getContrastItem('队伍建设', dwjs, '人', dwjsjqn)}
             {getContrastItem('外部人员', wbry, '人', wbryjqn)}
         </div>

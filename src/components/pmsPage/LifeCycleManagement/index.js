@@ -710,6 +710,7 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   reflush = () => {
+    this.fetchQueryProjectInfoInCycle(this.state.xmid);
     this.fetchQueryLiftcycleMilestone(this.state.xmid);
     this.fetchQueryLifecycleStuff(this.state.xmid);
   }
@@ -931,23 +932,30 @@ class LifeCycleManagementTabs extends React.Component {
           <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
             onCancel={this.closeFillOutModal}
             src={fillOutUrl} />}
-
+        {/*员工评价弹窗*/}
         {ygpjVisible &&
           <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
             onCancel={() => this.setState({ ygpjVisible: false })}
             src={ygpjUrl} />}
-
         {/*默认信息修改弹窗*/}
         {defMsgModifyModalVisible &&
           <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
             onCancel={this.closeDefMsgModifyModal}
             src={editMessageUrl} />}
+        {/*阶段信息修改弹窗*/}
+        {editModelVisible &&
+          <div>
+            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+              onCancel={this.closeModelEditModal}
+              src={editModelUrl} /></div>}
 
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
           fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
           currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
-          closePaymentProcessModal={this.closePaymentProcessModal} />}
+          closePaymentProcessModal={this.closePaymentProcessModal}
+          onSuccess={() => this.onSuccess("流程发起")}
+        />}
 
         {/*合同信息修改弹窗*/}
         {editMessageVisible && <ContractInfoUpdate
@@ -955,6 +963,7 @@ class LifeCycleManagementTabs extends React.Component {
           currentXmmc={currentXmmc}
           editMessageVisible={editMessageVisible}
           closeMessageEditModal={this.closeMessageEditModal}
+          onSuccess={() => this.onSuccess("信息修改")}
         ></ContractInfoUpdate>}
 
         {/*中标信息修改弹窗*/}
@@ -964,14 +973,9 @@ class LifeCycleManagementTabs extends React.Component {
           bidInfoModalVisible={bidInfoModalVisible}
           closeBidInfoModal={this.closeBidInfoModal}
           loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+          onSuccess={() => this.onSuccess("信息修改")}
         ></BidInfoUpdate>}
 
-        {/*阶段信息修改弹窗*/}
-        {editModelVisible &&
-          <div>
-            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
-              onCancel={this.closeModelEditModal}
-              src={editModelUrl} /></div>}
         <div style={{ height: '8%', margin: '3.571rem 3.571rem 2.381rem 3.571rem' }}>
           <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
             fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}

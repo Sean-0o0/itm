@@ -338,7 +338,7 @@ class ContractInfoUpdate extends React.Component {
             addGysModalVisible,
             isSpinning,
             selectedRowIds } = this.state;
-        const { currentXmid, currentXmmc, editMessageVisible, closeMessageEditModal } = this.props;
+        const { currentXmid, currentXmmc, editMessageVisible, closeMessageEditModal, onSuccess } = this.props;
         const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
@@ -536,9 +536,10 @@ class ContractInfoUpdate extends React.Component {
                                     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
                                 }).then(res => {
                                     if (res?.code === 1) {
-                                        message.success('合同信息修改成功', 1);
+                                        // message.success('合同信息修改成功', 1);
+                                        onSuccess();
                                     } else {
-                                        message.error('合同信息修改失败', 1);
+                                        message.error('信息修改失败', 1);
                                     }
                                 })
                                 // this.props.form.resetFiled();

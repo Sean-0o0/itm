@@ -32,6 +32,27 @@ class OperationList extends React.Component {
     //   currentPageNum: 1,
     // });
   };
+  handleSelectFocus = () => {
+    FetchQueryOwnerProjectList(
+      {
+        paging: -1,
+        current: 1,
+        pageSize: 10,
+        total: -1,
+        sort: '',
+        cxlx: 'ALL',
+      }
+    ).then((ret = {}) => {
+      const { record, code, totalrows } = ret;
+      if (code === 1) {
+        this.setState({
+          listData: [...record],
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  };
 
   // onSearch = (value) => {
   //   if (value === '') {
@@ -130,7 +151,7 @@ class OperationList extends React.Component {
     const { open, currentPageNum, listData } = this.state;
     const { defaultValue, data, fetchQueryOwnerProjectList, projectInfo, totalRows } = this.props;
     return (
-      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px'}}>
+      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px' }}>
         <Input.Group compact>
           <div onMouseDown={(e) => { e.preventDefault() }} style={{ position: 'relative' }} className="operationListSelectBox">
             <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}
@@ -149,6 +170,7 @@ class OperationList extends React.Component {
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
+              onFocus={this.handleSelectFocus}
               open={open}
               onDropdownVisibleChange={(visible) => { this.setState({ open: visible }) }}
             // dropdownStyle={{ height: '355px' }}

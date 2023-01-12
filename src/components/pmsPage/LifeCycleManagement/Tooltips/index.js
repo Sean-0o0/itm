@@ -11,8 +11,6 @@ const { pmsServices: { getStreamByLiveBos } } = api;
 
 const { Option } = Select;
 
-const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
-
 class Tooltips extends React.Component {
   state = { src: '', xmUserId: '' };
   componentDidMount() {
@@ -96,6 +94,8 @@ class Tooltips extends React.Component {
   }
 
   handleAuthority = (fn, txt, arg) => {
+    const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
+    // console.log('this.state.xmUserId,LOGIN_USER_ID', this.state.xmUserId === LOGIN_USER_ID, this.state.xmUserId, LOGIN_USER_ID, JSON.parse(sessionStorage.getItem("user")));
     if (this.state.xmUserId === LOGIN_USER_ID) {
       if (arg) {
         fn.call(this, arg);

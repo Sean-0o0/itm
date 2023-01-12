@@ -180,7 +180,8 @@ const PaymentProcess = (props) => {
                     console.log('submitData', submitData);
                     CreatPaymentFlow(submitData).then(res => {
                         if (res.code === 200) {
-                            message.success('付款流程发起成功', 1);
+                            // message.success('付款流程发起成功', 1);
+                            onSuccess();
                             resetFields();
                             fetchQueryLifecycleStuff(currentXmid);
                         }

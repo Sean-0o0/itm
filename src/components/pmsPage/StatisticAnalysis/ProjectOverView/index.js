@@ -147,9 +147,9 @@ export default function ProjectOverView(props) {
       <div className='overview-bottom-box'>
         <div className='overview-bottom-title'>预算总体情况</div>
         <div className='overview-bottom-contrast-box'>
-          {getContrastItem('finance', '总预算', zys / 10000, '万', zysjqn / 10000)}
-          {getContrastItem('cash', '资本性预算', zbxys / 10000, '万', zbxysjqn / 10000)}
-          {getContrastItem('assets', '非资本性预算', fzbxys / 10000, '万', fzbxysjqn / 10000)}
+          {getContrastItem('finance', '总预算', zys, '万', zysjqn)}
+          {getContrastItem('cash', '资本性预算', zbxys, '万', zbxysjqn)}
+          {getContrastItem('assets', '非资本性预算', fzbxys, '万', fzbxysjqn)}
         </div>
       </div>
     </div>

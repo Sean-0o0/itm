@@ -39,12 +39,12 @@ class WorkBench extends React.Component {
   }
 
   componentDidRecover = () => {
-    this.fetchQueryOwnerMessage();
+    this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
     this.fetchQueryOwnerWorkflow();
     this.fetchQueryOwnerProjectList();
   }
   componentDidMount() {
-    this.fetchQueryOwnerMessage();
+    this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
     this.fetchQueryOwnerWorkflow();
     this.fetchQueryOwnerProjectList();
   }
@@ -273,7 +273,7 @@ class WorkBench extends React.Component {
                 width: '25%',
                 overflow: 'hidden'
               }}>
-                <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList} sliderData={sliderData}/>
+                <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList} sliderData={sliderData} />
               </div>
             </Col>
           </Row>
