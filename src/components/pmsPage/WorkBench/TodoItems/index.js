@@ -567,8 +567,9 @@ class TodoItems extends React.Component {
         dataIndex: 'jzrq',
         // key: 'jzrq',
         render: (text, record) => {
-          return <span
-            style={{ fontSize: '2.083rem', }}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
+          return record.wdsl < 0 ? <span
+              style={{fontSize: '2.083rem', color: 'red'}}>逾期{record.wdsl * -1}天</span>
+            : <span style={{fontSize: '2.083rem',}}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
         },
       },
     ];

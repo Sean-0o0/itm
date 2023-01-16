@@ -83,7 +83,7 @@ class WorkBench extends React.Component {
       .format('YYYYMMDD')
     FetchQueryOwnerMessage(
       {
-        cxlx: "ALL",
+        cxlx: "NUMBER",
         date: 20220101,
         paging: -1,
         current: 0,
