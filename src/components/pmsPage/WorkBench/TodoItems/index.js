@@ -426,7 +426,7 @@ class TodoItems extends React.Component {
 
   //成功回调
   onSuccess = (name) => {
-    message.success(name + "成功");
+    message.success(name + "完成");
   }
 
   updateFlag = () => {
@@ -692,16 +692,19 @@ class TodoItems extends React.Component {
               height: '100%'
             }} onClick={this.onclickdb}>待办事项
             </div>
-            <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
+            <div style={{width: '75%', height: '100%', textAlign: 'end'}}>
               {/*<i style={{color: 'red', paddingRight: ".5rem", verticalAlign: 'middle'}}*/}
               {/*   className="iconfont icon-message"/><span*/}
               {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
               {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
-              <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
-                className="iconfont icon-shijian" /><a
-                  style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}
-                  onClick={this.getUndoItems}>未完成 <span
-                    style={{ color: 'rgba(215, 14, 25, 1)' }}>{wzxsl}</span></a>
+              <i style={{color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
+                 className="iconfont icon-shijian"/>
+              {wzxsl === '0' ? <span
+                style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>暂无未完成事项 <span
+                style={{color: 'rgba(215, 14, 25, 1)'}}></span></span> : <span
+                style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成 <span
+                style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}<a onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a></span></span>}
+
             </div>
           </div>
         </div>
@@ -791,34 +794,34 @@ class TodoItems extends React.Component {
                 <div style={{ height: '90%' }}>
                   {/*文档上传弹窗*/}
                   {uploadVisible &&
-                    <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-                      onCancel={this.closeUploadModal}
-                      src={uploadUrl} />}
+                  <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传待办")}
+                               onCancel={this.closeUploadModal}
+                               src={uploadUrl}/>}
                   {/*文档修改弹窗*/}
                   {editVisible &&
-                    <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
-                      onCancel={this.closeEditModal}
-                      src={uploadUrl} />}
+                  <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改待办")}
+                               onCancel={this.closeEditModal}
+                               src={uploadUrl}/>}
                   {/*立项流程发起弹窗*/}
                   {sendVisible &&
-                    <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")}
-                      onCancel={this.closeSendModal}
-                      src={sendUrl} />}
+                  <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起待办")}
+                               onCancel={this.closeSendModal}
+                               src={sendUrl}/>}
                   {/*信息录入弹窗*/}
                   {fillOutVisible &&
-                    <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
-                      onCancel={this.closeFillOutModal}
-                      src={fillOutUrl} />}
+                  <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入待办")}
+                               onCancel={this.closeFillOutModal}
+                               src={fillOutUrl}/>}
                   {/*信息修改弹窗*/}
                   {editMessageVisible &&
-                    <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
-                      onCancel={this.closeMessageEditModal}
-                      src={editMessageUrl} />}
+                  <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改待办")}
+                               onCancel={this.closeMessageEditModal}
+                               src={editMessageUrl}/>}
                   {/*人员新增提醒弹窗*/}
                   {ryxztxVisible &&
-                    <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("执行")}
-                      onCancel={()=>this.setState({ryxztxVisible: false})}
-                      src={ryxztxUrl} />}
+                  <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("人员新增待办")}
+                               onCancel={() => this.setState({ryxztxVisible: false})}
+                               src={ryxztxUrl}/>}
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
                     locale={{ emptyText: <Empty description={"暂无消息"} /> }} dataSource={data}
                     style={{ height: '100%' }} />

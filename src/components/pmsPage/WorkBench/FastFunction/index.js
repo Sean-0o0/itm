@@ -97,55 +97,56 @@ class FastFunction extends React.Component {
                 src={src_fileAdd} />}
             <Row className='workBench'>
               <Col xs={24} sm={24} lg={24} xl={24} className='fastFun'
-                style={{ display: 'flex' }}>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => this.setState({ fileAddVisible: true })}>
-                  <div><img src={icon_01} alt="" style={{ width: '7.143rem', height: '7.143rem' }} /></div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }} >新建项目</div>
-                </div>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/UIProcessor?Table=XMXX&hideTitlebar=true`}>
-                  <div><img src={icon_02} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
+                   style={{display: 'flex'}}>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => this.setState({fileAddVisible: true})}>
+                  <div><img src={icon_01} alt="" style={{width: '7.143rem', height: '7.143rem'}}/></div>
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>新建项目</div>
+                </a>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/UIProcessor?Table=XMXX&hideTitlebar=true`}>
+                  <div><img src={icon_02} alt="" style={{width: '7.143rem', height: '7.143rem'}}/>
                   </div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>项目信息</div>
-                </div>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/pms/manage/LifeCycleManagement`} >
-                  <div><img src={icon_05} alt="" style={{ width: '7.143rem', height: '7.143rem' }} /></div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>生命周期
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>项目信息</div>
+                </a>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/pms/manage/LifeCycleManagement`}>
+                  <div><img src={icon_05} alt="" style={{width: '7.143rem', height: '7.143rem'}}/></div>
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>生命周期
                   </div>
-                </div>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/UIProcessor?Table=V_WDCX&hideTitlebar=true`}>
-                  <div><img src={icon_03} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
+                </a>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/UIProcessor?Table=V_WDCX&hideTitlebar=true`}>
+                  <div><img src={icon_03} alt="" style={{width: '7.143rem', height: '7.143rem'}}/>
                   </div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>文档管理</div>
-                </div>
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>文档管理</div>
+                </a>
               </Col>
-              <Col xs={24} sm={24} lg={24} xl={24} className='fastFun' style={{ display: 'flex', marginTop: '3.3688rem' }}>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/UIProcessor?Table=V_YSXMTJ&hideTitlebar=true`}>
-                  <div><img src={icon_08} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
+              <Col xs={24} sm={24} lg={24} xl={24} className='fastFun'
+                   style={{display: 'flex', marginTop: '3.3688rem'}}>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/UIProcessor?Table=V_YSXMTJ&hideTitlebar=true`}>
+                  <div><img src={icon_08} alt="" style={{width: '7.143rem', height: '7.143rem'}}/>
                   </div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>预算开销</div>
-                </div>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`}>
-                  <div><img src={icon_04} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>预算开销</div>
+                </a>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`}>
+                  <div><img src={icon_04} alt="" style={{width: '7.143rem', height: '7.143rem'}}/>
                   </div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }} >周报填写</div>
-                </div>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/pms/manage/WeeklyReportTable`}>
-                  <div><img src={icon_06} alt="" style={{ width: '7.143rem', height: '7.143rem' }} /></div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>周报汇总</div>
-                </div>
-                <div style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => window.location.href = `/#/UIProcessor?Table=KHJFY&hideTitlebar=true`}>
-                  <div><img src={icon_07} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>周报填写</div>
+                </a>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/pms/manage/WeeklyReportTable`}>
+                  <div><img src={icon_06} alt="" style={{width: '7.143rem', height: '7.143rem'}}/></div>
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>周报汇总</div>
+                </a>
+                <a style={{width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center'}}
+                   onClick={() => window.location.href = `/#/UIProcessor?Table=KHJFY&hideTitlebar=true`}>
+                  <div><img src={icon_07} alt="" style={{width: '7.143rem', height: '7.143rem'}}/>
                   </div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>外包费用</div>
-                </div>
+                  <div className='fastFun-head' style={{margin: '1.19rem 0 0 0', fontSize: '2.083rem'}}>外包费用</div>
+                </a>
               </Col>
             </Row>
           </div>
