@@ -2938,7 +2938,26 @@
       }
     }
   }
+
 }
+
+//首页日历颜色样式
+.calendar-style {
+  .ant-fullcalendar-selected-day .ant-fullcalendar-value,
+  .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value {
+    background-color: #3361ff;
+  }
+
+  .ant-fullcalendar-today .ant-fullcalendar-value,
+  .ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value {
+    box-shadow: 0 0 0 1px #3361ff inset;
+  }
+
+  .ant-fullcalendar-value:hover {
+    background-color: rgba(51, 97, 255, 0.5);
+  }
+}
+
 
 .tableStyle {
 
@@ -2947,6 +2966,7 @@
     padding: 1.19rem;
   }
 }
+
 
 //spin图标垂直居中
 .ant-spin-nested-loading.diy-style-spin>div>.ant-spin {

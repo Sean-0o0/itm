@@ -407,7 +407,7 @@ class ContractInfoUpdate extends React.Component {
                         <Popconfirm title="确定要删除吗?" onConfirm={() => {
                             return this.handleSingleDelete(record.id)
                         }}>
-                            <a style={{ color: '#1890ff' }}>删除</a>
+                            <a style={{ color: '#3361ff' }}>删除</a>
                         </Popconfirm>
                     ) : null,
             }

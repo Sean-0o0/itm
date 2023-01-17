@@ -515,7 +515,7 @@ class TodoItems extends React.Component {
                     <i style={{ color: 'red', fontSize: '2.381rem' }} className="iconfont icon-fill-star" />
                   </span>
                 }
-                <a style={{ fontSize: '2.083rem', color: '#1890ff', paddingLeft: '0.5rem' }}
+                <a style={{ fontSize: '2.083rem', color: '#3361ff', paddingLeft: '0.5rem' }}
                   onClick={() => this.handleUrl(record)}>
                   {text.length > 8 ? text.slice(0, 8) + '...' : text}
                 </a>
@@ -552,7 +552,7 @@ class TodoItems extends React.Component {
         // key: 'xmmc',
         render: (text, record) => {
           return <span><Tooltip title={text.length > 10 ? text : ''} style={{ fontSize: '2.381rem' }}>
-            <span style={{ display: 'flex', }}><Link style={{ color: '#1890ff', fontSize: '2.083rem', }} to={{
+            <span style={{ display: 'flex', }}><Link style={{ color: '#3361ff', fontSize: '2.083rem', }} to={{
               pathname: '/pms/manage/LifeCycleManagement',
               query: { xmid: record.xmid },
             }}>
@@ -710,7 +710,7 @@ class TodoItems extends React.Component {
         </div>
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', height: '95%' }}>
           <div style={{ width: '24%' }}>
-            <div style={{ border: '1px solid #d9d9d9', borderRadius: 4 }}>
+            <div style={{ border: '1px solid #d9d9d9', borderRadius: 4 }} className="calendar-style">
               <Calendar
                 // monthCellRender={this.monthCellRender}
                 dateCellRender={this.dateCellRender}
