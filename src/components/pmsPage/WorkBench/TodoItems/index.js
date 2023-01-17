@@ -591,7 +591,7 @@ class TodoItems extends React.Component {
       cxlx: "UNDO",
     })
     const { fetchQueryOwnerMessage } = this.props;
-    fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), "UNDO")
+    fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), "NUMBER")
   }
 
   onclickdb = () => {
