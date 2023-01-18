@@ -63,7 +63,7 @@ class TodoItems extends React.Component {
     page: 1,
     date: moment(new Date()).format('YYYYMMDD'),
     flag: true,
-    cxlx: "ALL",
+    cxlx: "UNDO",
   };
 
 
@@ -461,7 +461,6 @@ class TodoItems extends React.Component {
   }
 
   updateState = (record, zxlx) => {
-    // console.log("recordrecord", record)
     UpdateMessageState({
       zxlx: zxlx,
       xxid: record.xxid,
@@ -599,7 +598,7 @@ class TodoItems extends React.Component {
       cxlx: "ALL",
     })
     const { fetchQueryOwnerMessage } = this.props;
-    fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD', "ALL"))
+    fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD'), "ALL")
   }
 
   getUndoItems = () => {

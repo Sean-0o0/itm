@@ -158,7 +158,7 @@ class WorkBench extends React.Component {
         cxlx: 'USER',
         paging: 1,
         current: e ? e : 1,
-        pageSize: 5,
+        pageSize: 7,
         total: -1,
         sort: ''
       }

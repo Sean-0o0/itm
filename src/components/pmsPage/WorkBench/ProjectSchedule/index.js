@@ -127,31 +127,6 @@ class ProjectSchedule extends React.Component {
   componentDidMount() {
   }
 
-  fetchQueryOwnerProjectList = (current, pageSize) => {
-    FetchQueryOwnerProjectList(
-      {
-        // paging: 1,
-        paging: -1,
-        current,
-        pageSize,
-        total: -1,
-        sort: '',
-        cxlx: 'ALL',
-      }
-    ).then((ret = {}) => {
-      const { record, code, totalrows } = ret;
-      if (code === 1) {
-        this.setState({
-          xmid: record[0].xmid,
-          operationListData: record,
-          operationListTotalRows: totalrows
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
-
   //获取项目展示信息
   // fetchQueryProjectInfoInCycle = (xmid) => {
   //   FetchQueryProjectInfoInCycle({
