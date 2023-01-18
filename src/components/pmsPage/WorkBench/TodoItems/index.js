@@ -651,20 +651,20 @@ class TodoItems extends React.Component {
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
+      width: '50%',
       height: '58rem',
       title: uploadTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: uploadVisible,
       footer: null,
     };
     const editModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '100rem',
+      width: '60%',
       height: '68rem',
       title: editTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: editVisible,
       footer: null,
     };
@@ -681,30 +681,30 @@ class TodoItems extends React.Component {
     const fillOutModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '150rem',
+      width: '60%',
       height: '80rem',
       title: fillOutTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: fillOutVisible,
       footer: null,
     };
     const editMessageModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '150rem',
+      width: '60%',
       height: '80rem',
       title: editMessageTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: editMessageVisible,
       footer: null,
     };
     const ryxztxModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '40%',
+      width: '60%',
       height: '45rem',
       title: '人员新增提醒',
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: ryxztxVisible,
       footer: null,
     };
