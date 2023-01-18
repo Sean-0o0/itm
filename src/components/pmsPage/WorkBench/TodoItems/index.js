@@ -13,6 +13,7 @@ import {
   Pagination,
   message, Popconfirm,
   Icon,
+  Button,
 } from 'antd';
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
@@ -26,7 +27,6 @@ import 'moment/locale/zh-cn';
 import FastFunction from "../FastFunction";
 
 const { Panel } = Collapse;
-const { Group, Button } = Radio;
 
 const Loginname = localStorage.getItem("firstUserID");
 
@@ -66,11 +66,18 @@ class TodoItems extends React.Component {
     cxlx: "ALL",
   };
 
+
   componentDidMount() {
+    // 日历today对象
+    let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
+    if (node) {
+      node.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
+      node.style.color = 'rgba(0, 0, 0, 0.65)';
+      node.style.boxShadow = '0 0 0 0 #3361ff inset';
+    }
   }
 
   onPanelChange = (value, mode) => {
-    console.log(value, mode);
   }
 
   handleUrl = (text) => {
@@ -81,7 +88,7 @@ class TodoItems extends React.Component {
     if (text.sxmc.includes("流程")) {
       this.handleSend(text);
     }
-    if (text.sxmc.includes('人员新增提醒')){
+    if (text.sxmc.includes('人员新增提醒')) {
       this.handleRyxztx(text);
     }
     if (text.sxmc.includes("文档") ||
@@ -130,7 +137,7 @@ class TodoItems extends React.Component {
     }
   }
 
-  handleRyxztx = (record)=>{
+  handleRyxztx = (record) => {
     const params = {
       "attribute": 0,
       "authFlag": 0,
@@ -568,8 +575,8 @@ class TodoItems extends React.Component {
         // key: 'jzrq',
         render: (text, record) => {
           return record.wdsl < 0 ? <span
-              style={{fontSize: '2.083rem', color: 'red'}}>逾期{record.wdsl * -1}天</span>
-            : <span style={{fontSize: '2.083rem',}}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
+            style={{ fontSize: '2.083rem', color: 'red' }}>逾期{record.wdsl * -1}天</span>
+            : <span style={{ fontSize: '2.083rem', }}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
         },
       },
     ];
@@ -577,6 +584,16 @@ class TodoItems extends React.Component {
   };
 
   handleDateChange = (e) => {
+    if (moment(e).format('YYYYMMDD') === new moment().format('YYYYMMDD')) {
+      let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
+      node.style.backgroundColor = '';
+      node.style.color = '';
+      node.style.boxShadow = '';
+    }
+    let nodeToday = document.querySelector('.ant-fullcalendar-today .ant-fullcalendar-value,.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value');
+    if (nodeToday) {
+      nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
+    }
     this.setState({
       date: moment(e).format('YYYYMMDD'),
       cxlx: "ALL",
@@ -592,6 +609,19 @@ class TodoItems extends React.Component {
     })
     const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), "NUMBER")
+    // 日历today对象
+    let node = document.querySelector('.ant-fullcalendar-selected-day .ant-fullcalendar-value');
+    if (node) {
+      node.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
+      node.style.color = 'rgba(0, 0, 0, 0.65)';
+      node.style.boxShadow = '0 0 0 0 #3361ff inset';
+    }
+    let nodeToday = document.querySelector('.ant-fullcalendar-today .ant-fullcalendar-value,.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value');
+    if (nodeToday) {
+      nodeToday.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
+      nodeToday.style.color = 'rgba(0, 0, 0, 0.65)';
+      nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
+    }
   }
 
   onclickdb = () => {
@@ -644,7 +674,7 @@ class TodoItems extends React.Component {
       title: sendTitle,
       width: '180rem',
       height: '134.2rem',
-      style: {top: '2rem'},
+      style: { top: '2rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -692,18 +722,18 @@ class TodoItems extends React.Component {
               height: '100%'
             }} onClick={this.onclickdb}>待办事项
             </div>
-            <div style={{width: '75%', height: '100%', textAlign: 'end'}}>
+            <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
               {/*<i style={{color: 'red', paddingRight: ".5rem", verticalAlign: 'middle'}}*/}
               {/*   className="iconfont icon-message"/><span*/}
               {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
               {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
-              <i style={{color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle'}}
-                 className="iconfont icon-shijian"/>
+              <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
+                className="iconfont icon-shijian" />
               {wzxsl === '0' ? <span
-                style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>暂无未完成事项 <span
-                style={{color: 'rgba(215, 14, 25, 1)'}}></span></span> : <span
-                style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成 <span
-                style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}<a onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a></span></span>}
+                style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}>暂无未完成事项 <span
+                  style={{ color: 'rgba(215, 14, 25, 1)' }}></span></span> : <span
+                    style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}>未完成 <span
+                      style={{ color: 'rgba(215, 14, 25, 1)' }}>{wzxsl}<a style={{ color: '#3361ff' }} onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a></span></span>}
 
             </div>
           </div>
@@ -794,34 +824,34 @@ class TodoItems extends React.Component {
                 <div style={{ height: '90%' }}>
                   {/*文档上传弹窗*/}
                   {uploadVisible &&
-                  <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传待办")}
-                               onCancel={this.closeUploadModal}
-                               src={uploadUrl}/>}
+                    <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传待办")}
+                      onCancel={this.closeUploadModal}
+                      src={uploadUrl} />}
                   {/*文档修改弹窗*/}
                   {editVisible &&
-                  <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改待办")}
-                               onCancel={this.closeEditModal}
-                               src={uploadUrl}/>}
+                    <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改待办")}
+                      onCancel={this.closeEditModal}
+                      src={uploadUrl} />}
                   {/*立项流程发起弹窗*/}
                   {sendVisible &&
-                  <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起待办")}
-                               onCancel={this.closeSendModal}
-                               src={sendUrl}/>}
+                    <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起待办")}
+                      onCancel={this.closeSendModal}
+                      src={sendUrl} />}
                   {/*信息录入弹窗*/}
                   {fillOutVisible &&
-                  <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入待办")}
-                               onCancel={this.closeFillOutModal}
-                               src={fillOutUrl}/>}
+                    <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入待办")}
+                      onCancel={this.closeFillOutModal}
+                      src={fillOutUrl} />}
                   {/*信息修改弹窗*/}
                   {editMessageVisible &&
-                  <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改待办")}
-                               onCancel={this.closeMessageEditModal}
-                               src={editMessageUrl}/>}
+                    <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改待办")}
+                      onCancel={this.closeMessageEditModal}
+                      src={editMessageUrl} />}
                   {/*人员新增提醒弹窗*/}
                   {ryxztxVisible &&
-                  <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("人员新增待办")}
-                               onCancel={() => this.setState({ryxztxVisible: false})}
-                               src={ryxztxUrl}/>}
+                    <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("人员新增待办")}
+                      onCancel={() => this.setState({ ryxztxVisible: false })}
+                      src={ryxztxUrl} />}
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
                     locale={{ emptyText: <Empty description={"暂无消息"} /> }} dataSource={data}
                     style={{ height: '100%' }} />
