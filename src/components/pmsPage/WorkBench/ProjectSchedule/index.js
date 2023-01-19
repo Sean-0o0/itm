@@ -214,6 +214,12 @@ class ProjectSchedule extends React.Component {
         Loginname
       )
     }
+    if (item.sxmc.includes("信委会议案流程")) {
+      params = getParams("LC_XWHYALC", "StartWork",
+        [],
+        Loginname
+      )
+    }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
       if (code === 1) {
@@ -848,7 +854,7 @@ class ProjectSchedule extends React.Component {
       width: '50%',
       height: '68rem',
       title: uploadTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -858,7 +864,7 @@ class ProjectSchedule extends React.Component {
       width: '60%',
       height: '68rem',
       title: editTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -868,7 +874,7 @@ class ProjectSchedule extends React.Component {
       title: sendTitle,
       width: '60%',
       height: '100rem',
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -878,7 +884,7 @@ class ProjectSchedule extends React.Component {
       width: '60%',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
@@ -888,7 +894,7 @@ class ProjectSchedule extends React.Component {
       width: '60%',
       height: '80rem',
       title: editMessageTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: defMsgModifyModalVisible,
       footer: null,
     };
@@ -898,7 +904,7 @@ class ProjectSchedule extends React.Component {
       width: '60%',
       height: '80rem',
       title: editModelTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editModelVisible,
       footer: null,
     };
@@ -909,7 +915,7 @@ class ProjectSchedule extends React.Component {
       width: '60%',
       height: '38rem',
       title: '操作',
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: ygpjVisible,
       footer: null,
     };
@@ -1061,7 +1067,7 @@ class ProjectSchedule extends React.Component {
                             <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
                               className='card'>
                               <Col span={24} className='cont1'>
-                                <div className='head' style={{ borderRadius: '8px 8px 0px 0px' }}>
+                                <div className='head' style={{ borderRadius: '1.1904rem 1.1904rem 0px 0px' }}>
                                   {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
                                   <div className='head1'>
                                     <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
@@ -1081,8 +1087,8 @@ class ProjectSchedule extends React.Component {
                               <Col span={24}
                                 style={{
                                   width: '100%',
-                                  padding: '3rem 3rem calc(3rem - 16px) 3rem',
-                                  borderRadius: '0 0 8px 8px',
+                                  padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                                  borderRadius: '0 0 1.1904rem 1.1904rem',
                                   maxHeight: '50rem'
                                 }}
                                 className='cont2'>
@@ -1094,7 +1100,7 @@ class ProjectSchedule extends React.Component {
                                         num = num + 1;
                                       }
                                     })
-                                    return <Col span={8} style={{ marginBottom: '16px' }}>
+                                    return <Col span={8} style={{ marginBottom: '2.3808rem' }}>
                                       <div className='cont-col'>
                                         <div className='cont-col1'>
                                           <div className='right'>
@@ -1104,7 +1110,7 @@ class ProjectSchedule extends React.Component {
                                         <div>
                                           {sort[index].List.map((item = {}, ind) => {
                                             return <Row className='cont-row' style={{
-                                              marginTop: ind === 0 ? '18px' : '16px'
+                                              marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
                                             }}>
                                               <Col span={18}>
                                                 <div style={{ display: 'flex', alignItems: 'center' }}>

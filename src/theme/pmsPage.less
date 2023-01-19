@@ -975,7 +975,7 @@
   }
 
   & .table-box {
-    height: 110.112rem;
+    height: calc(100vh - 25rem);
     margin: 2.381rem 3.5712rem 2.6784rem 3.5712rem;
     background-color: white;
     box-shadow: 0 0.1488rem 0.5952rem 0 rgba(20, 38, 98, 0.04);
@@ -1014,7 +1014,6 @@
 
   .ant-table {
 
-    // height: 631px;
     th,
     td {
       padding: 5px;
@@ -1027,25 +1026,25 @@
     }
 
     .ant-table-body {
-      height: 629px;
+      height: calc(100vh - 45.08rem);
     }
 
     .ant-table-placeholder {
       position: absolute;
       width: 100%;
-      top: 34px;
-      height: 561px;
+      top: 4.464rem;
+      height: calc(100vh - 47rem);
     }
   }
 
   //表格滚动条样式
   .ant-table-body-inner {
-    max-height: 580px !important;
+    max-height: calc(100vh - 45rem) !important;
   }
 
   .ant-table-fixed-right {
     & ::-webkit-scrollbar {
-      width: 10px;
+      width: 1.488rem;
       background-color: #fafafa;
     }
 
@@ -1056,13 +1055,13 @@
   }
 
   .ant-table-fixed-header .ant-table-scroll .ant-table-header {
-    margin-bottom: -10px !important; //表格横向滚动条高度
+    margin-bottom: -1.488rem !important; //表格横向滚动条高度
   }
 
   .ant-table-scroll {
     & ::-webkit-scrollbar {
-      height: 10px;
-      width: 10px;
+      height: 1.488rem;
+      width: 1.488rem;
       background-color: #fafafa;
     }
 
@@ -1353,13 +1352,13 @@
 //发票列表
 .add-expense-drawer {
   & .ant-drawer-body {
-    margin-bottom: 53px;
+    margin-bottom: 7.8864rem;
     overflow: hidden;
     overflow-y: auto;
     height: calc(100vh - 108px);
 
     &::-webkit-scrollbar {
-      width: 10px;
+      width: 1.488rem;
       background-color: #fafafa;
     }
 
@@ -1538,7 +1537,7 @@
     height: 56px;
     padding: 0 24px;
     justify-content: space-between;
-    margin-bottom: 10px;
+    margin-bottom: 1.488rem;
     background-color: #fff;
   }
 
@@ -1547,11 +1546,11 @@
     height: 55vh;
     overflow: hidden;
     overflow-y: auto;
-    padding-bottom: 10px;
+    padding-bottom: 1.488rem;
 
     &::-webkit-scrollbar {
-      height: 10px;
-      width: 10px;
+      height: 1.488rem;
+      width: 1.488rem;
       background-color: #fafafa;
     }
 
@@ -1571,7 +1570,7 @@
 
       &>.item-title {
         font-weight: bold;
-        padding-left: 10px;
+        padding-left: 1.488rem;
         margin-bottom: 24px;
       }
 
@@ -1582,7 +1581,7 @@
       }
 
       &>.item-info {
-        padding: 16px 10px;
+        padding: 16px 1.488rem;
 
         .info-title {
           font-size: 15px;
@@ -1597,8 +1596,6 @@
             display: flex;
             flex-direction: row;
             align-items: center;
-
-            .title-tag-icon {}
 
             .title-tag {
               font-size: 12px;
@@ -1716,7 +1713,7 @@
 
 //付款流程发起弹窗
 .payment-process-box {
-  max-height: calc(100vh - 13.5rem - 53px) !important;
+  max-height: calc(100vh - 13.5rem - 7.8864rem) !important;
 
   //付款流程发起弹窗 - 表单信息
   .basic-info-title,
@@ -2074,6 +2071,14 @@
 //OperationList
 .operationListSelectBox {
   :global {
+    .ant-select-selection__rendered {
+      line-height: 4.5rem;
+    }
+
+    .ant-select-selection--single {
+      height: 4.5rem;
+    }
+
     .ant-select-selection {
       border-color: transparent;
       box-shadow: none;
@@ -2943,6 +2948,7 @@
 
 //首页日历颜色样式
 .calendar-style {
+
   .ant-fullcalendar-selected-day .ant-fullcalendar-value,
   .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value {
     background-color: #3361ff;

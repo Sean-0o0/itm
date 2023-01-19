@@ -169,7 +169,7 @@ const AddExpense = (props) => {
                         //     },
                         // ],
                     })(<Select
-                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                         showSearch
                         placeholder="请选择费用类型"
                         optionFilterProp="children"
@@ -201,7 +201,7 @@ const AddExpense = (props) => {
                     {getFieldDecorator('skzh', {
                         initialValue: '',
                     })(<Select
-                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                         showSearch
                         placeholder="请选择发票类型"
                         optionFilterProp="children"
@@ -484,8 +484,8 @@ const AddExpense = (props) => {
                         right: 0,
                         bottom: 0,
                         width: '100%',
-                        borderTop: '1px solid #e9e9e9',
-                        padding: '10px 16px',
+                        borderTop: '0.1488rem solid #e9e9e9',
+                        padding: '1.488rem 2.3808rem',
                         background: '#fff',
                         textAlign: 'right',
                     }}

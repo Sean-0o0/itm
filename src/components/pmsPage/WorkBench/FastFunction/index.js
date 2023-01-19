@@ -86,7 +86,7 @@ class FastFunction extends React.Component {
                 </div>)
               })}
             </Carousel>
-            {sliderData?.length === 0 && <Empty description={"暂无提醒"} imageStyle={{ height: '56px' }} />}
+            {sliderData?.length === 0 && <Empty description={"暂无提醒"} imageStyle={{ height: '8.3328rem' }} />}
           </div>
           <div className='bottom-box'>
             {fileAddVisible &&

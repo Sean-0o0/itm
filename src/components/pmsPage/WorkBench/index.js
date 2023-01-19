@@ -258,8 +258,8 @@ class WorkBench extends React.Component {
             <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
               <div style={{
                 boxSizing: 'border-box',
-                boxShadow: '#ececec 0 3px 10px',
-                borderRadius: '10px',
+                boxShadow: '#ececec 0 0.4464rem 1.488rem',
+                borderRadius: '1.488rem',
                 width: '75%',
                 background: 'white'
               }}>
@@ -283,8 +283,8 @@ class WorkBench extends React.Component {
             <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
               <div style={{
                 boxSizing: 'border-box',
-                boxShadow: '#ececec 0 3px 10px',
-                borderRadius: '10px',
+                boxShadow: '#ececec 0 0.4464rem 1.488rem',
+                borderRadius: '1.488rem',
                 width: '75%',
                 background: 'white'
               }}>
@@ -297,14 +297,14 @@ class WorkBench extends React.Component {
               <div style={{
                 marginLeft: '3.571rem',
                 boxSizing: 'border-box',
-                boxShadow: '#ececec 0 3px 10px',
-                borderRadius: '10px',
+                boxShadow: '#ececec 0 0.4464rem 1.488rem',
+                borderRadius: '1.488rem',
                 width: '25%',
                 background: 'white'
               }}>
                 <div style={{ height: '100%' }}>
                   {/*<div style={{display: 'flex'}}>*/}
-                  {/*  <div style={{margin: '2rem',fontSize:'16px',fontWeight: 700,color: '#303133'}}>流程情况</div>*/}
+                  {/*  <div style={{margin: '2rem',fontSize:'2.3808rem',fontWeight: 700,color: '#303133'}}>流程情况</div>*/}
                   {/*</div>*/}
                   <ProcessSituation data={ProcessSituationData} fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
                     total={ProcessSituationTotal} />

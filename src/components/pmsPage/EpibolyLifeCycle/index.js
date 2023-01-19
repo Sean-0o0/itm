@@ -9,7 +9,7 @@ export default function EpibolyLifeCycle() {
         <div className='epiboly-life-cycle'>
             <div className='top-console'>
             <Select
-              style={{ width: '34rem', borderRadius: '8px !important' }}
+              style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
               showSearch
               placeholder="请选择项目名称"
               optionFilterProp="children"

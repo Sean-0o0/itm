@@ -35,15 +35,15 @@ export default function ProjectProfileTab() {
             return (
                 <div className='lcbjd-box'>
                     {getLcbItem()}
-                    {getIcon('arrow-right1', '16px')}
+                    {getIcon('arrow-right1', '2.3808rem')}
                     {getLcbItem()}
-                    {getIcon('arrow-right1', '16px')}
+                    {getIcon('arrow-right1', '2.3808rem')}
                     {getLcbItem()}
                     <i className='lcbjd-icon-down iconfont icon-arrow-down1' />
                     {getLcbItem()}
-                    {getIcon('arrow-left1', '16px')}
+                    {getIcon('arrow-left1', '2.3808rem')}
                     {getLcbItem()}
-                    {getIcon('arrow-left1', '16px')}
+                    {getIcon('arrow-left1', '2.3808rem')}
                     {getLcbItem()}
                 </div>
             );

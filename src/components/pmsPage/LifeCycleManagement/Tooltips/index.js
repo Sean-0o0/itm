@@ -12,7 +12,15 @@ const { pmsServices: { getStreamByLiveBos } } = api;
 const { Option } = Select;
 
 class Tooltips extends React.Component {
-  state = { src: '', xmUserId: '' };
+  state = {
+    src: '',
+    xmUserId: '',
+    txtStyle: {
+      marginLeft: '0.6rem',
+      color: 'rgba(51, 97, 255, 1)',
+      marginRight: '0.5952rem'
+    },
+  };
   componentDidMount() {
     this.fetchQueryProjectInfoInCycle(this.props.xmid);
   }
@@ -132,72 +140,160 @@ class Tooltips extends React.Component {
     })
   }
   getSpan = txt => <span style={{ color: 'rgba(51, 97, 255, 1)', cursor: 'pointer' }}>{txt}</span>;
+  //流程发起查看
+  getLcfqck = (status, item, isFklc = false) => {
+    if (status === ' ')
+      return (
+        <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} >
+          <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('发起')}
+        </Tooltip>
+      );
+    else {
+      if (isFklc)//是否为付款流程
+        return (
+          <>
+            <Tooltip title="打印" onClick={this.print}>
+              <a style={this.state.txtStyle} >
+                <Icon type="printer" style={{ marginRight: '0.5952rem' }} />{this.getSpan('打印')}
+              </a>
+            </Tooltip>
+            <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
+              <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
+              />{this.getSpan('查看')}
+            </Tooltip>
+          </>
+        );
+      return (
+        <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
+          />{this.getSpan('查看')}
+        </Tooltip>
+      );
+    }
+
+  };
+  //文档上传修改
+  getWdscxg = (status, item) => {
+    if (status === ' ')
+      return (
+        <Tooltip title="上传" onClick={this.handleAuthority.bind(this, this.handleUpload, '上传')}>
+          <a style={this.state.txtStyle} className="iconfont icon-upload" />{this.getSpan('上传')}
+        </Tooltip>
+      );
+    return (
+      <Tooltip title="修改" onClick={this.handleAuthority.bind(this, this.handleEdit, '修改')} >
+        <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('修改')}
+      </Tooltip>
+    );
+  };
+  //信息录入修改
+  getXxlrxg = (status, item) => {
+    if (status === ' ')
+      return (
+        <Tooltip title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-file-fillout" />{this.getSpan('录入')}
+        </Tooltip>
+      );
+    return (
+      <Tooltip title="修改" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '修改', item)}>
+        <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('修改')}</Tooltip>
+    );
+  };
+  //员工评价
+  getCz = (status, item) => {
+    if (status === ' ')
+      return (
+        <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-file-fillout" />{this.getSpan('操作')}
+        </Tooltip>
+      );
+    return (
+      <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
+        <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('操作')}
+      </Tooltip>
+    )
+  }
+  getToolTip = (name, status, item) => {
+    switch (name) {
+      case '信委会议案流程':
+        return this.getLcfqck(status, item);
+      case '总办会会议纪要':
+        return this.getWdscxg(status, item);
+      case '总办会提案':
+        return this.getWdscxg(status, item);
+      case '软件费用审批流程':
+        return this.getLcfqck(status, item);
+      case '项目立项申请':
+        return this.getLcfqck(status, item);
+      case '中标信息录入':
+        return this.getXxlrxg(status, item);
+      case '中标公告':
+        return this.getWdscxg(status, item);
+      case '招标方式变更流程':
+        return this.getLcfqck(status, item);
+      case '评标报告':
+        return this.getWdscxg(status, item);
+      case '合同信息录入':
+        return this.getXxlrxg(status, item);
+      case '合同签署流程':
+        return this.getLcfqck(status, item);
+      case '可行性方案':
+        return this.getWdscxg(status, item);
+      case '调研报告':
+        return this.getWdscxg(status, item);
+      case '申请VPN':
+        return this.getLcfqck(status, item);
+      case '申请权限':
+        return this.getLcfqck(status, item);
+      case '申请餐券':
+        return this.getLcfqck(status, item);
+      case 'UI设计图':
+        return this.getWdscxg(status, item);
+      case '功能清单':
+        return this.getWdscxg(status, item);
+      case '原型图':
+        return this.getWdscxg(status, item);
+      case '需求文档':
+        return this.getWdscxg(status, item);
+      case '开发文档':
+        return this.getWdscxg(status, item);
+      case '系统拓扑图':
+        return this.getWdscxg(status, item);
+      case '系统框架图':
+        return this.getWdscxg(status, item);
+      case '测试文档':
+        return this.getWdscxg(status, item);
+      case '员工评价':
+        return this.getCz(status, item);
+      case '原型设计说明书':
+        return this.getWdscxg(status, item);
+      case '开发测试报告':
+        return this.getWdscxg(status, item);
+      case '系统部署图、逻辑图':
+        return this.getWdscxg(status, item);
+      case '评估报告':
+        return this.getWdscxg(status, item);
+      case '软件系统验收测试报告':
+        return this.getWdscxg(status, item);
+      case '生产安装部署手册':
+        return this.getWdscxg(status, item);
+      case '生产操作及运维手册':
+        return this.getWdscxg(status, item);
+      case '用户手册':
+        return this.getWdscxg(status, item);
+      case '付款流程':
+        return this.getWdscxg(status, item, true);
+      default: console.error('未配置tooltip'); return;
+    }
+  }
 
   render() {
-    const { src } = this.state;
-    const { getSpan } = this;
-    const { type, status, item, xmid } = this.props;
+    const { status, item, xmid } = this.props;
     item.xmid = xmid;
+    const name = item.sxmc; //事项名称
     return (
-      <div className={item.sxmc.includes('付款流程') ? 'rowline-cont' : ''}>
-        {item.sxmc.includes('付款流程') && <iframe src={src} id='Iframe' style={{ display: 'none' }} />}
-        {
-          type.includes("信息录入") ? (status === " " ? <Tooltip title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
-            <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-              className="iconfont icon-file-fillout" />{getSpan('录入')}
-          </Tooltip>
-            : <Tooltip title="修改" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '修改', item)}>
-              <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-                className="iconfont icon-edit" />{getSpan('修改')}
-            </Tooltip>) : ''
-        }
-        {
-          type.includes("其他") ? (status === " " ? <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
-            <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-              className="iconfont icon-file-fillout" />{getSpan('操作')}
-          </Tooltip>
-            : <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
-              <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-                className="iconfont icon-edit" />{getSpan('操作')}
-            </Tooltip>) : ''
-        }
-        {
-          type.includes("流程") ? (status === " " ?
-            <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} >
-              <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-                className="iconfont icon-send" />{getSpan('发起')}
-            </Tooltip> :
-            <>
-              {item.sxmc.includes('付款流程') && <Tooltip title="打印" onClick={this.print}>
-                <a style={{ marginLeft: '2.6rem', color: 'rgba(51, 97, 255, 1)' }} >
-                  <Icon type="printer" style={{ marginRight: '0.5952rem' }} />{getSpan('打印')}
-                </a>
-              </Tooltip>}
-              <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
-                <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-                  className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-                />{getSpan('查看')}
-              </Tooltip>
-            </>) : ''
-        }
-        {
-          type.includes("文档") ||
-            type.includes("信委会") ||
-            type.includes("总办会") ||
-            type.includes("需求调研") ||
-            type.includes("产品设计") ||
-            type.includes("系统框架搭建") ||
-            type.includes("功能开发") ||
-            type.includes("外部系统对接") ||
-            type.includes("系统测试") ? (status === " " ?
-              <Tooltip title="上传" onClick={this.handleAuthority.bind(this, this.handleUpload, '上传')}>
-                <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-                  className="iconfont icon-upload" />{getSpan('上传')}
-              </Tooltip> : <Tooltip title="修改" onClick={this.handleAuthority.bind(this, this.handleEdit, '修改')} >
-                <a style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)', marginRight: '0.5952rem' }}
-                  className="iconfont icon-edit" />{getSpan('修改')}
-              </Tooltip>) : ''
-        }
+      <div className={name === '付款流程' ? 'rowline-cont' : ''}>
+        {this.getToolTip(name, status, item)}
       </div>
     );
   }

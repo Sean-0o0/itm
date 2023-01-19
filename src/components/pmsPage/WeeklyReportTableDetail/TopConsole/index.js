@@ -61,13 +61,13 @@ export default function TopConsole(props) {
             <MonthPicker
                 value={monthData}
                 onChange={handleDateChange}
-                style={{ margin: '0 1.488rem', width: '110px' }} />
+                style={{ margin: '0 1.488rem', width: '16.368rem' }} />
             <Button onClick={handleWeekChange.bind(this, 'next')}>
                 下月
                 <Icon type="right" />
             </Button>
             <Select
-                style={{ width: '34rem', borderRadius: '8px !important', marginLeft: '2.3808rem' }}
+                style={{ width: '34rem', borderRadius: '1.1904rem !important', marginLeft: '2.3808rem' }}
                 showSearch
                 allowClear
                 placeholder="请选择项目名称"

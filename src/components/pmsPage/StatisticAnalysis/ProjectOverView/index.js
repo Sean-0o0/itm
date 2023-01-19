@@ -86,7 +86,7 @@ export default function ProjectOverView(props) {
     return (
       <div className='contrast-item'>
         <div className='contrast-item-left'>
-          <i className={'iconfont icon-' + iconName} style={{ fontSize: '24px' }}></i>
+          <i className={'iconfont icon-' + iconName} style={{ fontSize: '3.5712rem' }}></i>
         </div>
         <div className='contrast-item-right'>
           <div className='contrast-item-txt'>{dataTxt}</div>

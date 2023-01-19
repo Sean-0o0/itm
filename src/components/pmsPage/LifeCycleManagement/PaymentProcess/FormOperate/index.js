@@ -53,8 +53,8 @@ export default function FormOperate(props) {
             <Col span={12}>
                 <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
                     <div style={{
-                        width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
-                        borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px', fontSize: '1.867rem'
+                        width: '100%', height: '4.7616rem', backgroundColor: '#F5F5F5', border: '0.1488rem solid #d9d9d9',
+                        borderRadius: '0.5952rem', marginTop: '0.744rem', lineHeight: '4.7616rem', paddingLeft: '1.488rem', fontSize: '1.867rem'
                     }}>{value}</div>
                 </Form.Item>
             </Col>
@@ -120,7 +120,7 @@ export default function FormOperate(props) {
                             },
                         ],
                     })(<Select
-                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                         showSearch
                         placeholder="请选择收款账户"
                         optionFilterProp="children"
@@ -144,7 +144,7 @@ export default function FormOperate(props) {
                 <Col span={1}>
                     <img src={require('../../../../../image/pms/LifeCycleManagement/add.png')}
                         onClick={() => setAddSkzhModalVisible(true)}
-                        alt='' style={{ height: '20px', marginLeft: '8px', marginTop: '10px', cursor: 'pointer' }}
+                        alt='' style={{ height: '2.976rem', marginLeft: '1.1904rem', marginTop: '1.488rem', cursor: 'pointer' }}
                     />
                 </Col>
             </>
@@ -234,7 +234,7 @@ export default function FormOperate(props) {
         maxLength: 13,
     };
     return (
-        <Form style={{ padding: '0 24px' }}>
+        <Form style={{ padding: '0 3.5712rem' }}>
             <div className='basic-info-title'>基本信息</div>
             <Row>
                 {getInputDisabled('提交人', LOGIN_USER_NAME, 6, 18)}

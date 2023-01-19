@@ -92,33 +92,33 @@ class OperationList extends React.Component {
   //获取html节点
   getReactNode = (title, content, iconType) => {
     return (
-      <div style={{ display: 'flex', marginRight: '100px' }}>
+      <div style={{ display: 'flex', marginRight: '14.88rem' }}>
         <div style={{
-          height: '42px',
-          width: '42px',
-          borderRadius: '21px',
+          height: '6.2496rem',
+          width: '6.2496rem',
+          borderRadius: '50%',
           backgroundColor: '#3361FF',
           textAlign: 'center',
-          lineHeight: '42px',
+          lineHeight: '6.2496rem',
           color: 'white',
-          fontSize: '20px'
+          fontSize: '2.976rem'
         }}>
           <Icon type={iconType} /></div>
         <div style={{
-          height: '42px',
-          marginLeft: '16px',
-          lineHeight: '21px',
+          height: '6.2496rem',
+          marginLeft: '2.3808rem',
+          lineHeight: '3.1248rem',
           fontFamily: 'PingFangSC-Regular',
         }}>
           <div style={{
-            height: '21px',
-            fontSize: '14px',
+            height: '3.1248rem',
+            fontSize: '2.0832rem',
             fontWeight: '400',
             color: '#606266',
           }}>{title}</div>
           <div style={{
-            height: '21px',
-            fontSize: '16px',
+            height: '3.1248rem',
+            fontSize: '2.3808rem',
             fontWeight: '600',
             color: '#303133',
           }}>{content}</div>
@@ -131,15 +131,15 @@ class OperationList extends React.Component {
     return (
       <div style={{
         backgroundColor: 'rgba(51,97,255,0.05)',
-        fontSize: '12px',
+        fontSize: '1.7856rem',
         fontWeight: '400',
         color: '#3361FF',
-        height: '20px',
-        lineHeight: '14px',
-        padding: '2px 8px',
-        borderRadius: '4px',
-        border: '1px solid rgba(51,97,255,0.3)',
-        marginRight: '8px',
+        height: '2.976rem',
+        lineHeight: '2.0832rem',
+        padding: '0.2976rem 1.1904rem',
+        borderRadius: '0.5952rem',
+        border: '0.1488rem solid rgba(51,97,255,0.3)',
+        marginRight: '1.1904rem',
         cursor: 'pointer'
       }}>
         {text}
@@ -151,7 +151,7 @@ class OperationList extends React.Component {
     const { open, currentPageNum, listData } = this.state;
     const { defaultValue, data, fetchQueryOwnerProjectList, projectInfo, totalRows } = this.props;
     return (
-      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '8px' }}>
+      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '1.1904rem' }}>
         <Input.Group compact>
           <div onMouseDown={(e) => { e.preventDefault() }} style={{ position: 'relative' }} className="operationListSelectBox">
             <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}
@@ -159,7 +159,7 @@ class OperationList extends React.Component {
             />
             <Select
               ref={this.selectRef}
-              style={{ width: '34rem', borderRadius: '8px !important' }}
+              style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
               showSearch
               placeholder="请选择项目名称"
               optionFilterProp="children"
@@ -173,21 +173,6 @@ class OperationList extends React.Component {
               onFocus={this.handleSelectFocus}
               open={open}
               onDropdownVisibleChange={(visible) => { this.setState({ open: visible }) }}
-            // dropdownStyle={{ height: '355px' }}
-            // dropdownRender={(options) => {
-            //   return (<>
-            //     {options}
-            //     <div style={{ display: 'flex', height: '4.46rem', lineHeight: '4.46rem', position: 'absolute', bottom: '0' }}>
-            //       <span style={{ padding: '0 2.381rem', lineHeight: '4.46rem' }}>共 {totalRows} 条</span>
-            //       <Pagination size="small" simple current={currentPageNum} defaultCurrent={DEFAULT_CURRENT} total={totalRows} pageSize={PASE_SIZE} onChange={(pageNum) => {
-            //         this.setState({
-            //           currentPageNum: pageNum,
-            //         });
-            //         fetchQueryOwnerProjectList(pageNum, PASE_SIZE);
-            //       }} />
-            //     </div>
-            //   </>);
-            // }}
             >
               {
                 data?.map((item = {}, ind) => {
@@ -196,18 +181,12 @@ class OperationList extends React.Component {
               }
             </Select></div>
         </Input.Group>
-        {/*<Col span={4}*/}
-        {/*     style={{height: '100%', display: 'flex', alignItems: 'center', textAlign: 'end', fontSize: '2.083rem'}}>*/}
-        {/*  <img src={icon_flag} alt="" style={{width: '2rem', height: '2rem'}}/>*/}
-        {/*  &nbsp;<span style={{color: 'rgba(144, 147, 153, 1)'}}>当前处于：<span*/}
-        {/*  style={{color: 'rgba(48, 49, 51, 1)'}}>项目立项阶段</span></span>*/}
-        {/*</Col>*/}
-        <div style={{ display: 'flex', marginTop: '16px' }}>
+        <div style={{ display: 'flex', marginTop: '2.3808rem' }}>
           {this.getReactNode('项目经理', projectInfo?.xmjl, 'user',)}
           {this.getReactNode('项目进度',
-            <div style={{ display: 'flex', minWidth: '170px' }}>
+            <div style={{ display: 'flex', minWidth: '25.296rem' }}>
               {projectInfo?.xmjd}%
-              <Progress style={{ marginLeft: '8px' }} percent={Number(projectInfo?.xmjd)} strokeColor='#3361FF' showInfo={false} />
+              <Progress style={{ marginLeft: '1.1904rem' }} percent={Number(projectInfo?.xmjd)} strokeColor='#3361FF' showInfo={false} />
             </div>, 'pie-chart')}
           {this.getReactNode('项目标签',
             <div style={{ display: 'flex' }}>

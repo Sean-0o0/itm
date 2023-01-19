@@ -204,7 +204,7 @@ const EditableCell = (props) => {
     const getSelect = (onChange, open, setOpen, data) => {
         return (
             <Select
-                style={{ width: '12rem', borderRadius: '8px !important' }}
+                style={{ width: '12rem', borderRadius: '1.1904rem !important' }}
                 placeholder="请选择"
                 onChange={onChange}
                 open={open}

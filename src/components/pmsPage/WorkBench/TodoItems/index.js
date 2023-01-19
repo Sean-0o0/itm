@@ -628,7 +628,7 @@ class TodoItems extends React.Component {
   }
 
   render() {
-    const { data, total, wzxsl } = this.props;
+    const { data, total, wzxsl = 0 } = this.props;
     const {
       uploadVisible,
       editVisible,
@@ -653,7 +653,7 @@ class TodoItems extends React.Component {
       width: '50%',
       height: '58rem',
       title: uploadTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -663,7 +663,7 @@ class TodoItems extends React.Component {
       width: '60%',
       height: '68rem',
       title: editTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -683,7 +683,7 @@ class TodoItems extends React.Component {
       width: '60%',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
@@ -693,7 +693,7 @@ class TodoItems extends React.Component {
       width: '60%',
       height: '80rem',
       title: editMessageTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editMessageVisible,
       footer: null,
     };
@@ -703,7 +703,7 @@ class TodoItems extends React.Component {
       width: '60%',
       height: '45rem',
       title: '人员新增提醒',
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: ryxztxVisible,
       footer: null,
     };
@@ -722,17 +722,20 @@ class TodoItems extends React.Component {
             }} onClick={this.onclickdb}>待办事项
             </div>
             <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
-              {/*<i style={{color: 'red', paddingRight: ".5rem", verticalAlign: 'middle'}}*/}
-              {/*   className="iconfont icon-message"/><span*/}
-              {/*style={{fontSize: '14px', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未读 <span*/}
-              {/*style={{color: 'rgba(215, 14, 25, 1)'}}>{wdsl}</span></span>*/}
-              <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
-                className="iconfont icon-shijian" />
-              {wzxsl === '0' ? <span
-                style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}>暂无未完成事项 <span
-                  style={{ color: 'rgba(215, 14, 25, 1)' }}></span></span> : <span
-                    style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}>未完成 <span
-                      style={{ color: 'rgba(215, 14, 25, 1)' }}>{wzxsl}<a style={{ color: '#3361ff' }} onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a></span></span>}
+              {wzxsl === 0 ? ''
+                :
+                <>
+                  <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
+                    className="iconfont icon-shijian" />
+                  <span
+                    style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}>未完成
+                    <span
+                      style={{ color: 'rgba(215, 14, 25, 1)' }}>{wzxsl}
+                      <a style={{ color: '#3361ff' }} onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a>
+                    </span>
+                  </span>
+                </>
+              }
 
             </div>
           </div>
@@ -852,7 +855,7 @@ class TodoItems extends React.Component {
                       onCancel={() => this.setState({ ryxztxVisible: false })}
                       src={ryxztxUrl} />}
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
-                    locale={{ emptyText: <Empty description={"暂无消息"} /> }} dataSource={data}
+                    locale={{ emptyText: <Empty description={"暂无待办事项"} /> }} dataSource={data}
                     style={{ height: '100%' }} />
 
                 </div>

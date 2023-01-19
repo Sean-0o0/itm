@@ -123,7 +123,7 @@ const SelectReceipt = (props) => {
                 marginBottom: 0
             } : {}}
             bodyStyle={isModalFullScreen ? {
-                height: "calc(100vh - 53px)",
+                height: "calc(100vh - 7.8864rem)",
                 overflowY: "auto",
                 padding: '0'
             } : {

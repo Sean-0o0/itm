@@ -465,7 +465,7 @@ class ContractInfoUpdate extends React.Component {
                 rowSelection={rowSelection}
                 selectedRowIds={selectedRowIds}
             ></TableFullScreen>}
-            <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '1000px'}
+            <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '148.8rem'}
                 maskClosable={false}
                 // destroyOnClose
                 zIndex={100}
@@ -477,7 +477,7 @@ class ContractInfoUpdate extends React.Component {
                     marginBottom: 0
                 } : {}}
                 bodyStyle={isModalFullScreen ? {
-                    height: "calc(100vh - 53px)",
+                    height: "calc(100vh - 7.8864rem)",
                     overflowY: "auto",
                     padding: '0'
                 } : {
@@ -555,24 +555,24 @@ class ContractInfoUpdate extends React.Component {
                     closeMessageEditModal();
                 }}>
                 <div style={{
-                    height: '42px', width: '100%', display: 'flex',
+                    height: '6.2496rem', width: '100%', display: 'flex',
                     alignItems: 'center', backgroundColor: '#3361FF', color: 'white',
-                    marginBottom: '16px', padding: '0 24px', borderRadius: '8px 8px 0 0', fontSize: '2.333rem'
+                    marginBottom: '2.3808rem', padding: '0 3.5712rem', borderRadius: '1.1904rem 1.1904rem 0 0', fontSize: '2.333rem'
                 }}>
                     <strong>修改</strong>
                     <img src={isModalFullScreen
                         ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
                         : require('../../../../image/pms/LifeCycleManagement/full-screen.png')} alt=''
-                        style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
+                        style={{ height: '2.0832rem', marginLeft: 'auto', marginRight: '3.72rem', cursor: 'pointer' }}
                         onClick={() => { this.setState({ isModalFullScreen: !isModalFullScreen }) }} />
                 </div>
                 <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
-                    <Form name="nest-messages" style={{ padding: '0 24px' }}>
+                    <Form name="nest-messages" style={{ padding: '0 3.5712rem' }}>
                         <Row>
                             <Col span={12}> <Form.Item label="项目名称" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
                                 <div style={{
-                                    width: '100%', height: '32px', backgroundColor: '#F5F5F5', border: '1px solid #d9d9d9',
-                                    borderRadius: '4px', marginTop: '5px', lineHeight: '32px', paddingLeft: '10px', fontSize: '1.867rem'
+                                    width: '100%', height: '4.7616rem', backgroundColor: '#F5F5F5', border: '0.1488em solid #d9d9d9',
+                                    borderRadius: '0.5952em', marginTop: '0.744rem', lineHeight: '4.7616rem', paddingLeft: '1.488rem', fontSize: '1.867rem'
                                 }}>{currentXmmc}</div>
                             </Form.Item>
                             </Col>
@@ -614,7 +614,7 @@ class ContractInfoUpdate extends React.Component {
                                         },
                                     ],
                                 })(<Select
-                                    style={{ width: '100%', borderRadius: '8px !important' }}
+                                    style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                                     placeholder="请选择供应商"
                                     showSearch
                                     allowClear
@@ -635,16 +635,16 @@ class ContractInfoUpdate extends React.Component {
                                     onClick={() => {
                                         this.setState({ addGysModalVisible: true });
                                     }}
-                                    alt='' style={{ height: '20px', marginLeft: '7px', marginTop: '10px', cursor: 'pointer' }}
+                                    alt='' style={{ height: '2.976rem', marginLeft: '1.0416rem', marginTop: '1.488rem', cursor: 'pointer' }}
                                 />
                             </Col>
                         </Row>
                         <Row>
                             <Col span={24}>
                                 <Form.Item label={<span><span style={{ color: 'red' }}>*</span>付款详情</span>} labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-                                    <div style={{ border: '1px solid #e8e8e8', borderRadius: '4px', paddingTop: '10px' }}>
-                                        <div style={{ display: 'flex', height: '36px', padding: '3px 15px' }}>
-                                            <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
+                                    <div style={{ border: '0.1488em solid #e8e8e8', borderRadius: '0.5952em', paddingTop: '1.488rem' }}>
+                                        <div style={{ display: 'flex', height: '5.3568rem', padding: '0.4464em 2.232rem' }}>
+                                            <div style={{ lineHeight: '2.6784rem', marginRight: '1.488rem', cursor: 'pointer' }} onClick={() => {
                                                 let arrData = tableData;
                                                 arrData.push({ id: Date.now(), ['fkqs' + Date.now()]: '', ['bfb' + Date.now()]: 0.5, ['fkje' + Date.now()]: 0.5, ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'), zt: '2' });
                                                 this.setState({ tableData: arrData }, () => {
@@ -653,7 +653,7 @@ class ContractInfoUpdate extends React.Component {
                                                 });
                                             }}><img
                                                     src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                                                    alt='' style={{ height: '20px', marginRight: '6px' }}
+                                                    alt='' style={{ height: '2.976rem', marginRight: '0.8928rem' }}
                                                 />新增</div>
                                             <Popconfirm title="确定要删除吗?" onConfirm={() => {
                                                 if (selectedRowIds.length > 0) {
@@ -665,9 +665,9 @@ class ContractInfoUpdate extends React.Component {
                                                     message.info('请选择需要删除的数据', 1);
                                                 }
                                             }}>
-                                                <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
+                                                <div style={{ lineHeight: '2.6784rem', cursor: 'pointer' }}><img
                                                     src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                                                    alt='' style={{ height: '20px', marginRight: '6px' }}
+                                                    alt='' style={{ height: '2.976rem', marginRight: '0.8928rem' }}
                                                 />删除</div>
                                             </Popconfirm>
 
@@ -675,7 +675,7 @@ class ContractInfoUpdate extends React.Component {
                                             {/* <img
                                             src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
                                                 : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                                            alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
+                                            alt='' style={{ height: '2.976rem', marginLeft: 'auto', cursor: 'pointer' }}
                                             onClick={() => {
                                                 this.setState({ isTableFullScreen: !isTableFullScreen })
                                             }} /> */}

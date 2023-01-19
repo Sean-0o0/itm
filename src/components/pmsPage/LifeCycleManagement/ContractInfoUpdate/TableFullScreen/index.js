@@ -36,15 +36,15 @@ export default class TableFullScreen extends Component {
                 }}
                 bodyStyle={{
                     height: "100vh",
-                    padding: '0 0 24px 0',
+                    padding: '0 0 3.5712rem 0',
                 }}>
-                <div style={{ height: '55px', width: '100%', display: 'flex', alignItems: 'center', padding: '0 57px 0 22px' }}>
-                    <div style={{ lineHeight: '18px', marginRight: '10px', cursor: 'pointer' }} onClick={() => {
+                <div style={{ height: '8.184rem', width: '100%', display: 'flex', alignItems: 'center', padding: '0 8.4816rem 0 3.2736rem' }}>
+                    <div style={{ lineHeight: '2.6784rem', marginRight: '1.488rem', cursor: 'pointer' }} onClick={() => {
                         let arrData = tableData;
                         arrData.push({ id: Date.now(), ['fkqs' + Date.now()]: '', ['bfb' + Date.now()]: 0.5, ['fkje' + Date.now()]: 0.5, ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'), zt: '2' });
                         setTableData(arrData);
                     }}><img src={require('../../../../../image/pms/LifeCycleManagement/addTable.png')}
-                        alt='' style={{ height: '20px', marginRight: '6px' }}
+                        alt='' style={{ height: '2.976rem', marginRight: '0.8928rem' }}
                         />新增</div>
                     <Popconfirm title="确定要删除吗?" onConfirm={() => {
                         if (selectedRowIds.length > 0) {
@@ -54,13 +54,13 @@ export default class TableFullScreen extends Component {
                             message.info('请选择需要删除的数据', 1);
                         }
                     }}>
-                        <div style={{ lineHeight: '18px', cursor: 'pointer' }}><img
+                        <div style={{ lineHeight: '2.6784rem', cursor: 'pointer' }}><img
                             src={require('../../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                            alt='' style={{ height: '20px', marginRight: '6px' }}
+                            alt='' style={{ height: '2.976rem', marginRight: '0.8928rem' }}
                         />删除</div></Popconfirm>
                     <img src={isTableFullScreen ? require('../../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
                         : require('../../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                        alt='' style={{ height: '20px', marginLeft: 'auto', cursor: 'pointer' }}
+                        alt='' style={{ height: '2.976rem', marginLeft: 'auto', cursor: 'pointer' }}
                         onClick={() => { setTableFullScreen(!isTableFullScreen); }} />
                 </div>
                 <div className='tableBox1'>

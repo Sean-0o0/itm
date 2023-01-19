@@ -215,13 +215,17 @@ class LifeCycleManagementTabs extends React.Component {
         Loginname
       )
     }
+    if (name.includes("信委会议案流程")) {
+      params = getParams("LC_XWHYALC", "StartWork",
+        [],
+        Loginname
+      )
+    }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
-          // sendTitle: e + '发起',
           sendUrl: url,
-          // sendVisible: true,
         });
       }
     }).catch((error) => {
@@ -818,7 +822,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '50%',
       height: '68rem',
       title: uploadTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -828,7 +832,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '68rem',
       title: editTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -837,8 +841,8 @@ class LifeCycleManagementTabs extends React.Component {
       // defaultFullScreen: true,
       title: sendTitle,
       width: '60%',
-      height: '110rem',
-      style: {top: '5rem'},
+      height: '128rem',
+      style: { top: '5rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -848,7 +852,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
@@ -858,7 +862,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: editMessageTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: defMsgModifyModalVisible,
       footer: null,
     };
@@ -868,7 +872,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: editModelTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editModelVisible,
       footer: null,
     };
@@ -879,7 +883,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '38rem',
       title: '操作',
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: ygpjVisible,
       footer: null,
     };
@@ -1001,7 +1005,9 @@ class LifeCycleManagementTabs extends React.Component {
                     detail.push(childItem);
                   }
                 })
+                console.log('detail', detail);
                 let sort = this.groupBy(detail);
+                console.log('sort', sort);
                 return <div className='LifeCycleManage' style={{
                   borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
                   borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),

@@ -240,7 +240,7 @@ const PaymentProcess = (props) => {
                     top: '2rem'
                 }}
                 bodyStyle={isModalFullScreen ? {
-                    height: "calc(100vh - 53px)",
+                    height: "calc(100vh - 7.8864rem)",
                     overflowY: "auto",
                     padding: '0'
                 } : {
@@ -256,7 +256,7 @@ const PaymentProcess = (props) => {
                     <img src={isModalFullScreen
                         ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
                         : require('../../../../image/pms/LifeCycleManagement/full-screen.png')} alt=''
-                        style={{ height: '14px', marginLeft: 'auto', marginRight: '25px', cursor: 'pointer' }}
+                        style={{ height: '2.0832rem', marginLeft: 'auto', marginRight: '3.72rem', cursor: 'pointer' }}
                         onClick={() => setIsModalFullScreen(!isModalFullScreen)} />
                 </div>
                 <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin payment-process-box'>

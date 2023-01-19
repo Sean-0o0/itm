@@ -79,7 +79,7 @@ const EditableCell = (props) => {
     const getSelect = (onChange, open, setOpen, data) => {
         return (
             <Select
-                style={{ width: '28rem', borderRadius: '8px !important' }}
+                style={{ width: '28rem', borderRadius: '1.1904rem !important' }}
                 placeholder="请选择填报人"
                 mode="multiple"
                 onChange={onChange}

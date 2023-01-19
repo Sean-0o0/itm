@@ -296,10 +296,10 @@ const TableBox = (props) => {
                 return <div>
                     {authIdAData?.includes(CUR_USER_ID) && (<>
                         <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
-                            <a style={{ color: '#3361ff', marginRight: '10px' }}>退回</a>
+                            <a style={{ color: '#3361ff', marginRight: '1.488rem' }}>退回</a>
                         </Popconfirm>
                         <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
-                            <a style={{ color: '#3361ff', marginRight: '10px' }}>删除</a>
+                            <a style={{ color: '#3361ff', marginRight: '1.488rem' }}>删除</a>
                         </Popconfirm>
                     </>)}
                     <a style={{ color: '#3361ff' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
@@ -393,7 +393,7 @@ const TableBox = (props) => {
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
                     // scroll={tableData.length > 11 ? { y: 573, x: 2200 } : { x: 2200 }}
-                    scroll={{ y: 574, x: 2200 }}
+                    scroll={{ y: true, x: 2200 }}
                     pagination={false}
                     bordered
                 ></Table>
