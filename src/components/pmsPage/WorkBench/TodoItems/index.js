@@ -741,8 +741,8 @@ class TodoItems extends React.Component {
           </div>
         </div>
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', height: '95%' }}>
-          <div style={{ width: '24%' }}>
-            <div style={{ border: '1px solid #d9d9d9', borderRadius: 4 }} className="calendar-style">
+          <div style={{ width: '24%', height: 'calc(100% - 3.571rem)' }}>
+            <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, height: '100%' }} className="calendar-style">
               <Calendar
                 // monthCellRender={this.monthCellRender}
                 dateCellRender={this.dateCellRender}
@@ -781,7 +781,7 @@ class TodoItems extends React.Component {
                     );
                   }
                   return (
-                    <div style={{ padding: 10 }}>
+                    <div style={{ padding: '1.488rem' }}>
                       <Row type="flex" justify="space-between">
                         <Col>
                           <Select

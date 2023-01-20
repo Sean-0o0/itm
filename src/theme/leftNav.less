@@ -379,31 +379,39 @@
       &:not(:last-child) {
         margin-bottom: 0;
       }
-
+      &:hover{
+        background-color: rgba(51, 97, 255, 0.7) !important;
+      }
       a {
         .tn();
         color: rgba(48, 49, 51, 1);
 
         &:hover {
-          color: rgba(48, 49, 51, 1) !important;
+          .iconfont{
+            color: #fff;
+          }
+          color: #fff !important;
           font-weight: bold;
         }
       }
 
       &.ant-menu-item-selected {
+        &:hover{
+          background-color: rgba(51, 97, 255, 0.7) !important;
+        }
         >a {
           //color: rgba(0, 0, 0, 0.7);
           color: #fff !important;
           font-weight: bold;
           .iconfont {
-            color: rgba(48, 49, 51, 1) !important;
+            color: #fff !important;
             font-weight: bold;
             //color: rgba(0, 0, 0, 0.7);
           }
 
           &:hover {
             //color: rgba(0, 0, 0, 0.7) !important;
-            color: #303133 !important;
+            color: #fff !important;
             font-weight: bold;
 
             .iconfont {
@@ -464,7 +472,6 @@
           color: #ffffff !important;
           background-color: rgba(51, 97, 255, 1) !important;
         }
-
         >a:hover {
           color: rgba(48, 49, 51, 1) !important;
         }
@@ -508,12 +515,17 @@
         }
 
         &:hover {
-          color: rgba(48, 49, 51, 1) !important;
+          color: #fff !important;
+          background-color: rgba(51, 97, 255, 0.7) !important;
+          .iconfont {
+            color: #fff !important;
+          }
           font-weight: bold;
           .ant-menu-submenu-arrow {
+            color: #fff !important;
             &:after,
             &:before {
-              background: rgba(48, 49, 51, 1) !important;
+              background: #fff !important;
             }
           }
         }
@@ -521,29 +533,31 @@
       }
 
       &.ant-menu-submenu-selected {
+        &:hover{
+          background-color: rgba(51, 97, 255, 0.7) !important;
+        }
         >.ant-menu-submenu-title {
           //color: rgba(0, 0, 0, 0.7);
           //background-color: #fff;
-          color: #303133 !important;
+          color: #fff;
           background: rgba(51, 97, 255, 1);
           font-weight: bold;
 
           .iconfont {
-            color: #303133 !important;
+            color: #fff;
             font-weight: bold;
-            //color: rgba(0, 0, 0, 0.7);
           }
 
           &:hover {
-            color: #303133 !important;
-            //color: rgba(0, 0, 0, 0.7) !important;
+            color: #fff !important;
+            background-color: rgba(51, 97, 255, 0.7) !important;
             font-weight: bold;
 
             .ant-menu-submenu-arrow {
 
               &:after,
               &:before {
-                background: rgba(0, 0, 0, 0.7) !important;
+                background: #fff !important;
               }
             }
           }
@@ -554,7 +568,7 @@
 
             &:after,
             &:before {
-              background: rgba(0, 0, 0, 0.7);
+              background: #fff;
             }
           }
         }
@@ -570,13 +584,12 @@
             color: rgba(0, 0, 0, 0.7);
           }
           &:hover {
-            color: rgba(0, 0, 0, 0.7) !important;
+            color: #fff !important;
             .iconfont {
-              color: rgba(0, 0, 0, 0.7) !important;
+              color: #fff !important;
             }
           }
           .ant-menu-submenu-arrow {
-
             opacity: 1;
 
             &:after,

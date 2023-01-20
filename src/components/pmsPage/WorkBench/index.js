@@ -271,7 +271,8 @@ class WorkBench extends React.Component {
               <div style={{
                 marginLeft: '3.571rem',
                 width: '25%',
-                overflow: 'hidden'
+                overflow: 'hidden',
+                height: '100%',
               }}>
                 <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList} sliderData={sliderData} />
               </div>

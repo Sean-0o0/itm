@@ -1045,7 +1045,7 @@ class LifeCycleManagementTabs extends React.Component {
                           }}>
                             <span>
                               原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
-                              （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                              （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day') > 0)
                                 ?
                                 '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
                                 :

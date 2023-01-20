@@ -340,10 +340,8 @@
 
               .lcb-item-txt {
                 max-width: 25.8912rem;
-                overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
-                height: 1.7856rem;
               }
 
               .lcb-item-num {
@@ -1226,10 +1224,10 @@
             & .triangle-up img {
               content: '';
               position: absolute;
-              height: 15px;
-              font-size: 15px;
+              height: 2.232rem;
+              font-size: 2.232rem;
               color: #fafafb;
-              left: 4.5px;
+              left: 0.6696rem;
               top: -1.1904rem;
               transition: all 0.5s;
             }
@@ -2023,12 +2021,12 @@
   }
 
   .ant-table-scroll {
-    &::-webkit-scrollbar {
+    & ::-webkit-scrollbar {
       width: 1.488rem;
       background-color: #fafafa;
     }
 
-    &::-webkit-scrollbar-thumb {
+    & ::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
       border-radius: 1.3392rem;
     }
@@ -2470,14 +2468,16 @@
 }
 
 .workBench {
+  height: 100%;
+
   .fast-function {
     height: 100%;
 
     & .top-box {
-      height: 25.2008rem;
+      height: 40%;
       background-color: #fff;
       box-sizing: border-box;
-      box-shadow: #ececec 0 0.4464rem 1.488rem;
+      box-shadow: rgb(236 236 236) 0px 0.4464rem 1.488rem;
       border-radius: 1.488rem;
       margin-bottom: 2.8272rem;
       padding: 1.6368rem 3.5712rem 0 3.5712rem;
@@ -2572,49 +2572,55 @@
     }
 
     & .bottom-box {
-      height: 32.5336rem;
+      height: calc(60% - 2.8272rem);
       background-color: #fff;
       box-sizing: border-box;
-      box-shadow: #ececec 0 0.4464rem 1.488rem;
+      box-shadow: rgb(236 236 236) 0px 0.4464rem 1.488rem;
       border-radius: 1.488rem;
       padding: 2.976rem 3.5712rem;
-    }
-  }
-
-  .fastFun {
-    .fastFun-head {
-      //padding-left: 1rem;
-      //padding-bottom: 0.5rem;
       display: flex;
-      //width: 5%;
-      font-size: 2.083rem;
-      .font-w400();
-      line-height: 2.976rem;
-      color: rgba(96, 98, 102, 1);
+      /* flex-direction: column; */
+      flex-wrap: wrap;
+      align-content: space-between;
 
-      .fastFun-head-title {
-        display: flex;
-        align-items: center;
-        border-radius: 50%;
-        height: 7.143rem;
-        width: 7.143rem;
+      .fastFun {
+        .fastFun-head {
+          //padding-left: 1rem;
+          //padding-bottom: 0.5rem;
+          display: flex;
+          //width: 5%;
+          font-size: 2.083rem;
+          .font-w400();
+          line-height: 2.976rem;
+          color: rgba(96, 98, 102, 1);
 
-        .fastFun-head-cont {
-          width: 100%;
-          height: 100%;
-          display: grid;
-          align-items: center;
+          .fastFun-head-title {
+            display: flex;
+            align-items: center;
+            border-radius: 50%;
+            height: 7.143rem;
+            width: 7.143rem;
+
+            .fastFun-head-cont {
+              width: 100%;
+              height: 100%;
+              display: grid;
+              align-items: center;
+            }
+          }
+        }
+
+        .fastFun-head {
+          font-size: 2.0832rem;
+          font-weight: 400;
+          color: #333333;
+          line-height: 3.273rem;
         }
       }
     }
-
-    .fastFun-head {
-      font-size: 2.0832rem;
-      font-weight: 400;
-      color: #333333;
-      line-height: 3.273rem;
-    }
   }
+
+
 
   //首页项目进度
   .workBench-LifeCycleManage {
@@ -2962,6 +2968,20 @@
   .ant-fullcalendar-value:hover {
     background-color: rgba(51, 97, 255, 0.5) !important;
   }
+
+  .ant-fullcalendar {
+    height: 100% !important;
+  }
+
+  .ant-fullcalendar-calendar-body {
+    height: 100%;
+    padding: 2.3808rem;
+
+    .ant-fullcalendar-table {
+      height: 38.0928rem;
+    }
+  }
+
 }
 
 
