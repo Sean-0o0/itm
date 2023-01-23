@@ -13,6 +13,7 @@ import reportcenter from './reportcenter';
 import processCenter from './processCenter';
 import dataCenter from './dataCenter';
 import pmsServices from "./pmsServices";
+import projectManage from "./projectManage";
 
 const APIPrefix = '/api';
 
@@ -33,6 +34,7 @@ const getAPIs = () => {
     processCenter,//流程中心
     dataCenter, //数据中心
     pmsServices,//pms微服务
+    projectManage // 项目管理
   };
   const apis = {};
 

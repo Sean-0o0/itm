@@ -9,8 +9,14 @@ import LBDialog from 'livebos-frame/dist/LBDialog';
 import {Switch, Route} from 'dva/router';
 import ZipFileModel from './ZipFileModel/index';
 import CapitalBudgetExport from "./CapitalBudgetExport";
+import NewProjectModel from './NewProjectModel';
 
 class SinglePage extends Component {
+
+  state = {
+
+  };
+
   componentDidMount() {
     if (this.props.resizeDialog) {
       const height = this.getParamString('height') || 400;
@@ -61,6 +67,9 @@ class SinglePage extends Component {
         <Switch>
           <Route exact path={`${parentUrl}/ZipFilePage/:params`}
                  render={props => <ZipFileModel {...props} onSubmitOperate={this.onSubmitOperate}
+                                                onCancelOperate={this.onCancelOperate}/>}/>
+          <Route exact path={`${parentUrl}/SaveProject`}
+                 render={props => <NewProjectModel {...props} onSubmitOperate={this.onSubmitOperate}
                                                 onCancelOperate={this.onCancelOperate}/>}/>
 
           <Route exact path={`${parentUrl}/CapitalBudgetExportPage`}
