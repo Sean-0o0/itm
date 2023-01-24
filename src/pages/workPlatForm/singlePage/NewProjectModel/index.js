@@ -311,7 +311,7 @@ class NewProjectModel extends React.Component {
   }
 
   handleCancel = () => {
-    this.props.onSubmitOperate();
+    this.props.closeDialog();
   };
 
   // 查询人员信息
@@ -599,7 +599,10 @@ class NewProjectModel extends React.Component {
     OperateCreatProject(params).then((result) => {
       const { code = -1, note = '' } = result;
       if (code > 0) {
-          message.success("保存成功！");
+          this.props.submitOperate();
+          // setTimeout(function() {
+          //  window.parent.location.reload();
+          // }, 1000 );
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);

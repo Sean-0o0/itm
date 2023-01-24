@@ -33,9 +33,6 @@ class ZipFileModel extends React.Component {
     return params;
   }
 
-  hanleCancle = () => {
-    this.props.onCancelOperate();
-  }
 
   getZipFile = () => {
     const myDate = new Date();
@@ -68,7 +65,7 @@ class ZipFileModel extends React.Component {
     downloadForm.submit();
     // 删除该 form
     iframe.removeChild(downloadForm);
-    this.props.onSubmitOperate();
+    // this.props.submitOperate();
     //TODO 需获取表单回调后显示导出成功
     setTimeout(message.success("导出成功"), 3000)
   }
