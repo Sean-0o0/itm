@@ -103,7 +103,7 @@ class NewProjectModel extends React.Component {
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
     arr[9] = [loginUser.id];
-    this.setState({searchStaffList: [loginUser], loginUser: loginUser, staffJobList: RYGW, checkedStaffKey: ['_' + loginUser.id], staffInfo: {...this.state.staffInfo, jobStaffList: arr}});
+    this.setState({searchStaffList: [loginUser], loginUser: loginUser, staffJobList: RYGW, staffInfo: {...this.state.staffInfo, jobStaffList: arr}});
     this.fetchInterface();
   };
 
@@ -311,7 +311,18 @@ class NewProjectModel extends React.Component {
   }
 
   handleCancel = () => {
-    this.props.closeDialog();
+    const _this = this;
+    confirm({
+      okText: '确认',
+      cancelText: '取消',
+      title: '提示',
+      content: '确定要取消操作？',
+      onOk() {
+        _this.props.closeDialog();
+      },
+      onCancel() {
+      },
+    });
   };
 
   // 查询人员信息
@@ -426,14 +437,30 @@ class NewProjectModel extends React.Component {
 
   // 删除岗位
   removeJob = (e) => {
-    const { staffJobList } = this.state;
-    const newStaffJobList = staffJobList.filter(item => item.ibm != e);
-    this.setState({staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
+    const _this = this;
+    confirm({
+      okText: '确认',
+      cancelText: '取消',
+      title: '提示',
+      content: '确定要删除此岗位？',
+      onOk() {
+        const { staffJobList } = _this.state;
+        const newStaffJobList = staffJobList.filter(item => item.ibm != e);
+        _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true)})
+      },
+      onCancel() {
+      },
+    });
+
   };
 
   // 保存数据操作
   handleFormValidate = (e) => {
     e.preventDefault();
+    if(this.state.isEditMile) {
+      message.warn("里程碑信息还未保存！");
+      return
+    }
     const _this = this;
     this.props.form.validateFields((err, values) => {
       if (err) {
@@ -500,6 +527,8 @@ class NewProjectModel extends React.Component {
             onCancel() {
             },
           });
+        } else {
+          _this.handleSave(values);
         }
       }
 
@@ -530,8 +559,8 @@ class NewProjectModel extends React.Component {
         projectLabel: values.projectLabel.join(";"),
         org: Number(values.org),
         software: Number(values.software),
-        biddingMethod: Number(values.biddingMethod),
-        year: Number(values.year.format("YYYY")),
+        biddingMethod: values.projectType == 2 ? '' : Number(values.biddingMethod),
+        year: Number(this.state.budgetInfo.year.format("YYYY")),
         budgetProject: Number(values.budgetProjectId),
         projectBudget: String(values.projectBudget)
       };
@@ -549,12 +578,15 @@ class NewProjectModel extends React.Component {
           onCancel() {
           },
         });
+      } else {
+        _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager);
       }
     }
 
   };
 
   makeOperateParams = (params, milePostInfo, staffJobParams, projectManager) => {
+    this.setState({loading: true});
     let milepostInfo = [];
     let matterInfo = [];
     milePostInfo.forEach(item => {
@@ -598,13 +630,14 @@ class NewProjectModel extends React.Component {
   operateCreatProject(params) {
     OperateCreatProject(params).then((result) => {
       const { code = -1, note = '' } = result;
+      this.setState({loading: false});
       if (code > 0) {
-          this.props.submitOperate();
-          // setTimeout(function() {
-          //  window.parent.location.reload();
-          // }, 1000 );
+        this.props.submitOperate();
+      } else {
+        message.error(note);
       }
     }).catch((error) => {
+      this.setState({loading: false});
       message.error(!error.success ? error.message : error.note);
     });
   }
@@ -820,17 +853,17 @@ class NewProjectModel extends React.Component {
     const basicFormItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 6 },
+        sm: { span: 7 },
       },
       wrapperCol: {
         xs: { span: 24 },
-        sm: { span: 16 },
+        sm: { span: 14 },
       },
     };
     const budgetFormItemLayout = {
       labelCol: {
         xs: { span: 24 },
-        sm: { span: 8 },
+        sm: { span: 7 },
       },
       wrapperCol: {
         xs: { span: 24 },
@@ -851,931 +884,977 @@ class NewProjectModel extends React.Component {
 
     return (
       <Fragment>
-        <Spin spinning={loading} tip="正在努力的加载中..." size="large">
+
           <div className="newProject">
-            <div className="title">
-              <Icon type="caret-down" style={{fontSize: '2rem'}} />
-              <span style={{paddingLeft: '1.5rem', fontSize: '2.5rem', color: '#3461FF'}}>基本信息</span>
-            </div>
-            <Form {...basicFormItemLayout} onSubmit={ e => this.handleFormValidate(e)} style={{width: '98%'}}>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item label="项目名称">
-                    {getFieldDecorator('projectName', {
-                      rules: [{
-                        required: true,
-                        message: '请输入项目名称'
-                      }],
-                      initialValue: basicInfo.projectName
-                    })(
-                      <Input placeholder="请输入项目名称" />
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="项目类型">
-                    {getFieldDecorator('projectType', {
-                      rules: [{
-                        required: true,
-                        message: '请输入项目类型'
-                      }],
-                      initialValue: basicInfo.projectType
-                    })(
-                      <Radio.Group onChange={e => {
-                        this.setState({basicInfo: {...this.state.basicInfo, projectType: e.target.value}});
-                        this.fetchQueryMilepostInfo({
-                          type: e.target.value,
-                          xmid: -1,
-                          biddingMethod: basicInfo.biddingMethod,
-                          budget: budgetInfo.projectBudget,
-                          label: ''
-                        });
-                      }}>
-                        <Radio value={1}>外采项目</Radio>
-                        <Radio value={2}>自研项目</Radio>
-                      </Radio.Group>
-                    )}
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item label="项目标签" >
-                    {getFieldDecorator('projectLabel', {
-                      initialValue: basicInfo.projectLabel
-                    })(
-                      <Select showSearch
-                              mode="multiple"
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                              }>
-                        {
-                          projectLabelList.length > 0 && projectLabelList.map((item, index) => {
-                            return (
-                              <Option key={index} value={item.id}>{item.bqmc}</Option>
-                            )
-                          })
-                        }
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="所属部门">
-                    {getFieldDecorator('org', {
-                      rules: [{
-                        required: true,
-                        message: '请输入所属部门'
-                      }],
-                      initialValue: basicInfo.org
-                    })(
-                      <TreeSelect
-                        showSearch
-                        treeNodeFilterProp="title"
-                        style={{ width: '100%' }}
-                        dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-                        treeData={organizationTreeList}
-                        placeholder="请选择所属部门"
-                        treeDefaultExpandAll
-                        onChange={this.onChange}
-                      />
-                    )}
+            <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
+              <div>
+                <div className="title">
+                  <Icon type="caret-down" style={{fontSize: '2rem'}} />
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>基本信息</span>
+                </div>
+                <Form {...basicFormItemLayout} onSubmit={ e => this.handleFormValidate(e)} style={{width: '98%'}}>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item label="项目名称">
+                        {getFieldDecorator('projectName', {
+                          rules: [{
+                            required: true,
+                            message: '请输入项目名称'
+                          }],
+                          initialValue: basicInfo.projectName
+                        })(
+                          <Input placeholder="请输入项目名称" />
+                        )}
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="项目类型">
+                        {getFieldDecorator('projectType', {
+                          rules: [{
+                            required: true,
+                            message: '请输入项目类型'
+                          }],
+                          initialValue: basicInfo.projectType
+                        })(
+                          <Radio.Group onChange={e => {
+                            this.setState({basicInfo: {...this.state.basicInfo, projectType: e.target.value}});
+                            this.fetchQueryMilepostInfo({
+                              type: e.target.value,
+                              xmid: -1,
+                              biddingMethod: basicInfo.biddingMethod,
+                              budget: budgetInfo.projectBudget,
+                              label: ''
+                            });
+                          }}>
+                            <Radio value={1}>外采项目</Radio>
+                            <Radio value={2}>自研项目</Radio>
+                          </Radio.Group>
+                        )}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item label="项目标签" >
+                        {getFieldDecorator('projectLabel', {
+                          initialValue: basicInfo.projectLabel
+                        })(
+                          <Select showSearch
+                                  showArrow={true}
+                                  mode="multiple"
+                                  filterOption={(input, option) =>
+                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                  }>
+                            {
+                              projectLabelList.length > 0 && projectLabelList.map((item, index) => {
+                                return (
+                                  <Option key={index} value={item.id}>{item.bqmc}</Option>
+                                )
+                              })
+                            }
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="所属部门">
+                        {getFieldDecorator('org', {
+                          rules: [{
+                            required: true,
+                            message: '请输入所属部门'
+                          }],
+                          initialValue: basicInfo.org
+                        })(
+                          <TreeSelect
+                            showSearch
+                            treeNodeFilterProp="title"
+                            style={{ width: '100%' }}
+                            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                            treeData={organizationTreeList}
+                            placeholder="请选择所属部门"
+                            treeDefaultExpandAll
+                            onChange={this.onChange}
+                          />
+                        )}
 
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item label="关联软件" >
-                    {getFieldDecorator('software', {
-                      initialValue: basicInfo.software
-                    })(
-                      <Select showSearch
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                              }>
-                        {
-                          softwareList.length > 0 && softwareList.map((item, index) => {
-                            return (
-                              <Option key={index} value={item.id}>{item.softName}</Option>
-                            )
-                          })
-                        }
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="招标方式">
-                    {getFieldDecorator('biddingMethod', {
-                      rules: [{
-                        required: true,
-                        message: '请输入招标方式'
-                      }],
-                      initialValue: basicInfo.biddingMethod
-                    })(
-                      <Radio.Group onChange={e => {
-                        this.setState({basicInfo: {...this.state.basicInfo, biddingMethod: e.target.value}});
-                        this.fetchQueryMilepostInfo({
-                          type: basicInfo.projectType,
-                          xmid: -1,
-                          biddingMethod: e.target.value,
-                          budget: budgetInfo.projectBudget,
-                          label: ''
-                        });
-                      }}>
-                        <Radio value={1}>邀请招标</Radio>
-                        <Radio value={2}>直采</Radio>
-                        <Radio value={3}>公开招标</Radio>
-                      </Radio.Group>
-                    )}
-                  </Form.Item>
-                </Col>
-              </Row>
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item label="关联软件" >
+                        {getFieldDecorator('software', {
+                          initialValue: basicInfo.software
+                        })(
+                          <Select showSearch
+                                  filterOption={(input, option) =>
+                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                  }>
+                            {
+                              softwareList.length > 0 && softwareList.map((item, index) => {
+                                return (
+                                  <Option key={index} value={item.id}>{item.softName}</Option>
+                                )
+                              })
+                            }
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </Col>
+                    {
+                      basicInfo.projectType === 1 ? (
+                        <Col span={12}>
+                          <Form.Item label="招标方式">
+                            {getFieldDecorator('biddingMethod', {
+                              rules: [{
+                                required: true,
+                                message: '请输入招标方式'
+                              }],
+                              initialValue: basicInfo.biddingMethod
+                            })(
+                              <Radio.Group onChange={e => {
+                                this.setState({basicInfo: {...this.state.basicInfo, biddingMethod: e.target.value}});
+                                this.fetchQueryMilepostInfo({
+                                  type: basicInfo.projectType,
+                                  xmid: -1,
+                                  biddingMethod: e.target.value,
+                                  budget: budgetInfo.projectBudget,
+                                  label: ''
+                                });
+                              }}>
+                                <Radio value={1}>邀请招标</Radio>
+                                <Radio value={2}>直采</Radio>
+                                <Radio value={3}>公开招标</Radio>
+                              </Radio.Group>
+                            )}
+                          </Form.Item>
+                        </Col>
+                      ) : null
+                    }
 
-            </Form>
-            <div className="title">
-              <Icon type="caret-down" style={{fontSize: '2rem'}} />
-              <span style={{paddingLeft: '1.5rem', fontSize: '2.5rem', color: '#3461FF'}}>预算信息</span>
-            </div>
-            <Form {...budgetFormItemLayout} onSubmit={ e => this.handleFormValidate(e)} style={{width: '98%'}}>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item label="年份">
-                    {getFieldDecorator('year', {
-                      initialValue: budgetInfo.year
-                    })(
-                      <DatePicker allowClear={false} ref={picker => this.picker = picker}
-                                  onPanelChange={(v) => {
-                                    this.picker.picker.state.open = false;
-                                    const _this = this;
-                                    this.setState({budgetInfo: {
-                                        ...this.state.budgetInfo,
-                                        budgetProjectId: '',
-                                        totalBudget: 0,
-                                        relativeBudget: 0,
-                                        year: v
-                                      }}, function() {
-                                      _this.props.form.resetFields(['projectBudget']);
-                                      _this.props.form.validateFields(['projectBudget']);
-                                      _this.fetchQueryBudgetProjects({ type: 'NF', year: Number(v.format("YYYY"))});
+                  </Row>
+
+                </Form>
+                <div className="title">
+                  <Icon type="caret-down" style={{fontSize: '2rem'}} />
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>预算信息</span>
+                </div>
+                <Form {...budgetFormItemLayout} onSubmit={ e => this.handleFormValidate(e)} style={{width: '98%'}}>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item label="年份">
+                        {/*{getFieldDecorator('year', {*/}
+                        {/*  initialValue: budgetInfo.year*/}
+                        {/*})(*/}
+                        <DatePicker value={budgetInfo.year} allowClear={false} ref={picker => this.picker = picker}
+                                    onChange={v => {
+                                      const _this = this;
+                                      this.setState({budgetInfo: {
+                                          ...this.state.budgetInfo,
+                                          budgetProjectId: '',
+                                          totalBudget: 0,
+                                          relativeBudget: 0,
+                                          year: v == null ? moment(new Date()) : v
+                                        }}, function() {
+                                        _this.props.form.resetFields(['projectBudget']);
+                                        _this.props.form.validateFields(['projectBudget']);
+                                        _this.fetchQueryBudgetProjects({ type: 'NF', year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))});
+                                      })
+                                    }}
+                                    onPanelChange={(v) => {
+                                      this.picker.picker.state.open = false;
+                                      const _this = this;
+                                      this.setState({budgetInfo: {
+                                          ...this.state.budgetInfo,
+                                          budgetProjectId: '',
+                                          totalBudget: 0,
+                                          relativeBudget: 0,
+                                          year: v
+                                        }}, function() {
+                                        _this.props.form.resetFields(['projectBudget']);
+                                        _this.props.form.validateFields(['projectBudget']);
+                                        _this.fetchQueryBudgetProjects({ type: 'NF', year: Number(v.format("YYYY"))});
+                                      })
+                                    }}
+                                    format="YYYY" mode="year" />
+                        {/*)}*/}
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="关联预算项目" required={true}>
+                        {getFieldDecorator('budgetProjectId', {
+                          rules: [{
+                            required: true,
+                            message: '请选择关联预算项目'
+                          }],
+                          initialValue: basicInfo.budgetProjectId
+                        })(
+                          <Select showSearch
+                                  value={budgetInfo.budgetProjectId}
+                                  onChange={e =>  {
+                                    budgetProjectList.forEach(item => {
+                                      if(item.ysID == e) {
+                                        const _this = this;
+                                        this.setState({budgetInfo : {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: e,
+                                            totalBudget: Number(item.ysZJE),
+                                            relativeBudget: Number(item.ysKGL)
+                                          }},function() {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                        });
+                                      }
                                     })
                                   }}
-                                  value={nowTime} format="YYYY" mode="year" />
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="关联预算项目" required={true}>
-                    {getFieldDecorator('budgetProjectId', {
-                      rules: [{
-                        required: true,
-                        message: '请选择关联预算项目'
-                      }],
-                      initialValue: basicInfo.budgetProjectId
-                    })(
-                      <Select showSearch
-                              value={budgetInfo.budgetProjectId}
-                              onChange={e =>  {
-                                budgetProjectList.forEach(item => {
-                                  if(item.ysID == e) {
-                                    const _this = this;
-                                    this.setState({budgetInfo : {
-                                        ...this.state.budgetInfo,
-                                        budgetProjectId: e,
-                                        totalBudget: Number(item.ysZJE),
-                                        relativeBudget: Number(item.ysKGL)
-                                      }},function() {
-                                      _this.props.form.resetFields(['projectBudget']);
-                                      _this.props.form.validateFields(['projectBudget']);
-                                    });
-                                  }
-                                })
-                              }}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                              }>
-                        {
-                          budgetProjectList.length > 0 && budgetProjectList.map((item, index) => {
-                            return (
-                              <Option key={index} value={item.ysID}>{item.ysName}</Option>
-                            )
-                          })
-                        }
-                      </Select>
-                    )}
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item label="总预算(元)">
-                    <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.totalBudget} precision={2} />
-                  </Form.Item>
-                </Col>
-                <Col span={12}>
-                  <Form.Item label="当前可关联总预算(元)">
-                    <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget} precision={2} />
-                  </Form.Item>
-                </Col>
-              </Row>
-              <Row gutter={24}>
-                <Col span={12}>
-                  <Form.Item label="本项目预算(元)" required={true}>
-                    {getFieldDecorator('projectBudget', {
-                      rules: [{
-                        required: true,
-                        message: '请输入本项目预算(元)'
-                      }, {
-                        validator: this.handleValidatorProjectBudget
-                      }],
-                      initialValue: budgetInfo.projectBudget
-                    })(
-                      <InputNumber onBlur={(e) => {
-                        this.fetchQueryMilepostInfo({
-                          type: basicInfo.projectType,
-                          xmid: -1,
-                          biddingMethod: basicInfo.biddingMethod,
-                          budget: budgetInfo.projectBudget,
-                          label: ''
-                        });
-                      }} style={{width: '100%'}} precision={2} />
-                    )}
-                  </Form.Item>
-                </Col>
-                <Col span={12} style={{paddingLeft: 0}}>
-                </Col>
-              </Row>
-            </Form>
-            <div className="title">
-              <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-                <div style={{width: '90%'}}>
-                  <Icon type="caret-down" style={{fontSize: '2rem'}} />
-                  <span style={{paddingLeft: '1.5rem', fontSize: '2.5rem', color: '#3461FF'}}>里程碑信息</span>
-                  <span style={{paddingLeft: '2rem', color: '#de3741'}}>拖动里程碑下的事项卡片可调整顺序</span>
+                                  filterOption={(input, option) =>
+                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                  }>
+                            {
+                              budgetProjectList.length > 0 && budgetProjectList.map((item, index) => {
+                                return (
+                                  <Option key={index} value={item.ysID}>{item.ysName}</Option>
+                                )
+                              })
+                            }
+                          </Select>
+                        )}
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item label="总预算(元)">
+                        <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.totalBudget} precision={0} />
+                      </Form.Item>
+                    </Col>
+                    <Col span={12}>
+                      <Form.Item label="当前可关联总预算(元)">
+                        <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget} precision={0} />
+                      </Form.Item>
+                    </Col>
+                  </Row>
+                  <Row gutter={24}>
+                    <Col span={12}>
+                      <Form.Item label="本项目预算(元)" required={true}>
+                        {getFieldDecorator('projectBudget', {
+                          rules: [{
+                            required: true,
+                            message: '请输入本项目预算(元)'
+                          }, {
+                            validator: this.handleValidatorProjectBudget
+                          }],
+                          initialValue: budgetInfo.projectBudget
+                        })(
+                          <InputNumber onBlur={(e) => {
+                            this.fetchQueryMilepostInfo({
+                              type: basicInfo.projectType,
+                              xmid: -1,
+                              biddingMethod: basicInfo.biddingMethod,
+                              budget: budgetInfo.projectBudget,
+                              label: ''
+                            });
+                          }} style={{width: '100%'}} precision={0} />
+                        )}
+                      </Form.Item>
+                    </Col>
+                    <Col span={12} style={{paddingLeft: 0}}>
+                    </Col>
+                  </Row>
+                </Form>
+                <div className="title">
+                  <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
+                    <div style={{width: '90%'}}>
+                      <Icon type="caret-down" style={{fontSize: '2rem'}} />
+                      <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>里程碑信息</span>
+                      {
+                        isEditMile ? (
+                          <span style={{paddingLeft: '2rem', color: '#de3741'}}>拖动里程碑下的事项卡片可调整顺序</span>
+                        ) : null
+                      }
+                    </div>
+                    <div style={{width: '10%'}}>
+                      {
+                        isEditMile ? (
+                          <div style={{display: 'flex', flexDirection: 'row'}}>
+                            <div style={{cursor: 'pointer', color: '#3461FF'}} onClick={this.saveMilePostInfo}>
+                              <Icon type="save" style={{fontSize: '2.5rem'}}/>
+                              <span style={{padding: '0 2rem 0 0.5rem', fontSize: '2.5rem'}}>保存</span>
+                            </div>
+
+                            <div style={{cursor: 'pointer', color: '#3461FF'}} onClick={this.cancelSaveMilePostInfo}>
+                              <Icon type="close-circle" style={{fontSize: '2.5rem'}}/>
+                              <span style={{paddingLeft: '0.5rem', fontSize: '2.5rem'}}>取消</span>
+                            </div>
+
+                          </div>
+                        ) : (
+                          <div style={{cursor: 'pointer', color: '#3461FF'}} onClick={() => this.setState({isEditMile: true})}>
+                            <Icon type="edit" style={{fontSize: '2.5rem', paddingLeft: '3rem'}} />
+                            <span style={{paddingLeft: '0.5rem', fontSize: '2.5rem'}}>修改</span>
+                          </div>
+                        )
+                      }
+                    </div>
+                  </div>
                 </div>
-                <div style={{width: '10%'}}>
-                  {
-                    isEditMile ? (
-                      <div style={{display: 'flex', flexDirection: 'row'}}>
-                        <div style={{cursor: 'pointer'}} onClick={this.saveMilePostInfo}>
-                          <Icon type="save" style={{fontSize: '1.5rem'}}/>
-                          <span style={{padding: '0 2rem 0 0.5rem'}}>保存</span>
-                        </div>
-
-                        <div style={{cursor: 'pointer'}} onClick={this.cancelSaveMilePostInfo}>
-                          <Icon type="close-circle" style={{fontSize: '1.5rem'}}/>
-                          <span style={{paddingLeft: '0.5rem'}}>取消</span>
-                        </div>
-
-                      </div>
-                    ) : (
-                      <div style={{cursor: 'pointer'}} onClick={() => this.setState({isEditMile: true})}>
-                        <Icon type="edit" style={{fontSize: '1.5rem'}} />
-                        <span style={{paddingLeft: '0.5rem'}}>修改</span>
-                      </div>
-                    )
-                  }
-                </div>
-              </div>
-            </div>
-            {
-              milePostInfo.length > 0 && milePostInfo.map((item, index) => {
-                if(isCollapse) {
-                  if(index < 2) {
-                    return (
-                      <React.Fragment>
-                        {
-                          item.type && item.type === 'new' ? (
-                            <div key={index} className="newMilePost">
-                              <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-                                <div style={{width: '20%'}}>
-                                  <Select
-                                    showSearch
-                                    filterOption={(input, option) =>
-                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }
-                                    onChange={e => this.selectMileStageInfo(e, index)}
-                                    placeholder="请选择"
-                                    style={{ width: '100%' }}
-                                  >
-                                    {
-                                      mileStageList.length > 0 && mileStageList.map((item, index) => {
-                                        return ( <Option key={index} value={item.id}>{item.lcbmc}</Option>)
-                                      })
-                                    }
-                                  </Select>
-                                </div>
-                                <div style={{width: '75%', marginLeft: '2rem'}}>
-                                  <RangePicker
-                                    onFocus={() => this.setState({isEditMile: true})}
-
-                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                    value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                    format="YYYY-MM-DD"
-                                  />
-                                </div>
-                                <div onClick={() => this.removeMilePostInfo(index)} style={{cursor: 'pointer', width: '5%', color: '#DE3741', textAlign: 'right', padding: '1.5rem 1.5rem 0 0'}}>
-                                  删除
-                                </div>
-                              </div>
-                              {
-                                item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                  return (
-                                    <div className="flow" key={i}>
-                                      <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
-                                                  className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
-
+                {
+                  milePostInfo.length > 0 && milePostInfo.map((item, index) => {
+                    if(isCollapse) {
+                      if(index < 2) {
+                        return (
+                          <React.Fragment>
+                            {
+                              item.type && item.type === 'new' ? (
+                                <div key={index} className="newMilePost">
+                                  <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
+                                    <div style={{width: '20%'}}>
+                                      <Select
+                                        showSearch
+                                        filterOption={(input, option) =>
+                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                        }
+                                        onChange={e => this.selectMileStageInfo(e, index)}
+                                        placeholder="请选择"
+                                        style={{ width: '100%' }}
+                                      >
                                         {
-                                          e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
-                                            if(sx.type && sx.type === 'title' && sx_index === 0) {
-                                              return (
-                                                <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                                  {e.swlxmc || ''}
-                                                </div>
-                                              )
-                                            } else if (sx.type && sx.type === 'title') {
-                                              return (
-                                                <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                                </div>
-                                              )
-                                            } else {
-                                              return (
-                                                <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
-                                                  {
-                                                    sx.type && sx.type === 'new' ? (
-                                                      <React.Fragment>
-                                                        <Select showSearch
-                                                                filterOption={(input, option) =>
-                                                                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                                }
-                                                                onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                                style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
-                                                          {
-                                                            mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                              if(mi.swlx === e.swlxmc) {
-                                                                return (
-                                                                  <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
-                                                                )
-                                                              }
-                                                            })
-                                                          }
-                                                        </Select>
-                                                        {
-                                                          isEditMile ? (
-                                                            <div onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
-                                                              <Icon type="close" className="icon"/>
-                                                            </div>
-                                                          ) : null
-                                                        }
-                                                      </React.Fragment>
-
-                                                    ) : (
-                                                      <React.Fragment>
-                                                        <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
-                                                        {
-                                                          isEditMile ? (
-                                                            <span onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                      <Icon type="close" className="icon"/>
-                                                    </span>
-                                                          ) : null
-                                                        }
-                                                      </React.Fragment>
-
-                                                    )
-                                                  }
-
-                                                </div>
-                                              )
-                                            }
+                                          mileStageList.length > 0 && mileStageList.map((item, index) => {
+                                            return ( <Option key={index} value={item.id}>{item.lcbmc}</Option>)
                                           })
                                         }
-
-
-                                      </GridLayout>
-                                      {
-                                        isEditMile ? (
-                                          <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                            <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
-                                          </div>
-                                        ) : null
-                                      }
+                                      </Select>
                                     </div>
-                                  )
+                                    <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
+                                      <RangePicker
+                                        onFocus={() => this.setState({isEditMile: true})}
+                                        style={{width: '31%'}}
+                                        onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
+                                        value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
+                                        format="YYYY-MM-DD"
+                                      />
+                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '67%'}}>
+                                        *
+                                      </div>
+                                    </div>
+                                    <div onClick={() => this.removeMilePostInfo(index)} style={{cursor: 'pointer', width: '5%', color: '#DE3741', textAlign: 'right', padding: '1.5rem 1.5rem 0 0'}}>
+                                      删除
+                                    </div>
+                                  </div>
+                                  {
+                                    item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
+                                      return (
+                                        <div className="flow" key={i}>
+                                          <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
+                                                      className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
 
-                                })
-                              }
-                            </div>
-                          ) : (
-                            <div key={index} className="milePost">
-                              <div className="title">
-                                <div className="left">
-                                  <span style={{paddingLeft: '1rem', fontSize: '2rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
-                                  <span style={{paddingLeft: '2rem'}}>
-                                <RangePicker
-                                  onFocus={() => this.setState({isEditMile: true})}
-                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                  value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                  format="YYYY-MM-DD"
-                                />
-                          </span>
+                                            {
+                                              e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
+                                                if(sx.type && sx.type === 'title' && sx_index === 0) {
+                                                  return (
+                                                    <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                      {e.swlxmc || ''}
+                                                    </div>
+                                                  )
+                                                } else if (sx.type && sx.type === 'title') {
+                                                  return (
+                                                    <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                    </div>
+                                                  )
+                                                } else {
+                                                  return (
+                                                    <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                      {
+                                                        sx.type && sx.type === 'new' ? (
+                                                          <React.Fragment>
+                                                            <Select showSearch
+                                                                    filterOption={(input, option) =>
+                                                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                                    }
+                                                                    onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                                    style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
+                                                              {
+                                                                mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                                  if(mi.swlx === e.swlxmc) {
+                                                                    return (
+                                                                      <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
+                                                                    )
+                                                                  }
+                                                                })
+                                                              }
+                                                            </Select>
+                                                            {
+                                                              isEditMile ? (
+                                                                <div style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
+                                                                  <Icon type="close" className="icon"/>
+                                                                </div>
+                                                              ) : null
+                                                            }
+                                                          </React.Fragment>
+
+                                                        ) : (
+                                                          <React.Fragment>
+                                                            <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                            {
+                                                              isEditMile ? (
+                                                                <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
+                                                              <Icon type="close" className="icon"/>
+                                                            </span>
+                                                              ) : null
+                                                            }
+                                                          </React.Fragment>
+
+                                                        )
+                                                      }
+
+                                                    </div>
+                                                  )
+                                                }
+                                              })
+                                            }
+
+
+                                          </GridLayout>
+                                          {
+                                            isEditMile ? (
+                                              <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
+                                                <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                              </div>
+                                            ) : null
+                                          }
+                                        </div>
+                                      )
+
+                                    })
+                                  }
+                                </div>
+                              ) : (
+                                <div key={index} className="milePost">
+                                  <div className="title">
+                                    <div className="left">
+                                      <div style={{marginTop: '2rem'}}>
+                                        <span style={{paddingLeft: '1rem', fontSize: '2rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
+                                      </div>
+                                      <div style={{paddingLeft: '2rem', position: 'relative'}}>
+                                        <RangePicker
+                                          style={{width: '70%'}}
+                                          onFocus={() => this.setState({isEditMile: true})}
+                                          onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
+                                          value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
+                                          format="YYYY-MM-DD"
+                                        />
+                                        <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '25%'}}>
+                                          *
+                                        </div>
+                                      </div>
+                                    </div>
+                                    {
+                                      isEditMile ? (
+                                        <div className="right">
+                                          {
+                                            index > 0 ? (
+                                              <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
+                                            ) : null
+                                          }
+                                          {
+                                            index !== milePostInfo.length - 1 ? (
+                                              <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
+                                            ) : null
+                                          }
+                                          <span style={{cursor: 'pointer'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                        </div>
+                                      ) : null
+                                    }
+
+                                  </div>
+                                  {
+                                    item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
+                                      return (
+                                        <div className="flow" key={i}>
+                                          <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
+                                                      className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
+
+                                            {
+                                              e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
+                                                if(sx.type && sx.type === 'title' && sx_index === 0) {
+                                                  return (
+                                                    <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                      {e.swlxmc || ''}
+                                                    </div>
+                                                  )
+                                                } else if (sx.type && sx.type === 'title') {
+                                                  return (
+                                                    <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                    </div>
+                                                  )
+                                                } else {
+                                                  return (
+                                                    <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                      {
+                                                        sx.type && sx.type === 'new' ? (
+                                                          <React.Fragment>
+                                                            <Select showSearch
+                                                                    filterOption={(input, option) =>
+                                                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                                    }
+                                                                    onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                                    style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
+                                                              {
+                                                                mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                                  if(mi.swlx === e.swlxmc) {
+                                                                    return (
+                                                                      <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
+                                                                    )
+                                                                  }
+                                                                })
+                                                              }
+                                                            </Select>
+                                                            {
+                                                              isEditMile ? (
+                                                                <div style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
+                                                                  <Icon type="close" className="icon"/>
+                                                                </div>
+                                                              ) : null
+                                                            }
+                                                          </React.Fragment>
+
+                                                        ) : (
+                                                          <React.Fragment>
+                                                            <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                            {
+                                                              isEditMile ? (
+                                                                <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
+                                                              <Icon type="close" className="icon"/>
+                                                            </span>
+                                                              ) : null
+                                                            }
+                                                          </React.Fragment>
+
+                                                        )
+                                                      }
+
+                                                    </div>
+                                                  )
+                                                }
+                                              })
+                                            }
+
+
+                                          </GridLayout>
+                                          {
+                                            isEditMile ? (
+                                              <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
+                                                <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                              </div>
+                                            ) : null
+                                          }
+                                        </div>
+                                      )
+
+                                    })
+                                  }
+
+
+                                </div>
+                              )
+                            }
+                          </React.Fragment>
+                        )
+                      }
+                    } else {
+                      return (
+                        <React.Fragment>
+                          {
+                            item.type && item.type === 'new' ? (
+                              <div key={index} className="newMilePost">
+                                <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
+                                  <div style={{width: '20%'}}>
+                                    <Select
+                                      showSearch
+                                      filterOption={(input, option) =>
+                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                      }
+                                      onChange={e => this.selectMileStageInfo(e, index)}
+                                      placeholder="请选择"
+                                      style={{ width: '100%' }}
+                                    >
+                                      {
+                                        mileStageList.length > 0 && mileStageList.map((item, index) => {
+                                          return ( <Option key={index} value={item.id}>{item.lcbmc}</Option>)
+                                        })
+                                      }
+                                    </Select>
+                                  </div>
+                                  <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
+                                    <RangePicker
+                                      onFocus={() => this.setState({isEditMile: true})}
+                                      style={{width: '31%'}}
+                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
+                                      value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
+                                      format="YYYY-MM-DD"
+                                    />
+                                    <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '67%'}}>
+                                      *
+                                    </div>
+                                  </div>
+                                  <div onClick={() => this.removeMilePostInfo(index)} style={{cursor: 'pointer', width: '5%', color: '#DE3741', textAlign: 'right', padding: '1.5rem 1.5rem 0 0'}}>
+                                    删除
+                                  </div>
                                 </div>
                                 {
-                                  isEditMile ? (
-                                    <div className="right">
-                                      {
-                                        index > 0 ? (
-                                          <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
-                                        ) : null
-                                      }
-                                      {
-                                        index !== milePostInfo.length - 1 ? (
-                                          <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
-                                        ) : null
-                                      }
-                                      <span style={{cursor: 'pointer'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                  item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
+                                    return (
+                                      <div className="flow" key={i}>
+                                        <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
+                                                    className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
+
+                                          {
+                                            e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
+                                              if(sx.type && sx.type === 'title' && sx_index === 0) {
+                                                return (
+                                                  <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                    {e.swlxmc || ''}
+                                                  </div>
+                                                )
+                                              } else if (sx.type && sx.type === 'title') {
+                                                return (
+                                                  <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                  </div>
+                                                )
+                                              } else {
+                                                return (
+                                                  <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                    {
+                                                      sx.type && sx.type === 'new' ? (
+                                                        <React.Fragment>
+                                                          <Select showSearch
+                                                                  filterOption={(input, option) =>
+                                                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                                  }
+                                                                  onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                                  style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
+                                                            {
+                                                              mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                                if(mi.swlx === e.swlxmc) {
+                                                                  return (
+                                                                    <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
+                                                                  )
+                                                                }
+                                                              })
+                                                            }
+                                                          </Select>
+                                                          {
+                                                            isEditMile ? (
+                                                              <div style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
+                                                                <Icon type="close" className="icon"/>
+                                                              </div>
+                                                            ) : null
+                                                          }
+                                                        </React.Fragment>
+
+                                                      ) : (
+                                                        <React.Fragment>
+                                                          <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                          {
+                                                            isEditMile ? (
+                                                              <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
+                                                            <Icon type="close" className="icon"/>
+                                                          </span>
+                                                            ) : null
+                                                          }
+                                                        </React.Fragment>
+
+                                                      )
+                                                    }
+
+                                                  </div>
+                                                )
+                                              }
+                                            })
+                                          }
+
+
+                                        </GridLayout>
+                                        {
+                                          isEditMile ? (
+                                            <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
+                                              <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                            </div>
+                                          ) : null
+                                        }
+                                      </div>
+                                    )
+
+                                  })
+                                }
+                              </div>
+                            ) : (
+                              <div key={index} className="milePost">
+                                <div className="title">
+                                  <div className="left">
+                                    <div style={{marginTop: '2rem'}}>
+                                      <span style={{paddingLeft: '1rem', fontSize: '2rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
                                     </div>
-                                  ) : null
+                                    <div style={{paddingLeft: '2rem', position: 'relative'}}>
+                                      <RangePicker
+                                        style={{width: '70%'}}
+                                        onFocus={() => this.setState({isEditMile: true})}
+                                        onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
+                                        value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
+                                        format="YYYY-MM-DD"
+                                      />
+                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '25%'}}>
+                                        *
+                                      </div>
+                                    </div>
+                                  </div>
+                                  {
+                                    isEditMile ? (
+                                      <div className="right">
+                                        {
+                                          index > 0 ? (
+                                            <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
+                                          ) : null
+                                        }
+                                        {
+                                          index !== milePostInfo.length - 1 ? (
+                                            <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
+                                          ) : null
+                                        }
+                                        <span style={{cursor: 'pointer'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                      </div>
+                                    ) : null
+                                  }
+
+                                </div>
+                                {
+                                  item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
+                                    return (
+                                      <div className="flow" key={i}>
+                                        <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
+                                                    className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
+
+                                          {
+                                            e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
+                                              if(sx.type && sx.type === 'title' && sx_index === 0) {
+                                                return (
+                                                  <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                    {e.swlxmc || ''}
+                                                  </div>
+                                                )
+                                              } else if (sx.type && sx.type === 'title') {
+                                                return (
+                                                  <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                  </div>
+                                                )
+                                              } else {
+                                                return (
+                                                  <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                    {
+                                                      sx.type && sx.type === 'new' ? (
+                                                        <React.Fragment>
+                                                          <Select showSearch
+                                                                  filterOption={(input, option) =>
+                                                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                                  }
+                                                                  onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                                  style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
+                                                            {
+                                                              mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                                if(mi.swlx === e.swlxmc) {
+                                                                  return (
+                                                                    <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
+                                                                  )
+                                                                }
+                                                              })
+                                                            }
+                                                          </Select>
+                                                          {
+                                                            isEditMile ? (
+                                                              <div style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
+                                                                <Icon type="close" className="icon"/>
+                                                              </div>
+                                                            ) : null
+                                                          }
+                                                        </React.Fragment>
+
+                                                      ) : (
+                                                        <React.Fragment>
+                                                          <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                          {
+                                                            isEditMile ? (
+                                                              <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
+                                                            <Icon type="close" className="icon"/>
+                                                          </span>
+                                                            ) : null
+                                                          }
+                                                        </React.Fragment>
+
+                                                      )
+                                                    }
+
+                                                  </div>
+                                                )
+                                              }
+                                            })
+                                          }
+
+
+                                        </GridLayout>
+                                        {
+                                          isEditMile ? (
+                                            <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
+                                              <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                            </div>
+                                          ) : null
+                                        }
+                                      </div>
+                                    )
+
+                                  })
                                 }
 
+
                               </div>
-                              {
-                                item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                  return (
-                                    <div className="flow" key={i}>
-                                      <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
-                                                  className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
+                            )
+                          }
+                        </React.Fragment>
+                      )
+                    }
 
-                                        {
-                                          e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
-                                            if(sx.type && sx.type === 'title' && sx_index === 0) {
-                                              return (
-                                                <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                                  {e.swlxmc || ''}
-                                                </div>
-                                              )
-                                            } else if (sx.type && sx.type === 'title') {
-                                              return (
-                                                <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                                </div>
-                                              )
-                                            } else {
-                                              return (
-                                                <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
-                                                  {
-                                                    sx.type && sx.type === 'new' ? (
-                                                      <React.Fragment>
-                                                        <Select showSearch
-                                                                filterOption={(input, option) =>
-                                                                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                                }
-                                                                onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                                style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
-                                                          {
-                                                            mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                              if(mi.swlx === e.swlxmc) {
-                                                                return (
-                                                                  <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
-                                                                )
-                                                              }
-                                                            })
-                                                          }
-                                                        </Select>
-                                                        {
-                                                          isEditMile ? (
-                                                            <div onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
-                                                              <Icon type="close" className="icon"/>
-                                                            </div>
-                                                          ) : null
-                                                        }
-                                                      </React.Fragment>
-
-                                                    ) : (
-                                                      <React.Fragment>
-                                                        <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
-                                                        {
-                                                          isEditMile ? (
-                                                            <span onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                      <Icon type="close" className="icon"/>
-                                                    </span>
-                                                          ) : null
-                                                        }
-                                                      </React.Fragment>
-
-                                                    )
-                                                  }
-
-                                                </div>
-                                              )
-                                            }
-                                          })
-                                        }
+                  })
+                }
 
 
-                                      </GridLayout>
-                                      {
-                                        isEditMile ? (
-                                          <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                            <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
-                                          </div>
-                                        ) : null
-                                      }
-                                    </div>
-                                  )
+                {
+                  isEditMile ? (
+                    <div className="addMilePost" onClick={this.addMilePostInfo}>
+                      <Icon type="plus" style={{fontSize: '1.7rem'}} /><span style={{paddingLeft: '1rem'}}>新增里程碑</span>
+                    </div>
+                  ) : null
+                }
 
-                                })
-                              }
+                <div className="collapse" onClick={() => this.setState({isCollapse: !this.state.isCollapse})}>
+                  {
+                    isCollapse ? (
+                      <React.Fragment>
+                        <span style={{paddingRight: '1rem'}}>点击展开里程碑信息</span><Icon style={{fontSize: '2rem'}} type="down" />
+                      </React.Fragment>
 
-
-                            </div>
-                          )
-                        }
+                    ) : (
+                      <React.Fragment>
+                        <span style={{paddingRight: '1rem'}}>点击收起里程碑信息</span><Icon style={{fontSize: '2rem'}} type="up" />
                       </React.Fragment>
                     )
                   }
-                } else {
-                  return (
-                    <React.Fragment>
-                      {
-                        item.type && item.type === 'new' ? (
-                          <div key={index} className="newMilePost">
-                            <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-                              <div style={{width: '20%'}}>
+                </div>
+                <div className="title">
+                  <Icon type="caret-down" style={{fontSize: '2rem'}} />
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>人员信息</span>
+                </div>
+                <div className="staffInfo">
+                  <div className="job">
+                    {
+                      staffJobList.length > 0 && staffJobList.map((item, index) => {
+                        if (item.ibm === '10') {
+                          return (
+                            <div className="jobItem">
+                              <div className="name" style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}><span style={{color: '#de3741', paddingRight: '1rem'}}>*</span><span>{item.note}：</span></div>
+                              <div style={{width: '65%'}}>
                                 <Select
-                                  showSearch
-                                  filterOption={(input, option) =>
-                                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                  }
-                                  onChange={e => this.selectMileStageInfo(e, index)}
-                                  placeholder="请选择"
+                                  value={jobStaffList.length > 0 ? jobStaffList[9] : []}
+                                  onBlur={() => this.setState({height: 0})}
+                                  onSearch={this.searchStaff}
+                                  onFocus={() => this.setState({staffInfo: { ...this.state.staffInfo, focusJob: '10' }})}
+                                  filterOption={false}
+                                  onChange={(e) => {
+                                    if(e.length > 1) {
+                                      message.warn("项目经理最多一个！");
+                                    } else {
+                                      let jobStaffList = this.state.staffInfo.jobStaffList;
+                                      jobStaffList[9] = e;
+                                      this.setState({height:  0, staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}});
+                                    }
+                                  }}
+                                  dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
+                                  mode="multiple"
                                   style={{ width: '100%' }}
                                 >
                                   {
-                                    mileStageList.length > 0 && mileStageList.map((item, index) => {
-                                      return ( <Option key={index} value={item.id}>{item.lcbmc}</Option>)
+                                    searchStaffList.length > 0 && searchStaffList.map((item, index) => {
+                                      return (
+                                        <Select.Option key={index} value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                      )
                                     })
                                   }
                                 </Select>
                               </div>
-                              <div style={{width: '75%', marginLeft: '2rem'}}>
-                                <RangePicker
-                                  onFocus={() => this.setState({isEditMile: true})}
-
-                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                  value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                  format="YYYY-MM-DD"
-                                />
+                            </div>
+                          )
+                        }
+                      })
+                    }
+                    {
+                      staffJobList.map((item, index) => {
+                        if (item.ibm !== '10' && item.ibm !== '6') {
+                          return (
+                            <div className="jobItem">
+                              <div className="name" style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}>
+                                <Icon onClick={this.removeJob.bind(this, item.ibm)} type="close" style={{paddingRight: '1rem', cursor: 'pointer'}}/><span>{item.note}：</span>
                               </div>
-                              <div onClick={() => this.removeMilePostInfo(index)} style={{cursor: 'pointer', width: '5%', color: '#DE3741', textAlign: 'right', padding: '1.5rem 1.5rem 0 0'}}>
-                                删除
+                              <div style={{width: '65%'}}>
+                                <Select
+                                  value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm)-1] : []}
+                                  onBlur={() => this.setState({height: 0})}
+                                  onSearch={this.searchStaff}
+                                  onFocus={() => this.setState({staffInfo: { ...this.state.staffInfo, focusJob: item.ibm }})}
+                                  filterOption={false}
+                                  onChange={(e) => {
+                                    let jobStaffList = this.state.staffInfo.jobStaffList;
+                                    jobStaffList[Number(item.ibm)-1] = e;
+                                    this.setState({height:  0, staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}});
+                                  }}
+                                  dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
+                                  mode="multiple"
+                                  style={{ width: '100%' }}
+                                >
+                                  {
+                                    searchStaffList.map((item, index) => {
+                                      return (
+                                        <Select.Option key={index} value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                      )
+                                    })
+                                  }
+                                </Select>
                               </div>
                             </div>
-                            {
-                              item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                return (
-                                  <div className="flow" key={i}>
-                                    <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
-                                                className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
+                          )
+                        }
+                      })
+                    }
 
-                                      {
-                                        e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
-                                          if(sx.type && sx.type === 'title' && sx_index === 0) {
-                                            return (
-                                              <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                                {e.swlxmc || ''}
-                                              </div>
-                                            )
-                                          } else if (sx.type && sx.type === 'title') {
-                                            return (
-                                              <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                              </div>
-                                            )
-                                          } else {
-                                            return (
-                                              <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
-                                                {
-                                                  sx.type && sx.type === 'new' ? (
-                                                    <React.Fragment>
-                                                      <Select showSearch
-                                                              filterOption={(input, option) =>
-                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                              }
-                                                              onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                              style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
-                                                        {
-                                                          mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                            if(mi.swlx === e.swlxmc) {
-                                                              return (
-                                                                <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
-                                                              )
-                                                            }
-                                                          })
-                                                        }
-                                                      </Select>
-                                                      {
-                                                        isEditMile ? (
-                                                          <div onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
-                                                            <Icon type="close" className="icon"/>
-                                                          </div>
-                                                        ) : null
-                                                      }
-                                                    </React.Fragment>
-
-                                                  ) : (
-                                                    <React.Fragment>
-                                                      <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
-                                                      {
-                                                        isEditMile ? (
-                                                          <span onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                      <Icon type="close" className="icon"/>
-                                                    </span>
-                                                        ) : null
-                                                      }
-                                                    </React.Fragment>
-
-                                                  )
-                                                }
-
-                                              </div>
-                                            )
-                                          }
-                                        })
-                                      }
-
-
-                                    </GridLayout>
-                                    {
-                                      isEditMile ? (
-                                        <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                          <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
-                                        </div>
-                                      ) : null
-                                    }
-                                  </div>
-                                )
-
-                              })
-                            }
-                          </div>
-                        ) : (
-                          <div key={index} className="milePost">
-                            <div className="title">
-                              <div className="left">
-                                <span style={{paddingLeft: '1rem', fontSize: '2rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
-                                <span style={{paddingLeft: '2rem'}}>
-                                <RangePicker
-                                  onFocus={() => this.setState({isEditMile: true})}
-                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                  value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                  format="YYYY-MM-DD"
-                                />
-                          </span>
-                              </div>
-                              {
-                                isEditMile ? (
-                                  <div className="right">
-                                    {
-                                      index > 0 ? (
-                                        <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
-                                      ) : null
-                                    }
-                                    {
-                                      index !== milePostInfo.length - 1 ? (
-                                        <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
-                                      ) : null
-                                    }
-                                    <span style={{cursor: 'pointer'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
-                                  </div>
-                                ) : null
-                              }
-
-                            </div>
-                            {
-                              item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                return (
-                                  <div className="flow" key={i}>
-                                    <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
-                                                className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
-
-                                      {
-                                        e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
-                                          if(sx.type && sx.type === 'title' && sx_index === 0) {
-                                            return (
-                                              <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                                {e.swlxmc || ''}
-                                              </div>
-                                            )
-                                          } else if (sx.type && sx.type === 'title') {
-                                            return (
-                                              <div key={String(sx_index+1)} style={{paddingTop: '2rem', fontWeight: 'bold'}}>
-                                              </div>
-                                            )
-                                          } else {
-                                            return (
-                                              <div key={String(sx_index + 1)} className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
-                                                {
-                                                  sx.type && sx.type === 'new' ? (
-                                                    <React.Fragment>
-                                                      <Select showSearch
-                                                              filterOption={(input, option) =>
-                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                              }
-                                                              onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                              style={{width: '85%', marginTop: '0.7rem', marginLeft: '1rem'}}>
-                                                        {
-                                                          mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                            if(mi.swlx === e.swlxmc) {
-                                                              return (
-                                                                <Option title={mi.sxmc} key={mi_index} value={mi.sxid}>{mi.sxmc}</Option>
-                                                              )
-                                                            }
-                                                          })
-                                                        }
-                                                      </Select>
-                                                      {
-                                                        isEditMile ? (
-                                                          <div onClick={() => this.removeMilePostInfoItem(index, i, sx_index)} style={{position: 'absolute', right: '0', top: '50%'}}>
-                                                            <Icon type="close" className="icon"/>
-                                                          </div>
-                                                        ) : null
-                                                      }
-                                                    </React.Fragment>
-
-                                                  ) : (
-                                                    <React.Fragment>
-                                                      <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
-                                                      {
-                                                        isEditMile ? (
-                                                          <span onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                      <Icon type="close" className="icon"/>
-                                                    </span>
-                                                        ) : null
-                                                      }
-                                                    </React.Fragment>
-
-                                                  )
-                                                }
-
-                                              </div>
-                                            )
-                                          }
-                                        })
-                                      }
-
-
-                                    </GridLayout>
-                                    {
-                                      isEditMile ? (
-                                        <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                          <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
-                                        </div>
-                                      ) : null
-                                    }
-                                  </div>
-                                )
-
-                              })
-                            }
-
-
-                          </div>
-                        )
-                      }
-                    </React.Fragment>
-                  )
-                }
-
-              })
-            }
-
-
-            {
-              isEditMile ? (
-                <div className="addMilePost" onClick={this.addMilePostInfo}>
-                  <Icon type="plus" style={{fontSize: '1.7rem'}} /><span style={{paddingLeft: '1rem'}}>新增里程碑</span>
+                  </div>
+                  <div className="button">
+                    <Button onClick={this.clickAddStaff} icon="left">添加</Button>
+                  </div>
+                  <div className="tree">
+                    <Tree
+                      checkable
+                      checkedKeys={checkedStaffKey}
+                      onCheck={this.onCheckTreeStaff}
+                    >
+                      {this.renderTreeNodes(organizationStaffTreeList)}
+                    </Tree>
+                  </div>
                 </div>
-              ) : null
-            }
-
-            <div className="collapse" onClick={() => this.setState({isCollapse: !this.state.isCollapse})}>
-              {
-                isCollapse ? (
-                  <React.Fragment>
-                    <span style={{paddingRight: '1rem'}}>点击展开里程碑信息</span><Icon style={{fontSize: '1.5rem'}} type="down" />
-                  </React.Fragment>
-
-                ) : (
-                  <React.Fragment>
-                    <span style={{paddingRight: '1rem'}}>点击收起里程碑信息</span><Icon style={{fontSize: '1.5rem'}} type="up" />
-                  </React.Fragment>
-                )
-              }
-            </div>
-            <div className="title">
-              <Icon type="caret-down" style={{fontSize: '2rem'}} />
-              <span style={{paddingLeft: '1.5rem', fontSize: '2.5rem', color: '#3461FF'}}>人员信息</span>
-            </div>
-            <div className="staffInfo">
-              <div className="job">
-                {
-                  staffJobList.length > 0 && staffJobList.map((item, index) => {
-                    if (item.ibm === '10') {
-                      return (
-                        <div className="jobItem">
-                          <div className="name" style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}><span style={{color: '#de3741', paddingRight: '1rem'}}>*</span><span>{item.note}：</span></div>
-                          <div style={{width: '65%'}}>
-                            <Select
-                              value={jobStaffList.length > 0 ? jobStaffList[9] : []}
-                              onBlur={() => this.setState({height: 0})}
-                              onSearch={this.searchStaff}
-                              onFocus={() => this.setState({staffInfo: { ...this.state.staffInfo, focusJob: '10' }})}
-                              filterOption={false}
-                              onChange={(e) => {
-                                if(e.length > 1) {
-                                  message.warn("项目经理最多一个！");
-                                } else {
-                                  let jobStaffList = this.state.staffInfo.jobStaffList;
-                                  jobStaffList[9] = e;
-                                  this.setState({height:  0, staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}});
-                                }
-                              }}
-                              dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
-                              mode="multiple"
-                              style={{ width: '100%' }}
-                            >
-                              {
-                                searchStaffList.length > 0 && searchStaffList.map((item, index) => {
-                                  return (
-                                    <Select.Option key={index} value={item.id}>{item.name}({item.orgName})</Select.Option>
-                                  )
-                                })
-                              }
-                            </Select>
-                          </div>
-                        </div>
-                      )
-                    }
-                  })
-                }
-                {
-                  staffJobList.map((item, index) => {
-                    if (item.ibm !== '10' && item.ibm !== '6') {
-                      return (
-                        <div className="jobItem">
-                          <div className="name" style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}>
-                            <Icon onClick={this.removeJob.bind(this, item.ibm)} type="close" style={{paddingRight: '1rem', cursor: 'pointer'}}/><span>{item.note}：</span>
-                          </div>
-                          <div style={{width: '65%'}}>
-                            <Select
-                              value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm)-1] : []}
-                              onBlur={() => this.setState({height: 0})}
-                              onSearch={this.searchStaff}
-                              onFocus={() => this.setState({staffInfo: { ...this.state.staffInfo, focusJob: item.ibm }})}
-                              filterOption={false}
-                              onChange={(e) => {
-                                let jobStaffList = this.state.staffInfo.jobStaffList;
-                                jobStaffList[Number(item.ibm)-1] = e;
-                                this.setState({height:  0, staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}});
-                              }}
-                              dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
-                              mode="multiple"
-                              style={{ width: '100%' }}
-                            >
-                              {
-                                searchStaffList.map((item, index) => {
-                                  return (
-                                    <Select.Option key={index} value={item.id}>{item.name}({item.orgName})</Select.Option>
-                                  )
-                                })
-                              }
-                            </Select>
-                          </div>
-                        </div>
-                      )
-                    }
-                  })
-                }
-
+                <div className="footer">
+                  <Button onClick={this.handleCancel}>取消</Button>
+                  <Button type="primary" onClick={ e => this.handleFormValidate(e)} style={{marginLeft: '2rem'}}>确定</Button>
+                </div>
               </div>
-              <div className="button">
-                <Button onClick={this.clickAddStaff} icon="left">添加</Button>
-              </div>
-              <div className="tree">
-                <Tree
-                  checkable
-                  checkedKeys={checkedStaffKey}
-                  onCheck={this.onCheckTreeStaff}
-                >
-                  {this.renderTreeNodes(organizationStaffTreeList)}
-                </Tree>
-              </div>
-            </div>
-            <div className="footer">
-              <Button onClick={this.handleCancel}>取消</Button>
-              <Button type="primary" onClick={ e => this.handleFormValidate(e)} style={{marginLeft: '2rem'}}>确定</Button>
-            </div>
+
+            </Spin>
           </div>
-        </Spin>
 
 
 

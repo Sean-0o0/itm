@@ -2095,12 +2095,21 @@
 .newProject {
   height: 100%;
   .ant-form label {
-    font-size: 2.3rem !important;
+    font-size: 2.5rem !important;
+  }
+  .ant-spin-nested-loading > div > .ant-spin {
+    position: fixed !important;
+    top: 10% !important;
   }
   input, select, textarea {
-    font-size: 2.3rem !important;
+    font-size: 2.5rem !important;
   }
-  background-color: #FFFFFF;
+  .ant-checkbox-wrapper, .ant-input, .ant-select {
+    font-size: 2.5rem !important;
+  }
+  .spin {
+    background-color: #FFFFFF;
+  }
   .react-grid-layout {
     position: relative;
     transition: height 200ms ease;
@@ -2306,7 +2315,7 @@
         padding: 1.6rem;
         margin: 1rem;
         .icon {
-          font-size: 1.5rem;
+          font-size: 2rem;
           color: #3461FF;
           cursor: pointer;
           padding-left: 1rem;
@@ -2314,7 +2323,7 @@
       }
       .new {
         .icon {
-          font-size: 1.5rem;
+          font-size: 2rem;
           color: #3461FF;
           cursor: pointer;
           padding-left: 1rem;
@@ -2337,6 +2346,8 @@
       border-bottom: 0 solid #F1F1F1;
       .left {
         width: 90%;
+        display: flex;
+        flex-direction: row;
       }
       .right {
         width: 10%;
@@ -2355,7 +2366,7 @@
         padding: 1.6rem;
         margin: 1rem;
         .icon {
-          font-size: 1.5rem;
+          font-size: 2rem;
           color: #3461FF;
           cursor: pointer;
           padding-left: 1rem;
@@ -2363,7 +2374,7 @@
       }
       .new {
         .icon {
-          font-size: 1.5rem;
+          font-size: 2rem;
           color: #3461FF;
           cursor: pointer;
           padding-left: 1rem;
@@ -2378,7 +2389,7 @@
     border-bottom: 1px solid #F1F1F1;
     .job {
       width: 43%;
-      margin: 2rem 2rem 2rem 4rem;
+      margin: 2rem 2rem 10rem 4rem;
       height: auto;
       padding: 3rem 3rem 0 3.5rem;
       background-color: #FAFAFB;
@@ -2409,7 +2420,11 @@
     }
   }
   .footer {
-    float: right;
+    width: 100%;
+    text-align: right;
+    position: fixed;
+    bottom: 0%;
+    background-color: #F6F6F9;
     padding: 1rem 3rem;
   }
 }
