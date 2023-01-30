@@ -486,7 +486,8 @@ class NewProjectModel extends React.Component {
     } else if ((jobStaffList[9].length > 0 && focusJob === '10') || (focusJob === '10' && checkedStaffKey.length > 1)) {
       message.warning('项目经理最多一个！');
     } else {
-      let arr = jobStaffList[Number(focusJob)-1];
+      console.log(jobStaffList);
+      let arr = jobStaffList[Number(focusJob)-1] ? jobStaffList[Number(focusJob)-1] : [];
       let searchStaffList = [];
       checkedStaffKey.forEach(item => {
         arr.push(item.substring(1, item.length));
@@ -636,6 +637,17 @@ class NewProjectModel extends React.Component {
 
   handleSave = (values) => {
     const {staffJobList = [], staffInfo: {jobStaffList = []}, mileInfo: {milePostInfo = []}} = this.state;
+    let flag = true; // 日期选择是否符合开始时间小于结束时间
+    milePostInfo.forEach(item => {
+      if(Number(moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'))
+        < Number(moment(item.kssj, 'YYYY-MM-DD').format('YYYYMMDD'))) {
+        flag = false;
+      }
+    });
+    if(!flag) {
+      message.warn("存在里程碑信息开始时间大于结束时间！");
+      return;
+    }
     let staffJobParam = [];
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
@@ -883,6 +895,24 @@ class NewProjectModel extends React.Component {
 
   };
 
+  // 移除里程碑类型信息
+  removeMilePostTypeInfo = (index, i) => {
+    const {mileInfo: {milePostInfo = []}} = this.state;
+    // 多层数组的深拷贝方式  真暴力哦
+    const mile = JSON.parse(JSON.stringify(milePostInfo));
+    const matterInfo = mile[index].matterInfos;
+    let newMatterInfo = [];
+    matterInfo.forEach((item, mi) => {
+      if(mi !== i) {
+        newMatterInfo.push(item);
+      }
+    });
+    mile[index].matterInfos = newMatterInfo;
+    const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
+    const arr = this.filterGridLayOut(removeTitleMile);
+    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+  };
+
   // 选中新加的里程碑事项信息
   selectMilePostInfoItem = (e, index, i, sx_index) => {
     const {mileInfo: {milePostInfo = []}, mileItemInfo = []} = this.state;
@@ -938,12 +968,15 @@ class NewProjectModel extends React.Component {
   };
 
   // 修改里程碑的时间
-  changeMilePostInfoTime = (date, index) => {
+  changeMilePostInfoTime = (date, index, type) => {
     const {mileInfo: {milePostInfo = []} } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
-    mile[index].kssj = date[0];
-    mile[index].jssj = date[1];
+    if(type === 'start') {
+      mile[index].kssj = date;
+    } else if (type === 'end') {
+      mile[index].jssj = date;
+    }
     this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
   };
 
@@ -1319,16 +1352,20 @@ class NewProjectModel extends React.Component {
                                         }
                                       </Select>
                                     </div>
-                                    <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
-                                      <RangePicker
-                                        allowClear={false}
-                                        onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
-                                        style={{width: '31%'}}
-                                        onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                        value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                        format="YYYY-MM-DD"
-                                      />
-                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '67%'}}>
+                                    <div style={{width: '75%', marginLeft: '2rem', position: 'relative', display: 'flex', flexDirection: 'row'}}>
+                                      <DatePicker format="YYYY-MM-DD" style={{width: '17%'}} value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                  allowClear={false}
+                                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                  onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                      <div style={{fontSize: '2.5rem', fontWeight: 'bold', padding: '2rem 2rem 0 2rem'}}>~</div>
+                                      <DatePicker format="YYYY-MM-DD" style={{width: '17%'}} value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                  allowClear={false}
+                                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                  onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '60.5%'}}>
+                                        *
+                                      </div>
+                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '81.5%'}}>
                                         *
                                       </div>
                                     </div>
@@ -1339,7 +1376,7 @@ class NewProjectModel extends React.Component {
                                   {
                                     item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                       return (
-                                        <div className="flow" key={i}>
+                                        <div className="flow" key={i} style={{margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'}}>
                                           <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
                                                       className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
 
@@ -1412,8 +1449,9 @@ class NewProjectModel extends React.Component {
                                           </GridLayout>
                                           {
                                             isEditMile ? (
-                                              <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                                <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                              <div style={{position: 'absolute', top: '40%', right: '4%', color: '#3461FF'}}>
+                                                <span onClick={() => this.addMilePostInfoItem(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem', paddingRight: '1.5rem'}}>添加</span>
+                                                <span onClick={() => this.removeMilePostTypeInfo(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除</span>
                                               </div>
                                             ) : null
                                           }
@@ -1430,16 +1468,20 @@ class NewProjectModel extends React.Component {
                                       <div style={{marginTop: '2rem'}}>
                                         <span style={{paddingLeft: '1rem', fontSize: '2.5rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
                                       </div>
-                                      <div style={{paddingLeft: '2rem', position: 'relative'}}>
-                                        <RangePicker
-                                          allowClear={false}
-                                          style={{width: '70%'}}
-                                          onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
-                                          onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                          value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                          format="YYYY-MM-DD"
-                                        />
-                                        <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '25%'}}>
+                                      <div style={{paddingLeft: '2rem', position: 'relative', display: 'flex', flexDirection: 'row'}}>
+                                        <DatePicker format="YYYY-MM-DD" style={{width: '35%'}} value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                    allowClear={false}
+                                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                    onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                        <div style={{fontSize: '2.5rem', fontWeight: 'bold', padding: '2rem 2rem 0 2rem'}}>~</div>
+                                        <DatePicker format="YYYY-MM-DD" style={{width: '35%'}} value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                    allowClear={false}
+                                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                    onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                        <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '18%'}}>
+                                          *
+                                        </div>
+                                        <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '60%'}}>
                                           *
                                         </div>
                                       </div>
@@ -1466,7 +1508,7 @@ class NewProjectModel extends React.Component {
                                   {
                                     item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                       return (
-                                        <div className="flow" key={i}>
+                                        <div className="flow" key={i} style={{margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'}}>
                                           <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
                                                       className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
 
@@ -1539,8 +1581,9 @@ class NewProjectModel extends React.Component {
                                           </GridLayout>
                                           {
                                             isEditMile ? (
-                                              <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                                <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                              <div style={{position: 'absolute', top: '40%', right: '4%', color: '#3461FF'}}>
+                                                <span onClick={() => this.addMilePostInfoItem(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem', paddingRight: '1.5rem'}}>添加</span>
+                                                <span onClick={() => this.removeMilePostTypeInfo(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除</span>
                                               </div>
                                             ) : null
                                           }
@@ -1581,16 +1624,20 @@ class NewProjectModel extends React.Component {
                                       }
                                     </Select>
                                   </div>
-                                  <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
-                                    <RangePicker
-                                      allowClear={false}
-                                      onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
-                                      style={{width: '31%'}}
-                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                      value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                      format="YYYY-MM-DD"
-                                    />
-                                    <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '67%'}}>
+                                  <div style={{width: '75%', marginLeft: '2rem', position: 'relative', display: 'flex', flexDirection: 'row'}}>
+                                    <DatePicker format="YYYY-MM-DD" style={{width: '17%'}} value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                allowClear={false}
+                                                onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                    <div style={{fontSize: '2.5rem', fontWeight: 'bold', padding: '2rem 2rem 0 2rem'}}>~</div>
+                                    <DatePicker format="YYYY-MM-DD" style={{width: '17%'}} value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                allowClear={false}
+                                                onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                    <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '60.5%'}}>
+                                      *
+                                    </div>
+                                    <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '81.5%'}}>
                                       *
                                     </div>
                                   </div>
@@ -1601,7 +1648,7 @@ class NewProjectModel extends React.Component {
                                 {
                                   item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                     return (
-                                      <div className="flow" key={i}>
+                                      <div className="flow" key={i} style={{margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'}}>
                                         <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
                                                     className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
 
@@ -1674,8 +1721,9 @@ class NewProjectModel extends React.Component {
                                         </GridLayout>
                                         {
                                           isEditMile ? (
-                                            <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                              <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                            <div style={{position: 'absolute', top: '40%', right: '4%', color: '#3461FF'}}>
+                                              <span onClick={() => this.addMilePostInfoItem(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem', paddingRight: '1.5rem'}}>添加</span>
+                                              <span onClick={() => this.removeMilePostTypeInfo(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除</span>
                                             </div>
                                           ) : null
                                         }
@@ -1692,16 +1740,20 @@ class NewProjectModel extends React.Component {
                                     <div style={{marginTop: '2rem'}}>
                                       <span style={{paddingLeft: '1rem', fontSize: '2.5rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
                                     </div>
-                                    <div style={{paddingLeft: '2rem', position: 'relative'}}>
-                                      <RangePicker
-                                        allowClear={false}
-                                        style={{width: '70%'}}
-                                        onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
-                                        onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
-                                        value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
-                                        format="YYYY-MM-DD"
-                                      />
-                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '25%'}}>
+                                    <div style={{paddingLeft: '2rem', position: 'relative', display: 'flex', flexDirection: 'row'}}>
+                                      <DatePicker format="YYYY-MM-DD" style={{width: '35%'}} value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                  allowClear={false}
+                                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                  onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                      <div style={{fontSize: '2.5rem', fontWeight: 'bold', padding: '2rem 2rem 0 2rem'}}>~</div>
+                                      <DatePicker format="YYYY-MM-DD" style={{width: '35%'}} value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                  allowClear={false}
+                                                  onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                  onFocus={() => this.setState({isEditMile: true, isCollapse: false})} />
+                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '18%'}}>
+                                        *
+                                      </div>
+                                      <div style={{color: '#f5222d', fontSize: '3.5rem', position: 'absolute', top: '10%', right: '60%'}}>
                                         *
                                       </div>
                                     </div>
@@ -1728,7 +1780,7 @@ class NewProjectModel extends React.Component {
                                 {
                                   item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                     return (
-                                      <div className="flow" key={i}>
+                                      <div className="flow" key={i} style={{margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'}}>
                                         <GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.stopDrag(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}
                                                     className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>
 
@@ -1801,8 +1853,9 @@ class NewProjectModel extends React.Component {
                                         </GridLayout>
                                         {
                                           isEditMile ? (
-                                            <div onClick={() => this.addMilePostInfoItem(index, i)} style={{position: 'absolute', top: '40%', right: '6%', cursor: 'pointer'}}>
-                                              <Icon type="plus-circle" style={{fontSize: '3.5rem'}} />
+                                            <div style={{position: 'absolute', top: '40%', right: '4%', color: '#3461FF'}}>
+                                              <span onClick={() => this.addMilePostInfoItem(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem', paddingRight: '1.5rem'}}>添加</span>
+                                              <span onClick={() => this.removeMilePostTypeInfo(index, i)} style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除</span>
                                             </div>
                                           ) : null
                                         }
