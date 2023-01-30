@@ -5,51 +5,29 @@
  */
 import React, {Component, Fragment} from 'react';
 import {connect} from 'dva';
-import LBDialog from 'livebos-frame/dist/LBDialog';
+import Bridge from 'livebos-bridge'
 import {Switch, Route} from 'dva/router';
 import ZipFileModel from './ZipFileModel/index';
 import CapitalBudgetExport from "./CapitalBudgetExport";
-
+import NewProjectModel from './NewProjectModel';
+const { events } = Bridge.constants
 class SinglePage extends Component {
-  componentDidMount() {
-    if (this.props.resizeDialog) {
-      const height = this.getParamString('height') || 400;
-      const width = this.getParamString('width') || 800;
-      // eslint-disable-next-line no-console
-      // //console.log(`高度：${this.getParamString('height')}`);
-      this.props.resizeDialog({width, height});
-    }
-    if (this.props.dialogOpened) {
-      const maximize = this.getParamString('maximize') || 'false';
-      if (maximize === 'true') {
-        this.props.dialogOpened();
 
-      }
+
+  closeDialog = () => {
+    const { closeDialog } = this.props;
+    if (closeDialog) {
+      closeDialog()
     }
   }
 
-  // liveBos弹框确定
-  onSubmitOperate = () => {
-    const result = {code: 1};
-    if (this.props.onSubmitOperate) {
-      this.props.onSubmitOperate(result);
+  submitOperate = () => {
+    const { submitOperate } = this.props;
+    if (submitOperate) {
+      submitOperate()
     }
   }
-  // liveBos弹框关闭
-  onCancelOperate = () => {
-    if (this.props.onCancelOperate) {
-      this.props.onCancelOperate();
-    }
-  }
-  getParamString = (key) => {
-    const {location: {search = ''}} = this.props;
-    const regExp = new RegExp(`(^|&)${key}=([^&]*)(&|$)`, 'i');
-    const paramString = search.match(regExp);
-    if (paramString !== null) {
-      return unescape(paramString[2]);
-    }
-    return null;
-  }
+
 
   render() {
     const {
@@ -60,27 +38,106 @@ class SinglePage extends Component {
       <Fragment>
         <Switch>
           <Route exact path={`${parentUrl}/ZipFilePage/:params`}
-                 render={props => <ZipFileModel {...props} onSubmitOperate={this.onSubmitOperate}
-                                                onCancelOperate={this.onCancelOperate}/>}/>
+                 render={props => <ZipFileModel {...props} submitOperate={this.submitOperate}
+                                                closeDialog={this.closeDialog}/>}/>
+          <Route exact path={`${parentUrl}/SaveProject/:params`}
+                 render={props => <NewProjectModel {...props} submitOperate={this.submitOperate}
+                                                   closeDialog={this.closeDialog}/>}/>
 
           <Route exact path={`${parentUrl}/CapitalBudgetExportPage`}
-                 render={props => <CapitalBudgetExport {...props} onSubmitOperate={this.onSubmitOperate}
-                                                       onCancelOperate={this.onCancelOperate}/>}/>
+                 render={props => <CapitalBudgetExport {...props} submitOperate={this.submitOperate}
+                                                       closeDialog={this.closeDialog}/>}/>
         </Switch>
       </Fragment>
     );
   }
 }
 
-const SinglePageApp = ({...props}) => {
-  // console.log("propspropsprops",props)
-  return (
-    <Fragment>
-      <LBDialog trustedOrigin="*">
-        <SinglePage {...props} />
-      </LBDialog>
-    </Fragment>
-  );
+class SinglePageApp extends React.Component {
+
+  state = {
+    bridge: null,
+    dialog: null
+  };
+
+  componentDidMount = () => {
+    this.connect();
+  }
+
+  connect = () => {
+    const bridge = new Bridge(window.parent)
+    bridge.onReady(() => {
+      bridge.on(events.SESSION_TIME_OUT, () => {
+        window.location.href = '/#/login';
+      })
+      this.setState({
+        bridge: bridge
+      }, () => {
+        this.getActiveDialog();
+      })
+    })
+
+  }
+
+  close = () => {
+    this.state.bridge.close()
+    this.setState({
+      bridge: null
+    })
+  }
+
+  closeDialog = () => {
+    const { dialog = null } = this.state;
+    if (dialog) {
+      dialog.close();
+    }
+  }
+
+  submitOperate = () => {
+    const { dialog = null } = this.state;
+    if (dialog) {
+      dialog.operateCallback({
+        callback: {
+          closeFlag: true,
+          reload: true,
+
+        },
+        message: '操作成功',
+        success: true
+      })
+    }
+  }
+
+  getActiveDialog = async () => {
+    const { bridge = null } = this.state;
+    if (bridge) {
+      const dialog = await bridge.getActiveDialog()
+      this.setState({
+        dialog: dialog
+      })
+    }
+  }
+
+  operateCallback = () => {
+    const { dialog = null } = this.state;
+    if (dialog) {
+      dialog.operateCallback({
+        callback: {
+          closeFlag: true,
+          reload: true
+        }
+      })
+    }
+  }
+
+  render() {
+    return (
+      <Fragment>
+        <SinglePage {...this.props} closeDialog={this.closeDialog} submitOperate={this.submitOperate} />
+      </Fragment>
+    );
+  }
+
 };
 export default connect(({global}) => ({
   dictionary: global.dictionary,

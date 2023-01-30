@@ -2,6 +2,7 @@ import React, { Fragment } from 'react';
 import moment from 'moment';
 import { Input, Select, DatePicker, Icon, Progress, message } from 'antd';
 import { connect } from 'dva';
+import LBDialog from 'livebos-frame/dist/LBDialog';
 import { ExportExcel, FetchQueryLifecycleStuff } from "../../../../services/pmsServices";
 import { DecryptBase64 } from '../../../../components/Common/Encrypt';
 
@@ -100,30 +101,33 @@ class CapitalBudgetExport extends React.Component {
     const nextYear = myDate.getFullYear() + 1;
     return (
       <Fragment>
-        <div style={{
-          height: '100%',
-          padding: '2.381rem 3.571rem 0 2.381rem',
-          backgroundColor: 'white',
-          borderRadius: '8px',
-          fontSize: '2.083rem'
-        }}>
-          <div style={{ height: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}
-            className="operationListSelectBox">
+        <LBDialog trustedOrigin="*">
+          <div style={{
+            height: '100%',
+            padding: '2.381rem 3.571rem 0 2.381rem',
+            backgroundColor: 'white',
+            borderRadius: '8px',
+            fontSize: '2.083rem'
+          }}>
+            <div style={{ height: '100%', position: 'relative', display: 'flex', alignItems: 'center' }}
+                 className="operationListSelectBox">
             <span style={{ fontSize: '2.381rem', }}>
               年份：&nbsp;&nbsp;
             </span>
-            <Input defaultValue={nextYear} style={{ width: '30%', fontSize: '2.038rem' }}
-              onChange={(e) => this.getYear(e)} placeholder="请输入年份" />
+              <Input defaultValue={nextYear} style={{ width: '30%', fontSize: '2.038rem' }}
+                     onChange={(e) => this.getYear(e)} placeholder="请输入年份"/>
+            </div>
+            <div style={{ textAlign: 'end', paddingTop: '8.9rem' }}>
+              {/*<button class="ant-btn" onClick={this.handleCancel}>取消</button>*/}
+              {/*&nbsp;&nbsp;*/}
+              <button className="ant-btn ant-btn-primary" onClick={this.getExcelFile}>导出Excel</button>
+              <iframe title='下载' id='m_iframe' ref={(c) => {
+                this.ifile = c;
+              }} style={{ display: 'none' }}/>
+            </div>
           </div>
-          <div style={{ textAlign: 'end', paddingTop: '8.9rem' }}>
-            {/*<button class="ant-btn" onClick={this.handleCancel}>取消</button>*/}
-            {/*&nbsp;&nbsp;*/}
-            <button class="ant-btn ant-btn-primary" onClick={this.getExcelFile}>导出Excel</button>
-            <iframe title='下载' id='m_iframe' ref={(c) => {
-              this.ifile = c;
-            }} style={{ display: 'none' }} />
-          </div>
-        </div>
+        </LBDialog>
+
       </Fragment>
     );
   }
