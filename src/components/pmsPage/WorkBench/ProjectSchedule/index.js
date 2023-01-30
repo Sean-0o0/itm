@@ -1032,12 +1032,13 @@ class ProjectSchedule extends React.Component {
                         <div className='head1'>
                           <Link className='head1-link' to={{
                             pathname: '/pms/manage/LifeCycleManagement',
-                            query: { xmid: items.xmid },
+                            query: {xmid: items.xmid},
                           }}>{items.xmmc}</Link>&nbsp;
-                          <i
-                            className={'iconfont icon-right'}
-                            style={{ fontSize: '2.381rem' }}
-                          />
+                          {/*<i*/}
+                          {/*  className={'iconfont icon-right'}*/}
+                          {/*  style={{ fontSize: '2.381rem' }}*/}
+                          {/*/>*/}
+                          {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
                         </div>
                         <div className='head3'>
                           {/*时间范围：*/}
