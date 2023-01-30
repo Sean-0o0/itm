@@ -508,13 +508,7 @@ class TodoItems extends React.Component {
   onSuccess = (name) => {
     message.success(name + "完成");
     const { fetchQueryOwnerMessage } = this.props;
-    fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx)
-    if (this.state.cxlx === "ALL") {
-      console.log('zcwc');
-    }
-    if (this.state.cxlx === "UNDO") {
-      console.log('sjsj');
-    }
+    fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx);
   }
 
   updateFlag = () => {
@@ -813,6 +807,16 @@ class TodoItems extends React.Component {
       title: '操作',
       style: { top: '10rem' },
       visible: ygpjVisible,
+      footer: null,
+    };
+    const ryxztxModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '60%',
+      height: '45rem',
+      title: '人员新增提醒',
+      style: { top: '10rem' },
+      visible: ryxztxVisible,
       footer: null,
     };
 
