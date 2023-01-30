@@ -1,5 +1,6 @@
-import { Row, Col, Carousel, Empty, message, Tooltip } from 'antd';
+import { Row, Col, Carousel, Empty, message, Tooltip, Modal } from 'antd';
 import React from 'react';
+import { EncryptBase64 } from '../../../../components/Common/Encrypt';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import icon_01 from "../../../../image/pms/fastFunction/icon_01.png";
 import icon_02 from "../../../../image/pms/fastFunction/icon_02.png";
@@ -26,6 +27,20 @@ class FastFunction extends React.Component {
   };
   sliderRef = React.createRef(null);
 
+  componentDidMount() {
+    window.addEventListener('message', this.handleIframePostMessage)
+  }
+  handleIframePostMessage = (event) => {
+    if(typeof event.data !== 'string' && event.data.operate === 'close') {
+      this.closeFileAddModal();
+    }
+    if(typeof event.data !== 'string' && event.data.operate === 'success') {
+      this.closeFileAddModal();
+      message.success('保存成功');
+    }
+  };
+
+
   closeFileAddModal = () => {
     this.setState({
       fileAddVisible: false,
@@ -45,8 +60,8 @@ class FastFunction extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新建项目',
-      width: '60%',
-      height: '100rem',
+      width: '70%',
+      height: '120rem',
       style: { top: '10rem' },
       visible: fileAddVisible,
       footer: null,
@@ -61,7 +76,8 @@ class FastFunction extends React.Component {
       visible: manageVisible,
       footer: null,
     };
-    const src_fileAdd = localStorage.getItem('livebos') + fileAddUrl;
+    // const src_fileAdd = localStorage.getItem('livebos') + fileAddUrl;
+    const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({xmid: -1, type: true}))}`;
     const src_manage = localStorage.getItem('livebos') + manageUrl;
     return (
       <div className='workBench'>
@@ -90,14 +106,29 @@ class FastFunction extends React.Component {
           </div>
           <div className='bottom-box'>
             {fileAddVisible &&
-              <BridgeModel modalProps={fileAddModalProps} onSucess={() => {
-                this.props.fetchQueryOwnerProjectList();
-                message.success('执行成功', 1);
+              <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onSucess={() => {
+                this.closeFileAddModal();
+                message.success('保存成功', 1);
               }} onCancel={this.closeFileAddModal}
                 src={src_fileAdd} />}
+
+
+              {/*{*/}
+              {/*  fileAddVisible &&*/}
+              {/*  <Modal*/}
+              {/*    bodyStyle={{padding: 0, maxHeight: '80rem', overflow: 'auto'}}*/}
+              {/*    wrapClassName="addProject"*/}
+              {/*    // footer={null}*/}
+              {/*    title="新建项目"*/}
+              {/*    width={1000}*/}
+              {/*    visible={this.state.fileAddVisible}*/}
+              {/*  >*/}
+              {/*    <iframe title="livebos" src="/#/single/pms/SaveProject/eyJ4bWlkIjotMX0=" style="width: 100%; border-color: transparent; height: calc(120rem - 62px);"></iframe>*/}
+              {/*  </Modal>*/}
+              {/*}*/}
               <Col xs={24} sm={24} lg={24} xl={24} className='fastFun' style={{ display: 'flex' }}>
                 <a style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                  onClick={() => this.setState({ fileAddVisible: true })}>
+                   onClick={() => this.setState({ fileAddVisible: true })}>
                   <div><img src={icon_01} alt="" style={{ width: '7.143rem', height: '7.143rem' }} /></div>
                   <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>新建项目</div>
                 </a>

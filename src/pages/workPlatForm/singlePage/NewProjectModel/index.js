@@ -6,6 +6,7 @@ import GridLayout from 'react-grid-layout';
 import { FetchQueryProjectDetails, FetchQuerySoftwareList, FetchQueryProjectLabel, FetchQueryOrganizationInfo, FetchQueryBudgetProjects, OperateCreatProject, FetchQueryMilepostInfo, FetchQueryMemberInfo, FetchQueryMilestoneStageInfo, FetchQueryMatterUnderMilepost } from "../../../../services/projectManage";
 import { DecryptBase64 } from '../../../../components/Common/Encrypt';
 import config from '../../../../utils/config';
+import LBDialog from 'livebos-frame/dist/LBDialog';
 const { Option } = Select;
 const { api } = config;
 const { confirm } = Modal;
@@ -15,6 +16,7 @@ const { pmsServices: { exportExcel } } = api;
 // const ResponsiveGridLayout = WidthProvider(Responsive);
 class NewProjectModel extends React.Component {
   state = {
+    type: false, // 是否是首页跳转过来的
     operateType: 'ADD', // 操作类型
     height: 0, // 人员信息下拉框高度设置
     softwareList: [], // 软件清单列表
@@ -65,7 +67,7 @@ class NewProjectModel extends React.Component {
   componentDidMount = async () => {
     const _this = this;
     const params = this.getUrlParams();
-    if(params.xmid != -1) {
+    if(params.xmid && params.xmid != -1) {
       // 修改项目操作
       this.setState({
         operateType: 'MOD',
@@ -75,35 +77,41 @@ class NewProjectModel extends React.Component {
         }
       })
     }
+    // 判断是否是首页跳转过来的
+    if(params.type) {
+      this.setState({type: true});
+    }
     setTimeout(function() {
       _this.filterJobList()
-    }, 1000 );
+    }, 500 );
   };
 
-  // 新建项目时候接口调用获取数据
   fetchInterface = async () => {
 
-    // 查询里程碑阶段信息
-    await this.fetchQueryMilestoneStageInfo({type : 'ALL'});
-    // 查询里程碑事项信息
-    await this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
-    // 查询里程碑信息
-    await this.fetchQueryMilepostInfo({  type: 1, xmid: this.state.basicInfo.projectId, biddingMethod: 1, budget: 0, label: ''});
-
+    // 查询软件清单
+    this.fetchQuerySoftwareList();
+    // 查询项目标签
+    this.fetchQueryProjectLabel();
+    // 查询关联预算项目信息
+    this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
-    // 查询软件清单
-    await this.fetchQuerySoftwareList();
-    // 查询项目标签
-    await this.fetchQueryProjectLabel();
+
+
+    // 查询里程碑阶段信息
+    this.fetchQueryMilestoneStageInfo({type : 'ALL'});
+    // 查询里程碑事项信息
+    this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
+    // 查询里程碑信息
+    this.fetchQueryMilepostInfo({  type: 1, xmid: this.state.basicInfo.projectId, biddingMethod: 1, budget: 0, label: ''});
+
     // 查询人员信息
     await this.fetchQueryMemberInfo();
-    // 查询关联预算项目信息
-    await this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
-
 
     // 修改项目时查询项目详细信息
-    await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+    if(this.state.operateType === 'MOD') {
+      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+    }
 
     // 修改加载状态
     this.setState({loading: false});
@@ -261,7 +269,7 @@ class NewProjectModel extends React.Component {
               projectId: result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
-              projectLabel: result.projectLabel.split(','),
+              projectLabel: result.projectLabel == '' ? [] : result.projectLabel.split(','),
               org: Number(result.orgId),
               software: result.softwareId,
               biddingMethod: Number(result.biddingMethod)
@@ -400,7 +408,11 @@ class NewProjectModel extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        _this.props.closeDialog();
+        if(_this.state.type) {
+          window.parent && window.parent.postMessage({operate: 'close'}, '*');
+        } else {
+          _this.props.closeDialog();
+        }
       },
       onCancel() {
       },
@@ -720,7 +732,11 @@ class NewProjectModel extends React.Component {
       const { code = -1, note = '' } = result;
       this.setState({loading: false});
       if (code > 0) {
-        this.props.submitOperate();
+        if(this.state.type) {
+          window.parent && window.parent.postMessage({operate: 'success'}, '*');
+        } else {
+          this.props.submitOperate();
+        }
       } else {
         message.error(note);
       }
@@ -959,20 +975,11 @@ class NewProjectModel extends React.Component {
       },
     };
     const { getFieldDecorator } = this.props.form;
-    const layout = [
-      {i: '1', x: 0, y: 0, w: 0.7, h: 3, static: true},
-      {i: '2', x: 1, y: 0, w: 1, h: 3},
-      {i: '3', x: 2, y: 0, w: 1, h: 3},
-      {i: '4', x: 3, y: 0, w: 1, h: 3},
-      {i: '5', x: 4, y: 0, w: 1, h: 3},
-      {i: '6', x: 5, y: 0, w: 1, h: 3}
-    ];
 
 
 
     return (
       <Fragment>
-
           <div className="newProject">
             <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
               <div>
@@ -1256,7 +1263,7 @@ class NewProjectModel extends React.Component {
                       <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>里程碑信息</span>
                       {
                         isEditMile ? (
-                          <span style={{paddingLeft: '2rem', color: '#de3741'}}>拖动里程碑下的事项卡片可调整顺序</span>
+                          <span style={{paddingLeft: '2rem', color: '#de3741', fontSize: '2.5rem'}}>拖动里程碑下的事项卡片可调整顺序</span>
                         ) : null
                       }
                     </div>
@@ -1314,6 +1321,7 @@ class NewProjectModel extends React.Component {
                                     </div>
                                     <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
                                       <RangePicker
+                                        allowClear={false}
                                         onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                         style={{width: '31%'}}
                                         onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
@@ -1424,6 +1432,7 @@ class NewProjectModel extends React.Component {
                                       </div>
                                       <div style={{paddingLeft: '2rem', position: 'relative'}}>
                                         <RangePicker
+                                          allowClear={false}
                                           style={{width: '70%'}}
                                           onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                           onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
@@ -1440,15 +1449,15 @@ class NewProjectModel extends React.Component {
                                         <div className="right">
                                           {
                                             index > 0 ? (
-                                              <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
+                                              <span style={{paddingRight: '1.5rem', cursor: 'pointer', fontSize: '2.5rem'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
                                             ) : null
                                           }
                                           {
                                             index !== milePostInfo.length - 1 ? (
-                                              <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
+                                              <span style={{paddingRight: '1.5rem', cursor: 'pointer', fontSize: '2.5rem'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
                                             ) : null
                                           }
-                                          <span style={{cursor: 'pointer'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                          <span style={{cursor: 'pointer', fontSize: '2.5rem'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
                                         </div>
                                       ) : null
                                     }
@@ -1574,6 +1583,7 @@ class NewProjectModel extends React.Component {
                                   </div>
                                   <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
                                     <RangePicker
+                                      allowClear={false}
                                       onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                       style={{width: '31%'}}
                                       onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
@@ -1684,6 +1694,7 @@ class NewProjectModel extends React.Component {
                                     </div>
                                     <div style={{paddingLeft: '2rem', position: 'relative'}}>
                                       <RangePicker
+                                        allowClear={false}
                                         style={{width: '70%'}}
                                         onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                         onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
@@ -1700,15 +1711,15 @@ class NewProjectModel extends React.Component {
                                       <div className="right">
                                         {
                                           index > 0 ? (
-                                            <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
+                                            <span style={{paddingRight: '1.5rem', cursor: 'pointer', fontSize: '2.5rem'}} onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
                                           ) : null
                                         }
                                         {
                                           index !== milePostInfo.length - 1 ? (
-                                            <span style={{paddingRight: '1.5rem', cursor: 'pointer'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
+                                            <span style={{paddingRight: '1.5rem', cursor: 'pointer', fontSize: '2.5rem'}} onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
                                           ) : null
                                         }
-                                        <span style={{cursor: 'pointer'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                        <span style={{cursor: 'pointer', fontSize: '2.5rem'}} onClick={() => this.removeMilePostInfo(index)}>删除</span>
                                       </div>
                                     ) : null
                                   }
@@ -1816,7 +1827,7 @@ class NewProjectModel extends React.Component {
                 {
                   isEditMile ? (
                     <div className="addMilePost" onClick={this.addMilePostInfo}>
-                      <Icon type="plus" style={{fontSize: '1.7rem'}} /><span style={{paddingLeft: '1rem'}}>新增里程碑</span>
+                      <Icon type="plus" style={{fontSize: '1.7rem'}} /><span style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>新增里程碑</span>
                     </div>
                   ) : null
                 }
@@ -1825,12 +1836,12 @@ class NewProjectModel extends React.Component {
                   {
                     isCollapse ? (
                       <React.Fragment>
-                        <span style={{paddingRight: '1rem'}}>点击展开里程碑信息</span><Icon style={{fontSize: '2rem'}} type="down" />
+                        <span style={{paddingRight: '1rem', fontSize: '2.5rem'}}>点击展开里程碑信息</span><Icon style={{fontSize: '2rem'}} type="down" />
                       </React.Fragment>
 
                     ) : (
                       <React.Fragment>
-                        <span style={{paddingRight: '1rem'}}>点击收起里程碑信息</span><Icon style={{fontSize: '2rem'}} type="up" />
+                        <span style={{paddingRight: '1rem', fontSize: '2.5rem'}}>点击收起里程碑信息</span><Icon style={{fontSize: '2rem'}} type="up" />
                       </React.Fragment>
                     )
                   }
@@ -1944,9 +1955,6 @@ class NewProjectModel extends React.Component {
 
             </Spin>
           </div>
-
-
-
       </Fragment>
     );
   }

@@ -19,6 +19,9 @@ class BridgeModal extends React.Component {
   }
 
   componentDidMount() {
+    if(this.props.isSpining && this.props.isSpining == 'customize') {
+      this.setState({isSpinning: false});
+    }
     setTimeout(() => {
       this.iframeRef.current.onload = (() => {
         this.connect();
