@@ -64,6 +64,22 @@ class TodoItems extends React.Component {
     date: moment(new Date()).format('YYYYMMDD'),
     flag: true,
     cxlx: "UNDO",
+    currentState: 0,//默认为0，查全部，为1时查具体日期
+    //员工评价
+    ygpjVisible: false,
+    ygpjUrl: '#',
+    //阶段信息修改
+    editModelVisible: false,
+    editModelUrl: '#',
+    //付款流程发起弹窗
+    paymentModalVisible: false,
+    currentXmid: 0,
+    currentXmmc: '',
+    //合同信息修改弹窗
+    contractModalVisible: false,
+    //中标信息修改弹窗
+    bidInfoModalVisible: false,
+
   };
 
 
@@ -80,59 +96,108 @@ class TodoItems extends React.Component {
   onPanelChange = (value, mode) => {
   }
 
-  handleUrl = (text) => {
-    // console.log("texttext",text.sxmc)
-    if (text.sxmc.includes("信息录入")) {
-      this.handleFillOut(text);
+  handleUrl = (item) => {
+    switch (item?.sxmc) {
+      case '信委会议案流程':
+        return this.handleSend(item);
+      case '总办会会议纪要':
+        return this.handleUpload(item);
+      case '总办会提案':
+        return this.handleUpload(item);
+      case '软件费用审批流程':
+        return this.handleSend(item);
+      case '项目立项申请':
+        return this.handleSend(item);
+      case '中标信息录入':
+        return this.handleFillOut(item);
+      case '中标公告':
+        return this.handleUpload(item);
+      case '招标方式变更流程':
+        return this.handleSend(item);
+      case '评标报告':
+        return this.handleUpload(item);
+      case '合同信息录入':
+        return this.handleFillOut(item);
+      case '合同签署流程':
+        return this.handleSend(item);
+      case '可行性方案':
+        return this.handleUpload(item);
+      case '调研报告':
+        return this.handleUpload(item);
+      case '申请VPN':
+        return this.handleSend(item);
+      case '申请权限':
+        return this.handleSend(item);
+      case '申请餐券':
+        return this.handleSend(item);
+      case 'UI设计图':
+        return this.handleUpload(item);
+      case '功能清单':
+        return this.handleUpload(item);
+      case '原型图':
+        return this.handleUpload(item);
+      case '需求文档':
+        return this.handleUpload(item);
+      case '开发文档':
+        return this.handleUpload(item);
+      case '系统拓扑图':
+        return this.handleUpload(item);
+      case '系统框架图':
+        return this.handleUpload(item);
+      case '测试文档':
+        return this.handleUpload(item);
+      case '员工评价':
+        return this.handleYgpj(item);
+      case '原型设计说明书':
+        return this.handleUpload(item);
+      case '开发测试报告':
+        return this.handleUpload(item);
+      case '系统部署图、逻辑图':
+        return this.handleUpload(item);
+      case '评估报告':
+        return this.handleUpload(item);
+      case '软件系统验收测试报告':
+        return this.handleUpload(item);
+      case '生产安装部署手册':
+        return this.handleUpload(item);
+      case '生产操作及运维手册':
+        return this.handleUpload(item);
+      case '用户手册':
+        return this.handleUpload(item);
+      case '付款流程':
+        return this.handleSend(item);
+      case '人员新增提醒':
+        return this.handleRyxztx(item);
+      default: console.error('未配置弹窗');
     }
-    if (text.sxmc.includes("流程")) {
-      this.handleSend(text);
-    }
-    if (text.sxmc.includes('人员新增提醒')) {
-      this.handleRyxztx(text);
-    }
-    if (text.sxmc.includes("文档") ||
-      text.sxmc.includes("信委会") ||
-      text.sxmc.includes("总办会") ||
-      text.sxmc.includes("需求调研") ||
-      text.sxmc.includes("产品设计") ||
-      text.sxmc.includes("系统框架搭建") ||
-      text.sxmc.includes("功能开发") ||
-      text.sxmc.includes("外部系统对接") ||
-      text.sxmc.includes("系统测试") ||
-      text.sxmc.includes("需求文档") ||
-      text.sxmc.includes("功能清单") ||
-      text.sxmc.includes("原型图")) {
-      this.handleUpload(text);
-    }
-    if (text.sxmc === "周报填写") {
+    if (item.sxmc === "周报填写") {
       window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
     }
-    if (text.sxmc === "资本性预算年初录入被退回") {
+    if (item.sxmc === "资本性预算年初录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc === "资本性预算年中录入被退回") {
+    if (item.sxmc === "资本性预算年中录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
     }
-    if (text.sxmc === "非资本性预算年初录入被退回") {
+    if (item.sxmc === "非资本性预算年初录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc === "非资本性预算年中录入被退回") {
+    if (item.sxmc === "非资本性预算年中录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
-    if (text.sxmc === "月报填写") {
+    if (item.sxmc === "月报填写") {
       window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
     }
-    if (text.sxmc === "资本性年初预算录入") {
+    if (item.sxmc === "资本性年初预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc === "资本性年中预算录入") {
+    if (item.sxmc === "资本性年中预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
     }
-    if (text.sxmc === "非资本性年初预算录入") {
+    if (item.sxmc === "非资本性年初预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
     }
-    if (text.sxmc === "非资本性年中预算录入") {
+    if (item.sxmc === "非资本性年中预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
   }
@@ -216,13 +281,21 @@ class TodoItems extends React.Component {
 
   //流程发起
   handleSend = (item) => {
-    // console.log("texttext111",item)
-    this.getSendUrl(item);
-    this.setState({
-      sendTitle: item.sxmc + '发起',
-      // sendUrl: url,
-      sendVisible: true,
-    });
+    if (item.sxmc === '付款流程') {
+      // this.setState({
+      //   paymentModalVisible: true,
+      //   currentXmid: item.xmid,
+      // });
+      message.info('功能开发中，暂时无法使用', 1);
+      return;
+    } else {
+      this.getSendUrl(item);
+      this.setState({
+        sendTitle: item.sxmc + '发起',
+        // sendUrl: url,
+        sendVisible: true,
+      });
+    }
   };
 
   //流程发起url
@@ -434,6 +507,14 @@ class TodoItems extends React.Component {
   //成功回调
   onSuccess = (name) => {
     message.success(name + "完成");
+    const { fetchQueryOwnerMessage } = this.props;
+    fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx)
+    if (this.state.cxlx === "ALL") {
+      console.log('zcwc');
+    }
+    if (this.state.cxlx === "UNDO") {
+      console.log('sjsj');
+    }
   }
 
   updateFlag = () => {
@@ -599,15 +680,18 @@ class TodoItems extends React.Component {
     })
     const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD'), "ALL")
+
   }
 
   getUndoItems = () => {
     this.setState({
       date: moment(new Date()).format('YYYYMMDD'),
       cxlx: "UNDO",
+    }, () => {
+      const { fetchQueryOwnerMessage } = this.props;
+      fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), this.state.cxlx)
     })
-    const { fetchQueryOwnerMessage } = this.props;
-    fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), "NUMBER")
+
     // 日历today对象
     let node = document.querySelector('.ant-fullcalendar-selected-day .ant-fullcalendar-value');
     if (node) {
@@ -646,12 +730,25 @@ class TodoItems extends React.Component {
       editMessageTitle,
       ryxztxVisible,
       ryxztxUrl,
+      ygpjVisible,
+      ygpjUrl,
+      //阶段信息修改
+      editModelVisible,
+      editModelUrl,
+      //付款流程发起弹窗
+      paymentModalVisible,
+      currentXmid,
+      currentXmmc,
+      //合同信息修改弹窗
+      contractModalVisible,
+      //中标信息修改弹窗
+      bidInfoModalVisible,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '50%',
-      height: '58rem',
+      height: '68rem',
       title: uploadTitle,
       style: { top: '10rem' },
       visible: uploadVisible,
@@ -671,9 +768,9 @@ class TodoItems extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: sendTitle,
-      width: '180rem',
-      height: '134.2rem',
-      style: { top: '2rem' },
+      width: '60%',
+      height: '100rem',
+      style: { top: '10rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -697,16 +794,28 @@ class TodoItems extends React.Component {
       visible: editMessageVisible,
       footer: null,
     };
-    const ryxztxModalProps = {
+    const editModelModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '60%',
-      height: '45rem',
-      title: '人员新增提醒',
+      height: '80rem',
+      title: '信息修改',
       style: { top: '10rem' },
-      visible: ryxztxVisible,
+      visible: editModelVisible,
       footer: null,
     };
+    //员工评价弹窗
+    const ygpjModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '60%',
+      height: '38rem',
+      title: '操作',
+      style: { top: '10rem' },
+      visible: ygpjVisible,
+      footer: null,
+    };
+
     return (
       <Row style={{ height: '100%', padding: '3.571rem' }}>
         <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
@@ -854,6 +963,47 @@ class TodoItems extends React.Component {
                     <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("人员新增待办")}
                       onCancel={() => this.setState({ ryxztxVisible: false })}
                       src={ryxztxUrl} />}
+
+                  {/*员工评价弹窗*/}
+                  {ygpjVisible &&
+                    <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+                      onCancel={() => this.setState({ ygpjVisible: false })}
+                      src={ygpjUrl} />}
+
+                  {/*阶段信息修改弹窗*/}
+                  {editModelVisible &&
+                    <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+                      onCancel={() => this.setState({ editModelVisible: false })}
+                      src={editModelUrl} />}
+
+                  {/* 付款流程发起弹窗 */}
+                  {paymentModalVisible && <PaymentProcess
+                    paymentModalVisible={paymentModalVisible}
+                    fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                    currentXmid={Number(currentXmid)}
+                    closePaymentProcessModal={() => this.setState({ paymentModalVisible: false })}
+                    onSuccess={() => this.onSuccess("流程发起")}
+                  />}
+
+                  {/*合同信息修改弹窗*/}
+                  {contractModalVisible && <ContractInfoUpdate
+                    currentXmid={Number(currentXmid)}
+                    currentXmmc={currentXmmc}
+                    editMessageVisible={contractModalVisible}
+                    closeMessageEditModal={() => this.setState({ contractModalVisible: false })}
+                    onSuccess={() => this.onSuccess("信息修改")}
+                  ></ContractInfoUpdate>}
+
+                  {/*中标信息修改弹窗*/}
+                  {bidInfoModalVisible && <BidInfoUpdate
+                    currentXmid={Number(currentXmid)}
+                    currentXmmc={currentXmmc}
+                    bidInfoModalVisible={bidInfoModalVisible}
+                    closeBidInfoModal={() => this.setState({ bidInfoModalVisible: false })}
+                    loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                    onSuccess={() => this.onSuccess("信息修改")}
+                  ></BidInfoUpdate>}
+
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
                     locale={{ emptyText: <Empty description={"暂无待办事项"} /> }} dataSource={data}
                     style={{ height: '100%' }} />
