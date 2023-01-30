@@ -40,7 +40,7 @@ class SinglePage extends Component {
           <Route exact path={`${parentUrl}/ZipFilePage/:params`}
                  render={props => <ZipFileModel {...props} submitOperate={this.submitOperate}
                                                 closeDialog={this.closeDialog}/>}/>
-          <Route exact path={`${parentUrl}/SaveProject`}
+          <Route exact path={`${parentUrl}/SaveProject/:params`}
                  render={props => <NewProjectModel {...props} submitOperate={this.submitOperate}
                                                    closeDialog={this.closeDialog}/>}/>
 

@@ -7,5 +7,6 @@ export default [
   { code: '', key: 'queryMilestoneStageInfo', url: '/projectManage/queryMilestoneStageInfo', dis: '查询里程碑阶段信息' },
   { code: '', key: 'queryMatterUnderMilepost', url: '/projectManage/queryMatterUnderMilepost', dis: '查询里程碑事项信息' },
   { code: '', key: 'queryMilepostInfo', url: '/projectManage/queryMilepostInfo', dis: '查询里程碑信息' },
-  { code: '', key: 'creatProject', url: '/projectManage/creatProject', dis: '新建、修改项目' }
+  { code: '', key: 'creatProject', url: '/projectManage/creatProject', dis: '新建、修改项目' },
+  { code: '', key: 'queryProjectDetails', url: '/projectManage/queryProjectDetails', dis: '修改项目时查询项目详细信息' }
 ];

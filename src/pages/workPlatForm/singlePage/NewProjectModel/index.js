@@ -3,7 +3,7 @@ import moment from 'moment';
 import { Input, Select, DatePicker, Icon, Radio, message, Modal, Spin, Form, Row, Col, InputNumber, Button, TreeSelect, Tree } from 'antd';
 import { connect } from 'dva';
 import GridLayout from 'react-grid-layout';
-import { FetchQuerySoftwareList, FetchQueryProjectLabel, FetchQueryOrganizationInfo, FetchQueryBudgetProjects, OperateCreatProject, FetchQueryMilepostInfo, FetchQueryMemberInfo, FetchQueryMilestoneStageInfo, FetchQueryMatterUnderMilepost } from "../../../../services/projectManage";
+import { FetchQueryProjectDetails, FetchQuerySoftwareList, FetchQueryProjectLabel, FetchQueryOrganizationInfo, FetchQueryBudgetProjects, OperateCreatProject, FetchQueryMilepostInfo, FetchQueryMemberInfo, FetchQueryMilestoneStageInfo, FetchQueryMatterUnderMilepost } from "../../../../services/projectManage";
 import { DecryptBase64 } from '../../../../components/Common/Encrypt';
 import config from '../../../../utils/config';
 const { Option } = Select;
@@ -15,6 +15,7 @@ const { pmsServices: { exportExcel } } = api;
 // const ResponsiveGridLayout = WidthProvider(Responsive);
 class NewProjectModel extends React.Component {
   state = {
+    operateType: 'ADD', // 操作类型
     height: 0, // 人员信息下拉框高度设置
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
@@ -38,6 +39,7 @@ class NewProjectModel extends React.Component {
       jobStaffList: [] // 各个岗位下对应的员工id
     },
     basicInfo: {
+      projectId: -1,
       projectName: '',
       projectType: 1,
       projectLabel: [],
@@ -62,12 +64,23 @@ class NewProjectModel extends React.Component {
 
   componentDidMount = async () => {
     const _this = this;
+    const params = this.getUrlParams();
+    if(params.xmid != -1) {
+      // 修改项目操作
+      this.setState({
+        operateType: 'MOD',
+        basicInfo: {
+          ...this.state.basicInfo,
+          projectId: Number(params.xmid)
+        }
+      })
+    }
     setTimeout(function() {
       _this.filterJobList()
     }, 1000 );
   };
 
-  // 接口调用
+  // 新建项目时候接口调用获取数据
   fetchInterface = async () => {
 
     // 查询里程碑阶段信息
@@ -75,7 +88,7 @@ class NewProjectModel extends React.Component {
     // 查询里程碑事项信息
     await this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
     // 查询里程碑信息
-    await this.fetchQueryMilepostInfo({  type: 1, xmid: -1, biddingMethod: 1, budget: 0, label: ''});
+    await this.fetchQueryMilepostInfo({  type: 1, xmid: this.state.basicInfo.projectId, biddingMethod: 1, budget: 0, label: ''});
 
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
@@ -87,9 +100,14 @@ class NewProjectModel extends React.Component {
     await this.fetchQueryMemberInfo();
     // 查询关联预算项目信息
     await this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+
+
+    // 修改项目时查询项目详细信息
+    await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+
     // 修改加载状态
     this.setState({loading: false});
-  }
+  };
 
   // 处理岗位数据
   filterJobList = () => {
@@ -104,7 +122,10 @@ class NewProjectModel extends React.Component {
     loginUser.id = String(loginUser.id);
     arr[9] = [loginUser.id];
     this.setState({searchStaffList: [loginUser], loginUser: loginUser, staffJobList: RYGW, staffInfo: {...this.state.staffInfo, jobStaffList: arr}});
+
+    // this.fetchInterface();
     this.fetchInterface();
+
   };
 
 
@@ -203,6 +224,67 @@ class NewProjectModel extends React.Component {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
+  // 修改项目时查询项目详细信息
+  fetchQueryProjectDetails(params) {
+    return FetchQueryProjectDetails(params)
+      .then((result) => {
+        const { code = -1, record = [] } = result;
+        if (code > 0 && record.length > 0) {
+          let result = record[0];
+          let jobArr = [];
+          let searchStaffList = [];
+          let memberInfo = JSON.parse(result.memberInfo);
+          memberInfo.push({gw: '10', rymc: result.projectManager});
+          memberInfo.forEach(item => {
+            let rymc = item.rymc.split(',').map(String);
+            jobArr[Number(item.gw)-1] = rymc;
+            rymc.forEach(ry => {
+              this.state.staffList.forEach(staff => {
+                if(ry == staff.id) {
+                  searchStaffList.push(staff);
+                }
+              })
+            })
+          });
+          let totalBudget = 0;
+          let relativeBudget = 0;
+          this.state.budgetProjectList.forEach(item => {
+            if(item.ysID == result.budgetProject) {
+              totalBudget = Number(item.ysZJE);
+              relativeBudget = Number(item.ysKGL);
+            }
+          });
+
+          this.setState({searchStaffList: searchStaffList,
+            basicInfo: {
+              projectId: result.projectId,
+              projectName: result.projectName,
+              projectType: Number(result.projectType),
+              projectLabel: result.projectLabel.split(','),
+              org: Number(result.orgId),
+              software: result.softwareId,
+              biddingMethod: Number(result.biddingMethod)
+            },
+            budgetInfo: {
+              year: moment(moment(result.year, 'YYYY').format()),
+              budgetProjectId: result.budgetProject,
+              totalBudget: totalBudget,
+              relativeBudget: relativeBudget,
+              projectBudget: Number(result.projectBudget)
+            },
+            staffInfo: {
+              focusJob: '',
+              jobStaffList: jobArr
+            }
+          });
+        }
+      }).catch((error) => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  }
+
+
 
   // 查询里程碑阶段信息
   fetchQueryMilestoneStageInfo(params) {
@@ -326,9 +408,13 @@ class NewProjectModel extends React.Component {
   };
 
   // 查询人员信息
-  searchStaff = (val) => {
+  searchStaff = (val, type) => {
     if(val.length !== 0) {
-      let searchStaffList = [this.state.loginUser];
+      let searchStaffList = [];
+      let isExist = this.state.staffList.filter(item => item.id == this.state.loginUser.id);
+      if(type === 'manage' && isExist.length === 0) {
+        searchStaffList.push(this.state.loginUser);
+      }
       this.state.staffList.forEach(item => {
         if(item.name.toLowerCase().indexOf(val.toLowerCase()) >= 0) {
           searchStaffList.push(item);
@@ -541,11 +627,13 @@ class NewProjectModel extends React.Component {
     let staffJobParam = [];
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
-      let param = {
-        gw: index,
-        rymc: jobStaffList[index-1].join(';')
-      };
-      staffJobParam.push(param);
+      if(jobStaffList[index-1] && jobStaffList[index-1].length > 0) {
+        let param = {
+          gw: index,
+          rymc: jobStaffList[index-1].join(';')
+        };
+        staffJobParam.push(param);
+      }
     });
     const staffJobParams = staffJobParam.filter(item => (item.rymc !== ''));
     // 获取项目经理
@@ -620,8 +708,8 @@ class NewProjectModel extends React.Component {
       item.gw = String(item.gw);
     });
     params.members = memberInfo;
-    params.projectId = -1;
-    params.type = 'ADD';
+    params.projectId = Number(this.state.basicInfo.projectId);
+    params.type = this.state.operateType;
     params.czr = Number(this.state.loginUser.id);
 
     this.operateCreatProject(params);
@@ -920,7 +1008,7 @@ class NewProjectModel extends React.Component {
                             this.setState({basicInfo: {...this.state.basicInfo, projectType: e.target.value}});
                             this.fetchQueryMilepostInfo({
                               type: e.target.value,
-                              xmid: -1,
+                              xmid: this.state.basicInfo.projectId,
                               biddingMethod: basicInfo.biddingMethod,
                               budget: budgetInfo.projectBudget,
                               label: ''
@@ -1016,7 +1104,7 @@ class NewProjectModel extends React.Component {
                                 this.setState({basicInfo: {...this.state.basicInfo, biddingMethod: e.target.value}});
                                 this.fetchQueryMilepostInfo({
                                   type: basicInfo.projectType,
-                                  xmid: -1,
+                                  xmid: this.state.basicInfo.projectId,
                                   biddingMethod: e.target.value,
                                   budget: budgetInfo.projectBudget,
                                   label: ''
@@ -1087,10 +1175,9 @@ class NewProjectModel extends React.Component {
                             required: true,
                             message: '请选择关联预算项目'
                           }],
-                          initialValue: basicInfo.budgetProjectId
+                          initialValue: budgetInfo.budgetProjectId
                         })(
                           <Select showSearch
-                                  value={budgetInfo.budgetProjectId}
                                   onChange={e =>  {
                                     budgetProjectList.forEach(item => {
                                       if(item.ysID == e) {
@@ -1149,7 +1236,7 @@ class NewProjectModel extends React.Component {
                           <InputNumber onBlur={(e) => {
                             this.fetchQueryMilepostInfo({
                               type: basicInfo.projectType,
-                              xmid: -1,
+                              xmid: this.state.basicInfo.projectId,
                               biddingMethod: basicInfo.biddingMethod,
                               budget: budgetInfo.projectBudget,
                               label: ''
@@ -1227,7 +1314,7 @@ class NewProjectModel extends React.Component {
                                     </div>
                                     <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
                                       <RangePicker
-                                        onFocus={() => this.setState({isEditMile: true})}
+                                        onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                         style={{width: '31%'}}
                                         onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
                                         value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
@@ -1252,7 +1339,7 @@ class NewProjectModel extends React.Component {
                                               e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
                                                 if(sx.type && sx.type === 'title' && sx_index === 0) {
                                                   return (
-                                                    <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                    <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold', fontSize: '2.5rem'}}>
                                                       {e.swlxmc || ''}
                                                     </div>
                                                   )
@@ -1294,7 +1381,7 @@ class NewProjectModel extends React.Component {
 
                                                         ) : (
                                                           <React.Fragment>
-                                                            <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                            <span title={sx.sxmc} style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
                                                             {
                                                               isEditMile ? (
                                                                 <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
@@ -1333,12 +1420,12 @@ class NewProjectModel extends React.Component {
                                   <div className="title">
                                     <div className="left">
                                       <div style={{marginTop: '2rem'}}>
-                                        <span style={{paddingLeft: '1rem', fontSize: '2rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
+                                        <span style={{paddingLeft: '1rem', fontSize: '2.5rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
                                       </div>
                                       <div style={{paddingLeft: '2rem', position: 'relative'}}>
                                         <RangePicker
                                           style={{width: '70%'}}
-                                          onFocus={() => this.setState({isEditMile: true})}
+                                          onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                           onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
                                           value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
                                           format="YYYY-MM-DD"
@@ -1378,7 +1465,7 @@ class NewProjectModel extends React.Component {
                                               e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
                                                 if(sx.type && sx.type === 'title' && sx_index === 0) {
                                                   return (
-                                                    <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                    <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold', fontSize: '2.5rem'}}>
                                                       {e.swlxmc || ''}
                                                     </div>
                                                   )
@@ -1420,7 +1507,7 @@ class NewProjectModel extends React.Component {
 
                                                         ) : (
                                                           <React.Fragment>
-                                                            <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                            <span title={sx.sxmc} style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
                                                             {
                                                               isEditMile ? (
                                                                 <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
@@ -1487,7 +1574,7 @@ class NewProjectModel extends React.Component {
                                   </div>
                                   <div style={{width: '75%', marginLeft: '2rem', position: 'relative'}}>
                                     <RangePicker
-                                      onFocus={() => this.setState({isEditMile: true})}
+                                      onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                       style={{width: '31%'}}
                                       onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
                                       value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
@@ -1512,7 +1599,7 @@ class NewProjectModel extends React.Component {
                                             e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
                                               if(sx.type && sx.type === 'title' && sx_index === 0) {
                                                 return (
-                                                  <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                  <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontSize: '2.5rem', fontWeight: 'bold'}}>
                                                     {e.swlxmc || ''}
                                                   </div>
                                                 )
@@ -1554,7 +1641,7 @@ class NewProjectModel extends React.Component {
 
                                                       ) : (
                                                         <React.Fragment>
-                                                          <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                          <span title={sx.sxmc} style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
                                                           {
                                                             isEditMile ? (
                                                               <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
@@ -1593,12 +1680,12 @@ class NewProjectModel extends React.Component {
                                 <div className="title">
                                   <div className="left">
                                     <div style={{marginTop: '2rem'}}>
-                                      <span style={{paddingLeft: '1rem', fontSize: '2rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
+                                      <span style={{paddingLeft: '1rem', fontSize: '2.5rem', fontWeight: 'bold',  borderLeft: '4px solid #3461FF'}}>{item.lcbmc}</span>
                                     </div>
                                     <div style={{paddingLeft: '2rem', position: 'relative'}}>
                                       <RangePicker
                                         style={{width: '70%'}}
-                                        onFocus={() => this.setState({isEditMile: true})}
+                                        onFocus={() => this.setState({isEditMile: true, isCollapse: false})}
                                         onChange={(date, str) => this.changeMilePostInfoTime(str, index)}
                                         value={[moment(item.kssj, 'YYYY-MM-DD'), moment(item.jssj, 'YYYY-MM-DD')]}
                                         format="YYYY-MM-DD"
@@ -1638,7 +1725,7 @@ class NewProjectModel extends React.Component {
                                             e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {
                                               if(sx.type && sx.type === 'title' && sx_index === 0) {
                                                 return (
-                                                  <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold'}}>
+                                                  <div key={String(sx_index+1)} style={{paddingTop: '3rem', fontWeight: 'bold', fontSize: '2.5rem'}}>
                                                     {e.swlxmc || ''}
                                                   </div>
                                                 )
@@ -1680,7 +1767,7 @@ class NewProjectModel extends React.Component {
 
                                                       ) : (
                                                         <React.Fragment>
-                                                          <span>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
+                                                          <span title={sx.sxmc} style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>
                                                           {
                                                             isEditMile ? (
                                                               <span style={{position: 'fixed', right: '5%'}} onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
@@ -1762,9 +1849,10 @@ class NewProjectModel extends React.Component {
                               <div className="name" style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}><span style={{color: '#de3741', paddingRight: '1rem'}}>*</span><span>{item.note}：</span></div>
                               <div style={{width: '65%'}}>
                                 <Select
+                                  placeholder="请输入名字搜索人员"
                                   value={jobStaffList.length > 0 ? jobStaffList[9] : []}
                                   onBlur={() => this.setState({height: 0})}
-                                  onSearch={this.searchStaff}
+                                  onSearch={e => this.searchStaff(e, 'manage')}
                                   onFocus={() => this.setState({staffInfo: { ...this.state.staffInfo, focusJob: '10' }})}
                                   filterOption={false}
                                   onChange={(e) => {
@@ -1804,9 +1892,10 @@ class NewProjectModel extends React.Component {
                               </div>
                               <div style={{width: '65%'}}>
                                 <Select
+                                  placeholder="请输入名字搜索人员"
                                   value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm)-1] : []}
                                   onBlur={() => this.setState({height: 0})}
-                                  onSearch={this.searchStaff}
+                                  onSearch={e => this.searchStaff(e, 'staff')}
                                   onFocus={() => this.setState({staffInfo: { ...this.state.staffInfo, focusJob: item.ibm }})}
                                   filterOption={false}
                                   onChange={(e) => {

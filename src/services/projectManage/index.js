@@ -11,7 +11,8 @@ const { projectManage: {
   queryMilestoneStageInfo,
   queryMatterUnderMilepost,
   queryMilepostInfo,
-  creatProject
+  creatProject,
+  queryProjectDetails
 } } = api;
 
 // 查询软件清单
@@ -99,6 +100,16 @@ export async function FetchQueryMilepostInfo(payload, configObj) {
 export async function OperateCreatProject(payload, configObj) {
   const option = {
     url: creatProject,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 修改项目时查询项目详细信息
+export async function FetchQueryProjectDetails(payload, configObj) {
+  const option = {
+    url: queryProjectDetails,
     method: 'post',
     data: payload,
   };
