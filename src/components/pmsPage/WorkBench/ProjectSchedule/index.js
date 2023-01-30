@@ -1159,7 +1159,7 @@ class ProjectSchedule extends React.Component {
                   total={total}
                   size="small"
                   showTotal={total => `共 ${total} 条`}
-                  defaultPageSize={5}
+                  defaultPageSize={7}
                   onChange={this.handPageChange}
                   // showQuickJumper={true}
                   defaultCurrent={1}
