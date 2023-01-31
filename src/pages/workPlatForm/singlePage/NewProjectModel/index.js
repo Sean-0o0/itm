@@ -87,7 +87,7 @@ class NewProjectModel extends React.Component {
     }
     setTimeout(function() {
       _this.filterJobList()
-    }, 500 );
+    }, 300 );
   };
 
   fetchInterface = async () => {
@@ -124,6 +124,7 @@ class NewProjectModel extends React.Component {
   // 处理岗位数据
   filterJobList = () => {
     const { dictionary: { RYGW = [] } } = this.props;
+    console.log(RYGW);
     // 初始化各个岗位下对应的员工id的数组
     let arr = [];
     RYGW.forEach(item => {
@@ -134,10 +135,7 @@ class NewProjectModel extends React.Component {
     loginUser.id = String(loginUser.id);
     arr[9] = [loginUser.id];
     this.setState({searchStaffList: [loginUser], loginUser: loginUser, staffJobList: RYGW, staffInfo: {...this.state.staffInfo, jobStaffList: arr}});
-
-    // this.fetchInterface();
     this.fetchInterface();
-
   };
 
 
@@ -316,10 +314,11 @@ class NewProjectModel extends React.Component {
     return FetchQueryMemberInfo(
       { type: 'ALL' }
     ).then((result) => {
-      const { code = -1, record = [] } = result;
+      const { code = -1, record = '' } = result;
       if (code > 0) {
+        const result = JSON.parse(record);
         const arr = [];
-        record.forEach(item => {
+        result.forEach(item => {
           let e = {
             orgFid: item.orgId,
             orgId: '_' + item.id,
@@ -327,7 +326,7 @@ class NewProjectModel extends React.Component {
           };
           arr.push(e);
         });
-        this.setState({staffList: record, organizationStaffTreeList: this.toTree(this.state.organizationList.concat(arr), 0)});
+        this.setState({staffList: result, organizationStaffTreeList: this.toTree(this.state.organizationList.concat(arr), 0)});
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -1976,10 +1975,14 @@ class NewProjectModel extends React.Component {
 
                 {
                   jobStaffInfoCollapse ? (
-                    <div className="title" style={{marginBottom: '10rem'}}>
-                      <Icon type="caret-right" onClick={() => this.setState({jobStaffInfoCollapse: !jobStaffInfoCollapse})} style={{fontSize: '2rem', cursor: 'pointer'}} />
-                      <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>人员信息</span>
-                    </div>
+                    <React.Fragment>
+                      <div className="title">
+                        <Icon type="caret-right" onClick={() => this.setState({jobStaffInfoCollapse: !jobStaffInfoCollapse})} style={{fontSize: '2rem', cursor: 'pointer'}} />
+                        <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>人员信息</span>
+                      </div>
+                      <div style={{width: '100%', height: '10rem', visibility: 'hidden'}}></div>
+                    </React.Fragment>
+
                   ) : (
                     <React.Fragment>
                       <div className="title">
