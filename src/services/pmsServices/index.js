@@ -37,7 +37,8 @@ const {
     queryPaymentFlowDetailFile,
     getApplyListProvisionalAuth,
     queryContrastStatisticInfo,
-    checkInvoice
+    checkInvoice,
+    queryUserRole,
   },
 } = api;
 
@@ -373,6 +374,16 @@ export async function QueryContrastStatisticInfo(payload) {
 export async function CheckInvoice(payload) {
   const option = {
     url: checkInvoice,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+//查询用户的角色
+export async function QueryUserRole(payload) {
+  const option = {
+    url: queryUserRole,
     method: 'post',
     data: payload,
   };

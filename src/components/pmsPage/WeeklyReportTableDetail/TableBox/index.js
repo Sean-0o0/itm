@@ -327,15 +327,15 @@ const TableBox = (props) => {
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
+                    <a style={{ color: '#3361ff', marginRight: '1.488rem' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
                     {authIdData?.includes(CUR_USER_ID) && (<>
                         <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
                             <a style={{ color: '#3361ff', marginRight: '1.488rem' }}>退回</a>
                         </Popconfirm>
                         <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
-                            <a style={{ color: '#3361ff', marginRight: '1.488rem' }}>删除</a>
+                            <a style={{ color: '#3361ff' }}>删除</a>
                         </Popconfirm>
                     </>)}
-                    <a style={{ color: '#3361ff' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
                 </div>
             },
         },
