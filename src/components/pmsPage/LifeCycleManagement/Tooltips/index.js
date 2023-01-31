@@ -111,8 +111,7 @@ class Tooltips extends React.Component {
   handleAuthority = (fn, txt, arg) => {
     const {projectInfo} = this.props;
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
-    // console.log('this.state.xmUserId,LOGIN_USER_ID', this.state.xmUserId === LOGIN_USER_ID, this.state.xmUserId, LOGIN_USER_ID, JSON.parse(sessionStorage.getItem("user")));
-    if (projectInfo?.userid === LOGIN_USER_ID) {
+    if (Number(projectInfo?.userid) === LOGIN_USER_ID) {
       if (arg) {
         fn.call(this, arg);
       } else {

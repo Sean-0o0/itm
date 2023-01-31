@@ -215,7 +215,7 @@ class ProjectSchedule extends React.Component {
       )
     }
     if (item.sxmc.includes("信委会议案流程")) {
-      params = getParams("LC_XWHYALC", "StartWork",
+      params = getParams("LC_XWHYALC", "LC_XWHYALC_TAFQ",
         [],
         Loginname
       )

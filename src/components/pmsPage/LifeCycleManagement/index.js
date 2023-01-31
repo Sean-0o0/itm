@@ -258,7 +258,7 @@ class LifeCycleManagementTabs extends React.Component {
       )
     }
     if (name.includes("信委会议案流程")) {
-      params = getParams("LC_XWHYALC", "StartWork",
+      params = getParams("LC_XWHYALC", "LC_XWHYALC_TAFQ",
         [],
         Loginname
       )
