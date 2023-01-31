@@ -34,5 +34,5 @@ export default [
   { code: '', key: 'getStreamByLiveBos', url: '/EKB/v1/getStreamByLiveBos', dis: '获取LiveBos文档流' },
   { code: '', key: 'queryContrastStatisticInfo', url: '/projectManage/queryContrastStatisticInfo', dis: '查询领导看板页顶部较去年数据' },
   { code: '', key: 'checkInvoice', url: '/EKB/v1/checkInvoice', dis: '对接易快报发票查验接口' },
-
+  { code: '', key: 'queryUserRole', url: '/projectManage/queryUserRole', dis: '查询用户的角色' },
 ];
