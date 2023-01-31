@@ -20,18 +20,18 @@ class OperationList extends React.Component {
     });
   }
 
-  onChange = (value) => {
-    const { fetchQueryLiftcycleMilestone, fetchQueryLifecycleStuff, getCurrentXmid, fetchQueryOwnerProjectList, fetchQueryProjectInfoInCycle } = this.props;
-    fetchQueryLiftcycleMilestone(value);
-    fetchQueryLifecycleStuff(value);
-    fetchQueryProjectInfoInCycle(value);
-    getCurrentXmid(value);//生命周期页取得最新xmid
-    //选择后不会回到第一页
-    // fetchQueryOwnerProjectList(1, PASE_SIZE);
-    // this.setState({
-    //   currentPageNum: 1,
-    // });
-  };
+  // onChange = (value) => {
+  //   const { fetchQueryLiftcycleMilestone, fetchQueryLifecycleStuff, getCurrentXmid, fetchQueryProjectInfoInCycle } = this.props;
+  //   fetchQueryLiftcycleMilestone(value);
+  //   fetchQueryLifecycleStuff(value);
+  //   fetchQueryProjectInfoInCycle(value);
+  //   // getCurrentXmid(value);//生命周期页取得最新xmid
+  //   //选择后不会回到第一页
+  //   // fetchQueryOwnerProjectList(1, PASE_SIZE);
+  //   // this.setState({
+  //   //   currentPageNum: 1,
+  //   // });
+  // };
   handleSelectFocus = () => {
     FetchQueryOwnerProjectList(
       {
@@ -149,7 +149,7 @@ class OperationList extends React.Component {
 
   render() {
     const {open, currentPageNum, listData} = this.state;
-    const {defaultValue, data, fetchQueryOwnerProjectList, projectInfo, totalRows} = this.props;
+    const {projectInfo, data, defaultValue} = this.props;
     let bqmc = projectInfo?.bqmc ? projectInfo?.bqmc : "";
     // let bqmc = "{\"个人重点关注\":\"38\",\"个人重点关注22\":\"38\",}";
     let obj;
@@ -161,43 +161,44 @@ class OperationList extends React.Component {
     obj = eval(' (' + bqmc + ')')
     return (
       <div style={{height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '1.1904rem'}}>
-        <Input.Group compact>
-          <div onMouseDown={(e) => {
-            e.preventDefault()
-          }} style={{position: 'relative'}} className="operationListSelectBox">
-            <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}
-                 alt='' style={{marginBottom: '0.5952rem', height: '2.976rem'}}
-            />
-            <Select
-              ref={this.selectRef}
-              style={{width: '34rem', borderRadius: '1.1904rem !important'}}
-              showSearch
-              placeholder="请选择项目名称"
-              optionFilterProp="children"
-              key={defaultValue ? defaultValue : data[0]?.xmmc}
-              defaultValue={defaultValue ? defaultValue : data[0]?.xmmc}
-              onChange={this.onChange}
-              // onSearch={this.onSearch}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              onFocus={this.handleSelectFocus}
-              open={open}
-              onDropdownVisibleChange={(visible) => { this.setState({ open: visible }) }}
-            >
-              {
-                data?.map((item = {}, ind) => {
-                  return <Option key={ind} value={item.xmid}>{item.xmmc}</Option>
-                })
-              }
-            </Select></div>
-        </Input.Group>
-        <div style={{ display: 'flex', marginTop: '2.3808rem' }}>
+        {/*<Input.Group compact>*/}
+        {/*  <div onMouseDown={(e) => {*/}
+        {/*    e.preventDefault()*/}
+        {/*  }} style={{position: 'relative'}} className="operationListSelectBox">*/}
+        {/*    <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}*/}
+        {/*         alt='' style={{marginBottom: '0.5952rem', height: '2.976rem'}}*/}
+        {/*    />*/}
+        {/*    <Select*/}
+        {/*      ref={this.selectRef}*/}
+        {/*      style={{width: '34rem', borderRadius: '1.1904rem !important'}}*/}
+        {/*      showSearch*/}
+        {/*      placeholder="请选择项目名称"*/}
+        {/*      optionFilterProp="children"*/}
+        {/*      key={defaultValue ? defaultValue : data[0]?.xmmc}*/}
+        {/*      defaultValue={defaultValue ? defaultValue : data[0]?.xmmc}*/}
+        {/*      onChange={this.onChange}*/}
+        {/*      // onSearch={this.onSearch}*/}
+        {/*      filterOption={(input, option) =>*/}
+        {/*        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0*/}
+        {/*      }*/}
+        {/*      onFocus={this.handleSelectFocus}*/}
+        {/*      open={open}*/}
+        {/*      onDropdownVisibleChange={(visible) => { this.setState({ open: visible }) }}*/}
+        {/*    >*/}
+        {/*      {*/}
+        {/*        data?.map((item = {}, ind) => {*/}
+        {/*          return <Option key={ind} value={item.xmid}>{item.xmmc}</Option>*/}
+        {/*        })*/}
+        {/*      }*/}
+        {/*    </Select></div>*/}
+        {/*</Input.Group>*/}
+        <div style={{display: 'flex', margin: '1rem 0'}}>
           {this.getReactNode('项目经理', projectInfo?.xmjl, 'user',)}
           {this.getReactNode('项目进度',
-            <div style={{ display: 'flex', minWidth: '25.296rem' }}>
+            <div style={{display: 'flex', minWidth: '25.296rem'}}>
               {projectInfo?.xmjd}%
-              <Progress style={{ marginLeft: '1.1904rem' }} percent={Number(projectInfo?.xmjd)} strokeColor='#3361FF' showInfo={false} />
+              <Progress style={{marginLeft: '1.1904rem'}} percent={Number(projectInfo?.xmjd)} strokeColor='#3361FF'
+                        showInfo={false}/>
             </div>, 'pie-chart')}
           {this.getReactNode('项目标签',
             <div style={{display: 'flex'}}>

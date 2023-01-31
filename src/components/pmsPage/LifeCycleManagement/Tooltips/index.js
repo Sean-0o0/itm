@@ -20,27 +20,28 @@ const {Option} = Select;
 class Tooltips extends React.Component {
   state = {
     src: '',
-    xmUserId: '',
+    // xmUserId: '',
     txtStyle: {
       marginLeft: '0.6rem',
       color: 'rgba(51, 97, 255, 1)',
       marginRight: '0.5952rem'
     },
   };
+
   componentDidMount() {
-    this.fetchQueryProjectInfoInCycle(this.props.xmid);
+    // this.fetchQueryProjectInfoInCycle(this.props.xmid);
   }
 
   //获取项目经理id
-  fetchQueryProjectInfoInCycle = (xmid) => {
-    FetchQueryProjectInfoInCycle({
-      xmmc: xmid,
-    }).then(res => {
-      this.setState({
-        xmUserId: Number(res?.record?.userid),
-      });
-    });
-  };
+  // fetchQueryProjectInfoInCycle = (xmid) => {
+  //   FetchQueryProjectInfoInCycle({
+  //     xmmc: xmid,
+  //   }).then(res => {
+  //     this.setState({
+  //       xmUserId: Number(res?.record?.userid),
+  //     });
+  //   });
+  // };
   handleFillOut = (item) => {
     // console.log("item", item);
     this.props.handleFillOut(item);
@@ -108,9 +109,10 @@ class Tooltips extends React.Component {
   }
 
   handleAuthority = (fn, txt, arg) => {
+    const {projectInfo} = this.props;
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
     // console.log('this.state.xmUserId,LOGIN_USER_ID', this.state.xmUserId === LOGIN_USER_ID, this.state.xmUserId, LOGIN_USER_ID, JSON.parse(sessionStorage.getItem("user")));
-    if (this.state.xmUserId === LOGIN_USER_ID) {
+    if (projectInfo?.userid === LOGIN_USER_ID) {
       if (arg) {
         fn.call(this, arg);
       } else {
