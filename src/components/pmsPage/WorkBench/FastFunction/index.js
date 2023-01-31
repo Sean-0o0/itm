@@ -62,7 +62,7 @@ class FastFunction extends React.Component {
       title: '新建项目',
       width: '70%',
       height: '120rem',
-      style: { top: '10rem' },
+      style: {top: '5rem'},
       visible: fileAddVisible,
       footer: null,
     };

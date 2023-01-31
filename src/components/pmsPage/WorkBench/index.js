@@ -158,7 +158,7 @@ class WorkBench extends React.Component {
         cxlx: 'USER',
         paging: 1,
         current: e ? e : 1,
-        pageSize: 7,
+        pageSize: 5,
         total: -1,
         sort: ''
       }
@@ -182,7 +182,7 @@ class WorkBench extends React.Component {
         const { record = [], code = 0 } = ret;
         if (code === 1) {
           //zxxh排序
-          e[i].extend = false;
+          e[i].extend = i === 0;
           e[i].kssj = record[0].kssj
           e[i].jssj = record[0].jssj
           e[i].zt = record[0].zt

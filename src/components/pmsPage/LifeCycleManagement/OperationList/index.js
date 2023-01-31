@@ -148,18 +148,29 @@ class OperationList extends React.Component {
   };
 
   render() {
-    const { open, currentPageNum, listData } = this.state;
-    const { defaultValue, data, fetchQueryOwnerProjectList, projectInfo, totalRows } = this.props;
+    const {open, currentPageNum, listData} = this.state;
+    const {defaultValue, data, fetchQueryOwnerProjectList, projectInfo, totalRows} = this.props;
+    let bqmc = projectInfo?.bqmc ? projectInfo?.bqmc : "";
+    // let bqmc = "{\"个人重点关注\":\"38\",\"个人重点关注22\":\"38\",}";
+    let obj;
+    if (bqmc !== "") {
+      bqmc = bqmc?.slice(0, bqmc?.lastIndexOf(",")) + bqmc?.slice(bqmc?.lastIndexOf(",") + 1, bqmc.length);
+    } else {
+      bqmc = '{"暂无":"0"}';
+    }
+    obj = eval(' (' + bqmc + ')')
     return (
-      <div style={{ height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '1.1904rem' }}>
+      <div style={{height: '100%', padding: '2.381rem 3.571rem', backgroundColor: 'white', borderRadius: '1.1904rem'}}>
         <Input.Group compact>
-          <div onMouseDown={(e) => { e.preventDefault() }} style={{ position: 'relative' }} className="operationListSelectBox">
+          <div onMouseDown={(e) => {
+            e.preventDefault()
+          }} style={{position: 'relative'}} className="operationListSelectBox">
             <img src={require('../../../../image/pms/LifeCycleManagement/search.png')}
-              alt='' style={{ marginBottom: '0.5952rem', height: '2.976rem' }}
+                 alt='' style={{marginBottom: '0.5952rem', height: '2.976rem'}}
             />
             <Select
               ref={this.selectRef}
-              style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
+              style={{width: '34rem', borderRadius: '1.1904rem !important'}}
               showSearch
               placeholder="请选择项目名称"
               optionFilterProp="children"
@@ -189,11 +200,17 @@ class OperationList extends React.Component {
               <Progress style={{ marginLeft: '1.1904rem' }} percent={Number(projectInfo?.xmjd)} strokeColor='#3361FF' showInfo={false} />
             </div>, 'pie-chart')}
           {this.getReactNode('项目标签',
-            <div style={{ display: 'flex' }}>
-              {(projectInfo?.zdxm === '1') && this.getTag('重点项目')}
-              {(projectInfo?.zyxm === '1') && this.getTag('自研项目')}
-              {(projectInfo?.ddxm === '1') && this.getTag('迭代项目')}
-              {(projectInfo?.zdxm === '0' && projectInfo?.ddxm === '0' && projectInfo?.zyxm === '0') && this.getTag('暂无')}
+            <div style={{display: 'flex'}}>
+              {Object.keys(obj ? obj : "").map(key => {
+                return this.getTag(key.toString());
+              })}
+              {/*{JSON.parse("{\"个人重点关注\":\"38\"}").map((item = {}, ind) => {*/}
+              {/*  return this.getTag(item);*/}
+              {/*})}*/}
+              {/*{(projectInfo?.zdxm === '1') && this.getTag('重点项目')}*/}
+              {/*{(projectInfo?.zyxm === '1') && this.getTag('自研项目')}*/}
+              {/*{(projectInfo?.ddxm === '1') && this.getTag('迭代项目')}*/}
+              {/*{(projectInfo?.zdxm === '0' && projectInfo?.ddxm === '0' && projectInfo?.zyxm === '0') && this.getTag('暂无')}*/}
             </div>, 'tag')}
         </div>
       </div>

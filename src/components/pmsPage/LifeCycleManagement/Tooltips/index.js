@@ -1,15 +1,21 @@
 import React from 'react';
-import { Button, Input, Select, Row, Col, Tooltip, message, Icon } from 'antd';
-import { connect } from 'dva';
+import {Button, Input, Select, Row, Col, Tooltip, message, Icon, Dropdown, Menu} from 'antd';
+import {connect} from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
-import { FetchQueryLifecycleStuff, FetchQueryOAUrl, FetchQueryOwnerWorkflow, FetchQueryProjectInfoInCycle, GetApplyListProvisionalAuth } from "../../../../services/pmsServices";
+import {
+  FetchQueryLifecycleStuff,
+  FetchQueryOAUrl,
+  FetchQueryOwnerWorkflow,
+  FetchQueryProjectInfoInCycle,
+  GetApplyListProvisionalAuth
+} from "../../../../services/pmsServices";
 import axios from 'axios'
 import config from '../../../../utils/config';
 
-const { api } = config;
-const { pmsServices: { getStreamByLiveBos } } = api;
+const {api} = config;
+const {pmsServices: {getStreamByLiveBos}} = api;
 
-const { Option } = Select;
+const {Option} = Select;
 
 class Tooltips extends React.Component {
   state = {
@@ -142,32 +148,54 @@ class Tooltips extends React.Component {
   getSpan = txt => <span style={{ color: 'rgba(51, 97, 255, 1)', cursor: 'pointer' }}>{txt}</span>;
   //流程发起查看
   getLcfqck = (status, item, isFklc = false) => {
-    if (status === ' ')
+    //status === ' '
+    if (status === ' ') {
       return (
-        <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)} >
-          <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('发起')}
+        <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-send"/>{this.getSpan('发起')}
         </Tooltip>
       );
-    else {
-      if (isFklc)//是否为付款流程
-        return (
-          <>
-            <Tooltip title="打印" onClick={this.print}>
-              <a style={this.state.txtStyle} >
-                <Icon type="printer" style={{ marginRight: '0.5952rem' }} />{this.getSpan('打印')}
-              </a>
-            </Tooltip>
-            <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
-              <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-              />{this.getSpan('查看')}
-            </Tooltip>
-          </>
+    } else {
+      let menu = "";
+      //是否为付款流程
+      if (isFklc) {
+        menu = (
+          <Menu>
+            <Menu.Item>
+              <Tooltip title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
+                <a style={this.state.txtStyle} className="iconfont icon-send"/>{this.getSpan('重新发起')}
+              </Tooltip>
+            </Menu.Item>
+            <Menu.Item>
+              <Tooltip title="打印" onClick={this.print}>
+                <a style={this.state.txtStyle} className="iconfont icon-print"/>{this.getSpan('打印')}
+              </Tooltip>
+            </Menu.Item>
+          </Menu>
         );
+      } else {
+        menu = (
+          <Menu>
+            <Menu.Item>
+              <Tooltip title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
+                <a style={this.state.txtStyle} className="iconfont icon-send"/>{this.getSpan('重新发起')}
+              </Tooltip>
+            </Menu.Item>
+          </Menu>
+        );
+      }
       return (
-        <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
-          <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-          />{this.getSpan('查看')}
-        </Tooltip>
+        <>
+          <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
+            <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
+            />{this.getSpan('查看')}
+          </Tooltip>
+          <Dropdown overlay={menu}>
+            <i style={{color: 'rgba(51, 97, 255, 1)', marginLeft: '1.5rem'}}
+               className="iconfont icon-more">
+            </i>
+          </Dropdown>
+        </>
       );
     }
 

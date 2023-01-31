@@ -1139,26 +1139,30 @@ class LifeCycleManagementTabs extends React.Component {
                                                       visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
                                                       onVisibleChange={this.handleVisibleChange}
                                                     >
-                                                      <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
+                                                      <a className='lifecycle-text-overflow'
+                                                         style={item.zxqk === " " ? {color: '#333'} : {color: 'rgb(51, 97, 255)'}}>{item.sxmc}</a>
                                                     </Popover> :
-                                                    <a className='lifecycle-text-overflow' style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }} onClick={() => this.handleClick(item)}>{item.sxmc}</a>
-                                                )
+                                                    <a className='lifecycle-text-overflow'
+                                                       style={item.zxqk === " " ? {color: '#333'} : {color: 'rgb(51, 97, 255)'}}
+                                                       onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                  )
                                                   :
                                                   <span className='lifecycle-text-overflow'>{item.sxmc}</span>
                                               }
                                             </div>
                                             <div className='cont-row-zxqk'>{item.zxqk}</div>
                                           </Col>
-                                          <Col span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6} style={{ textAlign: 'right' }}>
+                                          <Col span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6}
+                                               style={{textAlign: 'left', width: '29%'}}>
                                             <Tooltips type={item.swlx}
-                                              item={item}
-                                              status={item.zxqk}
-                                              xmid={xmid}
-                                              handleUpload={() => this.handleUpload(item)}
-                                              handleSend={this.handleSend}
-                                              handleFillOut={() => this.handleFillOut(item)}
-                                              handleEdit={() => this.handleEdit(item)}
-                                              handleMessageEdit={this.handleMessageEdit}
+                                                      item={item}
+                                                      status={item.zxqk}
+                                                      xmid={xmid}
+                                                      handleUpload={() => this.handleUpload(item)}
+                                                      handleSend={this.handleSend}
+                                                      handleFillOut={() => this.handleFillOut(item)}
+                                                      handleEdit={() => this.handleEdit(item)}
+                                                      handleMessageEdit={this.handleMessageEdit}
                                             />
                                           </Col>
                                         </Row>
