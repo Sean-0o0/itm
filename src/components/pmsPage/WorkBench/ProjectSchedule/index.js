@@ -1057,7 +1057,10 @@ class ProjectSchedule extends React.Component {
                           {/*<ProjectProgress state={items.zt}/>*/}
                         </div>
                         <div className='head4'>
-                          项目风险：<ProjectRisk state={items.fxnr} item={items}
+                          项目风险：<ProjectRisk userId={items?.userid}
+                            xmid={items?.xmid}
+                            loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                            state={items.fxnr} item={items}
                             lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
                         </div>
                       </div>
