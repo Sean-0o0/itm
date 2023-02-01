@@ -20,7 +20,7 @@ class PersonWorkBench extends Component {
       isSpinning: true,
     })
     if (LOGIN_USERID) {
-      console.log('登录用户id', LOGIN_USERID);
+      // console.log('登录用户id', LOGIN_USERID);
       QueryUserRole({
         userId: Number(LOGIN_USERID),
       }).then(res => {

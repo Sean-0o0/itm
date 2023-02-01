@@ -162,12 +162,12 @@ class FastFunction extends React.Component {
                   onClick={() => window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`}>
                   <div><img src={icon_04} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
                   </div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>周报填写</div>
+                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>月报填写</div>
                 </a>
                 <a style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
                   onClick={() => window.location.href = `/#/pms/manage/WeeklyReportTable`}>
                   <div><img src={icon_06} alt="" style={{ width: '7.143rem', height: '7.143rem' }} /></div>
-                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>周报汇总</div>
+                  <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>月报汇总</div>
                 </a>
                 <a style={{ width: '25%', height: '33%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
                   onClick={() => window.location.href = `/#/UIProcessor?Table=KHJFY&hideTitlebar=true`}>

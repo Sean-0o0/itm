@@ -75,7 +75,8 @@ class WorkBench extends React.Component {
         this.fetchQueryAllOwnerMessage();
       }
     }).catch(error => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
+      // console.log('问题处在这');
     });
   }
 
@@ -107,7 +108,8 @@ class WorkBench extends React.Component {
         this.queryOverBudgetData();
       }
     }).catch(error => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
+      // console.log('问题处在这',2);
     });
   }
 
@@ -127,7 +129,8 @@ class WorkBench extends React.Component {
         });
       }
     }).catch(error => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
+      // console.log('问题处在这',3);
     });
   };
 
@@ -148,7 +151,8 @@ class WorkBench extends React.Component {
         });
       }
     }).catch(error => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
+      // console.log('问题处在这',4);
     });
   }
 
@@ -170,19 +174,20 @@ class WorkBench extends React.Component {
         this.fetchQueryLifecycleStuff(record)
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
+      // console.log('问题处在这',5);
     });
   }
 
   fetchQueryLiftcycleMilestone = (e, total) => {
-    FetchQueryProjectInfoInCycle({
-      xmmc: e[0].xmid,
+    (e[0])&&FetchQueryProjectInfoInCycle({
+      xmmc: (e[0])?.xmid,
     }).then(res => {
       let userid = res?.record?.userid;
       for (let i = 0; i < e.length; i++) {
         FetchQueryLiftcycleMilestone({
           cxlx: 'SINGLE',
-          xmmc: e[i].xmid,
+          xmmc: (e[0])?.xmid,
         }).then((ret = {}) => {
           const { record = [], code = 0 } = ret;
           if (code === 1) {
@@ -203,7 +208,8 @@ class WorkBench extends React.Component {
             // });
           }
         }).catch((error) => {
-          message.error(!error.success ? error.message : error.note);
+          console.error(!error.success ? error.message : error.note);
+          // console.log('问题处在这',6);
         });
       }
     });
@@ -230,7 +236,8 @@ class WorkBench extends React.Component {
           })
         }
       }).catch((error) => {
-        message.error(!error.success ? error.message : error.note);
+        console.error(!error.success ? error.message : error.note);
+        // console.log('问题处在这',7);
         return null;
       });
     }

@@ -230,7 +230,7 @@ class ProjectSchedule extends React.Component {
         });
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -265,7 +265,7 @@ class ProjectSchedule extends React.Component {
         });
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -281,7 +281,7 @@ class ProjectSchedule extends React.Component {
         // window.location.href = url;
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -298,7 +298,7 @@ class ProjectSchedule extends React.Component {
         // window.location.href = url;
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -312,7 +312,7 @@ class ProjectSchedule extends React.Component {
         });
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -336,7 +336,7 @@ class ProjectSchedule extends React.Component {
         });
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -373,7 +373,7 @@ class ProjectSchedule extends React.Component {
         }
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -395,7 +395,7 @@ class ProjectSchedule extends React.Component {
         });
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -471,7 +471,7 @@ class ProjectSchedule extends React.Component {
         // window.location.href = url;
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
   }
   //其他
@@ -789,7 +789,7 @@ class ProjectSchedule extends React.Component {
         return data;
       }
     }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
+      console.error(!error.success ? error.message : error.note);
     });
     return null;
   }
