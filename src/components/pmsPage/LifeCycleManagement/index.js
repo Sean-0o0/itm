@@ -901,8 +901,8 @@ class LifeCycleManagementTabs extends React.Component {
       // defaultFullScreen: true,
       title: sendTitle,
       width: '60%',
-      height: '128rem',
-      style: { top: '5rem' },
+      height: '115rem',
+      style: {top: '5rem'},
       visible: sendVisible,
       footer: null,
     };
