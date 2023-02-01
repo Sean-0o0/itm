@@ -96,6 +96,46 @@ const ExpenseDetail = (props) => {
         visible: addExpenseModalVisiable,
         footer: null,
     };
+    const data = [
+        {
+            id: 1,
+            fylx: '办公用品',
+            je: 12,
+            rq: '20220212',
+            fplx: '普通发票',
+            fp: { items: [[1, '滴滴电子发票1.pdf'], [1, '滴滴电子发票2.pdf'], [1, '滴滴电子发票3.pdf']] },
+            ysxm: '',
+            se: '',
+            sl: '',
+            xfsy: '这是一条普通的消费事由。。。',
+            fj: { items: [[1, '滴滴电子发票1.pdf'], [1, '滴滴电子发票2.pdf'], [1, '滴滴电子发票3.pdf']] },
+            htfyj: '某某合同复印件.pdf',
+            ysbgfyj: '某某验收报告复印件.pdf',
+            fylxdm: 'z',
+            fylxmbdm: 'z',
+            fpbm: 'z',
+            ysfydm: 'z',
+        },
+        {
+            id: 1,
+            fylx: '办公用品',
+            je: 12,
+            rq: '20220212',
+            fplx: '普通发票',
+            fp: { items: [[1, '滴滴电子发票1.pdf'], [1, '滴滴电子发票2.pdf'], [1, '滴滴电子发票3.pdf']] },
+            ysxm: '',
+            se: '',
+            sl: '',
+            xfsy: '这是一条普通的消费事由。。。',
+            fj: { items: [[1, '滴滴电子发票1.pdf'], [1, '滴滴电子发票2.pdf'], [1, '滴滴电子发票3.pdf']] },
+            htfyj: '某某合同复印件.pdf',
+            ysbgfyj: '某某验收报告复印件.pdf',
+            fylxdm: 'z',
+            fylxmbdm: 'z',
+            fpbm: 'z',
+            ysfydm: 'z',
+        },
+    ];
 
     return (
         <>
@@ -107,7 +147,7 @@ const ExpenseDetail = (props) => {
                 {/* 费用明细新增弹窗 */}
                 <AddExpense visible={addExpenseModalVisiable} setVisible={setAddExpenseModalVisiable} userykbid={userykbid} />
                 <Spin spinning={isExpenseSpinning} tip='加载中' size='large' wrapperClassName='expense-detail-spin'>
-                    {expenseDetailData?.map((item, index) => (
+                    {data?.map((item, index) => (
                         <div className='content-box' key={item.id}>
                             <div className='expense-info'>
                                 <div className='info-icon-num'>{index + 1}</div>
@@ -122,7 +162,7 @@ const ExpenseDetail = (props) => {
                                 <div className='receipt-box'>
                                     <div className='receipt-title'><div className='divider'></div>发票：</div>
                                     <div className='receipt-list'>
-                                        {item.fp?.items.map((x, i) => (
+                                        {item.fp?.items?.map((x, i) => (
                                             <div className='receipt-item' key={i} onClick={() => handlePreView(item.id, x[1], x[0], 'FP')}>
                                                 <img className='receipt-icon' alt='' src={require('../../../../../image/pms/LifeCycleManagement/receipt.png')} />
                                                 {x[1]}
@@ -136,7 +176,7 @@ const ExpenseDetail = (props) => {
                                         OA流程附件：
                                     </div>
                                     <div className='receipt-list'>
-                                        {item.fj?.items.map((x, i) => (
+                                        {item.fj?.items?.map((x, i) => (
                                             <div className='receipt-item' key={i} onClick={() => handlePreView(item.id, x[1], x[0], 'FJ')}>
                                                 <img className='attachment-icon' alt='' src={require('../../../../../image/pms/LifeCycleManagement/attachment.png')} />
                                                 {x[1]}

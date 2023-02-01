@@ -65,7 +65,7 @@ class TodoItems extends React.Component {
     flag: true,
     cxlx: "UNDO",
     currentState: 0,//默认为0，查全部，为1时查具体日期
-    //员工评价
+    //员工评价开启
     ygpjVisible: false,
     ygpjUrl: '#',
     //阶段信息修改
@@ -146,7 +146,7 @@ class TodoItems extends React.Component {
         return this.handleUpload(item);
       case '测试文档':
         return this.handleUpload(item);
-      case '员工评价':
+      case '员工评价开启':
         return this.handleYgpj(item);
       case '原型设计说明书':
         return this.handleUpload(item);
@@ -798,7 +798,7 @@ class TodoItems extends React.Component {
       visible: editModelVisible,
       footer: null,
     };
-    //员工评价弹窗
+    //员工评价开启弹窗
     const ygpjModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
@@ -968,7 +968,7 @@ class TodoItems extends React.Component {
                       onCancel={() => this.setState({ ryxztxVisible: false })}
                       src={ryxztxUrl} />}
 
-                  {/*员工评价弹窗*/}
+                  {/*员工评价开启弹窗*/}
                   {ygpjVisible &&
                     <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
                       onCancel={() => this.setState({ ygpjVisible: false })}

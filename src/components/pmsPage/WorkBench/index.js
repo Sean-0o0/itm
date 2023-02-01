@@ -8,7 +8,8 @@ import {
   FetchQueryLifecycleStuff, FetchQueryLiftcycleMilestone,
   FetchQueryOwnerMessage,
   FetchQueryOwnerProjectList,
-  FetchQueryOwnerWorkflow
+  FetchQueryOwnerWorkflow,
+  FetchQueryProjectInfoInCycle
 } from "../../../services/pmsServices";
 import moment from "moment";
 
@@ -186,10 +187,20 @@ class WorkBench extends React.Component {
           e[i].kssj = record[0].kssj
           e[i].jssj = record[0].jssj
           e[i].zt = record[0].zt
-          this.setState({
-            ProjectScheduleTotal: total,
-            ProjectScheduleData: e,
+          FetchQueryProjectInfoInCycle({
+            xmmc: e[i].xmid,
+          }).then(res => {
+            e[i].userid = res?.record?.userid;
+            console.log(e);
+            this.setState({
+              ProjectScheduleTotal: total,
+              ProjectScheduleData: e,
+            });
           });
+          // this.setState({
+          //   ProjectScheduleTotal: total,
+          //   ProjectScheduleData: e,
+          // });
         }
       }).catch((error) => {
         message.error(!error.success ? error.message : error.note);

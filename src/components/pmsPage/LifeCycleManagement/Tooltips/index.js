@@ -1,6 +1,6 @@
 import React from 'react';
-import {Button, Input, Select, Row, Col, Tooltip, message, Icon, Dropdown, Menu} from 'antd';
-import {connect} from 'dva';
+import { Button, Input, Select, Row, Col, Tooltip, message, Icon, Dropdown, Menu } from 'antd';
+import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
 import {
   FetchQueryLifecycleStuff,
@@ -12,10 +12,10 @@ import {
 import axios from 'axios'
 import config from '../../../../utils/config';
 
-const {api} = config;
-const {pmsServices: {getStreamByLiveBos}} = api;
+const { api } = config;
+const { pmsServices: { getStreamByLiveBos } } = api;
 
-const {Option} = Select;
+const { Option } = Select;
 
 class Tooltips extends React.Component {
   state = {
@@ -109,9 +109,9 @@ class Tooltips extends React.Component {
   }
 
   handleAuthority = (fn, txt, arg) => {
-    const {projectInfo} = this.props;
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
-    if (Number(projectInfo?.userid) === LOGIN_USER_ID) {
+    // console.log(Number(this.props.userId) ,LOGIN_USER_ID,this.props);
+    if (Number(this.props?.userId || this.props?.projectInfo?.userid) === LOGIN_USER_ID) {
       if (arg) {
         fn.call(this, arg);
       } else {
@@ -153,7 +153,7 @@ class Tooltips extends React.Component {
     if (status === ' ') {
       return (
         <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
-          <a style={this.state.txtStyle} className="iconfont icon-send"/>{this.getSpan('发起')}
+          <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('发起')}
         </Tooltip>
       );
     } else {
@@ -164,12 +164,12 @@ class Tooltips extends React.Component {
           <Menu>
             <Menu.Item>
               <Tooltip title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
-                <a style={this.state.txtStyle} className="iconfont icon-send"/>{this.getSpan('重新发起')}
+                <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('重新发起')}
               </Tooltip>
             </Menu.Item>
             <Menu.Item>
               <Tooltip title="打印" onClick={this.print}>
-                <a style={this.state.txtStyle} className="iconfont icon-print"/>{this.getSpan('打印')}
+                <a style={this.state.txtStyle} className="iconfont icon-print" />{this.getSpan('打印')}
               </Tooltip>
             </Menu.Item>
           </Menu>
@@ -179,7 +179,7 @@ class Tooltips extends React.Component {
           <Menu>
             <Menu.Item>
               <Tooltip title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
-                <a style={this.state.txtStyle} className="iconfont icon-send"/>{this.getSpan('重新发起')}
+                <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('重新发起')}
               </Tooltip>
             </Menu.Item>
           </Menu>
@@ -192,8 +192,8 @@ class Tooltips extends React.Component {
             />{this.getSpan('查看')}
           </Tooltip>
           <Dropdown overlay={menu}>
-            <i style={{color: 'rgba(51, 97, 255, 1)', marginLeft: '1.5rem'}}
-               className="iconfont icon-more">
+            <i style={{ color: 'rgba(51, 97, 255, 1)', marginLeft: '1.5rem' }}
+              className="iconfont icon-more">
             </i>
           </Dropdown>
         </>
@@ -228,7 +228,7 @@ class Tooltips extends React.Component {
         <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('修改')}</Tooltip>
     );
   };
-  //员工评价
+  //员工评价开启
   getCz = (status, item) => {
     if (status === ' ')
       return (
@@ -292,7 +292,7 @@ class Tooltips extends React.Component {
         return this.getWdscxg(status, item);
       case '测试文档':
         return this.getWdscxg(status, item);
-      case '员工评价':
+      case '员工评价开启':
         return this.getCz(status, item);
       case '原型设计说明书':
         return this.getWdscxg(status, item);

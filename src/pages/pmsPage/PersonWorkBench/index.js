@@ -15,19 +15,26 @@ class PersonWorkBench extends Component {
     isSpinning: false,//加载状态
   }
   componentDidMount() {
-    const LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem("user"))?.id);
+    const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
     this.setState({
       isSpinning: true,
     })
-    console.log('登录用户id', LOGIN_USERID);
-    QueryUserRole({
-      userId: LOGIN_USERID,
-    }).then(res => {
+    if (LOGIN_USERID) {
+      console.log('登录用户id', LOGIN_USERID);
+      QueryUserRole({
+        userId: Number(LOGIN_USERID),
+      }).then(res => {
+        this.setState({
+          isLeader: res.role === '信息技术事业部领导',
+          isSpinning: false,
+        });
+      })
+    } else {
       this.setState({
-        isLeader: res.role === '信息技术事业部领导',
+        isLeader: false,
         isSpinning: false,
       });
-    })
+    }
   }
   render() {
     return (

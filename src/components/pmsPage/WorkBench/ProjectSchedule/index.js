@@ -50,7 +50,7 @@ class ProjectSchedule extends React.Component {
     // //信息录入url
     // fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     // fillOutTitle: '',
-    // //员工评价
+    // //员工评价开启
     // ygpjVisible: false,
     // ygpjUrl: '#',
     // //付款流程发起弹窗显示
@@ -94,7 +94,7 @@ class ProjectSchedule extends React.Component {
     //信息录入url
     fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     fillOutTitle: '',
-    //员工评价
+    //员工评价开启
     ygpjVisible: false,
     ygpjUrl: '#',
     //信息修改
@@ -441,7 +441,7 @@ class ProjectSchedule extends React.Component {
     });
   };
 
-  //livebos弹窗配置，默认入参值为员工评价弹窗的
+  //livebos弹窗配置，默认入参值为员工评价开启弹窗的
   handleModalConfig = ({ objName = "View_XMRYPF",
     oprName = "View_XMRYPF_OPENCOMMENT",
     data = [
@@ -476,7 +476,7 @@ class ProjectSchedule extends React.Component {
   }
   //其他
   // handleOther = (item) => {
-  //   if (item.sxmc.includes("员工评价开启")) {
+  //   if (item.sxmc.includes("员工评价开启开启")) {
   //     this.handleModalConfig();
   //     return;
   //   }
@@ -908,7 +908,7 @@ class ProjectSchedule extends React.Component {
       visible: editModelVisible,
       footer: null,
     };
-    //员工评价弹窗
+    //员工评价开启弹窗
     const ygpjModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
@@ -1032,7 +1032,7 @@ class ProjectSchedule extends React.Component {
                         <div className='head1'>
                           <Link className='head1-link' to={{
                             pathname: '/pms/manage/LifeCycleManagement',
-                            query: {xmid: items.xmid},
+                            query: { xmid: items.xmid },
                           }}>{items.xmmc}</Link>&nbsp;
                           {/*<i*/}
                           {/*  className={'iconfont icon-right'}*/}
@@ -1124,6 +1124,7 @@ class ProjectSchedule extends React.Component {
                                                 <Tooltips type={item.swlx}
                                                   xmid={item.xmid}
                                                   item={item}
+                                                  userId={items.userid}
                                                   status={item.zxqk}
                                                   handleUpload={() => this.handleUpload(item)}
                                                   handleSend={this.handleSend}
