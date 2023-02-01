@@ -940,7 +940,7 @@ class LifeCycleManagementTabs extends React.Component {
     const ygpjModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '60%',
+      width: '30%',
       height: '38rem',
       title: '操作',
       style: { top: '10rem' },
