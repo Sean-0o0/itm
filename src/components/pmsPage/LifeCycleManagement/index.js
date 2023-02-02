@@ -1,4 +1,19 @@
-import { Collapse, Row, Col, Menu, Form, message, Modal, Dropdown, Popover, Tabs, Spin, Select, Input } from 'antd';
+import {
+  Collapse,
+  Row,
+  Col,
+  Menu,
+  Form,
+  message,
+  Modal,
+  Dropdown,
+  Popover,
+  Tabs,
+  Spin,
+  Select,
+  Input,
+  Empty
+} from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
 import ProjectRisk from './ProjectRisk';
@@ -70,7 +85,14 @@ class LifeCycleManagementTabs extends React.Component {
     editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
     editModelTitle: '',
     editModelVisible: false,
+    //所有项目
+    allItemsData: [],
+    allItemsDataTotalRows: 0,
+    //名下没有项目时表示-所有项目中第一个 有项目时表示名下所有项目
+    allItemsDataFirst: [],
+    //名下项目
     operationListData: [],
+    isHaveItem: false,
     operationListTotalRows: 0,
     xmid: -1,
     // defaultValue: 0,
@@ -105,66 +127,108 @@ class LifeCycleManagementTabs extends React.Component {
     }
   }
 
-  // fetchQueryOwnerProjectList = (current, pageSize) => {
-  //   const { params } = this.props;
-  //   FetchQueryOwnerProjectList(
-  //     {
-  //       // paging: 1,
-  //       paging: -1,
-  //       current,
-  //       pageSize,
-  //       total: -1,
-  //       sort: '',
-  //       cxlx: 'ALL',
-  //     }
-  //   ).then((ret = {}) => {
-  //     const { record, code, totalrows } = ret;
-  //     if (code === 1) {
-  //       this.setState({
-  //         defaultValue: params.xmid,
-  //         xmid: record[0].xmid,
-  //         operationListData: record,
-  //         operationListTotalRows: totalrows
-  //       }, () => {
-  //         this.fetchQueryProjectInfoInCycle(this.props.params?.xmid || Number(this.state.operationListData[0]?.xmid));
-  //       });
-  //     }
-  //     this.fetchQueryLiftcycleMilestone(params.xmid);
-  //     this.fetchQueryLifecycleStuff(params.xmid);
-  //   }).catch((error) => {
-  //     message.error(!error.success ? error.message : error.note);
-  //   });
-  // }
+  fetchQueryOwnerProjectList = (current, pageSize) => {
+    const {params} = this.props;
+    FetchQueryOwnerProjectList(
+      {
+        // paging: 1,
+        paging: -1,
+        current,
+        pageSize,
+        total: -1,
+        sort: '',
+        cxlx: 'ALL',
+      }
+    ).then((ret = {}) => {
+      const {record, code, totalrows} = ret;
+      if (code === 1) {
+        const rec = [];
+        // console.log()
+        // if(this.state.xmid !== -1){
+        //   record.map((item = {}, index) => {
+        //     if(item.xmid === this.state.xmid){
+        //       rec[0] = record[index];
+        //     }
+        //   })
+        // }else{
+        //   rec[0] = record[0];
+        // }
+        rec[0] = record[0];
+        this.setState({
+          isHaveItem: false,
+          defaultValue: params.xmid,
+          xmid: record[0].xmid,
+          allItemsData: record,
+          allItemsDataFirst: rec,
+          operationListData: record,
+        }, () => {
+          this.fetchQueryProjectInfoInCycle(this.props.params?.xmid || Number(this.state.allItemsData[0]?.xmid));
+        });
+      }
+      this.fetchQueryLiftcycleMilestone(params.xmid);
+      this.fetchQueryLifecycleStuff(params.xmid);
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
 
   //查询自己名下还在执行的项目
   fetchQueryOwnerProjectListUser = () => {
-    const { params } = this.props;
+    const {params} = this.props;
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
         paging: -1,
         current: 1,
-        pageSize: 99,
+        pageSize: 999,
         total: -1,
         sort: '',
         cxlx: 'USER',
       }
     ).then((ret = {}) => {
-      const { record, code, totalrows } = ret;
-      if (code === 1) {
+      const {record, code, totalrows} = ret;
+      //名下有项目-展示所有正在执行的项目,搜索框展示所有项目
+      if (code === 1 && record.length > 0) {
         // console.log("recordcccc",record)
-        record&&record[0]&&this.setState({
+        this.setState({
           // defaultValue: params.xmid,
-          xmid: record[0].xmid,
+          isHaveItem: true,
+          xmid: record[0]?.xmid,
+          allItemsDataFirst: record,
           operationListData: record,
-          operationListTotalRows: totalrows
+        })
+        FetchQueryOwnerProjectList(
+          {
+            // paging: 1,
+            paging: -1,
+            current: 1,
+            pageSize: 999,
+            total: -1,
+            sort: '',
+            cxlx: 'ALL',
+          }
+        ).then((ret = {}) => {
+          const {record, code, totalrows} = ret;
+          if (code === 1) {
+            this.setState({
+              allItemsData: record,
+            })
+          }
+        }).catch((error) => {
+          message.error(!error.success ? error.message : error.note);
         });
       }
-      this.fetchQueryProjectInfoInCycle(params.xmid);
-      this.fetchQueryLiftcycleMilestone(params.xmid);
-      this.fetchQueryLifecycleStuff(params.xmid);
+      //名下没有项目,展示所有项目的第一个,搜索框展示所有的
+      else {
+        this.fetchQueryOwnerProjectList(1, PASE_SIZE);
+      }
+      if (this.state.xmid) {
+        this.fetchQueryProjectInfoInCycle(params.xmid);
+        this.fetchQueryLiftcycleMilestone(params.xmid);
+        this.fetchQueryLifecycleStuff(params.xmid);
+      }
     }).catch((error) => {
-      console.log('问题出在这！');
+      // console.log('问题出在这！');
       message.error(!error.success ? error.message : error.note);
     });
   }
@@ -179,7 +243,7 @@ class LifeCycleManagementTabs extends React.Component {
         projectInfo: res?.record,
       });
     });
-    console.log("loadingloading22222", this.state.loading)
+    // console.log("projectInfo", this.state.projectInfo)
   };
 
   //流程发起url
@@ -265,7 +329,7 @@ class LifeCycleManagementTabs extends React.Component {
       )
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
+      const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           sendUrl: url,
@@ -300,7 +364,7 @@ class LifeCycleManagementTabs extends React.Component {
       "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
+      const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           uploadUrl: url,
@@ -314,7 +378,7 @@ class LifeCycleManagementTabs extends React.Component {
   //信息录入url
   getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
+      const {code, message, url} = ret;
       // console.log("🚀 ~ file: index.js ~ line 233 ~ LifeCycleManagementTabs ~ CreateOperateHyperLink ~ url", url)
       if (code === 1) {
         this.setState({
@@ -331,7 +395,7 @@ class LifeCycleManagementTabs extends React.Component {
   //默认信息修改url
   getEditMessageUrl = (params, msg = '修改') => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
+      const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
@@ -348,7 +412,7 @@ class LifeCycleManagementTabs extends React.Component {
   //阶段信息修改url
   getEditModelUrl = (params) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
+      const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           editModelUrl: url,
@@ -365,7 +429,7 @@ class LifeCycleManagementTabs extends React.Component {
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const { record = [], code = 0 } = ret;
+      const {record = [], code = 0} = ret;
       // console.log("basicData",record);
       if (code === 1) {
         //zxxh排序
@@ -380,7 +444,7 @@ class LifeCycleManagementTabs extends React.Component {
         });
       }
     }).catch((error) => {
-      this.setState({ loading: false });
+      this.setState({loading: false});
       message.error(!error.success ? error.message : error.note);
     });
   }
@@ -399,7 +463,7 @@ class LifeCycleManagementTabs extends React.Component {
       sxid: item.sxid,
       xmmc: this.state.xmid
     }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
+      const {code = 0, record = []} = ret;
       // console.log("WpsWDXXData", record);
       if (code === 1) {
         if (record.url.includes("[")) {
@@ -427,7 +491,7 @@ class LifeCycleManagementTabs extends React.Component {
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
+      const {code = 0, record = []} = ret;
       // console.log("detailData",record);
       if (code === 1) {
         this.setState({
@@ -441,7 +505,7 @@ class LifeCycleManagementTabs extends React.Component {
         });
       }
     }).catch((error) => {
-      this.setState({ loading: false });
+      this.setState({loading: false});
       message.error(!error.success ? error.message : error.note);
     });
   }
@@ -451,7 +515,7 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   extend = (number) => {
-    const { basicData } = this.state;
+    const {basicData} = this.state;
     basicData.map((item = {}, index) => {
       if (index === number) {
         item.extend = !item.extend;
@@ -505,17 +569,18 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //livebos弹窗配置，默认入参值为员工评价开启弹窗的
-  handleModalConfig = ({ objName = "View_XMRYPF",
-    oprName = "View_XMRYPF_OPENCOMMENT",
-    data = [
-      {
-        "name": "XMMC",
-        "value": this.state.xmid
-      },
-    ], userName = Loginname,
-    urlName = 'ygpjUrl',
-    visibleName = 'ygpjVisible'
-  }) => {
+  handleModalConfig = ({
+                         objName = "View_XMRYPF",
+                         oprName = "View_XMRYPF_OPENCOMMENT",
+                         data = [
+                           {
+                             "name": "XMMC",
+                             "value": this.state.xmid
+                           },
+                         ], userName = Loginname,
+                         urlName = 'ygpjUrl',
+                         visibleName = 'ygpjVisible'
+                       }) => {
     let params = {
       "attribute": 0,
       "authFlag": 0,
@@ -525,7 +590,7 @@ class LifeCycleManagementTabs extends React.Component {
       "userId": userName
     };
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
+      const {code, message, url} = ret;
       if (code === 1) {
         this.setState({
           [urlName]: url,
@@ -548,7 +613,10 @@ class LifeCycleManagementTabs extends React.Component {
   //信息录入
   handleFillOut = (item) => {
     let params = {};
-    if (item.sxmc.includes("周报填写")) { window.location.href = this.state.weelyReportUrl; return; }
+    if (item.sxmc.includes("周报填写")) {
+      window.location.href = this.state.weelyReportUrl;
+      return;
+    }
     //暂时放信息录入，以后多了放-其他
     if (item.sxmc.includes("员工评价开启")) {
       this.handleModalConfig({});
@@ -737,7 +805,7 @@ class LifeCycleManagementTabs extends React.Component {
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
-        dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
+        dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
       } else {
         let res = dataArr.some(item => {//判断相同swlx，有就添加到当前项
           if (item.swlx === mapItem.swlx) {
@@ -746,7 +814,7 @@ class LifeCycleManagementTabs extends React.Component {
           }
         })
         if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
+          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
         }
       }
     })
@@ -824,17 +892,62 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   handleVisibleChange = visible => {
-    this.setState({ fileListVisible: visible });
+    this.setState({fileListVisible: visible});
   };
 
   callback = (key) => {
-    console.log("keyccccc", key)
-    console.log("loadingloading000", this.state.loading)
+    // console.log("keyccccc", key)
+    // console.log("loadingloading000", this.state.loading)
+    // console.log("isHaveItem", this.state.isHaveItem)
+    const {operationListData, allItemsData} = this.state;
     this.setState({
       xmid: key,
       loading: true,
+    }, () => {
+      //名下没有项目 展示所有项目的第一条 名下有项目展示 所有正在执行的项目 搜索框始终展示所有项目
+      if (!this.state.isHaveItem) {
+        // console.log("没项目")
+        operationListData.map((item = {}, index) => {
+          const rec = [];
+          if (item.xmid === this.state.xmid) {
+            rec[0] = item;
+            this.setState({
+              allItemsDataFirst: rec
+            })
+          }
+        })
+      } else {
+        //名下有项目,选择了非名下的项目
+        // console.log("有项目")
+        let rec = [];
+        let recnew = [];
+        operationListData.map((item = {}, index) => {
+          if (item.xmid === this.state.xmid) {
+            rec.push(item);
+          }
+          recnew.push(item)
+        })
+        // console.log("rec.length === 0",rec.length === 0)
+        if (rec.length === 0) {
+          allItemsData.map((item = {}, index) => {
+            if (item.xmid === this.state.xmid) {
+              recnew.unshift(item)
+              this.setState({
+                allItemsDataFirst: recnew,
+              })
+            }
+          })
+          // console.log("ccccccc",this.state.allItemsDataFirst)
+          // console.log("ccccccc1111",recnew)
+        } else {
+          // console.log("ccccccc22222",recnew)
+          this.setState({
+            allItemsDataFirst: recnew,
+          })
+        }
+      }
     })
-    console.log("loadingloading1111", this.state.loading)
+    // console.log("loadingloading1111", this.state.loading)
     this.fetchQueryLiftcycleMilestone(key);
     this.fetchQueryLifecycleStuff(key);
     this.fetchQueryProjectInfoInCycle(key);
@@ -875,15 +988,17 @@ class LifeCycleManagementTabs extends React.Component {
       ygpjUrl,
       loading,
       open,
+      allItemsData,
+      allItemsDataFirst,
     } = this.state;
-    console.log("paramsparams", xmid)
+    // console.log("allItemsDataFirst", allItemsDataFirst)
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '50%',
       height: '68rem',
       title: uploadTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: uploadVisible,
       footer: null,
     };
@@ -893,7 +1008,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '68rem',
       title: editTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: editVisible,
       footer: null,
     };
@@ -913,7 +1028,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: fillOutTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: fillOutVisible,
       footer: null,
     };
@@ -923,7 +1038,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: editMessageTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: defMsgModifyModalVisible,
       footer: null,
     };
@@ -933,7 +1048,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: editModelTitle,
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: editModelVisible,
       footer: null,
     };
@@ -944,7 +1059,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '30%',
       height: '38rem',
       title: '操作',
-      style: { top: '10rem' },
+      style: {top: '10rem'},
       visible: ygpjVisible,
       footer: null,
     };
@@ -980,13 +1095,13 @@ class LifeCycleManagementTabs extends React.Component {
     const operations = <Input.Group compact>
       <div onMouseDown={(e) => {
         e.preventDefault()
-      }} style={{ position: 'relative' }} className="operationListSelectBox">
+      }} style={{position: 'relative'}} className="operationListSelectBox">
         <img src={require('../../../image/pms/LifeCycleManagement/search.png')}
-          alt='' style={{ marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem' }}
+             alt='' style={{marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem'}}
         />
         <Select
           // ref={this.selectRef}
-          style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
+          style={{width: '34rem', borderRadius: '1.1904rem !important'}}
           showSearch
           placeholder="请选择项目名称"
           optionFilterProp="children"
@@ -1000,60 +1115,60 @@ class LifeCycleManagementTabs extends React.Component {
           onFocus={this.handleSelectFocus}
           open={open}
           onDropdownVisibleChange={(visible) => {
-            this.setState({ open: visible })
+            this.setState({open: visible})
           }}
         >
           {
-            operationListData?.map((item = {}, ind) => {
+            allItemsData?.map((item = {}, ind) => {
               return <Option key={ind} value={item.xmid}>{item.xmmc}</Option>
             })
           }
         </Select></div>
     </Input.Group>;
     return (
-      <Row style={{ height: '100%' }}>
+      <Row style={{height: '100%'}}>
         {/*文档上传弹窗*/}
         {uploadVisible &&
-          <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-            onCancel={this.closeUploadModal}
-            src={uploadUrl} />}
+        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+                     onCancel={this.closeUploadModal}
+                     src={uploadUrl}/>}
         {/*文档修改弹窗*/}
         {editVisible &&
-          <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
-            onCancel={this.closeEditModal}
-            src={uploadUrl} />}
+        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+                     onCancel={this.closeEditModal}
+                     src={uploadUrl}/>}
         {/*流程发起弹窗*/}
         {sendVisible &&
-          <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
-            src={sendUrl} />}
+        <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
+                     src={sendUrl}/>}
         {/*信息录入弹窗*/}
         {fillOutVisible &&
-          <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
-            onCancel={this.closeFillOutModal}
-            src={fillOutUrl} />}
+        <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+                     onCancel={this.closeFillOutModal}
+                     src={fillOutUrl}/>}
         {/*员工评价开启弹窗*/}
         {ygpjVisible &&
-          <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
-            onCancel={() => this.setState({ ygpjVisible: false })}
-            src={ygpjUrl} />}
+        <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+                     onCancel={() => this.setState({ygpjVisible: false})}
+                     src={ygpjUrl}/>}
         {/*默认信息修改弹窗*/}
         {defMsgModifyModalVisible &&
-          <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
-            onCancel={this.closeDefMsgModifyModal}
-            src={editMessageUrl} />}
+        <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+                     onCancel={this.closeDefMsgModifyModal}
+                     src={editMessageUrl}/>}
         {/*阶段信息修改弹窗*/}
         {editModelVisible &&
-          <div>
-            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
-              onCancel={this.closeModelEditModal}
-              src={editModelUrl} /></div>}
+        <div>
+          <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+                       onCancel={this.closeModelEditModal}
+                       src={editModelUrl}/></div>}
 
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
-          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
-          closePaymentProcessModal={this.closePaymentProcessModal}
-          onSuccess={() => this.onSuccess("流程发起")}
+                                                fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                                                currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+                                                closePaymentProcessModal={this.closePaymentProcessModal}
+                                                onSuccess={() => this.onSuccess("流程发起")}
         />}
 
         {/*合同信息修改弹窗*/}
@@ -1075,219 +1190,226 @@ class LifeCycleManagementTabs extends React.Component {
           onSuccess={() => this.onSuccess("信息修改")}
         ></BidInfoUpdate>}
         <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
-          <Tabs tabBarStyle={{ backgroundColor: 'white', margin: '0', padding: '3.571rem 0 0 3.571rem' }}
-            onChange={this.callback} type="card" activeKey={xmid} tabBarExtraContent={operations}>
-            {
-              operationListData.map(item => {
-                return <TabPane tab={item.xmmc} key={item.xmid}>
-                  <div style={{ height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem' }}>
-                    <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
-                      fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-                      // fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
-                      fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
-                      data={operationListData}
-                      // totalRows={operationListTotalRows}
-                      defaultValue={xmid}
-                      projectInfo={projectInfo} />
-                  </div>
-                  <div className='lifecyclemanage-box-wrapper'>
-                    <div className='lifecyclemanage-box'>
-                      {
-                        basicData.map((item = {}, index) => {
-                          let detail = [];
-                          detailData.map((childItem = {}, index) => {
-                            if (childItem.lcbid === item.lcbid) {
-                              detail.push(childItem);
-                            }
-                          })
-                          // console.log('detail', detail);
-                          let sort = this.groupBy(detail);
-                          // console.log('sort', sort);
-                          return <div className='LifeCycleManage' style={{
-                            borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
-                            borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),
-                            borderBottomLeftRadius: (index === basicData.length - 1 ? '1.1904rem' : ''),
-                            borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
-                          }}>
-                            <div className='head'>
-                              <Imgs status={item.zt} />
-                              <i
-                                className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                                onClick={() => this.extend(index)} />&nbsp;
-                              <div className='head1'>
-                                {item.lcbmc}
-                              </div>
-                              {item.lcbmc !== '项目付款' ? <>
-                                <div className='head6'>
-                                  进度：<span style={{ color: 'black' }}>{item.jd}</span>
-                                </div>
-                                <div style={{
-                                  lineHeight: '2.976rem',
-                                  width: '33%',
-                                  minWidth: '59.52rem',
-                                  fontSize: '2.232rem',
-                                  fontWeight: 400,
-                                  color: '#606266',
-                                  paddingTop: '3.2736rem'
-                                }}>
-                                  <span
-                                    style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
-                                  {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
+          {
+            <Tabs tabBarStyle={{backgroundColor: 'white', margin: '0', padding: '3.571rem 0 0 3.571rem'}}
+                  onChange={this.callback} type="card" activeKey={xmid} tabBarExtraContent={operations}>
+              {
+                allItemsDataFirst.map(item => {
+                  // console.log("1111",item)
+                  return (
+                    <TabPane tab={item.xmmc} key={item.xmid}>
+                      <div style={{height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem'}}>
+                        <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
+                                       fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                          // fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+                                       fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
+                                       data={operationListData}
+                          // totalRows={operationListTotalRows}
+                                       defaultValue={xmid}
+                                       projectInfo={projectInfo}/>
+                      </div>
+                      <div className='lifecyclemanage-box-wrapper'>
+                        <div className='lifecyclemanage-box'>
+                          {
+                            basicData.map((item = {}, index) => {
+                              let detail = [];
+                              detailData.map((childItem = {}, index) => {
+                                if (childItem.lcbid === item.lcbid) {
+                                  detail.push(childItem);
+                                }
+                              })
+                              // console.log('detail', detail);
+                              let sort = this.groupBy(detail);
+                              // console.log('sort', sort);
+                              return <div className='LifeCycleManage' style={{
+                                borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
+                                borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),
+                                borderBottomLeftRadius: (index === basicData.length - 1 ? '1.1904rem' : ''),
+                                borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
+                              }}>
+                                <div className='head'>
+                                  <Imgs status={item.zt}/>
+                                  <i
+                                    className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
+                                    onClick={() => this.extend(index)}/>&nbsp;
+                                  <div className='head1'>
+                                    {item.lcbmc}
+                                  </div>
+                                  {item.lcbmc !== '项目付款' ? <>
+                                    <div className='head6'>
+                                      进度：<span style={{color: 'black'}}>{item.jd}</span>
+                                    </div>
                                     <div style={{
-                                      display: 'flex',
-                                      justifyContent: 'space-between',
-                                      fontSize: '2.0832rem',
-                                      color: '#909399'
+                                      lineHeight: '2.976rem',
+                                      width: '33%',
+                                      minWidth: '59.52rem',
+                                      fontSize: '2.232rem',
+                                      fontWeight: 400,
+                                      color: '#606266',
+                                      paddingTop: '3.2736rem'
                                     }}>
+                                  <span
+                                    style={{color: 'rgba(48, 49, 51, 1)'}}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
+                                      {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
+                                      <div style={{
+                                        display: 'flex',
+                                        justifyContent: 'space-between',
+                                        fontSize: '2.0832rem',
+                                        color: '#909399'
+                                      }}>
                                       <span>
                                         原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
                                         （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day') > 0)
-                                          ?
-                                          '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
-                                          :
-                                          '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
-                                          }天，`}
+                                        ?
+                                        '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                                        :
+                                        '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
+                                      }天，`}
                                         修改{item.xgcs}次）
                                       </span>
-                                    </div>
-                                  }
-                                </div>
-                                <div className='head4'>
-                                  项目风险：<ProjectRisk userId={projectInfo?.userid}
-                                    loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                                    item={item} xmid={this.state.xmid} />
-                                </div>
-                                <div className='head2'>
-                                  状态：<ProjectProgress state={item.zt} />
-                                </div>
-                                <div className='head5'>
-                                  <div className='head5-title'>
-                                    <div className='head5-cont'>
-                                      <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
-                                        className="iconfont icon-edit" onClick={() => {
-                                          if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
-                                            this.handleEditModel(item);
-                                          } else {
-                                            message.error(`抱歉，只有当前项目经理可以进行该操作`);
-                                          }
-                                        }
-                                        } />
-                                    </div>
-                                  </div>
-                                </div>
-                              </> : ''}
-                            </div>
-                            {
-                              item.extend ?
-                                <Row style={{
-                                  height: '80%',
-                                  width: '100%',
-                                  padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0 6.571rem 0 10.571rem')
-                                }} className='card' id={index}>
-                                  {
-                                    <Col span={24} style={{
-                                      width: '100%',
-                                      padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
-                                      borderRadius: '1.1904rem',
-                                      maxHeight: '50rem'
-                                    }}
-                                      className='cont'>
-                                      {
-                                        sort.map((item = {}, index) => {
-                                          let num = 0
-                                          sort[index].List.map((item = {}, ind) => {
-                                            if (item.zxqk !== " ") {
-                                              num = num + 1;
-                                            }
-                                          })
-                                          return <Col span={8} className='cont-col-self'
-                                            style={{ marginBottom: '2.3808rem' }} key={index}>
-                                            <div className='cont-col'>
-                                              <div className='cont-col1'>
-                                                <div className='right'>
-                                                  {item.swlx}({num}/{sort[index].List.length})
-                                                </div>
-                                              </div>
-                                              <div>
-                                                {sort[index].List.map((item = {}, ind) => {
-                                                  return <Row key={ind} className='cont-row' style={{
-                                                    // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                                    // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
-                                                    marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
-                                                  }}>
-                                                    <Col
-                                                      span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 14 : 17}>
-                                                      <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                        <Points status={item.zxqk} />
-                                                        {/*根据事项类型判断是否是文档*/}
-                                                        {
-                                                          item.swlx.includes("文档") ||
-                                                            item.swlx.includes("信委会") ||
-                                                            item.swlx.includes("总办会") ||
-                                                            item.swlx.includes("需求调研") ||
-                                                            item.swlx.includes("产品设计") ||
-                                                            item.swlx.includes("系统框架搭建") ||
-                                                            item.swlx.includes("功能开发") ||
-                                                            item.swlx.includes("外部系统对接") ||
-                                                            item.swlx.includes("系统测试") ? (
-                                                            fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
-                                                              <Popover
-                                                                content={content}
-                                                                title="文件列表"
-                                                                trigger="hover"
-                                                                overlayClassName="popover-filelist"
-                                                                visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
-                                                                onVisibleChange={this.handleVisibleChange}
-                                                              >
-                                                                <a className='lifecycle-text-overflow'
-                                                                  style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
-                                                              </Popover> :
-                                                              <a className='lifecycle-text-overflow'
-                                                                style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}
-                                                                onClick={() => this.handleClick(item)}>{item.sxmc}</a>
-                                                          )
-                                                            :
-                                                            <span className='lifecycle-text-overflow'>{item.sxmc}</span>
-                                                        }
-                                                      </div>
-                                                      <div className='cont-row-zxqk'>{item.zxqk}</div>
-                                                    </Col>
-                                                    <Col
-                                                      span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6}
-                                                      style={{ textAlign: 'left', width: '29%' }}>
-                                                      <Tooltips type={item.swlx}
-                                                        item={item}
-                                                        status={item.zxqk}
-                                                        xmid={xmid}
-                                                        projectInfo={projectInfo}
-                                                        handleUpload={() => this.handleUpload(item)}
-                                                        handleSend={this.handleSend}
-                                                        handleFillOut={() => this.handleFillOut(item)}
-                                                        handleEdit={() => this.handleEdit(item)}
-                                                        handleMessageEdit={this.handleMessageEdit}
-                                                      />
-                                                    </Col>
-                                                  </Row>
-                                                })}
-                                              </div>
-                                            </div>
-                                          </Col>
-                                        })
+                                      </div>
                                       }
-                                    </Col>
-                                  }
-                                </Row>
-                                : ''
-                            }
-                          </div>
-                        })
-                      }
-                    </div>
-                  </div>
-                </TabPane>
-              })
-            }
-          </Tabs>
+                                    </div>
+                                    <div className='head4'>
+                                      项目风险：<ProjectRisk userId={projectInfo?.userid}
+                                                        loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                                        item={item} xmid={this.state.xmid}/>
+                                    </div>
+                                    <div className='head2'>
+                                      状态：<ProjectProgress state={item.zt}/>
+                                    </div>
+                                    <div className='head5'>
+                                      <div className='head5-title'>
+                                        <div className='head5-cont'>
+                                          <a style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3rem'}}
+                                             className="iconfont icon-edit" onClick={() => {
+                                            if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
+                                              this.handleEditModel(item);
+                                            } else {
+                                              message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                                            }
+                                          }
+                                          }/>
+                                        </div>
+                                      </div>
+                                    </div>
+                                  </> : ''}
+                                </div>
+                                {
+                                  item.extend ?
+                                    <Row style={{
+                                      height: '80%',
+                                      width: '100%',
+                                      padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0 6.571rem 0 10.571rem')
+                                    }} className='card' id={index}>
+                                      {
+                                        <Col span={24} style={{
+                                          width: '100%',
+                                          padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                                          borderRadius: '1.1904rem',
+                                          maxHeight: '50rem'
+                                        }}
+                                             className='cont'>
+                                          {
+                                            sort.map((item = {}, index) => {
+                                              let num = 0
+                                              sort[index].List.map((item = {}, ind) => {
+                                                if (item.zxqk !== " ") {
+                                                  num = num + 1;
+                                                }
+                                              })
+                                              return <Col span={8} className='cont-col-self'
+                                                          style={{marginBottom: '2.3808rem'}} key={index}>
+                                                <div className='cont-col'>
+                                                  <div className='cont-col1'>
+                                                    <div className='right'>
+                                                      {item.swlx}({num}/{sort[index].List.length})
+                                                    </div>
+                                                  </div>
+                                                  <div>
+                                                    {sort[index].List.map((item = {}, ind) => {
+                                                      return <Row key={ind} className='cont-row' style={{
+                                                        // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                                        // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                                        marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
+                                                      }}>
+                                                        <Col
+                                                          span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 14 : 17}>
+                                                          <div style={{display: 'flex', alignItems: 'center'}}>
+                                                            <Points status={item.zxqk}/>
+                                                            {/*根据事项类型判断是否是文档*/}
+                                                            {
+                                                              item.swlx.includes("文档") ||
+                                                              item.swlx.includes("信委会") ||
+                                                              item.swlx.includes("总办会") ||
+                                                              item.swlx.includes("需求调研") ||
+                                                              item.swlx.includes("产品设计") ||
+                                                              item.swlx.includes("系统框架搭建") ||
+                                                              item.swlx.includes("功能开发") ||
+                                                              item.swlx.includes("外部系统对接") ||
+                                                              item.swlx.includes("系统测试") ? (
+                                                                  fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
+                                                                    <Popover
+                                                                      content={content}
+                                                                      title="文件列表"
+                                                                      trigger="hover"
+                                                                      overlayClassName="popover-filelist"
+                                                                      visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
+                                                                      onVisibleChange={this.handleVisibleChange}
+                                                                    >
+                                                                      <a className='lifecycle-text-overflow'
+                                                                         style={item.zxqk === " " ? {color: '#333'} : {color: 'rgb(51, 97, 255)'}}>{item.sxmc}</a>
+                                                                    </Popover> :
+                                                                    <a className='lifecycle-text-overflow'
+                                                                       style={item.zxqk === " " ? {color: '#333'} : {color: 'rgb(51, 97, 255)'}}
+                                                                       onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                                )
+                                                                :
+                                                                <span
+                                                                  className='lifecycle-text-overflow'>{item.sxmc}</span>
+                                                            }
+                                                          </div>
+                                                          <div className='cont-row-zxqk'>{item.zxqk}</div>
+                                                        </Col>
+                                                        <Col
+                                                          span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6}
+                                                          style={{textAlign: 'left', width: '29%'}}>
+                                                          <Tooltips type={item.swlx}
+                                                                    item={item}
+                                                                    status={item.zxqk}
+                                                                    xmid={xmid}
+                                                                    projectInfo={projectInfo}
+                                                                    handleUpload={() => this.handleUpload(item)}
+                                                                    handleSend={this.handleSend}
+                                                                    handleFillOut={() => this.handleFillOut(item)}
+                                                                    handleEdit={() => this.handleEdit(item)}
+                                                                    handleMessageEdit={this.handleMessageEdit}
+                                                          />
+                                                        </Col>
+                                                      </Row>
+                                                    })}
+                                                  </div>
+                                                </div>
+                                              </Col>
+                                            })
+                                          }
+                                        </Col>
+                                      }
+                                    </Row>
+                                    : ''
+                                }
+                              </div>
+                            })
+                          }
+                        </div>
+                      </div>
+                    </TabPane>
+                  )
+                })
+              }
+            </Tabs>
+          }
+
         </Spin>
       </Row>
     );
