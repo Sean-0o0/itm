@@ -153,7 +153,7 @@ class LifeCycleManagementTabs extends React.Component {
       const { record, code, totalrows } = ret;
       if (code === 1) {
         // console.log("recordcccc",record)
-        this.setState({
+        record&&record[0]&&this.setState({
           // defaultValue: params.xmid,
           xmid: record[0].xmid,
           operationListData: record,
@@ -164,6 +164,7 @@ class LifeCycleManagementTabs extends React.Component {
       this.fetchQueryLiftcycleMilestone(params.xmid);
       this.fetchQueryLifecycleStuff(params.xmid);
     }).catch((error) => {
+      console.log('问题出在这！');
       message.error(!error.success ? error.message : error.note);
     });
   }
