@@ -121,10 +121,10 @@ class NewProjectModel extends React.Component {
     this.setState({loading: false});
   };
 
+
   // 处理岗位数据
   filterJobList = () => {
     const { dictionary: { RYGW = [] } } = this.props;
-    console.log(RYGW);
     // 初始化各个岗位下对应的员工id的数组
     let arr = [];
     RYGW.forEach(item => {
@@ -148,11 +148,13 @@ class NewProjectModel extends React.Component {
         let data = JSON.parse(result);
 
         const arr = this.filterGridLayOut(data);
-        // 赋予初始时间和结束时间
-        arr.forEach(item => {
-          item.kssj = nowTime;
-          item.jssj = tomorrowTime;
-        });
+        if(this.state.operateType === 'ADD') {
+          // 赋予初始时间和结束时间
+          arr.forEach(item => {
+            item.kssj = nowTime;
+            item.jssj = tomorrowTime;
+          });
+        }
 
         this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr }});
       }
@@ -603,6 +605,8 @@ class NewProjectModel extends React.Component {
                       flag = true;
                     },
                   });
+                } else {
+                  _this.handleSave(values);
                 }
               },
               onCancel() {
