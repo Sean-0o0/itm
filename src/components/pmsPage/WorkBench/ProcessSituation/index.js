@@ -88,22 +88,13 @@ class ProcessSituation extends React.Component {
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ height: '100%' }}>
-              <div style={{ height: '70rem' }}>
+              <div style={{ height: '25rem' }}>
                 <Card title='' bordered={false} className='ProcessStatus' headStyle={{ padding: '0' }}
                   style={{ height: '100%', }} bodyStyle={{ padding: '0rem', height: '100%', }}>
                   {
-                    data.map((item = {}, index) => {
-                      return <div className='ProcessStatus-Div' style={{}}>
+                    data?.map((item = {}, index) => {
+                      return <div className='ProcessStatus-Div' style={{}} key={index}>
                         <div className='title'>
-                          {/* <div className='cont-row-point' style={{borderColor: 'rgba(51, 97, 255, 1)'}}/> */}
-                          {/* <Link style={{color: color, fontSize: '2.083rem',}}
-                                onMouseOver={() => this.handleColorChange("#3361FF")}
-                                onMouseLeave={() => this.handleColorChange('')}
-                                onClick={() => this.handleSee("项目信息管理系统立项申请")}>{item.subject}</Link>&nbsp;
-                          <i
-                            className={'iconfont icon-right'}
-                            style={{fontSize: '2.381rem', color: color}}
-                          /> */}
                           <Points status={item.state} />
                           <a target="_blank" className='title-link' style={{ fontSize: '2.083rem' }}
                             rel="noopener noreferrer" onClick={() => this.handleToggle(item.url)}>{item.subject}</a>&nbsp;
@@ -123,23 +114,10 @@ class ProcessSituation extends React.Component {
                             <ProgressStatus state={item.state} />
                           </Col>
                         </Row>
-                        <Divider style={{ margin: '2.381rem 0' }} />
                       </div>
                     })
                   }
                 </Card>
-              </div>
-              <div style={{ height: '10%', marginBottom: '1rem' }}>
-                <Pagination
-                  style={{ textAlign: 'end', fontSize: '2.083rem' }}
-                  total={total}
-                  size="small"
-                  showTotal={total => `共 ${total} 条`}
-                  defaultPageSize={5}
-                  onChange={this.handPageChange}
-                  // showQuickJumper={true}
-                  defaultCurrent={1}
-                />
               </div>
             </div>
           </Col>

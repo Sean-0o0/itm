@@ -2870,105 +2870,16 @@
     height: 100%;
 
     & .top-box {
-      height: 40%;
+      height: 56%;
       background-color: #fff;
       box-sizing: border-box;
       box-shadow: rgb(236 236 236) 0px 0.4464rem 1.488rem;
       border-radius: 1.488rem;
       margin-bottom: 2.8272rem;
-      padding: 1.6368rem 3.5712rem 0 3.5712rem;
-      position: relative;
-
-      & .title-box {
-        height: 8.3328rem;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        font-size: 2.3808rem;
-        font-family: PingFangSC-Medium, PingFang SC;
-        font-weight: 600;
-        color: #303133;
-
-        & .title-icon {
-          height: 3.5712rem;
-          margin-right: 1.1904rem;
-        }
-
-      }
-
-      & .last-icon {
-        height: 3.5712rem;
-        position: absolute;
-        top: 13.88rem;
-        left: 1.9344rem;
-        z-index: 2;
-        cursor: pointer;
-      }
-
-      & .next-icon {
-        height: 3.5712rem;
-        position: absolute;
-        top: 13.88rem;
-        right: 1.9344rem;
-        z-index: 2;
-        cursor: pointer;
-      }
-
-      & .slider-box {
-        height: 11.729904rem;
-        background-color: #FAFAFB;
-        border-radius: 1.1904rem;
-        padding: 2.3808rem;
-        z-index: 1;
-
-        & .title {
-          font-size: 2.232rem;
-          font-weight: 500;
-          margin-bottom: 0.5rem;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-          color: #333333;
-
-          & .title-time {
-            margin-left: auto;
-            color: #999999;
-            font-weight: 500;
-          }
-        }
-
-        & .content-box {
-          color: #ff0000;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-        }
-      }
-
-      .ant-carousel .slick-slide {
-        overflow: hidden;
-        height: 15.2312rem;
-      }
-
-      .ant-carousel .slick-dots li button {
-        background-color: #3361FF;
-        height: 6px;
-        width: 6px;
-        border-radius: 0.4464rem;
-        opacity: 0.2;
-      }
-
-      .ant-carousel .slick-dots .slick-active button {
-        background-color: #3361FF;
-        height: 6px;
-        width: 2.3808rem;
-        border-radius: 0.4464rem;
-        opacity: 1;
-      }
     }
 
     & .bottom-box {
-      height: calc(60% - 2.8272rem);
+      height: calc(44% - 2.8272rem);
       background-color: #fff;
       box-sizing: border-box;
       box-shadow: rgb(236 236 236) 0px 0.4464rem 1.488rem;
@@ -3289,6 +3200,14 @@
 
   .ProcessStatus {
     .ProcessStatus-Div {
+      border-bottom: 0.1488rem solid rgb(202, 202, 202);
+      margin-bottom: 2.3808rem;
+
+      &:last-child {
+        margin-bottom: 0;
+        border: 0;
+      }
+
       .title {
         font-size: 2.083rem;
         // color: rgba(48, 49, 51, 1);
@@ -3322,6 +3241,19 @@
         margin-top: 1.19rem;
         display: flex;
         align-items: center;
+        padding-bottom: 2.3808rem;
+        overflow: hidden;
+        overflow-y: auto;
+        &::-webkit-scrollbar {
+          width: 1.488rem;
+          background-color: #fafafa;
+          border-radius: 1.3392rem;
+        }
+    
+        &::-webkit-scrollbar-thumb {
+          background-color: #c1c1c1;
+          border-radius: 1.3392rem;
+        }
 
         .col1 {
           font-size: 2.083rem;
@@ -3401,7 +3333,7 @@
 
 
 //spin图标垂直居中
-.ant-spin-nested-loading.diy-style-spin > div > .ant-spin {
+.ant-spin-nested-loading.diy-style-spin>div>.ant-spin {
   max-height: none;
 }
 

@@ -180,7 +180,7 @@ class WorkBench extends React.Component {
   }
 
   fetchQueryLiftcycleMilestone = (e, total) => {
-    (e[0])&&FetchQueryProjectInfoInCycle({
+    (e[0]) && FetchQueryProjectInfoInCycle({
       xmmc: (e[0])?.xmid,
     }).then(res => {
       let userid = res?.record?.userid;
@@ -293,7 +293,11 @@ class WorkBench extends React.Component {
                 overflow: 'hidden',
                 height: '100%',
               }}>
-                <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList} sliderData={sliderData} />
+                <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+                  sliderData={sliderData}
+                  data={ProcessSituationData}
+                  fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
+                  total={ProcessSituationTotal} />
               </div>
             </Col>
           </Row>
@@ -305,29 +309,13 @@ class WorkBench extends React.Component {
                 boxSizing: 'border-box',
                 boxShadow: '#ececec 0 0.4464rem 1.488rem',
                 borderRadius: '1.488rem',
-                width: '75%',
+                width: '100%',
                 background: 'white'
               }}>
                 <div style={{ height: '100%' }}>
                   <ProjectSchedule data={ProjectScheduleData} total={ProjectScheduleTotal}
                     fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
                     ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend} />
-                </div>
-              </div>
-              <div style={{
-                marginLeft: '3.571rem',
-                boxSizing: 'border-box',
-                boxShadow: '#ececec 0 0.4464rem 1.488rem',
-                borderRadius: '1.488rem',
-                width: '25%',
-                background: 'white'
-              }}>
-                <div style={{ height: '100%' }}>
-                  {/*<div style={{display: 'flex'}}>*/}
-                  {/*  <div style={{margin: '2rem',fontSize:'2.3808rem',fontWeight: 700,color: '#303133'}}>流程情况</div>*/}
-                  {/*</div>*/}
-                  <ProcessSituation data={ProcessSituationData} fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
-                    total={ProcessSituationTotal} />
                 </div>
               </div>
             </Col>
