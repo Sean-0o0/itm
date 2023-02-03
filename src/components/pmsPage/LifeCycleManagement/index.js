@@ -128,7 +128,7 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   fetchQueryOwnerProjectList = (current, pageSize) => {
-    const {params} = this.props;
+    const { params } = this.props;
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
@@ -140,7 +140,7 @@ class LifeCycleManagementTabs extends React.Component {
         cxlx: 'ALL',
       }
     ).then((ret = {}) => {
-      const {record, code, totalrows} = ret;
+      const { record, code, totalrows } = ret;
       if (code === 1) {
         const rec = [];
         // console.log()
@@ -174,7 +174,7 @@ class LifeCycleManagementTabs extends React.Component {
 
   //查询自己名下还在执行的项目
   fetchQueryOwnerProjectListUser = () => {
-    const {params} = this.props;
+    const { params } = this.props;
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
@@ -186,7 +186,7 @@ class LifeCycleManagementTabs extends React.Component {
         cxlx: 'USER',
       }
     ).then((ret = {}) => {
-      const {record, code, totalrows} = ret;
+      const { record, code, totalrows } = ret;
       //名下有项目-展示所有正在执行的项目,搜索框展示所有项目
       if (code === 1 && record.length > 0) {
         // console.log("recordcccc",record)
@@ -208,7 +208,7 @@ class LifeCycleManagementTabs extends React.Component {
             cxlx: 'ALL',
           }
         ).then((ret = {}) => {
-          const {record, code, totalrows} = ret;
+          const { record, code, totalrows } = ret;
           if (code === 1) {
             this.setState({
               allItemsData: record,
@@ -324,12 +324,17 @@ class LifeCycleManagementTabs extends React.Component {
     }
     if (name.includes("信委会议案流程")) {
       params = getParams("LC_XWHYALC", "LC_XWHYALC_TAFQ",
-        [],
+        [
+          {
+            "name": "XMMC",
+            "value": this.state.xmid
+          }
+        ],
         Loginname
       )
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           sendUrl: url,
@@ -364,7 +369,7 @@ class LifeCycleManagementTabs extends React.Component {
       "userId": Loginname
     }
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           uploadUrl: url,
@@ -378,7 +383,7 @@ class LifeCycleManagementTabs extends React.Component {
   //信息录入url
   getFileOutUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       // console.log("🚀 ~ file: index.js ~ line 233 ~ LifeCycleManagementTabs ~ CreateOperateHyperLink ~ url", url)
       if (code === 1) {
         this.setState({
@@ -395,7 +400,7 @@ class LifeCycleManagementTabs extends React.Component {
   //默认信息修改url
   getEditMessageUrl = (params, msg = '修改') => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editMessageUrl: url,
@@ -412,7 +417,7 @@ class LifeCycleManagementTabs extends React.Component {
   //阶段信息修改url
   getEditModelUrl = (params) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           editModelUrl: url,
@@ -429,7 +434,7 @@ class LifeCycleManagementTabs extends React.Component {
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const {record = [], code = 0} = ret;
+      const { record = [], code = 0 } = ret;
       // console.log("basicData",record);
       if (code === 1) {
         //zxxh排序
@@ -444,7 +449,7 @@ class LifeCycleManagementTabs extends React.Component {
         });
       }
     }).catch((error) => {
-      this.setState({loading: false});
+      this.setState({ loading: false });
       message.error(!error.success ? error.message : error.note);
     });
   }
@@ -463,7 +468,7 @@ class LifeCycleManagementTabs extends React.Component {
       sxid: item.sxid,
       xmmc: this.state.xmid
     }).then((ret = {}) => {
-      const {code = 0, record = []} = ret;
+      const { code = 0, record = [] } = ret;
       // console.log("WpsWDXXData", record);
       if (code === 1) {
         if (record.url.includes("[")) {
@@ -491,7 +496,7 @@ class LifeCycleManagementTabs extends React.Component {
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const {code = 0, record = []} = ret;
+      const { code = 0, record = [] } = ret;
       // console.log("detailData",record);
       if (code === 1) {
         this.setState({
@@ -505,7 +510,7 @@ class LifeCycleManagementTabs extends React.Component {
         });
       }
     }).catch((error) => {
-      this.setState({loading: false});
+      this.setState({ loading: false });
       message.error(!error.success ? error.message : error.note);
     });
   }
@@ -515,7 +520,7 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   extend = (number) => {
-    const {basicData} = this.state;
+    const { basicData } = this.state;
     basicData.map((item = {}, index) => {
       if (index === number) {
         item.extend = !item.extend;
@@ -570,17 +575,17 @@ class LifeCycleManagementTabs extends React.Component {
 
   //livebos弹窗配置，默认入参值为员工评价开启弹窗的
   handleModalConfig = ({
-                         objName = "View_XMRYPF",
-                         oprName = "View_XMRYPF_OPENCOMMENT",
-                         data = [
-                           {
-                             "name": "XMMC",
-                             "value": this.state.xmid
-                           },
-                         ], userName = Loginname,
-                         urlName = 'ygpjUrl',
-                         visibleName = 'ygpjVisible'
-                       }) => {
+    objName = "View_XMRYPF",
+    oprName = "View_XMRYPF_OPENCOMMENT",
+    data = [
+      {
+        "name": "XMMC",
+        "value": this.state.xmid
+      },
+    ], userName = Loginname,
+    urlName = 'ygpjUrl',
+    visibleName = 'ygpjVisible'
+  }) => {
     let params = {
       "attribute": 0,
       "authFlag": 0,
@@ -590,7 +595,7 @@ class LifeCycleManagementTabs extends React.Component {
       "userId": userName
     };
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           [urlName]: url,
@@ -805,7 +810,7 @@ class LifeCycleManagementTabs extends React.Component {
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
-        dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+        dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
       } else {
         let res = dataArr.some(item => {//判断相同swlx，有就添加到当前项
           if (item.swlx === mapItem.swlx) {
@@ -814,7 +819,7 @@ class LifeCycleManagementTabs extends React.Component {
           }
         })
         if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({swlx: mapItem.swlx, List: [mapItem]})
+          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
         }
       }
     })
@@ -892,14 +897,14 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   handleVisibleChange = visible => {
-    this.setState({fileListVisible: visible});
+    this.setState({ fileListVisible: visible });
   };
 
   callback = (key) => {
     // console.log("keyccccc", key)
     // console.log("loadingloading000", this.state.loading)
     // console.log("isHaveItem", this.state.isHaveItem)
-    const {operationListData, allItemsData} = this.state;
+    const { operationListData, allItemsData } = this.state;
     this.setState({
       xmid: key,
       loading: true,
@@ -998,7 +1003,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '50%',
       height: '68rem',
       title: uploadTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: uploadVisible,
       footer: null,
     };
@@ -1008,7 +1013,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '68rem',
       title: editTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editVisible,
       footer: null,
     };
@@ -1018,7 +1023,7 @@ class LifeCycleManagementTabs extends React.Component {
       title: sendTitle,
       width: '60%',
       height: '115rem',
-      style: {top: '5rem'},
+      style: { top: '5rem' },
       visible: sendVisible,
       footer: null,
     };
@@ -1028,7 +1033,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: fillOutTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: fillOutVisible,
       footer: null,
     };
@@ -1038,7 +1043,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: editMessageTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: defMsgModifyModalVisible,
       footer: null,
     };
@@ -1048,7 +1053,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '60%',
       height: '80rem',
       title: editModelTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: editModelVisible,
       footer: null,
     };
@@ -1059,7 +1064,7 @@ class LifeCycleManagementTabs extends React.Component {
       width: '30%',
       height: '38rem',
       title: '操作',
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: ygpjVisible,
       footer: null,
     };
@@ -1095,13 +1100,13 @@ class LifeCycleManagementTabs extends React.Component {
     const operations = <Input.Group compact>
       <div onMouseDown={(e) => {
         e.preventDefault()
-      }} style={{position: 'relative'}} className="operationListSelectBox">
+      }} style={{ position: 'relative' }} className="operationListSelectBox">
         <img src={require('../../../image/pms/LifeCycleManagement/search.png')}
-             alt='' style={{marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem'}}
+          alt='' style={{ marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem' }}
         />
         <Select
           // ref={this.selectRef}
-          style={{width: '34rem', borderRadius: '1.1904rem !important'}}
+          style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
           showSearch
           placeholder="请选择项目名称"
           optionFilterProp="children"
@@ -1115,7 +1120,7 @@ class LifeCycleManagementTabs extends React.Component {
           onFocus={this.handleSelectFocus}
           open={open}
           onDropdownVisibleChange={(visible) => {
-            this.setState({open: visible})
+            this.setState({ open: visible })
           }}
         >
           {
@@ -1126,49 +1131,49 @@ class LifeCycleManagementTabs extends React.Component {
         </Select></div>
     </Input.Group>;
     return (
-      <Row style={{height: '100%'}}>
+      <Row style={{ height: '100%' }}>
         {/*文档上传弹窗*/}
         {uploadVisible &&
-        <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
-                     onCancel={this.closeUploadModal}
-                     src={uploadUrl}/>}
+          <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+            onCancel={this.closeUploadModal}
+            src={uploadUrl} />}
         {/*文档修改弹窗*/}
         {editVisible &&
-        <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
-                     onCancel={this.closeEditModal}
-                     src={uploadUrl}/>}
+          <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+            onCancel={this.closeEditModal}
+            src={uploadUrl} />}
         {/*流程发起弹窗*/}
         {sendVisible &&
-        <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
-                     src={sendUrl}/>}
+          <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
+            src={sendUrl} />}
         {/*信息录入弹窗*/}
         {fillOutVisible &&
-        <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
-                     onCancel={this.closeFillOutModal}
-                     src={fillOutUrl}/>}
+          <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+            onCancel={this.closeFillOutModal}
+            src={fillOutUrl} />}
         {/*员工评价开启弹窗*/}
         {ygpjVisible &&
-        <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
-                     onCancel={() => this.setState({ygpjVisible: false})}
-                     src={ygpjUrl}/>}
+          <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+            onCancel={() => this.setState({ ygpjVisible: false })}
+            src={ygpjUrl} />}
         {/*默认信息修改弹窗*/}
         {defMsgModifyModalVisible &&
-        <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
-                     onCancel={this.closeDefMsgModifyModal}
-                     src={editMessageUrl}/>}
+          <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+            onCancel={this.closeDefMsgModifyModal}
+            src={editMessageUrl} />}
         {/*阶段信息修改弹窗*/}
         {editModelVisible &&
-        <div>
-          <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
-                       onCancel={this.closeModelEditModal}
-                       src={editModelUrl}/></div>}
+          <div>
+            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+              onCancel={this.closeModelEditModal}
+              src={editModelUrl} /></div>}
 
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
-                                                fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-                                                currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
-                                                closePaymentProcessModal={this.closePaymentProcessModal}
-                                                onSuccess={() => this.onSuccess("流程发起")}
+          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          closePaymentProcessModal={this.closePaymentProcessModal}
+          onSuccess={() => this.onSuccess("流程发起")}
         />}
 
         {/*合同信息修改弹窗*/}
@@ -1191,22 +1196,22 @@ class LifeCycleManagementTabs extends React.Component {
         ></BidInfoUpdate>}
         <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
           {
-            <Tabs tabBarStyle={{backgroundColor: 'white', margin: '0', padding: '3.571rem 0 0 3.571rem'}}
-                  onChange={this.callback} type="card" activeKey={xmid} tabBarExtraContent={operations}>
+            <Tabs tabBarStyle={{ backgroundColor: 'white', margin: '0', padding: '3.571rem 0 0 3.571rem' }}
+              onChange={this.callback} type="card" activeKey={xmid} tabBarExtraContent={operations}>
               {
                 allItemsDataFirst.map(item => {
                   // console.log("1111",item)
                   return (
                     <TabPane tab={item.xmmc} key={item.xmid}>
-                      <div style={{height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem'}}>
+                      <div style={{ height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem' }}>
                         <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
-                                       fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
                           // fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
-                                       fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
-                                       data={operationListData}
+                          fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
+                          data={operationListData}
                           // totalRows={operationListTotalRows}
-                                       defaultValue={xmid}
-                                       projectInfo={projectInfo}/>
+                          defaultValue={xmid}
+                          projectInfo={projectInfo} />
                       </div>
                       <div className='lifecyclemanage-box-wrapper'>
                         <div className='lifecyclemanage-box'>
@@ -1228,16 +1233,16 @@ class LifeCycleManagementTabs extends React.Component {
                                 borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
                               }}>
                                 <div className='head'>
-                                  <Imgs status={item.zt}/>
+                                  <Imgs status={item.zt} />
                                   <i
                                     className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                                    onClick={() => this.extend(index)}/>&nbsp;
+                                    onClick={() => this.extend(index)} />&nbsp;
                                   <div className='head1'>
                                     {item.lcbmc}
                                   </div>
                                   {item.lcbmc !== '项目付款' ? <>
                                     <div className='head6'>
-                                      进度：<span style={{color: 'black'}}>{item.jd}</span>
+                                      进度：<span style={{ color: 'black' }}>{item.jd}</span>
                                     </div>
                                     <div style={{
                                       lineHeight: '2.976rem',
@@ -1248,48 +1253,48 @@ class LifeCycleManagementTabs extends React.Component {
                                       color: '#606266',
                                       paddingTop: '3.2736rem'
                                     }}>
-                                  <span
-                                    style={{color: 'rgba(48, 49, 51, 1)'}}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
+                                      <span
+                                        style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
                                       {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
-                                      <div style={{
-                                        display: 'flex',
-                                        justifyContent: 'space-between',
-                                        fontSize: '2.0832rem',
-                                        color: '#909399'
-                                      }}>
-                                      <span>
-                                        原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
-                                        （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day') > 0)
-                                        ?
-                                        '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
-                                        :
-                                        '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
-                                      }天，`}
-                                        修改{item.xgcs}次）
-                                      </span>
-                                      </div>
+                                        <div style={{
+                                          display: 'flex',
+                                          justifyContent: 'space-between',
+                                          fontSize: '2.0832rem',
+                                          color: '#909399'
+                                        }}>
+                                          <span>
+                                            原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
+                                            （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day') > 0)
+                                              ?
+                                              '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
+                                              :
+                                              '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
+                                              }天，`}
+                                            修改{item.xgcs}次）
+                                          </span>
+                                        </div>
                                       }
                                     </div>
                                     <div className='head4'>
                                       项目风险：<ProjectRisk userId={projectInfo?.userid}
-                                                        loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                                                        item={item} xmid={this.state.xmid}/>
+                                        loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                        item={item} xmid={this.state.xmid} />
                                     </div>
                                     <div className='head2'>
-                                      状态：<ProjectProgress state={item.zt}/>
+                                      状态：<ProjectProgress state={item.zt} />
                                     </div>
                                     <div className='head5'>
                                       <div className='head5-title'>
                                         <div className='head5-cont'>
-                                          <a style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3rem'}}
-                                             className="iconfont icon-edit" onClick={() => {
-                                            if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
-                                              this.handleEditModel(item);
-                                            } else {
-                                              message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                                          <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
+                                            className="iconfont icon-edit" onClick={() => {
+                                              if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
+                                                this.handleEditModel(item);
+                                              } else {
+                                                message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                                              }
                                             }
-                                          }
-                                          }/>
+                                            } />
                                         </div>
                                       </div>
                                     </div>
@@ -1309,7 +1314,7 @@ class LifeCycleManagementTabs extends React.Component {
                                           borderRadius: '1.1904rem',
                                           maxHeight: '50rem'
                                         }}
-                                             className='cont'>
+                                          className='cont'>
                                           {
                                             sort.map((item = {}, index) => {
                                               let num = 0
@@ -1319,7 +1324,7 @@ class LifeCycleManagementTabs extends React.Component {
                                                 }
                                               })
                                               return <Col span={8} className='cont-col-self'
-                                                          style={{marginBottom: '2.3808rem'}} key={index}>
+                                                style={{ marginBottom: '2.3808rem' }} key={index}>
                                                 <div className='cont-col'>
                                                   <div className='cont-col1'>
                                                     <div className='right'>
@@ -1335,35 +1340,35 @@ class LifeCycleManagementTabs extends React.Component {
                                                       }}>
                                                         <Col
                                                           span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 14 : 17}>
-                                                          <div style={{display: 'flex', alignItems: 'center'}}>
-                                                            <Points status={item.zxqk}/>
+                                                          <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                            <Points status={item.zxqk} />
                                                             {/*根据事项类型判断是否是文档*/}
                                                             {
                                                               item.swlx.includes("文档") ||
-                                                              item.swlx.includes("信委会") ||
-                                                              item.swlx.includes("总办会") ||
-                                                              item.swlx.includes("需求调研") ||
-                                                              item.swlx.includes("产品设计") ||
-                                                              item.swlx.includes("系统框架搭建") ||
-                                                              item.swlx.includes("功能开发") ||
-                                                              item.swlx.includes("外部系统对接") ||
-                                                              item.swlx.includes("系统测试") ? (
-                                                                  fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
-                                                                    <Popover
-                                                                      content={content}
-                                                                      title="文件列表"
-                                                                      trigger="hover"
-                                                                      overlayClassName="popover-filelist"
-                                                                      visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
-                                                                      onVisibleChange={this.handleVisibleChange}
-                                                                    >
-                                                                      <a className='lifecycle-text-overflow'
-                                                                         style={item.zxqk === " " ? {color: '#333'} : {color: 'rgb(51, 97, 255)'}}>{item.sxmc}</a>
-                                                                    </Popover> :
+                                                                item.swlx.includes("信委会") ||
+                                                                item.swlx.includes("总办会") ||
+                                                                item.swlx.includes("需求调研") ||
+                                                                item.swlx.includes("产品设计") ||
+                                                                item.swlx.includes("系统框架搭建") ||
+                                                                item.swlx.includes("功能开发") ||
+                                                                item.swlx.includes("外部系统对接") ||
+                                                                item.swlx.includes("系统测试") ? (
+                                                                fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
+                                                                  <Popover
+                                                                    content={content}
+                                                                    title="文件列表"
+                                                                    trigger="hover"
+                                                                    overlayClassName="popover-filelist"
+                                                                    visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
+                                                                    onVisibleChange={this.handleVisibleChange}
+                                                                  >
                                                                     <a className='lifecycle-text-overflow'
-                                                                       style={item.zxqk === " " ? {color: '#333'} : {color: 'rgb(51, 97, 255)'}}
-                                                                       onClick={() => this.handleClick(item)}>{item.sxmc}</a>
-                                                                )
+                                                                      style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
+                                                                  </Popover> :
+                                                                  <a className='lifecycle-text-overflow'
+                                                                    style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}
+                                                                    onClick={() => this.handleClick(item)}>{item.sxmc}</a>
+                                                              )
                                                                 :
                                                                 <span
                                                                   className='lifecycle-text-overflow'>{item.sxmc}</span>
@@ -1373,17 +1378,17 @@ class LifeCycleManagementTabs extends React.Component {
                                                         </Col>
                                                         <Col
                                                           span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6}
-                                                          style={{textAlign: 'left', width: '29%'}}>
+                                                          style={{ textAlign: 'left', width: '29%' }}>
                                                           <Tooltips type={item.swlx}
-                                                                    item={item}
-                                                                    status={item.zxqk}
-                                                                    xmid={xmid}
-                                                                    projectInfo={projectInfo}
-                                                                    handleUpload={() => this.handleUpload(item)}
-                                                                    handleSend={this.handleSend}
-                                                                    handleFillOut={() => this.handleFillOut(item)}
-                                                                    handleEdit={() => this.handleEdit(item)}
-                                                                    handleMessageEdit={this.handleMessageEdit}
+                                                            item={item}
+                                                            status={item.zxqk}
+                                                            xmid={xmid}
+                                                            projectInfo={projectInfo}
+                                                            handleUpload={() => this.handleUpload(item)}
+                                                            handleSend={this.handleSend}
+                                                            handleFillOut={() => this.handleFillOut(item)}
+                                                            handleEdit={() => this.handleEdit(item)}
+                                                            handleMessageEdit={this.handleMessageEdit}
                                                           />
                                                         </Col>
                                                       </Row>
