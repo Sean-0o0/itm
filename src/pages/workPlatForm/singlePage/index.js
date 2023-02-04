@@ -10,6 +10,7 @@ import {Switch, Route} from 'dva/router';
 import ZipFileModel from './ZipFileModel/index';
 import CapitalBudgetExport from "./CapitalBudgetExport";
 import NewProjectModel from './NewProjectModel';
+import NewProjectModelV2 from "./NewProjectModelV2";
 const { events } = Bridge.constants
 class SinglePage extends Component {
 
@@ -41,8 +42,8 @@ class SinglePage extends Component {
                  render={props => <ZipFileModel {...props} submitOperate={this.submitOperate}
                                                 closeDialog={this.closeDialog}/>}/>
           <Route exact path={`${parentUrl}/SaveProject/:params`}
-                 render={props => <NewProjectModel {...props} submitOperate={this.submitOperate}
-                                                   closeDialog={this.closeDialog}/>}/>
+                 render={props => <NewProjectModelV2 {...props} submitOperate={this.submitOperate}
+                                                     closeDialog={this.closeDialog}/>}/>
 
           <Route exact path={`${parentUrl}/CapitalBudgetExportPage`}
                  render={props => <CapitalBudgetExport {...props} submitOperate={this.submitOperate}

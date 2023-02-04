@@ -2136,6 +2136,7 @@
   }
 
   .react-grid-item.cssTransforms {
+    width: max-content !important;
     transition-property: transform;
   }
 
@@ -2391,13 +2392,13 @@
       border-bottom: 0 solid #F1F1F1;
 
       .left {
-        width: 90%;
+        width: 84%;
         display: flex;
         flex-direction: row;
       }
 
       .right {
-        width: 10%;
+        width: 16%;
         color: #3461FF;
       }
     }
@@ -2411,6 +2412,8 @@
       background-color: #F6F6F9;
 
       .item {
+        height: auto !important;
+        //width: max-content !important;
         border: 1px solid #E0E0E0;
         padding: 1.6rem;
         margin: 1rem;
@@ -2424,11 +2427,17 @@
       }
 
       .new {
+        display: flex;
+
         .icon {
           font-size: 2rem;
           color: #3461FF;
           cursor: pointer;
           padding-left: 1rem;
+        }
+
+        .ant-select {
+          width: 25rem !important;
         }
       }
     }
@@ -2484,6 +2493,10 @@
     bottom: 0%;
     background-color: #F6F6F9;
     padding: 1rem 3rem;
+
+    .steps-action {
+      display: inline-block;
+    }
   }
 }
 
@@ -3249,7 +3262,7 @@
           background-color: #fafafa;
           border-radius: 1.3392rem;
         }
-    
+
         &::-webkit-scrollbar-thumb {
           background-color: #c1c1c1;
           border-radius: 1.3392rem;
@@ -3351,6 +3364,10 @@
 }
 
 //首页加载
-.ant-spin-nested-loading.person-workbench-spin-style>div>.ant-spin {
+.ant-spin-nested-loading.person-workbench-spin-style > div > .ant-spin {
   max-height: calc(100vh - 6.5rem);
+}
+
+.ant-steps-dot .ant-steps-item-content, .ant-steps-dot.ant-steps-small .ant-steps-item-content {
+  width: auto !important;
 }
