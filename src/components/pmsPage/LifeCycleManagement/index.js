@@ -1050,8 +1050,8 @@ class LifeCycleManagementTabs extends React.Component {
     const editModelModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '60%',
-      height: '80rem',
+      width: '40%',
+      height: '53rem',
       title: editModelTitle,
       style: { top: '10rem' },
       visible: editModelVisible,
