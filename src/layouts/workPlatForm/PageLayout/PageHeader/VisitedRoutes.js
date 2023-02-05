@@ -38,7 +38,10 @@ function VisitedRoutes(props) {
   const menuArray = treeToArrayData(menuTree, 'children');
 
   const { location: { pathname = '', search = '' } } = history;
-  const newPathname = pathname + search;
+  let newPathname = pathname + search;
+  if (pathname && pathname === '/pms/manage/LifeCycleManagement') {
+    newPathname = pathname;
+  }
 
   const calclateMoreIconPosition = () => {
     // const visitedRoutesDom = document.querySelector('#visited_routes_container');
@@ -114,7 +117,7 @@ function VisitedRoutes(props) {
 
   return (
     <div style={{ width: visitedScroll }} className='clearfix' id='visited-scroll' >
-      <div  className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
+      <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
           <span style={{ margin: '0 1rem' }}>首页</span>
@@ -161,7 +164,7 @@ function VisitedRoutes(props) {
               </Menu>
             }
           >
-            <div ref={moreIconRef} className={styles.tagview} style={{ position: 'absolute', left: visitedScroll, zIndex: 2, background: '#ffffff', borderLeft: 'none'}}>
+            <div ref={moreIconRef} className={styles.tagview} style={{ position: 'absolute', left: visitedScroll, zIndex: 2, background: '#ffffff', borderLeft: 'none' }}>
               <Icon type="more" style={{ fontSize: '1.416rem' }} />
             </div>
           </Dropdown>

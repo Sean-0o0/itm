@@ -160,7 +160,7 @@ class WorkBench extends React.Component {
   fetchQueryOwnerProjectList = (e) => {
     FetchQueryOwnerProjectList(
       {
-        cxlx: 'USER',
+        cxlx: 'INDEX',
         paging: 1,
         current: e ? e : 1,
         pageSize: 5,

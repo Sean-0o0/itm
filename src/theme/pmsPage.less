@@ -3212,6 +3212,22 @@
   }
 
   .ProcessStatus {
+    height: 23rem;
+    overflow: hidden;
+    overflow-y: auto;
+    padding-right: 1.7856rem;
+
+    &::-webkit-scrollbar {
+      width: 1.488rem;
+      background-color: #fafafa;
+      border-radius: 1.3392rem;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 1.3392rem;
+    }
+
     .ProcessStatus-Div {
       border-bottom: 0.1488rem solid rgb(202, 202, 202);
       margin-bottom: 2.3808rem;
@@ -3255,18 +3271,6 @@
         display: flex;
         align-items: center;
         padding-bottom: 2.3808rem;
-        overflow: hidden;
-        overflow-y: auto;
-        &::-webkit-scrollbar {
-          width: 1.488rem;
-          background-color: #fafafa;
-          border-radius: 1.3392rem;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background-color: #c1c1c1;
-          border-radius: 1.3392rem;
-        }
 
         .col1 {
           font-size: 2.083rem;
@@ -3370,4 +3374,18 @@
 
 .ant-steps-dot .ant-steps-item-content, .ant-steps-dot.ant-steps-small .ant-steps-item-content {
   width: auto !important;
+}
+
+//首页滚动条
+.m-layout-content {
+  &::-webkit-scrollbar {
+    width: 2.3808rem;
+    background-color: #fafafa;
+    border-radius: 1.1904rem;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    background-color: #c1c1c1;
+    border-radius: 1.1904rem;
+  }
 }

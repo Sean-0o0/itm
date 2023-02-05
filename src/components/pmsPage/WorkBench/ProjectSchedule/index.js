@@ -953,7 +953,7 @@ class ProjectSchedule extends React.Component {
       </>
     );
     return (
-      <Row className='workBench' style={{ height: '70rem', padding: '3.571rem' }}>
+      <Row className='workBench' style={{ height: '100%', padding: '3.571rem' }}>
         <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
           <div style={{ display: 'flex', }}>
             <i style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem' }}
@@ -1023,10 +1023,10 @@ class ProjectSchedule extends React.Component {
               onCancel={this.closeModelEditModal}
               src={editModelUrl} /></div>}
 
-        <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
+        <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row' }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ height: '100%' }}>
-              <div style={{ height: '70rem', overflowY: 'auto' }}>
+              <div style={{ height: '100%', overflowY: 'auto', minHeight: 'calc(100vh - 97.7rem)' }}>
                 {
                   data.map((items = {}, index) => {
                     return <div className='workBench-LifeCycleManage'>
