@@ -1,4 +1,4 @@
-import { Row, Col, Tooltip, Dropdown, Menu, Pagination, Divider, message, } from 'antd';
+import { Row, Col, Menu, Pagination, Divider, message, Empty } from 'antd';
 import React from 'react';
 import icon_wrong from "../../../../image/pms/icon_milepost_wrong.png";
 import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
@@ -1028,7 +1028,7 @@ class ProjectSchedule extends React.Component {
             <div style={{ height: '100%' }}>
               <div style={{ height: '100%', overflowY: 'auto', minHeight: 'calc(100vh - 97.7rem)' }}>
                 {
-                  data.map((items = {}, index) => {
+                  data?.map((items = {}, index) => {
                     return <div className='workBench-LifeCycleManage'>
                       <div className='head'>
                         <i
@@ -1161,6 +1161,7 @@ class ProjectSchedule extends React.Component {
                     </div>
                   })
                 }
+                {data?.length === 0 && <Empty description='暂无项目' />}
               </div>
               <div style={{ height: '10%', marginBottom: '1rem' }}>
                 <Pagination

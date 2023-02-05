@@ -81,7 +81,7 @@ export default class PageSider extends React.Component {
         {/*}*/}
         <Scrollbars
           autoHide
-          style={{ width: '100%', height: 'calc(100% - 19rem)' }}
+          style={{ width: '100%', height: 'calc(100% - 8rem)' }}
         >
           <Menu
             theme='light'
