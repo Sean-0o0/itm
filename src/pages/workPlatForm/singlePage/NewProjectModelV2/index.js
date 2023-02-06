@@ -1,4 +1,4 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import moment from 'moment';
 import {
   Tag,
@@ -19,7 +19,7 @@ import {
   TreeSelect,
   Tree
 } from 'antd';
-import {connect} from 'dva';
+import { connect } from 'dva';
 import GridLayout from 'react-grid-layout';
 import {
   FetchQueryProjectDetails,
@@ -33,15 +33,15 @@ import {
   FetchQueryMilestoneStageInfo,
   FetchQueryMatterUnderMilepost
 } from "../../../../services/projectManage";
-import {DecryptBase64, EncryptBase64} from '../../../../components/Common/Encrypt';
+import { DecryptBase64, EncryptBase64 } from '../../../../components/Common/Encrypt';
 import config from '../../../../utils/config';
 import LBDialog from 'livebos-frame/dist/LBDialog';
 
-const {Option} = Select;
-const {api} = config;
-const {confirm} = Modal;
-const {TreeNode} = TreeSelect;
-const {Step} = Steps;
+const { Option } = Select;
+const { api } = config;
+const { confirm } = Modal;
+const { TreeNode } = TreeSelect;
+const { Step } = Steps;
 
 class NewProjectModelV2 extends React.Component {
   constructor(props) {
@@ -121,7 +121,7 @@ class NewProjectModelV2 extends React.Component {
     }
     // 判断是否是首页跳转过来的
     if (params.type) {
-      this.setState({type: true});
+      this.setState({ type: true });
     }
     setTimeout(function () {
       _this.filterJobList()
@@ -130,12 +130,12 @@ class NewProjectModelV2 extends React.Component {
 
   next() {
     const current = this.state.current + 1;
-    this.setState({current});
+    this.setState({ current });
   }
 
   prev() {
     const current = this.state.current - 1;
-    this.setState({current});
+    this.setState({ current });
   }
 
   fetchInterface = async () => {
@@ -145,15 +145,15 @@ class NewProjectModelV2 extends React.Component {
     // 查询项目标签
     await this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    await this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY")) });
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    await this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
     // 查询里程碑事项信息
-    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    await this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
     // 查询里程碑信息
     await this.fetchQueryMilepostInfo({
       type: 1,
@@ -168,17 +168,17 @@ class NewProjectModelV2 extends React.Component {
 
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
-      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+      await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
     }
 
     // 修改加载状态
-    this.setState({loading: false});
+    this.setState({ loading: false });
   };
 
 
   // 处理岗位数据
   filterJobList = () => {
-    const {dictionary: {RYGW = []}} = this.props;
+    const { dictionary: { RYGW = [] } } = this.props;
     // 初始化各个岗位下对应的员工id的数组
     let arr = [];
     RYGW.forEach(item => {
@@ -192,7 +192,7 @@ class NewProjectModelV2 extends React.Component {
       searchStaffList: [loginUser],
       loginUser: loginUser,
       staffJobList: RYGW,
-      staffInfo: {...this.state.staffInfo, jobStaffList: arr}
+      staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
     });
     this.fetchInterface();
   };
@@ -201,8 +201,8 @@ class NewProjectModelV2 extends React.Component {
   // 查询里程碑信息
   fetchQueryMilepostInfo(params) {
     return FetchQueryMilepostInfo(params).then((record) => {
-      const {code = -1, result = ''} = record;
-      const {nowTime, tomorrowTime} = this.state;
+      const { code = -1, result = '' } = record;
+      const { nowTime, tomorrowTime } = this.state;
       if (code > 0) {
         let data = JSON.parse(result);
 
@@ -215,7 +215,7 @@ class NewProjectModelV2 extends React.Component {
           });
         }
 
-        this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+        this.setState({ milePostInfo: arr, mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -238,7 +238,7 @@ class NewProjectModelV2 extends React.Component {
               h: 3,
               static: true
             })
-            sxlb.push({type: 'title'});
+            sxlb.push({ type: 'title' });
           }
           sxlb.push(e);
           layout.push({
@@ -285,18 +285,18 @@ class NewProjectModelV2 extends React.Component {
 
   toItemTree(list, parId) {
     let a = list.reduce((pre, current, index) => {
-      pre[current.zdbm] = pre[current.zdbm] ||[];
-      pre[current.zdbm].push({ key: current.ysID,title: current.ysName, value: current.ysID,ysID:current.ysID,ysKGL:Number(current.ysKGL),ysLB:current.ysLB,ysName:current.ysName,ysZJE:Number(current.ysZJE),zdbm:current.zdbm });
+      pre[current.zdbm] = pre[current.zdbm] || [];
+      pre[current.zdbm].push({ key: current.ysID, title: current.ysName, value: current.ysID, ysID: current.ysID, ysKGL: Number(current.ysKGL), ysLB: current.ysLB, ysName: current.ysName, ysZJE: Number(current.ysZJE), zdbm: current.zdbm });
       return pre;
     }, []);
 
     const treeData = [];
     const indexData = [];
-    list.map(item =>{
-      if(indexData.indexOf(item.zdbm) === -1){
+    list.map(item => {
+      if (indexData.indexOf(item.zdbm) === -1) {
         indexData.push(item.zdbm)
-        if(a[item.zdbm]){
-          let treeDatamini = {children:[]}
+        if (a[item.zdbm]) {
+          let treeDatamini = { children: [] }
           treeDatamini.key = item.zdbm
           treeDatamini.value = item.zdbm
           treeDatamini.title = item.ysLB
@@ -306,7 +306,7 @@ class NewProjectModelV2 extends React.Component {
           treeDatamini.ysName = item.ysName
           treeDatamini.ysZJE = Number(item.ysZJE)
           treeDatamini.zdbm = item.zdbm
-          treeDatamini.dropdownStyle = {color:'#666'}
+          treeDatamini.dropdownStyle = { color: '#666' }
           treeDatamini.disabled = true
           treeDatamini.children = a[item.zdbm]
           treeData.push(treeDatamini)
@@ -314,7 +314,7 @@ class NewProjectModelV2 extends React.Component {
       }
 
     })
-    console.log("treeData",treeData);
+    console.log("treeData", treeData);
     return treeData;
   }
 
@@ -322,7 +322,7 @@ class NewProjectModelV2 extends React.Component {
   fetchQueryMatterUnderMilepost(params) {
     return FetchQueryMatterUnderMilepost(params)
       .then((result) => {
-        const {code = -1, records = []} = result;
+        const { code = -1, records = [] } = result;
         if (code > 0) {
           const data = JSON.parse(records);
           if (params.type === 'ALL') {
@@ -334,7 +334,7 @@ class NewProjectModelV2 extends React.Component {
                 arr.push(sx)
               });
             });
-            this.setState({mileItemInfo: arr});
+            this.setState({ mileItemInfo: arr });
           } else if (params.type === 'SINGLE') {
             console.log("datadata", data)
             const idarr = [];
@@ -348,7 +348,7 @@ class NewProjectModelV2 extends React.Component {
                 swlxarr.push(swlxparam);
               }
             })
-            this.setState({newMileItemInfo: data, swlxarr: swlxarr});
+            this.setState({ newMileItemInfo: data, swlxarr: swlxarr });
           }
         }
       }).catch((error) => {
@@ -360,13 +360,13 @@ class NewProjectModelV2 extends React.Component {
   fetchQueryProjectDetails(params) {
     return FetchQueryProjectDetails(params)
       .then((result) => {
-        const {code = -1, record = []} = result;
+        const { code = -1, record = [] } = result;
         if (code > 0 && record.length > 0) {
           let result = record[0];
           let jobArr = [];
           let searchStaffList = [];
           let memberInfo = JSON.parse(result.memberInfo);
-          memberInfo.push({gw: '10', rymc: result.projectManager});
+          memberInfo.push({ gw: '10', rymc: result.projectManager });
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
@@ -426,9 +426,9 @@ class NewProjectModelV2 extends React.Component {
   fetchQueryMilestoneStageInfo(params) {
     return FetchQueryMilestoneStageInfo(params)
       .then((result) => {
-        const {code = -1, record = []} = result;
+        const { code = -1, record = [] } = result;
         if (code > 0) {
-          this.setState({mileStageList: record});
+          this.setState({ mileStageList: record });
         }
       }).catch((error) => {
         message.error(!error.success ? error.message : error.note);
@@ -438,9 +438,9 @@ class NewProjectModelV2 extends React.Component {
   // 查询人员信息
   fetchQueryMemberInfo() {
     return FetchQueryMemberInfo(
-      {type: 'ALL'}
+      { type: 'ALL' }
     ).then((result) => {
-      const {code = -1, record = ''} = result;
+      const { code = -1, record = '' } = result;
       if (code > 0) {
         const result = JSON.parse(record);
         const arr = [];
@@ -467,7 +467,7 @@ class NewProjectModelV2 extends React.Component {
     return FetchQueryOrganizationInfo({
       type: 'ALL'
     }).then((result) => {
-      const {code = -1, record = []} = result;
+      const { code = -1, record = [] } = result;
       if (code > 0) {
         const loginUser = this.state.loginUser;
         // 深拷贝
@@ -477,7 +477,7 @@ class NewProjectModelV2 extends React.Component {
           if (e.orgId == loginUser.org) {
             loginUser.orgName = e.orgName;
           }
-          arr.push({...e})
+          arr.push({ ...e })
         });
         this.setState({
           loginUser: loginUser, organizationList: record, organizationTreeList: this.toOrgTree(arr, 0)
@@ -491,9 +491,9 @@ class NewProjectModelV2 extends React.Component {
   // 查询关联预算项目信息
   fetchQueryBudgetProjects(params) {
     return FetchQueryBudgetProjects(params).then((result) => {
-      const {code = -1, record = []} = result;
+      const { code = -1, record = [] } = result;
       if (code > 0) {
-        this.setState({budgetProjectList: this.toItemTree(record)});
+        this.setState({ budgetProjectList: this.toItemTree(record) });
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -503,10 +503,10 @@ class NewProjectModelV2 extends React.Component {
 
   // 查询软件清单
   fetchQuerySoftwareList() {
-    return FetchQuerySoftwareList({type: 'ALL'}).then((result) => {
-      const {code = -1, record = []} = result;
+    return FetchQuerySoftwareList({ type: 'ALL' }).then((result) => {
+      const { code = -1, record = [] } = result;
       if (code > 0) {
-        this.setState({softwareList: record});
+        this.setState({ softwareList: record });
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -516,9 +516,9 @@ class NewProjectModelV2 extends React.Component {
   // 查询项目标签
   fetchQueryProjectLabel() {
     return FetchQueryProjectLabel({}).then((result) => {
-      const {code = -1, record = []} = result;
+      const { code = -1, record = [] } = result;
       if (code > 0) {
-        this.setState({projectLabelList: record});
+        this.setState({ projectLabelList: record });
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -527,7 +527,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 获取url参数
   getUrlParams = () => {
-    const {match: {params: {params: encryptParams = ''}}} = this.props;
+    const { match: { params: { params: encryptParams = '' } } } = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
     // console.log("paramsparams", params)
     return params;
@@ -542,7 +542,7 @@ class NewProjectModelV2 extends React.Component {
       content: '确定要取消操作？',
       onOk() {
         if (_this.state.type) {
-          window.parent && window.parent.postMessage({operate: 'close'}, '*');
+          window.parent && window.parent.postMessage({ operate: 'close' }, '*');
         } else {
           _this.props.closeDialog();
         }
@@ -565,26 +565,26 @@ class NewProjectModelV2 extends React.Component {
           searchStaffList.push(item);
         }
       });
-      this.setState({height: 400}, function () {
-        this.setState({searchStaffList: searchStaffList})
+      this.setState({ height: 400 }, function () {
+        this.setState({ searchStaffList: searchStaffList })
       });
     } else {
-      this.setState({height: 0}, function () {
-        this.setState({searchStaffList: []})
+      this.setState({ height: 0 }, function () {
+        this.setState({ searchStaffList: [] })
       });
     }
   };
 
 
   stopDrag = (e, index, i) => {
-    const {mileInfo: {milePostInfo}} = this.state;
+    const { mileInfo: { milePostInfo } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const milePost = JSON.parse(JSON.stringify(milePostInfo));
 
     const mile = milePost[index];
     const matter = mile.matterInfos[i];
     matter.gridLayout = e;
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: milePost}});
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: milePost } });
   };
 
   // 验证本项目预算
@@ -597,7 +597,7 @@ class NewProjectModelV2 extends React.Component {
     //   },300)
     // }
 
-    this.setState({budgetInfo: {...this.state.budgetInfo, projectBudget: val === '' || val === '-' ? 0 : val}});
+    this.setState({ budgetInfo: { ...this.state.budgetInfo, projectBudget: val === '' || val === '-' ? 0 : val } });
     if (!val) {
       callback();
     }
@@ -612,7 +612,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 点击添加按钮
   clickAddStaff = () => {
-    const {staffInfo: {focusJob, jobStaffList}, checkedStaffKey} = this.state;
+    const { staffInfo: { focusJob, jobStaffList }, checkedStaffKey } = this.state;
     if (focusJob === '') {
       message.warning('请先选择你要添加到的岗位！');
     } else if (checkedStaffKey.length === 0) {
@@ -637,7 +637,7 @@ class NewProjectModelV2 extends React.Component {
       this.setState({
         checkedStaffKey: [],
         searchStaffList: searchStaffList,
-        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
+        staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
       })
     }
   };
@@ -651,12 +651,12 @@ class NewProjectModelV2 extends React.Component {
           </TreeNode>
         );
       }
-      return <TreeNode key={item.orgId} {...item} dataRef={item}/>;
+      return <TreeNode key={item.orgId} {...item} dataRef={item} />;
     });
 
 
   onCheckTreeStaff = (key, node) => {
-    this.setState({checkedStaffKey: key})
+    this.setState({ checkedStaffKey: key })
   };
 
   // 数组对象排序
@@ -681,9 +681,9 @@ class NewProjectModelV2 extends React.Component {
       title: '提示',
       content: '确定要删除此岗位？',
       onOk() {
-        const {staffJobList} = _this.state;
+        const { staffJobList } = _this.state;
         const newStaffJobList = staffJobList.filter(item => item.ibm != e);
-        _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true)})
+        _this.setState({ staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true) })
       },
       onCancel() {
       },
@@ -692,8 +692,8 @@ class NewProjectModelV2 extends React.Component {
   };
 
   // 保存数据操作
-  handleFormValidate = (e,type) => {
-    const {operateType} = this.state;
+  handleFormValidate = (e, type) => {
+    const { operateType } = this.state;
     e.preventDefault();
     // if (this.state.isEditMile) {
     //   message.warn("里程碑信息还未保存！");
@@ -803,7 +803,7 @@ class NewProjectModelV2 extends React.Component {
   };
 
   handleSave = (values) => {
-    const {basicInfo={},budgetInfo={},staffJobList = [], staffInfo: {jobStaffList = []}, mileInfo: {milePostInfo = []}} = this.state;
+    const { basicInfo = {}, budgetInfo = {}, staffJobList = [], staffInfo: { jobStaffList = [] }, mileInfo: { milePostInfo = [] } } = this.state;
 
     let flag = true; // 日期选择是否符合开始时间小于结束时间
     milePostInfo.forEach(item => {
@@ -834,14 +834,14 @@ class NewProjectModelV2 extends React.Component {
       message.warn("项目经理不能为空！");
     } else {
       let orgNew = "";
-      if(basicInfo.org?.length>0) {
+      if (basicInfo.org?.length > 0) {
         basicInfo.org.map((item, index) => {
           orgNew = item.concat(";").concat(orgNew);
         })
       };
       orgNew = orgNew.substring(0, orgNew.length - 1)
       let label = "";
-      if(basicInfo.projectLabel?.length>0){
+      if (basicInfo.projectLabel?.length > 0) {
         basicInfo.projectLabel.map((item, index) => {
           label = item.concat(";").concat(label);
         })
@@ -853,7 +853,7 @@ class NewProjectModelV2 extends React.Component {
         projectLabel: label,
         org: orgNew,
         software: Number(basicInfo.software),
-        biddingMethod: basicInfo.projectType === 2 ? '' : Number(basicInfo.biddingMethod),
+        biddingMethod: basicInfo.projectType === 2 ? 0 : Number(basicInfo.biddingMethod),
         year: Number(this.state.budgetInfo.year.format("YYYY")),
         budgetProject: Number(budgetInfo.budgetProjectId),
         projectBudget: String(budgetInfo.projectBudget)
@@ -880,7 +880,7 @@ class NewProjectModelV2 extends React.Component {
   };
 
   makeOperateParams = (params, milePostInfo, staffJobParams, projectManager) => {
-    this.setState({loading: true});
+    this.setState({ loading: true });
     let milepostInfo = [];
     let matterInfo = [];
     milePostInfo.forEach(item => {
@@ -914,7 +914,7 @@ class NewProjectModelV2 extends React.Component {
       item.gw = String(item.gw);
     });
     params.members = memberInfo;
-    console.log("params.projectId",this.state.basicInfo.projectId)
+    console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
     console.log("operateType", this.state.operateType)
     params.type = this.state.operateType;
@@ -925,19 +925,19 @@ class NewProjectModelV2 extends React.Component {
 
   operateCreatProject(params) {
     OperateCreatProject(params).then((result) => {
-      const {code = -1, note = '',projectId} = result;
-      this.setState({loading: false});
+      const { code = -1, note = '', projectId } = result;
+      this.setState({ loading: false });
       if (code > 0) {
         console.log("0000")
         if (this.state.type) {
           console.log("1111")
-          window.parent && window.parent.postMessage({operate: 'success'}, '*');
+          window.parent && window.parent.postMessage({ operate: 'success' }, '*');
         } else {
           console.log("22222")
           this.props.submitOperate();
         }
         const params = {
-          projectId:projectId,
+          projectId: projectId,
         }
         //projectId跳转到生命周期页面
         // window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
@@ -948,14 +948,14 @@ class NewProjectModelV2 extends React.Component {
 
       console.log("333333")
     }).catch((error) => {
-      this.setState({loading: false});
+      this.setState({ loading: false });
       message.error(!error.success ? error.message : error.note);
     });
   }
 
   // 移动里程碑信息
   moveMilePostInfo = (index, direction) => {
-    const {mileInfo: {milePostInfo}} = this.state;
+    const { mileInfo: { milePostInfo } } = this.state;
     if (direction === 'top') {
       // 上移
       const temp = milePostInfo[index];
@@ -967,7 +967,7 @@ class NewProjectModelV2 extends React.Component {
       milePostInfo[index] = milePostInfo[index + 1];
       milePostInfo[index + 1] = temp;
     }
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: milePostInfo}});
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: milePostInfo } });
   };
 
   // 取消保存里程碑信息
@@ -981,7 +981,7 @@ class NewProjectModelV2 extends React.Component {
       onOk() {
         // 深拷贝
         const mile = JSON.parse(JSON.stringify(_this.state.milePostInfo));
-        _this.setState({isEditMile: false, mileInfo: {..._this.state.mileInfo, milePostInfo: mile}})
+        _this.setState({ isEditMile: false, mileInfo: { ..._this.state.mileInfo, milePostInfo: mile } })
       },
       onCancel() {
       },
@@ -990,7 +990,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 保存里程碑信息
   saveMilePostInfo = () => {
-    const {mileInfo: {milePostInfo = []}} = this.state;
+    const { mileInfo: { milePostInfo = [] } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     mile.forEach(item => {
@@ -1012,13 +1012,13 @@ class NewProjectModelV2 extends React.Component {
         e.sxlb = sxlb;
       })
     });
-    this.setState({isEditMile: false, milePostInfo: mile, mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ isEditMile: false, milePostInfo: mile, mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   };
 
   // 删除里程碑信息
   removeMilePostInfo = (index) => {
     const _this = this;
-    const {mileInfo: {milePostInfo = []}} = this.state;
+    const { mileInfo: { milePostInfo = [] } } = this.state;
     confirm({
       okText: '确认',
       cancelText: '取消',
@@ -1031,7 +1031,7 @@ class NewProjectModelV2 extends React.Component {
             arr.push(item);
           }
         });
-        _this.setState({mileInfo: {..._this.state.mileInfo, milePostInfo: arr}});
+        _this.setState({ mileInfo: { ..._this.state.mileInfo, milePostInfo: arr } });
       },
       onCancel() {
       },
@@ -1060,7 +1060,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 删除里程碑事项信息
   removeMilePostInfoItem = (index, i, sx_index) => {
-    const {mileInfo: {milePostInfo = []}} = this.state;
+    const { mileInfo: { milePostInfo = [] } } = this.state;
 
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
@@ -1084,21 +1084,21 @@ class NewProjectModelV2 extends React.Component {
 
   // 添加里程碑事项信息-ccccc
   addMilePostInfoItem = (index, i) => {
-    const {mileInfo: {milePostInfo = []}} = this.state;
+    const { mileInfo: { milePostInfo = [] } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     // console.log("milePostInfo", milePostInfo)
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
-    matterInfo[i].sxlb.push({sxid: '', sxmc: '', type: 'new'});
+    matterInfo[i].sxlb.push({ sxid: '', sxmc: '', type: 'new' });
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
     // console.log("milePostInfo222", removeTitleMile)
     const arr = this.filterGridLayOut(removeTitleMile);
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
   };
 
   // 移除里程碑类型信息
   removeMilePostTypeInfo = (index, i) => {
-    const {mileInfo: {milePostInfo = []}} = this.state;
+    const { mileInfo: { milePostInfo = [] } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
@@ -1119,15 +1119,15 @@ class NewProjectModelV2 extends React.Component {
           arr.push(item);
         }
       });
-      this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+      this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
     } else {
-      this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+      this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
     }
   };
 
   // 选中新加的里程碑事项信息
   selectMilePostInfoItem = (e, index, i, sx_index) => {
-    const {mileInfo: {milePostInfo = []}, mileItemInfo = []} = this.state;
+    const { mileInfo: { milePostInfo = [] }, mileItemInfo = [] } = this.state;
     let sxmc = '';
     mileItemInfo.forEach(item => {
       if (item.sxid == e) {
@@ -1140,13 +1140,13 @@ class NewProjectModelV2 extends React.Component {
     const sxlb = matterInfo[i].sxlb;
     sxlb[sx_index].sxid = e;
     sxlb[sx_index].sxmc = sxmc;
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   };
 
   // 选中新建里程碑的阶段信息
   selectMileStageInfo = async (e, index) => {
-    const {mileInfo: {milePostInfo = []}, mileStageList = []} = this.state;
-    await this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
+    const { mileInfo: { milePostInfo = [] }, mileStageList = [] } = this.state;
+    await this.fetchQueryMatterUnderMilepost({ type: 'SINGLE', lcbid: e });
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const newMileItemInfo = JSON.parse(JSON.stringify(this.state.newMileItemInfo));
@@ -1166,22 +1166,22 @@ class NewProjectModelV2 extends React.Component {
     mile[index].matterInfos = matterInfos;
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
     const arr = this.filterGridLayOut(removeTitleMile);
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}})
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: arr } })
   };
 
   // 新建里程碑信息
   addMilePostInfo = () => {
-    const {mileInfo: {milePostInfo = []}, nowTime, tomorrowTime} = this.state;
+    const { mileInfo: { milePostInfo = [] }, nowTime, tomorrowTime } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
-    let lcb = {matterInfos: [], lcbmc: '', type: 'new', kssj: nowTime, jssj: tomorrowTime};
+    let lcb = { matterInfos: [], lcbmc: '', type: 'new', kssj: nowTime, jssj: tomorrowTime };
     mile.push(lcb);
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   };
 
   // 修改里程碑的时间
   changeMilePostInfoTime = (date, index, type) => {
-    const {mileInfo: {milePostInfo = []}} = this.state;
+    const { mileInfo: { milePostInfo = [] } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     if (type === 'start') {
@@ -1189,12 +1189,12 @@ class NewProjectModelV2 extends React.Component {
     } else if (type === 'end') {
       mile[index].jssj = date;
     }
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   };
 
   onChange = minicurrent => {
     // console.log('onChange:', minicurrent);
-    this.setState({minicurrent});
+    this.setState({ minicurrent });
     let height = document.getElementById("lcbxxClass")?.scrollHeight;
     // let height222 = document.getElementById("milePost"+minicurrent)
     let heightTotal = 0;
@@ -1212,13 +1212,13 @@ class NewProjectModelV2 extends React.Component {
   };
 
   onChange0 = current => {
-    this.setState({current});
+    this.setState({ current });
   };
 
   handleClose = removedTag => {
     const tags = this.state.tags.filter(tag => tag !== removedTag);
     // console.log(tags);
-    this.setState({tags});
+    this.setState({ tags });
   };
 
   showInput = (index, i) => {
@@ -1226,18 +1226,18 @@ class NewProjectModelV2 extends React.Component {
     // console.log("index", index)
     this[`${index}inputRef${i}`] = React.createRef();
     // this.setState({inputVisible: i}, () => this.mySelect.focus());
-    this.setState({inputVisible: `${index}+${i}`}, () => this[`${index}inputRef${i}`].current.focus());
+    this.setState({ inputVisible: `${index}+${i}` }, () => this[`${index}inputRef${i}`].current.focus());
   };
 
 
   handleInputChange = e => {
-    this.setState({inputValue: e.target.value});
+    this.setState({ inputValue: e.target.value });
   };
 
   handleInputConfirm = (e, index, i, sx_index) => {
     // console.log("sx_index",sx_index)
     //matterInfos
-    const {mileInfo: {milePostInfo = []}, mileItemInfo = []} = this.state;
+    const { mileInfo: { milePostInfo = [] }, mileItemInfo = [] } = this.state;
     let sxmc = '';
     let swlx = '';
     mileItemInfo.forEach(item => {
@@ -1250,7 +1250,7 @@ class NewProjectModelV2 extends React.Component {
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
     const sxlb = matterInfo[i].sxlb;
-    let newsxlb = {lcb: sxlb[sx_index - 1].lcb, swlx: swlx, sxid: e, sxmc: sxmc, sxzxid: "0", sxzxsx: sx_index, xh: "3"}
+    let newsxlb = { lcb: sxlb[sx_index - 1].lcb, swlx: swlx, sxid: e, sxmc: sxmc, sxzxid: "0", sxzxsx: sx_index, xh: "3" }
     let flag = 0;
     sxlb.map(item => {
       if (item.sxmc !== newsxlb.sxmc) {
@@ -1262,28 +1262,28 @@ class NewProjectModelV2 extends React.Component {
     } else if (flag !== sxlb.length) {
       message.warn("已存在,请勿重复添加！")
     }
-    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
     // console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
   };
 
   //添加事项
   addSwlx = (e, index) => {
-    this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
+    this.fetchQueryMatterUnderMilepost({ type: 'SINGLE', lcbid: e });
     //添加事项类型
     console.log("eeeee", e)
     console.log("index", index)
-    const {mileInfo: {milePostInfo = []},} = this.state;
+    const { mileInfo: { milePostInfo = [] }, } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
-    let matterInfos = {swlxmc: "new", sxlb: []}
+    let matterInfos = { swlxmc: "new", sxlb: [] }
     matterInfo.push(matterInfos)
-    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
     //添加内的流程
   }
 
   addSwlxMx = (e, index, i, sx_index) => {
-    const {mileInfo: {milePostInfo = []},} = this.state;
+    const { mileInfo: { milePostInfo = [] }, } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     let swlxmc = ""
@@ -1294,14 +1294,14 @@ class NewProjectModelV2 extends React.Component {
     })
     const matterInfo = mile[index].matterInfos;
     console.log("matterInfo", matterInfo);
-    const sxlbparam = {type: 'title'};
+    const sxlbparam = { type: 'title' };
     matterInfo.map(item => {
       if (item.swlxmc === "new") {
         item.swlxmc = swlxmc
         item.sxlb[0] = sxlbparam;
       }
     })
-    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   }
 
   // onOrgChange = (e) =>{
@@ -1334,7 +1334,7 @@ class NewProjectModelV2 extends React.Component {
       projectLabelList = [],
       budgetProjectList = [],
       budgetInfoCollapse,
-      mileInfo: {milePostInfo = []},
+      mileInfo: { milePostInfo = [] },
       organizationTreeList,
       basicInfoCollapse,
       budgetInfo,
@@ -1345,50 +1345,50 @@ class NewProjectModelV2 extends React.Component {
       organizationStaffTreeList,
       staffJobList = [],
       checkedStaffKey,
-      staffInfo: {jobStaffList = []},
-      basicInfo = {software:''},
+      staffInfo: { jobStaffList = [] },
+      basicInfo = { software: '' },
       swlxarr = []
     } = this.state;
-    const {getFieldDecorator} = this.props.form;
+    const { getFieldDecorator } = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
-        xs: {span: 24},
-        sm: {span: 7},
+        xs: { span: 24 },
+        sm: { span: 7 },
       },
       wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 14},
+        xs: { span: 24 },
+        sm: { span: 14 },
       },
     };
     const budgetFormItemLayout = {
       labelCol: {
-        xs: {span: 24},
-        sm: {span: 7},
+        xs: { span: 24 },
+        sm: { span: 7 },
       },
       wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 14},
+        xs: { span: 24 },
+        sm: { span: 14 },
       },
     };
     const steps = [
       {
         title: <span>
-      <div>基本&预算信息</div>
-      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目信息填写</div>
-    </span>,
+          <div>基本&预算信息</div>
+          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>项目信息填写</div>
+        </span>,
         content: '',
       },
       {
         title: <span>
-      <div>里程碑信息</div>
-      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>里程碑信息填写</div>
-    </span>,
+          <div>里程碑信息</div>
+          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>里程碑信息填写</div>
+        </span>,
       },
       {
         title: <span>
-      <div>人员信息</div>
-      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目参与人员信息填写</div>
-    </span>,
+          <div>人员信息</div>
+          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>项目参与人员信息填写</div>
+        </span>,
       },
     ];
     const ministeps = [];
@@ -1396,19 +1396,19 @@ class NewProjectModelV2 extends React.Component {
     milePostInfo.map(item => {
       let params;
       params = {
-        title: <div style={{fontSize: '2.7rem'}}>{item.lcbmc}</div>
+        title: <div style={{ fontSize: '2.7rem' }}>{item.lcbmc}</div>
       }
       ministeps.push(params)
     })
     return (
       <Fragment>
-        <div className="newProject" style={{overflow: 'hidden', height: "100%"}}>
-          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
-            <div style={{overflow: 'hidden', height: "100%"}}>
-              <div style={{margin: '0 20rem 0 20rem', height: "11%"}}>
-                <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
+        <div className="newProject" style={{ overflow: 'hidden', height: "100%" }}>
+          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{ height: "100%" }}>
+            <div style={{ overflow: 'hidden', height: "100%" }}>
+              <div style={{ margin: '0 20rem 0 20rem', height: "11%" }}>
+                <Steps current={current} onChange={this.onChange0} type="navigation" style={{ height: "100%" }}>
                   {steps.map((item, index) => (
-                    <Step key={index} title={item.title}/>
+                    <Step key={index} title={item.title} />
                   ))}
                 </Steps>
               </div>
@@ -1424,7 +1424,7 @@ class NewProjectModelV2 extends React.Component {
                       borderLeft: '4px solid #3461FF'
                     }}>基本信息</span>
                   </div>
-                  <Form {...basicFormItemLayout}  ref={e=>this.basicForm=e} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>
+                  <Form {...basicFormItemLayout} ref={e => this.basicForm = e} onSubmit={e => this.handleFormValidate(e)} style={{ width: '98%' }}>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="项目名称">
@@ -1436,8 +1436,8 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectName
                           })(
                             <Input placeholder="请输入项目名称" onChange={e => {
-                              this.setState({basicInfo: {...basicInfo, projectName: e.target.value}});
-                            }}/>
+                              this.setState({ basicInfo: { ...basicInfo, projectName: e.target.value } });
+                            }} />
                           )}
                         </Form.Item>
                       </Col>
@@ -1451,7 +1451,7 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectType
                           })(
                             <Radio.Group onChange={e => {
-                              this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
+                              this.setState({ basicInfo: { ...basicInfo, projectType: e.target.value } });
                               this.fetchQueryMilepostInfo({
                                 type: e.target.value,
                                 xmid: basicInfo.projectId,
@@ -1474,17 +1474,17 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectLabel
                           })(
                             <Select showSearch
-                                    showArrow={true}
-                                    mode="multiple"
-                                    onChange={e => {
-                                      console.log("eee", e)
-                                      this.setState({
-                                        basicInfo: {...basicInfo, projectLabel: e}
-                                      })
-                                    }}
-                                    filterOption={(input, option) =>
-                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }>
+                              showArrow={true}
+                              mode="multiple"
+                              onChange={e => {
+                                console.log("eee", e)
+                                this.setState({
+                                  basicInfo: { ...basicInfo, projectLabel: e }
+                                })
+                              }}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                              }>
                               {
                                 projectLabelList.length > 0 && projectLabelList.map((item, index) => {
                                   return (
@@ -1509,15 +1509,15 @@ class NewProjectModelV2 extends React.Component {
                               multiple
                               showSearch
                               treeNodeFilterProp="title"
-                              style={{width: '100%'}}
-                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                              style={{ width: '100%' }}
+                              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                               treeData={organizationTreeList}
                               placeholder="请选择应用部门"
                               treeDefaultExpandAll
                               onChange={e => {
                                 console.log("eee", e)
                                 this.setState({
-                                  basicInfo: {...basicInfo, org: e}
+                                  basicInfo: { ...basicInfo, org: e }
                                 })
                               }}
                             />
@@ -1533,18 +1533,18 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.software
                           })(
                             <Select showSearch
-                                    onChange={e => {
-                                      softwareList.forEach(item => {
-                                        if (item.id === e) {
-                                          this.setState({
-                                            basicInfo: {...basicInfo, software: e,}
-                                          });
-                                        }
-                                      })
-                                    }}
-                                    filterOption={(input, option) =>
-                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }>
+                              onChange={e => {
+                                softwareList.forEach(item => {
+                                  if (item.id === e) {
+                                    this.setState({
+                                      basicInfo: { ...basicInfo, software: e, }
+                                    });
+                                  }
+                                })
+                              }}
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                              }>
                               {
                                 softwareList.length > 0 && softwareList.map((item, index) => {
                                   return (
@@ -1568,7 +1568,7 @@ class NewProjectModelV2 extends React.Component {
                                 initialValue: basicInfo.biddingMethod
                               })(
                                 <Radio.Group onChange={e => {
-                                  this.setState({basicInfo: {...basicInfo, biddingMethod: e.target.value}});
+                                  this.setState({ basicInfo: { ...basicInfo, biddingMethod: e.target.value } });
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
                                     xmid: this.state.basicInfo.projectId,
@@ -1590,19 +1590,19 @@ class NewProjectModelV2 extends React.Component {
                     </Row>
 
 
-                  {/*</React.Fragment>*/}
-                  {/*<React.Fragment>*/}
-                  <div className="title">
-                    {/*<Icon type="caret-down" onClick={() => this.setState({budgetInfoCollapse: !budgetInfoCollapse})}*/}
-                    {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
-                    <span style={{
-                      paddingLeft: '1rem',
-                      fontSize: '3rem',
-                      fontWeight: 'bold',
-                      borderLeft: '4px solid #3461FF'
-                    }}>预算信息</span>
-                  </div>
-                  {/*<Form {...budgetFormItemLayout} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>*/}
+                    {/*</React.Fragment>*/}
+                    {/*<React.Fragment>*/}
+                    <div className="title">
+                      {/*<Icon type="caret-down" onClick={() => this.setState({budgetInfoCollapse: !budgetInfoCollapse})}*/}
+                      {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
+                      <span style={{
+                        paddingLeft: '1rem',
+                        fontSize: '3rem',
+                        fontWeight: 'bold',
+                        borderLeft: '4px solid #3461FF'
+                      }}>预算信息</span>
+                    </div>
+                    {/*<Form {...budgetFormItemLayout} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>*/}
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="年份">
@@ -1610,43 +1610,43 @@ class NewProjectModelV2 extends React.Component {
                           {/*  initialValue: budgetInfo.year*/}
                           {/*})(*/}
                           <DatePicker value={budgetInfo.year} allowClear={false} ref={picker => this.picker = picker}
-                                      onChange={v => {
-                                        const _this = this;
-                                        this.setState({
-                                          budgetInfo: {
-                                            ...this.state.budgetInfo,
-                                            budgetProjectId: '',
-                                            totalBudget: 0,
-                                            relativeBudget: 0,
-                                            year: v == null ? moment(new Date()) : v
-                                          }
-                                        }, function () {
-                                          _this.props.form.resetFields(['projectBudget']);
-                                          _this.props.form.validateFields(['projectBudget']);
-                                          _this.fetchQueryBudgetProjects({
-                                            type: 'NF',
-                                            year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))
-                                          });
-                                        })
-                                      }}
-                                      onPanelChange={(v) => {
-                                        this.picker.picker.state.open = false;
-                                        const _this = this;
-                                        this.setState({
-                                          budgetInfo: {
-                                            ...this.state.budgetInfo,
-                                            budgetProjectId: '',
-                                            totalBudget: 0,
-                                            relativeBudget: 0,
-                                            year: v
-                                          }
-                                        }, function () {
-                                          _this.props.form.resetFields(['projectBudget']);
-                                          _this.props.form.validateFields(['projectBudget']);
-                                          _this.fetchQueryBudgetProjects({type: 'NF', year: Number(v.format("YYYY"))});
-                                        })
-                                      }}
-                                      format="YYYY" mode="year"/>
+                            onChange={v => {
+                              const _this = this;
+                              this.setState({
+                                budgetInfo: {
+                                  ...this.state.budgetInfo,
+                                  budgetProjectId: '',
+                                  totalBudget: 0,
+                                  relativeBudget: 0,
+                                  year: v == null ? moment(new Date()) : v
+                                }
+                              }, function () {
+                                _this.props.form.resetFields(['projectBudget']);
+                                _this.props.form.validateFields(['projectBudget']);
+                                _this.fetchQueryBudgetProjects({
+                                  type: 'NF',
+                                  year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))
+                                });
+                              })
+                            }}
+                            onPanelChange={(v) => {
+                              this.picker.picker.state.open = false;
+                              const _this = this;
+                              this.setState({
+                                budgetInfo: {
+                                  ...this.state.budgetInfo,
+                                  budgetProjectId: '',
+                                  totalBudget: 0,
+                                  relativeBudget: 0,
+                                  year: v
+                                }
+                              }, function () {
+                                _this.props.form.resetFields(['projectBudget']);
+                                _this.props.form.validateFields(['projectBudget']);
+                                _this.fetchQueryBudgetProjects({ type: 'NF', year: Number(v.format("YYYY")) });
+                              })
+                            }}
+                            format="YYYY" mode="year" />
                           {/*)}*/}
                         </Form.Item>
                       </Col>
@@ -1662,13 +1662,13 @@ class NewProjectModelV2 extends React.Component {
                             <TreeSelect
                               showSearch
                               treeNodeFilterProp="title"
-                              style={{width: '100%'}}
-                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                              style={{ width: '100%' }}
+                              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                               treeData={budgetProjectList}
                               placeholder="请选择关联预算项目"
                               // treeDefaultExpandAll
                               onChange={e => {
-                                console.log("eeeee",e)
+                                console.log("eeeee", e)
                                 budgetProjectList.forEach(item => {
                                   item.children.forEach(i => {
                                     if (i.key === e) {
@@ -1707,17 +1707,17 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
+                    <Row gutter={24} style={{ display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : '' }}>
                       <Col span={12}>
                         <Form.Item label="总预算(元)">
-                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.totalBudget}
-                                       precision={0}/>
+                          <InputNumber disabled={true} style={{ width: '100%' }} value={budgetInfo.totalBudget}
+                            precision={0} />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
                         <Form.Item label="当前可关联总预算(元)">
-                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
-                                       precision={0}/>
+                          <InputNumber disabled={true} style={{ width: '100%' }} value={budgetInfo.relativeBudget}
+                            precision={0} />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1741,11 +1741,11 @@ class NewProjectModelV2 extends React.Component {
                                 budget: budgetInfo.projectBudget,
                                 label: ''
                               });
-                            }} style={{width: '100%'}} precision={0}/>
+                            }} style={{ width: '100%' }} precision={0} />
                           )}
                         </Form.Item>
                       </Col>
-                      <Col span={12} style={{paddingLeft: 0}}>
+                      <Col span={12} style={{ paddingLeft: 0 }}>
                       </Col>
                     </Row>
                   </Form>
@@ -1753,16 +1753,16 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 2rem 2rem 10rem'}}>
-                  <Steps progressDot style={{height: '100rem', width: '15%', padding: '3rem 0'}} direction="vertical"
-                         current={minicurrent} onChange={this.onChange}>
+                current === 1 && <div style={{ display: 'flex', height: '75%', margin: '2rem 2rem 2rem 10rem' }}>
+                  <Steps progressDot style={{ height: '100rem', width: '15%', padding: '3rem 0' }} direction="vertical"
+                    current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
-                      <Step style={{height: (100 / (ministeps.length * 1.1)) + 'rem'}} key={index} title={item.title}/>
+                      <Step style={{ height: (100 / (ministeps.length * 1.1)) + 'rem' }} key={index} title={item.title} />
                     ))}
                   </Steps>
                   <div className="steps-content" id="lcbxxClass"
-                       style={{overflowY: 'scroll', height: '100%', width: '83%', margin: '0 0 15rem 0'}}>
+                    style={{ overflowY: 'scroll', height: '100%', width: '83%', margin: '0 0 15rem 0' }}>
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
@@ -1773,8 +1773,8 @@ class NewProjectModelV2 extends React.Component {
                                 {
                                   item.type && item.type === 'new' ? (
                                     <div key={index} className="newMilePost">
-                                      <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-                                        <div style={{width: '14%'}}>
+                                      <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
+                                        <div style={{ width: '14%' }}>
                                           <Select
                                             showSearch
                                             filterOption={(input, option) =>
@@ -1782,7 +1782,7 @@ class NewProjectModelV2 extends React.Component {
                                             }
                                             onChange={e => this.selectMileStageInfo(e, index)}
                                             placeholder="请选择"
-                                            style={{width: '100%'}}
+                                            style={{ width: '100%' }}
                                           >
                                             {
                                               mileStageList.length > 0 && mileStageList.map((item, index) => {
@@ -1798,14 +1798,14 @@ class NewProjectModelV2 extends React.Component {
                                           display: 'flex',
                                           flexDirection: 'row'
                                         }}>
-                                          <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}
-                                                      value={moment(item.kssj, 'YYYY-MM-DD')}
-                                                      allowClear={false}
-                                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
-                                                      onFocus={() => this.setState({
-                                                        isEditMile: true,
-                                                        isCollapse: false
-                                                      })}/>
+                                          <DatePicker format="YYYY-MM-DD" style={{ width: '21%' }}
+                                            value={moment(item.kssj, 'YYYY-MM-DD')}
+                                            allowClear={false}
+                                            onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                            onFocus={() => this.setState({
+                                              isEditMile: true,
+                                              isCollapse: false
+                                            })} />
                                           <div
                                             style={{
                                               fontSize: '2.5rem',
@@ -1813,14 +1813,14 @@ class NewProjectModelV2 extends React.Component {
                                               padding: '2rem 2rem 0 2rem'
                                             }}>~
                                           </div>
-                                          <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}
-                                                      value={moment(item.jssj, 'YYYY-MM-DD')}
-                                                      allowClear={false}
-                                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
-                                                      onFocus={() => this.setState({
-                                                        isEditMile: true,
-                                                        isCollapse: false
-                                                      })}/>
+                                          <DatePicker format="YYYY-MM-DD" style={{ width: '21%' }}
+                                            value={moment(item.jssj, 'YYYY-MM-DD')}
+                                            allowClear={false}
+                                            onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                            onFocus={() => this.setState({
+                                              isEditMile: true,
+                                              isCollapse: false
+                                            })} />
                                           <div style={{
                                             color: '#f5222d',
                                             fontSize: '3.5rem',
@@ -1840,7 +1840,7 @@ class NewProjectModelV2 extends React.Component {
                                             *
                                           </div>
                                         </div>
-                                        <div style={{display: 'flex', width: "20%"}}>
+                                        <div style={{ display: 'flex', width: "20%" }}>
                                           <div onClick={() => this.saveMilePostInfo(index)} style={{
                                             cursor: 'pointer',
                                             // width: '5%',
@@ -1873,10 +1873,10 @@ class NewProjectModelV2 extends React.Component {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                           return (
                                             <div className="flow" key={i}
-                                                 style={{
-                                                   display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
-                                                   margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
-                                                 }}>
+                                              style={{
+                                                display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                                margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
+                                              }}>
                                               <div>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
@@ -1896,25 +1896,25 @@ class NewProjectModelV2 extends React.Component {
                                                 {
                                                   e.swlxmc === "new" && (
                                                     <Select showSearch
-                                                            ref={this[`${index}inputRef${i}`]}
-                                                            filterOption={(input, option) =>
-                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                            }
+                                                      ref={this[`${index}inputRef${i}`]}
+                                                      filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                      }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      onChange={(e) => this.setState({ inputValue: e })}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                            onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                            style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '1rem'
-                                                            }}>
+                                                      onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                      style={{
+                                                        width: '20rem',
+                                                        marginTop: '0.7rem',
+                                                        marginLeft: '1rem'
+                                                      }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
                                                           // if (mi.swlx === e.swlxmc) {
                                                           return (
                                                             <Option title={mi.swlx} key={mi_index}
-                                                                    value={mi.swlxid}>{mi.swlx}</Option>
+                                                              value={mi.swlxid}>{mi.swlx}</Option>
                                                           )
                                                           // }
                                                         })
@@ -1929,31 +1929,31 @@ class NewProjectModelV2 extends React.Component {
                                                     if (sx.type && sx.type === 'title') {
                                                       return (
                                                         <div key={String(sx_index + 1)}
-                                                             style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                          style={{ paddingTop: '2rem', fontWeight: 'bold' }}>
                                                         </div>
                                                       )
                                                     }
                                                   })
                                                 }
                                               </div>
-                                              <div style={{width: '80%', display: 'flex', flexWrap: 'wrap'}}>
-                                                <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{ width: '80%', display: 'flex', flexWrap: 'wrap' }}>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                       // console.log("sxsxsx",sx)
                                                       if (!sx.type && sx_index !== 0) {
                                                         return (
                                                           <div key={String(sx_index + 1)}
-                                                               className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                            className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
                                                             {
                                                               <React.Fragment>
                                                                 <span title={sx.sxmc}
-                                                                      style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
+                                                                  style={{ fontSize: '2.5rem' }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                                 {
                                                                   <span
                                                                     onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                              <Icon type="close" className="icon"/>
-                                                            </span>
+                                                                    <Icon type="close" className="icon" />
+                                                                  </span>
                                                                 }
                                                               </React.Fragment>
                                                             }
@@ -1965,25 +1965,25 @@ class NewProjectModelV2 extends React.Component {
                                                   }
                                                   {inputVisible === `${index}+${i}` && (
                                                     <Select showSearch
-                                                            ref={this[`${index}inputRef${i}`]}
-                                                            filterOption={(input, option) =>
-                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                            }
+                                                      ref={this[`${index}inputRef${i}`]}
+                                                      filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                      }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      onChange={(e) => this.setState({ inputValue: e })}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                            onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                            style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '1rem'
-                                                            }}>
+                                                      onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                      style={{
+                                                        width: '20rem',
+                                                        marginTop: '0.7rem',
+                                                        marginLeft: '1rem'
+                                                      }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                           if (mi.swlx === e.swlxmc) {
                                                             return (
                                                               <Option title={mi.sxmc} key={mi_index}
-                                                                      value={mi.sxid}>{mi.sxmc}</Option>
+                                                                value={mi.sxid}>{mi.sxmc}</Option>
                                                             )
                                                           }
                                                         })
@@ -1994,25 +1994,25 @@ class NewProjectModelV2 extends React.Component {
                                                     e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                     (
                                                       <Select showSearch
-                                                              ref={this[`${index}inputRef${i}`]}
-                                                              filterOption={(input, option) =>
-                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                              }
+                                                        ref={this[`${index}inputRef${i}`]}
+                                                        filterOption={(input, option) =>
+                                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                        }
                                                         // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                              onChange={(e) => this.setState({inputValue: e})}
+                                                        onChange={(e) => this.setState({ inputValue: e })}
                                                         //milePostInfo[index].matterInfos[i].length
-                                                              onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                              style={{
-                                                                width: '20rem',
-                                                                marginTop: '0.7rem',
-                                                                marginLeft: '1rem'
-                                                              }}>
+                                                        onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                        style={{
+                                                          width: '20rem',
+                                                          marginTop: '0.7rem',
+                                                          marginLeft: '1rem'
+                                                        }}>
                                                         {
                                                           mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                             if (mi.swlx === e.swlxmc) {
                                                               return (
                                                                 <Option title={mi.sxmc} key={mi_index}
-                                                                        value={mi.sxid}>{mi.sxmc}</Option>
+                                                                  value={mi.sxid}>{mi.sxmc}</Option>
                                                               )
                                                             }
                                                           })
@@ -2028,11 +2028,11 @@ class NewProjectModelV2 extends React.Component {
                                                   color: '#3461FF'
                                                 }}>
                                                   <Tag onClick={() => this.showInput(index, i)}
-                                                       style={{background: '#fff', borderStyle: 'dashed'}}>
-                                                    <Icon type="plus"/> 新增
+                                                    style={{ background: '#fff', borderStyle: 'dashed' }}>
+                                                    <Icon type="plus" /> 新增
                                                   </Tag>
                                                   <span onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                        style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>
+                                                    style={{ cursor: 'pointer', fontSize: '2.5rem' }}>删除本行</span>
                                                 </div>
                                               </div>
                                             </div>
@@ -2045,13 +2045,13 @@ class NewProjectModelV2 extends React.Component {
                                     <div key={index} className="milePost" id={`milePost${index}`}>
                                       <div className="title">
                                         <div className="left">
-                                          <div style={{marginTop: '2rem'}}>
-                                        <span style={{
-                                          paddingLeft: '1rem',
-                                          fontSize: '2.5rem',
-                                          fontWeight: 'bold',
-                                          borderLeft: '4px solid #3461FF'
-                                        }}>{item.lcbmc}</span>
+                                          <div style={{ marginTop: '2rem' }}>
+                                            <span style={{
+                                              paddingLeft: '1rem',
+                                              fontSize: '2.5rem',
+                                              fontWeight: 'bold',
+                                              borderLeft: '4px solid #3461FF'
+                                            }}>{item.lcbmc}</span>
                                           </div>
                                           <div style={{
                                             paddingLeft: '2rem',
@@ -2059,28 +2059,28 @@ class NewProjectModelV2 extends React.Component {
                                             display: 'flex',
                                             flexDirection: 'row'
                                           }}>
-                                            <DatePicker format="YYYY-MM-DD" style={{width: '35%'}}
-                                                        value={moment(item.kssj, 'YYYY-MM-DD')}
-                                                        allowClear={false}
-                                                        onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
-                                                        onFocus={() => this.setState({
-                                                          isEditMile: true,
-                                                          isCollapse: false
-                                                        })}/>
+                                            <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}
+                                              value={moment(item.kssj, 'YYYY-MM-DD')}
+                                              allowClear={false}
+                                              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                              onFocus={() => this.setState({
+                                                isEditMile: true,
+                                                isCollapse: false
+                                              })} />
                                             <div style={{
                                               fontSize: '2.5rem',
                                               fontWeight: 'bold',
                                               padding: '2rem 2rem 0 2rem'
                                             }}>~
                                             </div>
-                                            <DatePicker format="YYYY-MM-DD" style={{width: '35%'}}
-                                                        value={moment(item.jssj, 'YYYY-MM-DD')}
-                                                        allowClear={false}
-                                                        onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
-                                                        onFocus={() => this.setState({
-                                                          isEditMile: true,
-                                                          isCollapse: false
-                                                        })}/>
+                                            <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}
+                                              value={moment(item.jssj, 'YYYY-MM-DD')}
+                                              allowClear={false}
+                                              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                              onFocus={() => this.setState({
+                                                isEditMile: true,
+                                                isCollapse: false
+                                              })} />
                                             <div style={{
                                               color: '#f5222d',
                                               fontSize: '3.5rem',
@@ -2134,8 +2134,8 @@ class NewProjectModelV2 extends React.Component {
                                             }
                                             {
                                               !item.lcbmc.includes("立项") && !item.lcbmc.includes("实施") && !item.lcbmc.includes("上线")
-                                              && <span style={{cursor: 'pointer', fontSize: '2.5rem'}}
-                                                       onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                              && <span style={{ cursor: 'pointer', fontSize: '2.5rem' }}
+                                                onClick={() => this.removeMilePostInfo(index)}>删除</span>
                                             }
 
                                           </div>
@@ -2146,10 +2146,10 @@ class NewProjectModelV2 extends React.Component {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                           return (
                                             <div className="flow" key={i}
-                                                 style={{
-                                                   display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
-                                                   margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
-                                                 }}>
+                                              style={{
+                                                display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                                margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
+                                              }}>
                                               {/*<GridLayout isDraggable={false} style={{marginBottom: '2rem'}}*/}
                                               {/*            onDragStop={(e) => this.stopDrag(e, index, i)}*/}
                                               {/*            compactType="horizontal" isBounded={true} isResizable={false}*/}
@@ -2175,25 +2175,25 @@ class NewProjectModelV2 extends React.Component {
                                                 {
                                                   e.swlxmc === "new" && (
                                                     <Select showSearch
-                                                            ref={this[`${index}inputRef${i}`]}
-                                                            filterOption={(input, option) =>
-                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                            }
+                                                      ref={this[`${index}inputRef${i}`]}
+                                                      filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                      }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      onChange={(e) => this.setState({ inputValue: e })}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                            onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                            style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '1rem'
-                                                            }}>
+                                                      onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                      style={{
+                                                        width: '20rem',
+                                                        marginTop: '0.7rem',
+                                                        marginLeft: '1rem'
+                                                      }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
                                                           // if (mi.swlx === e.swlxmc) {
                                                           return (
                                                             <Option title={mi.swlx} key={mi_index}
-                                                                    value={mi.swlxid}>{mi.swlx}</Option>
+                                                              value={mi.swlxid}>{mi.swlx}</Option>
                                                           )
                                                           // }
                                                         })
@@ -2208,31 +2208,31 @@ class NewProjectModelV2 extends React.Component {
                                                     if (sx.type && sx.type === 'title') {
                                                       return (
                                                         <div key={String(sx_index + 1)}
-                                                             style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                          style={{ paddingTop: '2rem', fontWeight: 'bold' }}>
                                                         </div>
                                                       )
                                                     }
                                                   })
                                                 }
                                               </div>
-                                              <div style={{width: '80%', display: 'flex', flexWrap: 'wrap'}}>
-                                                <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{ width: '80%', display: 'flex', flexWrap: 'wrap' }}>
+                                                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                       // console.log("sxsxsx",sx)
                                                       if (!sx.type && sx_index !== 0) {
                                                         return (
                                                           <div key={String(sx_index + 1)}
-                                                               className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                            className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
                                                             {
                                                               <React.Fragment>
                                                                 <span title={sx.sxmc}
-                                                                      style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
+                                                                  style={{ fontSize: '2.5rem' }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                                 {
                                                                   <span
                                                                     onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                              <Icon type="close" className="icon"/>
-                                                            </span>
+                                                                    <Icon type="close" className="icon" />
+                                                                  </span>
                                                                 }
                                                               </React.Fragment>
                                                             }
@@ -2244,25 +2244,25 @@ class NewProjectModelV2 extends React.Component {
                                                   }
                                                   {inputVisible === `${index}+${i}` && (
                                                     <Select showSearch
-                                                            ref={this[`${index}inputRef${i}`]}
-                                                            filterOption={(input, option) =>
-                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                            }
+                                                      ref={this[`${index}inputRef${i}`]}
+                                                      filterOption={(input, option) =>
+                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                      }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      onChange={(e) => this.setState({ inputValue: e })}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                            onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                            style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '1rem'
-                                                            }}>
+                                                      onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                      style={{
+                                                        width: '20rem',
+                                                        marginTop: '0.7rem',
+                                                        marginLeft: '1rem'
+                                                      }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                           if (mi.swlx === e.swlxmc) {
                                                             return (
                                                               <Option title={mi.sxmc} key={mi_index}
-                                                                      value={mi.sxid}>{mi.sxmc}</Option>
+                                                                value={mi.sxid}>{mi.sxmc}</Option>
                                                             )
                                                           }
                                                         })
@@ -2273,25 +2273,25 @@ class NewProjectModelV2 extends React.Component {
                                                     e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                     (
                                                       <Select showSearch
-                                                              ref={this[`${index}inputRef${i}`]}
-                                                              filterOption={(input, option) =>
-                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                              }
+                                                        ref={this[`${index}inputRef${i}`]}
+                                                        filterOption={(input, option) =>
+                                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                        }
                                                         // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                              onChange={(e) => this.setState({inputValue: e})}
+                                                        onChange={(e) => this.setState({ inputValue: e })}
                                                         //milePostInfo[index].matterInfos[i].length
-                                                              onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                              style={{
-                                                                width: '20rem',
-                                                                marginTop: '0.7rem',
-                                                                marginLeft: '1rem'
-                                                              }}>
+                                                        onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                        style={{
+                                                          width: '20rem',
+                                                          marginTop: '0.7rem',
+                                                          marginLeft: '1rem'
+                                                        }}>
                                                         {
                                                           mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                             if (mi.swlx === e.swlxmc) {
                                                               return (
                                                                 <Option title={mi.sxmc} key={mi_index}
-                                                                        value={mi.sxid}>{mi.sxmc}</Option>
+                                                                  value={mi.sxid}>{mi.sxmc}</Option>
                                                               )
                                                             }
                                                           })
@@ -2307,11 +2307,11 @@ class NewProjectModelV2 extends React.Component {
                                                   color: '#3461FF'
                                                 }}>
                                                   <Tag onClick={() => this.showInput(index, i)}
-                                                       style={{background: '#fff', borderStyle: 'dashed'}}>
-                                                    <Icon type="plus"/> 新增
+                                                    style={{ background: '#fff', borderStyle: 'dashed' }}>
+                                                    <Icon type="plus" /> 新增
                                                   </Tag>
                                                   <span onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                        style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>
+                                                    style={{ cursor: 'pointer', fontSize: '2.5rem' }}>删除本行</span>
                                                 </div>
                                               </div>
                                             </div>
@@ -2332,8 +2332,8 @@ class NewProjectModelV2 extends React.Component {
                       }
                       {
                         <div className="addMilePost" onClick={this.addMilePostInfo}>
-                          <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
-                          style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>新增里程碑</span>
+                          <Icon type="plus" style={{ fontSize: '1.7rem' }} /><span
+                            style={{ paddingLeft: '1rem', fontSize: '2.5rem' }}>新增里程碑</span>
                         </div>
                       }
 
@@ -2356,14 +2356,14 @@ class NewProjectModelV2 extends React.Component {
                             return (
                               <div className="jobItem">
                                 <div className="name"
-                                     style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}><span
-                                  style={{color: '#de3741', paddingRight: '1rem'}}>*</span><span>{item.note}：</span>
+                                  style={{ color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : '' }}><span
+                                    style={{ color: '#de3741', paddingRight: '1rem' }}>*</span><span>{item.note}：</span>
                                 </div>
-                                <div style={{width: '65%'}}>
+                                <div style={{ width: '65%' }}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={jobStaffList.length > 0 ? jobStaffList[9] : []}
-                                    onBlur={() => this.setState({height: 0})}
+                                    onBlur={() => this.setState({ height: 0 })}
                                     onSearch={e => this.searchStaff(e, 'manage')}
                                     onFocus={() => this.setState({
                                       staffInfo: {
@@ -2380,19 +2380,19 @@ class NewProjectModelV2 extends React.Component {
                                         jobStaffList[9] = e;
                                         this.setState({
                                           height: 0,
-                                          staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
+                                          staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
                                         });
                                       }
                                     }}
-                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
+                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
                                     mode="multiple"
-                                    style={{width: '100%'}}
+                                    style={{ width: '100%' }}
                                   >
                                     {
                                       searchStaffList.length > 0 && searchStaffList.map((item, index) => {
                                         return (
                                           <Select.Option key={index}
-                                                         value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                            value={item.id}>{item.name}({item.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -2409,15 +2409,15 @@ class NewProjectModelV2 extends React.Component {
                             return (
                               <div className="jobItem">
                                 <div className="name"
-                                     style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}>
+                                  style={{ color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : '' }}>
                                   <Icon onClick={this.removeJob.bind(this, item.ibm)} type="close"
-                                        style={{paddingRight: '1rem', cursor: 'pointer'}}/><span>{item.note}：</span>
+                                    style={{ paddingRight: '1rem', cursor: 'pointer' }} /><span>{item.note}：</span>
                                 </div>
-                                <div style={{width: '65%'}}>
+                                <div style={{ width: '65%' }}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm) - 1] : []}
-                                    onBlur={() => this.setState({height: 0})}
+                                    onBlur={() => this.setState({ height: 0 })}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() => this.setState({
                                       staffInfo: {
@@ -2431,18 +2431,18 @@ class NewProjectModelV2 extends React.Component {
                                       jobStaffList[Number(item.ibm) - 1] = e;
                                       this.setState({
                                         height: 0,
-                                        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
+                                        staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
                                       });
                                     }}
-                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
+                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
                                     mode="multiple"
-                                    style={{width: '100%'}}
+                                    style={{ width: '100%' }}
                                   >
                                     {
                                       searchStaffList.map((item, index) => {
                                         return (
                                           <Select.Option key={index}
-                                                         value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                            value={item.id}>{item.name}({item.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -2484,18 +2484,18 @@ class NewProjectModelV2 extends React.Component {
                 }}>暂存草稿</Button>
                 <div className="steps-action">
                   {current > 0 && (
-                    <Button style={{marginLeft: '2rem'}} onClick={() => this.prev()}>
+                    <Button style={{ marginLeft: '2rem' }} onClick={() => this.prev()}>
                       上一步
                     </Button>
                   )}
                   {current < steps.length - 1 && (
-                    <Button type="primary" style={{marginLeft: '2rem'}} onClick={() => this.next()}>
+                    <Button type="primary" style={{ marginLeft: '2rem' }} onClick={() => this.next()}>
                       下一步
                     </Button>
                   )}
                   {current === steps.length - 1 && (
-                    <Button style={{marginLeft: '2rem'}} type="primary"
-                            onClick={e => this.handleFormValidate(e,1)} style={{marginLeft: '2rem'}}>
+                    <Button style={{ marginLeft: '2rem' }} type="primary"
+                      onClick={e => this.handleFormValidate(e, 1)} style={{ marginLeft: '2rem' }}>
                       完成
                     </Button>
                   )}
@@ -2509,6 +2509,6 @@ class NewProjectModelV2 extends React.Component {
   }
 }
 
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(Form.create()(NewProjectModelV2));
