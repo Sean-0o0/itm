@@ -121,9 +121,9 @@ class LifeCycleManagementTabs extends React.Component {
       this.setState({
         xmid: nextProps.params.xmid,
       });
-      this.fetchQueryLiftcycleMilestone(nextProps.params.xmid)
-      this.fetchQueryLifecycleStuff(nextProps.params.xmid);
-      this.fetchQueryProjectInfoInCycle(nextProps.params.xmid);
+      this.fetchQueryLiftcycleMilestone(nextProps.params.xmid?nextProps.params.xmid:this.state.xmid)
+      this.fetchQueryLifecycleStuff(nextProps.params.xmid?nextProps.params.xmid:this.state.xmid)
+      this.fetchQueryProjectInfoInCycle(nextProps.params.xmid?nextProps.params.xmid:this.state.xmid)
     }
   }
 

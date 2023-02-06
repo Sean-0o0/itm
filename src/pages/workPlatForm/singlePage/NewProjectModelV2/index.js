@@ -1,6 +1,7 @@
 import React, {Fragment} from 'react';
 import moment from 'moment';
 import {
+  Tag,
   Steps,
   Input,
   Select,
@@ -32,7 +33,7 @@ import {
   FetchQueryMilestoneStageInfo,
   FetchQueryMatterUnderMilepost
 } from "../../../../services/projectManage";
-import {DecryptBase64} from '../../../../components/Common/Encrypt';
+import {DecryptBase64, EncryptBase64} from '../../../../components/Common/Encrypt';
 import config from '../../../../utils/config';
 import LBDialog from 'livebos-frame/dist/LBDialog';
 
@@ -95,7 +96,11 @@ class NewProjectModelV2 extends React.Component {
     newMileItemInfo: [], // 新建里程碑的事项信息
     isCollapse: true, // 是否折叠里程碑更多信息
     isEditMile: true, // 是否在修改里程碑信息
-    loading: false  // 是否正在加载
+    loading: false,  // 是否正在加载
+    tags: ['Unremovable', 'Tag 2', 'Tag 3'],
+    inputVisible: '-1-1',
+    inputValue: '',
+    swlxarr: [],
   }
   componentDidMount = async () => {
     const _this = this;
@@ -132,21 +137,21 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    await this.fetchQuerySoftwareList();
+    this.fetchQuerySoftwareList();
     // 查询项目标签
-    await this.fetchQueryProjectLabel();
+    this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
-    await this.fetchQueryOrganizationInfo();
+    this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
-    await this.fetchQueryMilepostInfo({
+    this.fetchQueryMilepostInfo({
       type: 1,
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
@@ -249,7 +254,7 @@ class NewProjectModelV2 extends React.Component {
     return arr;
   };
 
-  toTree(list, parId) {
+  toOrgTree(list, parId) {
     let obj = {};
     let result = [];
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
@@ -274,6 +279,41 @@ class NewProjectModelV2 extends React.Component {
     return result;
   }
 
+  toItemTree(list, parId) {
+    let a = list.reduce((pre, current, index) => {
+      pre[current.zdbm] = pre[current.zdbm] ||[];
+      pre[current.zdbm].push({ key: current.ysID,title: current.ysName, value: current.ysID,ysID:current.ysID,ysKGL:Number(current.ysKGL),ysLB:current.ysLB,ysName:current.ysName,ysZJE:Number(current.ysZJE),zdbm:current.zdbm });
+      return pre;
+    }, []);
+
+    const treeData = [];
+    const indexData = [];
+    list.map(item =>{
+      if(indexData.indexOf(item.zdbm) === -1){
+        indexData.push(item.zdbm)
+        if(a[item.zdbm]){
+          let treeDatamini = {children:[]}
+          treeDatamini.key = item.zdbm
+          treeDatamini.value = item.zdbm
+          treeDatamini.title = item.ysLB
+          treeDatamini.ysID = item.ysID
+          treeDatamini.ysKGL = Number(item.ysKGL)
+          treeDatamini.ysLB = item.ysLB
+          treeDatamini.ysName = item.ysName
+          treeDatamini.ysZJE = Number(item.ysZJE)
+          treeDatamini.zdbm = item.zdbm
+          treeDatamini.dropdownStyle = {color:'#666'}
+          treeDatamini.disabled = true
+          treeDatamini.children = a[item.zdbm]
+          treeData.push(treeDatamini)
+        }
+      }
+
+    })
+    console.log("treeData",treeData);
+    return treeData;
+  }
+
   // 查询里程碑事项信息
   fetchQueryMatterUnderMilepost(params) {
     return FetchQueryMatterUnderMilepost(params)
@@ -292,7 +332,19 @@ class NewProjectModelV2 extends React.Component {
             });
             this.setState({mileItemInfo: arr});
           } else if (params.type === 'SINGLE') {
-            this.setState({newMileItemInfo: data});
+            console.log("datadata", data)
+            const idarr = [];
+            const swlxarr = [];
+            data.forEach(item => {
+              let swlxparam = {}
+              swlxparam.swlx = item.swlx;
+              swlxparam.swlxid = item.swlxid;
+              if (idarr.indexOf(swlxparam.swlxid) === -1) {
+                idarr.push(item.swlxid);
+                swlxarr.push(swlxparam);
+              }
+            })
+            this.setState({newMileItemInfo: data, swlxarr: swlxarr});
           }
         }
       }).catch((error) => {
@@ -393,7 +445,7 @@ class NewProjectModelV2 extends React.Component {
         });
         this.setState({
           staffList: result,
-          organizationStaffTreeList: this.toTree(this.state.organizationList.concat(arr), 0)
+          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0)
         });
       }
     }).catch((error) => {
@@ -419,7 +471,7 @@ class NewProjectModelV2 extends React.Component {
           arr.push({...e})
         });
         this.setState({
-          loginUser: loginUser, organizationList: record, organizationTreeList: this.toTree(arr, 0)
+          loginUser: loginUser, organizationList: record, organizationTreeList: this.toOrgTree(arr, 0)
         });
       }
     }).catch((error) => {
@@ -432,7 +484,7 @@ class NewProjectModelV2 extends React.Component {
     return FetchQueryBudgetProjects(params).then((result) => {
       const {code = -1, record = []} = result;
       if (code > 0) {
-        this.setState({budgetProjectList: record});
+        this.setState({budgetProjectList: this.toItemTree(record)});
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -468,7 +520,7 @@ class NewProjectModelV2 extends React.Component {
   getUrlParams = () => {
     const {match: {params: {params: encryptParams = ''}}} = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
-    console.log("paramsparams", params)
+    // console.log("paramsparams", params)
     return params;
   }
 
@@ -559,7 +611,7 @@ class NewProjectModelV2 extends React.Component {
     } else if ((jobStaffList[9].length > 0 && focusJob === '10') || (focusJob === '10' && checkedStaffKey.length > 1)) {
       message.warning('项目经理最多一个！');
     } else {
-      console.log(jobStaffList);
+      // console.log(jobStaffList);
       let arr = jobStaffList[Number(focusJob) - 1] ? jobStaffList[Number(focusJob) - 1] : [];
       let searchStaffList = [];
       checkedStaffKey.forEach(item => {
@@ -631,11 +683,16 @@ class NewProjectModelV2 extends React.Component {
   };
 
   // 保存数据操作
-  handleFormValidate = (e) => {
+  handleFormValidate = (e,type) => {
     e.preventDefault();
-    if (this.state.isEditMile) {
-      message.warn("里程碑信息还未保存！");
-      return
+    // if (this.state.isEditMile) {
+    //   message.warn("里程碑信息还未保存！");
+    //   return
+    // }
+    if(type === 0) {
+      this.setState({
+        operateType: 'SAVE'
+      })
     }
     const _this = this;
     this.props.form.validateFields((err, values) => {
@@ -714,7 +771,8 @@ class NewProjectModelV2 extends React.Component {
   };
 
   handleSave = (values) => {
-    const {staffJobList = [], staffInfo: {jobStaffList = []}, mileInfo: {milePostInfo = []}} = this.state;
+    const {basicInfo={},budgetInfo={},staffJobList = [], staffInfo: {jobStaffList = []}, mileInfo: {milePostInfo = []}} = this.state;
+
     let flag = true; // 日期选择是否符合开始时间小于结束时间
     milePostInfo.forEach(item => {
       if (Number(moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'))
@@ -727,6 +785,7 @@ class NewProjectModelV2 extends React.Component {
       return;
     }
     let staffJobParam = [];
+    console.log("this.state.basicInfo",this.state.basicInfo)
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
@@ -743,19 +802,33 @@ class NewProjectModelV2 extends React.Component {
     if (projectManager.length == 0) {
       message.warn("项目经理不能为空！");
     } else {
+      let org = "";
+      if(basicInfo.org?.length>0){
+        basicInfo.org.map(item=>{
+          org = item.concat(";").concat(org);
+        })
+      };
+      console.log("orgorg",org)
+      let label = "";
+      if(basicInfo.projectLabel?.length>0){
+        basicInfo.projectLabel.map(item=>{
+          label = item.concat(";").concat(label);
+        })
+      };
+      console.log("orgorg",org)
       const params = {
-        projectName: values.projectName,
-        projectType: values.projectType,
-        projectLabel: values.projectLabel.join(";"),
-        org: Number(values.org),
-        software: Number(values.software),
-        biddingMethod: values.projectType == 2 ? '' : Number(values.biddingMethod),
+        projectName: basicInfo.projectName,
+        projectType: basicInfo.projectType,
+        projectLabel: label,
+        org: org,
+        software: Number(basicInfo.software),
+        biddingMethod: basicInfo.projectType === 2 ? '' : Number(basicInfo.biddingMethod),
         year: Number(this.state.budgetInfo.year.format("YYYY")),
-        budgetProject: Number(values.budgetProjectId),
-        projectBudget: String(values.projectBudget)
+        budgetProject: Number(budgetInfo.budgetProjectId),
+        projectBudget: String(budgetInfo.projectBudget)
       };
       const _this = this;
-      const timeList = milePostInfo.filter(item => item.jssj == this.state.tomorrowTime && item.kssj == this.state.nowTime);
+      const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
       if (timeList && timeList.length > 0) {
         confirm({
           okText: '确认',
@@ -810,7 +883,8 @@ class NewProjectModelV2 extends React.Component {
       item.gw = String(item.gw);
     });
     params.members = memberInfo;
-    params.projectId = Number(this.state.basicInfo.projectId);
+    console.log("params.projectId",this.state.basicInfo.projectId)
+    params.projectId = this.state.basicInfo.projectId === undefined||this.state.basicInfo.projectId ===''?-1:Number(this.state.basicInfo.projectId);
     params.type = this.state.operateType;
     params.czr = Number(this.state.loginUser.id);
 
@@ -819,17 +893,28 @@ class NewProjectModelV2 extends React.Component {
 
   operateCreatProject(params) {
     OperateCreatProject(params).then((result) => {
-      const {code = -1, note = ''} = result;
+      const {code = -1, note = '',projectId} = result;
       this.setState({loading: false});
       if (code > 0) {
+        console.log("0000")
         if (this.state.type) {
+          console.log("1111")
           window.parent && window.parent.postMessage({operate: 'success'}, '*');
         } else {
+          console.log("22222")
           this.props.submitOperate();
         }
+        const params = {
+          projectId:projectId,
+        }
+        //projectId跳转到生命周期页面
+        // window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
+        // window.location.href =`/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
       } else {
         message.error(note);
       }
+
+      console.log("333333")
     }).catch((error) => {
       this.setState({loading: false});
       message.error(!error.success ? error.message : error.note);
@@ -969,12 +1054,12 @@ class NewProjectModelV2 extends React.Component {
   addMilePostInfoItem = (index, i) => {
     const {mileInfo: {milePostInfo = []}} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
-    console.log("milePostInfo", milePostInfo)
+    // console.log("milePostInfo", milePostInfo)
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
     matterInfo[i].sxlb.push({sxid: '', sxmc: '', type: 'new'});
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-    console.log("milePostInfo222", removeTitleMile)
+    // console.log("milePostInfo222", removeTitleMile)
     const arr = this.filterGridLayOut(removeTitleMile);
     this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
   };
@@ -994,7 +1079,18 @@ class NewProjectModelV2 extends React.Component {
     mile[index].matterInfos = newMatterInfo;
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
     const arr = this.filterGridLayOut(removeTitleMile);
-    this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+    //里程碑下没有里程碑类型信息 则删除里程碑
+    if (arr[index].matterInfos.length === 0) {
+      let arr = [];
+      milePostInfo.forEach((item, i) => {
+        if (i !== index) {
+          arr.push(item);
+        }
+      });
+      this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+    } else {
+      this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+    }
   };
 
   // 选中新加的里程碑事项信息
@@ -1065,13 +1161,123 @@ class NewProjectModelV2 extends React.Component {
   };
 
   onChange = minicurrent => {
-    console.log('onChange:', minicurrent);
+    // console.log('onChange:', minicurrent);
     this.setState({minicurrent});
   };
 
+  onChange0 = current => {
+    // console.log('onChange:', minicurrent);
+    this.setState({current});
+  };
+
+  handleClose = removedTag => {
+    const tags = this.state.tags.filter(tag => tag !== removedTag);
+    // console.log(tags);
+    this.setState({tags});
+  };
+
+  showInput = (index, i) => {
+    // console.log("iiiii", i)
+    // console.log("index", index)
+    this[`${index}inputRef${i}`] = React.createRef();
+    // this.setState({inputVisible: i}, () => this.mySelect.focus());
+    this.setState({inputVisible: `${index}+${i}`}, () => this[`${index}inputRef${i}`].current.focus());
+  };
+
+
+  handleInputChange = e => {
+    this.setState({inputValue: e.target.value});
+  };
+
+  handleInputConfirm = (e, index, i, sx_index) => {
+    // console.log("sx_index",sx_index)
+    //matterInfos
+    const {mileInfo: {milePostInfo = []}, mileItemInfo = []} = this.state;
+    let sxmc = '';
+    let swlx = '';
+    mileItemInfo.forEach(item => {
+      if (item.sxid === e) {
+        sxmc = item.sxmc;
+        swlx = item.swlxid;
+      }
+    });
+    // 多层数组的深拷贝方式  真暴力哦
+    const mile = JSON.parse(JSON.stringify(milePostInfo));
+    const matterInfo = mile[index].matterInfos;
+    const sxlb = matterInfo[i].sxlb;
+    let newsxlb = {lcb: sxlb[sx_index - 1].lcb, swlx: swlx, sxid: e, sxmc: sxmc, sxzxid: "0", sxzxsx: sx_index, xh: "3"}
+    let flag = 0;
+    sxlb.map(item => {
+      if (item.sxmc !== newsxlb.sxmc) {
+        flag++;
+      }
+    })
+    if (flag === sxlb.length && newsxlb.sxmc) {
+      sxlb.push(newsxlb);
+    } else if (flag !== sxlb.length) {
+      message.warn("已存在,请勿重复添加！")
+    }
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    // console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
+  };
+
+  //添加事项
+  addSwlx = (e, index) => {
+    this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
+    //添加事项类型
+    console.log("eeeee", e)
+    console.log("index", index)
+    const {mileInfo: {milePostInfo = []},} = this.state;
+    // 多层数组的深拷贝方式  真暴力哦
+    const mile = JSON.parse(JSON.stringify(milePostInfo));
+    const matterInfo = mile[index].matterInfos;
+    let matterInfos = {swlxmc: "new", sxlb: []}
+    matterInfo.push(matterInfos)
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    //添加内的流程
+  }
+
+  addSwlxMx = (e, index, i, sx_index) => {
+    const {mileInfo: {milePostInfo = []},} = this.state;
+    // 多层数组的深拷贝方式  真暴力哦
+    const mile = JSON.parse(JSON.stringify(milePostInfo));
+    let swlxmc = ""
+    this.state.swlxarr.map((mi, mi_index) => {
+      if (mi.swlxid === e) {
+        swlxmc = mi.swlx;
+      }
+    })
+    const matterInfo = mile[index].matterInfos;
+    console.log("matterInfo", matterInfo);
+    const sxlbparam = {type: 'title'};
+    matterInfo.map(item => {
+      if (item.swlxmc === "new") {
+        item.swlxmc = swlxmc
+        item.sxlb[0] = sxlbparam;
+      }
+    })
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+  }
+
+  onOrgChange = (e) =>{
+    const {basicInfo = {org:''},} =this.state
+    this.setState({
+      org:e,
+    })
+  }
+
+  onBqChange = (e) =>{
+    const {basicInfo = {projectLabel:''},} =this.state
+    this.setState({
+      projectLabel:e,
+    })
+  }
 
   render() {
     const {
+      tags,
+      inputValue,
+      inputVisible,
       loading,
       current,
       minicurrent,
@@ -1095,7 +1301,8 @@ class NewProjectModelV2 extends React.Component {
       staffJobList = [],
       checkedStaffKey,
       staffInfo: {jobStaffList = []},
-      basicInfo = {}
+      basicInfo = {software:''},
+      swlxarr = []
     } = this.state;
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
@@ -1140,7 +1347,7 @@ class NewProjectModelV2 extends React.Component {
       },
     ];
     const ministeps = [];
-    console.log("milePostInfo", milePostInfo)
+    // console.log("milePostInfo", milePostInfo)
     milePostInfo.map(item => {
       let params;
       params = {
@@ -1152,22 +1359,27 @@ class NewProjectModelV2 extends React.Component {
       <Fragment>
         <div className="newProject">
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
-            <div>
+            <div style={{overflow:current === 0 || current === 2?'hidden':''}}>
               <div style={{margin: '3rem 20rem 0 20rem'}}>
-                <Steps current={current}>
-                  {steps.map(item => (
-                    <Step key={item.title} title={item.title}/>
+                <Steps current={current} onChange={this.onChange0}>
+                  {steps.map((item, index) => (
+                    <Step key={index} title={item.title}/>
                   ))}
                 </Steps>
               </div>
               {
                 current === 0 && <div className="steps-content"><React.Fragment>
                   <div className="title">
-                    <Icon type="caret-down" onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}
-                          style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                    <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>基本信息</span>
+                    {/*<Icon type="caret-down" onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}*/}
+                    {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
+                    <span style={{
+                      paddingLeft: '1rem',
+                      fontSize: '3rem',
+                      fontWeight: 'bold',
+                      borderLeft: '4px solid #3461FF'
+                    }}>基本信息</span>
                   </div>
-                  <Form {...basicFormItemLayout} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>
+                  <Form {...basicFormItemLayout}  ref={e=>this.basicForm=e} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="项目名称">
@@ -1178,7 +1390,7 @@ class NewProjectModelV2 extends React.Component {
                             }],
                             initialValue: basicInfo.projectName
                           })(
-                            <Input placeholder="请输入项目名称"/>
+                            <Input placeholder="请输入项目名称" onChange={e => {this.setState({basicInfo: {...basicInfo, projectName: e.target.value}});}}/>
                           )}
                         </Form.Item>
                       </Col>
@@ -1192,7 +1404,7 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectType
                           })(
                             <Radio.Group onChange={e => {
-                              this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
+                              this.setState({basicInfo: { projectType: e.target.value}});
                               this.fetchQueryMilepostInfo({
                                 type: e.target.value,
                                 xmid: basicInfo.projectId,
@@ -1217,6 +1429,7 @@ class NewProjectModelV2 extends React.Component {
                             <Select showSearch
                                     showArrow={true}
                                     mode="multiple"
+                                    onChange={e=>this.onBqChange(e)}
                                     filterOption={(input, option) =>
                                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                     }>
@@ -1232,23 +1445,24 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item label="所属部门">
+                        <Form.Item label="应用部门">
                           {getFieldDecorator('org', {
                             rules: [{
                               required: true,
-                              message: '请输入所属部门'
+                              message: '请输入应用部门'
                             }],
-                            initialValue: basicInfo.org
+                            // initialValue: basicInfo.org
                           })(
                             <TreeSelect
+                              multiple
                               showSearch
                               treeNodeFilterProp="title"
                               style={{width: '100%'}}
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={organizationTreeList}
-                              placeholder="请选择所属部门"
+                              placeholder="请选择应用部门"
                               treeDefaultExpandAll
-                              onChange={this.onChange}
+                              onChange={e=>this.onOrgChange(e)}
                             />
                           )}
 
@@ -1262,6 +1476,15 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.software
                           })(
                             <Select showSearch
+                                    onChange={e => {
+                                      softwareList.forEach(item => {
+                                        if (item.id === e) {
+                                          this.setState({
+                                            software: e,
+                                          });
+                                        }
+                                      })
+                                    }}
                                     filterOption={(input, option) =>
                                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                     }>
@@ -1288,7 +1511,7 @@ class NewProjectModelV2 extends React.Component {
                                 initialValue: basicInfo.biddingMethod
                               })(
                                 <Radio.Group onChange={e => {
-                                  this.setState({basicInfo: {...this.state.basicInfo, biddingMethod: e.target.value}});
+                                  this.setState({basicInfo: { biddingMethod: e.target.value}});
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
                                     xmid: this.state.basicInfo.projectId,
@@ -1309,15 +1532,20 @@ class NewProjectModelV2 extends React.Component {
 
                     </Row>
 
-                  </Form>
+
                   {/*</React.Fragment>*/}
                   {/*<React.Fragment>*/}
                   <div className="title">
-                    <Icon type="caret-down" onClick={() => this.setState({budgetInfoCollapse: !budgetInfoCollapse})}
-                          style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                    <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>预算信息</span>
+                    {/*<Icon type="caret-down" onClick={() => this.setState({budgetInfoCollapse: !budgetInfoCollapse})}*/}
+                    {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
+                    <span style={{
+                      paddingLeft: '1rem',
+                      fontSize: '3rem',
+                      fontWeight: 'bold',
+                      borderLeft: '4px solid #3461FF'
+                    }}>预算信息</span>
                   </div>
-                  <Form {...budgetFormItemLayout} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>
+                  {/*<Form {...budgetFormItemLayout} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>*/}
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="年份">
@@ -1365,7 +1593,7 @@ class NewProjectModelV2 extends React.Component {
                           {/*)}*/}
                         </Form.Item>
                       </Col>
-                      <Col span={12}>
+                      <Col span={12} className="glys">
                         <Form.Item label="关联预算项目" required={true}>
                           {getFieldDecorator('budgetProjectId', {
                             rules: [{
@@ -1374,36 +1602,36 @@ class NewProjectModelV2 extends React.Component {
                             }],
                             initialValue: budgetInfo.budgetProjectId
                           })(
-                            <Select showSearch
-                                    onChange={e => {
-                                      budgetProjectList.forEach(item => {
-                                        if (item.ysID == e) {
-                                          const _this = this;
-                                          this.setState({
-                                            budgetInfo: {
-                                              ...this.state.budgetInfo,
-                                              budgetProjectId: e,
-                                              totalBudget: Number(item.ysZJE),
-                                              relativeBudget: Number(item.ysKGL)
-                                            }
-                                          }, function () {
-                                            _this.props.form.resetFields(['projectBudget']);
-                                            _this.props.form.validateFields(['projectBudget']);
-                                          });
+                            <TreeSelect
+                              showSearch
+                              treeNodeFilterProp="title"
+                              style={{width: '100%'}}
+                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                              treeData={budgetProjectList}
+                              placeholder="请选择关联预算项目"
+                              // treeDefaultExpandAll
+                              onChange={e => {
+                                console.log("eeeee",e)
+                                budgetProjectList.forEach(item => {
+                                  item.children.forEach(i => {
+                                    if (i.key === e) {
+                                      const _this = this;
+                                      this.setState({
+                                        budgetInfo: {
+                                          ...this.state.budgetInfo,
+                                          budgetProjectId: e,
+                                          totalBudget: Number(i.ysZJE),
+                                          relativeBudget: Number(i.ysKGL)
                                         }
-                                      })
-                                    }}
-                                    filterOption={(input, option) =>
-                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }>
-                              {
-                                budgetProjectList.length > 0 && budgetProjectList.map((item, index) => {
-                                  return (
-                                    <Option key={index} value={item.ysID}>{item.ysName}</Option>
-                                  )
+                                      }, function () {
+                                        _this.props.form.resetFields(['projectBudget']);
+                                        _this.props.form.validateFields(['projectBudget']);
+                                      });
+                                    }
+                                  })
                                 })
-                              }
-                            </Select>
+                              }}
+                            />
                           )}
                         </Form.Item>
                       </Col>
@@ -1450,6 +1678,7 @@ class NewProjectModelV2 extends React.Component {
                       </Col>
                     </Row>
                   </Form>
+                  {/*</Form>*/}
                 </React.Fragment></div>
               }
               {
@@ -1457,57 +1686,15 @@ class NewProjectModelV2 extends React.Component {
                   <Steps progressDot style={{width: '15%', padding: '3rem 0'}} direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
 
-                    {ministeps.map(item => (
-                      <Step style={{height: (100 / (ministeps.length * 2)) + '%'}} key={item.title} title={item.title}/>
+                    {ministeps.map((item, index) => (
+                      <Step style={{height: (100 / (ministeps.length * 2)) + '%'}} key={index} title={item.title}/>
                     ))}
                   </Steps>
-                  <div className="steps-content" style={{width: '83%'}}>
+                  <div className="steps-content" style={{width: '83%', margin: '0 0 15rem 0'}}>
                     <React.Fragment>
-                      {/*<div className="title">*/}
-                      {/*  <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>*/}
-                      {/*    <div style={{width: '90%'}}>*/}
-                      {/*      <Icon type="caret-down"*/}
-                      {/*            onClick={() => this.setState({milePostInfoCollapse: !milePostInfoCollapse})}*/}
-                      {/*            style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
-                      {/*      <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>里程碑信息</span>*/}
-                      {/*      {*/}
-                      {/*        isEditMile ? (*/}
-                      {/*          <span style={{*/}
-                      {/*            paddingLeft: '2rem',*/}
-                      {/*            color: '#de3741',*/}
-                      {/*            fontSize: '2.5rem'*/}
-                      {/*          }}>拖动里程碑下的事项卡片可调整顺序</span>*/}
-                      {/*        ) : null*/}
-                      {/*      }*/}
-                      {/*    </div>*/}
-                      {/*    <div style={{width: '10%'}}>*/}
-                      {/*      {*/}
-                      {/*        isEditMile ? (*/}
-                      {/*          <div style={{display: 'flex', flexDirection: 'row'}}>*/}
-                      {/*            <div style={{cursor: 'pointer', color: '#3461FF'}} onClick={this.saveMilePostInfo}>*/}
-                      {/*              <Icon type="save" style={{fontSize: '2.5rem'}}/>*/}
-                      {/*              <span style={{padding: '0 2rem 0 0.5rem', fontSize: '2.5rem'}}>保存</span>*/}
-                      {/*            </div>*/}
-
-                      {/*            <div style={{cursor: 'pointer', color: '#3461FF'}} onClick={this.cancelSaveMilePostInfo}>*/}
-                      {/*              <Icon type="close-circle" style={{fontSize: '2.5rem'}}/>*/}
-                      {/*              <span style={{paddingLeft: '0.5rem', fontSize: '2.5rem'}}>取消</span>*/}
-                      {/*            </div>*/}
-
-                      {/*          </div>*/}
-                      {/*        ) : (*/}
-                      {/*          <div style={{cursor: 'pointer', color: '#3461FF'}}*/}
-                      {/*               onClick={() => this.setState({isEditMile: true})}>*/}
-                      {/*            <Icon type="edit" style={{fontSize: '2.5rem', paddingLeft: '3rem'}}/>*/}
-                      {/*            <span style={{paddingLeft: '0.5rem', fontSize: '2.5rem'}}>修改</span>*/}
-                      {/*          </div>*/}
-                      {/*        )*/}
-                      {/*      }*/}
-                      {/*    </div>*/}
-                      {/*  </div>*/}
-                      {/*</div>*/}
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
+                          console.log("itemitemitem", item)
                           {
                             return (
                               <React.Fragment>
@@ -1515,7 +1702,7 @@ class NewProjectModelV2 extends React.Component {
                                   item.type && item.type === 'new' ? (
                                     <div key={index} className="newMilePost">
                                       <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-                                        <div style={{width: '20%'}}>
+                                        <div style={{width: '14%'}}>
                                           <Select
                                             showSearch
                                             filterOption={(input, option) =>
@@ -1533,13 +1720,13 @@ class NewProjectModelV2 extends React.Component {
                                           </Select>
                                         </div>
                                         <div style={{
-                                          width: '75%',
+                                          width: '66%',
                                           marginLeft: '2rem',
                                           position: 'relative',
                                           display: 'flex',
                                           flexDirection: 'row'
                                         }}>
-                                          <DatePicker format="YYYY-MM-DD" style={{width: '17%'}}
+                                          <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}
                                                       value={moment(item.kssj, 'YYYY-MM-DD')}
                                                       allowClear={false}
                                                       onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
@@ -1554,7 +1741,7 @@ class NewProjectModelV2 extends React.Component {
                                               padding: '2rem 2rem 0 2rem'
                                             }}>~
                                           </div>
-                                          <DatePicker format="YYYY-MM-DD" style={{width: '17%'}}
+                                          <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}
                                                       value={moment(item.jssj, 'YYYY-MM-DD')}
                                                       allowClear={false}
                                                       onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
@@ -1567,7 +1754,7 @@ class NewProjectModelV2 extends React.Component {
                                             fontSize: '3.5rem',
                                             position: 'absolute',
                                             top: '10%',
-                                            right: '60.5%'
+                                            right: '51.5%'
                                           }}>
                                             *
                                           </div>
@@ -1576,26 +1763,48 @@ class NewProjectModelV2 extends React.Component {
                                             fontSize: '3.5rem',
                                             position: 'absolute',
                                             top: '10%',
-                                            right: '81.5%'
+                                            right: '77.5%'
                                           }}>
                                             *
                                           </div>
                                         </div>
-                                        <div onClick={() => this.removeMilePostInfo(index)} style={{
-                                          cursor: 'pointer',
-                                          width: '5%',
-                                          color: '#DE3741',
-                                          textAlign: 'right',
-                                          padding: '1.5rem 1.5rem 0 0'
-                                        }}>
-                                          删除
+                                        <div style={{display: 'flex', width: "20%"}}>
+                                          <div onClick={() => this.saveMilePostInfo(index)} style={{
+                                            cursor: 'pointer',
+                                            // width: '5%',
+                                            color: 'rgb(52, 97, 255)',
+                                            textAlign: 'right',
+                                            padding: '1.5rem 1.5rem 0 0'
+                                          }}>
+                                            保存
+                                          </div>
+                                          {
+                                            <span style={{
+                                              padding: '1.5rem 1.5rem 0 0',
+                                              cursor: 'pointer',
+                                              color: 'rgb(52, 97, 255)',
+                                              fontSize: '2.5rem'
+                                            }} onClick={() => this.addSwlx(item?.lcblxid, index)}>添加事项</span>
+                                          }
+                                          <div onClick={() => this.removeMilePostInfo(index)} style={{
+                                            cursor: 'pointer',
+                                            // width: '5%',
+                                            color: '#DE3741',
+                                            textAlign: 'right',
+                                            padding: '1.5rem 1.5rem 0 0'
+                                          }}>
+                                            删除
+                                          </div>
                                         </div>
                                       </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                           return (
                                             <div className="flow" key={i}
-                                                 style={{margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'}}>
+                                                 style={{
+                                                   display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                                   margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
+                                                 }}>
                                               <div>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
@@ -1612,6 +1821,35 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   })
                                                 }
+                                                {
+                                                  e.swlxmc === "new" && (
+                                                    <Select showSearch
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
+                                                      // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      //milePostInfo[index].matterInfos[i].length
+                                                            onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
+                                                      {
+                                                        swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
+                                                          // if (mi.swlx === e.swlxmc) {
+                                                          return (
+                                                            <Option title={mi.swlx} key={mi_index}
+                                                                    value={mi.swlxid}>{mi.swlx}</Option>
+                                                          )
+                                                          // }
+                                                        })
+                                                      }
+                                                    </Select>
+                                                  )
+                                                }
                                               </div>
                                               <div>
                                                 {
@@ -1627,187 +1865,104 @@ class NewProjectModelV2 extends React.Component {
                                                 }
                                               </div>
                                               <div style={{width: '80%', display: 'flex', flexWrap: 'wrap'}}>
-                                                {
-                                                  e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                    console.log("sxsx,", sx)
-                                                    console.log("flagflag,", !sx.type && sx_index !== 0)
-                                                    if (!sx.type && sx_index !== 0) {
-                                                      return (
-                                                        <div key={String(sx_index + 1)}
-                                                             className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
-                                                          {
-                                                            sx.type && sx.type === 'new' ? (
-                                                              <React.Fragment>
-                                                                <Select showSearch
-                                                                        filterOption={(input, option) =>
-                                                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                                        }
-                                                                        onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                                        style={{
-                                                                          width: '85%',
-                                                                          marginTop: '0.7rem',
-                                                                          marginLeft: '1rem'
-                                                                        }}>
-                                                                  {
-                                                                    mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                                      if (mi.swlx === e.swlxmc) {
-                                                                        return (
-                                                                          <Option title={mi.sxmc} key={mi_index}
-                                                                                  value={mi.sxid}>{mi.sxmc}</Option>
-                                                                        )
-                                                                      }
-                                                                    })
-                                                                  }
-                                                                </Select>
-                                                                {
-                                                                  isEditMile ? (
-                                                                    <div
-                                                                      onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}
-                                                                      style={{
-                                                                        position: 'relative',
-                                                                        display: 'flex',
-                                                                        alignItems: 'center'
-                                                                      }}>
-                                                                      <Icon type="close" className="icon"/>
-                                                                    </div>
-                                                                  ) : null
-                                                                }
-                                                              </React.Fragment>
-
-                                                            ) : (
+                                                <div style={{display: 'flex'}}>
+                                                  {
+                                                    e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
+                                                      // console.log("sxsxsx",sx)
+                                                      if (!sx.type && sx_index !== 0) {
+                                                        return (
+                                                          <div key={String(sx_index + 1)}
+                                                               className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                            {
                                                               <React.Fragment>
                                                                 <span title={sx.sxmc}
                                                                       style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                                 {
-                                                                  isEditMile ? (
-                                                                    <span
-                                                                      onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
+                                                                  <span
+                                                                    onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
                                                               <Icon type="close" className="icon"/>
                                                             </span>
-                                                                  ) : null
                                                                 }
                                                               </React.Fragment>
+                                                            }
 
+                                                          </div>
+                                                        )
+                                                      }
+                                                    })
+                                                  }
+                                                  {inputVisible === `${index}+${i}` && (
+                                                    <Select showSearch
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
+                                                      // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      //milePostInfo[index].matterInfos[i].length
+                                                            onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
+                                                      {
+                                                        mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                          if (mi.swlx === e.swlxmc) {
+                                                            return (
+                                                              <Option title={mi.sxmc} key={mi_index}
+                                                                      value={mi.sxid}>{mi.sxmc}</Option>
                                                             )
                                                           }
-
-                                                        </div>
-                                                      )
-                                                    }
-                                                  })
-                                                }
+                                                        })
+                                                      }
+                                                    </Select>
+                                                  )}
+                                                  {
+                                                    e.sxlb?.length === 1 && e.swlxmc !== "new" &&
+                                                    (
+                                                      <Select showSearch
+                                                              ref={this[`${index}inputRef${i}`]}
+                                                              filterOption={(input, option) =>
+                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                              }
+                                                        // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                              onChange={(e) => this.setState({inputValue: e})}
+                                                        //milePostInfo[index].matterInfos[i].length
+                                                              onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                              style={{
+                                                                width: '20rem',
+                                                                marginTop: '0.7rem',
+                                                                marginLeft: '1rem'
+                                                              }}>
+                                                        {
+                                                          mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                            if (mi.swlx === e.swlxmc) {
+                                                              return (
+                                                                <Option title={mi.sxmc} key={mi_index}
+                                                                        value={mi.sxid}>{mi.sxmc}</Option>
+                                                              )
+                                                            }
+                                                          })
+                                                        }
+                                                      </Select>
+                                                    )
+                                                  }
+                                                </div>
+                                                <div style={{
+                                                  position: 'absolute',
+                                                  top: '30%',
+                                                  right: '0.7%',
+                                                  color: '#3461FF'
+                                                }}>
+                                                  <Tag onClick={() => this.showInput(index, i)}
+                                                       style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                    <Icon type="plus"/> 新增
+                                                  </Tag>
+                                                  <span onClick={() => this.removeMilePostTypeInfo(index, i)}
+                                                        style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>
+                                                </div>
                                               </div>
-
-                                              {/*<GridLayout isDraggable={isEditMile} style={{marginBottom: '2rem'}} onDragStop={(e) => this.。(e, index, i)} compactType="horizontal" isBounded={true} isResizable={false}*/}
-                                              {/*            className="layout" layout={e.gridLayout} cols={6} rowHeight={3} width={900}>*/}
-
-                                              {/*{*/}
-                                              {/*  e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {*/}
-                                              {/*    if (sx.type && sx.type === 'title' && sx_index === 0) {*/}
-                                              {/*      return (*/}
-                                              {/*        <div key={String(sx_index + 1)} style={{*/}
-                                              {/*          paddingTop: '3rem',*/}
-                                              {/*          fontSize: '2.5rem',*/}
-                                              {/*          fontWeight: 'bold',*/}
-                                              {/*        }}>*/}
-                                              {/*          {e.swlxmc || ''}*/}
-                                              {/*        </div>*/}
-                                              {/*      )*/}
-                                              {/*    } else if (sx.type && sx.type === 'title') {*/}
-                                              {/*      return (*/}
-                                              {/*        <div key={String(sx_index + 1)}*/}
-                                              {/*             style={{paddingTop: '2rem', fontWeight: 'bold'}}>*/}
-                                              {/*        </div>*/}
-                                              {/*      )*/}
-                                              {/*    } else {*/}
-                                              {/*      return (*/}
-                                              {/*        <div key={String(sx_index + 1)}*/}
-                                              {/*             className={sx.type && sx.type === 'new' ? 'new' : 'item'}>*/}
-                                              {/*          {*/}
-                                              {/*            sx.type && sx.type === 'new' ? (*/}
-                                              {/*              <React.Fragment>*/}
-                                              {/*                <Select showSearch*/}
-                                              {/*                        filterOption={(input, option) =>*/}
-                                              {/*                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0*/}
-                                              {/*                        }*/}
-                                              {/*                        onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}*/}
-                                              {/*                        style={{*/}
-                                              {/*                          width: '85%',*/}
-                                              {/*                          marginTop: '0.7rem',*/}
-                                              {/*                          marginLeft: '1rem'*/}
-                                              {/*                        }}>*/}
-                                              {/*                  {*/}
-                                              {/*                    mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {*/}
-                                              {/*                      if (mi.swlx === e.swlxmc) {*/}
-                                              {/*                        return (*/}
-                                              {/*                          <Option title={mi.sxmc} key={mi_index}*/}
-                                              {/*                                  value={mi.sxid}>{mi.sxmc}</Option>*/}
-                                              {/*                        )*/}
-                                              {/*                      }*/}
-                                              {/*                    })*/}
-                                              {/*                  }*/}
-                                              {/*                </Select>*/}
-                                              {/*                {*/}
-                                              {/*                  isEditMile ? (*/}
-                                              {/*                    <div style={{position: 'relative',*/}
-                                              {/*                      display: 'flex',*/}
-                                              {/*                      alignItems: 'center'*/}
-                                              {/*                    }}*/}
-                                              {/*                         onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}*/}
-                                              {/*                         style={{*/}
-                                              {/*                           position: 'absolute',*/}
-                                              {/*                           right: '0',*/}
-                                              {/*                           top: '50%'*/}
-                                              {/*                         }}>*/}
-                                              {/*                      <Icon type="close" className="icon"/>*/}
-                                              {/*                    </div>*/}
-                                              {/*                  ) : null*/}
-                                              {/*                }*/}
-                                              {/*              </React.Fragment>*/}
-
-                                              {/*            ) : (*/}
-                                              {/*              <React.Fragment>*/}
-                                              {/*                <span title={sx.sxmc}*/}
-                                              {/*                      style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 8 ? (sx.sxmc.substring(0, 8) + '...') : sx.sxmc}</span>*/}
-                                              {/*                {*/}
-                                              {/*                  isEditMile ? (*/}
-                                              {/*                    <span style={{position: 'fixed', right: '5%'}}*/}
-                                              {/*                          onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>*/}
-                                              {/*                  <Icon type="close" className="icon"/>*/}
-                                              {/*                </span>*/}
-                                              {/*                  ) : null*/}
-                                              {/*                }*/}
-                                              {/*              </React.Fragment>*/}
-
-                                              {/*            )*/}
-                                              {/*          }*/}
-
-                                              {/*        </div>*/}
-                                              {/*      )*/}
-                                              {/*    }*/}
-                                              {/*  })*/}
-                                              {/*}*/}
-
-
-                                              {/*</GridLayout>*/}
-                                              {
-                                                isEditMile ? (
-                                                  <div style={{
-                                                    position: 'absolute',
-                                                    top: '40%',
-                                                    right: '0.7%',
-                                                    color: '#3461FF'
-                                                  }}>
-                                                <span onClick={() => this.addMilePostInfoItem(index, i)} style={{
-                                                  cursor: 'pointer',
-                                                  fontSize: '2.5rem',
-                                                  paddingRight: '1.5rem'
-                                                }}>添加事项</span>
-                                                    <span onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                          style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>
-                                                  </div>
-                                                ) : null
-                                              }
                                             </div>
                                           )
 
@@ -1875,34 +2030,43 @@ class NewProjectModelV2 extends React.Component {
                                           </div>
                                         </div>
                                         {
-                                          isEditMile ? (
-                                            <div className="right">
-                                              {
-                                                index > 0 ? (
-                                                  <span
-                                                    style={{
-                                                      paddingRight: '1.5rem',
-                                                      cursor: 'pointer',
-                                                      fontSize: '2.5rem'
-                                                    }}
-                                                    onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
-                                                ) : null
-                                              }
-                                              {
-                                                index !== milePostInfo.length - 1 ? (
-                                                  <span
-                                                    style={{
-                                                      paddingRight: '1.5rem',
-                                                      cursor: 'pointer',
-                                                      fontSize: '2.5rem'
-                                                    }}
-                                                    onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
-                                                ) : null
-                                              }
-                                              <span style={{cursor: 'pointer', fontSize: '2.5rem'}}
-                                                    onClick={() => this.removeMilePostInfo(index)}>删除</span>
-                                            </div>
-                                          ) : null
+                                          <div className="right">
+                                            {
+                                              index > 0 ? (
+                                                <span
+                                                  style={{
+                                                    paddingRight: '1.5rem',
+                                                    cursor: 'pointer',
+                                                    fontSize: '2.5rem'
+                                                  }}
+                                                  onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
+                                              ) : null
+                                            }
+                                            {
+                                              index !== milePostInfo.length - 1 ? (
+                                                <span
+                                                  style={{
+                                                    paddingRight: '1.5rem',
+                                                    cursor: 'pointer',
+                                                    fontSize: '2.5rem'
+                                                  }}
+                                                  onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
+                                              ) : null
+                                            }
+                                            {
+                                              <span style={{
+                                                paddingRight: '1.5rem',
+                                                cursor: 'pointer',
+                                                fontSize: '2.5rem'
+                                              }} onClick={() => this.addSwlx(item?.lcblxid, index)}>添加事项</span>
+                                            }
+                                            {
+                                              !item.lcbmc.includes("立项") && !item.lcbmc.includes("实施") && !item.lcbmc.includes("上线")
+                                              && <span style={{cursor: 'pointer', fontSize: '2.5rem'}}
+                                                       onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                            }
+
+                                          </div>
                                         }
 
                                       </div>
@@ -1910,7 +2074,10 @@ class NewProjectModelV2 extends React.Component {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                           return (
                                             <div className="flow" key={i}
-                                                 style={{margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'}}>
+                                                 style={{
+                                                   display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                                   margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
+                                                 }}>
                                               {/*<GridLayout isDraggable={false} style={{marginBottom: '2rem'}}*/}
                                               {/*            onDragStop={(e) => this.stopDrag(e, index, i)}*/}
                                               {/*            compactType="horizontal" isBounded={true} isResizable={false}*/}
@@ -1933,6 +2100,35 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   })
                                                 }
+                                                {
+                                                  e.swlxmc === "new" && (
+                                                    <Select showSearch
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
+                                                      // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      //milePostInfo[index].matterInfos[i].length
+                                                            onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
+                                                      {
+                                                        swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
+                                                          // if (mi.swlx === e.swlxmc) {
+                                                          return (
+                                                            <Option title={mi.swlx} key={mi_index}
+                                                                    value={mi.swlxid}>{mi.swlx}</Option>
+                                                          )
+                                                          // }
+                                                        })
+                                                      }
+                                                    </Select>
+                                                  )
+                                                }
                                               </div>
                                               <div>
                                                 {
@@ -1948,69 +2144,15 @@ class NewProjectModelV2 extends React.Component {
                                                 }
                                               </div>
                                               <div style={{width: '80%', display: 'flex', flexWrap: 'wrap'}}>
-                                                {
-                                                  e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                    if (!sx.type && sx_index !== 0) {
-                                                      return (
-                                                        <div key={String(sx_index + 1)}
-                                                             className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
-                                                          {
-                                                            sx.type && sx.type === 'new' ? (
-                                                              <React.Fragment>
-                                                                <Select showSearch
-                                                                        filterOption={(input, option) =>
-                                                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                                        }
-                                                                        onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                                        style={{
-                                                                          width: '85%',
-                                                                          marginTop: '0.7rem',
-                                                                          marginLeft: '1rem'
-                                                                        }}>
-                                                                  {
-                                                                    mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                                      if (mi.swlx === e.swlxmc) {
-                                                                        return (
-                                                                          <Option title={mi.sxmc} key={mi_index}
-                                                                                  value={mi.sxid}>{mi.sxmc}</Option>
-                                                                        )
-                                                                      }
-                                                                    })
-                                                                  }
-                                                                </Select>
-                                                                {
-                                                                  <div
-                                                                    onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}
-                                                                    style={{
-                                                                      position: 'relative',
-                                                                      display: 'flex',
-                                                                      alignItems: 'center'
-                                                                    }}>
-                                                                    <Icon type="close" className="icon"/>
-                                                                  </div>
-                                                                }
-                                                                <div style={{
-                                                                  position: 'absolute',
-                                                                  top: '40%',
-                                                                  right: '0.7%',
-                                                                  color: '#3461FF'
-                                                                }}>
-                                                              <span onClick={() => this.addMilePostInfoItem(index, i)}
-                                                                    style={{
-                                                                      cursor: 'pointer',
-                                                                      fontSize: '2.5rem',
-                                                                      paddingRight: '1.5rem'
-                                                                    }}>添加事项</span>
-                                                                  <span
-                                                                    onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                                    style={{
-                                                                      cursor: 'pointer',
-                                                                      fontSize: '2.5rem'
-                                                                    }}>删除本行</span>
-                                                                </div>
-                                                              </React.Fragment>
-
-                                                            ) : (
+                                                <div style={{display: 'flex'}}>
+                                                  {
+                                                    e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
+                                                      // console.log("sxsxsx",sx)
+                                                      if (!sx.type && sx_index !== 0) {
+                                                        return (
+                                                          <div key={String(sx_index + 1)}
+                                                               className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                            {
                                                               <React.Fragment>
                                                                 <span title={sx.sxmc}
                                                                       style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
@@ -2020,140 +2162,86 @@ class NewProjectModelV2 extends React.Component {
                                                               <Icon type="close" className="icon"/>
                                                             </span>
                                                                 }
-                                                                <div style={{
-                                                                  position: 'absolute',
-                                                                  top: '40%',
-                                                                  right: '0.7%',
-                                                                  color: '#3461FF'
-                                                                }}>
-                                                              <span onClick={() => this.addMilePostInfoItem(index, i)}
-                                                                    style={{
-                                                                      cursor: 'pointer',
-                                                                      fontSize: '2.5rem',
-                                                                      paddingRight: '1.5rem'
-                                                                    }}>添加事项</span>
-                                                                  <span
-                                                                    onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                                    style={{
-                                                                      cursor: 'pointer',
-                                                                      fontSize: '2.5rem'
-                                                                    }}>删除本行</span>
-                                                                </div>
                                                               </React.Fragment>
+                                                            }
 
+                                                          </div>
+                                                        )
+                                                      }
+                                                    })
+                                                  }
+                                                  {inputVisible === `${index}+${i}` && (
+                                                    <Select showSearch
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
+                                                      // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                      //milePostInfo[index].matterInfos[i].length
+                                                            onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
+                                                      {
+                                                        mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                          if (mi.swlx === e.swlxmc) {
+                                                            return (
+                                                              <Option title={mi.sxmc} key={mi_index}
+                                                                      value={mi.sxid}>{mi.sxmc}</Option>
                                                             )
                                                           }
-
-                                                        </div>
-                                                      )
-                                                    }
-                                                  })
-                                                }
+                                                        })
+                                                      }
+                                                    </Select>
+                                                  )}
+                                                  {
+                                                    e.sxlb?.length === 1 && e.swlxmc !== "new" &&
+                                                    (
+                                                      <Select showSearch
+                                                              ref={this[`${index}inputRef${i}`]}
+                                                              filterOption={(input, option) =>
+                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                              }
+                                                        // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
+                                                              onChange={(e) => this.setState({inputValue: e})}
+                                                        //milePostInfo[index].matterInfos[i].length
+                                                              onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                              style={{
+                                                                width: '20rem',
+                                                                marginTop: '0.7rem',
+                                                                marginLeft: '1rem'
+                                                              }}>
+                                                        {
+                                                          mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                            if (mi.swlx === e.swlxmc) {
+                                                              return (
+                                                                <Option title={mi.sxmc} key={mi_index}
+                                                                        value={mi.sxid}>{mi.sxmc}</Option>
+                                                              )
+                                                            }
+                                                          })
+                                                        }
+                                                      </Select>
+                                                    )
+                                                  }
+                                                </div>
+                                                <div style={{
+                                                  position: 'absolute',
+                                                  top: '30%',
+                                                  right: '0.7%',
+                                                  color: '#3461FF'
+                                                }}>
+                                                  <Tag onClick={() => this.showInput(index, i)}
+                                                       style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                    <Icon type="plus"/> 新增
+                                                  </Tag>
+                                                  <span onClick={() => this.removeMilePostTypeInfo(index, i)}
+                                                        style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>
+                                                </div>
                                               </div>
-                                              {/*{*/}
-                                              {/*  e.sxlb.length > 0 && e.sxlb.map((sx, sx_index) => {*/}
-                                              {/*    if (sx.type && sx.type === 'title' && sx_index === 0) {*/}
-                                              {/*      return (*/}
-                                              {/*        <div key={String(sx_index + 1)} style={{*/}
-                                              {/*          paddingTop: '3rem',*/}
-                                              {/*          fontWeight: 'bold',*/}
-                                              {/*          fontSize: '2.5rem'*/}
-                                              {/*        }}>*/}
-                                              {/*          {e.swlxmc || ''}*/}
-                                              {/*        </div>*/}
-                                              {/*      )*/}
-                                              {/*    }*/}
-                                              {/*    else if (sx.type && sx.type === 'title') {*/}
-                                              {/*      return (*/}
-                                              {/*        <div key={String(sx_index + 1)}*/}
-                                              {/*             style={{paddingTop: '2rem', fontWeight: 'bold'}}>*/}
-                                              {/*        </div>*/}
-                                              {/*      )*/}
-                                              {/*    } */}
-                                              {/*    else {*/}
-                                              {/*      return (*/}
-                                              {/*        <div key={String(sx_index + 1)}*/}
-                                              {/*             className={sx.type && sx.type === 'new' ? 'new' : 'item'}>*/}
-                                              {/*          {*/}
-                                              {/*            sx.type && sx.type === 'new' ? (*/}
-                                              {/*              <React.Fragment>*/}
-                                              {/*                <Select showSearch*/}
-                                              {/*                        filterOption={(input, option) =>*/}
-                                              {/*                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0*/}
-                                              {/*                        }*/}
-                                              {/*                        onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}*/}
-                                              {/*                        style={{*/}
-                                              {/*                          width: '85%',*/}
-                                              {/*                          marginTop: '0.7rem',*/}
-                                              {/*                          marginLeft: '1rem'*/}
-                                              {/*                        }}>*/}
-                                              {/*                  {*/}
-                                              {/*                    mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {*/}
-                                              {/*                      if (mi.swlx === e.swlxmc) {*/}
-                                              {/*                        return (*/}
-                                              {/*                          <Option title={mi.sxmc} key={mi_index}*/}
-                                              {/*                                  value={mi.sxid}>{mi.sxmc}</Option>*/}
-                                              {/*                        )*/}
-                                              {/*                      }*/}
-                                              {/*                    })*/}
-                                              {/*                  }*/}
-                                              {/*                </Select>*/}
-                                              {/*                {*/}
-                                              {/*                  isEditMile ? (*/}
-                                              {/*                    <div*/}
-                                              {/*                      onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}*/}
-                                              {/*                      style={{position: 'relative',*/}
-                                              {/*                        display: 'flex',*/}
-                                              {/*                        alignItems: 'center'*/}
-                                              {/*                      }}>*/}
-                                              {/*                      <Icon type="close" className="icon"/>*/}
-                                              {/*                    </div>*/}
-                                              {/*                  ) : null*/}
-                                              {/*                }*/}
-                                              {/*              </React.Fragment>*/}
-
-                                              {/*            ) : (*/}
-                                              {/*              <React.Fragment>*/}
-                                              {/*                <span title={sx.sxmc} style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>*/}
-                                              {/*                {*/}
-                                              {/*                  isEditMile ? (*/}
-                                              {/*                    <span*/}
-                                              {/*                      onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>*/}
-                                              {/*                  <Icon type="close" className="icon"/>*/}
-                                              {/*                </span>*/}
-                                              {/*                  ) : null*/}
-                                              {/*                }*/}
-                                              {/*              </React.Fragment>*/}
-
-                                              {/*            )*/}
-                                              {/*          }*/}
-
-                                              {/*        </div>*/}
-                                              {/*      )*/}
-                                              {/*    }*/}
-                                              {/*  })*/}
-                                              {/*}*/}
-
-
-                                              {/*</GridLayout>*/}
-                                              {
-                                                isEditMile ? (
-                                                  <div style={{
-                                                    position: 'absolute',
-                                                    top: '40%',
-                                                    right: '0.7%',
-                                                    color: '#3461FF'
-                                                  }}>
-                                                <span onClick={() => this.addMilePostInfoItem(index, i)} style={{
-                                                  cursor: 'pointer',
-                                                  fontSize: '2.5rem',
-                                                  paddingRight: '1.5rem'
-                                                }}>添加事项</span>
-                                                    <span onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                          style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>
-                                                  </div>
-                                                ) : null
-                                              }
                                             </div>
                                           )
 
@@ -2171,24 +2259,23 @@ class NewProjectModelV2 extends React.Component {
                         })
                       }
                       {
-                        isEditMile ? (
-                          <div className="addMilePost" onClick={this.addMilePostInfo}>
-                            <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
-                            style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>新增里程碑</span>
-                          </div>
-                        ) : null
+                        <div className="addMilePost" onClick={this.addMilePostInfo}>
+                          <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
+                          style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>新增里程碑</span>
+                        </div>
                       }
 
-                    </React.Fragment></div>
+                    </React.Fragment>
+                  </div>
                 </div>
               }
               {
                 current === 2 && <div className="steps-content"><React.Fragment>
-                  <div className="title">
-                    <Icon type="caret-down" onClick={() => this.setState({jobStaffInfoCollapse: !jobStaffInfoCollapse})}
-                          style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                    <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>人员信息</span>
-                  </div>
+                  {/*<div className="title">*/}
+                  {/*  <Icon type="caret-down" onClick={() => this.setState({jobStaffInfoCollapse: !jobStaffInfoCollapse})}*/}
+                  {/*        style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
+                  {/*  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>人员信息</span>*/}
+                  {/*</div>*/}
                   <div className="staffInfo">
                     <div className="job">
                       {
@@ -2319,7 +2406,7 @@ class NewProjectModelV2 extends React.Component {
               {/*<div className="steps-content">{steps[current].content}</div>*/}
               <div className="footer">
                 <Button onClick={this.handleCancel}>取消</Button>
-                <Button onClick={e => this.handleFormValidate(e)} style={{marginLeft: '2rem'}}>暂存草稿</Button>
+                <Button onClick={e => this.handleFormValidate(e,0)} style={{marginLeft: '2rem'}}>暂存草稿</Button>
                 <div className="steps-action">
                   {current > 0 && (
                     <Button style={{marginLeft: '2rem'}} onClick={() => this.prev()}>
@@ -2333,7 +2420,7 @@ class NewProjectModelV2 extends React.Component {
                   )}
                   {current === steps.length - 1 && (
                     <Button style={{marginLeft: '2rem'}} type="primary"
-                            onClick={() => message.success('Processing complete!')}>
+                            onClick={e => this.handleFormValidate(e,1)} style={{marginLeft: '2rem'}}>
                       完成
                     </Button>
                   )}
