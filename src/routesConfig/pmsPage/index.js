@@ -2,7 +2,7 @@ const prefix = '/pms/manage';
 exports.routes = [
   {
     //生命周期管理页面
-    path: `${prefix}/LifeCycleManagement/:params`,
+    path: `${prefix}/LifeCycleManagement`,
     //exact: false,
     // models: () => [import('../models/workPlatForm/mainPage/mot/motEvent')],
     component: './pmsPage/LifeCycleManagement',
