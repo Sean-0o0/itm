@@ -137,21 +137,21 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    this.fetchQuerySoftwareList();
+    await this.fetchQuerySoftwareList();
     // 查询项目标签
-    this.fetchQueryProjectLabel();
+    await this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
-    this.fetchQueryOrganizationInfo();
+    await this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
-    this.fetchQueryMilepostInfo({
+    await this.fetchQueryMilepostInfo({
       type: 1,
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
@@ -377,20 +377,25 @@ class NewProjectModelV2 extends React.Component {
           let totalBudget = 0;
           let relativeBudget = 0;
           this.state.budgetProjectList.forEach(item => {
-            if (item.ysID == result.budgetProject) {
-              totalBudget = Number(item.ysZJE);
-              relativeBudget = Number(item.ysKGL);
-            }
+            item.children.forEach(i => {
+              if (i.key === result.budgetProject) {
+                totalBudget = Number(i.ysZJE);
+                relativeBudget = Number(i.ysKGL);
+              }
+            })
           });
-
+          let newOrg = []
+          if (result.orgId) {
+            newOrg = result.orgId.split(";");
+          }
           this.setState({
             searchStaffList: searchStaffList,
             basicInfo: {
               projectId: result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
-              projectLabel: result.projectLabel == '' ? [] : result.projectLabel.split(','),
-              org: Number(result.orgId),
+              projectLabel: result.projectLabel === '' ? [] : result.projectLabel.split(','),
+              org: newOrg,
               software: result.softwareId,
               biddingMethod: Number(result.biddingMethod)
             },
@@ -592,7 +597,7 @@ class NewProjectModelV2 extends React.Component {
     if (!val) {
       callback();
     }
-    if (val > _this.state.budgetInfo.relativeBudget) {
+    if (val > _this.state.budgetInfo.relativeBudget && this.state.budgetInfo.budgetProjectId !== '0') {
       callback('预算超过当前可关联总预算！请注意！');
     } else {
       callback();
@@ -785,13 +790,12 @@ class NewProjectModelV2 extends React.Component {
       return;
     }
     let staffJobParam = [];
-    console.log("this.state.basicInfo",this.state.basicInfo)
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
         let param = {
           gw: index,
-          rymc: jobStaffList[index - 1].join(';')
+          rymc: jobStaffList[index - 1].join(',')
         };
         staffJobParam.push(param);
       }
@@ -802,25 +806,25 @@ class NewProjectModelV2 extends React.Component {
     if (projectManager.length == 0) {
       message.warn("项目经理不能为空！");
     } else {
-      let org = "";
-      if(basicInfo.org?.length>0){
-        basicInfo.org.map(item=>{
-          org = item.concat(";").concat(org);
+      let orgNew = "";
+      if(basicInfo.org?.length>0) {
+        basicInfo.org.map((item, index) => {
+          orgNew = item.concat(";").concat(orgNew);
         })
       };
-      console.log("orgorg",org)
+      orgNew = orgNew.substring(0, orgNew.length - 1)
       let label = "";
       if(basicInfo.projectLabel?.length>0){
-        basicInfo.projectLabel.map(item=>{
+        basicInfo.projectLabel.map((item, index) => {
           label = item.concat(";").concat(label);
         })
       };
-      console.log("orgorg",org)
+      label = label.substring(0, label.length - 1)
       const params = {
         projectName: basicInfo.projectName,
         projectType: basicInfo.projectType,
         projectLabel: label,
-        org: org,
+        org: orgNew,
         software: Number(basicInfo.software),
         biddingMethod: basicInfo.projectType === 2 ? '' : Number(basicInfo.biddingMethod),
         year: Number(this.state.budgetInfo.year.format("YYYY")),
@@ -1259,19 +1263,19 @@ class NewProjectModelV2 extends React.Component {
     this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
   }
 
-  onOrgChange = (e) =>{
-    const {basicInfo = {org:''},} =this.state
-    this.setState({
-      org:e,
-    })
-  }
-
-  onBqChange = (e) =>{
-    const {basicInfo = {projectLabel:''},} =this.state
-    this.setState({
-      projectLabel:e,
-    })
-  }
+  // onOrgChange = (e) =>{
+  //   const {basicInfo = {}} =this.state
+  //   this.setState({
+  //     basicInfo:{org:e}
+  //   })
+  // }
+  //
+  // onBqChange = (e) =>{
+  //   const {basicInfo = {}} =this.state
+  //   this.setState({
+  //     basicInfo:{projectLabel:e}
+  //   })
+  // }
 
   render() {
     const {
@@ -1361,7 +1365,7 @@ class NewProjectModelV2 extends React.Component {
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
             <div style={{overflow:current === 0 || current === 2?'hidden':''}}>
               <div style={{margin: '3rem 20rem 0 20rem'}}>
-                <Steps current={current} onChange={this.onChange0}>
+                <Steps current={current} onChange={this.onChange0} type="navigation">
                   {steps.map((item, index) => (
                     <Step key={index} title={item.title}/>
                   ))}
@@ -1390,7 +1394,9 @@ class NewProjectModelV2 extends React.Component {
                             }],
                             initialValue: basicInfo.projectName
                           })(
-                            <Input placeholder="请输入项目名称" onChange={e => {this.setState({basicInfo: {...basicInfo, projectName: e.target.value}});}}/>
+                            <Input placeholder="请输入项目名称" onChange={e => {
+                              this.setState({basicInfo: {...basicInfo, projectName: e.target.value}});
+                            }}/>
                           )}
                         </Form.Item>
                       </Col>
@@ -1404,7 +1410,7 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectType
                           })(
                             <Radio.Group onChange={e => {
-                              this.setState({basicInfo: { projectType: e.target.value}});
+                              this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
                               this.fetchQueryMilepostInfo({
                                 type: e.target.value,
                                 xmid: basicInfo.projectId,
@@ -1429,7 +1435,12 @@ class NewProjectModelV2 extends React.Component {
                             <Select showSearch
                                     showArrow={true}
                                     mode="multiple"
-                                    onChange={e=>this.onBqChange(e)}
+                                    onChange={e => {
+                                      console.log("eee", e)
+                                      this.setState({
+                                        basicInfo: {...basicInfo, projectLabel: e}
+                                      })
+                                    }}
                                     filterOption={(input, option) =>
                                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                     }>
@@ -1451,7 +1462,7 @@ class NewProjectModelV2 extends React.Component {
                               required: true,
                               message: '请输入应用部门'
                             }],
-                            // initialValue: basicInfo.org
+                            initialValue: basicInfo.org ? basicInfo.org : null
                           })(
                             <TreeSelect
                               multiple
@@ -1462,7 +1473,12 @@ class NewProjectModelV2 extends React.Component {
                               treeData={organizationTreeList}
                               placeholder="请选择应用部门"
                               treeDefaultExpandAll
-                              onChange={e=>this.onOrgChange(e)}
+                              onChange={e => {
+                                console.log("eee", e)
+                                this.setState({
+                                  basicInfo: {...basicInfo, org: e}
+                                })
+                              }}
                             />
                           )}
 
@@ -1480,7 +1496,7 @@ class NewProjectModelV2 extends React.Component {
                                       softwareList.forEach(item => {
                                         if (item.id === e) {
                                           this.setState({
-                                            software: e,
+                                            basicInfo: {...basicInfo, software: e,}
                                           });
                                         }
                                       })
@@ -1511,7 +1527,7 @@ class NewProjectModelV2 extends React.Component {
                                 initialValue: basicInfo.biddingMethod
                               })(
                                 <Radio.Group onChange={e => {
-                                  this.setState({basicInfo: { biddingMethod: e.target.value}});
+                                  this.setState({basicInfo: {...basicInfo, biddingMethod: e.target.value}});
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
                                     xmid: this.state.basicInfo.projectId,
@@ -1616,17 +1632,31 @@ class NewProjectModelV2 extends React.Component {
                                   item.children.forEach(i => {
                                     if (i.key === e) {
                                       const _this = this;
-                                      this.setState({
-                                        budgetInfo: {
-                                          ...this.state.budgetInfo,
-                                          budgetProjectId: e,
-                                          totalBudget: Number(i.ysZJE),
-                                          relativeBudget: Number(i.ysKGL)
-                                        }
-                                      }, function () {
-                                        _this.props.form.resetFields(['projectBudget']);
-                                        _this.props.form.validateFields(['projectBudget']);
-                                      });
+                                      if (e === '0') {
+                                        this.setState({
+                                          budgetInfo: {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: e,
+                                            totalBudget: 0,
+                                            relativeBudget: 0
+                                          }
+                                        }, function () {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                        });
+                                      } else {
+                                        this.setState({
+                                          budgetInfo: {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: e,
+                                            totalBudget: Number(i.ysZJE),
+                                            relativeBudget: Number(i.ysKGL)
+                                          }
+                                        }, function () {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                        });
+                                      }
                                     }
                                   })
                                 })
@@ -1636,7 +1666,7 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={24}>
+                    <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
                       <Col span={12}>
                         <Form.Item label="总预算(元)">
                           <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.totalBudget}
@@ -1865,7 +1895,7 @@ class NewProjectModelV2 extends React.Component {
                                                 }
                                               </div>
                                               <div style={{width: '80%', display: 'flex', flexWrap: 'wrap'}}>
-                                                <div style={{display: 'flex'}}>
+                                                <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                       // console.log("sxsxsx",sx)
@@ -2144,7 +2174,7 @@ class NewProjectModelV2 extends React.Component {
                                                 }
                                               </div>
                                               <div style={{width: '80%', display: 'flex', flexWrap: 'wrap'}}>
-                                                <div style={{display: 'flex'}}>
+                                                <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                       // console.log("sxsxsx",sx)
