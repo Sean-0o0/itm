@@ -101,14 +101,18 @@ class NewProjectModelV2 extends React.Component {
     inputVisible: '-1-1',
     inputValue: '',
     swlxarr: [],
+    //项目状态
+    projectStatus: '',
   }
   componentDidMount = async () => {
     const _this = this;
     const params = this.getUrlParams();
-    if (params.xmid && params.xmid != -1) {
+    if (params.xmid && params.xmid !== -1) {
+      console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
-        operateType: 'MOD',
+        // operateType: 'MOD',
+        projectStatus: params.projectStatus,
         basicInfo: {
           ...this.state.basicInfo,
           projectId: Number(params.xmid)
@@ -163,7 +167,7 @@ class NewProjectModelV2 extends React.Component {
     await this.fetchQueryMemberInfo();
 
     // 修改项目时查询项目详细信息
-    if (this.state.operateType === 'MOD') {
+    if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
     }
 
@@ -689,12 +693,35 @@ class NewProjectModelV2 extends React.Component {
 
   // 保存数据操作
   handleFormValidate = (e,type) => {
+    const {operateType} = this.state;
     e.preventDefault();
     // if (this.state.isEditMile) {
     //   message.warn("里程碑信息还未保存！");
     //   return
     // }
-    if(type === 0) {
+    //type:0 草稿 type:1 完成
+    if (type === 0) {
+      this.setState({
+        operateType: 'SAVE'
+      })
+    }
+    //修改项目的时候隐藏暂存草稿,点完成type传MOD
+    console.log("type", type)
+    console.log("this.state.projectStatus ===\"MOD\"", this.state.projectStatus)
+    if (type === 1 && this.state.projectStatus === 'MOD') {
+      this.setState({
+        operateType: 'MOD'
+      })
+    }
+    //修改草稿点完成type入参就传ADD
+    if (type === 1 && this.state.projectStatus === 'SAVE') {
+      console.log("sahdkjasdahsd",)
+      this.setState({
+        operateType: 'ADD'
+      })
+    }
+    //暂存草稿就还是SAVE
+    if (type === 0 && this.state.projectStatus === 'SAVE') {
       this.setState({
         operateType: 'SAVE'
       })
@@ -888,7 +915,8 @@ class NewProjectModelV2 extends React.Component {
     });
     params.members = memberInfo;
     console.log("params.projectId",this.state.basicInfo.projectId)
-    params.projectId = this.state.basicInfo.projectId === undefined||this.state.basicInfo.projectId ===''?-1:Number(this.state.basicInfo.projectId);
+    params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
+    console.log("operateType", this.state.operateType)
     params.type = this.state.operateType;
     params.czr = Number(this.state.loginUser.id);
 
@@ -1167,10 +1195,23 @@ class NewProjectModelV2 extends React.Component {
   onChange = minicurrent => {
     // console.log('onChange:', minicurrent);
     this.setState({minicurrent});
+    let height = document.getElementById("lcbxxClass")?.scrollHeight;
+    // let height222 = document.getElementById("milePost"+minicurrent)
+    let heightTotal = 0;
+    //滚动到指定高度
+    if (minicurrent) {
+      for (let i = 0; i < minicurrent; i++) {
+        console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
+        heightTotal = heightTotal + document.getElementById("milePost" + i).offsetHeight;
+      }
+    }
+    heightTotal = heightTotal + (7.8 * (minicurrent - 1) + 11.8)
+    console.log('height222', heightTotal);
+    document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
+
   };
 
   onChange0 = current => {
-    // console.log('onChange:', minicurrent);
     this.setState({current});
   };
 
@@ -1333,20 +1374,20 @@ class NewProjectModelV2 extends React.Component {
       {
         title: <span>
       <div>基本&预算信息</div>
-      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目名称预算等信息</div>
+      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目信息填写</div>
     </span>,
         content: '',
       },
       {
         title: <span>
       <div>里程碑信息</div>
-      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目明细记录</div>
+      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>里程碑信息填写</div>
     </span>,
       },
       {
         title: <span>
       <div>人员信息</div>
-      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>负责人</div>
+      <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目参与人员信息填写</div>
     </span>,
       },
     ];
@@ -1361,11 +1402,11 @@ class NewProjectModelV2 extends React.Component {
     })
     return (
       <Fragment>
-        <div className="newProject">
-          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
-            <div style={{overflow:current === 0 || current === 2?'hidden':''}}>
-              <div style={{margin: '3rem 20rem 0 20rem'}}>
-                <Steps current={current} onChange={this.onChange0} type="navigation">
+        <div className="newProject" style={{overflow: 'hidden', height: "100%"}}>
+          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
+            <div style={{overflow: 'hidden', height: "100%"}}>
+              <div style={{margin: '0 20rem 0 20rem', height: "11%"}}>
+                <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
                     <Step key={index} title={item.title}/>
                   ))}
@@ -1712,19 +1753,20 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{display: 'flex', height: '100%', margin: '2rem 2rem 2rem 10rem'}}>
-                  <Steps progressDot style={{width: '15%', padding: '3rem 0'}} direction="vertical"
+                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 2rem 2rem 10rem'}}>
+                  <Steps progressDot style={{height: '100rem', width: '15%', padding: '3rem 0'}} direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
-                      <Step style={{height: (100 / (ministeps.length * 2)) + '%'}} key={index} title={item.title}/>
+                      <Step style={{height: (100 / (ministeps.length * 1.1)) + 'rem'}} key={index} title={item.title}/>
                     ))}
                   </Steps>
-                  <div className="steps-content" style={{width: '83%', margin: '0 0 15rem 0'}}>
+                  <div className="steps-content" id="lcbxxClass"
+                       style={{overflowY: 'scroll', height: '100%', width: '83%', margin: '0 0 15rem 0'}}>
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
-                          console.log("itemitemitem", item)
+                          // console.log("itemitemitem", item)
                           {
                             return (
                               <React.Fragment>
@@ -2000,7 +2042,7 @@ class NewProjectModelV2 extends React.Component {
                                       }
                                     </div>
                                   ) : (
-                                    <div key={index} className="milePost">
+                                    <div key={index} className="milePost" id={`milePost${index}`}>
                                       <div className="title">
                                         <div className="left">
                                           <div style={{marginTop: '2rem'}}>
@@ -2436,7 +2478,10 @@ class NewProjectModelV2 extends React.Component {
               {/*<div className="steps-content">{steps[current].content}</div>*/}
               <div className="footer">
                 <Button onClick={this.handleCancel}>取消</Button>
-                <Button onClick={e => this.handleFormValidate(e,0)} style={{marginLeft: '2rem'}}>暂存草稿</Button>
+                <Button onClick={e => this.handleFormValidate(e, 0)} style={{
+                  marginLeft: '2rem',
+                  display: this.state.projectStatus === "MOD" ? 'none' : ''
+                }}>暂存草稿</Button>
                 <div className="steps-action">
                   {current > 0 && (
                     <Button style={{marginLeft: '2rem'}} onClick={() => this.prev()}>
