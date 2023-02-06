@@ -84,10 +84,6 @@ class FastFunction extends React.Component {
       <div className='workBench'>
         <div className='fast-function'>
           <div className='top-box'>
-            <ProcessSituation data={data} fetchQueryOwnerWorkflow={fetchQueryOwnerWorkflow}
-              total={total} />
-          </div>
-          <div className='bottom-box'>
             {fileAddVisible &&
               <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onSucess={() => {
                 this.closeFileAddModal();
@@ -115,6 +111,9 @@ class FastFunction extends React.Component {
                 <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>月报填写</div>
               </a>
             </Col>
+          </div>
+          <div className='bottom-box'>
+            <ProcessSituation data={data} fetchQueryOwnerWorkflow={fetchQueryOwnerWorkflow} total={total} />
           </div>
         </div>
       </div>

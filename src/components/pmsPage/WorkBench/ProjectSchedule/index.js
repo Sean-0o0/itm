@@ -1,4 +1,4 @@
-import { Row, Col, Menu, Pagination, Divider, message, Empty } from 'antd';
+import { Row, Col, Menu, Divider, message, Empty, Popconfirm } from 'antd';
 import React from 'react';
 import icon_wrong from "../../../../image/pms/icon_milepost_wrong.png";
 import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
@@ -6,9 +6,11 @@ import ProjectRisk from "./ProjectRisk";
 import icon_normal from "../../../../image/pms/icon_milepost_normal.png";
 import icon_waiting from "../../../../image/pms/icon_milepost_waiting.png";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import { EncryptBase64 } from '../../../../components/Common/Encrypt';
 import { Link } from "dva/router";
 import Tooltips from "../../LifeCycleManagement/Tooltips";
 import { FetchLivebosLink } from "../../../../services/amslb/user";
+import { OperateCreatProject } from "../../../../services/projectManage";
 import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff,
@@ -30,47 +32,6 @@ const Loginname = localStorage.getItem("firstUserID");
 
 class ProjectSchedule extends React.Component {
   state = {
-    // //上传弹窗
-    // uploadVisible: false,
-    // //上传url
-    // uploadUrl: '/OperateProcessor?operate=TWD_XM_INTERFACE_UPLODC&Table=TWD_XM',
-    // uploadTitle: '',
-    // //修改弹窗
-    // editVisible: false,
-    // //修改url
-    // editUrl: '/OperateProcessor?operate=TWD_XM_XWHJY&Table=TWD_XM',
-    // editTitle: '',
-    // //立项流程发起弹窗
-    // sendVisible: false,
-    // //立项流程发起url
-    // sendUrl: '/OperateProcessor?operate=TLC_LCFQ_LXSQLCFQ&Table=TLC_LCFQ',
-    // sendTitle: '',
-    // //信息录入
-    // fillOutVisible: false,
-    // //信息录入url
-    // fillOutUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
-    // fillOutTitle: '',
-    // //员工评价开启
-    // ygpjVisible: false,
-    // ygpjUrl: '#',
-    // //付款流程发起弹窗显示
-    // paymentModalVisible: false,
-    // //信息修改
-    // editMessageVisible: false,//合同
-    // bidInfoModalVisible: false,//中标
-    // defMsgModifyModalVisible: false,//默认
-    // currentXmid: 0,
-    // currentXmmc: '',
-    // //信息修改url
-    // editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
-    // editMessageTitle: '',
-    // editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
-    // editModelTitle: '',
-    // editModelVisible: false,
-    // color: '',
-    // userId: 0,
-    // currentXmid: 0,
-    // operationListData: [],
     //项目生命周期基本信息
     basicData: [],
     detailData: [],
@@ -122,9 +83,13 @@ class ProjectSchedule extends React.Component {
     //付款流程发起弹窗显示
     paymentModalVisible: false,
     color: '',
+    fileAddVisible: false,
+    fileAddUrl: '/OperateProcessor?operate=TXMXX_XMXX_NEWPROGRAM&Table=TXMXX_XMXX',
+    src_fileAdd: `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`,
   };
 
   componentDidMount() {
+    window.addEventListener('message', this.handleIframePostMessage)
   }
 
   //获取项目展示信息
@@ -719,8 +684,11 @@ class ProjectSchedule extends React.Component {
   }
 
   reflush = () => {
+    console.log('刷新数据');
     // this.fetchQueryLiftcycleMilestone(this.state.xmid);
     // this.fetchQueryLifecycleStuff(this.state.xmid);
+    const { fetchQueryOwnerProjectList } = this.props;
+    fetchQueryOwnerProjectList(1);
   }
 
   //文件wps预览-勿删
@@ -803,6 +771,7 @@ class ProjectSchedule extends React.Component {
     extend(number);
   }
   handPageChange = (e) => {
+    console.log(e);
     this.setState({
       page: e,
     })
@@ -814,6 +783,64 @@ class ProjectSchedule extends React.Component {
       color: e,
     })
   }
+
+  handleDraftModify = (xmid) => {
+    this.setState({
+      fileAddVisible: true,
+      src_fileAdd: `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }))}`,
+    })
+  }
+  handleDraftDelete = (xmid = 0) => {
+    OperateCreatProject({
+      czr: 0,
+      projectName: '',
+      projectType: 0,
+      projectLabel: '',
+      org: '',
+      software: 0,
+      biddingMethod: 0,
+      year: 0,
+      budgetProject: 0,
+      projectBudget: 0,
+      mileposts: [{
+        "lcb": "0",
+        "kssj": "0",
+        "jssj": "0",
+      }],
+      matters: [{
+        "lcb": "0",
+        "sxmc": "0",
+      }],
+      projectManager: 0,
+      members: [{
+        "rymc": "无",
+        "gw": "0",
+      }],
+      projectId: Number(xmid),
+      type: 'DELETE',
+    }).then(res => {
+      if (res.code === 1) {
+        const { fetchQueryOwnerProjectList } = this.props;
+        fetchQueryOwnerProjectList(1);
+      }
+    }).catch((error) => {
+      console.error(!error.success ? error.message : error.note);
+    });
+  }
+  closeFileAddModal = () => {
+    this.setState({
+      fileAddVisible: false,
+    });
+  };
+  handleIframePostMessage = (event) => {
+    if (typeof event.data !== 'string' && event.data.operate === 'close') {
+      this.closeFileAddModal();
+    }
+    if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      this.closeFileAddModal();
+      message.success('保存成功');
+    }
+  };
 
   render() {
     const { data, total, ProjectScheduleDetailData } = this.props;
@@ -851,6 +878,8 @@ class ProjectSchedule extends React.Component {
       ygpjUrl,
       color,
       currentXmid,
+      fileAddVisible,
+      src_fileAdd,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
     const uploadModalProps = {
@@ -922,6 +951,16 @@ class ProjectSchedule extends React.Component {
       title: '操作',
       style: { top: '10rem' },
       visible: ygpjVisible,
+      footer: null,
+    };
+    const fileAddModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      title: '新建项目',
+      width: '70%',
+      height: '120rem',
+      style: { top: '2rem' },
+      visible: fileAddVisible,
       footer: null,
     };
     const menu = (
@@ -1022,148 +1061,166 @@ class ProjectSchedule extends React.Component {
             <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
               onCancel={this.closeModelEditModal}
               src={editModelUrl} /></div>}
+        {/* 修改项目弹窗 */}
+        {fileAddVisible &&
+          <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onSucess={() => {
+            this.closeFileAddModal();
+            message.success('保存成功', 1);
+          }} onCancel={this.closeFileAddModal}
+            src={src_fileAdd} />}
 
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row' }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ height: '100%' }}>
-              <div style={{ height: '100%', overflowY: 'auto', minHeight: 'calc(100vh - 97.7rem)' }}>
+              <div style={{ height: '100%', overflowY: 'auto', minHeight: 'calc(100vh - 93.2rem)' }}>
+                {data?.length === 0 && <Empty description='暂无项目' />}
                 {
                   data?.map((items = {}, index) => {
-                    return <div className='workBench-LifeCycleManage'>
-                      <div className='head'>
-                        <i
-                          className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                          onClick={() => this.extend(index)} />&nbsp;
-                        <div className='head1'>
-                          <Link className='head1-link' to={{
-                            pathname: '/pms/manage/LifeCycleManagement',
-                            query: { xmid: items.xmid },
-                          }}>{items.xmmc}</Link>&nbsp;
-                          {/*<i*/}
-                          {/*  className={'iconfont icon-right'}*/}
-                          {/*  style={{ fontSize: '2.381rem' }}*/}
-                          {/*/>*/}
-                          {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
-                        </div>
-                        <div className='head3'>
-                          {/*时间范围：*/}
-                          {/*<div style={{color: 'rgba(48, 49, 51, 1)'}}>2022.05.10 ~ 2022.06.15</div>*/}
-                        </div>
-                        <div className='head2'>
-                          项目进度：
-                          <div className='head2-title' style={{
-                            background: 'rgba(51, 97, 255, 0.1)',
-                            color: 'rgba(51, 97, 255, 1)',
-                            // width: '12rem'
-                          }}>
-                            <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
-                            <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
-                          </div>
-                          {/*<ProjectProgress state={items.zt}/>*/}
-                        </div>
-                        <div className='head4'>
-                          项目风险：<ProjectRisk userId={items?.userid}
-                            xmid={items?.xmid}
-                            loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                            state={items.fxnr} item={items}
-                            lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
+                    return <>
+                      {items?.zt === '2' ? <><div className='workBench-draft'>
+                        <span className='prj-name'>{items.xmmc}</span>
+                        <div className='prj-status'><span>项目状态：</span>草稿</div>
+                        <div className='update-delete'>
+                          <a onClick={() => this.handleDraftModify(items.xmid)}>修改</a>
+                          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDraftDelete(items.xmid)}>
+                            <a>删除</a>
+                          </Popconfirm>
                         </div>
                       </div>
-                      {items.extend ?
-                        ProjectScheduleDetailData.map((item = {}, ind) => {
-                          let sort = this.groupBy(item?.List);
-                          return items?.xmid === item?.xmid &&
-                            <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
-                              className='card'>
-                              <Col span={24} className='cont1'>
-                                <div className='head' style={{ borderRadius: '1.1904rem 1.1904rem 0px 0px' }}>
-                                  {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
-                                  <div className='head1'>
-                                    <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                                      className="iconfont icon-fill-flag" />&nbsp;
-                                    里程碑阶段：
-                                    <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item?.List[0]?.lcb}</span>
-                                  </div>
-                                  <div className='head2'>
-                                    <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                                      className="iconfont icon-time" />&nbsp;
-                                    里程碑时间：
-                                    <div
-                                      style={{ color: 'rgba(48, 49, 51, 1)' }}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
-                                  </div>
-                                </div>
-                              </Col>
-                              <Col span={24}
-                                style={{
-                                  width: '100%',
-                                  padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
-                                  borderRadius: '0 0 1.1904rem 1.1904rem',
-                                  maxHeight: '50rem'
-                                }}
-                                className='cont2'>
-                                {
-                                  sort.map((item = {}, index) => {
-                                    let num = 0
-                                    sort[index].List.map((item = {}, ind) => {
-                                      if (item.zxqk !== " ") {
-                                        num = num + 1;
-                                      }
-                                    })
-                                    return <Col span={8} style={{ marginBottom: '2.3808rem' }}>
-                                      <div className='cont-col'>
-                                        <div className='cont-col1'>
-                                          <div className='right'>
-                                            {item.swlx}({num}/{sort[index].List.length})
-                                          </div>
-                                        </div>
-                                        <div>
-                                          {sort[index].List.map((item = {}, ind) => {
-                                            return <Row className='cont-row' style={{
-                                              marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
-                                            }}>
-                                              <Col span={18}>
-                                                <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                  <Points status={item.zxqk} />
-                                                  <span>{item.sxmc}</span>
-                                                </div>
-                                                <div className='cont-row-zxqk'>{item.zxqk}</div>
-                                              </Col>
-                                              <Col span={6}>
-                                                <Tooltips type={item.swlx}
-                                                  xmid={item.xmid}
-                                                  item={item}
-                                                  userId={items.userid}
-                                                  status={item.zxqk}
-                                                  handleUpload={() => this.handleUpload(item)}
-                                                  handleSend={this.handleSend}
-                                                  handleFillOut={() => this.handleFillOut(item)}
-                                                  handleEdit={() => this.handleEdit(item)}
-                                                  handleMessageEdit={this.handleMessageEdit} />
-                                              </Col>
-                                              <div className='cont-row1'>
-                                                <div className='left'>
-                                                  {/*//2022.06.17上传*/}
-                                                </div>
-                                              </div>
-                                            </Row>
-                                          })}
-                                        </div>
+                        <Divider style={{ margin: '2.381rem 0' }} /></> :
+                        <div className='workBench-LifeCycleManage'>
+                          <div className='head'>
+                            <div style={{ width: '55%', display: 'flex' }}>
+                              <i
+                                className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
+                                onClick={() => this.extend(index)} />&nbsp;
+                              <div className='head1'>
+                                <Link className='head1-link' to={{
+                                  pathname: '/pms/manage/LifeCycleManagement',
+                                  query: { xmid: items.xmid },
+                                }}>{items.xmmc}</Link>&nbsp;
+                                {/*<i*/}
+                                {/*  className={'iconfont icon-right'}*/}
+                                {/*  style={{ fontSize: '2.381rem' }}*/}
+                                {/*/>*/}
+                                {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
+                              </div>
+                            </div>
+                            <div className='head2'>
+                              项目进度：
+                              <div className='head2-title' style={{
+                                background: 'rgba(51, 97, 255, 0.1)',
+                                color: 'rgba(51, 97, 255, 1)',
+                                // width: '12rem'
+                              }}>
+                                <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
+                                <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
+                              </div>
+                              {/*<ProjectProgress state={items.zt}/>*/}
+                            </div>
+                            <div className='head4'>
+                              项目风险：<ProjectRisk userId={items?.userid}
+                                xmid={items?.xmid}
+                                loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                state={items.fxnr} item={items}
+                                lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
+                            </div>
+                          </div>
+                          {items.extend ?
+                            ProjectScheduleDetailData.map((item = {}, ind) => {
+                              let sort = this.groupBy(item?.List);
+                              return items?.xmid === item?.xmid &&
+                                <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
+                                  className='card'>
+                                  <Col span={24} className='cont1'>
+                                    <div className='head' style={{ borderRadius: '1.1904rem 1.1904rem 0px 0px' }}>
+                                      {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
+                                      <div className='head1'>
+                                        <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                          className="iconfont icon-fill-flag" />&nbsp;
+                                        里程碑阶段：
+                                        <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item?.List[0]?.lcb}</span>
                                       </div>
-                                    </Col>
-                                  })
-                                }
-                              </Col>
-                            </Row>
-                        })
-                        : ''
-                      }
-                      <Divider style={{ margin: '2.381rem 0' }} />
-                    </div>
+                                      <div className='head2'>
+                                        <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                          className="iconfont icon-time" />&nbsp;
+                                        里程碑时间：
+                                        <div
+                                          style={{ color: 'rgba(48, 49, 51, 1)' }}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
+                                      </div>
+                                    </div>
+                                  </Col>
+                                  <Col span={24}
+                                    style={{
+                                      width: '100%',
+                                      padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                                      borderRadius: '0 0 1.1904rem 1.1904rem',
+                                      maxHeight: '50rem'
+                                    }}
+                                    className='cont2'>
+                                    {
+                                      sort.map((item = {}, index) => {
+                                        let num = 0
+                                        sort[index].List.map((item = {}, ind) => {
+                                          if (item.zxqk !== " ") {
+                                            num = num + 1;
+                                          }
+                                        })
+                                        return <Col span={8} style={{ marginBottom: '2.3808rem' }}>
+                                          <div className='cont-col'>
+                                            <div className='cont-col1'>
+                                              <div className='right'>
+                                                {item.swlx}({num}/{sort[index].List.length})
+                                              </div>
+                                            </div>
+                                            <div>
+                                              {sort[index].List.map((item = {}, ind) => {
+                                                return <Row className='cont-row' style={{
+                                                  marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
+                                                }}>
+                                                  <Col span={18}>
+                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                      <Points status={item.zxqk} />
+                                                      <span>{item.sxmc}</span>
+                                                    </div>
+                                                    <div className='cont-row-zxqk'>{item.zxqk}</div>
+                                                  </Col>
+                                                  <Col span={6}>
+                                                    <Tooltips type={item.swlx}
+                                                      xmid={item.xmid}
+                                                      item={item}
+                                                      userId={items.userid}
+                                                      status={item.zxqk}
+                                                      handleUpload={() => this.handleUpload(item)}
+                                                      handleSend={this.handleSend}
+                                                      handleFillOut={() => this.handleFillOut(item)}
+                                                      handleEdit={() => this.handleEdit(item)}
+                                                      handleMessageEdit={this.handleMessageEdit} />
+                                                  </Col>
+                                                  <div className='cont-row1'>
+                                                    <div className='left'>
+                                                      {/*//2022.06.17上传*/}
+                                                    </div>
+                                                  </div>
+                                                </Row>
+                                              })}
+                                            </div>
+                                          </div>
+                                        </Col>
+                                      })
+                                    }
+                                  </Col>
+                                </Row>
+                            })
+                            : ''
+                          }
+                          <Divider style={{ margin: '2.381rem 0' }} />
+                        </div>}
+                    </>
                   })
                 }
-                {data?.length === 0 && <Empty description='暂无项目' />}
               </div>
-              <div style={{ height: '10%', marginBottom: '1rem' }}>
+              {/* <div style={{ height: '10%', marginBottom: '1rem' }}>
                 <Pagination
                   style={{ textAlign: 'end', fontSize: '2.083rem' }}
                   total={total}
@@ -1174,7 +1231,7 @@ class ProjectSchedule extends React.Component {
                   // showQuickJumper={true}
                   defaultCurrent={1}
                 />
-              </div>
+              </div> */}
             </div>
           </Col>
         </Col>

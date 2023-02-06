@@ -2891,15 +2891,6 @@
     height: 100%;
 
     & .top-box {
-      height: 56%;
-      background-color: #fff;
-      box-sizing: border-box;
-      box-shadow: rgb(236 236 236) 0px 0.4464rem 1.488rem;
-      border-radius: 1.488rem;
-      margin-bottom: 2.8272rem;
-    }
-
-    & .bottom-box {
       height: calc(44% - 2.8272rem);
       background-color: #fff;
       box-sizing: border-box;
@@ -2910,6 +2901,7 @@
       /* flex-direction: column; */
       flex-wrap: wrap;
       align-content: space-between;
+      margin-bottom: 2.8272rem;
 
       .fastFun {
         .fastFun-head {
@@ -2946,14 +2938,64 @@
         }
       }
     }
+
+    & .bottom-box {
+      height: 56%;
+      background-color: #fff;
+      box-sizing: border-box;
+      box-shadow: rgb(236 236 236) 0px 0.4464rem 1.488rem;
+      border-radius: 1.488rem;
+    }
   }
 
 
+  .workBench-draft {
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    // justify-content: space-between;
+    font-size: 2.083rem;
+    color: #303133;
+    height: 4.017rem;
+    padding-left: 4.464rem;
+
+    .prj-name {
+      font-size: 2.232rem;
+      font-weight: bold;
+      width: 60%;
+    }
+
+    .prj-status {
+      width: 24%;
+
+      span {
+        color: rgba(96, 98, 102, 1);
+      }
+    }
+
+    .update-delete {
+      margin-left: auto;
+
+      a {
+        color: #3361FF;
+        margin-right: 2.976rem;
+
+        &:last-child {
+          margin-right: 0;
+        }
+      }
+    }
+
+
+  }
 
   //首页项目进度
   .workBench-LifeCycleManage {
     width: 100%;
     background-color: white;
+
+
 
     .head {
       font-size: 2.083rem;
@@ -2961,6 +3003,7 @@
       padding: 0rem;
       display: flex;
       align-items: center;
+      justify-content: space-between;
 
       .head-img {
         width: 4rem;
@@ -2977,7 +3020,6 @@
         display: flex;
         align-items: center;
         margin-left: 1rem;
-        width: 55%;
         font-size: 2.232rem;
         color: #3361FF;
         .font-w600();
@@ -3399,6 +3441,9 @@
     border-radius: 1.1904rem;
   }
 }
-li.ant-select-tree-treenode-disabled > span:not(.ant-select-tree-switcher), li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper, li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper span{
+
+li.ant-select-tree-treenode-disabled>span:not(.ant-select-tree-switcher),
+li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper,
+li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span {
   color: rgba(0, 0, 0, 0.65) !important;
 }

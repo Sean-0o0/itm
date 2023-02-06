@@ -161,9 +161,9 @@ class WorkBench extends React.Component {
     FetchQueryOwnerProjectList(
       {
         cxlx: 'INDEX',
-        paging: 1,
+        paging: -1,
         current: e ? e : 1,
-        pageSize: 5,
+        pageSize: 7,
         total: -1,
         sort: ''
       }
@@ -185,31 +185,27 @@ class WorkBench extends React.Component {
     }).then(res => {
       let userid = res?.record?.userid;
       for (let i = 0; i < e.length; i++) {
-        FetchQueryLiftcycleMilestone({
+        (e[i])?.zt !== '2' && FetchQueryLiftcycleMilestone({
           cxlx: 'SINGLE',
-          xmmc: (e[0])?.xmid,
+          xmmc: (e[i])?.xmid,
         }).then((ret = {}) => {
+          console.log('ddd');
+          console.log("🚀 ~ WorkBench ~ ret.record", ret)
           const { record = [], code = 0 } = ret;
           if (code === 1) {
             //zxxh排序
             e[i].extend = i === 0;
-            e[i].kssj = record[0].kssj
-            e[i].jssj = record[0].jssj
-            e[i].zt = record[0].zt
+            e[i].kssj = (record[0])?.kssj
+            e[i].jssj = (record[0])?.jssj
+            e[i].status = (record[0])?.zt
             e[i].userid = userid;
             this.setState({
               ProjectScheduleTotal: total,
               ProjectScheduleData: e,
-            });
-
-            // this.setState({
-            //   ProjectScheduleTotal: total,
-            //   ProjectScheduleData: e,
-            // });
+            })
+            console.log(e);
+            ;
           }
-        }).catch((error) => {
-          console.error(!error.success ? error.message : error.note);
-          // console.log('问题处在这',6);
         });
       }
     });
@@ -250,7 +246,6 @@ class WorkBench extends React.Component {
         item.extend = !item.extend;
       }
     })
-    console.log(ProjectScheduleData);
     this.setState({
       ProjectScheduleData,
     })
