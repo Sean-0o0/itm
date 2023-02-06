@@ -189,8 +189,6 @@ class WorkBench extends React.Component {
           cxlx: 'SINGLE',
           xmmc: (e[i])?.xmid,
         }).then((ret = {}) => {
-          console.log('ddd');
-          console.log("🚀 ~ WorkBench ~ ret.record", ret)
           const { record = [], code = 0 } = ret;
           if (code === 1) {
             //zxxh排序
@@ -202,9 +200,7 @@ class WorkBench extends React.Component {
             this.setState({
               ProjectScheduleTotal: total,
               ProjectScheduleData: e,
-            })
-            console.log(e);
-            ;
+            });
           }
         });
       }

@@ -1063,9 +1063,13 @@ class ProjectSchedule extends React.Component {
               src={editModelUrl} /></div>}
         {/* 修改项目弹窗 */}
         {fileAddVisible &&
-          <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onSucess={() => {
+          <BridgeModel isSpining="customize" modalProps={fileAddModalProps} submitOperate={() => {
+            console.log('kkkkk1');
             this.closeFileAddModal();
             message.success('保存成功', 1);
+            console.log('kkkkk2');
+            // const { fetchQueryOwnerProjectList } = this.props;
+            // fetchQueryOwnerProjectList(1);
           }} onCancel={this.closeFileAddModal}
             src={src_fileAdd} />}
 
