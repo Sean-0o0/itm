@@ -1214,7 +1214,8 @@ class ProjectSchedule extends React.Component {
                                             <div>
                                               {sort[index].List.map((item = {}, ind) => {
                                                 return <Row className='cont-row' style={{
-                                                  marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
+                                                  marginTop: ind === 0 ? '2.6784rem' : '2.3808rem',
+                                                  height: '4.65rem'
                                                 }}>
                                                   <Col span={18}>
                                                     <div style={{ display: 'flex', alignItems: 'center' }}>
