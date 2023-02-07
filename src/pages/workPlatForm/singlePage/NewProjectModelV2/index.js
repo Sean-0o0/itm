@@ -52,7 +52,7 @@ class NewProjectModelV2 extends React.Component {
     current: 0,
     minicurrent: 0,
     type: false, // 是否是首页跳转过来的
-    operateType: 'ADD', // 操作类型
+    operateType: '', // 操作类型
     height: 0, // 人员信息下拉框高度设置
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
@@ -102,7 +102,7 @@ class NewProjectModelV2 extends React.Component {
     inputValue: '',
     swlxarr: [],
     //项目状态
-    projectStatus: '',
+    projectStatus: "",
     //保存操作类型 草稿/完成
     handleType: '',
   }
@@ -145,6 +145,24 @@ class NewProjectModelV2 extends React.Component {
           this.setState({current});
         }
       });
+    } else if (this.state.current === 1) {
+      const {mileInfo: {milePostInfo = []}} = this.state;
+      const reg1 = new RegExp("-", "g");
+      let flag = 0
+      for (let i = 0; i < milePostInfo.length; i++) {
+        const jssj = milePostInfo[i].jssj.replace(reg1, "");
+        const kssj = milePostInfo[i].kssj.replace(reg1, "");
+        if (Number(kssj) > Number(jssj)) {
+          message.warn("开始时间需要小于结束时间")
+          break;
+        } else {
+          flag++;
+        }
+      }
+      if (flag === milePostInfo.length) {
+        const current = this.state.current + 1;
+        this.setState({current});
+      }
     } else {
       const current = this.state.current + 1;
       this.setState({current});
@@ -739,7 +757,6 @@ class NewProjectModelV2 extends React.Component {
     }
     //修改草稿点完成type入参就传ADD
     if (type === 1 && this.state.projectStatus === 'SAVE') {
-      console.log("sahdkjasdahsd",)
       this.setState({
         operateType: 'ADD'
       })
@@ -778,7 +795,7 @@ class NewProjectModelV2 extends React.Component {
       if (err) {
         const errs = Object.keys(err);
         if (errs.includes('projectName')) {
-          message.warn("请填写项目名称！");
+          // message.warn("请填写项目名称！");
           return
         }
         if (errs.includes('org')) {
@@ -798,7 +815,7 @@ class NewProjectModelV2 extends React.Component {
               title: '提示',
               content: '预算超过当前可关联总预算，是否确认？',
               onOk() {
-                if (values.projectBudget < 5000) {
+                if (values.projectBudget < 5000 && type === 1) {
                   confirm({
                     okText: '确认',
                     cancelText: '取消',
@@ -828,7 +845,7 @@ class NewProjectModelV2 extends React.Component {
           }
         }
       } else {
-        if (values.projectBudget < 5000) {
+        if (values.projectBudget < 5000 && type === 1) {
           confirm({
             okText: '确认',
             cancelText: '取消',
@@ -859,7 +876,7 @@ class NewProjectModelV2 extends React.Component {
         flag = false;
       }
     });
-    if (!flag) {
+    if (!flag && this.state.type === 1) {
       message.warn("存在里程碑信息开始时间大于结束时间！");
       return;
     }
@@ -907,7 +924,7 @@ class NewProjectModelV2 extends React.Component {
       };
       const _this = this;
       const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
-      if (timeList && timeList.length > 0) {
+      if (timeList && timeList.length > 0 && this.state.type === 1) {
         confirm({
           okText: '确认',
           cancelText: '取消',
@@ -952,7 +969,16 @@ class NewProjectModelV2 extends React.Component {
         })
       });
     });
-
+    if (this.state.type === 0 && this.state.projectStatus === "") {
+      this.setState({
+        operateType: 'SAVE'
+      })
+    }
+    if (this.state.type === 1 && this.state.projectStatus === "") {
+      this.setState({
+        operateType: 'ADD'
+      })
+    }
     params.mileposts = milepostInfo;
     params.matters = matterInfo;
     params.projectManager = Number(projectManager[0].rymc);
@@ -1235,12 +1261,13 @@ class NewProjectModelV2 extends React.Component {
     const newDate = date.replace(reg1, "");
     if (type === 'start') {
       const jssj = mile[index].jssj.replace(reg1, "");
-      if (Number(newDate) > Number(jssj)) {
-        message.warn("开始时间需要小于结束时间")
-        return;
-      } else {
-        mile[index].kssj = date;
-      }
+      // if (Number(newDate) > Number(jssj)) {
+      //   message.warn("开始时间需要小于结束时间")
+      //   return;
+      // } else {
+      //
+      // }
+      mile[index].kssj = date;
     } else if (type === 'end') {
       const kssj = mile[index].kssj.replace(reg1, "");
       if (Number(newDate) < Number(kssj)) {
@@ -1282,6 +1309,23 @@ class NewProjectModelV2 extends React.Component {
           this.setState({current});
         }
       });
+    } else if (this.state.current === 1) {
+      const {mileInfo: {milePostInfo = []}} = this.state;
+      const reg1 = new RegExp("-", "g");
+      let flag = 0
+      for (let i = 0; i < milePostInfo.length; i++) {
+        const jssj = milePostInfo[i].jssj.replace(reg1, "");
+        const kssj = milePostInfo[i].kssj.replace(reg1, "");
+        if (Number(kssj) > Number(jssj)) {
+          message.warn("开始时间需要小于结束时间")
+          break;
+        } else {
+          flag++;
+        }
+      }
+      if (flag === milePostInfo.length) {
+        this.setState({current});
+      }
     } else {
       this.setState({current});
     }
@@ -2029,24 +2073,24 @@ class NewProjectModelV2 extends React.Component {
                                                         isEditMile: true,
                                                         isCollapse: false
                                                       })}/>
-                                          {/*<div style={{*/}
-                                          {/*  color: '#f5222d',*/}
-                                          {/*  fontSize: '3.5rem',*/}
-                                          {/*  position: 'absolute',*/}
-                                          {/*  top: '10%',*/}
-                                          {/*  right: '18%'*/}
-                                          {/*}}>*/}
-                                          {/*  **/}
-                                          {/*</div>*/}
-                                          {/*<div style={{*/}
-                                          {/*  color: '#f5222d',*/}
-                                          {/*  fontSize: '3.5rem',*/}
-                                          {/*  position: 'absolute',*/}
-                                          {/*  top: '10%',*/}
-                                          {/*  right: '60%'*/}
-                                          {/*}}>*/}
-                                          {/*  **/}
-                                          {/*</div>*/}
+                                          <div style={{
+                                            color: '#f5222d',
+                                            fontSize: '3.5rem',
+                                            position: 'absolute',
+                                            top: '10%',
+                                            right: '18%'
+                                          }}>
+                                            *
+                                          </div>
+                                          <div style={{
+                                            color: '#f5222d',
+                                            fontSize: '3.5rem',
+                                            position: 'absolute',
+                                            top: '10%',
+                                            right: '60%'
+                                          }}>
+                                            *
+                                          </div>
                                         </div>
                                       </div>
                                       {
@@ -2353,24 +2397,24 @@ class NewProjectModelV2 extends React.Component {
                                                         isEditMile: true,
                                                         isCollapse: false
                                                       })}/>
-                                          {/*<div style={{*/}
-                                          {/*  color: '#f5222d',*/}
-                                          {/*  fontSize: '3.5rem',*/}
-                                          {/*  position: 'absolute',*/}
-                                          {/*  top: '10%',*/}
-                                          {/*  right: '18%'*/}
-                                          {/*}}>*/}
-                                          {/*  **/}
-                                          {/*</div>*/}
-                                          {/*<div style={{*/}
-                                          {/*  color: '#f5222d',*/}
-                                          {/*  fontSize: '3.5rem',*/}
-                                          {/*  position: 'absolute',*/}
-                                          {/*  top: '10%',*/}
-                                          {/*  right: '60%'*/}
-                                          {/*}}>*/}
-                                          {/*  **/}
-                                          {/*</div>*/}
+                                          <div style={{
+                                            color: '#f5222d',
+                                            fontSize: '3.5rem',
+                                            position: 'absolute',
+                                            top: '10%',
+                                            right: '18%'
+                                          }}>
+                                            *
+                                          </div>
+                                          <div style={{
+                                            color: '#f5222d',
+                                            fontSize: '3.5rem',
+                                            position: 'absolute',
+                                            top: '10%',
+                                            right: '60%'
+                                          }}>
+                                            *
+                                          </div>
                                         </div>
                                       </div>
                                       {
