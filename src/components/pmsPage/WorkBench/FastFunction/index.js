@@ -41,10 +41,13 @@ class FastFunction extends React.Component {
       this.closeFileAddModal();
       // message.success('保存成功');
       //projectId跳转到生命周期页面
-      const params = {
-        projectId: sessionStorage.getItem("projectId"),
+      const handleType = sessionStorage.getItem("projectId")
+      if (handleType === '1') {
+        const params = {
+          projectId: sessionStorage.getItem("projectId"),
+        }
+        window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
       }
-      window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
     }
   };
 

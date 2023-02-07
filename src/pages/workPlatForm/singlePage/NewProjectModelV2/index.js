@@ -103,6 +103,8 @@ class NewProjectModelV2 extends React.Component {
     swlxarr: [],
     //项目状态
     projectStatus: '',
+    //保存操作类型 草稿/完成
+    handleType: '',
   }
   componentDidMount = async () => {
     const _this = this;
@@ -129,8 +131,24 @@ class NewProjectModelV2 extends React.Component {
   };
 
   next() {
-    const current = this.state.current + 1;
-    this.setState({ current });
+    //验证项目名称必填，在点击下一步的时候就要验证
+    if (this.state.current === 0) {
+      this.props.form.validateFields((err, values) => {
+        if (err) {
+          const errs = Object.keys(err);
+          if (errs.includes('projectName')) {
+            message.warn("请填写项目名称！");
+            return;
+          }
+        } else {
+          const current = this.state.current + 1;
+          this.setState({current});
+        }
+      });
+    } else {
+      const current = this.state.current + 1;
+      this.setState({current});
+    }
   }
 
   prev() {
@@ -141,21 +159,21 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    this.fetchQuerySoftwareList();
+    await this.fetchQuerySoftwareList();
     // 查询项目标签
-    this.fetchQueryProjectLabel();
+    await this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
-    this.fetchQueryMilepostInfo({
+    await this.fetchQueryMilepostInfo({
       type: 1,
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
@@ -163,16 +181,16 @@ class NewProjectModelV2 extends React.Component {
       label: ''
     });
 
+    // 修改加载状态
+    this.setState({loading: false});
+
     // 查询人员信息
     await this.fetchQueryMemberInfo();
 
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
-      await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
+      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
     }
-
-    // 修改加载状态
-    this.setState({ loading: false });
   };
 
 
@@ -205,17 +223,20 @@ class NewProjectModelV2 extends React.Component {
       const { nowTime, tomorrowTime } = this.state;
       if (code > 0) {
         let data = JSON.parse(result);
-
+        console.log("data-cccc", data)
         const arr = this.filterGridLayOut(data);
-        if (this.state.operateType === 'ADD') {
-          // 赋予初始时间和结束时间
-          arr.forEach(item => {
+        // 赋予初始时间和结束时间
+        arr.forEach(item => {
+          if (item.kssj === "0") {
             item.kssj = nowTime;
-            item.jssj = tomorrowTime;
-          });
-        }
 
-        this.setState({ milePostInfo: arr, mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
+          }
+          if (item.jssj === "0") {
+            item.jssj = tomorrowTime;
+          }
+        });
+
+        this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -693,13 +714,16 @@ class NewProjectModelV2 extends React.Component {
 
   // 保存数据操作
   handleFormValidate = (e, type) => {
-    const { operateType } = this.state;
+    const {operateType} = this.state;
     e.preventDefault();
     // if (this.state.isEditMile) {
     //   message.warn("里程碑信息还未保存！");
     //   return
     // }
     //type:0 草稿 type:1 完成
+    this.setState({
+      handleType: type,
+    })
     if (type === 0) {
       this.setState({
         operateType: 'SAVE'
@@ -725,6 +749,29 @@ class NewProjectModelV2 extends React.Component {
       this.setState({
         operateType: 'SAVE'
       })
+    }
+    //数据验证
+    //type===0 草稿 只验证项目名称 点完成type===1验证所有带*的？
+    if (type === 0 && this.state.basicInfo.projectName === "") {
+      message.warn("请填写项目名称！");
+    }
+    if (type === 1) {
+      if (this.state.basicInfo.projectName === "") {
+        message.warn("请填写项目名称！");
+        return
+      }
+      if (this.state.basicInfo.org === "") {
+        message.warn("请选择部门！");
+        return
+      }
+      if (this.state.budgetInfo.budgetProjectId === "") {
+        message.warn("请选择关联预算项目！");
+        return
+      }
+      if (this.state.budgetInfo.projectBudget === "") {
+        message.warn("请输入本项目预算！");
+        return
+      }
     }
     const _this = this;
     this.props.form.validateFields((err, values) => {
@@ -855,7 +902,7 @@ class NewProjectModelV2 extends React.Component {
         software: Number(basicInfo.software),
         biddingMethod: basicInfo.projectType === 2 ? 0 : Number(basicInfo.biddingMethod),
         year: Number(this.state.budgetInfo.year.format("YYYY")),
-        budgetProject: Number(budgetInfo.budgetProjectId),
+        budgetProject: budgetInfo.budgetProjectId === '' ? -1 : Number(budgetInfo.budgetProjectId),
         projectBudget: String(budgetInfo.projectBudget)
       };
       const _this = this;
@@ -924,11 +971,13 @@ class NewProjectModelV2 extends React.Component {
   };
 
   operateCreatProject(params) {
+    const {handleType} = this.state;
     OperateCreatProject(params).then((result) => {
       const { code = -1, note = '', projectId } = result;
       this.setState({ loading: false });
       if (code > 0) {
         sessionStorage.setItem("projectId", projectId);
+        sessionStorage.setItem("handleType", handleType);
         if (this.state.type) {
           window.parent && window.parent.postMessage({ operate: 'success' }, '*');
         } else {
@@ -1179,13 +1228,27 @@ class NewProjectModelV2 extends React.Component {
 
   // 修改里程碑的时间
   changeMilePostInfoTime = (date, index, type) => {
-    const { mileInfo: { milePostInfo = [] } } = this.state;
+    const {mileInfo: {milePostInfo = []}} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
+    const reg1 = new RegExp("-", "g");
+    const newDate = date.replace(reg1, "");
     if (type === 'start') {
-      mile[index].kssj = date;
+      const jssj = mile[index].jssj.replace(reg1, "");
+      if (Number(newDate) > Number(jssj)) {
+        message.warn("开始时间需要小于结束时间")
+        return;
+      } else {
+        mile[index].kssj = date;
+      }
     } else if (type === 'end') {
-      mile[index].jssj = date;
+      const kssj = mile[index].kssj.replace(reg1, "");
+      if (Number(newDate) < Number(kssj)) {
+        message.warn("开始时间需要小于结束时间")
+        return;
+      } else {
+        mile[index].jssj = date;
+      }
     }
     this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   };
@@ -1207,7 +1270,21 @@ class NewProjectModelV2 extends React.Component {
   };
 
   onChange0 = current => {
-    this.setState({ current });
+    if (this.state.current === 0) {
+      this.props.form.validateFields((err, values) => {
+        if (err) {
+          const errs = Object.keys(err);
+          if (errs.includes('projectName')) {
+            message.warn("请填写项目名称！");
+            return;
+          }
+        } else {
+          this.setState({current});
+        }
+      });
+    } else {
+      this.setState({current});
+    }
   };
 
   handleClose = removedTag => {
@@ -1368,7 +1445,7 @@ class NewProjectModelV2 extends React.Component {
     const steps = [
       {
         title: <span>
-          <div>基本&预算信息</div>
+          <div>项目基本及预算信息</div>
           <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目信息填写</div>
         </span>,
         content: '',
@@ -1438,12 +1515,21 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
+                        <div style={{
+                          color: '#f5222d',
+                          fontSize: '14px',
+                          position: 'absolute',
+                          top: '13%',
+                          right: '83.5%'
+                        }}>
+                          *
+                        </div>
                         <Form.Item label="项目类型">
                           {getFieldDecorator('projectType', {
-                            rules: [{
-                              required: true,
-                              message: '请输入项目类型'
-                            }],
+                            // rules: [{
+                            //   required: true,
+                            //   message: '请输入项目类型'
+                            // }],
                             initialValue: basicInfo.projectType
                           })(
                             <Radio.Group onChange={e => {
@@ -1493,12 +1579,21 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
+                        <div style={{
+                          color: '#f5222d',
+                          fontSize: '14px',
+                          position: 'absolute',
+                          top: '13%',
+                          right: '83.5%'
+                        }}>
+                          *
+                        </div>
                         <Form.Item label="应用部门">
                           {getFieldDecorator('org', {
-                            rules: [{
-                              required: true,
-                              message: '请输入应用部门'
-                            }],
+                            // rules: [{
+                            //   required: true,
+                            //   message: '请输入应用部门'
+                            // }],
                             initialValue: basicInfo.org ? basicInfo.org : null
                           })(
                             <TreeSelect
@@ -1555,12 +1650,21 @@ class NewProjectModelV2 extends React.Component {
                       {
                         basicInfo.projectType === 1 ? (
                           <Col span={12}>
+                            <div style={{
+                              color: '#f5222d',
+                              fontSize: '14px',
+                              position: 'absolute',
+                              top: '13%',
+                              right: '83.5%'
+                            }}>
+                              *
+                            </div>
                             <Form.Item label="招标方式">
                               {getFieldDecorator('biddingMethod', {
-                                rules: [{
-                                  required: true,
-                                  message: '请输入招标方式'
-                                }],
+                                // rules: [{
+                                //   required: true,
+                                //   message: '请输入招标方式'
+                                // }],
                                 initialValue: basicInfo.biddingMethod
                               })(
                                 <Radio.Group onChange={e => {
@@ -1647,12 +1751,21 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12} className="glys">
-                        <Form.Item label="关联预算项目" required={true}>
+                        <div style={{
+                          color: '#f5222d',
+                          fontSize: '14px',
+                          position: 'absolute',
+                          top: '13%',
+                          right: '88.5%'
+                        }}>
+                          *
+                        </div>
+                        <Form.Item label="关联预算项目">
                           {getFieldDecorator('budgetProjectId', {
-                            rules: [{
-                              required: true,
-                              message: '请选择关联预算项目'
-                            }],
+                            // rules: [{
+                            //   required: true,
+                            //   message: '请选择关联预算项目'
+                            // }],
                             initialValue: budgetInfo.budgetProjectId
                           })(
                             <TreeSelect
@@ -1717,16 +1830,25 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={24}>
+                    <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
                       <Col span={12}>
-                        <Form.Item label="本项目预算(元)" required={true}>
+                        <div style={{
+                          color: '#f5222d',
+                          fontSize: '14px',
+                          position: 'absolute',
+                          top: '13%',
+                          right: '90.5%'
+                        }}>
+                          *
+                        </div>
+                        <Form.Item label="本项目预算(元)">
                           {getFieldDecorator('projectBudget', {
-                            rules: [{
-                              required: true,
-                              message: '请输入本项目预算(元)'
-                            }, {
-                              validator: this.handleValidatorProjectBudget
-                            }],
+                            // rules: [{
+                            //   required: true,
+                            //   message: '请输入本项目预算(元)'
+                            // }, {
+                            //   validator: this.handleValidatorProjectBudget
+                            // }],
                             initialValue: budgetInfo.projectBudget
                           })(
                             <InputNumber onBlur={(e) => {
@@ -1758,7 +1880,13 @@ class NewProjectModelV2 extends React.Component {
                     ))}
                   </Steps>
                   <div className="steps-content" id="lcbxxClass"
-                       style={{overflowY: 'scroll', height: '100%', width: '83%', margin: '0 0 15rem 0'}}>
+                       style={{
+                         overflowY: 'scroll',
+                         overflowX: 'hidden',
+                         height: '100%',
+                         width: '83%',
+                         margin: '0 0 15rem 0'
+                       }}>
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {

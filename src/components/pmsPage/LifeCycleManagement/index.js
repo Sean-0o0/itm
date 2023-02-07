@@ -112,13 +112,16 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   componentDidMount() {
-    this.fetchQueryOwnerProjectListUser();
+
     const params = this.getUrlParams();
     console.log("params", params)
     if (params !== undefined && params.projectId && params.projectId !== -1) {
       this.setState({
         xmid: params.projectId,
       })
+      this.fetchQueryOwnerProjectListUser();
+    } else {
+      this.fetchQueryOwnerProjectListUser();
     }
     // this.fetchQueryOwnerProjectList(1, PASE_SIZE);
   }
@@ -877,14 +880,14 @@ class LifeCycleManagementTabs extends React.Component {
 
   singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
     let clientType = WpsInvoke.ClientType.wps;
-    let name = "HelloWps";
+    let name = "WpsOAAssist";
     if (param.filepath.includes(".docx") || param.filepath.includes(".doc") || param.filepath.includes(".DOCX") || param.filepath.includes(".DOC")) {
       clientType = WpsInvoke.ClientType.wps;
-      name = "HelloWps";
+      name = "WpsOAAssist";
     }
     if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
       clientType = WpsInvoke.ClientType.et;
-      name = "HelloWps-et";
+      name = "EtOAAssist";
     }
     if (param.filepath.includes(".pdf")) {
       // clientType = WpsInvoke.ClientType.wpp;
@@ -894,7 +897,7 @@ class LifeCycleManagementTabs extends React.Component {
     }
     const WpsClient = new WpsClientOpen.WpsClient(clientType);
     //打包时修改config.js文件里的插件地址PluginsUrl。
-    WpsClient.jsPluginsXml = PluginsUrl;
+    // WpsClient.jsPluginsXml = PluginsUrl;
     WpsClient.InvokeAsHttp(
       name, // 组件类型
       // "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
@@ -1415,7 +1418,7 @@ class LifeCycleManagementTabs extends React.Component {
                                                           </div>
                                                           <div style={{
                                                             width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '41.67%' : '25%',
-                                                            textAlign: 'left', width: '29%'
+                                                            textAlign: 'left',
                                                           }} >
                                                             <Tooltips type={item.swlx}
                                                               item={item}
