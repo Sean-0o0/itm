@@ -78,7 +78,6 @@ class LifeCycleManagementTabs extends React.Component {
     editMessageVisible: false,//合同
     bidInfoModalVisible: false,//中标
     defMsgModifyModalVisible: false,//默认
-    currentXmid: 0,
     currentXmmc: '',
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
@@ -920,7 +919,7 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   callback = (key) => {
-    // console.log("keyccccc", key)
+    console.log("keyccccc", key)
     // console.log("loadingloading000", this.state.loading)
     // console.log("isHaveItem", this.state.isHaveItem)
     const { operationListData, allItemsData } = this.state;
@@ -928,6 +927,7 @@ class LifeCycleManagementTabs extends React.Component {
       xmid: key,
       loading: true,
     }, () => {
+      console.log('##xmid', this.state.xmid);
       //名下没有项目 展示所有项目的第一条 名下有项目展示 所有正在执行的项目 搜索框始终展示所有项目
       if (!this.state.isHaveItem) {
         // console.log("没项目")
@@ -1195,14 +1195,14 @@ class LifeCycleManagementTabs extends React.Component {
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
           fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
           closePaymentProcessModal={this.closePaymentProcessModal}
           onSuccess={() => this.onSuccess("流程发起")}
         />}
 
         {/*合同信息修改弹窗*/}
         {editMessageVisible && <ContractInfoUpdate
-          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
           currentXmmc={currentXmmc}
           editMessageVisible={editMessageVisible}
           closeMessageEditModal={this.closeMessageEditModal}
@@ -1211,7 +1211,7 @@ class LifeCycleManagementTabs extends React.Component {
 
         {/*中标信息修改弹窗*/}
         {bidInfoModalVisible && <BidInfoUpdate
-          currentXmid={Number(this.state.currentXmid) !== 0 ? Number(this.state.currentXmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
           currentXmmc={currentXmmc}
           bidInfoModalVisible={bidInfoModalVisible}
           closeBidInfoModal={this.closeBidInfoModal}
