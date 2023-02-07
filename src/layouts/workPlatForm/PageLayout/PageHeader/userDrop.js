@@ -257,7 +257,9 @@ export default class UserDrop extends React.Component {
             </div> */}
             <div className="m-panel-introduce" style={{ float: 'unset' }}>
               <div className="m-panel-name">{name}</div>
-              <div className="m-panel-id">上次登录时间 {lastlogin.replace(/-/g, '.')}</div>
+              <div className="m-panel-id">上次登录时间
+                <div>{lastlogin.replace(/-/g, '.')}</div>
+              </div>
               {
                 loginmethod !== '1' &&
                 (
@@ -345,7 +347,7 @@ export default class UserDrop extends React.Component {
                     <List.Item.Meta
                       avatar={<i className='iconfont icon-follow' />}
                       title={<span>流程委托</span>}
-                      style={{alignItems: 'center'}}
+                      style={{ alignItems: 'center' }}
                     />
                   </List.Item>
                 </Link>
@@ -358,7 +360,7 @@ export default class UserDrop extends React.Component {
                     onClick={() => this.handleLogout(dispatch)}
                     avatar={<i className={`iconfont ${item.icon}`} />}
                     title={<span>{item.title}</span>}
-                    style={{alignItems: 'center'}}
+                    style={{ alignItems: 'center' }}
                   />
                 </List.Item>
               </Col>

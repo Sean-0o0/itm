@@ -189,26 +189,34 @@ class WorkBench extends React.Component {
         if (item.zt !== '2')
           indexArr.push(index);
       })
-      // console.log(indexArr);
+      indexArr.push(-1);
       for (let i = 0; i < e.length; i++) {
-        (e[i])?.zt !== '2' && FetchQueryLiftcycleMilestone({
-          cxlx: 'SINGLE',
-          xmmc: (e[i])?.xmid,
-        }).then((ret = {}) => {
-          const { record = [], code = 0 } = ret;
-          if (code === 1 && record[0]) {
-            //zxxh排序
-            e[i].extend = i === indexArr[0];//第一个不为草稿的
-            e[i].kssj = (record[0])?.kssj
-            e[i].jssj = (record[0])?.jssj
-            e[i].status = (record[0])?.zt
-            e[i].userid = userid;
-            this.setState({
-              ProjectScheduleTotal: total,
-              ProjectScheduleData: e,
-            });
-          }
-        });
+        console.log(e[i]);
+        if ((e[i])?.zt !== '2') {
+          FetchQueryLiftcycleMilestone({
+            cxlx: 'SINGLE',
+            xmmc: (e[i])?.xmid,
+          }).then((ret = {}) => {
+            const { record = [], code = 0 } = ret;
+            if (code === 1 && record[0]) {
+              //zxxh排序
+              e[i].extend = i === indexArr[0];//第一个不为草稿的
+              e[i].kssj = (record[0])?.kssj
+              e[i].jssj = (record[0])?.jssj
+              e[i].status = (record[0])?.zt
+              e[i].userid = userid;
+              this.setState({
+                ProjectScheduleTotal: total,
+                ProjectScheduleData: e,
+              });
+            }
+          });
+        } else {
+          this.setState({
+            ProjectScheduleTotal: total,
+            ProjectScheduleData: e,
+          });
+        }
       }
     });
   }
@@ -262,7 +270,7 @@ class WorkBench extends React.Component {
       TodoItemsTotal = 0,
       ProcessSituationData = [],
       ProcessSituationTotal = 0,
-      ProjectScheduleData = [],
+      ProjectScheduleData,
       ProjectScheduleTotal = 0,
       ProjectScheduleDetailData = [],
       sliderData,

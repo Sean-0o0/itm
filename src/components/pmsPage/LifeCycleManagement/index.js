@@ -1361,21 +1361,20 @@ class LifeCycleManagementTabs extends React.Component {
                                                     {sort[index].List.map((item = {}, ind) => {
                                                       return <>
                                                         <div key={ind} className='cont-row' style={{
-                                                          // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                                          // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
                                                           marginTop: ind === 0 ? '2.6784rem' : '2.3808rem',
-                                                          display: 'flex', alignItems: 'center'
+                                                          display: 'flex', alignItems: 'center',
+                                                          height: '4.65rem'
                                                         }}>
                                                           <Points status={item.zxqk} />
                                                           <div style={{ width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '58.33%' : '75%' }}>
                                                             {/* <div style={{ display: 'flex', alignItems: 'center' }}> */}
                                                             {/*根据事项类型判断是否是文档*/}
                                                             {
-                                                            //   ["文档","信委会","总办会","需求调研",
-                                                            //   "产品设计","系统框架搭建","功能开发",
-                                                            //   "外部系统对接","需求设计","招标","合同",
-                                                            //   "系统测试"
-                                                            // ].includes()
+                                                              //   ["文档","信委会","总办会","需求调研",
+                                                              //   "产品设计","系统框架搭建","功能开发",
+                                                              //   "外部系统对接","需求设计","招标","合同",
+                                                              //   "系统测试"
+                                                              // ].includes()
                                                               item.swlx.includes("文档") ||
                                                                 item.swlx.includes("信委会") ||
                                                                 item.swlx.includes("总办会") ||

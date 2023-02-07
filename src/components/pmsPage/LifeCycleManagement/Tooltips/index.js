@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Input, Select, Row, Col, Tooltip, message, Icon, Dropdown, Menu } from 'antd';
+import { Select, message, Icon, Dropdown, Menu } from 'antd';
 import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
 import {
@@ -23,8 +23,6 @@ class Tooltips extends React.Component {
     // xmUserId: '',
     txtStyle: {
       marginLeft: '0.6rem',
-      color: 'rgba(51, 97, 255, 1)',
-      marginRight: '0.5952rem'
     },
   };
 
@@ -146,15 +144,15 @@ class Tooltips extends React.Component {
       message.error(err)
     })
   }
-  getSpan = txt => <span style={{ color: 'rgba(51, 97, 255, 1)', cursor: 'pointer' }}>{txt}</span>;
+  getSpan = txt => <span style={{ marginLeft: '0.5952rem' }}>{txt}</span>;
   //流程发起查看
   getLcfqck = (status, item, isFklc = false) => {
     //status === ' '
     if (status === ' ') {
       return (
-        <Tooltip title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
-          <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('发起')}
-        </Tooltip>
+        <div title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('发起')}</a>
+        </div>
       );
     } else {
       let menu = "";
@@ -163,14 +161,14 @@ class Tooltips extends React.Component {
         menu = (
           <Menu>
             <Menu.Item>
-              <Tooltip title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
-                <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('重新发起')}
-              </Tooltip>
+              <div title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
+                <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('重新发起')}</a>
+              </div>
             </Menu.Item>
             <Menu.Item>
-              <Tooltip title="打印" onClick={this.print}>
-                <a style={this.state.txtStyle} className="iconfont icon-print" />{this.getSpan('打印')}
-              </Tooltip>
+              <div title="打印" onClick={this.print}>
+                <a style={this.state.txtStyle} className="iconfont icon-print" >{this.getSpan('打印')}</a>
+              </div>
             </Menu.Item>
           </Menu>
         );
@@ -178,19 +176,19 @@ class Tooltips extends React.Component {
         menu = (
           <Menu>
             <Menu.Item>
-              <Tooltip title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
-                <a style={this.state.txtStyle} className="iconfont icon-send" />{this.getSpan('重新发起')}
-              </Tooltip>
+              <div title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
+                <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('重新发起')}</a>
+              </div>
             </Menu.Item>
           </Menu>
         );
       }
       return (
         <>
-          <Tooltip title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
+          <div title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
             <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
-            />{this.getSpan('查看')}
-          </Tooltip>
+            >{this.getSpan('查看')}</a>
+          </div>
           <Dropdown overlay={menu}>
             <i style={{ color: 'rgba(51, 97, 255, 1)', marginLeft: '1.5rem' }}
               className="iconfont icon-more">
@@ -205,41 +203,41 @@ class Tooltips extends React.Component {
   getWdscxg = (status, item) => {
     if (status === ' ')
       return (
-        <Tooltip title="上传" onClick={this.handleAuthority.bind(this, this.handleUpload, '上传')}>
-          <a style={this.state.txtStyle} className="iconfont icon-upload" />{this.getSpan('上传')}
-        </Tooltip>
+        <div title="上传" onClick={this.handleAuthority.bind(this, this.handleUpload, '上传')}>
+          <a style={this.state.txtStyle} className="iconfont icon-upload">{this.getSpan('上传')}</a>
+        </div>
       );
     return (
-      <Tooltip title="修改" onClick={this.handleAuthority.bind(this, this.handleEdit, '修改')} >
-        <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('修改')}
-      </Tooltip>
+      <div title="修改" onClick={this.handleAuthority.bind(this, this.handleEdit, '修改')} >
+        <a style={this.state.txtStyle} className="iconfont icon-edit">{this.getSpan('修改')}</a>
+      </div>
     );
   };
   //信息录入修改
   getXxlrxg = (status, item) => {
     if (status === ' ')
       return (
-        <Tooltip title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
-          <a style={this.state.txtStyle} className="iconfont icon-file-fillout" />{this.getSpan('录入')}
-        </Tooltip>
+        <div title="录入" onClick={this.handleAuthority.bind(this, this.handleFillOut, '录入', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-file-fillout">{this.getSpan('录入')}</a>
+        </div>
       );
     return (
-      <Tooltip title="修改" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '修改', item)}>
-        <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('修改')}</Tooltip>
+      <div title="修改" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '修改', item)}>
+        <a style={this.state.txtStyle} className="iconfont icon-edit">{this.getSpan('修改')}</a></div>
     );
   };
   //员工评价开启
   getCz = (status, item) => {
     if (status === ' ')
       return (
-        <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
-          <a style={this.state.txtStyle} className="iconfont icon-file-fillout" />{this.getSpan('操作')}
-        </Tooltip>
+        <div title="操作" onClick={this.handleAuthority.bind(this, this.handleFillOut, '操作', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-file-fillout">{this.getSpan('操作')}</a>
+        </div>
       );
     return (
-      <Tooltip title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
-        <a style={this.state.txtStyle} className="iconfont icon-edit" />{this.getSpan('操作')}
-      </Tooltip>
+      <div title="操作" onClick={this.handleAuthority.bind(this, this.handleMessageEdit, '操作', item)}>
+        <a style={this.state.txtStyle} className="iconfont icon-edit">{this.getSpan('操作')}</a>
+      </div>
     )
   }
   getToolTip = (name, status, item) => {
@@ -321,7 +319,7 @@ class Tooltips extends React.Component {
     item.xmid = xmid;
     const name = item.sxmc; //事项名称
     return (
-      <div className={name === '付款流程' ? 'rowline-cont' : ''}>
+      <div className={name === '付款流程' ? 'rowline-cont tooltip-hover' : 'tooltip-hover'}>
         {this.getToolTip(name, status, item)}
       </div>
     );

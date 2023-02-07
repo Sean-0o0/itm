@@ -844,6 +844,7 @@ class ProjectSchedule extends React.Component {
 
   render() {
     const { data, total, ProjectScheduleDetailData, fetchQueryOwnerProjectList} = this.props;
+    console.log("🚀 ~ file: index.js ~ line 847 ~ ProjectSchedule ~ render ~ data", data)
     const {
       uploadVisible,
       editVisible,
