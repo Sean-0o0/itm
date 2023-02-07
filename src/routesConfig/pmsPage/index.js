@@ -2,6 +2,13 @@ const prefix = '/pms/manage';
 exports.routes = [
   {
     //生命周期管理页面
+    path: `${prefix}/LifeCycleManagement/:params`,
+    //exact: false,
+    // models: () => [import('../models/workPlatForm/mainPage/mot/motEvent')],
+    component: './pmsPage/LifeCycleManagement',
+  },
+  {
+    //生命周期管理页面
     path: `${prefix}/LifeCycleManagement`,
     //exact: false,
     // models: () => [import('../models/workPlatForm/mainPage/mot/motEvent')],

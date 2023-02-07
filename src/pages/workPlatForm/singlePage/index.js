@@ -11,6 +11,7 @@ import ZipFileModel from './ZipFileModel/index';
 import CapitalBudgetExport from "./CapitalBudgetExport";
 import NewProjectModel from './NewProjectModel';
 import NewProjectModelV2 from "./NewProjectModelV2";
+import LifeCycleManagementTabs from "../../../components/pmsPage/LifeCycleManagement";
 const { events } = Bridge.constants
 class SinglePage extends Component {
 
@@ -48,6 +49,8 @@ class SinglePage extends Component {
           <Route exact path={`${parentUrl}/CapitalBudgetExportPage`}
                  render={props => <CapitalBudgetExport {...props} submitOperate={this.submitOperate}
                                                        closeDialog={this.closeDialog}/>}/>
+          {/*<Route exact path={`${parentUrl}/LifeCycleManagement/:params`}*/}
+          {/*       render={props => <LifeCycleManagementTabs {...props}/>}/>*/}
         </Switch>
       </Fragment>
     );

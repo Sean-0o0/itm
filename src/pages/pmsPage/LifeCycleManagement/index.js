@@ -8,12 +8,15 @@ import {DecryptBase64} from '../../../components/Common/Encrypt';
 class LifeCycleManagement extends Component {
 
   render() {
-    const {location: {query = {}}} = this.props;
-    // const jsonParam = JSON.parse(DecryptBase64(params.params));
-    console.log("params", query);
+    const {location: {query = {}}, match: {params: {params: encryptParams = ''}}} = this.props;
+    let jsonParam = ""
+    if (this.props.match.params.params !== undefined) {
+      jsonParam = JSON.parse(DecryptBase64(encryptParams));
+      console.log("params", jsonParam);
+    }
     return (
       <React.Fragment>
-        <LifeCycleManagementTabs params={query}/>
+        <LifeCycleManagementTabs params={jsonParam}/>
       </React.Fragment>
     );
   }

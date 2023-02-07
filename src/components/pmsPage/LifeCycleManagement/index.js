@@ -39,6 +39,7 @@ import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../utils/config";
 import PaymentProcess from './PaymentProcess';
 import moment from 'moment';
+import {DecryptBase64} from "../../Common/Encrypt";
 
 const { TabPane } = Tabs;
 
@@ -112,8 +113,15 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   componentDidMount() {
-    // this.fetchQueryOwnerProjectList(1, PASE_SIZE);
     this.fetchQueryOwnerProjectListUser();
+    const params = this.getUrlParams();
+    console.log("params", params)
+    if (params !== undefined && params.projectId && params.projectId !== -1) {
+      this.setState({
+        xmid: params.projectId,
+      })
+    }
+    // this.fetchQueryOwnerProjectList(1, PASE_SIZE);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
@@ -121,14 +129,24 @@ class LifeCycleManagementTabs extends React.Component {
       this.setState({
         xmid: nextProps.params.xmid,
       });
-      this.fetchQueryLiftcycleMilestone(nextProps.params.xmid?nextProps.params.xmid:this.state.xmid)
-      this.fetchQueryLifecycleStuff(nextProps.params.xmid?nextProps.params.xmid:this.state.xmid)
-      this.fetchQueryProjectInfoInCycle(nextProps.params.xmid?nextProps.params.xmid:this.state.xmid)
+      this.fetchQueryLiftcycleMilestone(nextProps.params.xmid ? nextProps.params.xmid : this.state.xmid)
+      this.fetchQueryLifecycleStuff(nextProps.params.xmid ? nextProps.params.xmid : this.state.xmid)
+      this.fetchQueryProjectInfoInCycle(nextProps.params.xmid ? nextProps.params.xmid : this.state.xmid)
     }
   }
 
+  // 获取url参数
+  getUrlParams = () => {
+    let params;
+    if (this.props.match !== undefined) {
+      const {match: {params: {params: encryptParams = ''}}} = this.props;
+      params = JSON.parse(DecryptBase64(encryptParams));
+    }
+    return params;
+  }
+
   fetchQueryOwnerProjectList = (current, pageSize) => {
-    const { params } = this.props;
+    const {params} = this.props;
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
@@ -175,6 +193,7 @@ class LifeCycleManagementTabs extends React.Component {
   //查询自己名下还在执行的项目
   fetchQueryOwnerProjectListUser = () => {
     const { params } = this.props;
+    console.log("11111", params)
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
@@ -223,9 +242,9 @@ class LifeCycleManagementTabs extends React.Component {
         this.fetchQueryOwnerProjectList(1, PASE_SIZE);
       }
       if (this.state.xmid) {
-        this.fetchQueryProjectInfoInCycle(params.xmid);
-        this.fetchQueryLiftcycleMilestone(params.xmid);
-        this.fetchQueryLifecycleStuff(params.xmid);
+        this.fetchQueryProjectInfoInCycle(this.state.xmid);
+        this.fetchQueryLiftcycleMilestone(this.state.xmid);
+        this.fetchQueryLifecycleStuff(this.state.xmid);
       }
     }).catch((error) => {
       // console.log('问题出在这！');

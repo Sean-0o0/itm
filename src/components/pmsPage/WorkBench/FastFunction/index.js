@@ -1,6 +1,6 @@
 import { Row, Col, Carousel, Empty, message, Tooltip, Modal } from 'antd';
 import React from 'react';
-import { EncryptBase64 } from '../../../../components/Common/Encrypt';
+import {EncryptBase64} from '../../../Common/Encrypt';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import icon_01 from "../../../../image/pms/fastFunction/icon_01.png";
 import icon_02 from "../../../../image/pms/fastFunction/icon_02.png";
@@ -14,9 +14,11 @@ import icon_09 from "../../../../image/pms/fastFunction/icon_09.png";
 import icon_10 from "../../../../image/pms/fastFunction/icon_10.png";
 import icon_11 from "../../../../image/pms/fastFunction/icon_11.png";
 import icon_12 from "../../../../image/pms/fastFunction/icon_12.png";
-import { FetchQueryOwnerMessage } from '../../../../services/pmsServices';
+import {FetchQueryOwnerMessage} from '../../../../services/pmsServices';
 import moment from 'moment';
 import ProcessSituation from '../ProcessSituation';
+import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
+import BasicModal from "../../../Common/BasicModal";
 
 class FastFunction extends React.Component {
   state = {
@@ -38,6 +40,11 @@ class FastFunction extends React.Component {
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       this.closeFileAddModal();
       message.success('保存成功');
+      //projectId跳转到生命周期页面
+      const params = {
+        projectId: sessionStorage.getItem("projectId"),
+      }
+      window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
     }
   };
 

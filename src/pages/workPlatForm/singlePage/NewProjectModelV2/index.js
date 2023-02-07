@@ -96,7 +96,7 @@ class NewProjectModelV2 extends React.Component {
     newMileItemInfo: [], // 新建里程碑的事项信息
     isCollapse: true, // 是否折叠里程碑更多信息
     isEditMile: true, // 是否在修改里程碑信息
-    loading: false,  // 是否正在加载
+    loading: true,  // 是否正在加载
     tags: ['Unremovable', 'Tag 2', 'Tag 3'],
     inputVisible: '-1-1',
     inputValue: '',
@@ -141,21 +141,21 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    await this.fetchQuerySoftwareList();
+    this.fetchQuerySoftwareList();
     // 查询项目标签
-    await this.fetchQueryProjectLabel();
+    this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    await this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY")) });
+    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    await this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
+    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    await this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
+    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
-    await this.fetchQueryMilepostInfo({
+    this.fetchQueryMilepostInfo({
       type: 1,
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
@@ -928,12 +928,10 @@ class NewProjectModelV2 extends React.Component {
       const { code = -1, note = '', projectId } = result;
       this.setState({ loading: false });
       if (code > 0) {
-        console.log("0000")
+        sessionStorage.setItem("projectId", projectId);
         if (this.state.type) {
-          console.log("1111")
           window.parent && window.parent.postMessage({ operate: 'success' }, '*');
         } else {
-          console.log("22222")
           this.props.submitOperate();
         }
         const params = {
@@ -1195,8 +1193,6 @@ class NewProjectModelV2 extends React.Component {
   onChange = minicurrent => {
     // console.log('onChange:', minicurrent);
     this.setState({ minicurrent });
-    let height = document.getElementById("lcbxxClass")?.scrollHeight;
-    // let height222 = document.getElementById("milePost"+minicurrent)
     let heightTotal = 0;
     //滚动到指定高度
     if (minicurrent) {
@@ -1208,7 +1204,6 @@ class NewProjectModelV2 extends React.Component {
     heightTotal = heightTotal + (7.8 * (minicurrent - 1) + 11.8)
     console.log('height222', heightTotal);
     document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
-
   };
 
   onChange0 = current => {
@@ -1334,7 +1329,7 @@ class NewProjectModelV2 extends React.Component {
       projectLabelList = [],
       budgetProjectList = [],
       budgetInfoCollapse,
-      mileInfo: { milePostInfo = [] },
+      mileInfo: {milePostInfo = []},
       organizationTreeList,
       basicInfoCollapse,
       budgetInfo,
@@ -1345,49 +1340,49 @@ class NewProjectModelV2 extends React.Component {
       organizationStaffTreeList,
       staffJobList = [],
       checkedStaffKey,
-      staffInfo: { jobStaffList = [] },
-      basicInfo = { software: '' },
+      staffInfo: {jobStaffList = []},
+      basicInfo = {software: ''},
       swlxarr = []
     } = this.state;
-    const { getFieldDecorator } = this.props.form;
+    const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
+        xs: {span: 24},
+        sm: {span: 7},
       },
       wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
+        xs: {span: 24},
+        sm: {span: 14},
       },
     };
     const budgetFormItemLayout = {
       labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
+        xs: {span: 24},
+        sm: {span: 7},
       },
       wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
+        xs: {span: 24},
+        sm: {span: 14},
       },
     };
     const steps = [
       {
         title: <span>
           <div>基本&预算信息</div>
-          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>项目信息填写</div>
+          <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目信息填写</div>
         </span>,
         content: '',
       },
       {
         title: <span>
           <div>里程碑信息</div>
-          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>里程碑信息填写</div>
+          <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>里程碑信息填写</div>
         </span>,
       },
       {
         title: <span>
           <div>人员信息</div>
-          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>项目参与人员信息填写</div>
+          <div style={{fontSize: '2.038rem', color: '#999', lineHeight: '3rem'}}>项目参与人员信息填写</div>
         </span>,
       },
     ];
@@ -1396,19 +1391,19 @@ class NewProjectModelV2 extends React.Component {
     milePostInfo.map(item => {
       let params;
       params = {
-        title: <div style={{ fontSize: '2.7rem' }}>{item.lcbmc}</div>
+        title: <div style={{fontSize: '2.7rem'}}>{item.lcbmc}</div>
       }
       ministeps.push(params)
     })
     return (
       <Fragment>
-        <div className="newProject" style={{ overflow: 'hidden', height: "100%" }}>
-          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{ height: "100%" }}>
-            <div style={{ overflow: 'hidden', height: "100%" }}>
-              <div style={{ margin: '0 20rem 0 20rem', height: "11%" }}>
-                <Steps current={current} onChange={this.onChange0} type="navigation" style={{ height: "100%" }}>
+        <div className="newProject" style={{overflow: 'hidden', height: "100%"}}>
+          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
+            <div style={{overflow: 'hidden', height: "100%"}}>
+              <div style={{margin: '0 20rem 0 20rem', height: "11%"}}>
+                <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
-                    <Step key={index} title={item.title} />
+                    <Step key={index} title={item.title}/>
                   ))}
                 </Steps>
               </div>
@@ -1424,7 +1419,8 @@ class NewProjectModelV2 extends React.Component {
                       borderLeft: '4px solid #3461FF'
                     }}>基本信息</span>
                   </div>
-                  <Form {...basicFormItemLayout} ref={e => this.basicForm = e} onSubmit={e => this.handleFormValidate(e)} style={{ width: '98%' }}>
+                  <Form {...basicFormItemLayout} ref={e => this.basicForm = e}
+                        onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="项目名称">
@@ -1436,8 +1432,8 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectName
                           })(
                             <Input placeholder="请输入项目名称" onChange={e => {
-                              this.setState({ basicInfo: { ...basicInfo, projectName: e.target.value } });
-                            }} />
+                              this.setState({basicInfo: {...basicInfo, projectName: e.target.value}});
+                            }}/>
                           )}
                         </Form.Item>
                       </Col>
@@ -1451,7 +1447,7 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectType
                           })(
                             <Radio.Group onChange={e => {
-                              this.setState({ basicInfo: { ...basicInfo, projectType: e.target.value } });
+                              this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
                               this.fetchQueryMilepostInfo({
                                 type: e.target.value,
                                 xmid: basicInfo.projectId,
@@ -1474,17 +1470,17 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectLabel
                           })(
                             <Select showSearch
-                              showArrow={true}
-                              mode="multiple"
-                              onChange={e => {
-                                console.log("eee", e)
-                                this.setState({
-                                  basicInfo: { ...basicInfo, projectLabel: e }
-                                })
-                              }}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                              }>
+                                    showArrow={true}
+                                    mode="multiple"
+                                    onChange={e => {
+                                      console.log("eee", e)
+                                      this.setState({
+                                        basicInfo: {...basicInfo, projectLabel: e}
+                                      })
+                                    }}
+                                    filterOption={(input, option) =>
+                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }>
                               {
                                 projectLabelList.length > 0 && projectLabelList.map((item, index) => {
                                   return (
@@ -1509,15 +1505,15 @@ class NewProjectModelV2 extends React.Component {
                               multiple
                               showSearch
                               treeNodeFilterProp="title"
-                              style={{ width: '100%' }}
-                              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                              style={{width: '100%'}}
+                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={organizationTreeList}
                               placeholder="请选择应用部门"
                               treeDefaultExpandAll
                               onChange={e => {
                                 console.log("eee", e)
                                 this.setState({
-                                  basicInfo: { ...basicInfo, org: e }
+                                  basicInfo: {...basicInfo, org: e}
                                 })
                               }}
                             />
@@ -1533,18 +1529,18 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.software
                           })(
                             <Select showSearch
-                              onChange={e => {
-                                softwareList.forEach(item => {
-                                  if (item.id === e) {
-                                    this.setState({
-                                      basicInfo: { ...basicInfo, software: e, }
-                                    });
-                                  }
-                                })
-                              }}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                              }>
+                                    onChange={e => {
+                                      softwareList.forEach(item => {
+                                        if (item.id === e) {
+                                          this.setState({
+                                            basicInfo: {...basicInfo, software: e,}
+                                          });
+                                        }
+                                      })
+                                    }}
+                                    filterOption={(input, option) =>
+                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }>
                               {
                                 softwareList.length > 0 && softwareList.map((item, index) => {
                                   return (
@@ -1568,7 +1564,7 @@ class NewProjectModelV2 extends React.Component {
                                 initialValue: basicInfo.biddingMethod
                               })(
                                 <Radio.Group onChange={e => {
-                                  this.setState({ basicInfo: { ...basicInfo, biddingMethod: e.target.value } });
+                                  this.setState({basicInfo: {...basicInfo, biddingMethod: e.target.value}});
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
                                     xmid: this.state.basicInfo.projectId,
@@ -1610,43 +1606,43 @@ class NewProjectModelV2 extends React.Component {
                           {/*  initialValue: budgetInfo.year*/}
                           {/*})(*/}
                           <DatePicker value={budgetInfo.year} allowClear={false} ref={picker => this.picker = picker}
-                            onChange={v => {
-                              const _this = this;
-                              this.setState({
-                                budgetInfo: {
-                                  ...this.state.budgetInfo,
-                                  budgetProjectId: '',
-                                  totalBudget: 0,
-                                  relativeBudget: 0,
-                                  year: v == null ? moment(new Date()) : v
-                                }
-                              }, function () {
-                                _this.props.form.resetFields(['projectBudget']);
-                                _this.props.form.validateFields(['projectBudget']);
-                                _this.fetchQueryBudgetProjects({
-                                  type: 'NF',
-                                  year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))
-                                });
-                              })
-                            }}
-                            onPanelChange={(v) => {
-                              this.picker.picker.state.open = false;
-                              const _this = this;
-                              this.setState({
-                                budgetInfo: {
-                                  ...this.state.budgetInfo,
-                                  budgetProjectId: '',
-                                  totalBudget: 0,
-                                  relativeBudget: 0,
-                                  year: v
-                                }
-                              }, function () {
-                                _this.props.form.resetFields(['projectBudget']);
-                                _this.props.form.validateFields(['projectBudget']);
-                                _this.fetchQueryBudgetProjects({ type: 'NF', year: Number(v.format("YYYY")) });
-                              })
-                            }}
-                            format="YYYY" mode="year" />
+                                      onChange={v => {
+                                        const _this = this;
+                                        this.setState({
+                                          budgetInfo: {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: '',
+                                            totalBudget: 0,
+                                            relativeBudget: 0,
+                                            year: v == null ? moment(new Date()) : v
+                                          }
+                                        }, function () {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                          _this.fetchQueryBudgetProjects({
+                                            type: 'NF',
+                                            year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))
+                                          });
+                                        })
+                                      }}
+                                      onPanelChange={(v) => {
+                                        this.picker.picker.state.open = false;
+                                        const _this = this;
+                                        this.setState({
+                                          budgetInfo: {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: '',
+                                            totalBudget: 0,
+                                            relativeBudget: 0,
+                                            year: v
+                                          }
+                                        }, function () {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                          _this.fetchQueryBudgetProjects({type: 'NF', year: Number(v.format("YYYY"))});
+                                        })
+                                      }}
+                                      format="YYYY" mode="year"/>
                           {/*)}*/}
                         </Form.Item>
                       </Col>
@@ -1662,8 +1658,8 @@ class NewProjectModelV2 extends React.Component {
                             <TreeSelect
                               showSearch
                               treeNodeFilterProp="title"
-                              style={{ width: '100%' }}
-                              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                              style={{width: '100%'}}
+                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={budgetProjectList}
                               placeholder="请选择关联预算项目"
                               // treeDefaultExpandAll
@@ -1707,17 +1703,17 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={24} style={{ display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : '' }}>
+                    <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
                       <Col span={12}>
                         <Form.Item label="总预算(元)">
-                          <InputNumber disabled={true} style={{ width: '100%' }} value={budgetInfo.totalBudget}
-                            precision={0} />
+                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.totalBudget}
+                                       precision={0}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
                         <Form.Item label="当前可关联总预算(元)">
-                          <InputNumber disabled={true} style={{ width: '100%' }} value={budgetInfo.relativeBudget}
-                            precision={0} />
+                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
+                                       precision={0}/>
                         </Form.Item>
                       </Col>
                     </Row>
@@ -1741,11 +1737,11 @@ class NewProjectModelV2 extends React.Component {
                                 budget: budgetInfo.projectBudget,
                                 label: ''
                               });
-                            }} style={{ width: '100%' }} precision={0} />
+                            }} style={{width: '100%'}} precision={0}/>
                           )}
                         </Form.Item>
                       </Col>
-                      <Col span={12} style={{ paddingLeft: 0 }}>
+                      <Col span={12} style={{paddingLeft: 0}}>
                       </Col>
                     </Row>
                   </Form>
@@ -1753,16 +1749,16 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{ display: 'flex', height: '75%', margin: '2rem 2rem 2rem 10rem' }}>
-                  <Steps progressDot style={{ height: '100rem', width: '15%', padding: '3rem 0' }} direction="vertical"
-                    current={minicurrent} onChange={this.onChange}>
+                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 2rem 2rem 10rem'}}>
+                  <Steps progressDot style={{height: '100rem', width: '15%', padding: '3rem 0'}} direction="vertical"
+                         current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
-                      <Step style={{ height: (100 / (ministeps.length * 1.1)) + 'rem' }} key={index} title={item.title} />
+                      <Step style={{height: (100 / (ministeps.length * 1.1)) + 'rem'}} key={index} title={item.title}/>
                     ))}
                   </Steps>
                   <div className="steps-content" id="lcbxxClass"
-                    style={{ overflowY: 'scroll', height: '100%', width: '83%', margin: '0 0 15rem 0' }}>
+                       style={{overflowY: 'scroll', height: '100%', width: '83%', margin: '0 0 15rem 0'}}>
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
@@ -1773,8 +1769,8 @@ class NewProjectModelV2 extends React.Component {
                                 {
                                   item.type && item.type === 'new' ? (
                                     <div key={index} className="newMilePost">
-                                      <div style={{ width: '100%', display: 'flex', flexDirection: 'row' }}>
-                                        <div style={{ width: '14%' }}>
+                                      <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
+                                        <div style={{width: '80%'}}>
                                           <Select
                                             showSearch
                                             filterOption={(input, option) =>
@@ -1782,7 +1778,7 @@ class NewProjectModelV2 extends React.Component {
                                             }
                                             onChange={e => this.selectMileStageInfo(e, index)}
                                             placeholder="请选择"
-                                            style={{ width: '100%' }}
+                                            style={{width: '25%'}}
                                           >
                                             {
                                               mileStageList.length > 0 && mileStageList.map((item, index) => {
@@ -1791,56 +1787,56 @@ class NewProjectModelV2 extends React.Component {
                                             }
                                           </Select>
                                         </div>
-                                        <div style={{
-                                          width: '66%',
-                                          marginLeft: '2rem',
-                                          position: 'relative',
-                                          display: 'flex',
-                                          flexDirection: 'row'
-                                        }}>
-                                          <DatePicker format="YYYY-MM-DD" style={{ width: '21%' }}
-                                            value={moment(item.kssj, 'YYYY-MM-DD')}
-                                            allowClear={false}
-                                            onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
-                                            onFocus={() => this.setState({
-                                              isEditMile: true,
-                                              isCollapse: false
-                                            })} />
-                                          <div
-                                            style={{
-                                              fontSize: '2.5rem',
-                                              fontWeight: 'bold',
-                                              padding: '2rem 2rem 0 2rem'
-                                            }}>~
-                                          </div>
-                                          <DatePicker format="YYYY-MM-DD" style={{ width: '21%' }}
-                                            value={moment(item.jssj, 'YYYY-MM-DD')}
-                                            allowClear={false}
-                                            onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
-                                            onFocus={() => this.setState({
-                                              isEditMile: true,
-                                              isCollapse: false
-                                            })} />
-                                          <div style={{
-                                            color: '#f5222d',
-                                            fontSize: '3.5rem',
-                                            position: 'absolute',
-                                            top: '10%',
-                                            right: '51.5%'
-                                          }}>
-                                            *
-                                          </div>
-                                          <div style={{
-                                            color: '#f5222d',
-                                            fontSize: '3.5rem',
-                                            position: 'absolute',
-                                            top: '10%',
-                                            right: '77.5%'
-                                          }}>
-                                            *
-                                          </div>
-                                        </div>
-                                        <div style={{ display: 'flex', width: "20%" }}>
+                                        {/*<div style={{*/}
+                                        {/*  width: '66%',*/}
+                                        {/*  marginLeft: '2rem',*/}
+                                        {/*  position: 'relative',*/}
+                                        {/*  display: 'flex',*/}
+                                        {/*  flexDirection: 'row'*/}
+                                        {/*}}>*/}
+                                        {/*  <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}*/}
+                                        {/*              value={moment(item.kssj, 'YYYY-MM-DD')}*/}
+                                        {/*              allowClear={false}*/}
+                                        {/*              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}*/}
+                                        {/*              onFocus={() => this.setState({*/}
+                                        {/*                isEditMile: true,*/}
+                                        {/*                isCollapse: false*/}
+                                        {/*              })}/>*/}
+                                        {/*  <div*/}
+                                        {/*    style={{*/}
+                                        {/*      fontSize: '2.5rem',*/}
+                                        {/*      fontWeight: 'bold',*/}
+                                        {/*      padding: '2rem 2rem 0 2rem'*/}
+                                        {/*    }}>~*/}
+                                        {/*  </div>*/}
+                                        {/*  <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}*/}
+                                        {/*              value={moment(item.jssj, 'YYYY-MM-DD')}*/}
+                                        {/*              allowClear={false}*/}
+                                        {/*              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}*/}
+                                        {/*              onFocus={() => this.setState({*/}
+                                        {/*                isEditMile: true,*/}
+                                        {/*                isCollapse: false*/}
+                                        {/*              })}/>*/}
+                                        {/*<div style={{*/}
+                                        {/*  color: '#f5222d',*/}
+                                        {/*  fontSize: '3.5rem',*/}
+                                        {/*  position: 'absolute',*/}
+                                        {/*  top: '10%',*/}
+                                        {/*  right: '51.5%'*/}
+                                        {/*}}>*/}
+                                        {/*  **/}
+                                        {/*</div>*/}
+                                        {/*<div style={{*/}
+                                        {/*  color: '#f5222d',*/}
+                                        {/*  fontSize: '3.5rem',*/}
+                                        {/*  position: 'absolute',*/}
+                                        {/*  top: '10%',*/}
+                                        {/*  right: '77.5%'*/}
+                                        {/*}}>*/}
+                                        {/*  **/}
+                                        {/*</div>*/}
+                                        {/*</div>*/}
+                                        <div style={{display: 'flex', width: "20%"}}>
                                           <div onClick={() => this.saveMilePostInfo(index)} style={{
                                             cursor: 'pointer',
                                             // width: '5%',
@@ -1869,14 +1865,70 @@ class NewProjectModelV2 extends React.Component {
                                           </div>
                                         </div>
                                       </div>
+                                      <div style={{display: 'flex', margin: '0 10rem 0 0', padding: '1rem 0 0 0',}}>
+                                        <div style={{marginTop: '2rem', textAlign: 'end', width: '10%',}}>
+                                            <span style={{
+                                              paddingLeft: '1rem',
+                                              fontSize: '2.5rem',
+                                              fontWeight: 'bold',
+                                            }}>时间</span>
+                                        </div>
+                                        <div style={{
+                                          paddingLeft: '2rem',
+                                          position: 'relative',
+                                          display: 'flex',
+                                          flexDirection: 'row'
+                                        }} id="datePicker">
+                                          <DatePicker format="YYYY-MM-DD" style={{width: '35%'}}
+                                                      value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                      allowClear={false}
+                                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                      onFocus={() => this.setState({
+                                                        isEditMile: true,
+                                                        isCollapse: false
+                                                      })}/>
+                                          <div style={{
+                                            fontSize: '2.5rem',
+                                            fontWeight: 'bold',
+                                            padding: '2rem 2rem 0 2rem'
+                                          }}>~
+                                          </div>
+                                          <DatePicker format="YYYY-MM-DD" style={{width: '35%'}}
+                                                      value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                      allowClear={false}
+                                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                      onFocus={() => this.setState({
+                                                        isEditMile: true,
+                                                        isCollapse: false
+                                                      })}/>
+                                          {/*<div style={{*/}
+                                          {/*  color: '#f5222d',*/}
+                                          {/*  fontSize: '3.5rem',*/}
+                                          {/*  position: 'absolute',*/}
+                                          {/*  top: '10%',*/}
+                                          {/*  right: '18%'*/}
+                                          {/*}}>*/}
+                                          {/*  **/}
+                                          {/*</div>*/}
+                                          {/*<div style={{*/}
+                                          {/*  color: '#f5222d',*/}
+                                          {/*  fontSize: '3.5rem',*/}
+                                          {/*  position: 'absolute',*/}
+                                          {/*  top: '10%',*/}
+                                          {/*  right: '60%'*/}
+                                          {/*}}>*/}
+                                          {/*  **/}
+                                          {/*</div>*/}
+                                        </div>
+                                      </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                           return (
                                             <div className="flow" key={i}
-                                              style={{
-                                                display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
-                                                margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
-                                              }}>
+                                                 style={{
+                                                   display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                                   margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
+                                                 }}>
                                               <div>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
@@ -1896,25 +1948,25 @@ class NewProjectModelV2 extends React.Component {
                                                 {
                                                   e.swlxmc === "new" && (
                                                     <Select showSearch
-                                                      ref={this[`${index}inputRef${i}`]}
-                                                      filterOption={(input, option) =>
-                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                      }
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                      onChange={(e) => this.setState({ inputValue: e })}
+                                                            onChange={(e) => this.setState({inputValue: e})}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                      onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                      style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '1rem'
-                                                      }}>
+                                                            onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
                                                           // if (mi.swlx === e.swlxmc) {
                                                           return (
                                                             <Option title={mi.swlx} key={mi_index}
-                                                              value={mi.swlxid}>{mi.swlx}</Option>
+                                                                    value={mi.swlxid}>{mi.swlx}</Option>
                                                           )
                                                           // }
                                                         })
@@ -1929,30 +1981,30 @@ class NewProjectModelV2 extends React.Component {
                                                     if (sx.type && sx.type === 'title') {
                                                       return (
                                                         <div key={String(sx_index + 1)}
-                                                          style={{ paddingTop: '2rem', fontWeight: 'bold' }}>
+                                                             style={{paddingTop: '2rem', fontWeight: 'bold'}}>
                                                         </div>
                                                       )
                                                     }
                                                   })
                                                 }
                                               </div>
-                                              <div style={{ width: '80%', display: 'flex', flexWrap: 'wrap' }}>
-                                                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                              <div style={{width: '70%', display: 'flex', flexWrap: 'wrap'}}>
+                                                <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                       // console.log("sxsxsx",sx)
                                                       if (!sx.type && sx_index !== 0) {
                                                         return (
                                                           <div key={String(sx_index + 1)}
-                                                            className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                               className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
                                                             {
                                                               <React.Fragment>
                                                                 <span title={sx.sxmc}
-                                                                  style={{ fontSize: '2.5rem' }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
+                                                                      style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                                 {
                                                                   <span
                                                                     onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                                    <Icon type="close" className="icon" />
+                                                                    <Icon type="close" className="icon"/>
                                                                   </span>
                                                                 }
                                                               </React.Fragment>
@@ -1965,25 +2017,25 @@ class NewProjectModelV2 extends React.Component {
                                                   }
                                                   {inputVisible === `${index}+${i}` && (
                                                     <Select showSearch
-                                                      ref={this[`${index}inputRef${i}`]}
-                                                      filterOption={(input, option) =>
-                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                      }
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                      onChange={(e) => this.setState({ inputValue: e })}
+                                                            onChange={(e) => this.setState({inputValue: e})}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                      onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                      style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '1rem'
-                                                      }}>
+                                                            onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                           if (mi.swlx === e.swlxmc) {
                                                             return (
                                                               <Option title={mi.sxmc} key={mi_index}
-                                                                value={mi.sxid}>{mi.sxmc}</Option>
+                                                                      value={mi.sxid}>{mi.sxmc}</Option>
                                                             )
                                                           }
                                                         })
@@ -1994,25 +2046,25 @@ class NewProjectModelV2 extends React.Component {
                                                     e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                     (
                                                       <Select showSearch
-                                                        ref={this[`${index}inputRef${i}`]}
-                                                        filterOption={(input, option) =>
-                                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                        }
+                                                              ref={this[`${index}inputRef${i}`]}
+                                                              filterOption={(input, option) =>
+                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                              }
                                                         // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                        onChange={(e) => this.setState({ inputValue: e })}
+                                                              onChange={(e) => this.setState({inputValue: e})}
                                                         //milePostInfo[index].matterInfos[i].length
-                                                        onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                        style={{
-                                                          width: '20rem',
-                                                          marginTop: '0.7rem',
-                                                          marginLeft: '1rem'
-                                                        }}>
+                                                              onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                              style={{
+                                                                width: '20rem',
+                                                                marginTop: '0.7rem',
+                                                                marginLeft: '1rem'
+                                                              }}>
                                                         {
                                                           mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                             if (mi.swlx === e.swlxmc) {
                                                               return (
                                                                 <Option title={mi.sxmc} key={mi_index}
-                                                                  value={mi.sxid}>{mi.sxmc}</Option>
+                                                                        value={mi.sxid}>{mi.sxmc}</Option>
                                                               )
                                                             }
                                                           })
@@ -2028,11 +2080,11 @@ class NewProjectModelV2 extends React.Component {
                                                   color: '#3461FF'
                                                 }}>
                                                   <Tag onClick={() => this.showInput(index, i)}
-                                                    style={{ background: '#fff', borderStyle: 'dashed' }}>
-                                                    <Icon type="plus" /> 新增
+                                                       style={{background: '#fff',}}>
+                                                    <Icon type="plus"/> 新增
                                                   </Tag>
-                                                  <span onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                    style={{ cursor: 'pointer', fontSize: '2.5rem' }}>删除本行</span>
+                                                  {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
+                                                  {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
                                                 </div>
                                               </div>
                                             </div>
@@ -2045,7 +2097,7 @@ class NewProjectModelV2 extends React.Component {
                                     <div key={index} className="milePost" id={`milePost${index}`}>
                                       <div className="title">
                                         <div className="left">
-                                          <div style={{ marginTop: '2rem' }}>
+                                          <div style={{marginTop: '2rem'}}>
                                             <span style={{
                                               paddingLeft: '1rem',
                                               fontSize: '2.5rem',
@@ -2053,53 +2105,48 @@ class NewProjectModelV2 extends React.Component {
                                               borderLeft: '4px solid #3461FF'
                                             }}>{item.lcbmc}</span>
                                           </div>
-                                          <div style={{
-                                            paddingLeft: '2rem',
-                                            position: 'relative',
-                                            display: 'flex',
-                                            flexDirection: 'row'
-                                          }}>
-                                            <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}
-                                              value={moment(item.kssj, 'YYYY-MM-DD')}
-                                              allowClear={false}
-                                              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
-                                              onFocus={() => this.setState({
-                                                isEditMile: true,
-                                                isCollapse: false
-                                              })} />
-                                            <div style={{
-                                              fontSize: '2.5rem',
-                                              fontWeight: 'bold',
-                                              padding: '2rem 2rem 0 2rem'
-                                            }}>~
-                                            </div>
-                                            <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}
-                                              value={moment(item.jssj, 'YYYY-MM-DD')}
-                                              allowClear={false}
-                                              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
-                                              onFocus={() => this.setState({
-                                                isEditMile: true,
-                                                isCollapse: false
-                                              })} />
-                                            <div style={{
-                                              color: '#f5222d',
-                                              fontSize: '3.5rem',
-                                              position: 'absolute',
-                                              top: '10%',
-                                              right: '18%'
-                                            }}>
-                                              *
-                                            </div>
-                                            <div style={{
-                                              color: '#f5222d',
-                                              fontSize: '3.5rem',
-                                              position: 'absolute',
-                                              top: '10%',
-                                              right: '60%'
-                                            }}>
-                                              *
-                                            </div>
-                                          </div>
+                                          {/*<div style={{paddingLeft: '2rem', position: 'relative', display: 'flex', flexDirection: 'row'}}>*/}
+                                          {/*  <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}*/}
+                                          {/*    value={moment(item.kssj, 'YYYY-MM-DD')}*/}
+                                          {/*    allowClear={false}*/}
+                                          {/*    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}*/}
+                                          {/*    onFocus={() => this.setState({*/}
+                                          {/*      isEditMile: true,*/}
+                                          {/*      isCollapse: false*/}
+                                          {/*    })} />*/}
+                                          {/*  <div style={{*/}
+                                          {/*    fontSize: '2.5rem',*/}
+                                          {/*    fontWeight: 'bold',*/}
+                                          {/*    padding: '2rem 2rem 0 2rem'*/}
+                                          {/*  }}>~*/}
+                                          {/*  </div>*/}
+                                          {/*  <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}*/}
+                                          {/*    value={moment(item.jssj, 'YYYY-MM-DD')}*/}
+                                          {/*    allowClear={false}*/}
+                                          {/*    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}*/}
+                                          {/*    onFocus={() => this.setState({*/}
+                                          {/*      isEditMile: true,*/}
+                                          {/*      isCollapse: false*/}
+                                          {/*    })} />*/}
+                                          {/*  <div style={{*/}
+                                          {/*    color: '#f5222d',*/}
+                                          {/*    fontSize: '3.5rem',*/}
+                                          {/*    position: 'absolute',*/}
+                                          {/*    top: '10%',*/}
+                                          {/*    right: '18%'*/}
+                                          {/*  }}>*/}
+                                          {/*    **/}
+                                          {/*  </div>*/}
+                                          {/*  <div style={{*/}
+                                          {/*    color: '#f5222d',*/}
+                                          {/*    fontSize: '3.5rem',*/}
+                                          {/*    position: 'absolute',*/}
+                                          {/*    top: '10%',*/}
+                                          {/*    right: '60%'*/}
+                                          {/*  }}>*/}
+                                          {/*    **/}
+                                          {/*  </div>*/}
+                                          {/*</div>*/}
                                         </div>
                                         {
                                           <div className="right">
@@ -2134,29 +2181,84 @@ class NewProjectModelV2 extends React.Component {
                                             }
                                             {
                                               !item.lcbmc.includes("立项") && !item.lcbmc.includes("实施") && !item.lcbmc.includes("上线")
-                                              && <span style={{ cursor: 'pointer', fontSize: '2.5rem' }}
-                                                onClick={() => this.removeMilePostInfo(index)}>删除</span>
+                                              && <span style={{cursor: 'pointer', fontSize: '2.5rem'}}
+                                                       onClick={() => this.removeMilePostInfo(index)}>删除</span>
                                             }
 
                                           </div>
                                         }
 
                                       </div>
+                                      <div style={{display: 'flex', margin: '0 10rem 0 0', padding: '1rem 0 0 0',}}>
+                                        <div style={{marginTop: '2rem', textAlign: 'end', width: '10%',}}>
+                                            <span style={{
+                                              paddingLeft: '1rem',
+                                              fontSize: '2.5rem',
+                                              fontWeight: 'bold',
+                                            }}>时间</span>
+                                        </div>
+                                        <div style={{
+                                          paddingLeft: '2rem',
+                                          position: 'relative',
+                                          display: 'flex',
+                                          flexDirection: 'row'
+                                        }} id="datePicker">
+                                          <DatePicker format="YYYY-MM-DD" style={{width: '35%'}}
+                                                      value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                      allowClear={false}
+                                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                      onFocus={() => this.setState({
+                                                        isEditMile: true,
+                                                        isCollapse: false
+                                                      })}/>
+                                          <div style={{
+                                            fontSize: '2.5rem',
+                                            fontWeight: 'bold',
+                                            padding: '2rem 2rem 0 2rem'
+                                          }}>~
+                                          </div>
+                                          <DatePicker format="YYYY-MM-DD" style={{width: '35%'}}
+                                                      value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                      allowClear={false}
+                                                      onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                      onFocus={() => this.setState({
+                                                        isEditMile: true,
+                                                        isCollapse: false
+                                                      })}/>
+                                          {/*<div style={{*/}
+                                          {/*  color: '#f5222d',*/}
+                                          {/*  fontSize: '3.5rem',*/}
+                                          {/*  position: 'absolute',*/}
+                                          {/*  top: '10%',*/}
+                                          {/*  right: '18%'*/}
+                                          {/*}}>*/}
+                                          {/*  **/}
+                                          {/*</div>*/}
+                                          {/*<div style={{*/}
+                                          {/*  color: '#f5222d',*/}
+                                          {/*  fontSize: '3.5rem',*/}
+                                          {/*  position: 'absolute',*/}
+                                          {/*  top: '10%',*/}
+                                          {/*  right: '60%'*/}
+                                          {/*}}>*/}
+                                          {/*  **/}
+                                          {/*</div>*/}
+                                        </div>
+                                      </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                           return (
-                                            <div className="flow" key={i}
-                                              style={{
-                                                display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
-                                                margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
-                                              }}>
+                                            <div className="flow" key={i} style={{
+                                              display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                              margin: '0 10rem 0 0'
+                                            }}>
                                               {/*<GridLayout isDraggable={false} style={{marginBottom: '2rem'}}*/}
                                               {/*            onDragStop={(e) => this.stopDrag(e, index, i)}*/}
                                               {/*            compactType="horizontal" isBounded={true} isResizable={false}*/}
                                               {/*            className="layout" layout={e.gridLayout} rowHeight={3}*/}
                                               {/*            cols={5}*/}
                                               {/*            width={900}>*/}
-                                              <div>
+                                              <div style={{width: '10%',}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     if (sx.type && sx.type === 'title' && sx_index === 0) {
@@ -2164,7 +2266,8 @@ class NewProjectModelV2 extends React.Component {
                                                         <div key={String(sx_index + 1)} style={{
                                                           paddingTop: '3rem',
                                                           fontWeight: 'bold',
-                                                          fontSize: '2.5rem'
+                                                          fontSize: '2.5rem',
+                                                          textAlign: 'end',
                                                         }}>
                                                           {e.swlxmc || ''}
                                                         </div>
@@ -2175,25 +2278,25 @@ class NewProjectModelV2 extends React.Component {
                                                 {
                                                   e.swlxmc === "new" && (
                                                     <Select showSearch
-                                                      ref={this[`${index}inputRef${i}`]}
-                                                      filterOption={(input, option) =>
-                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                      }
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                      onChange={(e) => this.setState({ inputValue: e })}
+                                                            onChange={(e) => this.setState({inputValue: e})}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                      onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                      style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '1rem'
-                                                      }}>
+                                                            onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
                                                           // if (mi.swlx === e.swlxmc) {
                                                           return (
                                                             <Option title={mi.swlx} key={mi_index}
-                                                              value={mi.swlxid}>{mi.swlx}</Option>
+                                                                    value={mi.swlxid}>{mi.swlx}</Option>
                                                           )
                                                           // }
                                                         })
@@ -2208,30 +2311,30 @@ class NewProjectModelV2 extends React.Component {
                                                     if (sx.type && sx.type === 'title') {
                                                       return (
                                                         <div key={String(sx_index + 1)}
-                                                          style={{ paddingTop: '2rem', fontWeight: 'bold' }}>
+                                                             style={{paddingTop: '2rem', fontWeight: 'bold'}}>
                                                         </div>
                                                       )
                                                     }
                                                   })
                                                 }
                                               </div>
-                                              <div style={{ width: '80%', display: 'flex', flexWrap: 'wrap' }}>
-                                                <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                              <div style={{width: '70%', display: 'flex', flexWrap: 'wrap'}}>
+                                                <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                       // console.log("sxsxsx",sx)
                                                       if (!sx.type && sx_index !== 0) {
                                                         return (
                                                           <div key={String(sx_index + 1)}
-                                                            className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                               className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
                                                             {
                                                               <React.Fragment>
                                                                 <span title={sx.sxmc}
-                                                                  style={{ fontSize: '2.5rem' }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
+                                                                      style={{fontSize: '2.5rem'}}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                                 {
                                                                   <span
                                                                     onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                                    <Icon type="close" className="icon" />
+                                                                    <Icon type="close" className="icon"/>
                                                                   </span>
                                                                 }
                                                               </React.Fragment>
@@ -2244,25 +2347,25 @@ class NewProjectModelV2 extends React.Component {
                                                   }
                                                   {inputVisible === `${index}+${i}` && (
                                                     <Select showSearch
-                                                      ref={this[`${index}inputRef${i}`]}
-                                                      filterOption={(input, option) =>
-                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                      }
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                      onChange={(e) => this.setState({ inputValue: e })}
+                                                            onChange={(e) => this.setState({inputValue: e})}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                      onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                      style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '1rem'
-                                                      }}>
+                                                            onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                            style={{
+                                                              width: '20rem',
+                                                              marginTop: '0.7rem',
+                                                              marginLeft: '1rem'
+                                                            }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                           if (mi.swlx === e.swlxmc) {
                                                             return (
                                                               <Option title={mi.sxmc} key={mi_index}
-                                                                value={mi.sxid}>{mi.sxmc}</Option>
+                                                                      value={mi.sxid}>{mi.sxmc}</Option>
                                                             )
                                                           }
                                                         })
@@ -2273,25 +2376,25 @@ class NewProjectModelV2 extends React.Component {
                                                     e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                     (
                                                       <Select showSearch
-                                                        ref={this[`${index}inputRef${i}`]}
-                                                        filterOption={(input, option) =>
-                                                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                        }
+                                                              ref={this[`${index}inputRef${i}`]}
+                                                              filterOption={(input, option) =>
+                                                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                              }
                                                         // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                        onChange={(e) => this.setState({ inputValue: e })}
+                                                              onChange={(e) => this.setState({inputValue: e})}
                                                         //milePostInfo[index].matterInfos[i].length
-                                                        onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                        style={{
-                                                          width: '20rem',
-                                                          marginTop: '0.7rem',
-                                                          marginLeft: '1rem'
-                                                        }}>
+                                                              onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
+                                                              style={{
+                                                                width: '20rem',
+                                                                marginTop: '0.7rem',
+                                                                marginLeft: '1rem'
+                                                              }}>
                                                         {
                                                           mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                             if (mi.swlx === e.swlxmc) {
                                                               return (
                                                                 <Option title={mi.sxmc} key={mi_index}
-                                                                  value={mi.sxid}>{mi.sxmc}</Option>
+                                                                        value={mi.sxid}>{mi.sxmc}</Option>
                                                               )
                                                             }
                                                           })
@@ -2307,16 +2410,15 @@ class NewProjectModelV2 extends React.Component {
                                                   color: '#3461FF'
                                                 }}>
                                                   <Tag onClick={() => this.showInput(index, i)}
-                                                    style={{ background: '#fff', borderStyle: 'dashed' }}>
-                                                    <Icon type="plus" /> 新增
+                                                       style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                    <Icon type="plus"/> 新增
                                                   </Tag>
-                                                  <span onClick={() => this.removeMilePostTypeInfo(index, i)}
-                                                    style={{ cursor: 'pointer', fontSize: '2.5rem' }}>删除本行</span>
+                                                  {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
+                                                  {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
                                                 </div>
                                               </div>
                                             </div>
                                           )
-
                                         })
                                       }
 
@@ -2332,8 +2434,8 @@ class NewProjectModelV2 extends React.Component {
                       }
                       {
                         <div className="addMilePost" onClick={this.addMilePostInfo}>
-                          <Icon type="plus" style={{ fontSize: '1.7rem' }} /><span
-                            style={{ paddingLeft: '1rem', fontSize: '2.5rem' }}>新增里程碑</span>
+                          <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
+                          style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>新增里程碑</span>
                         </div>
                       }
 
@@ -2356,14 +2458,14 @@ class NewProjectModelV2 extends React.Component {
                             return (
                               <div className="jobItem">
                                 <div className="name"
-                                  style={{ color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : '' }}><span
-                                    style={{ color: '#de3741', paddingRight: '1rem' }}>*</span><span>{item.note}：</span>
+                                     style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}><span
+                                  style={{color: '#de3741', paddingRight: '1rem'}}>*</span><span>{item.note}：</span>
                                 </div>
-                                <div style={{ width: '65%' }}>
+                                <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={jobStaffList.length > 0 ? jobStaffList[9] : []}
-                                    onBlur={() => this.setState({ height: 0 })}
+                                    onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'manage')}
                                     onFocus={() => this.setState({
                                       staffInfo: {
@@ -2380,19 +2482,19 @@ class NewProjectModelV2 extends React.Component {
                                         jobStaffList[9] = e;
                                         this.setState({
                                           height: 0,
-                                          staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
+                                          staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
                                         });
                                       }
                                     }}
-                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
+                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
                                     mode="multiple"
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
                                   >
                                     {
                                       searchStaffList.length > 0 && searchStaffList.map((item, index) => {
                                         return (
                                           <Select.Option key={index}
-                                            value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                                         value={item.id}>{item.name}({item.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -2409,15 +2511,15 @@ class NewProjectModelV2 extends React.Component {
                             return (
                               <div className="jobItem">
                                 <div className="name"
-                                  style={{ color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : '' }}>
+                                     style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}>
                                   <Icon onClick={this.removeJob.bind(this, item.ibm)} type="close"
-                                    style={{ paddingRight: '1rem', cursor: 'pointer' }} /><span>{item.note}：</span>
+                                        style={{paddingRight: '1rem', cursor: 'pointer'}}/><span>{item.note}：</span>
                                 </div>
-                                <div style={{ width: '65%' }}>
+                                <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm) - 1] : []}
-                                    onBlur={() => this.setState({ height: 0 })}
+                                    onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() => this.setState({
                                       staffInfo: {
@@ -2431,18 +2533,18 @@ class NewProjectModelV2 extends React.Component {
                                       jobStaffList[Number(item.ibm) - 1] = e;
                                       this.setState({
                                         height: 0,
-                                        staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
+                                        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
                                       });
                                     }}
-                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
+                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
                                     mode="multiple"
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
                                   >
                                     {
                                       searchStaffList.map((item, index) => {
                                         return (
                                           <Select.Option key={index}
-                                            value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                                         value={item.id}>{item.name}({item.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -2484,18 +2586,18 @@ class NewProjectModelV2 extends React.Component {
                 }}>暂存草稿</Button>
                 <div className="steps-action">
                   {current > 0 && (
-                    <Button style={{ marginLeft: '2rem' }} onClick={() => this.prev()}>
+                    <Button style={{marginLeft: '2rem'}} onClick={() => this.prev()}>
                       上一步
                     </Button>
                   )}
                   {current < steps.length - 1 && (
-                    <Button type="primary" style={{ marginLeft: '2rem' }} onClick={() => this.next()}>
+                    <Button type="primary" style={{marginLeft: '2rem'}} onClick={() => this.next()}>
                       下一步
                     </Button>
                   )}
                   {current === steps.length - 1 && (
-                    <Button style={{ marginLeft: '2rem' }} type="primary"
-                      onClick={e => this.handleFormValidate(e, 1)} style={{ marginLeft: '2rem' }}>
+                    <Button style={{marginLeft: '2rem'}} type="primary"
+                            onClick={e => this.handleFormValidate(e, 1)} style={{marginLeft: '2rem'}}>
                       完成
                     </Button>
                   )}
