@@ -1903,7 +1903,11 @@ class NewProjectModelV2 extends React.Component {
                                 budget: budgetInfo.projectBudget,
                                 label: ''
                               });
-                            }} style={{width: '100%'}} precision={0}/>
+                            }} style={{width: '100%'}} onChange={e => {
+                              this.setState({
+                                budgetInfo: {...budgetInfo, projectBudget: e,}
+                              });
+                            }} precision={0}/>
                           )}
                         </Form.Item>
                       </Col>
