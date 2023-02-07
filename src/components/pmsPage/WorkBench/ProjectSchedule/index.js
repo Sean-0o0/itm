@@ -1,4 +1,4 @@
-import { Row, Col, Menu, Divider, message, Empty, Popconfirm } from 'antd';
+import { Row, Col, Menu, Divider, message, Empty, Popconfirm, Pagination, Popover } from 'antd';
 import React from 'react';
 import icon_wrong from "../../../../image/pms/icon_milepost_wrong.png";
 import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
@@ -86,6 +86,7 @@ class ProjectSchedule extends React.Component {
     fileAddVisible: false,
     fileAddUrl: '/OperateProcessor?operate=TXMXX_XMXX_NEWPROGRAM&Table=TXMXX_XMXX',
     src_fileAdd: `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`,
+    page: 1,//当前分页
   };
 
   componentDidMount() {
@@ -685,10 +686,8 @@ class ProjectSchedule extends React.Component {
 
   reflush = () => {
     console.log('刷新数据');
-    // this.fetchQueryLiftcycleMilestone(this.state.xmid);
-    // this.fetchQueryLifecycleStuff(this.state.xmid);
     const { fetchQueryOwnerProjectList } = this.props;
-    fetchQueryOwnerProjectList(1);
+    fetchQueryOwnerProjectList(this.state.page);
   }
 
   //文件wps预览-勿删
@@ -771,7 +770,6 @@ class ProjectSchedule extends React.Component {
     extend(number);
   }
   handPageChange = (e) => {
-    console.log(e);
     this.setState({
       page: e,
     })
@@ -821,7 +819,7 @@ class ProjectSchedule extends React.Component {
     }).then(res => {
       if (res.code === 1) {
         const { fetchQueryOwnerProjectList } = this.props;
-        fetchQueryOwnerProjectList(1);
+        fetchQueryOwnerProjectList(this.state.page);
       }
     }).catch((error) => {
       console.error(!error.success ? error.message : error.note);
@@ -838,12 +836,14 @@ class ProjectSchedule extends React.Component {
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       this.closeFileAddModal();
-      message.success('保存成功');
+      message.success('保存成功', 1);
+      const { fetchQueryOwnerProjectList } = this.props;
+      fetchQueryOwnerProjectList(this.state.page);
     }
   };
 
   render() {
-    const { data, total, ProjectScheduleDetailData } = this.props;
+    const { data, total, ProjectScheduleDetailData, fetchQueryOwnerProjectList} = this.props;
     const {
       uploadVisible,
       editVisible,
@@ -880,6 +880,7 @@ class ProjectSchedule extends React.Component {
       currentXmid,
       fileAddVisible,
       src_fileAdd,
+      page,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
     const uploadModalProps = {
@@ -991,6 +992,21 @@ class ProjectSchedule extends React.Component {
           )}
       </>
     );
+    const getMileStoneName = (xmid) => {
+      let temp = ProjectScheduleDetailData?.filter(x => x?.xmid === xmid);
+      let arr = (temp && temp[0])?.List;
+      return arr && (arr[0])?.lcb;
+    }
+    const getTagData = (tag) => {
+      let arr = [];
+      if (tag.includes(';')) {
+        arr = tag.split(';');
+      }
+      else {
+        arr.push(tag);
+      }
+      return arr;
+    }
     return (
       <Row className='workBench' style={{ height: '100%', padding: '3.571rem' }}>
         <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
@@ -1063,21 +1079,24 @@ class ProjectSchedule extends React.Component {
               src={editModelUrl} /></div>}
         {/* 修改项目弹窗 */}
         {fileAddVisible &&
-          <BridgeModel isSpining="customize" modalProps={fileAddModalProps} submitOperate={() => {
-            console.log('kkkkk1');
-            this.closeFileAddModal();
-            message.success('保存成功', 1);
-            console.log('kkkkk2');
-            // const { fetchQueryOwnerProjectList } = this.props;
-            // fetchQueryOwnerProjectList(1);
-          }} onCancel={this.closeFileAddModal}
+          <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onCancel={this.closeFileAddModal}
             src={src_fileAdd} />}
 
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row' }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ height: '100%' }}>
-              <div style={{ height: '100%', overflowY: 'auto', minHeight: 'calc(100vh - 93.2rem)' }}>
-                {data?.length === 0 && <Empty description='暂无项目' />}
+              <div style={{
+                height: '100%',
+                overflowY: 'auto',
+                minHeight: 'calc(100vh - 97.7rem)'
+              }}>
+                {data?.length === 0 && <div style={{
+                  height: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  justifyContent: 'center',
+                  minHeight: 'calc(100vh - 97.7rem)'
+                }}><Empty description='暂无项目' /></div>}
                 {
                   data?.map((items = {}, index) => {
                     return <>
@@ -1094,7 +1113,7 @@ class ProjectSchedule extends React.Component {
                         <Divider style={{ margin: '2.381rem 0' }} /></> :
                         <div className='workBench-LifeCycleManage'>
                           <div className='head'>
-                            <div style={{ width: '55%', display: 'flex' }}>
+                            <div style={{ width: items.extend ? 'calc(20% + 17.856rem)' : '20%', display: 'flex' }}>
                               <i
                                 className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                                 onClick={() => this.extend(index)} />&nbsp;
@@ -1103,12 +1122,24 @@ class ProjectSchedule extends React.Component {
                                   pathname: '/pms/manage/LifeCycleManagement',
                                   query: { xmid: items.xmid },
                                 }}>{items.xmmc}</Link>&nbsp;
-                                {/*<i*/}
-                                {/*  className={'iconfont icon-right'}*/}
-                                {/*  style={{ fontSize: '2.381rem' }}*/}
-                                {/*/>*/}
                                 {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
                               </div>
+                            </div>
+                            {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 17.856rem)' : '20%' }}></div>
+                              : <div className='current-milestone'>
+                                当前里程碑：
+                                <div className='milestone-item'>{getMileStoneName(items.xmid)}</div>
+                              </div>}
+                            <div className='prj-tags'>
+                              项目标签：
+                              {getTagData(items?.bq)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                              {getTagData(items?.bq)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(
+                                <div className='tag-more'>
+                                  {getTagData(items?.bq)?.slice(3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                                </div>
+                              )} title={null}>
+                                <div className='tag-item'>...</div>
+                              </Popover>}
                             </div>
                             <div className='head2'>
                               项目进度：
@@ -1125,6 +1156,8 @@ class ProjectSchedule extends React.Component {
                             <div className='head4'>
                               项目风险：<ProjectRisk userId={items?.userid}
                                 xmid={items?.xmid}
+                                page={page}
+                                fetchQueryOwnerProjectList={this.props.fetchQueryOwnerProjectList}
                                 loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
                                 state={items.fxnr} item={items}
                                 lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
@@ -1224,18 +1257,17 @@ class ProjectSchedule extends React.Component {
                   })
                 }
               </div>
-              {/* <div style={{ height: '10%', marginBottom: '1rem' }}>
+              <div style={{ height: '10%', marginBottom: '1rem' }}>
                 <Pagination
                   style={{ textAlign: 'end', fontSize: '2.083rem' }}
                   total={total}
                   size="small"
                   showTotal={total => `共 ${total} 条`}
-                  defaultPageSize={7}
+                  defaultPageSize={5}
                   onChange={this.handPageChange}
-                  // showQuickJumper={true}
                   defaultCurrent={1}
                 />
-              </div> */}
+              </div>
             </div>
           </Col>
         </Col>

@@ -172,13 +172,12 @@ class MainPageLayout extends React.PureComponent {
         return;
       }
       if (isChangeTheme) {
-        let url = this.getUrl(menuTree[0] || {});
+        let url = this.getUrl(menuTree[0] || {});//
         if (url) {
           this.props.dispatch(routerRedux.push(url));
         } else {
           window.location.href = '/#/403';
         }
-
       } else if (purl) {
         if (purl === '/loading' || purl === '/') {
           if (menuTree[0]) {

@@ -30,7 +30,7 @@ export default class PageHeader extends React.PureComponent {
       <div style={{ width: '100%'}}>
         {/* <GuideCover data={guidesRecords} /> */}
         <div className="zj-header">
-          <div style={{ width: '29.76rem', textAlign: 'center', borderRight: '1px solid #EBEEF5'}}>
+          <div style={{ width: '34rem', textAlign: 'center', borderRight: '1px solid #EBEEF5'}}>
             <span><img className="logo" src={require('../../../../assets/apex-logo-zszq-left.png')} alt=""/>
             </span>
             <span style={{
@@ -39,7 +39,7 @@ export default class PageHeader extends React.PureComponent {
               fontWeight: 'bold',
               letterSpacing: '0.25rem',
               verticalAlign: 'middle'
-            }}>{"信息技术管理平台"}</span>
+            }}>{"信息技术综合管理平台"}</span>
           </div>
           {/* <Divider style={{height:'3rem'}} type="vertical" /> */}
           <div id="visited_routes_container" style={{ flex: 1, overflow: 'hidden' }} className={`${styles.historyContainer}`} >

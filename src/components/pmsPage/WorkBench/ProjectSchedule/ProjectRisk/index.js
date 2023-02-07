@@ -1,5 +1,5 @@
 import React from 'react';
-import { Button, Input, Select, Row, Col, message } from 'antd';
+import { Select, message, Icon } from 'antd';
 import { connect } from 'dva';
 import { CreateOperateHyperLink } from "../../../../../services/pmsServices";
 import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
@@ -65,6 +65,8 @@ class ProjectRisk extends React.Component {
   //成功回调
   onSuccess = (name) => {
     message.success(name + "成功");
+    const { page, fetchQueryOwnerProjectList } = this.props;
+    fetchQueryOwnerProjectList(page);
   }
 
 
@@ -90,24 +92,25 @@ class ProjectRisk extends React.Component {
           <BridgeModel modalProps={riskModalProps} onSucess={() => this.onSuccess("修改")} onCancel={this.closeRiskModal}
             src={riskUrl} />}
         {
-          Number(state) > 0 && <div style={{ display: 'flex' }}><i style={{ color: 'red', fontSize: '2.381rem' }}
+          Number(state) > 0 && <div style={{ display: 'flex', alignItems: 'center' }}><i style={{ color: 'red', fontSize: '2.381rem' }}
             className="iconfont icon-warning" />
-            <a style={{ color: 'rgba(215, 14, 25, 1)' }} onClick={() => {
+            <span style={{ color: 'red', marginLeft: '0.5952rem' }}>存在
+            </span>
+            <Icon type="eye" style={{ color: 'red', marginLeft: '0.5952rem' }} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`;
-            }}>&nbsp;存在
-            </a>
+            }}></Icon>
           </div>
         }
         {
-          state === "0" && <div style={{ display: 'flex' }}>
-            <a style={{ color: 'rgb(48, 49, 51, 1)' }} onClick={() => {
+          state === "0" && <div style={{ display: 'flex', alignItems: 'center' }}>
+            暂无风险<Icon type="plus-circle" style={{ color: '#3361ff', marginLeft: '0.5952rem' }} onClick={() => {
               const { userId, loginUserId } = this.props;
               if (Number(userId) === Number(loginUserId)) {
                 this.hanldeRisk(xmid, lcbid);
               } else {
                 message.error(`抱歉，只有当前项目经理可以进行该操作`);
               }
-            }}>&nbsp;暂无风险</a>
+            }} />
           </div>
         }
       </div>

@@ -39,7 +39,7 @@ import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../utils/config";
 import PaymentProcess from './PaymentProcess';
 import moment from 'moment';
-import {DecryptBase64} from "../../Common/Encrypt";
+import { DecryptBase64 } from "../../Common/Encrypt";
 
 const { TabPane } = Tabs;
 
@@ -139,14 +139,14 @@ class LifeCycleManagementTabs extends React.Component {
   getUrlParams = () => {
     let params;
     if (this.props.match !== undefined) {
-      const {match: {params: {params: encryptParams = ''}}} = this.props;
+      const { match: { params: { params: encryptParams = '' } } } = this.props;
       params = JSON.parse(DecryptBase64(encryptParams));
     }
     return params;
   }
 
   fetchQueryOwnerProjectList = (current, pageSize) => {
-    const {params} = this.props;
+    const { params } = this.props;
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
@@ -191,7 +191,7 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   //查询自己名下还在执行的项目
-  fetchQueryOwnerProjectListUser = () => {
+  fetchQueryOwnerProjectListUser = (xmid = '') => {
     const { params } = this.props;
     console.log("11111", params)
     FetchQueryOwnerProjectList(
@@ -212,7 +212,7 @@ class LifeCycleManagementTabs extends React.Component {
         this.setState({
           // defaultValue: params.xmid,
           isHaveItem: true,
-          xmid: record[0]?.xmid,
+          xmid: xmid === '' ? record[0]?.xmid : xmid,
           allItemsDataFirst: record,
           operationListData: record,
         })
@@ -977,6 +977,11 @@ class LifeCycleManagementTabs extends React.Component {
     this.fetchQueryProjectInfoInCycle(key);
   }
 
+  changeTab = (xmid) => {
+    this.setState({ xmid });
+    console.log(hhh, xmid);
+  };
+
   render() {
     const {
       uploadVisible,
@@ -1296,6 +1301,8 @@ class LifeCycleManagementTabs extends React.Component {
                                     </div>
                                     <div className='head4'>
                                       项目风险：<ProjectRisk userId={projectInfo?.userid}
+                                        fetchQueryOwnerProjectListUser={this.fetchQueryOwnerProjectListUser}
+                                        changeTab={this.changeTab}
                                         loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
                                         item={item} xmid={this.state.xmid} />
                                     </div>
@@ -1352,17 +1359,23 @@ class LifeCycleManagementTabs extends React.Component {
                                                   </div>
                                                   <div>
                                                     {sort[index].List.map((item = {}, ind) => {
-                                                      return <Row key={ind} className='cont-row' style={{
-                                                        // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
-                                                        // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
-                                                        marginTop: ind === 0 ? '2.6784rem' : '2.3808rem'
-                                                      }}>
-                                                        <Col
-                                                          span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 14 : 17}>
-                                                          <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                            <Points status={item.zxqk} />
+                                                      return <>
+                                                        <div key={ind} className='cont-row' style={{
+                                                          // height: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '2rem' : '5rem'),
+                                                          // margin: ((ind === sort[index].List.length - 1 && (sort.length - 3 <= index) && (index <= sort.length)) ? '0' : '0 0 1rem 0')
+                                                          marginTop: ind === 0 ? '2.6784rem' : '2.3808rem',
+                                                          display: 'flex', alignItems: 'center'
+                                                        }}>
+                                                          <Points status={item.zxqk} />
+                                                          <div style={{ width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '58.33%' : '75%' }}>
+                                                            {/* <div style={{ display: 'flex', alignItems: 'center' }}> */}
                                                             {/*根据事项类型判断是否是文档*/}
                                                             {
+                                                            //   ["文档","信委会","总办会","需求调研",
+                                                            //   "产品设计","系统框架搭建","功能开发",
+                                                            //   "外部系统对接","需求设计","招标","合同",
+                                                            //   "系统测试"
+                                                            // ].includes()
                                                               item.swlx.includes("文档") ||
                                                                 item.swlx.includes("信委会") ||
                                                                 item.swlx.includes("总办会") ||
@@ -1371,6 +1384,13 @@ class LifeCycleManagementTabs extends React.Component {
                                                                 item.swlx.includes("系统框架搭建") ||
                                                                 item.swlx.includes("功能开发") ||
                                                                 item.swlx.includes("外部系统对接") ||
+                                                                item.swlx.includes("需求设计") ||
+                                                                item.sxmc.includes("中标公告") ||
+                                                                item.sxmc.includes("报告") ||
+                                                                item.sxmc.includes("图") ||
+                                                                item.sxmc.includes("功能清单") ||
+                                                                item.sxmc.includes("说明书") ||
+                                                                item.sxmc.includes("手册") ||
                                                                 item.swlx.includes("系统测试") ? (
                                                                 fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
                                                                   <Popover
@@ -1392,25 +1412,27 @@ class LifeCycleManagementTabs extends React.Component {
                                                                 <span
                                                                   className='lifecycle-text-overflow'>{item.sxmc}</span>
                                                             }
+                                                            {/* </div> */}
                                                           </div>
-                                                          <div className='cont-row-zxqk'>{item.zxqk}</div>
-                                                        </Col>
-                                                        <Col
-                                                          span={(item.zxqk !== " ") && item.sxmc.includes('付款流程') ? 10 : 6}
-                                                          style={{ textAlign: 'left', width: '29%' }}>
-                                                          <Tooltips type={item.swlx}
-                                                            item={item}
-                                                            status={item.zxqk}
-                                                            xmid={xmid}
-                                                            projectInfo={projectInfo}
-                                                            handleUpload={() => this.handleUpload(item)}
-                                                            handleSend={this.handleSend}
-                                                            handleFillOut={() => this.handleFillOut(item)}
-                                                            handleEdit={() => this.handleEdit(item)}
-                                                            handleMessageEdit={this.handleMessageEdit}
-                                                          />
-                                                        </Col>
-                                                      </Row>
+                                                          <div style={{
+                                                            width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '41.67%' : '25%',
+                                                            textAlign: 'left', width: '29%'
+                                                          }} >
+                                                            <Tooltips type={item.swlx}
+                                                              item={item}
+                                                              status={item.zxqk}
+                                                              xmid={xmid}
+                                                              projectInfo={projectInfo}
+                                                              handleUpload={() => this.handleUpload(item)}
+                                                              handleSend={this.handleSend}
+                                                              handleFillOut={() => this.handleFillOut(item)}
+                                                              handleEdit={() => this.handleEdit(item)}
+                                                              handleMessageEdit={this.handleMessageEdit}
+                                                            />
+                                                          </div>
+                                                        </div>
+                                                        <div className='cont-row-zxqk'>{item.zxqk}</div>
+                                                      </>
                                                     })}
                                                   </div>
                                                 </div>

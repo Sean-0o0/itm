@@ -39,7 +39,7 @@ class FastFunction extends React.Component {
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       this.closeFileAddModal();
-      message.success('保存成功');
+      // message.success('保存成功');
       //projectId跳转到生命周期页面
       const params = {
         projectId: sessionStorage.getItem("projectId"),

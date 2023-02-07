@@ -1,11 +1,11 @@
 import React from 'react';
-import {Button, Input, Select, Row, Col, message} from 'antd';
-import {connect} from 'dva';
+import { Select, message, Icon } from 'antd';
+import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
-import {CreateOperateHyperLink} from "../../../../services/pmsServices";
+import { CreateOperateHyperLink } from "../../../../services/pmsServices";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 
-const {Option} = Select;
+const { Option } = Select;
 
 const Loginname = localStorage.getItem("firstUserID");
 
@@ -45,7 +45,7 @@ class ProjectRisk extends React.Component {
   //信息录入url
   getRiskUrl = (params, callBack) => {
     CreateOperateHyperLink(params).then((ret = {}) => {
-      const {code, message, url} = ret;
+      const { code, message, url } = ret;
       if (code === 1) {
         this.setState({
           riskUrl: url,
@@ -65,21 +65,23 @@ class ProjectRisk extends React.Component {
 
   //成功回调
   onSuccess = (name) => {
+    const { xmid, changeTab, fetchQueryOwnerProjectListUser, item } = this.props;
     message.success(name + "成功");
+    fetchQueryOwnerProjectListUser(xmid);
   }
 
 
   render() {
 
-    const {item, xmid} = this.props;
-    const {riskUrl, riskTitle, riskVisible,} = this.state;
+    const { item, xmid } = this.props;
+    const { riskUrl, riskTitle, riskVisible, } = this.state;
     const riskModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '100rem',
       height: '60rem',
       title: riskTitle,
-      style: {top: '10rem'},
+      style: { top: '10rem' },
       visible: riskVisible,
       footer: null,
     };
@@ -87,27 +89,28 @@ class ProjectRisk extends React.Component {
       <div>
         {/*风险信息修改弹窗*/}
         {riskVisible &&
-        <BridgeModel modalProps={riskModalProps} onSucess={() => this.onSuccess("修改")} onCancel={this.closeRiskModal}
-                     src={riskUrl}/>}
+          <BridgeModel modalProps={riskModalProps} onSucess={() => this.onSuccess("修改")} onCancel={this.closeRiskModal}
+            src={riskUrl} />}
         {
-          item?.fxnr !== "-1" && <div style={{display: 'flex'}}><i style={{color: 'red', fontSize: '2.381rem'}}
-                                                                   className="iconfont icon-warning"/>
-            <a style={{color: 'rgba(215, 14, 25, 1)'}} onClick={() => {
+          item?.fxnr !== "-1" && <div style={{ display: 'flex', alignItems: 'center' }}><i style={{ color: 'red', fontSize: '2.381rem' }}
+            className="iconfont icon-warning" />
+            <span style={{ color: 'red', marginLeft: '0.5952rem' }}>存在
+            </span>
+            <Icon type="eye" style={{ color: 'red', marginLeft: '0.5952rem' }} onClick={() => {
               window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`;
-            }}>&nbsp;存在
-            </a>
+            }}></Icon>
           </div>
         }
         {
-          item?.fxnr === "-1" && <div style={{display: 'flex'}}>
-            <a style={{color: 'rgb(51, 97, 255, 1)'}} onClick={() => {
+          item?.fxnr === "-1" && <div style={{ display: 'flex', alignItems: 'center' }}>
+            暂无风险<Icon type="plus-circle" style={{ color: '#3361ff', marginLeft: '0.5952rem' }} onClick={() => {
               const { userId, loginUserId } = this.props;
               if (Number(userId) === Number(loginUserId)) {
                 this.hanldeRisk(xmid, item);
               } else {
                 message.error(`抱歉，只有当前项目经理可以进行该操作`);
               }
-              }}>&nbsp;暂无风险</a>
+            }}></Icon>
           </div>
         }
       </div>

@@ -368,7 +368,7 @@ class ContractInfoUpdate extends React.Component {
             {
                 title: <><span style={{ color: 'red' }}>*</span>付款金额（元）</>,
                 dataIndex: 'fkje',
-                width: '16%',
+                width: '22%',
                 key: 'fkje',
                 ellipsis: true,
                 editable: true,
@@ -376,7 +376,7 @@ class ContractInfoUpdate extends React.Component {
             {
                 title: <><span style={{ color: 'red' }}>*</span>付款时间</>,
                 dataIndex: 'fksj',
-                width: '29%',
+                width: '23%',
                 key: 'fksj',
                 ellipsis: true,
                 editable: true,

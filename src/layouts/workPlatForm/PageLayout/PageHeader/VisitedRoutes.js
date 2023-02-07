@@ -117,12 +117,12 @@ function VisitedRoutes(props) {
 
   return (
     <div style={{ width: visitedScroll }} className='clearfix' id='visited-scroll' >
-      <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
+      {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
           <span style={{ margin: '0 1rem' }}>首页</span>
         </Link>
-      </div>
+      </div> */}
       {
         urls.length > 0 && urls.map((item) => {
           let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};

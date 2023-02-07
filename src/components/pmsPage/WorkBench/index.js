@@ -161,9 +161,9 @@ class WorkBench extends React.Component {
     FetchQueryOwnerProjectList(
       {
         cxlx: 'INDEX',
-        paging: -1,
+        paging: 1,
         current: e ? e : 1,
-        pageSize: 7,
+        pageSize: 5,
         total: -1,
         sort: ''
       }
@@ -184,15 +184,21 @@ class WorkBench extends React.Component {
       xmmc: (e[0])?.xmid,
     }).then(res => {
       let userid = res?.record?.userid;
+      let indexArr = [];
+      e.forEach((item, index) => {
+        if (item.zt !== '2')
+          indexArr.push(index);
+      })
+      // console.log(indexArr);
       for (let i = 0; i < e.length; i++) {
         (e[i])?.zt !== '2' && FetchQueryLiftcycleMilestone({
           cxlx: 'SINGLE',
           xmmc: (e[i])?.xmid,
         }).then((ret = {}) => {
           const { record = [], code = 0 } = ret;
-          if (code === 1) {
+          if (code === 1 && record[0]) {
             //zxxh排序
-            e[i].extend = i === 0;
+            e[i].extend = i === indexArr[0];//第一个不为草稿的
             e[i].kssj = (record[0])?.kssj
             e[i].jssj = (record[0])?.jssj
             e[i].status = (record[0])?.zt
