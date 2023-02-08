@@ -12,7 +12,6 @@ class LifeCycleManagement extends Component {
     let jsonParam = ""
     if (this.props.match.params.params !== undefined) {
       jsonParam = JSON.parse(DecryptBase64(encryptParams));
-      console.log("params", jsonParam);
     }
     return (
       <React.Fragment>

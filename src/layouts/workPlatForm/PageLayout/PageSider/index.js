@@ -21,8 +21,8 @@ export default class PageSider extends React.Component {
     const { location: { pathname = '', search = '' } } = history;
     const oldPathname = prevState.selectedKeys[0] || '';
     let newPathname = pathname + search;
-    if (pathname && pathname === '/pms/manage/LifeCycleManagement') {
-      newPathname = pathname;
+    if (pathname && pathname.includes('/pms/manage/LifeCycleManagement')) {
+      newPathname = '/pms/manage/LifeCycleManagement';
     }
     if (oldPathname !== newPathname) {
       this.setState({

@@ -18,6 +18,7 @@ import {
 import React from 'react';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import { Link } from 'dva/router';
+import { EncryptBase64 } from '../../../../components/Common/Encrypt';
 import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff, UpdateMessageState
@@ -634,12 +635,17 @@ class TodoItems extends React.Component {
         // key: 'xmmc',
         render: (text, record) => {
           return <span><Tooltip title={text.length > 10 ? text : ''} style={{ fontSize: '2.381rem' }}>
-            <span style={{ display: 'flex', }}><Link style={{ color: '#3361ff', fontSize: '2.083rem', }} to={{
-              pathname: '/pms/manage/LifeCycleManagement',
-              query: { xmid: record.xmid },
-            }}>
+            <span style={{ display: 'flex', }}><a style={{ color: '#3361ff', fontSize: '2.083rem', }}
+              // to={{
+              //   pathname: '/pms/manage/LifeCycleManagement',
+              //   query: { xmid: record.xmid },
+              // }}
+              onClick={
+                () => window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify({ projectId: record.xmid }))}`
+              }
+            >
               {text.length > 10 ? text.slice(0, 10) + '...' : text}
-            </Link></span></Tooltip></span>
+            </a></span></Tooltip></span>
         },
       },
       {

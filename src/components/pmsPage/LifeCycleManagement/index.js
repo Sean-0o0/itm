@@ -113,27 +113,29 @@ class LifeCycleManagementTabs extends React.Component {
 
   componentDidMount() {
 
-    const params = this.getUrlParams();
-    console.log("params", params)
+    // const params = this.getUrlParams();
+    const { params } = this.props;
+    console.log("params@@", params)
     if (params !== undefined && params.projectId && params.projectId !== -1) {
       this.setState({
         xmid: params.projectId,
       })
-      this.fetchQueryOwnerProjectListUser();
+      this.fetchQueryOwnerProjectListUser(params.projectId);
     } else {
-      this.fetchQueryOwnerProjectListUser();
+      this.fetchQueryOwnerProjectListUser(params.projectId);
     }
     // this.fetchQueryOwnerProjectList(1, PASE_SIZE);
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    if (nextProps.params !== this.props.params) {
+    console.log('###',nextProps.params ,this.props);
+    if (nextProps.params.projectId !== this.props.params.projectId) {
       this.setState({
-        xmid: nextProps.params.xmid,
+        xmid: nextProps.params.projectId,
       });
-      this.fetchQueryLiftcycleMilestone(nextProps.params.xmid ? nextProps.params.xmid : this.state.xmid)
-      this.fetchQueryLifecycleStuff(nextProps.params.xmid ? nextProps.params.xmid : this.state.xmid)
-      this.fetchQueryProjectInfoInCycle(nextProps.params.xmid ? nextProps.params.xmid : this.state.xmid)
+      this.fetchQueryLiftcycleMilestone(nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid)
+      this.fetchQueryLifecycleStuff(nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid)
+      this.fetchQueryProjectInfoInCycle(nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid)
     }
   }
 
@@ -176,7 +178,7 @@ class LifeCycleManagementTabs extends React.Component {
         rec[0] = record[0];
         this.setState({
           isHaveItem: false,
-          defaultValue: params.xmid,
+          defaultValue: params.projectId,
           xmid: record[0].xmid,
           allItemsData: record,
           allItemsDataFirst: rec,
@@ -185,8 +187,8 @@ class LifeCycleManagementTabs extends React.Component {
           this.fetchQueryProjectInfoInCycle(this.props.params?.xmid || Number(this.state.allItemsData[0]?.xmid));
         });
       }
-      this.fetchQueryLiftcycleMilestone(params.xmid);
-      this.fetchQueryLifecycleStuff(params.xmid);
+      this.fetchQueryLiftcycleMilestone(params.projectId);
+      this.fetchQueryLifecycleStuff(params.projectId);
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -212,7 +214,7 @@ class LifeCycleManagementTabs extends React.Component {
       if (code === 1 && record.length > 0) {
         // console.log("recordcccc",record)
         this.setState({
-          // defaultValue: params.xmid,
+          // defaultValue: params.projectId,
           isHaveItem: true,
           xmid: xmid === '' ? record[0]?.xmid : xmid,
           allItemsDataFirst: record,
@@ -1198,14 +1200,14 @@ class LifeCycleManagementTabs extends React.Component {
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
           fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
           closePaymentProcessModal={this.closePaymentProcessModal}
           onSuccess={() => this.onSuccess("流程发起")}
         />}
 
         {/*合同信息修改弹窗*/}
         {editMessageVisible && <ContractInfoUpdate
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
           currentXmmc={currentXmmc}
           editMessageVisible={editMessageVisible}
           closeMessageEditModal={this.closeMessageEditModal}
@@ -1214,7 +1216,7 @@ class LifeCycleManagementTabs extends React.Component {
 
         {/*中标信息修改弹窗*/}
         {bidInfoModalVisible && <BidInfoUpdate
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.xmid) || Number(this.state.operationListData[0].xmid)}
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
           currentXmmc={currentXmmc}
           bidInfoModalVisible={bidInfoModalVisible}
           closeBidInfoModal={this.closeBidInfoModal}

@@ -39,26 +39,17 @@ function VisitedRoutes(props) {
 
   const { location: { pathname = '', search = '' } } = history;
   let newPathname = pathname + search;
-  if (pathname && pathname === '/pms/manage/LifeCycleManagement') {
-    newPathname = pathname;
+  if (pathname && pathname.includes('/pms/manage/LifeCycleManagement')) {
+    newPathname = '/pms/manage/LifeCycleManagement';
   }
 
   const calclateMoreIconPosition = () => {
-    // const visitedRoutesDom = document.querySelector('#visited_routes_container');
-    // const operationDropsDom = document.querySelector('#fma_opertion_drops');
     const visitedRoutes = document.getElementsByClassName('cur-tabs') || [];
     let totalWidth = 0;
     for (let i = 0; i < visitedRoutes.length; i++) {
       totalWidth += visitedRoutes[i].offsetWidth;
     }
-    setVisitedScroll(totalWidth + 2)
-    // setVisitedRoutesWidth(visitedRoutesDom.clientWidth);
-    // if(visitedRoutesDom.clientWidth < visitedRoutesDom.scrollWidth) {
-    //   setIsFixedMore(true);
-    //   setOperationDropsWidth(operationDropsDom.clientWidth - moreIconRef.current.clientWidth);
-    // } else {
-    //   setIsFixedMore(false);
-    // }
+    setVisitedScroll(totalWidth + 2);
   };
 
   useEffect(() => {

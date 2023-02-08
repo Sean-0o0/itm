@@ -1117,10 +1117,16 @@ class ProjectSchedule extends React.Component {
                                   className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                                   onClick={() => this.extend(index)} />&nbsp;
                                 <div className='head1'>
-                                  <Link className='head1-link' to={{
-                                    pathname: '/pms/manage/LifeCycleManagement',
-                                    query: { xmid: items.xmid },
-                                  }}>{items.xmmc}</Link>&nbsp;
+                                  <a className='head1-link'
+                                    style={{ color: '#3361FF' }}
+                                    // to={{
+                                    //   pathname: '/pms/manage/LifeCycleManagement',
+                                    //   query: { xmid: items.xmid },
+                                    // }}
+                                    onClick={
+                                      () => window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify({ projectId: items?.xmid }))}`
+                                    }
+                                  >{items?.xmmc}</a>&nbsp;
                                   {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
                                 </div>
                               </div>
@@ -1259,7 +1265,7 @@ class ProjectSchedule extends React.Component {
                       </>
                     })
                   }
-                  {!isSpinning&&data?.length === 0 && <div style={{
+                  {!isSpinning && data?.length === 0 && <div style={{
                     height: '100%',
                     display: 'flex',
                     alignItems: 'center',

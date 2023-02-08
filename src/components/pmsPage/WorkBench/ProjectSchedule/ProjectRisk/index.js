@@ -1,5 +1,5 @@
 import React from 'react';
-import { Select, message, Icon } from 'antd';
+import { Select, message, Icon, Tooltip } from 'antd';
 import { connect } from 'dva';
 import { CreateOperateHyperLink } from "../../../../../services/pmsServices";
 import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
@@ -97,21 +97,24 @@ class ProjectRisk extends React.Component {
             className="iconfont icon-warning" />
             <span style={{ color: 'red', marginLeft: '0.5952rem' }}>存在
             </span>
-            <Icon type="eye" style={{ color: 'red', marginLeft: '0.5952rem' }} onClick={() => {
-              window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`;
-            }}></Icon>
+            <Tooltip title="查看风险">
+              <Icon type="eye" style={{ color: 'red', marginLeft: '0.5952rem' }} onClick={() => window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`}></Icon>
+            </Tooltip>
           </div>
         }
         {
           state === "0" && <div style={{ display: 'flex', alignItems: 'center' }}>
-            暂无风险<Icon type="plus-circle" style={{ color: '#3361ff', marginLeft: '0.5952rem' }} onClick={() => {
-              const { userId, loginUserId } = this.props;
-              if (Number(userId) === Number(loginUserId)) {
-                this.hanldeRisk(xmid, lcbid);
-              } else {
-                message.error(`抱歉，只有当前项目经理可以进行该操作`);
-              }
-            }} />
+            暂无风险
+            <Tooltip title="添加风险">
+              <Icon type="plus-circle" style={{ color: '#3361ff', marginLeft: '0.5952rem' }} onClick={() => {
+                const { userId, loginUserId } = this.props;
+                if (Number(userId) === Number(loginUserId)) {
+                  this.hanldeRisk(xmid, lcbid);
+                } else {
+                  message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                }
+              }} />
+            </Tooltip>
           </div>
         }
       </div>

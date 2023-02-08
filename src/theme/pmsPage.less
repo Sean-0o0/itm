@@ -3506,7 +3506,7 @@
     .ant-popover-inner {
       .ant-popover-inner-content {
         padding: 1.1904rem 2.3808rem 0 2.3808rem;
-        max-height: 14.392rem;
+        max-height: 14.6rem;
         overflow: hidden;
         overflow-y: auto;
 
@@ -3522,13 +3522,13 @@
         }
 
         & .tag-more {
-          width: 22.32rem;
-          display: flex;
-          flex-wrap: wrap;
-          align-items: center;
-          justify-content: space-between;
+          // width: 22.32rem;
+          // display: block;
+          // flex-wrap: wrap;
+          // align-items: center;
+          // justify-content: space-between;
 
-          .tag-item {
+          &>.tag-item {
             color: #3361FF;
             font-size: 1.7856rem;
             border: 0.1488rem solid #3361ff8f;
@@ -3538,6 +3538,11 @@
             height: 3.2736rem;
             line-height: 3.2736rem;
             margin-bottom: 1.1904rem;
+            width: fit-content;
+            max-width: 21.1296rem;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
           }
         }
       }
