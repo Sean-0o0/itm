@@ -1096,13 +1096,6 @@ class ProjectSchedule extends React.Component {
                   overflowY: 'auto',
                   minHeight: 'calc(100vh - 97.7rem)'
                 }}>
-                  {data?.length === 0 && <div style={{
-                    height: '100%',
-                    display: 'flex',
-                    alignItems: 'center',
-                    justifyContent: 'center',
-                    minHeight: 'calc(100vh - 97.7rem)'
-                  }}><Empty description='暂无项目' /></div>}
                   {
                     data?.map((items = {}, index) => {
                       return <>
@@ -1266,6 +1259,13 @@ class ProjectSchedule extends React.Component {
                       </>
                     })
                   }
+                  {!isSpinning&&data?.length === 0 && <div style={{
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 'calc(100vh - 97.7rem)'
+                  }}><Empty description='暂无项目' /></div>}
                 </div>
               </Spin>
               <div style={{ height: '10%', marginBottom: '1rem' }}>

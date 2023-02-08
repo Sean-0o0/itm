@@ -52,7 +52,7 @@ class WorkBench extends React.Component {
     this.setIsSpinning(true);
     this.fetchQueryOwnerProjectList();
   }
-  setIsSpinning = (bool)=> this.setState({isSpinning: bool});
+  setIsSpinning = (bool) => this.setState({ isSpinning: bool });
 
   fetchQueryOwnerMessage = (page, date, cxlx) => {
     const defaultDate = moment(new Date())
@@ -184,46 +184,54 @@ class WorkBench extends React.Component {
   }
 
   fetchQueryLiftcycleMilestone = (e, total) => {
-    (e[0]) && FetchQueryProjectInfoInCycle({
-      xmmc: (e[0])?.xmid,
-    }).then(res => {
-      let userid = res?.record?.userid;
-      let indexArr = [];
-      e.forEach((item, index) => {
-        if (item.zt !== '2')
-          indexArr.push(index);
-      })
-      indexArr.push(-1);
-      for (let i = 0; i < e.length; i++) {
-        if ((e[i])?.zt !== '2') {
-          FetchQueryLiftcycleMilestone({
-            cxlx: 'SINGLE',
-            xmmc: (e[i])?.xmid,
-          }).then((ret = {}) => {
-            const { record = [], code = 0 } = ret;
-            if (code === 1 && record[0]) {
-              //zxxh排序
-              e[i].extend = i === indexArr[0];//第一个不为草稿的
-              e[i].kssj = (record[0])?.kssj
-              e[i].jssj = (record[0])?.jssj
-              e[i].status = (record[0])?.zt
-              e[i].userid = userid;
-              this.setState({
-                ProjectScheduleTotal: total,
-                ProjectScheduleData: e,
-                isSpinning: false
-              });
-            }
-          });
-        } else {
-          this.setState({
-            ProjectScheduleTotal: total,
-            ProjectScheduleData: e,
-            isSpinning: false
-          });
+    if (e[0]) {
+      FetchQueryProjectInfoInCycle({
+        xmmc: (e[0])?.xmid,
+      }).then(res => {
+        let userid = res?.record?.userid;
+        let indexArr = [];
+        e.forEach((item, index) => {
+          if (item.zt !== '2')
+            indexArr.push(index);
+        })
+        indexArr.push(-1);
+        for (let i = 0; i < e.length; i++) {
+          if ((e[i])?.zt !== '2') {
+            FetchQueryLiftcycleMilestone({
+              cxlx: 'SINGLE',
+              xmmc: (e[i])?.xmid,
+            }).then((ret = {}) => {
+              const { record = [], code = 0 } = ret;
+              if (code === 1 && record[0]) {
+                //zxxh排序
+                e[i].extend = i === indexArr[0];//第一个不为草稿的
+                e[i].kssj = (record[0])?.kssj
+                e[i].jssj = (record[0])?.jssj
+                e[i].status = (record[0])?.zt
+                e[i].userid = userid;
+                this.setState({
+                  ProjectScheduleTotal: total,
+                  ProjectScheduleData: e,
+                  isSpinning: false
+                });
+              }
+            });
+          } else {
+            this.setState({
+              ProjectScheduleTotal: total,
+              ProjectScheduleData: e,
+              isSpinning: false
+            });
+          }
         }
-      }
-    });
+      });
+    } else {
+      this.setState({
+        ProjectScheduleTotal: total,
+        ProjectScheduleData: e,
+        isSpinning: false
+      });
+    }
   }
 
   fetchQueryLifecycleStuff = (e = []) => {
