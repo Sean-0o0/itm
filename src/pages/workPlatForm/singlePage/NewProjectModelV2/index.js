@@ -481,6 +481,9 @@ class NewProjectModelV2 extends React.Component {
 
   // 修改项目时查询项目详细信息
   fetchQueryProjectDetails(params) {
+    const {staffJobList =[]} = this.state;
+    console.log("staffJobList",staffJobList)
+    let newStaffJobList = [];
     return FetchQueryProjectDetails(params)
       .then((result) => {
         const { code = -1, record = [] } = result;
@@ -490,17 +493,39 @@ class NewProjectModelV2 extends React.Component {
           let searchStaffList = [];
           let memberInfo = JSON.parse(result.memberInfo);
           memberInfo.push({ gw: '10', rymc: result.projectManager });
+          let arr = [];
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
             rymc.forEach(ry => {
               this.state.staffList.forEach(staff => {
-                if (ry == staff.id) {
+                if (ry === staff.id) {
                   searchStaffList.push(staff);
                 }
               })
             })
+            // 初始化各个岗位下对应的员工id的数组
+            arr[Number(item.gw)] = [item.rymc];
+            // 获取当前登录用户信息
+            const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+            loginUser.id = String(loginUser.id);
+            arr[9] = [loginUser.id];
+            this.setState({
+              searchStaffList: [loginUser],
+              loginUser: loginUser,
+              // staffJobList: RYGW,
+              staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
+            });
+            staffJobList.map(i=>{
+              if(String(i.ibm) === String(item.gw)){
+                newStaffJobList.push(i)
+              }
+            })
           });
+          // newStaffJobList.unshift({ibm:"10",note:"项目经理"})
+          this.setState({ staffJobList: this.sortByKey(newStaffJobList, 'ibm', true) })
+          console.log("arr",arr)
+          console.log("newStaffJobList",newStaffJobList)
           let totalBudget = 0;
           let relativeBudget = 0;
           this.state.budgetProjectList.forEach(item => {
@@ -937,6 +962,7 @@ class NewProjectModelV2 extends React.Component {
       return;
     }
     let staffJobParam = [];
+    console.log("staffJobList保存",staffJobList);
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
