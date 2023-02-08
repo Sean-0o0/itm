@@ -163,23 +163,70 @@ class NewProjectModelV2 extends React.Component {
         }
       }
       if (flag === milePostInfo.length) {
-        const current = this.state.current + 1;
-        this.setState({current});
+        const _this = this;
+        const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
+        if (timeList && timeList.length > 0) {
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '有里程碑信息的默认起止时间没有修改，是否确认？',
+            onOk() {
+              const current = _this.state.current + 1;
+              _this.setState({current});
+            },
+            onCancel() {
+            },
+          });
+        } else {
+          const current = _this.state.current + 1;
+          _this.setState({current});
+        }
       }
-    } else {
-      const current = this.state.current + 1;
-      this.setState({current});
     }
-    this.isFinish();
+    console.log("current", this.state.current)
+    this.isFinish(this.state.current);
   }
 
   //是否已经填完所有必填项
-  isFinish = () => {
+  isFinish = (current) => {
     let basicFlag = false;
     let lcbFlag = false;
     const {basicInfo = {}, budgetInfo = {}} = this.state
-    console.log("budgetInfo.budgetProjectId", budgetInfo.budgetProjectId)
-    console.log("basicInfo.org", basicInfo.org)
+    if (current === 0) {
+      this.basicisFinish(current)
+    }
+    const {mileInfo: {milePostInfo = []}} = this.state;
+    const reg1 = new RegExp("-", "g");
+    let flag = 0
+    for (let i = 0; i < milePostInfo.length; i++) {
+      const jssj = milePostInfo[i].jssj.replace(reg1, "");
+      const kssj = milePostInfo[i].kssj.replace(reg1, "");
+      if (Number(kssj) > Number(jssj)) {
+        break;
+      } else {
+        flag++;
+      }
+    }
+    if (flag === milePostInfo.length && current === 1 && this.basicisFinish()) {
+      this.setState({
+        isFinish: 2
+      })
+      // lcbFlag = true;
+    } else if (flag === milePostInfo.length && current === 1 && !this.basicisFinish()) {
+      this.setState({
+        isFinish: 1
+      })
+    } else if (flag !== milePostInfo.length && current === 1) {
+      this.setState({
+        isFinish: -1
+      })
+    }
+  }
+
+  basicisFinish = (current) => {
+    let basicFlag = false;
+    const {basicInfo = {}, budgetInfo = {}} = this.state
     if (basicInfo.projectName !== '' && basicInfo.projectType !== '' && basicInfo.org !== '' && basicInfo.org?.length !== 0 && basicInfo.biddingMethod !== '') {
       if (budgetInfo.budgetProjectId !== '' && budgetInfo.budgetProjectId !== "0" && budgetInfo.projectBudget !== "" && budgetInfo.projectBudget !== null) {
         this.setState({
@@ -201,37 +248,7 @@ class NewProjectModelV2 extends React.Component {
         isFinish: -1
       })
     }
-    const {mileInfo: {milePostInfo = []}} = this.state;
-    const reg1 = new RegExp("-", "g");
-    let flag = 0
-    for (let i = 0; i < milePostInfo.length; i++) {
-      const jssj = milePostInfo[i].jssj.replace(reg1, "");
-      const kssj = milePostInfo[i].kssj.replace(reg1, "");
-      if (Number(kssj) > Number(jssj)) {
-        break;
-      } else {
-        flag++;
-      }
-    }
-    if (flag === milePostInfo.length) {
-      this.setState({
-        isFinish: 1
-      })
-      lcbFlag = true;
-    } else {
-      this.setState({
-        isFinish: -1
-      })
-    }
-    if (lcbFlag && basicFlag) {
-      this.setState({
-        isFinish: 2,
-      })
-    } else {
-      this.setState({
-        isFinish: -1
-      })
-    }
+    return basicFlag;
   }
 
   prev() {
@@ -282,6 +299,7 @@ class NewProjectModelV2 extends React.Component {
   // 处理岗位数据
   filterJobList = () => {
     const { dictionary: { RYGW = [] } } = this.props;
+    console.log("RYGW", RYGW)
     // 初始化各个岗位下对应的员工id的数组
     let arr = [];
     RYGW.forEach(item => {
@@ -474,7 +492,7 @@ class NewProjectModelV2 extends React.Component {
           let memberInfo = JSON.parse(result.memberInfo);
           memberInfo.push({ gw: '10', rymc: result.projectManager });
           memberInfo.forEach(item => {
-            let rymc = item.rymc.split(',').map(String);
+            let rymc = item.rymc.split(';').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
             rymc.forEach(ry => {
               this.state.staffList.forEach(staff => {
@@ -903,7 +921,7 @@ class NewProjectModelV2 extends React.Component {
     } else {
       basicflag = false;
     }
-    if (basicflag && type === 1) {
+    if (!basicflag && type === 1) {
       message.warn("项目基本信息及预算信息未填写完整！");
       return;
     }
@@ -1400,6 +1418,9 @@ class NewProjectModelV2 extends React.Component {
   }
 
   onChange0 = current => {
+    console.log("this.state.current", this.state.current)
+    console.log("index", current)
+    //验证项目名称必填，在点击下一步的时候就要验证
     if (this.state.current === 0) {
       this.props.form.validateFields((err, values) => {
         if (err) {
@@ -1427,11 +1448,29 @@ class NewProjectModelV2 extends React.Component {
         }
       }
       if (flag === milePostInfo.length) {
-        this.setState({current});
+        const _this = this;
+        const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
+        if (timeList && timeList.length > 0) {
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '有里程碑信息的默认起止时间没有修改，是否确认？',
+            onOk() {
+              _this.setState({current});
+            },
+            onCancel() {
+            },
+          });
+        } else {
+          const current = _this.state.current + 1;
+          _this.setState({current});
+        }
       }
     } else {
       this.setState({current});
     }
+    this.isFinish(this.state.current);
   };
 
   handleClose = removedTag => {
@@ -1569,6 +1608,7 @@ class NewProjectModelV2 extends React.Component {
       swlxarr = [],
       isFinish = -1
     } = this.state;
+    // console.log("staffJobList",staffJobList)
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
@@ -1629,7 +1669,7 @@ class NewProjectModelV2 extends React.Component {
                 <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
                     <Step key={index} title={item.title}
-                          status={isFinish === 2 ? 'finish' : (isFinish === index ? 'finish' : 'wait')}/>
+                          status={isFinish === 2 ? (index === 2 ? 'wait' : 'finish') : (isFinish === index ? 'finish' : 'wait')}/>
                   ))}
                 </Steps>
               </div>
@@ -2021,8 +2061,8 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 2rem 2rem 10rem'}}>
-                  <Steps progressDot style={{height: '100rem', width: '15%', padding: '3rem 0'}} direction="vertical"
+                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 10rem 2rem 10rem'}}>
+                  <Steps progressDot style={{height: '100rem', width: '20%', padding: '3rem 0'}} direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
@@ -2035,8 +2075,7 @@ class NewProjectModelV2 extends React.Component {
                          overflowY: 'scroll',
                          overflowX: 'hidden',
                          height: '100%',
-                         width: '83%',
-                         margin: '0 0 15rem 0'
+                         width: '80%',
                        }}
                        ref={c => {
                          this.scrollRef = c;
@@ -2157,13 +2196,13 @@ class NewProjectModelV2 extends React.Component {
                                       </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
+                                          console.log("e.sxlb", e.sxlb)
                                           return (
                                             <div className="flow" key={i}
                                                  style={{
                                                    display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
-                                                   margin: i > 0 ? '1rem 3rem 0 3rem' : '0 3rem'
                                                  }}>
-                                              <div>
+                                              <div style={{width: '10%'}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     if (sx.type && sx.type === 'title' && sx_index === 0) {
@@ -2171,7 +2210,8 @@ class NewProjectModelV2 extends React.Component {
                                                         <div key={String(sx_index + 1)} style={{
                                                           paddingTop: '3rem',
                                                           fontWeight: 'bold',
-                                                          fontSize: '2.5rem'
+                                                          fontSize: '2.5rem',
+                                                          textAlign: 'end'
                                                         }}>
                                                           {e.swlxmc || ''}
                                                         </div>
@@ -2222,7 +2262,7 @@ class NewProjectModelV2 extends React.Component {
                                                   })
                                                 }
                                               </div>
-                                              <div style={{width: '70%', display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{width: '78%', display: 'flex', flexWrap: 'wrap'}}>
                                                 <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
@@ -2249,7 +2289,7 @@ class NewProjectModelV2 extends React.Component {
                                                       }
                                                     })
                                                   }
-                                                  {inputVisible === `${index}+${i}` && (
+                                                  {inputVisible === `${index}+${i}` ? (
                                                     <Select showSearch
                                                             ref={this[`${index}inputRef${i}`]}
                                                             filterOption={(input, option) =>
@@ -2275,7 +2315,14 @@ class NewProjectModelV2 extends React.Component {
                                                         })
                                                       }
                                                     </Select>
-                                                  )}
+                                                  ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
+                                                    <div style={{margin: '1.5rem'}}><Tag
+                                                      style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                      <a className="iconfont circle-add"
+                                                         style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                         onClick={() => this.showInput(index, i)}>新增</a>
+                                                    </Tag></div>)
+                                                  }
                                                   {
                                                     e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                     (
@@ -2313,12 +2360,12 @@ class NewProjectModelV2 extends React.Component {
                                                   right: '0.7%',
                                                   color: '#3461FF'
                                                 }}>
-                                                  <Tag
-                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
-                                                    <a className="iconfont circle-add"
-                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
-                                                       onClick={() => this.showInput(index, i)}>新增</a>
-                                                  </Tag>
+                                                  {/*<Tag*/}
+                                                  {/*  style={{background: '#fff', borderStyle: 'dashed'}}>*/}
+                                                  {/*  <a className="iconfont circle-add"*/}
+                                                  {/*     style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}*/}
+                                                  {/*     onClick={() => this.showInput(index, i)}>新增</a>*/}
+                                                  {/*</Tag>*/}
                                                   {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
                                                   {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
                                                 </div>
@@ -2381,7 +2428,7 @@ class NewProjectModelV2 extends React.Component {
                                         }
 
                                       </div>
-                                      <div style={{display: 'flex', margin: '0 10rem 0 0', padding: '1rem 0 0 0',}}>
+                                      <div style={{display: 'flex', padding: '1rem 0 0 0',}}>
                                         <div style={{marginTop: '2rem', textAlign: 'end', width: '10%',}}>
                                             <span style={{
                                               paddingLeft: '1rem',
@@ -2439,10 +2486,10 @@ class NewProjectModelV2 extends React.Component {
                                       </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
+                                          console.log("e.sxlb", e.sxlb)
                                           return (
                                             <div className="flow" key={i} style={{
                                               display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
-                                              margin: '0 10rem 0 0'
                                             }}>
                                               {/*<GridLayout isDraggable={false} style={{marginBottom: '2rem'}}*/}
                                               {/*            onDragStop={(e) => this.stopDrag(e, index, i)}*/}
@@ -2510,7 +2557,7 @@ class NewProjectModelV2 extends React.Component {
                                                   })
                                                 }
                                               </div>
-                                              <div style={{width: '70%', display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{width: '78%', display: 'flex', flexWrap: 'wrap'}}>
                                                 <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
@@ -2537,7 +2584,7 @@ class NewProjectModelV2 extends React.Component {
                                                       }
                                                     })
                                                   }
-                                                  {inputVisible === `${index}+${i}` && (
+                                                  {inputVisible === `${index}+${i}` ? (
                                                     <Select showSearch
                                                             ref={this[`${index}inputRef${i}`]}
                                                             filterOption={(input, option) =>
@@ -2563,7 +2610,13 @@ class NewProjectModelV2 extends React.Component {
                                                         })
                                                       }
                                                     </Select>
-                                                  )}
+                                                  ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
+                                                    <div style={{margin: '1.5rem'}}><Tag
+                                                      style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                      <a className="iconfont circle-add"
+                                                         style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                         onClick={() => this.showInput(index, i)}>新增</a>
+                                                    </Tag></div>)}
                                                   {
                                                     e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                     (
@@ -2601,13 +2654,12 @@ class NewProjectModelV2 extends React.Component {
                                                   right: '0.7%',
                                                   color: '#3461FF'
                                                 }}>
-
-                                                  <Tag
-                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
-                                                    <a className="iconfont circle-add"
-                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
-                                                       onClick={() => this.showInput(index, i)}>新增</a>
-                                                  </Tag>
+                                                  {/*<Tag*/}
+                                                  {/*  style={{background: '#fff', borderStyle: 'dashed'}}>*/}
+                                                  {/*  <a className="iconfont circle-add"*/}
+                                                  {/*     style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}*/}
+                                                  {/*     onClick={() => this.showInput(index, i)}>新增</a>*/}
+                                                  {/*</Tag>*/}
                                                   {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
                                                   {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
                                                 </div>
