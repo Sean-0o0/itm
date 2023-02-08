@@ -89,7 +89,7 @@ const TableBox = (props) => {
                     }
                 });
                 submitTable.push({});
-                console.log("🚀submitTable", submitTable)
+                // console.log("🚀submitTable", submitTable)
                 let submitData = {
                     json: JSON.stringify(submitTable),
                     count: tableData.length,

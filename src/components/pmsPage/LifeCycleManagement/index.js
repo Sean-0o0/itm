@@ -1369,15 +1369,8 @@ class LifeCycleManagementTabs extends React.Component {
                                                           height: '4.65rem'
                                                         }}>
                                                           <Points status={item.zxqk} />
-                                                          <div style={{ width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '58.33%' : '75%' }}>
-                                                            {/* <div style={{ display: 'flex', alignItems: 'center' }}> */}
-                                                            {/*根据事项类型判断是否是文档*/}
+                                                          <div style={{ width: '75%' }}>
                                                             {
-                                                              //   ["文档","信委会","总办会","需求调研",
-                                                              //   "产品设计","系统框架搭建","功能开发",
-                                                              //   "外部系统对接","需求设计","招标","合同",
-                                                              //   "系统测试"
-                                                              // ].includes()
                                                               item.swlx.includes("文档") ||
                                                                 item.swlx.includes("信委会") ||
                                                                 item.swlx.includes("总办会") ||
@@ -1414,11 +1407,10 @@ class LifeCycleManagementTabs extends React.Component {
                                                                 <span
                                                                   className='lifecycle-text-overflow'>{item.sxmc}</span>
                                                             }
-                                                            {/* </div> */}
                                                           </div>
                                                           <div style={{
-                                                            width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '41.67%' : '25%',
-                                                            textAlign: 'left',
+                                                            width: '25%',
+                                                            textAlign: 'right',
                                                           }} >
                                                             <Tooltips type={item.swlx}
                                                               item={item}

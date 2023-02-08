@@ -304,7 +304,7 @@ class MainPageLayout extends React.PureComponent {
       //使用浙商管理平台的图标
       if(text === "首页"){
         icon = 'icon-home';
-      }if(text === "项目信息"){
+      }if(text === "项目管理"){
         icon = 'icon-detail';
       }if(text === "项目预算"){
         icon = 'icon-cash';

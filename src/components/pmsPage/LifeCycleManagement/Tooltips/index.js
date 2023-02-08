@@ -108,7 +108,7 @@ class Tooltips extends React.Component {
 
   handleAuthority = (fn, txt, arg) => {
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
-    console.log(Number(this.props.userId) ,LOGIN_USER_ID,this.props);
+    console.log(Number(this.props.userId), LOGIN_USER_ID, this.props);
     if (Number(this.props?.userId || this.props?.projectInfo?.userid) === LOGIN_USER_ID) {
       if (arg) {
         fn.call(this, arg);
@@ -147,7 +147,7 @@ class Tooltips extends React.Component {
   getSpan = txt => <span style={{ marginLeft: '0.5952rem' }}>{txt}</span>;
   //流程发起查看
   getLcfqck = (status, item, isFklc = false) => {
-    //status === ' '
+    // status === ' '
     if (status === ' ') {
       return (
         <div title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
@@ -184,17 +184,17 @@ class Tooltips extends React.Component {
         );
       }
       return (
-        <>
+        <div style={{ display: 'flex', alignItems: 'center' }}>
           <div title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
             <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
             >{this.getSpan('查看')}</a>
           </div>
-          <Dropdown overlay={menu}>
+          <Dropdown overlay={menu} overlayClassName='tooltip-dropdown'>
             <i style={{ color: 'rgba(51, 97, 255, 1)', marginLeft: '1.5rem' }}
               className="iconfont icon-more">
             </i>
           </Dropdown>
-        </>
+        </div>
       );
     }
 
@@ -319,7 +319,7 @@ class Tooltips extends React.Component {
     item.xmid = xmid;
     const name = item.sxmc; //事项名称
     return (
-      <div className={name === '付款流程' ? 'rowline-cont tooltip-hover' : 'tooltip-hover'}>
+      <div className='tooltip-hover'>
         {this.getToolTip(name, status, item)}
       </div>
     );

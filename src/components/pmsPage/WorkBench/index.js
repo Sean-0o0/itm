@@ -191,7 +191,6 @@ class WorkBench extends React.Component {
       })
       indexArr.push(-1);
       for (let i = 0; i < e.length; i++) {
-        console.log(e[i]);
         if ((e[i])?.zt !== '2') {
           FetchQueryLiftcycleMilestone({
             cxlx: 'SINGLE',

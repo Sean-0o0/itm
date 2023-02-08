@@ -138,7 +138,7 @@ function VisitedRoutes(props) {
           }
           tabCount++;
           return (
-            <div key={url} className={`cur-tabs ${styles.tagview} ${newPathname === url && styles.isActive}`}>
+            <div key={url} className={`cur-tabs ${styles.tagview} ${newPathname === url && styles.isActive}`} style={{padding: '0 2.3804rem'}}>
               <Link to={url}>{title}</Link>
               <i className="iconfont icon-fill-clear zy-ico-del" onClick={() => { closePage(url); }} />
               {/* <Icon type="close-circle" theme="twoTone" twoToneColor="#ec6057"  /> */}

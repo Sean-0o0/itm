@@ -326,7 +326,7 @@ class ProjectSchedule extends React.Component {
       xmmc: item.xmid
     }).then((ret = {}) => {
       const { code = 0, record = [] } = ret;
-      console.log("WpsWDXXData", record);
+      // console.log("WpsWDXXData", record);
       if (code === 1) {
         if (record.url.includes("[")) {
           let obj = JSON.parse(record.url);
@@ -843,8 +843,7 @@ class ProjectSchedule extends React.Component {
   };
 
   render() {
-    const { data, total, ProjectScheduleDetailData, fetchQueryOwnerProjectList} = this.props;
-    console.log("🚀 ~ file: index.js ~ line 847 ~ ProjectSchedule ~ render ~ data", data)
+    const { data, total, ProjectScheduleDetailData, fetchQueryOwnerProjectList } = this.props;
     const {
       uploadVisible,
       editVisible,
@@ -1000,11 +999,13 @@ class ProjectSchedule extends React.Component {
     }
     const getTagData = (tag) => {
       let arr = [];
-      if (tag.includes(';')) {
-        arr = tag.split(';');
-      }
-      else {
-        arr.push(tag);
+      if (tag !== '') {
+        if (tag.includes(';')) {
+          arr = tag.split(';');
+        }
+        else {
+          arr.push(tag);
+        }
       }
       return arr;
     }
@@ -1105,7 +1106,7 @@ class ProjectSchedule extends React.Component {
                         <span className='prj-name'>{items.xmmc}</span>
                         <div className='prj-status'><span>项目状态：</span>草稿</div>
                         <div className='update-delete'>
-                          <a onClick={() => this.handleDraftModify(items.xmid)}>修改</a>
+                          <a onClick={() => this.handleDraftModify(items.xmid)}>编辑</a>
                           <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDraftDelete(items.xmid)}>
                             <a>删除</a>
                           </Popconfirm>
@@ -1114,7 +1115,7 @@ class ProjectSchedule extends React.Component {
                         <Divider style={{ margin: '2.381rem 0' }} /></> :
                         <div className='workBench-LifeCycleManage'>
                           <div className='head'>
-                            <div style={{ width: items.extend ? 'calc(20% + 17.856rem)' : '20%', display: 'flex' }}>
+                            <div style={{ width: items.extend ? 'calc(20% + 25rem)' : '20%', display: 'flex' }}>
                               <i
                                 className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
                                 onClick={() => this.extend(index)} />&nbsp;
@@ -1126,21 +1127,23 @@ class ProjectSchedule extends React.Component {
                                 {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
                               </div>
                             </div>
-                            {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 17.856rem)' : '20%' }}></div>
+                            {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 25rem)' : '20%' }}></div>
                               : <div className='current-milestone'>
                                 当前里程碑：
                                 <div className='milestone-item'>{getMileStoneName(items.xmid)}</div>
                               </div>}
+
                             <div className='prj-tags'>
-                              项目标签：
-                              {getTagData(items?.bq)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
-                              {getTagData(items?.bq)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(
-                                <div className='tag-more'>
-                                  {getTagData(items?.bq)?.slice(3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
-                                </div>
-                              )} title={null}>
-                                <div className='tag-item'>...</div>
-                              </Popover>}
+                              {getTagData(items?.bq).length !== 0 && <>项目标签：
+                                {getTagData(items?.bq)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                                {getTagData(items?.bq)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(
+                                  <div className='tag-more'>
+                                    {getTagData(items?.bq)?.slice(3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                                  </div>
+                                )} title={null}>
+                                  <div className='tag-item'>...</div>
+                                </Popover>}
+                              </>}
                             </div>
                             <div className='head2'>
                               项目进度：

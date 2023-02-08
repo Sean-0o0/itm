@@ -79,7 +79,8 @@ class TodoItems extends React.Component {
     contractModalVisible: false,
     //中标信息修改弹窗
     bidInfoModalVisible: false,
-
+    //是否选中日期，控制未完成显示
+    isDateSelected: false,
   };
 
 
@@ -671,10 +672,10 @@ class TodoItems extends React.Component {
     this.setState({
       date: moment(e).format('YYYYMMDD'),
       cxlx: "ALL",
+      isDateSelected: true,
     })
     const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD'), "ALL")
-
   }
 
   getUndoItems = () => {
@@ -737,6 +738,7 @@ class TodoItems extends React.Component {
       contractModalVisible,
       //中标信息修改弹窗
       bidInfoModalVisible,
+      isDateSelected,
     } = this.state;
     const uploadModalProps = {
       isAllWindow: 1,
@@ -835,8 +837,7 @@ class TodoItems extends React.Component {
             }} onClick={this.onclickdb}>待办事项
             </div>
             <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
-              {wzxsl === 0 ? ''
-                :
+              {wzxsl !== 0 && isDateSelected &&
                 <>
                   <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
                     className="iconfont icon-shijian" />
