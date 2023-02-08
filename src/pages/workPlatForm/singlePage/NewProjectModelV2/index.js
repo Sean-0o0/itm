@@ -259,19 +259,19 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    await this.fetchQuerySoftwareList();
+    this.fetchQuerySoftwareList();
     // 查询项目标签
-    await this.fetchQueryProjectLabel();
+    this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
     await this.fetchQueryMilepostInfo({
       type: 1,
@@ -281,11 +281,6 @@ class NewProjectModelV2 extends React.Component {
       label: ''
     });
 
-    // 修改加载状态
-    this.setState({loading: false});
-    //判断完成状态
-    this.isFinish();
-
     // 查询人员信息
     await this.fetchQueryMemberInfo();
 
@@ -293,6 +288,10 @@ class NewProjectModelV2 extends React.Component {
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
     }
+    // 修改加载状态
+    this.setState({loading: false});
+    //判断完成状态
+    this.isFinish();
   };
 
 
@@ -492,7 +491,7 @@ class NewProjectModelV2 extends React.Component {
           let memberInfo = JSON.parse(result.memberInfo);
           memberInfo.push({ gw: '10', rymc: result.projectManager });
           memberInfo.forEach(item => {
-            let rymc = item.rymc.split(';').map(String);
+            let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
             rymc.forEach(ry => {
               this.state.staffList.forEach(staff => {
@@ -943,7 +942,7 @@ class NewProjectModelV2 extends React.Component {
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
         let param = {
           gw: index,
-          rymc: jobStaffList[index - 1].join(',')
+          rymc: jobStaffList[index - 1].join(';')
         };
         staffJobParam.push(param);
       }
@@ -1608,7 +1607,7 @@ class NewProjectModelV2 extends React.Component {
       swlxarr = [],
       isFinish = -1
     } = this.state;
-    // console.log("staffJobList",staffJobList)
+    console.log("staffJobList", staffJobList)
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
@@ -2061,7 +2060,7 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 10rem 2rem 10rem'}}>
+                current === 1 && <div style={{display: 'flex', height: '75%', margin: '2rem 0 2rem 20rem'}}>
                   <Steps progressDot style={{height: '100rem', width: '20%', padding: '3rem 0'}} direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
 
@@ -2262,7 +2261,7 @@ class NewProjectModelV2 extends React.Component {
                                                   })
                                                 }
                                               </div>
-                                              <div style={{width: '78%', display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{width: '90%', display: 'flex', flexWrap: 'wrap'}}>
                                                 <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
@@ -2557,7 +2556,7 @@ class NewProjectModelV2 extends React.Component {
                                                   })
                                                 }
                                               </div>
-                                              <div style={{width: '78%', display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{width: '90%', display: 'flex', flexWrap: 'wrap'}}>
                                                 <div style={{display: 'flex', flexWrap: 'wrap'}}>
                                                   {
                                                     e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
