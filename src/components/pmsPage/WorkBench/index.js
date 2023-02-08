@@ -34,6 +34,7 @@ class WorkBench extends React.Component {
     ProjectScheduleDetailData: [],
     ProjectScheduleTotal: 0,
     sliderData: [],
+    isSpinning: false, //项目进度加载状态
   };
 
   componentDidCache = () => {
@@ -42,13 +43,16 @@ class WorkBench extends React.Component {
   componentDidRecover = () => {
     this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
     this.fetchQueryOwnerWorkflow();
+    this.setIsSpinning(true);
     this.fetchQueryOwnerProjectList();
   }
   componentDidMount() {
     this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
     this.fetchQueryOwnerWorkflow();
+    this.setIsSpinning(true);
     this.fetchQueryOwnerProjectList();
   }
+  setIsSpinning = (bool)=> this.setState({isSpinning: bool});
 
   fetchQueryOwnerMessage = (page, date, cxlx) => {
     const defaultDate = moment(new Date())
@@ -207,6 +211,7 @@ class WorkBench extends React.Component {
               this.setState({
                 ProjectScheduleTotal: total,
                 ProjectScheduleData: e,
+                isSpinning: false
               });
             }
           });
@@ -214,6 +219,7 @@ class WorkBench extends React.Component {
           this.setState({
             ProjectScheduleTotal: total,
             ProjectScheduleData: e,
+            isSpinning: false
           });
         }
       }
@@ -273,6 +279,7 @@ class WorkBench extends React.Component {
       ProjectScheduleTotal = 0,
       ProjectScheduleDetailData = [],
       sliderData,
+      isSpinning,
     } = this.state;
     return (
       <div style={{ height: 'calc(100% - 4.5rem)' }}>
@@ -319,7 +326,8 @@ class WorkBench extends React.Component {
                 <div style={{ height: '100%' }}>
                   <ProjectSchedule data={ProjectScheduleData} total={ProjectScheduleTotal}
                     fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
-                    ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend} />
+                    ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend}
+                    isSpinning={isSpinning} setIsSpinning={this.setIsSpinning} />
                 </div>
               </div>
             </Col>

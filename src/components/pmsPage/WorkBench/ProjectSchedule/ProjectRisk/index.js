@@ -65,7 +65,8 @@ class ProjectRisk extends React.Component {
   //成功回调
   onSuccess = (name) => {
     message.success(name + "成功");
-    const { page, fetchQueryOwnerProjectList } = this.props;
+    const { page, fetchQueryOwnerProjectList, setIsSpinning } = this.props;
+    setIsSpinning(true);
     fetchQueryOwnerProjectList(page);
   }
 

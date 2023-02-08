@@ -1,4 +1,4 @@
-import { Row, Col, Menu, Divider, message, Empty, Popconfirm, Pagination, Popover } from 'antd';
+import { Row, Col, Menu, Divider, message, Empty, Popconfirm, Pagination, Popover, Spin } from 'antd';
 import React from 'react';
 import icon_wrong from "../../../../image/pms/icon_milepost_wrong.png";
 import ProjectProgress from "../../LifeCycleManagement/ProjectProgress";
@@ -15,7 +15,6 @@ import {
   CreateOperateHyperLink,
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone,
-  FetchQueryOwnerProjectList,
   FetchQueryProjectInfoInCycle,
   FetchQueryWpsWDXX,
 } from "../../../../services/pmsServices";
@@ -686,7 +685,8 @@ class ProjectSchedule extends React.Component {
 
   reflush = () => {
     console.log('刷新数据');
-    const { fetchQueryOwnerProjectList } = this.props;
+    const { fetchQueryOwnerProjectList, setIsSpinning } = this.props;
+    setIsSpinning(true);
     fetchQueryOwnerProjectList(this.state.page);
   }
 
@@ -773,7 +773,8 @@ class ProjectSchedule extends React.Component {
     this.setState({
       page: e,
     })
-    const { fetchQueryOwnerProjectList } = this.props;
+    const { fetchQueryOwnerProjectList, setIsSpinning } = this.props;
+    setIsSpinning(true);
     fetchQueryOwnerProjectList(e)
   }
   handleColorChange = (e) => {
@@ -818,7 +819,8 @@ class ProjectSchedule extends React.Component {
       type: 'DELETE',
     }).then(res => {
       if (res.code === 1) {
-        const { fetchQueryOwnerProjectList } = this.props;
+        const { fetchQueryOwnerProjectList, setIsSpinning } = this.props;
+        setIsSpinning(true);
         fetchQueryOwnerProjectList(this.state.page);
       }
     }).catch((error) => {
@@ -837,13 +839,14 @@ class ProjectSchedule extends React.Component {
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       this.closeFileAddModal();
       message.success('保存成功', 1);
-      const { fetchQueryOwnerProjectList } = this.props;
+      const { fetchQueryOwnerProjectList, setIsSpinning } = this.props;
+      setIsSpinning(true);
       fetchQueryOwnerProjectList(this.state.page);
     }
   };
 
   render() {
-    const { data, total, ProjectScheduleDetailData, fetchQueryOwnerProjectList } = this.props;
+    const { data, total, ProjectScheduleDetailData, isSpinning, setIsSpinning } = this.props;
     const {
       uploadVisible,
       editVisible,
@@ -1087,181 +1090,184 @@ class ProjectSchedule extends React.Component {
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row' }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
             <div style={{ height: '100%' }}>
-              <div style={{
-                height: '100%',
-                overflowY: 'auto',
-                minHeight: 'calc(100vh - 97.7rem)'
-              }}>
-                {data?.length === 0 && <div style={{
+              <Spin tip="加载中" spinning={isSpinning}>
+                <div style={{
                   height: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  justifyContent: 'center',
+                  overflowY: 'auto',
                   minHeight: 'calc(100vh - 97.7rem)'
-                }}><Empty description='暂无项目' /></div>}
-                {
-                  data?.map((items = {}, index) => {
-                    return <>
-                      {items?.zt === '2' ? <><div className='workBench-draft'>
-                        <span className='prj-name'>{items.xmmc}</span>
-                        <div className='prj-status'><span>项目状态：</span>草稿</div>
-                        <div className='update-delete'>
-                          <a onClick={() => this.handleDraftModify(items.xmid)}>编辑</a>
-                          <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDraftDelete(items.xmid)}>
-                            <a>删除</a>
-                          </Popconfirm>
-                        </div>
-                      </div>
-                        <Divider style={{ margin: '2.381rem 0' }} /></> :
-                        <div className='workBench-LifeCycleManage'>
-                          <div className='head'>
-                            <div style={{ width: items.extend ? 'calc(20% + 25rem)' : '20%', display: 'flex' }}>
-                              <i
-                                className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                                onClick={() => this.extend(index)} />&nbsp;
-                              <div className='head1'>
-                                <Link className='head1-link' to={{
-                                  pathname: '/pms/manage/LifeCycleManagement',
-                                  query: { xmid: items.xmid },
-                                }}>{items.xmmc}</Link>&nbsp;
-                                {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
-                              </div>
-                            </div>
-                            {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 25rem)' : '20%' }}></div>
-                              : <div className='current-milestone'>
-                                当前里程碑：
-                                <div className='milestone-item'>{getMileStoneName(items.xmid)}</div>
-                              </div>}
-
-                            <div className='prj-tags'>
-                              {getTagData(items?.bq).length !== 0 && <>项目标签：
-                                {getTagData(items?.bq)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
-                                {getTagData(items?.bq)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(
-                                  <div className='tag-more'>
-                                    {getTagData(items?.bq)?.slice(3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
-                                  </div>
-                                )} title={null}>
-                                  <div className='tag-item'>...</div>
-                                </Popover>}
-                              </>}
-                            </div>
-                            <div className='head2'>
-                              项目进度：
-                              <div className='head2-title' style={{
-                                background: 'rgba(51, 97, 255, 0.1)',
-                                color: 'rgba(51, 97, 255, 1)',
-                                // width: '12rem'
-                              }}>
-                                <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
-                                <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
-                              </div>
-                              {/*<ProjectProgress state={items.zt}/>*/}
-                            </div>
-                            <div className='head4'>
-                              项目风险：<ProjectRisk userId={items?.userid}
-                                xmid={items?.xmid}
-                                page={page}
-                                fetchQueryOwnerProjectList={this.props.fetchQueryOwnerProjectList}
-                                loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                                state={items.fxnr} item={items}
-                                lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
-                            </div>
+                }}>
+                  {data?.length === 0 && <div style={{
+                    height: '100%',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'center',
+                    minHeight: 'calc(100vh - 97.7rem)'
+                  }}><Empty description='暂无项目' /></div>}
+                  {
+                    data?.map((items = {}, index) => {
+                      return <>
+                        {items?.zt === '2' ? <><div className='workBench-draft'>
+                          <span className='prj-name'>{items.xmmc}</span>
+                          <div className='prj-status'><span>项目状态：</span>草稿</div>
+                          <div className='update-delete'>
+                            <a onClick={() => this.handleDraftModify(items.xmid)}>编辑</a>
+                            <Popconfirm title="确定要删除吗?" onConfirm={() => this.handleDraftDelete(items.xmid)}>
+                              <a>删除</a>
+                            </Popconfirm>
                           </div>
-                          {items.extend ?
-                            ProjectScheduleDetailData.map((item = {}, ind) => {
-                              let sort = this.groupBy(item?.List);
-                              return items?.xmid === item?.xmid &&
-                                <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
-                                  className='card'>
-                                  <Col span={24} className='cont1'>
-                                    <div className='head' style={{ borderRadius: '1.1904rem 1.1904rem 0px 0px' }}>
-                                      {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
-                                      <div className='head1'>
-                                        <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                                          className="iconfont icon-fill-flag" />&nbsp;
-                                        里程碑阶段：
-                                        <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item?.List[0]?.lcb}</span>
-                                      </div>
-                                      <div className='head2'>
-                                        <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
-                                          className="iconfont icon-time" />&nbsp;
-                                        里程碑时间：
-                                        <div
-                                          style={{ color: 'rgba(48, 49, 51, 1)' }}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
-                                      </div>
+                        </div>
+                          <Divider style={{ margin: '2.381rem 0' }} /></> :
+                          <div className='workBench-LifeCycleManage'>
+                            <div className='head'>
+                              <div style={{ width: items.extend ? 'calc(20% + 25rem)' : '20%', display: 'flex' }}>
+                                <i
+                                  className={items.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
+                                  onClick={() => this.extend(index)} />&nbsp;
+                                <div className='head1'>
+                                  <Link className='head1-link' to={{
+                                    pathname: '/pms/manage/LifeCycleManagement',
+                                    query: { xmid: items.xmid },
+                                  }}>{items.xmmc}</Link>&nbsp;
+                                  {!items.extend ? "" : <span className='head1-span'>（点击名称查看更多）</span>}
+                                </div>
+                              </div>
+                              {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 25rem)' : '20%' }}></div>
+                                : <div className='current-milestone'>
+                                  当前里程碑：
+                                  <div className='milestone-item'>{getMileStoneName(items.xmid)}</div>
+                                </div>}
+
+                              <div className='prj-tags'>
+                                {getTagData(items?.bq).length !== 0 && <>项目标签：
+                                  {getTagData(items?.bq)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                                  {getTagData(items?.bq)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(
+                                    <div className='tag-more'>
+                                      {getTagData(items?.bq)?.slice(3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
                                     </div>
-                                  </Col>
-                                  <Col span={24}
-                                    style={{
-                                      width: '100%',
-                                      padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
-                                      borderRadius: '0 0 1.1904rem 1.1904rem',
-                                      maxHeight: '50rem'
-                                    }}
-                                    className='cont2'>
-                                    {
-                                      sort.map((item = {}, index) => {
-                                        let num = 0
-                                        sort[index].List.map((item = {}, ind) => {
-                                          if (item.zxqk !== " ") {
-                                            num = num + 1;
-                                          }
-                                        })
-                                        return <Col span={8} style={{ marginBottom: '2.3808rem' }}>
-                                          <div className='cont-col'>
-                                            <div className='cont-col1'>
-                                              <div className='right'>
-                                                {item.swlx}({num}/{sort[index].List.length})
+                                  )} title={null}>
+                                    <div className='tag-item'>...</div>
+                                  </Popover>}
+                                </>}
+                              </div>
+                              <div className='head2'>
+                                项目进度：
+                                <div className='head2-title' style={{
+                                  background: 'rgba(51, 97, 255, 0.1)',
+                                  color: 'rgba(51, 97, 255, 1)',
+                                  // width: '12rem'
+                                }}>
+                                  <div className='head2-cont' style={{ background: 'rgba(51, 97, 255, 1)' }} />
+                                  <div style={{ margin: '0rem 2rem 0rem 1rem' }}>{items.jd}%</div>
+                                </div>
+                                {/*<ProjectProgress state={items.zt}/>*/}
+                              </div>
+                              <div className='head4'>
+                                项目风险：<ProjectRisk userId={items?.userid}
+                                  xmid={items?.xmid}
+                                  page={page}
+                                  fetchQueryOwnerProjectList={this.props.fetchQueryOwnerProjectList}
+                                  setIsSpinning={setIsSpinning}
+                                  loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
+                                  state={items.fxnr} item={items}
+                                  lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
+                              </div>
+                            </div>
+                            {items.extend ?
+                              ProjectScheduleDetailData.map((item = {}, ind) => {
+                                let sort = this.groupBy(item?.List);
+                                return items?.xmid === item?.xmid &&
+                                  <Row style={{ height: '80%', width: '100%', padding: '2rem 0px 0px 4.6rem' }}
+                                    className='card'>
+                                    <Col span={24} className='cont1'>
+                                      <div className='head' style={{ borderRadius: '1.1904rem 1.1904rem 0px 0px' }}>
+                                        {/*<img src={icon_wrong} alt="" className='head-img'/>*/}
+                                        <div className='head1'>
+                                          <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                            className="iconfont icon-fill-flag" />&nbsp;
+                                          里程碑阶段：
+                                          <span style={{ color: 'rgba(48, 49, 51, 1)' }}>{item?.List[0]?.lcb}</span>
+                                        </div>
+                                        <div className='head2'>
+                                          <i style={{ marginLeft: '0.6rem', color: 'rgba(51, 97, 255, 1)' }}
+                                            className="iconfont icon-time" />&nbsp;
+                                          里程碑时间：
+                                          <div
+                                            style={{ color: 'rgba(48, 49, 51, 1)' }}>{items.kssj.slice(0, 4) + '.' + items.kssj.slice(4, 6) + '.' + items.kssj.slice(6, 8)} ~ {items.jssj.slice(0, 4) + '.' + items.jssj.slice(4, 6) + '.' + items.jssj.slice(6, 8)} </div>
+                                        </div>
+                                      </div>
+                                    </Col>
+                                    <Col span={24}
+                                      style={{
+                                        width: '100%',
+                                        padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                                        borderRadius: '0 0 1.1904rem 1.1904rem',
+                                        maxHeight: '50rem'
+                                      }}
+                                      className='cont2'>
+                                      {
+                                        sort.map((item = {}, index) => {
+                                          let num = 0
+                                          sort[index].List.map((item = {}, ind) => {
+                                            if (item.zxqk !== " ") {
+                                              num = num + 1;
+                                            }
+                                          })
+                                          return <Col span={8} style={{ marginBottom: '2.3808rem' }}>
+                                            <div className='cont-col'>
+                                              <div className='cont-col1'>
+                                                <div className='right'>
+                                                  {item.swlx}({num}/{sort[index].List.length})
+                                                </div>
+                                              </div>
+                                              <div>
+                                                {sort[index].List.map((item = {}, ind) => {
+                                                  return <Row className='cont-row' style={{
+                                                    marginTop: ind === 0 ? '2.6784rem' : '2.3808rem',
+                                                    height: '4.65rem'
+                                                  }}>
+                                                    <Col span={18}>
+                                                      <div style={{ display: 'flex', alignItems: 'center' }}>
+                                                        <Points status={item.zxqk} />
+                                                        <span>{item.sxmc}</span>
+                                                      </div>
+                                                      <div className='cont-row-zxqk'>{item.zxqk}</div>
+                                                    </Col>
+                                                    <Col span={6}>
+                                                      <Tooltips type={item.swlx}
+                                                        xmid={item.xmid}
+                                                        item={item}
+                                                        userId={items.userid}
+                                                        status={item.zxqk}
+                                                        handleUpload={() => this.handleUpload(item)}
+                                                        handleSend={this.handleSend}
+                                                        handleFillOut={() => this.handleFillOut(item)}
+                                                        handleEdit={() => this.handleEdit(item)}
+                                                        handleMessageEdit={this.handleMessageEdit} />
+                                                    </Col>
+                                                    <div className='cont-row1'>
+                                                      <div className='left'>
+                                                        {/*//2022.06.17上传*/}
+                                                      </div>
+                                                    </div>
+                                                  </Row>
+                                                })}
                                               </div>
                                             </div>
-                                            <div>
-                                              {sort[index].List.map((item = {}, ind) => {
-                                                return <Row className='cont-row' style={{
-                                                  marginTop: ind === 0 ? '2.6784rem' : '2.3808rem',
-                                                  height: '4.65rem'
-                                                }}>
-                                                  <Col span={18}>
-                                                    <div style={{ display: 'flex', alignItems: 'center' }}>
-                                                      <Points status={item.zxqk} />
-                                                      <span>{item.sxmc}</span>
-                                                    </div>
-                                                    <div className='cont-row-zxqk'>{item.zxqk}</div>
-                                                  </Col>
-                                                  <Col span={6}>
-                                                    <Tooltips type={item.swlx}
-                                                      xmid={item.xmid}
-                                                      item={item}
-                                                      userId={items.userid}
-                                                      status={item.zxqk}
-                                                      handleUpload={() => this.handleUpload(item)}
-                                                      handleSend={this.handleSend}
-                                                      handleFillOut={() => this.handleFillOut(item)}
-                                                      handleEdit={() => this.handleEdit(item)}
-                                                      handleMessageEdit={this.handleMessageEdit} />
-                                                  </Col>
-                                                  <div className='cont-row1'>
-                                                    <div className='left'>
-                                                      {/*//2022.06.17上传*/}
-                                                    </div>
-                                                  </div>
-                                                </Row>
-                                              })}
-                                            </div>
-                                          </div>
-                                        </Col>
-                                      })
-                                    }
-                                  </Col>
-                                </Row>
-                            })
-                            : ''
-                          }
-                          <Divider style={{ margin: '2.381rem 0' }} />
-                        </div>}
-                    </>
-                  })
-                }
-              </div>
+                                          </Col>
+                                        })
+                                      }
+                                    </Col>
+                                  </Row>
+                              })
+                              : ''
+                            }
+                            <Divider style={{ margin: '2.381rem 0' }} />
+                          </div>}
+                      </>
+                    })
+                  }
+                </div>
+              </Spin>
               <div style={{ height: '10%', marginBottom: '1rem' }}>
                 <Pagination
                   style={{ textAlign: 'end', fontSize: '2.083rem' }}
