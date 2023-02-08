@@ -17,7 +17,8 @@ import {
   InputNumber,
   Button,
   TreeSelect,
-  Tree
+  Tree,
+  Tooltip,
 } from 'antd';
 import { connect } from 'dva';
 import GridLayout from 'react-grid-layout';
@@ -104,7 +105,9 @@ class NewProjectModelV2 extends React.Component {
     //项目状态
     projectStatus: "",
     //保存操作类型 草稿/完成
-    handleType: '',
+    handleType: -1,
+    //当前页面必填项是否全部填写 2基本信息和里程碑信息都填完 0基本信息填完 1里程碑信息填完
+    isFinish: -1,
   }
   componentDidMount = async () => {
     const _this = this;
@@ -167,11 +170,73 @@ class NewProjectModelV2 extends React.Component {
       const current = this.state.current + 1;
       this.setState({current});
     }
+    this.isFinish();
+  }
+
+  //是否已经填完所有必填项
+  isFinish = () => {
+    let basicFlag = false;
+    let lcbFlag = false;
+    const {basicInfo = {}, budgetInfo = {}} = this.state
+    console.log("budgetInfo.budgetProjectId", budgetInfo.budgetProjectId)
+    console.log("basicInfo.org", basicInfo.org)
+    if (basicInfo.projectName !== '' && basicInfo.projectType !== '' && basicInfo.org !== '' && basicInfo.org?.length !== 0 && basicInfo.biddingMethod !== '') {
+      if (budgetInfo.budgetProjectId !== '' && budgetInfo.budgetProjectId !== "0" && budgetInfo.projectBudget !== "" && budgetInfo.projectBudget !== null) {
+        this.setState({
+          isFinish: 0
+        })
+        basicFlag = true;
+      } else if (budgetInfo.budgetProjectId === "0") {
+        this.setState({
+          isFinish: 0
+        })
+        basicFlag = true;
+      } else {
+        this.setState({
+          isFinish: -1
+        })
+      }
+    } else {
+      this.setState({
+        isFinish: -1
+      })
+    }
+    const {mileInfo: {milePostInfo = []}} = this.state;
+    const reg1 = new RegExp("-", "g");
+    let flag = 0
+    for (let i = 0; i < milePostInfo.length; i++) {
+      const jssj = milePostInfo[i].jssj.replace(reg1, "");
+      const kssj = milePostInfo[i].kssj.replace(reg1, "");
+      if (Number(kssj) > Number(jssj)) {
+        break;
+      } else {
+        flag++;
+      }
+    }
+    if (flag === milePostInfo.length) {
+      this.setState({
+        isFinish: 1
+      })
+      lcbFlag = true;
+    } else {
+      this.setState({
+        isFinish: -1
+      })
+    }
+    if (lcbFlag && basicFlag) {
+      this.setState({
+        isFinish: 2,
+      })
+    } else {
+      this.setState({
+        isFinish: -1
+      })
+    }
   }
 
   prev() {
     const current = this.state.current - 1;
-    this.setState({ current });
+    this.setState({current});
   }
 
   fetchInterface = async () => {
@@ -201,6 +266,8 @@ class NewProjectModelV2 extends React.Component {
 
     // 修改加载状态
     this.setState({loading: false});
+    //判断完成状态
+    this.isFinish();
 
     // 查询人员信息
     await this.fetchQueryMemberInfo();
@@ -739,57 +806,6 @@ class NewProjectModelV2 extends React.Component {
     //   return
     // }
     //type:0 草稿 type:1 完成
-    this.setState({
-      handleType: type,
-    })
-    if (type === 0) {
-      this.setState({
-        operateType: 'SAVE'
-      })
-    }
-    //修改项目的时候隐藏暂存草稿,点完成type传MOD
-    console.log("type", type)
-    console.log("this.state.projectStatus ===\"MOD\"", this.state.projectStatus)
-    if (type === 1 && this.state.projectStatus === 'MOD') {
-      this.setState({
-        operateType: 'MOD'
-      })
-    }
-    //修改草稿点完成type入参就传ADD
-    if (type === 1 && this.state.projectStatus === 'SAVE') {
-      this.setState({
-        operateType: 'ADD'
-      })
-    }
-    //暂存草稿就还是SAVE
-    if (type === 0 && this.state.projectStatus === 'SAVE') {
-      this.setState({
-        operateType: 'SAVE'
-      })
-    }
-    //数据验证
-    //type===0 草稿 只验证项目名称 点完成type===1验证所有带*的？
-    if (type === 0 && this.state.basicInfo.projectName === "") {
-      message.warn("请填写项目名称！");
-    }
-    if (type === 1) {
-      if (this.state.basicInfo.projectName === "") {
-        message.warn("请填写项目名称！");
-        return
-      }
-      if (this.state.basicInfo.org === "") {
-        message.warn("请选择部门！");
-        return
-      }
-      if (this.state.budgetInfo.budgetProjectId === "") {
-        message.warn("请选择关联预算项目！");
-        return
-      }
-      if (this.state.budgetInfo.projectBudget === "") {
-        message.warn("请输入本项目预算！");
-        return
-      }
-    }
     const _this = this;
     this.props.form.validateFields((err, values) => {
       if (err) {
@@ -822,14 +838,14 @@ class NewProjectModelV2 extends React.Component {
                     title: '提示',
                     content: '请注意当前的本项目预算单位是元，是否确认？',
                     onOk() {
-                      _this.handleSave(values);
+                      _this.handleSave(values, type);
                     },
                     onCancel() {
                       flag = true;
                     },
                   });
                 } else {
-                  _this.handleSave(values);
+                  _this.handleSave(values, type);
                 }
               },
               onCancel() {
@@ -852,13 +868,13 @@ class NewProjectModelV2 extends React.Component {
             title: '提示',
             content: '请注意当前的本项目预算单位是元，是否确认？',
             onOk() {
-              _this.handleSave(values);
+              _this.handleSave(values, type);
             },
             onCancel() {
             },
           });
         } else {
-          _this.handleSave(values);
+          _this.handleSave(values, type);
         }
       }
 
@@ -866,9 +882,32 @@ class NewProjectModelV2 extends React.Component {
     });
   };
 
-  handleSave = (values) => {
-    const { basicInfo = {}, budgetInfo = {}, staffJobList = [], staffInfo: { jobStaffList = [] }, mileInfo: { milePostInfo = [] } } = this.state;
-
+  handleSave = (values, type) => {
+    const {
+      basicInfo = {},
+      budgetInfo = {},
+      staffJobList = [],
+      staffInfo: {jobStaffList = []},
+      mileInfo: {milePostInfo = []}
+    } = this.state;
+    //校验基础信息
+    let basicflag = false;
+    if (basicInfo.projectName !== '' && basicInfo.projectType !== '' && basicInfo.org !== '' && basicInfo.org?.length !== 0 && basicInfo.biddingMethod !== '') {
+      if (budgetInfo.budgetProjectId !== '' && budgetInfo.budgetProjectId !== "0" && budgetInfo.projectBudget !== "" && budgetInfo.projectBudget !== null) {
+        basicflag = true;
+      } else if (budgetInfo.budgetProjectId === "0") {
+        basicflag = true;
+      } else {
+        basicflag = false;
+      }
+    } else {
+      basicflag = false;
+    }
+    if (basicflag && type === 1) {
+      message.warn("项目基本信息及预算信息未填写完整！");
+      return;
+    }
+    //校验里程碑信息
     let flag = true; // 日期选择是否符合开始时间小于结束时间
     milePostInfo.forEach(item => {
       if (Number(moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'))
@@ -931,20 +970,21 @@ class NewProjectModelV2 extends React.Component {
           title: '提示',
           content: '有里程碑信息的默认起止时间没有修改，是否确认？',
           onOk() {
-            _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager);
+            _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
           },
           onCancel() {
           },
         });
       } else {
-        _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager);
+        _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
       }
     }
 
   };
 
-  makeOperateParams = (params, milePostInfo, staffJobParams, projectManager) => {
-    this.setState({ loading: true });
+  makeOperateParams = (params, milePostInfo, staffJobParams, projectManager, type) => {
+    this.setState({loading: true,});
+    console.log("statestate", this.state)
     let milepostInfo = [];
     let matterInfo = [];
     milePostInfo.forEach(item => {
@@ -969,15 +1009,48 @@ class NewProjectModelV2 extends React.Component {
         })
       });
     });
-    if (this.state.type === 0 && this.state.projectStatus === "") {
+    let operateType = '';
+    if (type === 0) {
       this.setState({
         operateType: 'SAVE'
       })
+      operateType = 'SAVE';
     }
-    if (this.state.type === 1 && this.state.projectStatus === "") {
+    //修改项目的时候隐藏暂存草稿,点完成type传MOD
+    console.log("handleType", type)
+    console.log("projectStatus", this.state.projectStatus === "")
+    console.log("projectStatus22", this.state.projectStatus === null)
+    if (type === 1 && this.state.projectStatus === 'MOD') {
+      this.setState({
+        operateType: 'MOD'
+      })
+      operateType = 'MOD';
+    }
+    //修改草稿点完成type入参就传ADD
+    if (type === 1 && this.state.projectStatus === 'SAVE') {
       this.setState({
         operateType: 'ADD'
       })
+      operateType = 'ADD';
+    }
+    //暂存草稿就还是SAVE
+    if (type === 0 && this.state.projectStatus === 'SAVE') {
+      this.setState({
+        operateType: 'SAVE'
+      })
+      operateType = 'SAVE';
+    }
+    if (type === 0 && this.state.projectStatus === "" || this.state.projectStatus === null) {
+      this.setState({
+        operateType: 'SAVE'
+      })
+      operateType = 'SAVE';
+    }
+    if (type === 1 && this.state.projectStatus === "" || this.state.projectStatus === null) {
+      this.setState({
+        operateType: 'ADD'
+      })
+      operateType = 'ADD';
     }
     params.mileposts = milepostInfo;
     params.matters = matterInfo;
@@ -989,23 +1062,22 @@ class NewProjectModelV2 extends React.Component {
     params.members = memberInfo;
     console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
-    console.log("operateType", this.state.operateType)
-    params.type = this.state.operateType;
+    console.log("operateType", operateType)
+    params.type = operateType;
     params.czr = Number(this.state.loginUser.id);
 
-    this.operateCreatProject(params);
+    this.operateCreatProject(params, type);
   };
 
-  operateCreatProject(params) {
-    const {handleType} = this.state;
+  operateCreatProject(params, type) {
     OperateCreatProject(params).then((result) => {
-      const { code = -1, note = '', projectId } = result;
-      this.setState({ loading: false });
+      const {code = -1, note = '', projectId} = result;
+      this.setState({loading: false});
       if (code > 0) {
         sessionStorage.setItem("projectId", projectId);
-        sessionStorage.setItem("handleType", handleType);
+        sessionStorage.setItem("handleType", type);
         if (this.state.type) {
-          window.parent && window.parent.postMessage({ operate: 'success' }, '*');
+          window.parent && window.parent.postMessage({operate: 'success'}, '*');
         } else {
           this.props.submitOperate();
         }
@@ -1260,7 +1332,7 @@ class NewProjectModelV2 extends React.Component {
     const reg1 = new RegExp("-", "g");
     const newDate = date.replace(reg1, "");
     if (type === 'start') {
-      const jssj = mile[index].jssj.replace(reg1, "");
+      // const jssj = mile[index].jssj.replace(reg1, "");
       // if (Number(newDate) > Number(jssj)) {
       //   message.warn("开始时间需要小于结束时间")
       //   return;
@@ -1269,13 +1341,14 @@ class NewProjectModelV2 extends React.Component {
       // }
       mile[index].kssj = date;
     } else if (type === 'end') {
-      const kssj = mile[index].kssj.replace(reg1, "");
-      if (Number(newDate) < Number(kssj)) {
-        message.warn("开始时间需要小于结束时间")
-        return;
-      } else {
-        mile[index].jssj = date;
-      }
+      // const kssj = mile[index].kssj.replace(reg1, "");
+      // if (Number(newDate) < Number(kssj)) {
+      //   message.warn("开始时间需要小于结束时间")
+      //   return;
+      // } else {
+      //   mile[index].jssj = date;
+      // }
+      mile[index].jssj = date;
     }
     this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
   };
@@ -1295,6 +1368,36 @@ class NewProjectModelV2 extends React.Component {
     console.log('height222', heightTotal);
     document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
   };
+
+  onScrollHandle = () => {
+    const {mileInfo: {milePostInfo = []}} = this.state;
+    //距离顶部高度
+    const scrollTop = this.scrollRef.scrollTop;
+    let heightTotal = 0;
+    let endHeight = []
+    //每个生命周期高度
+    for (let i = 0; i < milePostInfo.length; i++) {
+      heightTotal = heightTotal + document.getElementById("milePost" + i).offsetHeight;
+      const miniHeight = heightTotal
+      endHeight.push(miniHeight);
+    }
+    endHeight.unshift(0);
+    const scrollHeight = this.scrollRef.scrollHeight;
+    //二分法查出数字所在区间
+    let left = 0;
+    let right = endHeight.length;
+    while (left <= right) {
+      let center = Math.floor((left + right) / 2);
+      if (scrollTop < endHeight[center]) {
+        right = center - 1;
+      } else {
+        left = center + 1;
+      }
+    }
+    this.setState({
+      minicurrent: right,
+    })
+  }
 
   onChange0 = current => {
     if (this.state.current === 0) {
@@ -1463,7 +1566,8 @@ class NewProjectModelV2 extends React.Component {
       checkedStaffKey,
       staffInfo: {jobStaffList = []},
       basicInfo = {software: ''},
-      swlxarr = []
+      swlxarr = [],
+      isFinish = -1
     } = this.state;
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
@@ -1524,7 +1628,8 @@ class NewProjectModelV2 extends React.Component {
               <div style={{margin: '0 20rem 0 20rem', height: "11%"}}>
                 <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
-                    <Step key={index} title={item.title}/>
+                    <Step key={index} title={item.title}
+                          status={isFinish === 2 ? 'finish' : (isFinish === index ? 'finish' : 'wait')}/>
                   ))}
                 </Steps>
               </div>
@@ -1603,7 +1708,6 @@ class NewProjectModelV2 extends React.Component {
                                     showArrow={true}
                                     mode="multiple"
                                     onChange={e => {
-                                      console.log("eee", e)
                                       this.setState({
                                         basicInfo: {...basicInfo, projectLabel: e}
                                       })
@@ -1650,7 +1754,6 @@ class NewProjectModelV2 extends React.Component {
                               placeholder="请选择应用部门"
                               treeDefaultExpandAll
                               onChange={e => {
-                                console.log("eee", e)
                                 this.setState({
                                   basicInfo: {...basicInfo, org: e}
                                 })
@@ -1821,7 +1924,6 @@ class NewProjectModelV2 extends React.Component {
                               placeholder="请选择关联预算项目"
                               // treeDefaultExpandAll
                               onChange={e => {
-                                console.log("eeeee", e)
                                 budgetProjectList.forEach(item => {
                                   item.children.forEach(i => {
                                     if (i.key === e) {
@@ -1924,7 +2026,8 @@ class NewProjectModelV2 extends React.Component {
                          current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
-                      <Step style={{height: (100 / (ministeps.length * 1.1)) + 'rem'}} key={index} title={item.title}/>
+                      <Step status={minicurrent === index ? 'finish' : 'wait'}
+                            style={{height: (100 / (ministeps.length * 1.8)) + 'rem'}} key={index} title={item.title}/>
                     ))}
                   </Steps>
                   <div className="steps-content" id="lcbxxClass"
@@ -1934,7 +2037,11 @@ class NewProjectModelV2 extends React.Component {
                          height: '100%',
                          width: '83%',
                          margin: '0 0 15rem 0'
-                       }}>
+                       }}
+                       ref={c => {
+                         this.scrollRef = c;
+                       }}
+                       onScrollCapture={() => this.onScrollHandle()}>
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
@@ -1945,8 +2052,13 @@ class NewProjectModelV2 extends React.Component {
                                 {
                                   item.type && item.type === 'new' ? (
                                     <div key={index} className="newMilePost">
-                                      <div style={{width: '100%', display: 'flex', flexDirection: 'row'}}>
-                                        <div style={{width: '80%'}}>
+                                      <div style={{
+                                        width: '100%',
+                                        display: 'flex',
+                                        flexDirection: 'row',
+                                        padding: '2rem 3rem'
+                                      }}>
+                                        <div style={{width: '80%', borderLeft: '4px solid rgb(52, 97, 255)'}}>
                                           <Select
                                             showSearch
                                             filterOption={(input, option) =>
@@ -1954,7 +2066,7 @@ class NewProjectModelV2 extends React.Component {
                                             }
                                             onChange={e => this.selectMileStageInfo(e, index)}
                                             placeholder="请选择"
-                                            style={{width: '25%'}}
+                                            style={{width: '25%', left: '1rem'}}
                                           >
                                             {
                                               mileStageList.length > 0 && mileStageList.map((item, index) => {
@@ -1962,87 +2074,33 @@ class NewProjectModelV2 extends React.Component {
                                               })
                                             }
                                           </Select>
-                                        </div>
-                                        {/*<div style={{*/}
-                                        {/*  width: '66%',*/}
-                                        {/*  marginLeft: '2rem',*/}
-                                        {/*  position: 'relative',*/}
-                                        {/*  display: 'flex',*/}
-                                        {/*  flexDirection: 'row'*/}
-                                        {/*}}>*/}
-                                        {/*  <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}*/}
-                                        {/*              value={moment(item.kssj, 'YYYY-MM-DD')}*/}
-                                        {/*              allowClear={false}*/}
-                                        {/*              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}*/}
-                                        {/*              onFocus={() => this.setState({*/}
-                                        {/*                isEditMile: true,*/}
-                                        {/*                isCollapse: false*/}
-                                        {/*              })}/>*/}
-                                        {/*  <div*/}
-                                        {/*    style={{*/}
-                                        {/*      fontSize: '2.5rem',*/}
-                                        {/*      fontWeight: 'bold',*/}
-                                        {/*      padding: '2rem 2rem 0 2rem'*/}
-                                        {/*    }}>~*/}
-                                        {/*  </div>*/}
-                                        {/*  <DatePicker format="YYYY-MM-DD" style={{width: '21%'}}*/}
-                                        {/*              value={moment(item.jssj, 'YYYY-MM-DD')}*/}
-                                        {/*              allowClear={false}*/}
-                                        {/*              onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}*/}
-                                        {/*              onFocus={() => this.setState({*/}
-                                        {/*                isEditMile: true,*/}
-                                        {/*                isCollapse: false*/}
-                                        {/*              })}/>*/}
-                                        {/*<div style={{*/}
-                                        {/*  color: '#f5222d',*/}
-                                        {/*  fontSize: '3.5rem',*/}
-                                        {/*  position: 'absolute',*/}
-                                        {/*  top: '10%',*/}
-                                        {/*  right: '51.5%'*/}
-                                        {/*}}>*/}
-                                        {/*  **/}
-                                        {/*</div>*/}
-                                        {/*<div style={{*/}
-                                        {/*  color: '#f5222d',*/}
-                                        {/*  fontSize: '3.5rem',*/}
-                                        {/*  position: 'absolute',*/}
-                                        {/*  top: '10%',*/}
-                                        {/*  right: '77.5%'*/}
-                                        {/*}}>*/}
-                                        {/*  **/}
-                                        {/*</div>*/}
-                                        {/*</div>*/}
-                                        <div style={{display: 'flex', width: "20%"}}>
-                                          <div onClick={() => this.saveMilePostInfo(index)} style={{
-                                            cursor: 'pointer',
-                                            // width: '5%',
-                                            color: 'rgb(52, 97, 255)',
-                                            textAlign: 'right',
-                                            padding: '1.5rem 1.5rem 0 0'
-                                          }}>
-                                            保存
-                                          </div>
                                           {
-                                            <span style={{
-                                              padding: '1.5rem 1.5rem 0 0',
-                                              cursor: 'pointer',
-                                              color: 'rgb(52, 97, 255)',
-                                              fontSize: '2.5rem'
-                                            }} onClick={() => this.addSwlx(item?.lcblxid, index)}>添加事项</span>
+                                            <Tooltip title="保存">
+                                              <a style={{color: '#666', marginTop: '2rem', marginLeft: '2rem'}}
+                                                 className="iconfont file-filldone"
+                                                 onClick={() => this.saveMilePostInfo(index)}/>
+                                            </Tooltip>
                                           }
-                                          <div onClick={() => this.removeMilePostInfo(index)} style={{
-                                            cursor: 'pointer',
-                                            // width: '5%',
-                                            color: '#DE3741',
-                                            textAlign: 'right',
-                                            padding: '1.5rem 1.5rem 0 0'
-                                          }}>
-                                            删除
-                                          </div>
+                                          {
+                                            <Tooltip title="添加事项">
+                                              <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                 className="iconfont circle-add"
+                                                 onClick={() => this.addSwlx(item?.lcblxid, index)}/>
+                                            </Tooltip>
+                                          }
+                                          {
+                                            <Tooltip title="删除">
+                                              <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                 className="iconfont circle-reduce"
+                                                 onClick={() => this.removeMilePostInfo(index)}/>
+                                            </Tooltip>
+                                          }
+                                        </div>
+                                        <div style={{display: 'flex', width: "20%"}}>
                                         </div>
                                       </div>
-                                      <div style={{display: 'flex', margin: '0 10rem 0 0', padding: '1rem 0 0 0',}}>
-                                        <div style={{marginTop: '2rem', textAlign: 'end', width: '10%',}}>
+                                      <div style={{display: 'flex', margin: '0 3rem', padding: '1rem',}}>
+                                        <div style={{marginTop: '2rem', textAlign: 'end', width: '6.5%',}}>
                                             <span style={{
                                               paddingLeft: '1rem',
                                               fontSize: '2.5rem',
@@ -2255,9 +2313,11 @@ class NewProjectModelV2 extends React.Component {
                                                   right: '0.7%',
                                                   color: '#3461FF'
                                                 }}>
-                                                  <Tag onClick={() => this.showInput(index, i)}
-                                                       style={{background: '#fff',}}>
-                                                    <Icon type="plus"/> 新增
+                                                  <Tag
+                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                    <a className="iconfont circle-add"
+                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                       onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag>
                                                   {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
                                                   {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
@@ -2281,86 +2341,42 @@ class NewProjectModelV2 extends React.Component {
                                               borderLeft: '4px solid #3461FF'
                                             }}>{item.lcbmc}</span>
                                           </div>
-                                          {/*<div style={{paddingLeft: '2rem', position: 'relative', display: 'flex', flexDirection: 'row'}}>*/}
-                                          {/*  <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}*/}
-                                          {/*    value={moment(item.kssj, 'YYYY-MM-DD')}*/}
-                                          {/*    allowClear={false}*/}
-                                          {/*    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}*/}
-                                          {/*    onFocus={() => this.setState({*/}
-                                          {/*      isEditMile: true,*/}
-                                          {/*      isCollapse: false*/}
-                                          {/*    })} />*/}
-                                          {/*  <div style={{*/}
-                                          {/*    fontSize: '2.5rem',*/}
-                                          {/*    fontWeight: 'bold',*/}
-                                          {/*    padding: '2rem 2rem 0 2rem'*/}
-                                          {/*  }}>~*/}
-                                          {/*  </div>*/}
-                                          {/*  <DatePicker format="YYYY-MM-DD" style={{ width: '35%' }}*/}
-                                          {/*    value={moment(item.jssj, 'YYYY-MM-DD')}*/}
-                                          {/*    allowClear={false}*/}
-                                          {/*    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}*/}
-                                          {/*    onFocus={() => this.setState({*/}
-                                          {/*      isEditMile: true,*/}
-                                          {/*      isCollapse: false*/}
-                                          {/*    })} />*/}
-                                          {/*  <div style={{*/}
-                                          {/*    color: '#f5222d',*/}
-                                          {/*    fontSize: '3.5rem',*/}
-                                          {/*    position: 'absolute',*/}
-                                          {/*    top: '10%',*/}
-                                          {/*    right: '18%'*/}
-                                          {/*  }}>*/}
-                                          {/*    **/}
-                                          {/*  </div>*/}
-                                          {/*  <div style={{*/}
-                                          {/*    color: '#f5222d',*/}
-                                          {/*    fontSize: '3.5rem',*/}
-                                          {/*    position: 'absolute',*/}
-                                          {/*    top: '10%',*/}
-                                          {/*    right: '60%'*/}
-                                          {/*  }}>*/}
-                                          {/*    **/}
-                                          {/*  </div>*/}
-                                          {/*</div>*/}
+                                          {
+                                            index > 0 ? (
+                                              <Tooltip title="上移">
+                                                <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                   className="iconfont circle-up"
+                                                   onClick={() => this.moveMilePostInfo(index, 'top')}/>
+                                              </Tooltip>
+                                            ) : null
+                                          }
+                                          {
+                                            index !== milePostInfo.length - 1 ? (
+                                              <Tooltip title="下移">
+                                                <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                   className="iconfont circle-down"
+                                                   onClick={() => this.moveMilePostInfo(index, 'down')}/>
+                                              </Tooltip>
+                                            ) : null
+                                          }
+                                          {
+                                            <Tooltip title="添加事项">
+                                              <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                 className="iconfont circle-add"
+                                                 onClick={() => this.addSwlx(item?.lcblxid, index)}/>
+                                            </Tooltip>
+                                          }
+                                          {
+                                            !item.lcbmc.includes("立项") && !item.lcbmc.includes("实施") && !item.lcbmc.includes("上线")
+                                            && <Tooltip title="删除">
+                                              <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                 className="iconfont circle-reduce"
+                                                 onClick={() => this.removeMilePostInfo(index)}/>
+                                            </Tooltip>
+                                          }
                                         </div>
                                         {
-                                          <div className="right">
-                                            {
-                                              index > 0 ? (
-                                                <span
-                                                  style={{
-                                                    paddingRight: '1.5rem',
-                                                    cursor: 'pointer',
-                                                    fontSize: '2.5rem'
-                                                  }}
-                                                  onClick={() => this.moveMilePostInfo(index, 'top')}>上移</span>
-                                              ) : null
-                                            }
-                                            {
-                                              index !== milePostInfo.length - 1 ? (
-                                                <span
-                                                  style={{
-                                                    paddingRight: '1.5rem',
-                                                    cursor: 'pointer',
-                                                    fontSize: '2.5rem'
-                                                  }}
-                                                  onClick={() => this.moveMilePostInfo(index, 'down')}>下移</span>
-                                              ) : null
-                                            }
-                                            {
-                                              <span style={{
-                                                paddingRight: '1.5rem',
-                                                cursor: 'pointer',
-                                                fontSize: '2.5rem'
-                                              }} onClick={() => this.addSwlx(item?.lcblxid, index)}>添加事项</span>
-                                            }
-                                            {
-                                              !item.lcbmc.includes("立项") && !item.lcbmc.includes("实施") && !item.lcbmc.includes("上线")
-                                              && <span style={{cursor: 'pointer', fontSize: '2.5rem'}}
-                                                       onClick={() => this.removeMilePostInfo(index)}>删除</span>
-                                            }
-
+                                          <div className="right" style={{marginTop: '2rem',}}>
                                           </div>
                                         }
 
@@ -2585,9 +2601,12 @@ class NewProjectModelV2 extends React.Component {
                                                   right: '0.7%',
                                                   color: '#3461FF'
                                                 }}>
-                                                  <Tag onClick={() => this.showInput(index, i)}
-                                                       style={{background: '#fff', borderStyle: 'dashed'}}>
-                                                    <Icon type="plus"/> 新增
+
+                                                  <Tag
+                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                    <a className="iconfont circle-add"
+                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                       onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag>
                                                   {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
                                                   {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
