@@ -108,12 +108,22 @@ class NewProjectModelV2 extends React.Component {
     handleType: -1,
     //当前页面必填项是否全部填写 2基本信息和里程碑信息都填完 0基本信息填完 1里程碑信息填完
     isFinish: -1,
+    //人员岗位字典
+    rygwDictionary: [],
+    //剩余的人员岗位字典
+    rygwSelectDictionary: [],
+    //人员岗位单选框
+    rygwSelect: false,
+    //人员岗位单选框的值
+    onRygwSelectValue: '',
+    //组织机构默认展开的节点
+    orgExpendKeys: [],
   }
   componentDidMount = async () => {
     const _this = this;
     const params = this.getUrlParams();
     if (params.xmid && params.xmid !== -1) {
-      console.log("paramsparams", params)
+      // console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
         // operateType: 'MOD',
@@ -184,7 +194,7 @@ class NewProjectModelV2 extends React.Component {
         }
       }
     }
-    console.log("current", this.state.current)
+    // console.log("current", this.state.current)
     this.isFinish(this.state.current);
   }
 
@@ -312,7 +322,9 @@ class NewProjectModelV2 extends React.Component {
       searchStaffList: [loginUser],
       loginUser: loginUser,
       staffJobList: RYGW,
-      staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
+      rygwDictionary: RYGW,
+      rygwSelectDictionary: RYGW,
+      staffInfo: {...this.state.staffInfo, jobStaffList: arr}
     });
     this.fetchInterface();
   };
@@ -325,7 +337,7 @@ class NewProjectModelV2 extends React.Component {
       const { nowTime, tomorrowTime } = this.state;
       if (code > 0) {
         let data = JSON.parse(result);
-        console.log("data-cccc", data)
+        // console.log("data-cccc", data)
         const arr = this.filterGridLayOut(data);
         // 赋予初始时间和结束时间
         arr.forEach(item => {
@@ -403,6 +415,21 @@ class NewProjectModelV2 extends React.Component {
         obj[id].children = [list[i]];
       }
     }
+    //设置默认展开的节点
+    let expend = [];
+    let exp = {};
+    exp = JSON.parse(JSON.stringify(result[0]));
+    exp.children.map(item => {
+      delete item.children;
+      if (item.orgName === "公司总部") {
+        expend.push(item.orgId);
+      }
+    })
+    expend.push(exp.orgId)
+    this.setState({
+      orgExpendKeys: expend
+    })
+    // console.log("result-cccc",result)
     return result;
   }
 
@@ -459,7 +486,7 @@ class NewProjectModelV2 extends React.Component {
             });
             this.setState({ mileItemInfo: arr });
           } else if (params.type === 'SINGLE') {
-            console.log("datadata", data)
+            // console.log("datadata", data)
             const idarr = [];
             const swlxarr = [];
             data.forEach(item => {
@@ -481,8 +508,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 修改项目时查询项目详细信息
   fetchQueryProjectDetails(params) {
-    const {staffJobList =[]} = this.state;
-    console.log("staffJobList",staffJobList)
+    const {staffJobList = [], rygwSelectDictionary = []} = this.state;
     let newStaffJobList = [];
     return FetchQueryProjectDetails(params)
       .then((result) => {
@@ -514,18 +540,24 @@ class NewProjectModelV2 extends React.Component {
               searchStaffList: [loginUser],
               loginUser: loginUser,
               // staffJobList: RYGW,
-              staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
+              staffInfo: {...this.state.staffInfo, jobStaffList: arr}
             });
-            staffJobList.map(i=>{
-              if(String(i.ibm) === String(item.gw)){
+            staffJobList.map(i => {
+              if (String(i.ibm) === String(item.gw)) {
                 newStaffJobList.push(i)
               }
             })
           });
-          // newStaffJobList.unshift({ibm:"10",note:"项目经理"})
-          this.setState({ staffJobList: this.sortByKey(newStaffJobList, 'ibm', true) })
-          console.log("arr",arr)
-          console.log("newStaffJobList",newStaffJobList)
+          //删除newStaffJobList中有的岗位
+          // rygwSelectDictionary
+          let newArr = newStaffJobList.concat()
+          let newArray = rygwSelectDictionary.filter(function (item) {
+            return newArr.indexOf(item) === -1
+          });
+          // console.log("rygwSelectDictionary",newArray)
+          this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
+          // console.log("arr",arr)
+          // console.log("newStaffJobList",newStaffJobList)
           let totalBudget = 0;
           let relativeBudget = 0;
           this.state.budgetProjectList.forEach(item => {
@@ -829,9 +861,18 @@ class NewProjectModelV2 extends React.Component {
       title: '提示',
       content: '确定要删除此岗位？',
       onOk() {
-        const { staffJobList } = _this.state;
-        const newStaffJobList = staffJobList.filter(item => item.ibm != e);
-        _this.setState({ staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true) })
+        const {staffJobList, rygwSelectDictionary, rygwDictionary} = _this.state;
+        const newStaffJobList = staffJobList.filter(item => item.ibm !== e);
+        let newArr = newStaffJobList.concat()
+        console.log("newArr", newArr)
+        console.log("rygwDictionary", rygwDictionary)
+        let newArray = rygwDictionary.filter(function (item) {
+          return newArr.indexOf(item) === -1
+        });
+        // const filter = rygwDictionary.filter(item => item.ibm === e)
+        // rygwSelectDictionary.push(filter[0])
+        console.log("newArray", newArray)
+        _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true), rygwSelectDictionary: newArray})
       },
       onCancel() {
       },
@@ -962,7 +1003,7 @@ class NewProjectModelV2 extends React.Component {
       return;
     }
     let staffJobParam = [];
-    console.log("staffJobList保存",staffJobList);
+    // console.log("staffJobList保存",staffJobList);
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
@@ -1027,7 +1068,7 @@ class NewProjectModelV2 extends React.Component {
 
   makeOperateParams = (params, milePostInfo, staffJobParams, projectManager, type) => {
     this.setState({loading: true,});
-    console.log("statestate", this.state)
+    // console.log("statestate", this.state)
     let milepostInfo = [];
     let matterInfo = [];
     milePostInfo.forEach(item => {
@@ -1060,9 +1101,9 @@ class NewProjectModelV2 extends React.Component {
       operateType = 'SAVE';
     }
     //修改项目的时候隐藏暂存草稿,点完成type传MOD
-    console.log("handleType", type)
-    console.log("projectStatus", this.state.projectStatus === "")
-    console.log("projectStatus22", this.state.projectStatus === null)
+    // console.log("handleType", type)
+    // console.log("projectStatus", this.state.projectStatus === "")
+    // console.log("projectStatus22", this.state.projectStatus === null)
     if (type === 1 && this.state.projectStatus === 'MOD') {
       this.setState({
         operateType: 'MOD'
@@ -1103,9 +1144,9 @@ class NewProjectModelV2 extends React.Component {
       item.gw = String(item.gw);
     });
     params.members = memberInfo;
-    console.log("params.projectId", this.state.basicInfo.projectId)
+    // console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
-    console.log("operateType", operateType)
+    // console.log("operateType", operateType)
     params.type = operateType;
     params.czr = Number(this.state.loginUser.id);
 
@@ -1134,7 +1175,7 @@ class NewProjectModelV2 extends React.Component {
         message.error(note);
       }
 
-      console.log("333333")
+      // console.log("333333")
     }).catch((error) => {
       this.setState({ loading: false });
       message.error(!error.success ? error.message : error.note);
@@ -1403,12 +1444,12 @@ class NewProjectModelV2 extends React.Component {
     //滚动到指定高度
     if (minicurrent) {
       for (let i = 0; i < minicurrent; i++) {
-        console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
+        // console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
         heightTotal = heightTotal + document.getElementById("milePost" + i).offsetHeight;
       }
     }
     heightTotal = heightTotal + (7.8 * (minicurrent - 1) + 11.8)
-    console.log('height222', heightTotal);
+    // console.log('height222', heightTotal);
     document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
   };
 
@@ -1443,8 +1484,8 @@ class NewProjectModelV2 extends React.Component {
   }
 
   onChange0 = current => {
-    console.log("this.state.current", this.state.current)
-    console.log("index", current)
+    // console.log("this.state.current", this.state.current)
+    // console.log("index", current)
     //验证项目名称必填，在点击下一步的时候就要验证
     if (this.state.current === 0) {
       this.props.form.validateFields((err, values) => {
@@ -1550,17 +1591,17 @@ class NewProjectModelV2 extends React.Component {
 
   //添加事项
   addSwlx = (e, index) => {
-    this.fetchQueryMatterUnderMilepost({ type: 'SINGLE', lcbid: e });
+    this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
     //添加事项类型
-    console.log("eeeee", e)
-    console.log("index", index)
-    const { mileInfo: { milePostInfo = [] }, } = this.state;
+    // console.log("eeeee", e)
+    // console.log("index", index)
+    const {mileInfo: {milePostInfo = []},} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
-    let matterInfos = { swlxmc: "new", sxlb: [] }
+    let matterInfos = {swlxmc: "new", sxlb: []}
     matterInfo.push(matterInfos)
-    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
     //添加内的流程
   }
 
@@ -1575,30 +1616,53 @@ class NewProjectModelV2 extends React.Component {
       }
     })
     const matterInfo = mile[index].matterInfos;
-    console.log("matterInfo", matterInfo);
-    const sxlbparam = { type: 'title' };
+    // console.log("matterInfo", matterInfo);
+    const sxlbparam = {type: 'title'};
     matterInfo.map(item => {
       if (item.swlxmc === "new") {
         item.swlxmc = swlxmc
         item.sxlb[0] = sxlbparam;
       }
     })
-    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
   }
 
-  // onOrgChange = (e) =>{
-  //   const {basicInfo = {}} =this.state
-  //   this.setState({
-  //     basicInfo:{org:e}
-  //   })
-  // }
-  //
-  // onBqChange = (e) =>{
-  //   const {basicInfo = {}} =this.state
-  //   this.setState({
-  //     basicInfo:{projectLabel:e}
-  //   })
-  // }
+  onRygwSelectChange = (e) => {
+    // console.log("eeee",e)
+    this.setState({
+      onRygwSelectValue: e,
+    })
+  }
+
+  onRygwSelectConfirm = () => {
+    const {staffJobList, rygwDictionary, onRygwSelectValue, rygwSelectDictionary,} = this.state;
+    if (onRygwSelectValue !== '') {
+      const filter = rygwDictionary.filter(item => item.ibm === onRygwSelectValue)
+      staffJobList.push(filter[0]);
+      // console.log("staffJobList",staffJobList)
+      // console.log("rygwSelectDictionary",rygwSelectDictionary)
+      let newArr = staffJobList.concat()
+      let newArray = rygwDictionary.filter(function (item) {
+        return newArr.indexOf(item) === -1
+      });
+      // let newArray = rygwSelectDictionary.filter(item => item.ibm !== filter[0].ibm)
+      console.log("newArray", newArray)
+      this.setState({
+        rygwSelectDictionary: newArray,
+        rygwSelect: false,
+        onRygwSelectValue: '',
+        staffJobList: this.sortByKey(staffJobList, 'ibm', true)
+      })
+
+    }
+    // const flag = staffJobList.filter((item) => {
+    //   return filter.includes(item)
+    // })
+    // if(flag.length>0){
+    //   message.warn("已存在"+filter[0].note+"岗位,请勿重复添加！")
+    // }else{
+    // }
+  }
 
   render() {
     const {
@@ -1630,9 +1694,13 @@ class NewProjectModelV2 extends React.Component {
       staffInfo: {jobStaffList = []},
       basicInfo = {software: ''},
       swlxarr = [],
-      isFinish = -1
+      isFinish = -1,
+      rygwDictionary = [],
+      rygwSelectDictionary = [],
+      rygwSelect = false,
+      orgExpendKeys = [],
     } = this.state;
-    console.log("staffJobList", staffJobList)
+    // console.log("orgExpendKeys", orgExpendKeys)
     // console.log("organizationTreeList", organizationTreeList)
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
@@ -1817,7 +1885,8 @@ class NewProjectModelV2 extends React.Component {
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={organizationTreeList}
                               placeholder="请选择应用部门"
-                              treeDefaultExpandAll
+                              // treeDefaultExpandAll
+                              treeDefaultExpandedKeys={orgExpendKeys}
                               onChange={e => {
                                 this.setState({
                                   basicInfo: {...basicInfo, org: e}
@@ -1989,6 +2058,7 @@ class NewProjectModelV2 extends React.Component {
                               placeholder="请选择关联预算项目"
                               // treeDefaultExpandAll
                               onChange={e => {
+                                console.log("eeee", e)
                                 budgetProjectList.forEach(item => {
                                   item.children.forEach(i => {
                                     if (i.key === e) {
@@ -2827,7 +2897,39 @@ class NewProjectModelV2 extends React.Component {
                           }
                         })
                       }
-
+                      {
+                        staffJobList.length !== rygwDictionary.length && !rygwSelect &&
+                        <div style={{margin: '1.5rem'}}>
+                          <Tag
+                            style={{background: '#fff', borderStyle: 'dashed'}}>
+                            <a className="iconfont circle-add"
+                               style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                               onClick={() => {
+                                 this.setState({rygwSelect: true})
+                               }}>新增岗位</a>
+                          </Tag>
+                        </div>
+                      }
+                      {
+                        rygwSelect &&
+                        <Select showSearch
+                                showArrow={true}
+                          // mode="multiple"
+                                onChange={e => this.onRygwSelectChange(e)}
+                                style={{padding: '1.5rem 0 0 2rem', width: '25rem'}}
+                                onBlur={this.onRygwSelectConfirm}
+                                filterOption={(input, option) =>
+                                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }>
+                          {
+                            rygwSelectDictionary.length > 0 && rygwSelectDictionary.map((item, index) => {
+                              return (
+                                <Option key={item.ibm} value={item.ibm}>{item.note}</Option>
+                              )
+                            })
+                          }
+                        </Select>
+                      }
                     </div>
                     <div className="button">
                       <Button onClick={this.clickAddStaff} icon="left">添加</Button>
