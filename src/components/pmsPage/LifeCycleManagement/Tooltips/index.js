@@ -148,13 +148,13 @@ class Tooltips extends React.Component {
   //流程发起查看
   getLcfqck = (status, item, isFklc = false) => {
     // status === ' '
-    // if (status === ' ') {
-    //   return (
-    //     <div title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
-    //       <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('发起')}</a>
-    //     </div>
-    //   );
-    // } else {
+    if (status === ' ') {
+      return (
+        <div title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
+          <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('发起')}</a>
+        </div>
+      );
+    } else {
       let menu = "";
       //是否为付款流程
       if (isFklc) {
@@ -196,7 +196,7 @@ class Tooltips extends React.Component {
           </Dropdown>
         </div>
       );
-    // }
+    }
 
   };
   //文档上传修改
