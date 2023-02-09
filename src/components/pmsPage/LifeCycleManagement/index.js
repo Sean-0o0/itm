@@ -1371,7 +1371,7 @@ class LifeCycleManagementTabs extends React.Component {
                                                           height: '4.65rem'
                                                         }}>
                                                           <Points status={item.zxqk} />
-                                                          <div style={{ width: '75%' }}>
+                                                          <div style={{ width: '65%' }}>
                                                             {
                                                               item.swlx.includes("文档") ||
                                                                 item.swlx.includes("信委会") ||
@@ -1411,8 +1411,8 @@ class LifeCycleManagementTabs extends React.Component {
                                                             }
                                                           </div>
                                                           <div style={{
-                                                            width: '25%',
-                                                            textAlign: 'right',
+                                                            width: '35%',
+                                                            // textAlign: 'right',
                                                           }} >
                                                             <Tooltips type={item.swlx}
                                                               item={item}
