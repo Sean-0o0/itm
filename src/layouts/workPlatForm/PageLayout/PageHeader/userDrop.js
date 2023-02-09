@@ -346,7 +346,7 @@ export default class UserDrop extends React.Component {
                   >
                     <List.Item.Meta
                       avatar={<i className='iconfont icon-follow' />}
-                      title={<span>流程委托</span>}
+                      title={<span>个人配置</span>}
                       style={{ alignItems: 'center' }}
                     />
                   </List.Item>

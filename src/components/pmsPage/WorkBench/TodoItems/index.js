@@ -556,6 +556,11 @@ class TodoItems extends React.Component {
 
   // 表格当前的列
   renderColumns = () => {
+    const textOverflow = {
+      textOverflow: 'ellipsis',
+      overflow: 'hidden',
+      whiteSpace: 'nowrap',
+    }
     const cloums = [
       {
         width: '4%',
@@ -583,13 +588,13 @@ class TodoItems extends React.Component {
         title: <span style={{ textAlign: 'center' }}>待办事项</span>,
         dataIndex: 'sxmc',
         align: 'center',
+        ellipsis: true,
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text.length > 8 ? text : ''} style={{ fontSize: '2.381rem' }}>
-              <span style={{ display: 'flex', }}>
+            <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
+              <span style={{ display: 'flex', alignItems: 'center' }}>
                 {
-                  //onClick={() => this.updateState(record, 'READ')} 已读调用接口
                   record.xxlx === "1" && <span style={{
                     height: '3rem',
                     display: 'flex',
@@ -598,14 +603,10 @@ class TodoItems extends React.Component {
                     <i style={{ color: 'red', fontSize: '2.381rem' }} className="iconfont icon-fill-star" />
                   </span>
                 }
-                <a style={{ fontSize: '2.083rem', color: '#3361ff', paddingLeft: '0.5rem' }}
+                <a style={{ fontSize: '2.083rem', color: '#3361ff', paddingLeft: '0.5rem', ...textOverflow }}
                   onClick={() => this.handleUrl(record)}>
-                  {text.length > 8 ? text.slice(0, 8) + '...' : text}
+                  {text}
                 </a>
-                {/*必做标识*/}
-                {/*<div style={{backgroundColor: 'rgba(252, 236, 237, 1)', borderRadius: '10px'}}>*/}
-                {/*  {record.xxlx === "1" && <span style={{padding: '0 1rem', color: 'rgba(204, 62, 69, 1)'}}>必做</span>}*/}
-                {/*</div>*/}
               </span>
             </Tooltip>
           </span>
@@ -616,12 +617,13 @@ class TodoItems extends React.Component {
         title: '待办内容',
         dataIndex: 'txnr',
         align: 'center',
+        ellipsis: true,
         // key: 'sxmc',
         render: (text, record) => {
           return <span>
-            <Tooltip title={text.length > 13 ? text : ''} style={{ fontSize: '2.381rem' }}>
-              <span style={{ fontSize: '2.083rem', display: 'flex', }}>
-                {text.length > 13 ? text.slice(0, 13) + '...' : text}
+            <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
+              <span style={{ fontSize: '2.083rem', display: 'block', ...textOverflow }}>
+                {text}
               </span>
             </Tooltip>
           </span>
@@ -632,20 +634,17 @@ class TodoItems extends React.Component {
         title: '相关项目',
         dataIndex: 'xmmc',
         align: 'center',
+        ellipsis: true,
         // key: 'xmmc',
         render: (text, record) => {
-          return <span><Tooltip title={text.length > 10 ? text : ''} style={{ fontSize: '2.381rem' }}>
-            <span style={{ display: 'flex', }}><a style={{ color: '#3361ff', fontSize: '2.083rem', }}
-              // to={{
-              //   pathname: '/pms/manage/LifeCycleManagement',
-              //   query: { xmid: record.xmid },
-              // }}
+          return <span><Tooltip title={text} style={{ fontSize: '2.381rem' }}>
+            <a style={{ color: '#3361ff', fontSize: '2.083rem', display: 'block', ...textOverflow }}
               onClick={
                 () => window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify({ projectId: record.xmid }))}`
               }
             >
-              {text.length > 10 ? text.slice(0, 10) + '...' : text}
-            </a></span></Tooltip></span>
+              {text}
+            </a></Tooltip></span>
         },
       },
       {
@@ -653,11 +652,12 @@ class TodoItems extends React.Component {
         title: '日期',
         align: 'center',
         dataIndex: 'jzrq',
+        ellipsis: true,
         // key: 'jzrq',
         render: (text, record) => {
           return record.wdsl < 0 ? <span
-            style={{ fontSize: '2.083rem', color: 'red' }}>逾期{record.wdsl * -1}天</span>
-            : <span style={{ fontSize: '2.083rem', }}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
+            style={{ fontSize: '2.083rem', color: 'red', ...textOverflow }}>逾期{record.wdsl * -1}天</span>
+            : <span style={{ fontSize: '2.083rem', ...textOverflow }}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
         },
       },
     ];

@@ -1119,10 +1119,6 @@ class ProjectSchedule extends React.Component {
                                 <div className='head1'>
                                   <a className='head1-link'
                                     style={{ color: '#3361FF' }}
-                                    // to={{
-                                    //   pathname: '/pms/manage/LifeCycleManagement',
-                                    //   query: { xmid: items.xmid },
-                                    // }}
                                     onClick={
                                       () => window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify({ projectId: items?.xmid }))}`
                                     }
@@ -1132,7 +1128,7 @@ class ProjectSchedule extends React.Component {
                               </div>
                               {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 25rem)' : '20%' }}></div>
                                 : <div className='current-milestone'>
-                                  当前里程碑：
+                                  {moment().isBetween(moment(items?.kssj), moment(items?.jssj)) ? '当前' : '待开始'}里程碑：
                                   <div className='milestone-item'>{getMileStoneName(items.xmid)}</div>
                                 </div>}
 
