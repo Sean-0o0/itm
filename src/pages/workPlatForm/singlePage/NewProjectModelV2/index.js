@@ -797,7 +797,7 @@ class NewProjectModelV2 extends React.Component {
       callback();
     }
     if (val > _this.state.budgetInfo.relativeBudget && this.state.budgetInfo.budgetProjectId !== '0') {
-      callback('预算超过当前可关联总预算！请注意！');
+      callback('预算超过剩余预算！请注意！');
     } else {
       callback();
     }
@@ -922,13 +922,13 @@ class NewProjectModelV2 extends React.Component {
           return
         }
         if (errs.includes('projectBudget')) {
-          if (err.projectBudget.errors[0].message === '预算超过当前可关联总预算！请注意！') {
+          if (err.projectBudget.errors[0].message === '预算超过剩余预算！请注意！') {
             let flag = false; // 是否结束
             confirm({
               okText: '确认',
               cancelText: '取消',
               title: '提示',
-              content: '预算超过当前可关联总预算，是否确认？',
+              content: '预算超过剩余预算，是否确认？',
               onOk() {
                 if (values.projectBudget < 5000 && type === 1) {
                   confirm({
@@ -2127,13 +2127,19 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <Form.Item label="当前可关联总预算(元)">
-                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
+                        <Form.Item label="可执行预算(元)">
+                          <InputNumber disabled={true} style={{width: '100%'}} value={ysKZX}
                                        precision={0}/>
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
+                      <Col span={12}>
+                        <Form.Item label="剩余预算(元)">
+                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
+                                       precision={0}/>
+                        </Form.Item>
+                      </Col>
                       <Col span={12}>
                         <div style={{
                           color: '#f5222d',
@@ -2168,12 +2174,6 @@ class NewProjectModelV2 extends React.Component {
                               });
                             }} precision={0}/>
                           )}
-                        </Form.Item>
-                      </Col>
-                      <Col span={12} style={{paddingLeft: 0}}>
-                        <Form.Item label="可执行预算">
-                          <InputNumber disabled={true} style={{width: '100%'}} value={ysKZX}
-                                       precision={0}/>
                         </Form.Item>
                       </Col>
                     </Row>
