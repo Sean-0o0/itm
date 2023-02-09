@@ -67,7 +67,7 @@ class NewProjectModelV2 extends React.Component {
       budgetProjectId: '', // 预算项目id
       totalBudget: 0, // 总预算(元)
       relativeBudget: 0, // 可关联总预算(元)
-      projectBudget: '' // 本项目预算
+      projectBudget: 0 // 本项目预算
     },
     staffList: [], // 人员信息列表
     searchStaffList: [], // 搜索后的人员信息列表
@@ -269,19 +269,19 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    this.fetchQuerySoftwareList();
+    await this.fetchQuerySoftwareList();
     // 查询项目标签
-    this.fetchQueryProjectLabel();
+    await this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
 
 
     // 查询里程碑阶段信息
-    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
     await this.fetchQueryMilepostInfo({
       type: 1,
@@ -555,7 +555,8 @@ class NewProjectModelV2 extends React.Component {
             return newArr.indexOf(item) === -1
           });
           // console.log("rygwSelectDictionary",newArray)
-          this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
+          // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
+          this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList})
           // console.log("arr",arr)
           // console.log("newStaffJobList",newStaffJobList)
           let totalBudget = 0;
@@ -872,7 +873,8 @@ class NewProjectModelV2 extends React.Component {
         // const filter = rygwDictionary.filter(item => item.ibm === e)
         // rygwSelectDictionary.push(filter[0])
         console.log("newArray", newArray)
-        _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true), rygwSelectDictionary: newArray})
+        // _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true), rygwSelectDictionary: newArray})
+        _this.setState({staffJobList: newStaffJobList, rygwSelectDictionary: newArray})
       },
       onCancel() {
       },
@@ -1017,7 +1019,7 @@ class NewProjectModelV2 extends React.Component {
     const staffJobParams = staffJobParam.filter(item => (item.rymc !== ''));
     // 获取项目经理
     const projectManager = staffJobParams.filter(item => (item.gw == 10)) || [];
-    if (projectManager.length == 0) {
+    if (projectManager.length === 0) {
       message.warn("项目经理不能为空！");
     } else {
       let orgNew = "";
@@ -1025,7 +1027,8 @@ class NewProjectModelV2 extends React.Component {
         basicInfo.org.map((item, index) => {
           orgNew = item.concat(";").concat(orgNew);
         })
-      };
+      }
+      ;
       orgNew = orgNew.substring(0, orgNew.length - 1)
       let label = "";
       if (basicInfo.projectLabel?.length > 0) {
@@ -1043,7 +1046,7 @@ class NewProjectModelV2 extends React.Component {
         biddingMethod: basicInfo.projectType === 2 ? 0 : Number(basicInfo.biddingMethod),
         year: Number(this.state.budgetInfo.year.format("YYYY")),
         budgetProject: budgetInfo.budgetProjectId === '' ? -1 : Number(budgetInfo.budgetProjectId),
-        projectBudget: String(budgetInfo.projectBudget)
+        projectBudget: budgetInfo.projectBudget === null ? 0 : Number(budgetInfo.projectBudget)
       };
       const _this = this;
       const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
@@ -1651,7 +1654,8 @@ class NewProjectModelV2 extends React.Component {
         rygwSelectDictionary: newArray,
         rygwSelect: false,
         onRygwSelectValue: '',
-        staffJobList: this.sortByKey(staffJobList, 'ibm', true)
+        staffJobList: staffJobList
+        // staffJobList: this.sortByKey(staffJobList, 'ibm', true)
       })
 
     }
@@ -2069,7 +2073,8 @@ class NewProjectModelV2 extends React.Component {
                                             ...this.state.budgetInfo,
                                             budgetProjectId: e,
                                             totalBudget: 0,
-                                            relativeBudget: 0
+                                            relativeBudget: 0,
+                                            projectBudget: 0,
                                           }
                                         }, function () {
                                           _this.props.form.resetFields(['projectBudget']);
@@ -2915,6 +2920,7 @@ class NewProjectModelV2 extends React.Component {
                         <Select showSearch
                                 showArrow={true}
                           // mode="multiple"
+                                placeholder="请选择岗位"
                                 onChange={e => this.onRygwSelectChange(e)}
                                 style={{padding: '1.5rem 0 0 2rem', width: '25rem'}}
                                 onBlur={this.onRygwSelectConfirm}
