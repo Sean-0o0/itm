@@ -1488,7 +1488,6 @@ class NewProjectModelV2 extends React.Component {
             },
           });
         } else {
-          const current = _this.state.current + 1;
           _this.setState({current});
         }
       }
@@ -1634,6 +1633,7 @@ class NewProjectModelV2 extends React.Component {
       isFinish = -1
     } = this.state;
     console.log("staffJobList", staffJobList)
+    // console.log("organizationTreeList", organizationTreeList)
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
