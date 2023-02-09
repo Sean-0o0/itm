@@ -340,7 +340,7 @@ export default class UserDrop extends React.Component {
                 )
               } */}
               <Col span={12}>
-                <Link to={`/UIProcessor?Table=lbSurrogate&hideTitlebar=true`}>
+                <Link to={`/UIProcessor?Table=V_XMBQ_GRBQ&hideTitlebar=true`}>
                   <List.Item
                     style={{ borderBottom: 'none' }}
                   >
