@@ -118,6 +118,8 @@ class NewProjectModelV2 extends React.Component {
     onRygwSelectValue: '',
     //组织机构默认展开的节点
     orgExpendKeys: [],
+    //可执行预算
+    ysKZX: 0,
   }
   componentDidMount = async () => {
     const _this = this;
@@ -436,7 +438,18 @@ class NewProjectModelV2 extends React.Component {
   toItemTree(list, parId) {
     let a = list.reduce((pre, current, index) => {
       pre[current.zdbm] = pre[current.zdbm] || [];
-      pre[current.zdbm].push({ key: current.ysID, title: current.ysName, value: current.ysID, ysID: current.ysID, ysKGL: Number(current.ysKGL), ysLB: current.ysLB, ysName: current.ysName, ysZJE: Number(current.ysZJE), zdbm: current.zdbm });
+      pre[current.zdbm].push({
+        key: current.ysID,
+        title: current.ysName,
+        value: current.ysID,
+        ysID: current.ysID,
+        ysKGL: Number(current.ysKGL),
+        ysLB: current.ysLB,
+        ysName: current.ysName,
+        ysZJE: Number(current.ysZJE),
+        zdbm: current.zdbm,
+        ysKZX: Number(current.ysKZX),
+      });
       return pre;
     }, []);
 
@@ -455,6 +468,7 @@ class NewProjectModelV2 extends React.Component {
           treeDatamini.ysLB = item.ysLB
           treeDatamini.ysName = item.ysName
           treeDatamini.ysZJE = Number(item.ysZJE)
+          treeDatamini.ysKZX = Number(item.ysKZX)
           treeDatamini.zdbm = item.zdbm
           treeDatamini.dropdownStyle = { color: '#666' }
           treeDatamini.disabled = true
@@ -1454,6 +1468,7 @@ class NewProjectModelV2 extends React.Component {
     heightTotal = heightTotal + (7.8 * (minicurrent - 1) + 11.8)
     // console.log('height222', heightTotal);
     document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
+    // document.getElementById("milePost" + minicurrent).style.backgroundColor='red'
   };
 
   onScrollHandle = () => {
@@ -1703,6 +1718,7 @@ class NewProjectModelV2 extends React.Component {
       rygwSelectDictionary = [],
       rygwSelect = false,
       orgExpendKeys = [],
+      ysKZX = 0,
     } = this.state;
     // console.log("orgExpendKeys", orgExpendKeys)
     // console.log("organizationTreeList", organizationTreeList)
@@ -2062,7 +2078,6 @@ class NewProjectModelV2 extends React.Component {
                               placeholder="请选择关联预算项目"
                               // treeDefaultExpandAll
                               onChange={e => {
-                                console.log("eeee", e)
                                 budgetProjectList.forEach(item => {
                                   item.children.forEach(i => {
                                     if (i.key === e) {
@@ -2075,7 +2090,8 @@ class NewProjectModelV2 extends React.Component {
                                             totalBudget: 0,
                                             relativeBudget: 0,
                                             projectBudget: 0,
-                                          }
+                                          },
+                                          ysKZX: i.ysKZX,
                                         }, function () {
                                           _this.props.form.resetFields(['projectBudget']);
                                           _this.props.form.validateFields(['projectBudget']);
@@ -2087,7 +2103,8 @@ class NewProjectModelV2 extends React.Component {
                                             budgetProjectId: e,
                                             totalBudget: Number(i.ysZJE),
                                             relativeBudget: Number(i.ysKGL)
-                                          }
+                                          },
+                                          ysKZX: i.ysKZX,
                                         }, function () {
                                           _this.props.form.resetFields(['projectBudget']);
                                           _this.props.form.validateFields(['projectBudget']);
@@ -2154,6 +2171,10 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12} style={{paddingLeft: 0}}>
+                        <Form.Item label="可执行预算">
+                          <InputNumber disabled={true} style={{width: '100%'}} value={ysKZX}
+                                       precision={0}/>
+                        </Form.Item>
                       </Col>
                     </Row>
                   </Form>
