@@ -890,7 +890,7 @@ class ProjectSchedule extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '50%',
-      height: '68rem',
+      height: '78rem',
       title: uploadTitle,
       style: { top: '10rem' },
       visible: uploadVisible,
