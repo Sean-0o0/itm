@@ -32,7 +32,7 @@ import {
   FetchQueryMilepostInfo,
   FetchQueryMemberInfo,
   FetchQueryMilestoneStageInfo,
-  FetchQueryMatterUnderMilepost
+  FetchQueryMatterUnderMilepost, FetchQueryStationInfo
 } from "../../../../services/projectManage";
 import { DecryptBase64, EncryptBase64 } from '../../../../components/Common/Encrypt';
 import config from '../../../../utils/config';
@@ -67,7 +67,8 @@ class NewProjectModelV2 extends React.Component {
       budgetProjectId: '', // 预算项目id
       totalBudget: 0, // 总预算(元)
       relativeBudget: 0, // 可关联总预算(元)
-      projectBudget: 0 // 本项目预算
+      projectBudget: 0, // 本项目预算
+      budgetType: ''
     },
     staffList: [], // 人员信息列表
     searchStaffList: [], // 搜索后的人员信息列表
@@ -141,7 +142,7 @@ class NewProjectModelV2 extends React.Component {
       this.setState({ type: true });
     }
     setTimeout(function () {
-      _this.filterJobList()
+      _this.fetchInterface()
     }, 300);
   };
 
@@ -293,50 +294,66 @@ class NewProjectModelV2 extends React.Component {
       label: ''
     });
 
-    // 查询人员信息
-    await this.fetchQueryMemberInfo();
-
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
     }
     // 修改加载状态
     this.setState({loading: false});
+    // 查询人员信息
+    await this.fetchQueryMemberInfo();
+
+    // 查询岗位信息
+    await this.fetchQueryStationInfo();
+
     //判断完成状态
     this.isFinish();
   };
 
 
   // 处理岗位数据
-  filterJobList = () => {
-    const { dictionary: { RYGW = [] } } = this.props;
-    console.log("RYGW", RYGW)
-    // 初始化各个岗位下对应的员工id的数组
-    let arr = [];
-    RYGW.forEach(item => {
-      arr.push([]);
+  fetchQueryStationInfo = () => {
+    const params = {
+      "current": 1,
+      "pageSize": 999,
+      "paging": 1,
+      "sort": "",
+      "total": -1,
+      "type": "ALL"
+    }
+    FetchQueryStationInfo(params).then((result) => {
+      const {code = -1, record = ''} = result;
+      if (code > 0) {
+        let rec = JSON.parse(record)
+        // 初始化各个岗位下对应的员工id的数组
+        let arr = [];
+        rec.forEach(item => {
+          arr.push([]);
+        });
+        // 获取当前登录用户信息
+        const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+        loginUser.id = String(loginUser.id);
+        arr[9] = [loginUser.id];
+        this.setState({
+          searchStaffList: [loginUser],
+          loginUser: loginUser,
+          staffJobList: rec,
+          rygwDictionary: rec,
+          rygwSelectDictionary: rec,
+          staffInfo: {...this.state.staffInfo, jobStaffList: arr}
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
     });
-    // 获取当前登录用户信息
-    const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
-    loginUser.id = String(loginUser.id);
-    arr[9] = [loginUser.id];
-    this.setState({
-      searchStaffList: [loginUser],
-      loginUser: loginUser,
-      staffJobList: RYGW,
-      rygwDictionary: RYGW,
-      rygwSelectDictionary: RYGW,
-      staffInfo: {...this.state.staffInfo, jobStaffList: arr}
-    });
-    this.fetchInterface();
   };
 
 
   // 查询里程碑信息
   fetchQueryMilepostInfo(params) {
     return FetchQueryMilepostInfo(params).then((record) => {
-      const { code = -1, result = '' } = record;
-      const { nowTime, tomorrowTime } = this.state;
+      const {code = -1, result = ''} = record;
+      const {nowTime, tomorrowTime} = this.state;
       if (code > 0) {
         let data = JSON.parse(result);
         // console.log("data-cccc", data)
@@ -398,6 +415,7 @@ class NewProjectModelV2 extends React.Component {
   toOrgTree(list, parId) {
     let obj = {};
     let result = [];
+    // console.log("list",list)
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
     list.map(el => {
       el.title = el.orgName;
@@ -420,12 +438,13 @@ class NewProjectModelV2 extends React.Component {
     //设置默认展开的节点
     let expend = [];
     let exp = {};
+    // console.log("result",result)
     exp = JSON.parse(JSON.stringify(result[0]));
     exp.children.map(item => {
       delete item.children;
-      if (item.orgName === "公司总部") {
-        expend.push(item.orgId);
-      }
+      // if (item.orgName === "公司总部") {
+      expend.push(item.orgId);
+      // }
     })
     expend.push(exp.orgId)
     this.setState({
@@ -437,48 +456,99 @@ class NewProjectModelV2 extends React.Component {
 
   toItemTree(list, parId) {
     let a = list.reduce((pre, current, index) => {
-      pre[current.zdbm] = pre[current.zdbm] || [];
-      pre[current.zdbm].push({
-        key: current.ysID,
-        title: current.ysName,
-        value: current.ysID,
+      pre[current.ysLXID] = pre[current.ysLXID] || [];
+      pre[current.ysLXID].push({
+        key: current.ysLXID,
+        title: current.ysLX,
+        value: current.ysLXID,
         ysID: current.ysID,
         ysKGL: Number(current.ysKGL),
         ysLB: current.ysLB,
         ysName: current.ysName,
         ysZJE: Number(current.ysZJE),
         zdbm: current.zdbm,
+        ysLX: current.ysLX,
+        ysLXID: current.ysLXID,
         ysKZX: Number(current.ysKZX),
       });
       return pre;
     }, []);
 
     const treeData = [];
-    const indexData = [];
-    list.map(item => {
-      if (indexData.indexOf(item.zdbm) === -1) {
-        indexData.push(item.zdbm)
-        if (a[item.zdbm]) {
-          let treeDatamini = { children: [] }
-          treeDatamini.key = item.zdbm
-          treeDatamini.value = item.zdbm
-          treeDatamini.title = item.ysLB
-          treeDatamini.ysID = item.ysID
-          treeDatamini.ysKGL = Number(item.ysKGL)
-          treeDatamini.ysLB = item.ysLB
-          treeDatamini.ysName = item.ysName
-          treeDatamini.ysZJE = Number(item.ysZJE)
-          treeDatamini.ysKZX = Number(item.ysKZX)
-          treeDatamini.zdbm = item.zdbm
-          treeDatamini.dropdownStyle = { color: '#666' }
-          treeDatamini.disabled = true
-          treeDatamini.children = a[item.zdbm]
-          treeData.push(treeDatamini)
+    for (const key in a) {
+      const indexData = [];
+      const childrenData = [];
+      const childrenDatamini = [];
+      if (a.hasOwnProperty(key)) {
+        if (a[key] !== null) {
+          // console.log("item",a[key]);
+          let b = a[key].reduce((pre, current, index) => {
+            pre[current.zdbm] = pre[current.zdbm] || [];
+            pre[current.zdbm].push({
+              key: current.ysID,
+              title: current.ysName,
+              value: current.ysID,
+              ysID: current.ysID,
+              ysKGL: Number(current.ysKGL),
+              ysLB: current.ysLB,
+              ysName: current.ysName,
+              ysZJE: Number(current.ysZJE),
+              zdbm: current.zdbm,
+              ysKZX: Number(current.ysKZX),
+            });
+            return pre;
+          }, []);
+          a[key].map(item => {
+            if (indexData.indexOf(item.zdbm) === -1) {
+              indexData.push(item.zdbm)
+              if (b[item.zdbm]) {
+                let treeDatamini = {children: []}
+                if (item.zdbm === "6") {
+                  // console.log("b[item.zdbm]",b["6"])
+                  b[item.zdbm].map(i => {
+                    treeDatamini.key = i.ysID
+                    treeDatamini.value = i.ysID
+                    treeDatamini.title = i.ysName
+                    treeDatamini.ysID = i.ysID
+                    treeDatamini.ysKGL = Number(i.ysKGL)
+                    treeDatamini.ysLB = i.ysLB
+                    treeDatamini.ysName = i.ysName
+                    treeDatamini.ysZJE = Number(i.ysZJE)
+                    treeDatamini.ysKZX = Number(i.ysKZX)
+                    treeDatamini.zdbm = i.zdbm
+                  })
+                  // treeDatamini.dropdownStyle = { color: '#666' }
+                  // treeDatamini.disabled = true
+                  // treeDatamini.children = b[item.zdbm]
+                } else {
+                  treeDatamini.key = item.zdbm
+                  treeDatamini.value = item.zdbm
+                  treeDatamini.title = item.ysLB
+                  treeDatamini.ysID = item.ysID
+                  treeDatamini.ysKGL = Number(item.ysKGL)
+                  treeDatamini.ysLB = item.ysLB
+                  treeDatamini.ysName = item.ysName
+                  treeDatamini.ysZJE = Number(item.ysZJE)
+                  treeDatamini.ysKZX = Number(item.ysKZX)
+                  treeDatamini.zdbm = item.zdbm
+                  treeDatamini.dropdownStyle = {color: '#666'}
+                  treeDatamini.disabled = true
+                  treeDatamini.children = b[item.zdbm]
+                }
+                childrenDatamini.push(treeDatamini)
+              }
+              childrenData.key = key;
+              childrenData.value = key;
+              childrenData.title = item.ysLX;
+              childrenData.dropdownStyle = {color: '#666'};
+              childrenData.disabled = true;
+              childrenData.children = childrenDatamini;
+            }
+          })
+          treeData.push(childrenData);
         }
       }
-
-    })
-    console.log("treeData", treeData);
+    }
     return treeData;
   }
 
@@ -576,11 +646,13 @@ class NewProjectModelV2 extends React.Component {
           let totalBudget = 0;
           let relativeBudget = 0;
           this.state.budgetProjectList.forEach(item => {
-            item.children.forEach(i => {
-              if (i.key === result.budgetProject) {
-                totalBudget = Number(i.ysZJE);
-                relativeBudget = Number(i.ysKGL);
-              }
+            item.children.forEach(ite => {
+              ite.children.forEach(i => {
+                if (i.key === result.budgetProject) {
+                  totalBudget = Number(i.ysZJE);
+                  relativeBudget = Number(i.ysKGL);
+                }
+              })
             })
           });
           let newOrg = []
@@ -649,7 +721,7 @@ class NewProjectModelV2 extends React.Component {
         });
         this.setState({
           staffList: result,
-          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0)
+          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 1)
         });
       }
     }).catch((error) => {
@@ -675,7 +747,7 @@ class NewProjectModelV2 extends React.Component {
           arr.push({ ...e })
         });
         this.setState({
-          loginUser: loginUser, organizationList: record, organizationTreeList: this.toOrgTree(arr, 0)
+          loginUser: loginUser, organizationList: record, organizationTreeList: this.toOrgTree(arr, 1)
         });
       }
     }).catch((error) => {
@@ -1166,6 +1238,8 @@ class NewProjectModelV2 extends React.Component {
     // console.log("operateType", operateType)
     params.type = operateType;
     params.czr = Number(this.state.loginUser.id);
+    //资本性预算/非资本性预算
+    params.budgetType = this.state.budgetInfo.budgetType;
 
     this.operateCreatProject(params, type);
   };
@@ -1723,6 +1797,7 @@ class NewProjectModelV2 extends React.Component {
     // console.log("orgExpendKeys", orgExpendKeys)
     // console.log("organizationTreeList", organizationTreeList)
     const {getFieldDecorator} = this.props.form;
+    const userBasicInfo = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
     const basicFormItemLayout = {
       labelCol: {
         xs: {span: 24},
@@ -1960,11 +2035,11 @@ class NewProjectModelV2 extends React.Component {
                             }}>
                               *
                             </div>
-                            <Form.Item label="招标方式">
+                            <Form.Item label="采购方式">
                               {getFieldDecorator('biddingMethod', {
                                 // rules: [{
                                 //   required: true,
-                                //   message: '请输入招标方式'
+                                //   message: '请输入采购方式'
                                 // }],
                                 initialValue: basicInfo.biddingMethod
                               })(
@@ -2079,30 +2154,35 @@ class NewProjectModelV2 extends React.Component {
                               // treeDefaultExpandAll
                               onChange={e => {
                                 budgetProjectList.forEach(item => {
-                                  item.children.forEach(i => {
-                                    if (i.key === e) {
+                                  item?.children?.forEach(ite => {
+                                    console.log("ite", ite)
+                                    if (e === '0') {
                                       const _this = this;
-                                      if (e === '0') {
-                                        this.setState({
-                                          budgetInfo: {
-                                            ...this.state.budgetInfo,
-                                            budgetProjectId: e,
-                                            totalBudget: 0,
-                                            relativeBudget: 0,
-                                            projectBudget: 0,
-                                          },
-                                          ysKZX: i.ysKZX,
-                                        }, function () {
-                                          _this.props.form.resetFields(['projectBudget']);
-                                          _this.props.form.validateFields(['projectBudget']);
-                                        });
-                                      } else {
+                                      this.setState({
+                                        budgetInfo: {
+                                          ...this.state.budgetInfo,
+                                          budgetProjectId: e,
+                                          totalBudget: 0,
+                                          relativeBudget: 0,
+                                          projectBudget: 0,
+                                          budgetType: '资本性预算'
+                                        },
+                                        ysKZX: ite.ysKZX,
+                                      }, function () {
+                                        _this.props.form.resetFields(['projectBudget']);
+                                        _this.props.form.validateFields(['projectBudget']);
+                                      });
+                                    }
+                                    ite?.children?.forEach(i => {
+                                      if (i.key === e) {
+                                        const _this = this;
                                         this.setState({
                                           budgetInfo: {
                                             ...this.state.budgetInfo,
                                             budgetProjectId: e,
                                             totalBudget: Number(i.ysZJE),
-                                            relativeBudget: Number(i.ysKGL)
+                                            relativeBudget: Number(i.ysKGL),
+                                            budgetType: i.ysLX
                                           },
                                           ysKZX: i.ysKZX,
                                         }, function () {
@@ -2110,7 +2190,7 @@ class NewProjectModelV2 extends React.Component {
                                           _this.props.form.validateFields(['projectBudget']);
                                         });
                                       }
-                                    }
+                                    })
                                   })
                                 })
                               }}
@@ -2860,9 +2940,10 @@ class NewProjectModelV2 extends React.Component {
                                   >
                                     {
                                       searchStaffList.length > 0 && searchStaffList.map((item, index) => {
+                                        // console.log("searchStaffList",searchStaffList)
                                         return (
                                           <Select.Option key={index}
-                                                         value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                                         value={item.id}>{item.name}({userBasicInfo[0]?.extAttr?.orgname})</Select.Option>
                                         )
                                       })
                                     }

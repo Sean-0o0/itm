@@ -35,13 +35,15 @@ import ContractInfoUpdate from './ContractInfoUpdate';
 import BidInfoUpdate from './BidInfoUpdate';
 
 import WPSFrame from '../../../js/wps_general'
-import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
-import { PluginsUrl } from "../../../utils/config";
+import {WpsInvoke, WpsClientOpen} from '../../../js/wpsjsrpcsdk';
+import {PluginsUrl} from "../../../utils/config";
 import PaymentProcess from './PaymentProcess';
 import moment from 'moment';
-import { DecryptBase64 } from "../../Common/Encrypt";
+import {DecryptBase64} from "../../Common/Encrypt";
+import ContractSigning from "./ContractSigning";
+import AssociatedFile from "./AssociatedFile";
 
-const { TabPane } = Tabs;
+const {TabPane} = Tabs;
 
 const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
@@ -109,6 +111,10 @@ class LifeCycleManagementTabs extends React.Component {
     executionItemsData: [],
     loading: true,
     open: false,
+    //合同签署流程发起
+    contractSigningVisible: false,
+    //
+    associatedFileVisible: false,
   };
 
   componentDidMount() {
@@ -290,17 +296,17 @@ class LifeCycleManagementTabs extends React.Component {
       ],
       Loginname
     )
-    if (name.includes("合同签署")) {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
-        [
-          {
-            "name": "XMMC",
-            "value": this.state.xmid
-          }
-        ],
-        Loginname
-      )
-    }
+    // if (name.includes("合同签署")) {
+    // params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
+    //   [
+    //     {
+    //       "name": "XMMC",
+    //       "value": this.state.xmid
+    //     }
+    //   ],
+    //   Loginname
+    // )
+    // }
     if (name.includes("付款")) {
       params = getParams("LC_XMFKLC", "LC_XMFKLC_XMFKLCFQ",
         [
@@ -582,12 +588,24 @@ class LifeCycleManagementTabs extends React.Component {
 
   //流程发起
   handleSend = (item) => {
+    console.log("item", item)
     if (item.sxmc.includes('付款流程')) {
       // this.setState({
       //   paymentModalVisible: true,
       // });
       message.info('功能开发中，暂时无法使用', 1);
       return;
+    }
+    //合同签署流程弹窗个性化,不走livebos弹窗了
+    if (item.sxmc.includes("合同签署")) {
+      let index = this.state.operationListData?.findIndex(x => {
+        return Number(x.xmid) === Number(item.xmid)
+      })
+      this.setState({
+        currentXmmc: this.state.operationListData[index].xmmc,
+        contractSigningVisible: true,
+      })
+      return
     }
     this.getSendUrl(item.sxmc);
     this.setState({
@@ -983,9 +1001,17 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   changeTab = (xmid) => {
-    this.setState({ xmid });
+    this.setState({xmid});
     console.log(hhh, xmid);
   };
+
+  closeContractModal = () => {
+    this.setState({contractSigningVisible: false})
+  }
+
+  closeAssociatedFileModal = () => {
+    this.setState({associatedFileVisible: false})
+  }
 
   render() {
     const {
@@ -1024,8 +1050,10 @@ class LifeCycleManagementTabs extends React.Component {
       open,
       allItemsData,
       allItemsDataFirst,
+      contractSigningVisible,
+      associatedFileVisible,
     } = this.state;
-    // console.log("allItemsDataFirst", allItemsDataFirst)
+    console.log("contractSigningVisible", contractSigningVisible)
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
@@ -1214,6 +1242,22 @@ class LifeCycleManagementTabs extends React.Component {
           onSuccess={() => this.onSuccess("信息修改")}
         ></ContractInfoUpdate>}
 
+        {/*合同签署流程弹窗*/}
+        {contractSigningVisible && <ContractSigning
+          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
+          currentXmmc={currentXmmc}
+          contractSigningVisible={contractSigningVisible}
+          closeContractModal={this.closeContractModal}
+          onSuccess={() => this.onSuccess("合同签署")}
+        ></ContractSigning>}
+
+        {/*合同签署流程弹窗*/}
+        {associatedFileVisible && <AssociatedFile
+          associatedFileVisible={associatedFileVisible}
+          closeAssociatedFileModal={this.closeAssociatedFileModal}
+          onSuccess={() => this.onSuccess("合同签署")}
+        ></AssociatedFile>}
+
         {/*中标信息修改弹窗*/}
         {bidInfoModalVisible && <BidInfoUpdate
           currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
@@ -1241,6 +1285,7 @@ class LifeCycleManagementTabs extends React.Component {
                           // totalRows={operationListTotalRows}
                           defaultValue={xmid}
                           projectInfo={projectInfo} />
+                        {/*<span onClick={e =>{this.setState({associatedFileVisible:true})}}>点击事件</span>*/}
                       </div>
                       <div className='lifecyclemanage-box-wrapper'>
                         <div className='lifecyclemanage-box'>

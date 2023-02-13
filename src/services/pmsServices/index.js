@@ -39,6 +39,7 @@ const {
     queryContrastStatisticInfo,
     checkInvoice,
     queryUserRole,
+    individuationGetOAResult,
   },
 } = api;
 
@@ -388,4 +389,14 @@ export async function QueryUserRole(payload) {
     data: payload,
   };
   return request(option);
+}
+
+// 修改项目时查询项目详细信息
+export async function IndividuationGetOAResult(payload, configObj) {
+  const option = {
+    url: individuationGetOAResult,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
 }

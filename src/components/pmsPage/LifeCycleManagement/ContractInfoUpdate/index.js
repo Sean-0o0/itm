@@ -594,27 +594,28 @@ class ContractInfoUpdate extends React.Component {
                         </Row>
                         <Row>
                             <Col span={12}> <Form.Item label="签署日期" labelCol={{ span: 6 }} wrapperCol={{ span: 16 }}>
-                                {getFieldDecorator('qsrq', {
-                                    initialValue: contractInfo?.qsrq === null ? null : moment(contractInfo?.qsrq),
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '签署日期不允许空值',
-                                        },
-                                    ],
-                                })(<DatePicker style={{ width: '100%' }} />)}
+                              {getFieldDecorator('qsrq', {
+                                initialValue: contractInfo?.qsrq === null ? null : moment(contractInfo?.qsrq),
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: '签署日期不允许空值',
+                                  },
+                                ],
+                              })(<DatePicker style={{width: '100%'}}/>)}
                             </Form.Item></Col>
-                            <Col span={11}> <Form.Item label="供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
-                                {getFieldDecorator('gys', {
-                                    initialValue: gys,
-                                    rules: [
-                                        {
-                                            required: true,
-                                            message: '供应商不允许空值',
-                                        },
-                                    ],
-                                })(<Select
-                                    style={{ width: '100%', borderRadius: '1.1904rem !important' }}
+                          <Col span={11}>
+                            <Form.Item label="供应商" labelCol={{span: 8}} wrapperCol={{span: 16}}>
+                              {getFieldDecorator('gys', {
+                                initialValue: gys,
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: '供应商不允许空值',
+                                  },
+                                ],
+                              })(<Select
+                                style={{width: '100%', borderRadius: '1.1904rem !important'}}
                                     placeholder="请选择供应商"
                                     showSearch
                                     allowClear

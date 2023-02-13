@@ -11,6 +11,8 @@
     "@hanyk/rc-viewer": "^0.0.3",
     "@lingui/react": "^2.8.0",
     "@tweenjs/tween.js": "18.5.0",
+    "@wangeditor/editor": "^5.1.23",
+    "@wangeditor/editor-for-react": "^1.0.6",
     "ant-design-pro": "^2.3.0",
     "antd": "3.26.16",
     "array-move": "2.2.0",
@@ -74,6 +76,7 @@
     "store": "^2.0.0",
     "typescript": "3.6.4",
     "umi-request": "^1.2.8",
+    "wangeditor": "^4.7.15",
     "xml2js": "0.4.22"
   },
   "devDependencies": {

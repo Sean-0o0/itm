@@ -1,7 +1,7 @@
 import lodash from 'lodash';
-import { routerRedux } from 'dva/router';
-import { AccountLogin, AccountUser } from '../services/login';
-import { fetchOperationLog } from '../services/basicservices';
+import {routerRedux} from 'dva/router';
+import {AccountLogin, AccountUser, UserBasicInfo} from '../services/login';
+import {fetchOperationLog} from '../services/basicservices';
 import { FetchPwd } from '../services/amslb/user';
 import { AES } from '../utils/aes_utils';
 import { APP_SECRET, CLIENTID, ptlx } from '../utils/config';
@@ -64,16 +64,19 @@ export default {
       sessionStorage.setItem('recentlyVisited', ''); // 清除历史记录
       try {
         const response = yield call(AccountLogin, params);
-        const { code = 0, note = '', user = {} } = response || {};
+        const {code = 0, note = '', user = {}} = response || {};
+        const response2 = yield call(UserBasicInfo, {});
+        const {records = []} = response2 || {};
         yield put({
           type: 'changeLoginStatus',
           payload: {
             loginCode: code,
             loginNote: note,
             user,
+            userBasicInfo: records,
           },
         });
-        yield put({ type: 'fetOperationLog' }); // 记录日志
+        yield put({type: 'fetOperationLog'}); // 记录日志
         yield put({ type: 'global/resetAll' });
         yield put({ type: 'global/checkAuth' });
         yield put({ type: 'global/fetchUserBasicInfo', payload: { isFirst: true } });
@@ -156,9 +159,10 @@ export default {
 
   reducers: {
     changeLoginStatus(state, { payload }) {
-      const { loginCode, loginNote, user } = payload;
+      const {loginCode, loginNote, user, userBasicInfo} = payload;
       if (loginCode > 0) {
         sessionStorage.setItem('user', JSON.stringify(user)); // 保存用户基本信息
+        sessionStorage.setItem('userBasicInfo', JSON.stringify(userBasicInfo)); // 保存用户基本信息
       }
       return {
         loginCode,

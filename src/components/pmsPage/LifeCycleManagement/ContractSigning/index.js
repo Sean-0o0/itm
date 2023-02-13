@@ -1,0 +1,653 @@
+/**
+ * 合同签署流程发起弹窗页面
+ */
+import {
+  Row,
+  Col,
+  Popconfirm,
+  Modal,
+  Form,
+  Input,
+  Table,
+  DatePicker,
+  message,
+  Select,
+  Spin,
+  Radio,
+  TreeSelect, InputNumber, Upload, Button, Icon
+} from 'antd';
+
+const {Option} = Select;
+import React from 'react';
+import {connect} from "dva";
+import {FetchQueryGysInZbxx, IndividuationGetOAResult} from "../../../../services/pmsServices";
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import moment from "moment";
+import RichTextEditor from "./RichTextEditor";
+
+class ContractSigning extends React.Component {
+  state = {
+    isSpinning: false,
+    isSelectorOpen: false,
+    addGysModalVisible: false,
+    pbbgTurnRed: true,
+    fileList: [],
+    uploadFileParams: {
+      columnName: '',
+      documentData: '',
+      fileLength: '',
+      fileName: '',
+      filePath: '',
+      id: 0,
+      objectName: ''
+    },
+    // 基本信息是否折叠
+    basicInfoCollapse: false,
+    //合同信息是否折叠
+    contractInfoCollapse: false,
+    //附件信息是否折叠
+    attachmentInfoCollapse: false,
+    //关联流程是否折叠
+    flowInfoCollapse: false,
+    //紧急程度
+    LCJJCD: [],
+    //印章类型
+    YZLX: [],
+    //表单信息
+    // contractSigningFormInfo:{
+    //   bm:'',
+    //   BGRQ:'',
+    //   ngr:'',
+    //   lb:'',
+    //   title:'',
+    //   urgent:'',
+    //   gys:'',
+    //   htbh:'',
+    //   HTMBLX:'',
+    //   je:0,
+    //   YZLX:'',
+    //   YT:'',
+    //   QSBGNR:'',
+    //   filerela:"",
+    // }
+  }
+
+  componentDidMount() {
+    this.fetchQueryGysInZbxx()
+  }
+
+  // 查询供应商下拉列表
+  fetchQueryGysInZbxx = (current, pageSize) => {
+    FetchQueryGysInZbxx({
+      // paging: 1,
+      paging: -1,
+      sort: "",
+      current,
+      pageSize,
+      total: -1,
+    }).then(res => {
+      if (res.success) {
+        let rec = res.record;
+        this.setState({
+          gysData: [...rec]
+        });
+      }
+    });
+  }
+
+  OnGysSuccess = () => {
+    this.setState({addGysModalVisible: false});
+    this.fetchQueryGysInZbxx();
+  }
+
+  // 保存数据操作
+  handleFormValidate = (e) => {
+    e.preventDefault();
+    const {currentXmid, currentXmmc} = this.props;
+    console.log("currentXmid", currentXmid)
+    console.log("currentXmmc", currentXmmc)
+    const _this = this;
+    this.props.form.validateFields((err, values) => {
+      if (err) {
+        const errs = Object.keys(err);
+        if (errs.includes('BGRQ')) {
+          message.warn("请选择报告日期！");
+          return
+        }
+        if (errs.includes('title')) {
+          message.warn("请输入标题！");
+          return
+        }
+        if (errs.includes('urgent')) {
+          message.warn("请选择紧急程度！");
+          return
+        }
+        if (errs.includes('HTMBLX')) {
+          message.warn("请选择合同模版类型！");
+          return
+        }
+        if (errs.includes('je')) {
+          message.warn("请输入合同金额！");
+          return
+        }
+        if (errs.includes('YZLX')) {
+          message.warn("请选择印章类型！");
+          return
+        }
+        if (errs.includes('YT')) {
+          message.warn("请输入用途！");
+          return
+        }
+        if (errs.includes('QSBGNR')) {
+          message.warn("请输入请示报告内容！");
+          return
+        }
+      } else {
+        if (_this.state.pbbgTurnRed) {
+          message.warn("请上传合同附件！");
+          return
+        } else {
+          _this.individuationGetOAResult(values)
+        }
+      }
+    });
+  };
+
+  //发起流程到oa
+  individuationGetOAResult = (values) => {
+    console.log("params", this.handleParams(values))
+    return IndividuationGetOAResult(this.handleParams(values)).then((result) => {
+      const {code = -1, record = []} = result;
+      if (code > 0) {
+        this.props.closeContractModal()
+        this.props.onSuccess("合同签署")
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  handleParams = (values) => {
+    const {uploadFileParams} = this.state;
+    const {currentXmid, currentXmmc} = this.props;
+    const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+    loginUser.id = String(loginUser.id);
+    //表单数据
+    const formdata = {
+      "extinfo": {
+        "busdata": {
+          "BGRQ": moment(values.BGRQ).format('YYYYMMDD'),// 报告日期
+          "QSBGNR": values.QSBGNR,//请示报告内容
+          "LB": "1",//固定传1
+          "HTMBLX": values.HTMBLX,//合同模板类型id
+          "YZLX": String(values.YZLX),//印章类型字典id，多个用,隔开
+          "YT": values.YT, //用途
+          "BM1": "", //传空
+          "BM2": "", //传空
+          "NGR1": "", //传空
+          "NGR2": "", //传空
+        },
+      },
+      //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
+      "filerela": "",
+      "issend": 1,//是否直接送审，固定传1
+      "je": values.je,//金额
+      "loginname": loginUser.loginName,//登录用户userid
+      "title": values.title,//标题
+      "urgent": Number(values.urgent) //紧急程度id
+    }
+    //附件数据
+    const attachments = []
+    let att = {}
+    if (uploadFileParams !== {} && uploadFileParams !== undefined) {
+      att = {
+        content: uploadFileParams.documentData,
+        nrtitle: uploadFileParams.fileName,
+        nrtype: "1",
+        filetype: "合同"
+      }
+    }
+    attachments.push(att);
+    const flowdata = {
+      "zt": currentXmmc + "合同签署流程", // 主题，格式为：项目名称+合同签署流程
+      "xmmc": String(currentXmid), //项目的id
+      "bm": String(loginUser.org),//部门id
+      "gys": values.gys//供应商的id
+    }
+    const params = {
+      objectclass: "合同签署流程",
+      formdata: JSON.stringify(formdata),
+      attachments,
+      flowdata: JSON.stringify(flowdata),
+    };
+    return params;
+  }
+
+  render() {
+    const {
+      isSpinning = false,
+      isSelectorOpen = false,
+      gysData = [],
+      addGysModalVisible = false,
+      pbbgTurnRed = true,
+      fileList = [],
+      basicInfoCollapse = false,
+      contractInfoCollapse = false,
+      attachmentInfoCollapse = false,
+      flowInfoCollapse = false,
+    } = this.state;
+    const {contractSigningVisible, dictionary: {LCJJCD = [], YZLX = []}} = this.props;
+    const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
+    const userBasicInfo = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
+    const basicFormItemLayout = {
+      labelCol: {
+        xs: {span: 24},
+        sm: {span: 8},
+      },
+      wrapperCol: {
+        xs: {span: 24},
+        sm: {span: 16},
+      },
+    };
+    const addGysModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      title: '新增供应商',
+      width: '120rem',
+      height: '90rem',
+      style: {top: '20rem'},
+      visible: addGysModalVisible,
+      footer: null,
+    };
+    return (<>
+      {/*供应商弹窗*/}
+      {
+        addGysModalVisible &&
+        <BridgeModel modalProps={addGysModalProps}
+                     onCancel={() => this.setState({addGysModalVisible: false})}
+                     onSucess={this.OnGysSuccess}
+                     src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'}/>
+      }
+      <Modal wrapClassName='editMessage-modify' width={'148.8rem'}
+             title={null}
+             zIndex={100}
+             bodyStyle={{
+               padding: '0'
+             }}
+             onOk={e => this.handleFormValidate(e)}
+             onCancel={this.props.closeContractModal}
+             visible={contractSigningVisible}>
+        <div style={{
+          height: '6.2496rem',
+          width: '100%',
+          display: 'flex',
+          alignItems: 'center',
+          backgroundColor: '#3361FF',
+          color: 'white',
+          marginBottom: '2.3808rem',
+          padding: '0 3.5712rem',
+          borderRadius: '1.1904rem 1.1904rem 0 0',
+          fontSize: '2.333rem'
+        }}>
+          <strong>合同签署流程发起</strong>
+        </div>
+        <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
+          <div style={{padding: '0 3.5712rem'}}>
+            <div className="steps-content"><React.Fragment>
+              <Form {...basicFormItemLayout} ref={e => this.basicForm = e} style={{width: '98%'}}>
+                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                  <Icon type={basicInfoCollapse ? "caret-right" : "caret-down"}
+                        onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}
+                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>基本信息</span>
+                </div>
+                {
+                  !basicInfoCollapse &&
+                  <div style={{margin: '2rem 0 0 0'}}>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item label="部门">
+                          <Input placeholder="请输入部门" disabled={true} value={userBasicInfo[0]?.extAttr?.orgname}/>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="报告日期">
+                          {getFieldDecorator('BGRQ', {
+                            initialValue: moment(),
+                            rules: [
+                              {
+                                required: true,
+                                message: '报告日期不允许空值',
+                              },
+                            ],
+                          })(<DatePicker style={{width: '100%'}}/>)}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item label="拟稿人">
+                          <Input placeholder="请输入拟稿人" disabled={true} value={userBasicInfo[0]?.name}/>
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="类别">
+                          <Input placeholder="请输入类别" disabled={true} value="总部部门发起"/>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item label="标题">
+                          {getFieldDecorator('title', {
+                            rules: [{
+                              required: true,
+                              message: '请输入标题'
+                            }],
+                            initialValue: ""
+                          })(
+                            <Input placeholder="请输入标题"/>
+                          )}
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="紧急程度">
+                          {getFieldDecorator('urgent', {
+                            // initialValue: "一般"
+                          })(
+                            // <Select showSearch
+                            //         filterOption={(input, option) =>
+                            //           option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            //         }>
+                            //   {
+                            //     LCJJCD.length > 0 && LCJJCD.map((item, index) => {
+                            //       return (
+                            //         <Option key={index} value={item.ibm}>{item.note}</Option>
+                            //       )
+                            //     })
+                            //   }
+                            // </Select>
+                            <Radio.Group>
+                              {
+                                LCJJCD.length > 0 && LCJJCD.map((item, index) => {
+                                  return (
+                                    <Radio value={item.ibm}>{item.note}</Radio>
+                                  )
+                                })
+                              }
+                            </Radio.Group>
+                          )}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                }
+
+
+                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                  <Icon type={contractInfoCollapse ? "caret-right" : "caret-down"}
+                        onClick={() => this.setState({contractInfoCollapse: !contractInfoCollapse})}
+                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>合同信息</span>
+                </div>
+                {
+                  !contractInfoCollapse &&
+                  <div style={{margin: '2rem 0 0 0'}}>
+                    <Row gutter={24}>
+                      <Col span={12} style={{display: 'flex'}}>
+                        <Form.Item label="供应商" style={{width: '100%'}}>
+                          {getFieldDecorator('gys', {
+                            // initialValue: '1',
+                            // rules: [
+                            //   {
+                            //     required: true,
+                            //     message: '供应商不允许空值',
+                            //   },
+                            // ],
+                          })(<Select
+                            style={{width: '100%', borderRadius: '1.1904rem !important'}}
+                            placeholder="请选择供应商"
+                            showSearch
+                            allowClear
+                            open={isSelectorOpen}
+                            onDropdownVisibleChange={(visible) => this.setState({isSelectorOpen: visible})}
+                            filterOption={(input, option) =>
+                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                            }>
+                            {
+                              gysData?.map((item = {}, ind) => {
+                                return <Option key={ind} value={item.id}>{item.gysmc}</Option>
+                              })
+                            }
+                          </Select>)}
+                        </Form.Item>
+                        <div style={{position: 'absolute', right: '9.5%', marginTop: '1%'}}>
+                          <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
+                               onClick={() => {
+                                 this.setState({addGysModalVisible: true});
+                               }}
+                               alt='' style={{
+                            height: '2.976rem',
+                            marginLeft: '1.0416rem',
+                            marginTop: '1.488rem',
+                            cursor: 'pointer'
+                          }}
+                          />
+                        </div>
+                      </Col>
+                      <Col span={12} className="glys">
+                        <Form.Item label="合同编号">
+                          <Input placeholder="请输入合同编号" disabled={true}/>
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item label="合同模版类型">
+                          {getFieldDecorator('HTMBLX', {
+                            rules: [{
+                              required: true,
+                              message: '请选择合同模版类型'
+                            }],
+                            initialValue: "1"
+                          })(
+                            <Radio value={1} disabled defaultChecked>非模版合同</Radio>
+                          )}
+                        </Form.Item>
+                      </Col>
+                      <Col span={12}>
+                        <Form.Item label="合同金额">
+                          {getFieldDecorator('je', {
+                            rules: [{
+                              required: true,
+                              message: '请输入合同金额'
+                            }],
+                            // initialValue: "外采项目"
+                          })(
+                            <Input placeholder="请输入合同金额"/>
+                          )}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item label="印章类型">
+                          {getFieldDecorator('YZLX', {
+                            rules: [{
+                              required: true,
+                              message: '请选择印章类型'
+                            }],
+                            // initialValue: "外采项目"
+                          })(
+                            <Select showSearch
+                                    showArrow={true}
+                                    defaultValue={1}
+                                    mode="multiple"
+                                    filterOption={(input, option) =>
+                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                    }>
+                              {
+                                YZLX.length > 0 && YZLX.map((item, index) => {
+                                  return (
+                                    <Option key={index} value={item.ibm}>{item.note}</Option>
+                                  )
+                                })
+                              }
+                            </Select>
+                          )}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={24}>
+                        <Form.Item label="用途" labelCol={{span: 4}} wrapperCol={{span: 20}}>
+                          {getFieldDecorator('YT', {
+                            rules: [{
+                              required: true,
+                              message: '请输入用途'
+                            }],
+                            // initialValue: "外采项目"
+                          })(
+                            <Input placeholder="请输入用途"/>
+                          )}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                    <Row gutter={24}>
+                      <Col span={24}>
+                        <Form.Item label="请示报告内容" labelCol={{span: 4}} wrapperCol={{span: 20}}>
+                          {getFieldDecorator('QSBGNR', {
+                            rules: [{
+                              required: true,
+                              message: '请输入请示报告内容'
+                            }],
+                            // initialValue: "外采项目"
+                          })(
+                            <RichTextEditor className="w-e-menu w-e-text-container w-e-toolbar"/>
+                          )}
+                        </Form.Item>
+                      </Col>
+                    </Row>
+                  </div>
+                }
+
+                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                  <Icon type={attachmentInfoCollapse ? "caret-right" : "caret-down"}
+                        onClick={() => this.setState({attachmentInfoCollapse: !attachmentInfoCollapse})}
+                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>附件</span>
+                </div>
+                {
+                  !attachmentInfoCollapse &&
+                  <div style={{margin: '2rem 0 0 0'}}>
+                    <Row gutter={24}>
+                      <Col span={12}>
+                        <Form.Item label="合同" required
+                          // help={pbbgTurnRed ? '请上传合同附件' : ''}
+                                   validateStatus={pbbgTurnRed ? 'error' : 'success'}
+                        >
+                          <Upload
+                            onDownload={(file) => {
+                              if (!file.url) {
+                                let reader = new FileReader();
+                                reader.readAsDataURL(file.originFileObj);
+                                reader.onload = (e) => {
+                                  var link = document.createElement('a');
+                                  link.href = e.target.result;
+                                  link.download = file.name;
+                                  link.click();
+                                  window.URL.revokeObjectURL(link.href);
+                                }
+                              } else {
+                                // window.location.href=file.url;
+                                var link = document.createElement('a');
+                                link.href = file.url;
+                                link.download = file.name;
+                                link.click();
+                                window.URL.revokeObjectURL(link.href);
+                              }
+
+                            }}
+                            showUploadList={{
+                              showDownloadIcon: true,
+                              showRemoveIcon: true,
+                              showPreviewIcon: true,
+                            }}
+                            onChange={(info) => {
+                              let fileList = [...info.fileList];
+                              console.log("fileList", fileList)
+                              console.log("uploadFileParams", this.state.uploadFileParams)
+                              fileList = fileList.slice(-1);
+                              this.setState({fileList}, () => {
+                                // console.log('目前fileList', this.state.fileList);
+                              });
+                              if (fileList.length === 0) {
+                                this.setState({
+                                  pbbgTurnRed: true
+                                });
+                              } else {
+                                this.setState({
+                                  pbbgTurnRed: false
+                                });
+                              }
+                            }}
+                            beforeUpload={(file, fileList) => {
+                              // console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
+                              let reader = new FileReader(); //实例化文件读取对象
+                              reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
+                              reader.onload = (e) => { //文件读取成功完成时触发
+                                // console.log('文件读取成功完成时触发', e.target.result.split(','));
+                                let urlArr = e.target.result.split(',');
+                                this.setState({
+                                  uploadFileParams: {
+                                    ...this.state.uploadFileParams,
+                                    documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
+                                    fileName: file.name,
+                                  }
+                                });
+                              }
+                            }}
+                            accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
+                            fileList={[...fileList]}>
+                            <Button type="dashed">
+                              <Icon type="upload"/>点击上传
+                            </Button>
+                          </Upload>
+                        </Form.Item></Col>
+                    </Row>
+                  </div>
+                }
+
+                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                  <Icon type={flowInfoCollapse ? "caret-right" : "caret-down"}
+                        onClick={() => this.setState({flowInfoCollapse: !flowInfoCollapse})}
+                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
+                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>关联流程</span>
+                  <Icon type="plus-circle" theme="filled"
+                        style={{color: '#3461FF', paddingLeft: '1rem', fontSize: '3rem',}}/>
+                </div>
+                {
+                  !flowInfoCollapse &&
+                  <div style={{margin: '2rem 7rem'}}>
+                    <Row gutter={24}>
+                      <Col span={12} style={{display: 'flex'}}>
+                        <a>关联流程名称</a>
+                      </Col>
+                    </Row>
+                  </div>
+                }
+
+              </Form>
+              {/*</Form>*/}
+            </React.Fragment></div>
+          </div>
+        </Spin>
+      </Modal></>);
+  }
+
+
+}
+
+export default connect(({global}) => ({
+  dictionary: global.dictionary,
+}))(Form.create()(ContractSigning));
