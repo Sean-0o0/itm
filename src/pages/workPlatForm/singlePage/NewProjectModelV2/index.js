@@ -277,9 +277,9 @@ class NewProjectModelV2 extends React.Component {
     await this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
     await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
-    // 查询组织机构信息
-    await this.fetchQueryOrganizationInfo();
 
+    // 查询组织机构信息-应用部门
+    await this.fetchQueryOrganizationYYBMInfo();
 
     // 查询里程碑阶段信息
     await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
@@ -300,6 +300,8 @@ class NewProjectModelV2 extends React.Component {
     }
     // 修改加载状态
     this.setState({loading: false});
+    // 查询组织机构信息
+    await this.fetchQueryOrganizationInfo();
     // 查询人员信息
     await this.fetchQueryMemberInfo();
 
@@ -732,7 +734,7 @@ class NewProjectModelV2 extends React.Component {
   // 查询组织机构信息
   fetchQueryOrganizationInfo() {
     return FetchQueryOrganizationInfo({
-      type: 'ALL'
+      type: 'ZZJG'
     }).then((result) => {
       const { code = -1, record = [] } = result;
       if (code > 0) {
@@ -747,7 +749,33 @@ class NewProjectModelV2 extends React.Component {
           arr.push({ ...e })
         });
         this.setState({
-          loginUser: loginUser, organizationList: record, organizationTreeList: this.toOrgTree(arr, 1)
+          loginUser: loginUser, organizationList: record,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
+  // 查询组织机构信息-应用部门
+  fetchQueryOrganizationYYBMInfo() {
+    return FetchQueryOrganizationInfo({
+      type: 'YYBM'
+    }).then((result) => {
+      const { code = -1, record = [] } = result;
+      if (code > 0) {
+        const loginUser = this.state.loginUser;
+        // 深拷贝
+        const arr = [];
+        record.forEach(e => {
+          // 获取登录用户的部门名称
+          if (e.orgId == loginUser.org) {
+            loginUser.orgName = e.orgName;
+          }
+          arr.push({ ...e })
+        });
+        this.setState({
+          organizationTreeList: this.toOrgTree(arr, 1)
         });
       }
     }).catch((error) => {
