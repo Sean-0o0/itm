@@ -35,15 +35,15 @@ import ContractInfoUpdate from './ContractInfoUpdate';
 import BidInfoUpdate from './BidInfoUpdate';
 
 import WPSFrame from '../../../js/wps_general'
-import {WpsInvoke, WpsClientOpen} from '../../../js/wpsjsrpcsdk';
-import {PluginsUrl} from "../../../utils/config";
+import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
+import { PluginsUrl } from "../../../utils/config";
 import PaymentProcess from './PaymentProcess';
 import moment from 'moment';
-import {DecryptBase64} from "../../Common/Encrypt";
+import { DecryptBase64 } from "../../Common/Encrypt";
 import ContractSigning from "./ContractSigning";
 import AssociatedFile from "./AssociatedFile";
 
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 const PASE_SIZE = 10;
 const Loginname = localStorage.getItem("firstUserID");
@@ -362,7 +362,7 @@ class LifeCycleManagementTabs extends React.Component {
         Loginname
       )
     }
-    if (name === '会议议题提交') {
+    if (name === '会议议案提交') {
       params = getParams("TLC_LCFQ", "TLC_LCFQ_HYYA",
         [
           {
@@ -1012,16 +1012,16 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   changeTab = (xmid) => {
-    this.setState({xmid});
+    this.setState({ xmid });
     console.log(hhh, xmid);
   };
 
   closeContractModal = () => {
-    this.setState({contractSigningVisible: false})
+    this.setState({ contractSigningVisible: false })
   }
 
   closeAssociatedFileModal = () => {
-    this.setState({associatedFileVisible: false})
+    this.setState({ associatedFileVisible: false })
   }
 
   render() {

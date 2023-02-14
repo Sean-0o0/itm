@@ -190,7 +190,7 @@ class ProjectSchedule extends React.Component {
         Loginname
       )
     }
-    if (item.sxmc === '会议议题提交') {
+    if (item.sxmc === '会议议案提交') {
       params = getParams("TLC_LCFQ", "TLC_LCFQ_HYYA",
         [
           {
