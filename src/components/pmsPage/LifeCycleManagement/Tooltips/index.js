@@ -310,6 +310,8 @@ class Tooltips extends React.Component {
         return this.getWdscxg(status, item);
       case '付款流程':
         return this.getLcfqck(status, item, true);
+      case '会议议题提交':
+        return this.getLcfqck(status, item);
       default: console.error('未配置tooltip'); return;
     }
   }
