@@ -496,6 +496,8 @@ class NewProjectModelV2 extends React.Component {
               ysName: current.ysName,
               ysZJE: Number(current.ysZJE),
               zdbm: current.zdbm,
+              ysLX: current.ysLX,
+              ysLXID: current.ysLXID,
               ysKZX: Number(current.ysKZX),
             });
             return pre;
@@ -530,6 +532,8 @@ class NewProjectModelV2 extends React.Component {
                   treeDatamini.ysKGL = Number(item.ysKGL)
                   treeDatamini.ysLB = item.ysLB
                   treeDatamini.ysName = item.ysName
+                  treeDatamini.ysLX = item.ysLX
+                  treeDatamini.ysLXID = item.ysLXID
                   treeDatamini.ysZJE = Number(item.ysZJE)
                   treeDatamini.ysKZX = Number(item.ysKZX)
                   treeDatamini.zdbm = item.zdbm
@@ -2183,8 +2187,8 @@ class NewProjectModelV2 extends React.Component {
                               onChange={e => {
                                 budgetProjectList.forEach(item => {
                                   item?.children?.forEach(ite => {
-                                    console.log("ite", ite)
                                     if (e === '0') {
+                                      console.log("iteiteiteite",ite)
                                       const _this = this;
                                       this.setState({
                                         budgetInfo: {
@@ -2203,6 +2207,7 @@ class NewProjectModelV2 extends React.Component {
                                     }
                                     ite?.children?.forEach(i => {
                                       if (i.key === e) {
+                                        console.log("iiiiii",i)
                                         const _this = this;
                                         this.setState({
                                           budgetInfo: {
