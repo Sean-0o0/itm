@@ -367,7 +367,7 @@ class LifeCycleManagementTabs extends React.Component {
         [
           {
             "name": "GLXM",
-            "value": item.xmid
+            "value": this.state.xmid
           }
         ],
         Loginname
