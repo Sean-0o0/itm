@@ -5,13 +5,13 @@ import { Route, Redirect, Switch } from 'umi';
 import CacheRoute, { CacheSwitch } from 'react-router-cache-route';
 import { Layout, ConfigProvider, message, Icon } from 'antd';
 import zhCN from 'antd/lib/locale-provider/zh_CN';
-import lodash, {debounce} from 'lodash';
+import lodash, { debounce } from 'lodash';
 import PageSider from './PageSider';
 import PageHeader from './PageHeader';
-import {FetcUserMenuProject} from '../../../services/commonbase/index';
+import { FetcUserMenuProject } from '../../../services/commonbase/index';
 import TrackRouter from '../../../components/Common/Router/TrackRouter';
 import RecentlyVisiteUtils from '../../../utils/recentlyVisiteUtils';
-import {FetchMenu} from '../../../services/amslb/user';
+import { FetchMenu } from '../../../services/amslb/user';
 import Watermark from './Watermark';
 import SpecialUrl from './specialUrl';
 import styles from './index.less';
@@ -20,7 +20,7 @@ import WpsUrl from "./WpsUrl";
 import PersonWorkBench from '../../../pages/pmsPage/PersonWorkBench';
 // import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
 
-const {Header, Sider, Content} = Layout;
+const { Header, Sider, Content } = Layout;
 const prefix = '';
 
 class MainPageLayout extends React.PureComponent {
@@ -91,7 +91,7 @@ class MainPageLayout extends React.PureComponent {
     }
   }
 
-  fetcUserMenuProject = (pathname, search) =>{
+  fetcUserMenuProject = (pathname, search) => {
     FetcUserMenuProject({}).then((response) => {
       const { records = [] } = response || [];
       // const new_records = [];
@@ -108,8 +108,8 @@ class MainPageLayout extends React.PureComponent {
       //   return;
       // }
       // if (name !== this.state.name) {
-        // 获取权限菜单树
-        this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
+      // 获取权限菜单树
+      this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
       // }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -228,8 +228,8 @@ class MainPageLayout extends React.PureComponent {
     // else if (url.indexOf(repStr2) < 0) {
     //   tmplUrl = tmplUrl.replace('/livebos/', '/');
     // }
-    if (url.indexOf('/UIProcessor') !== -1||url.indexOf('/OperateProcessor') !== -1 ||url.indexOf('/WorkProcessor') !== -1) {
-      if(url.indexOf('lbFunAuthorize') === -1&&url.indexOf('lbFunAuthScope') === -1&&url.indexOf('lbFunAuthorizeTemp') === -1&&url.indexOf('lbAuthorizationState') === -1){
+    if (url.indexOf('/UIProcessor') !== -1 || url.indexOf('/OperateProcessor') !== -1 || url.indexOf('/WorkProcessor') !== -1) {
+      if (url.indexOf('lbFunAuthorize') === -1 && url.indexOf('lbFunAuthScope') === -1 && url.indexOf('lbFunAuthorizeTemp') === -1 && url.indexOf('lbAuthorizationState') === -1) {
         tmplUrl = `${tmplUrl}&hideTitlebar=true`
       }
     }
@@ -274,7 +274,7 @@ class MainPageLayout extends React.PureComponent {
       children.push({
         url: code,
         title: text,
-        openType:windowType?'_blank':'_self',
+        openType: windowType ? '_blank' : '_self',
         fid,
         root, // 根节点
         icon: iconUrl,
@@ -302,27 +302,30 @@ class MainPageLayout extends React.PureComponent {
       let icon = '';
       const { code, openType = 'self' } = this.parseUrl(url);
       //使用浙商管理平台的图标
-      if(text === "首页"){
+      if (text === "首页") {
         icon = 'icon-home';
-      }if(text === "项目管理"){
+      } if (text === "项目管理") {
         icon = 'icon-detail';
-      }if(text === "项目预算"){
+      } if (text === "项目预算") {
         icon = 'icon-cash';
-      }if(text === "系统管理"){
+      } if (text === "系统管理") {
         icon = 'icon-set';
-      }if(text === "统计分析"){
+      } if (text === "统计分析") {
         icon = 'icon-barchart';
       }
-      if(text === "生命周期管理"){
+      if (text === "生命周期管理") {
         icon = 'icon-work';
       }
-      if(text === "外包人员项目"){
+      if (text === "外包人员项目") {
         icon = 'icon-system';
+      }
+      if (text === "流程管理") {
+        icon = 'icon-procedure';
       }
       menuTree1.push({
         url: code,
         title: text,
-        openType: windowType?'_blank':'_self',
+        openType: windowType ? '_blank' : '_self',
         fid: '',
         root: url,
         icon: icon,
@@ -370,7 +373,7 @@ class MainPageLayout extends React.PureComponent {
     let toDefaultLink = {}; // eslint-disable-line
     if (menuTree.length > 0) {
       const itemPath = this.getFirstChildren(menuTree[0]);
-      toDefaultLink = {pathname: itemPath};
+      toDefaultLink = { pathname: itemPath };
     }
     // 是否开启水印
     const isOpenSecureMarker = localStorage.getItem('openSecureMarker') === '1';
@@ -381,17 +384,17 @@ class MainPageLayout extends React.PureComponent {
     const wpsUrl = WpsUrl.filter(item => location.pathname.startsWith(item));
     return (
       wpsUrl && wpsUrl.length > 0 ? (
-          <React.Fragment>
-            {/*WPS预览页面单独处理*/}
-            <ViewFile/>
-          </React.Fragment>
-        ) :
+        <React.Fragment>
+          {/*WPS预览页面单独处理*/}
+          <ViewFile />
+        </React.Fragment>
+      ) :
         (specialUrl && specialUrl.length > 0 ? (
           <React.Fragment>
             <Switch>
               {
                 // 路由
-                routes.map(({key, path, component}) => {
+                routes.map(({ key, path, component }) => {
                   return (
                     <Route
                       key={key || path}
@@ -402,106 +405,107 @@ class MainPageLayout extends React.PureComponent {
                     />
                   );
                 }
-              )}
-          </Switch>
-        </React.Fragment>
-      ) : (
-        <ConfigProvider locale={zhCN}>
-          <Layout className={theme} style={{ minHeight: '100%', height: '100%', minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth, overflow: 'hidden' }}>
-            <Header className="zy-header-wrap">
-              <PageHeader
-                menuTree={menuTree}
-                fetchMenuDatas={this.fetchMenuDatas}
-                history={history}
-                dispatch={dispatch}
-                dictionary={dictionary}
-                userBasicInfo={userBasicInfo}
-                userBusinessRole={userBusinessRole}
-                authUserInfo={authUserInfo}
-                authorities={authorities}
-                location={location}
-                userTodoWorkflowNum={userTodoWorkflowNum}
-                projectName={projectName}
-                theme={theme}
-              />
-            </Header>
-            <Layout style={{ background: '#4bafee', height: '100%', overflow: 'hidden' }}>
-              <Sider
-                className="siderContent cf-menu-wp"
-                trigger={null}
-                collapsible
-                width={240}
-                collapsedWidth={100}
-                collapsed={collapsed}
-              >
-                <PageSider menuTree={menuTree} collapsed={collapsed} location={location} history={history}></PageSider>
-                {<div style={{transform: !collapsed && 'rotate(180deg)'}}
-                      className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
-                  {collapsed ? <Icon type="menu-unfold" className='menu-sider-icon'/> :
-                    <Icon type="menu-fold" className='menu-sider-icon'/>}
-                </div>}
-              </Sider>
-              <Content id="htmlContent" style={{
-                borderRadius: '0 0 0 1rem',
-                height: '100%',
-                overflowY: 'auto',
-                overflowX: 'hidden',
-                width: '100%'
-              }} className="m-layout-content">
-                {/* <TopMenu></TopMenu> */}
-                <TrackRouter history={history} onEnter={(loc, preLoc) => {
-                  this.pageTrack(loc, preLoc);
-                }}>
-                  {/* 水印 */}
-                  { /* 系统监控/system/monitor页面不需要水印 */
-                    isOpenSecureMarker && userBasicInfo.userid && lodash.get(location, 'pathname', '').indexOf('/system/monitor/view') === -1 &&
-                    <Watermark userBasicInfo={userBasicInfo} location={location} elementID='htmlContent'/>
-                  }
-                  <CacheSwitch>
-                    {
-                      // 路由
-                      routes.map(({key, path, component, keepAlive = true}, index) => {
-                        if( path && !path.includes('/index')){
-                          return (
-                            path && (
-                              <CacheRoute
-                                key={index}
-                                when={() => {
+                )}
+            </Switch>
+          </React.Fragment>
+        ) : (
+          <ConfigProvider locale={zhCN}>
+            <Layout className={theme} style={{ minHeight: '100%', height: '100%', minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth, overflow: 'hidden' }}>
+              <Header className="zy-header-wrap">
+                <PageHeader
+                  menuTree={menuTree}
+                  fetchMenuDatas={this.fetchMenuDatas}
+                  history={history}
+                  dispatch={dispatch}
+                  dictionary={dictionary}
+                  userBasicInfo={userBasicInfo}
+                  userBusinessRole={userBusinessRole}
+                  authUserInfo={authUserInfo}
+                  authorities={authorities}
+                  location={location}
+                  userTodoWorkflowNum={userTodoWorkflowNum}
+                  projectName={projectName}
+                  theme={theme}
+                />
+              </Header>
+              <Layout style={{ background: '#4bafee', height: '100%', overflow: 'hidden' }}>
+                <Sider
+                  className="siderContent cf-menu-wp"
+                  trigger={null}
+                  collapsible
+                  width={240}
+                  collapsedWidth={100}
+                  collapsed={collapsed}
+                >
+                  <PageSider menuTree={menuTree} collapsed={collapsed} location={location} history={history}></PageSider>
+                  {<div style={{ transform: !collapsed && 'rotate(180deg)' }}
+                    className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
+                    {collapsed ? <Icon type="menu-unfold" className='menu-sider-icon' /> :
+                      <Icon type="menu-fold" className='menu-sider-icon' />}
+                  </div>}
+                </Sider>
+                <Content id="htmlContent" style={{
+                  borderRadius: '0 0 0 1rem',
+                  height: '100%',
+                  overflowY: 'auto',
+                  overflowX: 'hidden',
+                  width: '100%'
+                }} className="m-layout-content">
+                  {/* <TopMenu></TopMenu> */}
+                  <TrackRouter history={history} onEnter={(loc, preLoc) => {
+                    this.pageTrack(loc, preLoc);
+                  }}>
+                    {/* 水印 */}
+                    { /* 系统监控/system/monitor页面不需要水印 */
+                      isOpenSecureMarker && userBasicInfo.userid && lodash.get(location, 'pathname', '').indexOf('/system/monitor/view') === -1 &&
+                      <Watermark userBasicInfo={userBasicInfo} location={location} elementID='htmlContent' />
+                    }
+                    <CacheSwitch>
+                      {
+                        // 路由
+                        routes.map(({ key, path, component, keepAlive = true }, index) => {
+                          if (path && !path.includes('/index')) {
+                            return (
+                              path && (
+                                <CacheRoute
+                                  key={index}
+                                  when={() => {
                                     return keepAlive;
-                                }}
-                                cacheKey={key || path}
-                                path={path}
-                                unmount={false}
-                                saveScrollPosition
-                                component={component}
-                              />
-                            )
-                          );}
-                          return  <CacheRoute key={index}
-                          when={() => {
+                                  }}
+                                  cacheKey={key || path}
+                                  path={path}
+                                  unmount={false}
+                                  saveScrollPosition
+                                  component={component}
+                                />
+                              )
+                            );
+                          }
+                          return <CacheRoute key={index}
+                            when={() => {
                               return keepAlive;
-                          }}
-                          cacheKey={key || path}
-                          path={path}
-                          unmount={false}
-                          saveScrollPosition
-                          render={p=><PersonWorkBench {...p}></PersonWorkBench>}
+                            }}
+                            cacheKey={key || path}
+                            path={path}
+                            unmount={false}
+                            saveScrollPosition
+                            render={p => <PersonWorkBench {...p}></PersonWorkBench>}
                           />
                         }
-                      )}
-                    <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
-                    {menuTree && menuTree.length > 0 && <Redirect exact from={`${prefix}/`} to={toDefaultLink} />}
-                    {/* {menuTreeLoaded && menuTree.length === 0 && <Redirect exact from={`${prefix}/`} to={`${prefix}/404`} />} */}
-                    {/* { menuTreeLoaded && menuTree.length === 0 && <Route render={NotPermit} />}
+                        )}
+                      <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
+                      {menuTree && menuTree.length > 0 && <Redirect exact from={`${prefix}/`} to={toDefaultLink} />}
+                      {/* {menuTreeLoaded && menuTree.length === 0 && <Redirect exact from={`${prefix}/`} to={`${prefix}/404`} />} */}
+                      {/* { menuTreeLoaded && menuTree.length === 0 && <Route render={NotPermit} />}
                   { !menuTreeLoaded && <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} /> }
                   { !menuTreeLoaded && <Route render={loading} /> } */}
-                  </CacheSwitch>
-                </TrackRouter>
-              </Content>
-              <Content id="modalContent"/>
+                    </CacheSwitch>
+                  </TrackRouter>
+                </Content>
+                <Content id="modalContent" />
+              </Layout>
             </Layout>
-          </Layout>
-        </ConfigProvider>
+          </ConfigProvider>
         ))
     );
   }

@@ -190,6 +190,17 @@ class ProjectSchedule extends React.Component {
         Loginname
       )
     }
+    if (item.sxmc === '会议议题提交') {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_HYYA",
+        [
+          {
+            "name": "GLXM",
+            "value": item.xmid
+          }
+        ],
+        Loginname
+      )
+    }
     CreateOperateHyperLink(params).then((ret = {}) => {
       const { code, message, url } = ret;
       if (code === 1) {
@@ -817,6 +828,7 @@ class ProjectSchedule extends React.Component {
       }],
       projectId: Number(xmid),
       type: 'DELETE',
+      budgetType: "budgetType",
     }).then(res => {
       if (res.code === 1) {
         const { fetchQueryOwnerProjectList, setIsSpinning } = this.props;

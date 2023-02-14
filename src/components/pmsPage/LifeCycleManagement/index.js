@@ -134,7 +134,7 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    console.log('###',nextProps.params ,this.props);
+    console.log('###', nextProps.params, this.props);
     if (nextProps.params.projectId !== this.props.params.projectId) {
       this.setState({
         xmid: nextProps.params.projectId,
@@ -357,6 +357,17 @@ class LifeCycleManagementTabs extends React.Component {
           {
             "name": "XMMC",
             "value": this.state.xmid
+          }
+        ],
+        Loginname
+      )
+    }
+    if (name === '会议议题提交') {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_HYYA",
+        [
+          {
+            "name": "GLXM",
+            "value": item.xmid
           }
         ],
         Loginname
