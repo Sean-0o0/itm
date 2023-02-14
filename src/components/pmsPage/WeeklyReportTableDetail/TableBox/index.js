@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { Button, Table, message, Modal, Popconfirm, Form } from 'antd';
+import { Button, Table, message, Modal, Popconfirm, Form, Icon } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import { OperateSZHZBWeekly, CreateOperateHyperLink, QueryUserInfo } from '../../../../services/pmsServices';
 import moment from 'moment';
@@ -17,13 +17,31 @@ const TableBox = (props) => {
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdData, setAuthIdData] = useState([]);//权限用户id
+    const [toLeft, setToLeft] = useState(false);//是否允许左滚
+    const [toRight, setToRight] = useState(true);
 
     // const downloadRef = useRef(null);
 
     useEffect(() => {
         setTableLoading(true);
         getAutnIdData();
+        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
+        tableNode.addEventListener("scroll", (e) => {
+            console.log(Math.floor(tableNode.scrollWidth - tableNode.clientWidth));
+            if (tableNode.scrollLeft === 0) {
+                setToLeft(false);
+                setToRight(true);
+            } else if (tableNode.scrollLeft > 0 && tableNode.scrollLeft <= Math.floor(tableNode.scrollWidth - tableNode.clientWidth)) {
+                setToLeft(true);
+                setToRight(true);
+            }
+            else {
+                setToLeft(true);
+                setToRight(false);
+            }
+        });
     }, []);
+
 
     const getAutnIdData = () => {
         QueryUserInfo({
@@ -205,6 +223,16 @@ const TableBox = (props) => {
             message.error('导出失败', 1);
         });
     };
+    const handleTableScroll = (direction) => {
+        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
+        if (direction === 'left') {
+            tableNode.scrollLeft = 0;
+        }
+        if (direction === 'right') {
+            tableNode.scrollLeft = tableNode.scrollWidth;
+        }
+        console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
+    }
     const tableColumns = [
         {
             title: '模块',
@@ -238,7 +266,7 @@ const TableBox = (props) => {
             title: '负责人',
             dataIndex: 'manager',
             key: 'manager',
-            width: 90,
+            width: 125,
             fixed: 'left',
             ellipsis: true,
         },
@@ -258,38 +286,6 @@ const TableBox = (props) => {
             ellipsis: true,
             editable: true,
         },
-        {
-            title: '当前状态',
-            dataIndex: 'curStatus',
-            key: 'curStatus',
-            width: 100,
-            ellipsis: true,
-            editable: true,
-        },
-        // {
-        //     title: '里程碑名称',
-        //     dataIndex: 'lcbmc',
-        //     key: 'lcbmc',
-        //     width: 120,
-        //     ellipsis: true,
-        // },
-        // {
-        //     title: '里程碑进度',
-        //     dataIndex: 'lcbjd',
-        //     key: 'lcbjd',
-        //     width: 120,
-        //     ellipsis: true,
-        //     render: (value, row, index) => {
-        //         return `${value}%`;
-        //     },
-        // },
-        // {
-        //     title: '里程碑备注',
-        //     dataIndex: 'lcbbz',
-        //     key: 'lcbbz',
-        //     width: 120,
-        //     ellipsis: true,
-        // },
         {
             title: '完成时间',
             dataIndex: 'cplTime',
@@ -320,10 +316,18 @@ const TableBox = (props) => {
             editable: true,
         },
         {
+            title: '当前状态',
+            dataIndex: 'curStatus',
+            key: 'curStatus',
+            width: 100,
+            ellipsis: true,
+            editable: true,
+        },
+        {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
-            width: 180,
+            width: 160,
             fixed: 'right',
             render: (text, row, index) => {
                 return <div>
@@ -405,29 +409,47 @@ const TableBox = (props) => {
                 onCancel={() => setLcbqkModalVisible(false)}
                 src={lcbqkModalUrl} />}
         <div className='table-box'>
-            {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
-                <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
-                <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
-                <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
-                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                    <Button style={{ margin: '0 1.1904rem' }}>导出</Button>
-                </Popconfirm>
+                <div className='console-date'>
+                    <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
+                    <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
+                </div>
+
+                <div className='console-btn-submit'>
+                    <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
+                </div>
+
 
                 {/* {authIdData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>} */}
             </div>
             <div className='table-content'>
-                <Table
-                    loading={tableLoading}
-                    columns={columns}
-                    components={components}
-                    rowKey={record => record.id}
-                    rowClassName={() => 'editable-row'}
-                    dataSource={tableData}
-                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 1600 }}
-                    pagination={false}
-                    bordered
-                ></Table>
+                <Button disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" /></Button>
+                <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}><Icon type="right" /></Button>
+
+                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                    <Button >导出</Button>
+                </Popconfirm>
+                <div style={{
+                    // width: 'calc(100% - 4.7616rem)',
+                    marginTop: '2.3808rem'
+                }}>
+                    <Table
+                        loading={tableLoading}
+                        columns={columns}
+                        components={components}
+                        rowKey={record => record.id}
+                        rowClassName={() => 'editable-row'}
+                        dataSource={tableData}
+                        scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 1600 }}
+                        pagination={false}
+                        bordered
+                    ></Table>
+                </div>
+                {/* <div className='console-btn-switch' style={{ textAlign: 'center' }}>
+                    <Button disabled={!toLeft} shape="circle" onClick={() => handleTableScroll('left')}><Icon type="left" /></Button>
+                    <Button disabled={!toRight} shape="circle" style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}><Icon type="right" /></Button>
+                </div> */}
+
             </div>
         </div>
     </>

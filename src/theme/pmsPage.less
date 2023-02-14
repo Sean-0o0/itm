@@ -990,23 +990,39 @@
       border-bottom: 0.1488rem #edf1f4 solid;
       // box-shadow: 0px 1rem 1rem 0.1488rem #edf1f4;
       padding: 0 3.5712rem;
+      justify-content: space-between;
 
-      & .console-icon {
-        height: 3.5712rem;
-        margin-right: 1.1904rem;
+      & .console-date {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        & .console-icon {
+          height: 3.5712rem;
+          margin-right: 1.1904rem;
+        }
+
+        & .console-txt {
+          font-size: 2.3808rem;
+          font-family: Roboto-Medium;
+          font-weight: 600;
+          color: #303133;
+        }
       }
 
-      & .console-txt {
-        font-size: 2.3808rem;
-        font-family: Roboto-Medium;
-        font-weight: 600;
-        color: #303133;
-      }
     }
 
     & .table-content {
+      // display: flex;
       padding: 0 3.5712rem;
       margin-top: 2.232rem;
+      text-align: right;
+      .console-btn-switch{
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+      }
     }
   }
 
@@ -1021,17 +1037,18 @@
 
     th {
       font-weight: 600;
+      padding: 2.3808rem;
     }
 
     .ant-table-body {
-      height: calc(100vh - 45.08rem);
+      height: calc(100vh - 50rem);
     }
 
     .ant-table-placeholder {
       position: absolute;
       width: 100%;
-      top: 4.464rem;
-      height: calc(100vh - 51rem);
+      top: 8rem;
+      height: calc(100vh - 60rem);
     }
   }
 
@@ -3596,15 +3613,15 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   background-color: rgb(51, 97, 255) !important
 }
 
-.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot {
+.ant-steps-item-finish .ant-steps-item-icon>.ant-steps-icon .ant-steps-icon-dot {
   background-color: rgb(51, 97, 255) !important;
 }
 
-.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after {
+.ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-tail::after {
   background-color: rgb(51, 97, 255) !important;
 }
 
-.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-content > .ant-steps-item-title {
+.ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title {
   color: rgb(51, 97, 255) !important;
 }
 

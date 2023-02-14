@@ -15,7 +15,7 @@ export default function WeeklyReportDetail() {
     const [currentXmid, setCurrentXmid] = useState(-1);
     const [edited, setEdited] = useState(false);
     const [monthData, setMonthData] = useState(new moment());
-    
+
 
     useEffect(() => {
         queryProjectData();
@@ -72,7 +72,22 @@ export default function WeeklyReportDetail() {
                             return '被退回'
                     }
                 };
-                const newArr = res.record.map(item => {
+                function uniqueFunc(arr, uniId) {
+                    const res = new Map();
+                    return arr.filter((item) => !res.has(item[uniId]) && res.set(item[uniId], 1));
+                }
+                let uniqueArr = uniqueFunc(res.record, 'id');//去重后的arr
+                uniqueArr?.forEach(x => {
+                    let arr = [];
+                    res.record.forEach(item => {
+                        if (x.id === item.id) {
+                            arr.push(item.fzr.trim())
+                        }
+                    });
+                    x.fzr = arr.join('、');
+                });
+                // console.log('@@', uniqueArr);
+                const newArr = uniqueArr?.map(item => {
                     return {
                         id: item.id,
                         module: item.mk.trim(),
@@ -109,13 +124,13 @@ export default function WeeklyReportDetail() {
                     });
                     return pre;
                 }, {});
-                setGroupData({...groupObj});
+                setGroupData({ ...groupObj });
                 let finalArr = [];
                 let arrLength = 0;
-                for( let item in groupObj){
+                for (let item in groupObj) {
                     arrLength += groupObj[item].length;
-                    groupObj[item].forEach(x=>{
-                        finalArr.push({module: item, ...x})
+                    groupObj[item].forEach(x => {
+                        finalArr.push({ module: item, ...x })
                     })
                 }
                 setTableData(preState => [...finalArr]);
@@ -123,7 +138,7 @@ export default function WeeklyReportDetail() {
             }
         })
     };
-    
+
     const getCurrentWeek = (date) => {
         let timeStamp = date.getTime();
         let currentDay = date.getDay();
@@ -150,7 +165,7 @@ export default function WeeklyReportDetail() {
                 setEdited={setEdited}
                 monthData={monthData}
                 setMonthData={setMonthData}
-                >
+            >
             </TopConsole>
             <TableBox tableData={tableData}
                 queryTableData={queryTableData}
@@ -164,7 +179,7 @@ export default function WeeklyReportDetail() {
                 getCurrentWeek={getCurrentWeek}
                 currentXmid={currentXmid}
                 monthData={monthData}
-                >
+            >
             </TableBox>
         </div>
     )
