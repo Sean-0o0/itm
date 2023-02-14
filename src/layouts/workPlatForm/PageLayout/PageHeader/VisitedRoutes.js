@@ -108,7 +108,7 @@ function VisitedRoutes(props) {
   let tabCount = 0;
 
   return (
-    <div style={{ width: visitedScroll }} className='clearfix' id='visited-scroll' >
+    <div style={{ width: `${visitedScroll*0.1488}rem` }} className='clearfix' id='visited-scroll' >
       {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
