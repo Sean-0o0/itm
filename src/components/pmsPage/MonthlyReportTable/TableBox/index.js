@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Table, Form, message, Popconfirm } from 'antd';
+import { Button, Table, Form, message, Popconfirm, Icon } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import { CreateOperateHyperLink, OperateMonthly, QueryUserInfo } from '../../../../services/pmsServices';
@@ -17,10 +17,27 @@ const TableBox = (props) => {
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
     const [isSaved, setIsSaved] = useState(false);
+    const [toLeft, setToLeft] = useState(false);//是否允许左滚
+    const [toRight, setToRight] = useState(true);
 
     useEffect(() => {
         getAutnIdData();
         setTableLoading(true);
+        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
+        tableNode.addEventListener("scroll", (e) => {
+            console.log(Math.floor(tableNode.scrollWidth - tableNode.clientWidth));
+            if (tableNode.scrollLeft === 0) {
+                setToLeft(false);
+                setToRight(true);
+            } else if (tableNode.scrollLeft > 0 && tableNode.scrollLeft <= Math.floor(tableNode.scrollWidth - tableNode.clientWidth)) {
+                setToLeft(true);
+                setToRight(true);
+            }
+            else {
+                setToLeft(true);
+                setToRight(false);
+            }
+        });
     }, []);
 
     const getAutnIdData = () => {
@@ -168,6 +185,16 @@ const TableBox = (props) => {
             // console.error(e);
         });
     };
+    const handleTableScroll = (direction) => {
+        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
+        if (direction === 'left') {
+            tableNode.scrollLeft = 0;
+        }
+        if (direction === 'right') {
+            tableNode.scrollLeft = tableNode.scrollWidth;
+        }
+        // console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
+    }
     const tableColumns = [
         {
             title: '重点工作',
@@ -231,7 +258,7 @@ const TableBox = (props) => {
             key: 'annualPlan',
             ellipsis: true,
             editable: true,
-           
+
         },
         {
             title: '下月工作计划',
@@ -239,7 +266,7 @@ const TableBox = (props) => {
             key: 'xygzjh',
             ellipsis: true,
             editable: true,
-      
+
         },
         {
             title: '领导意见',
@@ -377,12 +404,18 @@ const TableBox = (props) => {
         <div className='table-box'>
             {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
-                <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
-                <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
-                <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
-                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                    <Button style={{ marginLeft: '1.1904rem' }}>导出</Button>
-                </Popconfirm>
+                <div className='console-date'>
+                    <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
+                    <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
+                </div>
+                <div className='console-btn-submit'>
+                    <Button style={{ marginLeft: 'auto' }} disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" />上一列</Button>
+                    <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}>下一列<Icon type="right" /></Button>
+                    <Button disabled={!edited} onClick={handleSubmit}>保存</Button>
+                    <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                        <Button style={{ marginLeft: '1.1904rem' }}>导出</Button>
+                    </Popconfirm>
+                </div>
             </div>
             <div className='table-content'>
                 <Table

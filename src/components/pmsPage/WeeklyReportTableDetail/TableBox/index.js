@@ -231,7 +231,7 @@ const TableBox = (props) => {
         if (direction === 'right') {
             tableNode.scrollLeft = tableNode.scrollWidth;
         }
-        console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
+        // console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
     }
     const tableColumns = [
         {
@@ -414,42 +414,27 @@ const TableBox = (props) => {
                     <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
                     <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
                 </div>
-
                 <div className='console-btn-submit'>
-                    <Button style={{ marginLeft: 'auto' }} disabled={!edited} onClick={handleSubmit}>保存</Button>
+                    <Button style={{ marginLeft: 'auto' }} disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" />上一列</Button>
+                    <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}>下一列<Icon type="right" /></Button>
+                    <Button  disabled={!edited} onClick={handleSubmit}>保存</Button>
+                    <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                        <Button style={{ marginLeft: '1.1904rem' }}>导出</Button>
+                    </Popconfirm> 
                 </div>
-
-
-                {/* {authIdData?.includes(CUR_USER_ID) && <Button onClick={handleSkipCurWeek}>跳过本周</Button>} */}
             </div>
             <div className='table-content'>
-                <Button disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" /></Button>
-                <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}><Icon type="right" /></Button>
-
-                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                    <Button >导出</Button>
-                </Popconfirm>
-                <div style={{
-                    // width: 'calc(100% - 4.7616rem)',
-                    marginTop: '2.3808rem'
-                }}>
-                    <Table
-                        loading={tableLoading}
-                        columns={columns}
-                        components={components}
-                        rowKey={record => record.id}
-                        rowClassName={() => 'editable-row'}
-                        dataSource={tableData}
-                        scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 1600 }}
-                        pagination={false}
-                        bordered
-                    ></Table>
-                </div>
-                {/* <div className='console-btn-switch' style={{ textAlign: 'center' }}>
-                    <Button disabled={!toLeft} shape="circle" onClick={() => handleTableScroll('left')}><Icon type="left" /></Button>
-                    <Button disabled={!toRight} shape="circle" style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}><Icon type="right" /></Button>
-                </div> */}
-
+                <Table
+                    loading={tableLoading}
+                    columns={columns}
+                    components={components}
+                    rowKey={record => record.id}
+                    rowClassName={() => 'editable-row'}
+                    dataSource={tableData}
+                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 1600 }}
+                    pagination={false}
+                    bordered
+                ></Table>
             </div>
         </div>
     </>

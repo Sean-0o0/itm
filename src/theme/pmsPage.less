@@ -1017,12 +1017,6 @@
       padding: 0 3.5712rem;
       margin-top: 2.232rem;
       text-align: right;
-      .console-btn-switch{
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        justify-content: center;
-      }
     }
   }
 
@@ -1066,11 +1060,12 @@
     & ::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
       border-radius: 1.3392rem;
+      
     }
   }
 
   .ant-table-fixed-header .ant-table-scroll .ant-table-header {
-    margin-bottom: -1.488rem !important; //表格横向滚动条高度
+    margin-bottom: 0rem !important; //表格横向滚动条高度
   }
 
   .ant-table-scroll {
@@ -1078,6 +1073,8 @@
       height: 1.488rem;
       width: 1.488rem;
       background-color: #fafafa;
+      display: none;
+      height: 0;
     }
 
     & ::-webkit-scrollbar-thumb {
