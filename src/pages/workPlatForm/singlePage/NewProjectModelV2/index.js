@@ -425,6 +425,7 @@ class NewProjectModelV2 extends React.Component {
       el.key = el.orgId;
       obj[el.orgId] = el;
     });
+    // console.log("objobj",obj)
     for (let i = 0, len = list.length; i < len; i++) {
       let id = list[i].orgFid;
       if (id == parId) {
@@ -728,7 +729,7 @@ class NewProjectModelV2 extends React.Component {
         });
         this.setState({
           staffList: result,
-          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 1)
+          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0)
         });
       }
     }).catch((error) => {
@@ -780,7 +781,7 @@ class NewProjectModelV2 extends React.Component {
           arr.push({ ...e })
         });
         this.setState({
-          organizationTreeList: this.toOrgTree(arr, 1)
+          organizationTreeList: this.toOrgTree(arr, 0)
         });
       }
     }).catch((error) => {
