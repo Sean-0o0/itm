@@ -681,7 +681,8 @@ class NewProjectModelV2 extends React.Component {
               budgetProjectId: result.budgetProject,
               totalBudget: totalBudget,
               relativeBudget: relativeBudget,
-              projectBudget: Number(result.projectBudget)
+              projectBudget: Number(result.projectBudget),
+              budgetType: result.budgetType
             },
             staffInfo: {
               focusJob: '',
