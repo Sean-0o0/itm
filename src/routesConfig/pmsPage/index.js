@@ -15,12 +15,12 @@ exports.routes = [
     component: './pmsPage/LifeCycleManagement',
   },
   {
-    //周报列表页面
+    //周报汇总
     path: `${prefix}/WeeklyReportSummary`,
     component: './pmsPage/WeeklyReportSummary',
   },
   {
-    //周报汇总-数字化专报
+    //数字化专班月报
     path: `${prefix}/WeeklyReportTable`,
     component: './pmsPage/WeeklyReportTable',
   },

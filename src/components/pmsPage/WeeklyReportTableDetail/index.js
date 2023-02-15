@@ -6,7 +6,7 @@ const { RangePicker } = DatePicker;
 import { FetchQueryOwnerProjectList, QueryDigitalSpecialClassWeeklyReport } from '../../../services/pmsServices';
 import moment from 'moment';
 
-export default function WeeklyReportDetail() {
+export default function WeeklyReportSummary() {
     const [dateRange, setDateRange] = useState([null, null]);
     const [tableData, setTableData] = useState([]);
     const [groupData, setGroupData] = useState({});
@@ -18,7 +18,7 @@ export default function WeeklyReportDetail() {
 
 
     useEffect(() => {
-        queryProjectData();
+        // queryProjectData();
         // setDateRange(p => [...getCurrentWeek(new Date())]);
     }, []);
 
@@ -44,24 +44,24 @@ export default function WeeklyReportDetail() {
             xmmc: xmid
         }).then(res => {
             if (res.code === 1) {
-                const getCurP = (num) => {
-                    switch (num) {
-                        case '1':
-                            return '规划中';
-                        case '2':
-                            return '进行中';
-                        case '3':
-                            return '已完成'
-                    }
-                };
-                const getCurS = (num) => {
-                    switch (num) {
-                        case '1':
-                            return '低风险';
-                        case '2':
-                            return '进度正常';
-                    }
-                };
+                // const getCurP = (num) => {
+                //     switch (num) {
+                //         case '1':
+                //             return '规划中';
+                //         case '2':
+                //             return '进行中';
+                //         case '3':
+                //             return '已完成'
+                //     }
+                // };
+                // const getCurS = (num) => {
+                //     switch (num) {
+                //         case '1':
+                //             return '低风险';
+                //         case '2':
+                //             return '进度正常';
+                //     }
+                // };
                 const getStatus = (num) => {
                     switch (num) {
                         case '1':
