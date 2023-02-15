@@ -272,21 +272,21 @@ class NewProjectModelV2 extends React.Component {
   fetchInterface = async () => {
 
     // 查询软件清单
-    await this.fetchQuerySoftwareList();
+    this.fetchQuerySoftwareList();
     // 查询项目标签
-    await this.fetchQueryProjectLabel();
+    this.fetchQueryProjectLabel();
     // 查询关联预算项目信息
-    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
 
     // 查询组织机构信息-应用部门
-    await this.fetchQueryOrganizationYYBMInfo();
+    this.fetchQueryOrganizationYYBMInfo();
 
     // 查询里程碑阶段信息
-    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
-    await this.fetchQueryMilepostInfo({
+    this.fetchQueryMilepostInfo({
       type: 1,
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
@@ -338,7 +338,7 @@ class NewProjectModelV2 extends React.Component {
         arr[9] = [loginUser.id];
         this.setState({
           searchStaffList: [loginUser],
-          loginUser: loginUser,
+          // loginUser: loginUser,
           staffJobList: rec,
           rygwDictionary: rec,
           rygwSelectDictionary: rec,
@@ -744,15 +744,16 @@ class NewProjectModelV2 extends React.Component {
     }).then((result) => {
       const { code = -1, record = [] } = result;
       if (code > 0) {
-        const loginUser = this.state.loginUser;
+        const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+        loginUser.id = String(loginUser.id);
         // 深拷贝
         const arr = [];
         record.forEach(e => {
           // 获取登录用户的部门名称
-          if (e.orgId == loginUser.org) {
+          if (String(e.orgId) === String(loginUser.org)) {
             loginUser.orgName = e.orgName;
           }
-          arr.push({ ...e })
+          arr.push({...e})
         });
         this.setState({
           loginUser: loginUser, organizationList: record,
@@ -1827,11 +1828,11 @@ class NewProjectModelV2 extends React.Component {
       rygwSelect = false,
       orgExpendKeys = [],
       ysKZX = 0,
+      loginUser = [],
     } = this.state;
     // console.log("orgExpendKeys", orgExpendKeys)
     // console.log("organizationTreeList", organizationTreeList)
     const {getFieldDecorator} = this.props.form;
-    const userBasicInfo = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
     const basicFormItemLayout = {
       labelCol: {
         xs: {span: 24},
@@ -2978,7 +2979,7 @@ class NewProjectModelV2 extends React.Component {
                                         // console.log("searchStaffList",searchStaffList)
                                         return (
                                           <Select.Option key={index}
-                                                         value={item.id}>{item.name}({userBasicInfo[0]?.extAttr?.orgname})</Select.Option>
+                                                         value={item.id}>{item.name}({loginUser.orgName})</Select.Option>
                                         )
                                       })
                                     }

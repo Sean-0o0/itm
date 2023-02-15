@@ -6,8 +6,6 @@ import { QueryPaymentAccountList, QueryPaymentFlowDetail, QueryPaymentFlowInfo, 
 import ExpenseDetail from './ExpenseDetail';
 import moment from 'moment';
 
-const LOGIN_USER = JSON.parse(sessionStorage.getItem("user"));
-const LOGIN_USER_ORG_ID = LOGIN_USER.org;
 
 const PaymentProcess = (props) => {
     //是否有合同 单选 1是 2否
@@ -56,7 +54,7 @@ const PaymentProcess = (props) => {
         sfyht, setSfyht, htje, yfkje, setSqrq,
         zhfw, setZhfw, skzh, setSkzh, dgskzh,
         // fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
-        // fileName, setFileName, 
+      // fileName, setFileName,
         setskzhId, setYkbSkzhId
     };
 
@@ -209,25 +207,28 @@ const PaymentProcess = (props) => {
     };
 
     const addSkzhModalProps = {
-        isAllWindow: 1,
-        // defaultFullScreen: true,
-        title: '新增收款账户',
-        width: '120rem',
-        height: '90rem',
-        style: { top: '20rem' },
-        visible: addSkzhModalVisible,
-        footer: null,
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      title: '新增收款账户',
+      width: '120rem',
+      height: '90rem',
+      style: {top: '20rem'},
+      visible: addSkzhModalVisible,
+      footer: null,
     };
 
-    return (
-        <>
-            {addSkzhModalVisible &&
-                <BridgeModel modalProps={addSkzhModalProps}
-                    onCancel={() => setAddSkzhModalVisible(false)}
-                    onSucess={OnSkzhAddSuccess}
-                    src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_SKZH_ADD&Table=View_SKZH'} />}
-            <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '180rem'}
-                maskClosable={false}
+  const LOGIN_USER = JSON.parse(sessionStorage.getItem("user"));
+  const LOGIN_USER_ORG_ID = LOGIN_USER.org;
+
+  return (
+    <>
+      {addSkzhModalVisible &&
+      <BridgeModel modalProps={addSkzhModalProps}
+                   onCancel={() => setAddSkzhModalVisible(false)}
+                   onSucess={OnSkzhAddSuccess}
+                   src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_SKZH_ADD&Table=View_SKZH'}/>}
+      <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '180rem'}
+             maskClosable={false}
                 zIndex={100}
                 maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
                 cancelText={'关闭'}

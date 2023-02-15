@@ -2,10 +2,6 @@ import React, { useState } from 'react';
 import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber } from 'antd';
 import moment from 'moment';
 const { TextArea } = Input;
-const LOGIN_USER = JSON.parse(sessionStorage.getItem("user"));
-const LOGIN_USER_ID = LOGIN_USER.id;
-const LOGIN_USER_NAME = LOGIN_USER.name;
-const LOGIN_USER_ORG_NAME = localStorage.getItem('orgName');
 
 
 export default function FormOperate(props) {
@@ -16,7 +12,7 @@ export default function FormOperate(props) {
         sfyht, setSfyht, htje, yfkje, setSqrq,
         zhfw, setZhfw, skzh, setSkzh, dgskzh,
         // fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
-        // fileName, setFileName, 
+      // fileName, setFileName,
         setskzhId, setYkbSkzhId
     } = formData;
     const { getFieldDecorator, getFieldValue } = form;
@@ -223,26 +219,30 @@ export default function FormOperate(props) {
         initialValue: '',
         rules: [
             {
-                required: true,
-                message: '附件张数不允许空值',
+              required: true,
+              message: '附件张数不允许空值',
             },
-            {
-                pattern: /^\d{0,13}$/,
-                message: '只能输入整数',
-            },
+          {
+            pattern: /^\d{0,13}$/,
+            message: '只能输入整数',
+          },
         ],
-        maxLength: 13,
+      maxLength: 13,
     };
-    return (
-        <Form style={{ padding: '0 3.5712rem' }}>
-            <div className='basic-info-title'>基本信息</div>
-            <Row>
-                {getInputDisabled('提交人', LOGIN_USER_NAME, 6, 18)}
-                {getInputDisabled('部门', LOGIN_USER_ORG_NAME, 9, 15)}
-            </Row>
-            <Row>
-                {getInput(btInputProps)}
-                {getDatePicker()}
+  const LOGIN_USER = JSON.parse(sessionStorage.getItem("user"));
+  const LOGIN_USER_ID = LOGIN_USER.id;
+  const LOGIN_USER_NAME = LOGIN_USER.name;
+  const LOGIN_USER_ORG_NAME = localStorage.getItem('orgName');
+  return (
+    <Form style={{padding: '0 3.5712rem'}}>
+      <div className='basic-info-title'>基本信息</div>
+      <Row>
+        {getInputDisabled('提交人', LOGIN_USER_NAME, 6, 18)}
+        {getInputDisabled('部门', LOGIN_USER_ORG_NAME, 9, 15)}
+      </Row>
+      <Row>
+        {getInput(btInputProps)}
+        {getDatePicker()}
             </Row>
             <div className='payment-info-title'>付款信息</div>
             <Row>

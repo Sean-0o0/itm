@@ -159,11 +159,12 @@ export default function request(options, config = {}) {
       if (success) {
         return Promise.reject(response);
       }
+      console.log("statusCode", response.status)
       statusCode = response.status;
       msg = data.note || statusText;
     } else {
-      statusCode = 600;
-      msg = error.note || '网络错误';
+      statusCode = 900;
+      msg = error.note || '会话过期';
     }
     if (statusCode === 900) {
       const loginStatus = window.sessionStorage.getItem('loginStatus') || '0'; // 登录状态: 0|未登录;1|已登录;-1|过期;
