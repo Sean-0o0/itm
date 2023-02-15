@@ -946,7 +946,8 @@
 }
 
 //周报详情
-.weekly-report-detail {
+.weekly-report-detail,
+.monthly-report-detail {
   overflow: hidden;
 
   & .top-console {
@@ -1034,6 +1035,7 @@
       padding: 2.3808rem;
     }
 
+    //与下边ant-table-body-inner高度要一致
     .ant-table-body {
       height: calc(100vh - 50rem);
     }
@@ -1046,9 +1048,9 @@
     }
   }
 
-  //表格滚动条样式
+  //高度要一致
   .ant-table-body-inner {
-    max-height: calc(100vh - 45rem) !important;
+    max-height: calc(100vh - 50rem) !important;
   }
 
   .ant-table-fixed-right {
@@ -1060,25 +1062,25 @@
     & ::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
       border-radius: 1.3392rem;
-      
+
     }
   }
 
   .ant-table-fixed-header .ant-table-scroll .ant-table-header {
-    margin-bottom: 0rem !important; //表格横向滚动条高度
+    margin-bottom: -1.4136rem !important; //表格横向滚动条高度
   }
 
   .ant-table-scroll {
     & ::-webkit-scrollbar {
       height: 1.488rem;
       width: 1.488rem;
-      background-color: #fafafa;
-      display: none;
-      height: 0;
+      background-color: transparent;
+      // display: none;
+      // height: 0;
     }
 
     & ::-webkit-scrollbar-thumb {
-      background-color: #c1c1c1;
+      background-color: transparent;
       border-radius: 1.3392rem;
     }
   }

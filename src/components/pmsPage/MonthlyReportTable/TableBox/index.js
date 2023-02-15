@@ -23,7 +23,7 @@ const TableBox = (props) => {
     useEffect(() => {
         getAutnIdData();
         setTableLoading(true);
-        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
+        const tableNode = document.querySelector('.monthly-report-detail .ant-table .ant-table-body');
         tableNode.addEventListener("scroll", (e) => {
             console.log(Math.floor(tableNode.scrollWidth - tableNode.clientWidth));
             if (tableNode.scrollLeft === 0) {
@@ -186,14 +186,14 @@ const TableBox = (props) => {
         });
     };
     const handleTableScroll = (direction) => {
-        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
+        const tableNode = document.querySelector('.monthly-report-detail .ant-table .ant-table-body');
         if (direction === 'left') {
             tableNode.scrollLeft = 0;
         }
         if (direction === 'right') {
             tableNode.scrollLeft = tableNode.scrollWidth;
         }
-        // console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
+        console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
     }
     const tableColumns = [
         {

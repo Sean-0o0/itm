@@ -114,7 +114,7 @@ export default function MonthlyReportTable() {
         return arr[target];
     }
     return (
-        <div className='weekly-report-detail'>
+        <div className='monthly-report-detail'>
             <TopConsole
                 setTableLoading={setTableLoading}
                 queryTableData={queryTableData}

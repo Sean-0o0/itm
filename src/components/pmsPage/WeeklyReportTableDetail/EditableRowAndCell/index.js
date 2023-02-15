@@ -75,13 +75,17 @@ const EditableCell = (props) => {
             case 'cplTime':
                 return '完成时间';
             case 'curProgress':
-                return '当前进展';
+                return '项目进展';
             case 'curRate':
-                return '当前进度';
+                return '项目进度';
             case 'curStatus':
                 return '当前状态';
             case 'riskDesc':
                 return '风险说明';
+            case 'peopleNumber':
+                return '专班人数';
+            case 'orgName':
+                return '使用部门';
             default:
                 return '';
         }
@@ -91,11 +95,16 @@ const EditableCell = (props) => {
         let message = `${getTitle(dataIndex)}不允许空值`;
         const getRules = (dataIndex) => {
             switch (dataIndex) {
-                case 'cplTime' || 'curProgress' || 'curStatus':
+                case 'cplTime':
+                case 'curProgress':
+                case 'curStatus':
                     return [{ required, message, }];
-                case 'annualPlan' || 'riskDesc':
+                case 'annualPlan':
+                case 'riskDesc':
                     return [{ required, message, }, { whitespace: true, message }, { max: 1000, message: `${getTitle(dataIndex)}长度不能超过1000` }];
                 case 'curRate':
+                case 'peopleNumber':
+                case 'orgName':
                     return [{ required, message, }, { whitespace: true, message }, { max: 30, message: `${getTitle(dataIndex)}长度不能超过30` }];
                 default:
                     return [{ required, message, }, { whitespace: true, message }];
@@ -193,7 +202,7 @@ const EditableCell = (props) => {
         }, {
             txt: '中风险',
             num: '2'
-        },{
+        }, {
             txt: '高风险',
             num: '3'
         }, {
@@ -230,6 +239,8 @@ const EditableCell = (props) => {
             case 'cplTime':
                 return getFormDec(form, idDataIndex, dataIndex, true, cplTimeValue, cplTimeNode);
             case 'riskDesc':
+            case 'peopleNumber':
+            case 'orgName':
                 return getFormDec(form, idDataIndex, dataIndex, false, String(record[idDataIndex]));
             case 'curProgress':
                 return getFormDec(form, idDataIndex, dataIndex, true, String(record[idDataIndex]), curProgressNode);

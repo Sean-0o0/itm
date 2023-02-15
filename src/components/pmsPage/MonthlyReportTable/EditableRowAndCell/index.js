@@ -105,7 +105,9 @@ const EditableCell = (props) => {
         let message = `${getTitle(dataIndex)}不允许空值`;
         const getRules = (dataIndex) => {
             switch (dataIndex) {
-                case 'bywcqk' || 'xygzjh' || 'ldyj':
+                case 'bywcqk':
+                case 'xygzjh':
+                case 'ldyj':
                     return [{ required, message, }, { whitespace: true, message }, { max: 1000, message: `${getTitle(dataIndex)}长度不能超过1000` }];
                 case 'txr':
                     return [{ required, message, }];
@@ -127,7 +129,7 @@ const EditableCell = (props) => {
         handleSave({ ...record, ...newVal });
         // const cellHeight = Math.ceil(arr.length / 2) * 27;
         const rowNode = document.querySelectorAll(`.ant-select-selection--multiple`);
-        const rowIndex = recordindex > rowNode.length-1 ? rowNode.length-1 : recordindex;
+        const rowIndex = recordindex > rowNode.length - 1 ? rowNode.length - 1 : recordindex;
         console.log(cellHeight, rowNode[rowIndex]);
         rowNode[rowIndex].scrollIntoView(false);
     };

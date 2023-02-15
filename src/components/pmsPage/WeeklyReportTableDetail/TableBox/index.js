@@ -271,7 +271,15 @@ const TableBox = (props) => {
             ellipsis: true,
         },
         {
-            title: '当前进展',
+            title: '完成时间',
+            dataIndex: 'cplTime',
+            key: 'cplTime',
+            width: 120,
+            ellipsis: true,
+            editable: true,
+        },
+        {
+            title: '项目进展',
             dataIndex: 'curProgress',
             key: 'curProgress',
             width: 100,
@@ -279,7 +287,7 @@ const TableBox = (props) => {
             editable: true,
         },
         {
-            title: '当前进度',
+            title: '项目进度',
             dataIndex: 'curRate',
             key: 'curRate',
             width: 120,
@@ -287,10 +295,10 @@ const TableBox = (props) => {
             editable: true,
         },
         {
-            title: '完成时间',
-            dataIndex: 'cplTime',
-            key: 'cplTime',
-            width: 120,
+            title: '当前状态',
+            dataIndex: 'curStatus',
+            key: 'curStatus',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -302,26 +310,32 @@ const TableBox = (props) => {
             editable: true,
         },
         {
-            title: '状态',
-            dataIndex: 'status',
-            key: 'status',
-            width: 100,
-            ellipsis: true,
-        },
-        {
-            title: '项目说明',
+            title: '年度规划',
             dataIndex: 'annualPlan',
             key: 'annualPlan',
             ellipsis: true,
             editable: true,
         },
         {
-            title: '当前状态',
-            dataIndex: 'curStatus',
-            key: 'curStatus',
-            width: 100,
+            title: '专班人数',
+            dataIndex: 'peopleNumber',
+            key: 'peopleNumber',
             ellipsis: true,
             editable: true,
+        },
+        {
+            title: '使用部门',
+            dataIndex: 'orgName',
+            key: 'orgName',
+            ellipsis: true,
+            editable: true,
+        },
+        {
+            title: '状态',
+            dataIndex: 'status',
+            key: 'status',
+            width: 100,
+            ellipsis: true,
         },
         {
             title: '操作',
@@ -431,7 +445,7 @@ const TableBox = (props) => {
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 1600 }}
+                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 2020 }}
                     pagination={false}
                     bordered
                 ></Table>

@@ -93,15 +93,14 @@ export default function WeeklyReportDetail() {
                         module: item.mk.trim(),
                         sysBuilding: item.xtjs.trim(),
                         manager: item.fzr.trim(),
-                        // lcbmc: item.lcbmc.trim(),
-                        // lcbjd: item.lcbjd.trim(),
-                        // lcbbz: item.lcbbz.trim(),
                         ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
                         ['curProgress' + item.id]: item.dqjz.trim(),
                         ['curRate' + item.id]: item.dqjzszhzb.trim(),
                         ['curStatus' + item.id]: item.dqzt.trim(),
                         ['riskDesc' + item.id]: item.fxsm.trim(),
+                        ['peopleNumber' + item.id]: item.zbrs.trim(),
+                        ['orgName' + item.id]: item.sybm.trim(),
                         ['status']: getStatus(item.zt.trim()),
                     };
                 });
@@ -111,21 +110,21 @@ export default function WeeklyReportDetail() {
                         id: current.id,
                         sysBuilding: current.sysBuilding,
                         manager: current.manager,
-                        // lcbmc: current.lcbmc,
-                        // lcbjd: current.lcbjd,
-                        // lcbbz: current.lcbbz,
                         ['annualPlan' + current.id]: current['annualPlan' + current.id],
                         ['cplTime' + current.id]: current['cplTime' + current.id],
                         ['curProgress' + current.id]: current['curProgress' + current.id],
                         ['curRate' + current.id]: current['curRate' + current.id],
                         ['curStatus' + current.id]: current['curStatus' + current.id],
                         ['riskDesc' + current.id]: current['riskDesc' + current.id],
+                        ['peopleNumber' + current.id]: current['peopleNumber' + current.id],
+                        ['orgName' + current.id]: current['orgName' + current.id],
                         ['status']: current['status'],
                     });
                     return pre;
                 }, {});
                 setGroupData({ ...groupObj });
                 let finalArr = [];
+
                 let arrLength = 0;
                 for (let item in groupObj) {
                     arrLength += groupObj[item].length;
