@@ -87,12 +87,12 @@ class TodoItems extends React.Component {
 
   componentDidMount() {
     // 日历today对象
-    let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
-    if (node) {
-      node.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
-      node.style.color = 'rgba(0, 0, 0, 0.65)';
-      node.style.boxShadow = '0 0 0 0 #3361ff inset';
-    }
+    // let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
+    // if (node) {
+    //   node.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
+    //   node.style.color = 'rgba(0, 0, 0, 0.65)';
+    //   node.style.boxShadow = '0 0 0 0 #3361ff inset';
+    // }
   }
 
   onPanelChange = (value, mode) => {
@@ -665,16 +665,16 @@ class TodoItems extends React.Component {
   };
 
   handleDateChange = (e) => {
-    if (moment(e).format('YYYYMMDD') === new moment().format('YYYYMMDD')) {
-      let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
-      node.style.backgroundColor = '';
-      node.style.color = '';
-      node.style.boxShadow = '';
-    }
-    let nodeToday = document.querySelector('.ant-fullcalendar-today .ant-fullcalendar-value,.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value');
-    if (nodeToday) {
-      nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
-    }
+    // if (moment(e).format('YYYYMMDD') === new moment().format('YYYYMMDD')) {
+    //   let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
+    //   node.style.backgroundColor = '';
+    //   node.style.color = '';
+    //   node.style.boxShadow = '';
+    // }
+    // let nodeToday = document.querySelector('.ant-fullcalendar-today .ant-fullcalendar-value,.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value');
+    // if (nodeToday) {
+    //   nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
+    // }
     this.setState({
       date: moment(e).format('YYYYMMDD'),
       cxlx: "ALL",
@@ -694,18 +694,18 @@ class TodoItems extends React.Component {
     })
 
     // 日历today对象
-    let node = document.querySelector('.ant-fullcalendar-selected-day .ant-fullcalendar-value');
-    if (node) {
-      node.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
-      node.style.color = 'rgba(0, 0, 0, 0.65)';
-      node.style.boxShadow = '0 0 0 0 #3361ff inset';
-    }
-    let nodeToday = document.querySelector('.ant-fullcalendar-today .ant-fullcalendar-value,.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value');
-    if (nodeToday) {
-      nodeToday.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
-      nodeToday.style.color = 'rgba(0, 0, 0, 0.65)';
-      nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
-    }
+    // let node = document.querySelector('.ant-fullcalendar-selected-day .ant-fullcalendar-value');
+    // if (node) {
+    //   node.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
+    //   node.style.color = 'rgba(0, 0, 0, 0.65)';
+    //   node.style.boxShadow = '0 0 0 0 #3361ff inset';
+    // }
+    // let nodeToday = document.querySelector('.ant-fullcalendar-today .ant-fullcalendar-value,.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value');
+    // if (nodeToday) {
+    //   nodeToday.style.background = '#fff';//为防止hover失效，在pmsPage.less里的原样式加了!important
+    //   nodeToday.style.color = 'rgba(0, 0, 0, 0.65)';
+    //   nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
+    // }
   }
 
   onclickdb = () => {
