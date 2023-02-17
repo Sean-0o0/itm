@@ -18,7 +18,7 @@ export default function WeeklyReportSummary() {
 
 
     useEffect(() => {
-        // queryProjectData();
+        queryProjectData();
         // setDateRange(p => [...getCurrentWeek(new Date())]);
     }, []);
 

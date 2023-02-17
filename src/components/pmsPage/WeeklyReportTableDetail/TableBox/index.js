@@ -14,8 +14,8 @@ const TableBox = (props) => {
     const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading,
         groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, monthData } = props;
     const [isSaved, setIsSaved] = useState(false);
-    const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
-    const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
+    const [summaryModalUrl, setSummaryModalUrl] = useState('');
+    const [summaryModalVisible, setSummaryModalVisible] = useState(false);
     const [authIdData, setAuthIdData] = useState([]);//权限用户id
     const [toLeft, setToLeft] = useState(false);//是否允许左滚
     const [toRight, setToRight] = useState(true);
@@ -126,14 +126,14 @@ const TableBox = (props) => {
                     count: tableData.length,
                     type: 'UPDATE'
                 };
-                OperateSZHZBWeekly({ ...submitData }).then(res => {
-                    if (res?.code === 1) {
-                        message.success('保存成功', 1);
-                        setIsSaved(true);
-                    } else {
-                        message.error('保存失败', 1);
-                    }
-                })
+                // OperateSZHZBWeekly({ ...submitData }).then(res => {
+                //     if (res?.code === 1) {
+                //         message.success('保存成功', 1);
+                //         setIsSaved(true);
+                //     } else {
+                //         message.error('保存失败', 1);
+                //     }
+                // })
                 console.log('submitData', submitData);
             }
         })
@@ -233,6 +233,30 @@ const TableBox = (props) => {
         }
         // console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
     }
+    const handleSummary = () => {
+        const params = {
+            "attribute": 0,
+            "authFlag": 0,
+            "objectName": "V_XSZHZBHZ",
+            "operateName": "V_XSZHZBHZ_SUMMIT",
+            "parameter": [
+                // {
+                //     "name": "ZBID",
+                //     "value": String(id)
+                // },
+            ],
+            "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
+        }
+        CreateOperateHyperLink(params).then((ret = {}) => {
+            const { code, message, url } = ret;
+            if (code === 1) {
+                setSummaryModalUrl(url);
+                setSummaryModalVisible(true);
+            }
+        }).catch((error) => {
+            message.error(!error.success ? error.message : error.note);
+        });
+    };
     const tableColumns = [
         {
             title: '模块',
@@ -383,45 +407,25 @@ const TableBox = (props) => {
             cell: EditableCell,
         },
     };
-    const lcbqkModalProps = {
+    const summaryModalProps = {
         isAllWindow: 1,
         // defaultFullScreen: true,
-        title: '详细信息',
-        width: '60%',
-        height: '102rem',
+        title: '手动汇总',
+        width: '40%',
+        height: '60rem',
         style: { top: '5%' },
-        visible: lcbqkModalVisible,
+        visible: summaryModalVisible,
         footer: null,
     };
-    const getLcbqkModalUrl = (id) => {
-        const params = {
-            "attribute": 0,
-            "authFlag": 0,
-            "objectName": "V_XSZHZBHZ",
-            "operateName": "V_XSZHZBHZ_VIEW_copy",
-            "parameter": [
-                {
-                    "name": "ZBID",
-                    "value": String(id)
-                },
-            ],
-            "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
-        }
-        CreateOperateHyperLink(params).then((ret = {}) => {
-            const { code, message, url } = ret;
-            if (code === 1) {
-                setLcbqkModalUrl(url);
-                setLcbqkModalVisible(true);
-            }
-        }).catch((error) => {
-            message.error(!error.success ? error.message : error.note);
-        });
-    };
     return (<>
-        {lcbqkModalVisible &&
-            <BridgeModel modalProps={lcbqkModalProps} onSucess={() => setLcbqkModalVisible(false)}
-                onCancel={() => setLcbqkModalVisible(false)}
-                src={lcbqkModalUrl} />}
+        {summaryModalVisible &&
+            <BridgeModel modalProps={summaryModalProps} onSucess={() => {
+                queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), Number(currentXmid));
+                setSummaryModalVisible(false);
+                message.success('汇总成功', 1);
+            }}
+                onCancel={() => setSummaryModalVisible(false)}
+                src={summaryModalUrl} />}
         <div className='table-box'>
             <div className='table-console'>
                 <div className='console-date'>
@@ -431,10 +435,11 @@ const TableBox = (props) => {
                 <div className='console-btn-submit'>
                     <Button style={{ marginLeft: 'auto' }} disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" />上一列</Button>
                     <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}>下一列<Icon type="right" /></Button>
-                    <Button  disabled={!edited} onClick={handleSubmit}>保存</Button>
+                    <Button style={{ marginRight: '1.1904rem'}} onClick={handleSummary}>手动汇总</Button>
+                    <Button disabled={!edited} onClick={handleSubmit}>保存</Button>
                     <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                        <Button style={{ marginLeft: '1.1904rem' }}>导出</Button>
-                    </Popconfirm> 
+                        <Button className='ss' style={{ marginLeft: '1.1904rem' }}>导出</Button>
+                    </Popconfirm>
                 </div>
             </div>
             <div className='table-content'>
