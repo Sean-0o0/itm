@@ -126,14 +126,14 @@ const TableBox = (props) => {
                     count: tableData.length,
                     type: 'UPDATE'
                 };
-                // OperateSZHZBWeekly({ ...submitData }).then(res => {
-                //     if (res?.code === 1) {
-                //         message.success('保存成功', 1);
-                //         setIsSaved(true);
-                //     } else {
-                //         message.error('保存失败', 1);
-                //     }
-                // })
+                OperateSZHZBWeekly({ ...submitData }).then(res => {
+                    if (res?.code === 1) {
+                        message.success('保存成功', 1);
+                        setIsSaved(true);
+                    } else {
+                        message.error('保存失败', 1);
+                    }
+                })
                 console.log('submitData', submitData);
             }
         })
@@ -435,7 +435,7 @@ const TableBox = (props) => {
                 <div className='console-btn-submit'>
                     <Button style={{ marginLeft: 'auto' }} disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" />上一列</Button>
                     <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}>下一列<Icon type="right" /></Button>
-                    <Button style={{ marginRight: '1.1904rem'}} onClick={handleSummary}>手动汇总</Button>
+                    {/* <Button style={{ marginRight: '1.1904rem'}} onClick={handleSummary}>手动汇总</Button> */}
                     <Button disabled={!edited} onClick={handleSubmit}>保存</Button>
                     <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
                         <Button className='ss' style={{ marginLeft: '1.1904rem' }}>导出</Button>

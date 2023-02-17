@@ -1,29 +1,31 @@
-import React, { useState, useEffect } from 'react'
-import { Button, Table, Form, message, Popconfirm, Icon } from 'antd';
+import React, { useState, useEffect, useRef } from 'react'
+import { Button, Table, message, Modal, Popconfirm, Form, Icon } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
-import BridgeModel from "../../../Common/BasicModal/BridgeModel";
-import { CreateOperateHyperLink, OperateMonthly, QueryUserInfo } from '../../../../services/pmsServices';
-import config from '../../../../utils/config';
+import { OperateSZHZBWeekly, CreateOperateHyperLink, QueryUserInfo } from '../../../../services/pmsServices';
 import moment from 'moment';
+import config from '../../../../utils/config';
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 
 const { api } = config;
-const { pmsServices: { digitalSpecialClassMonthReportExcel } } = api;
+const { pmsServices: { digitalSpecialClassWeeklyReportExcel } } = api;
 const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
-    const { form, tableData, setTableData, tableLoading, setTableLoading, edited, setEdited,
-        monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
-    const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
-    const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
-    const [authIdAData, setAuthIdData] = useState([]);//权限用户id
+    const { form, tableData, dateRange, setTableData, tableLoading, setTableLoading,
+        groupData, edited, setEdited, getCurrentWeek, currentXmid, queryTableData, monthData } = props;
     const [isSaved, setIsSaved] = useState(false);
+    const [summaryModalUrl, setSummaryModalUrl] = useState('');
+    const [summaryModalVisible, setSummaryModalVisible] = useState(false);
+    const [authIdData, setAuthIdData] = useState([]);//权限用户id
     const [toLeft, setToLeft] = useState(false);//是否允许左滚
     const [toRight, setToRight] = useState(true);
 
+    // const downloadRef = useRef(null);
+
     useEffect(() => {
-        getAutnIdData();
         setTableLoading(true);
-        const tableNode = document.querySelector('.weekly-report-summary .ant-table .ant-table-body');
+        getAutnIdData();
+        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
         tableNode.addEventListener("scroll", (e) => {
             console.log(Math.floor(tableNode.scrollWidth - tableNode.clientWidth));
             if (tableNode.scrollLeft === 0) {
@@ -40,9 +42,10 @@ const TableBox = (props) => {
         });
     }, []);
 
+
     const getAutnIdData = () => {
         QueryUserInfo({
-            type: 'YBAUTH',
+            type: 'ZBAUTH',
         }).then(res => {
             if (res.success) {
                 let idArr = res.record?.map(item => {
@@ -58,61 +61,72 @@ const TableBox = (props) => {
         const newData = [...tableData];
         const index = newData.findIndex(item => row.id === item.id);
         const item = newData[index];
+        const keys = Object.keys(row);
         //去空格
         const newRow = {
             id: row.id,
-            zdgz: row.zdgz,
-            xzgzap: row.xzgzap,
-            xmmc: row.xmmc,
-            zmk: row.zmk,
-            yf: row.yf,
-            zt: row.zt,
-            ['bywcqk' + row.id]: row['bywcqk' + row.id]?.trim(),
-            ['xygzjh' + row.id]: row['xygzjh' + row.id]?.trim(),
-            ['ldyj' + row.id]: row['ldyj' + row.id]?.trim(),
-            ['txr' + row.id]: row['txr' + row.id],
+            module: row.module,
+            sysBuilding: row.sysBuilding,
+            manager: row.manager,
+            // lcbmc: row.lcbmc,
+            // lcbjd: row.lcbjd,
+            // lcbbz: row.lcbbz,
+            [keys[6]]: row[keys[6]].trim(),
+            [keys[7]]: row[keys[7]],
+            [keys[8]]: row[keys[8]],
+            [keys[9]]: row[keys[9]].trim(),
+            [keys[10]]: row[keys[10]],
+            [keys[11]]: row[keys[11]].trim(),
+            [keys[12]]: row[keys[12]].trim(),
         };
-        console.log('newRow', newRow);
         newData.splice(index, 1, {
             ...item,//old row data
             ...newRow,//new row data
         });
-        console.log('newTable', newData);
         setEdited(true);
+        console.log('TableData', newData);
         setTableData(preState => [...newData]);
     };
     const handleSubmit = () => {
         form.validateFields(err => {
             if (!err) {
-                let submitTable = tableData.map((item, index) => {
-                    let rowspan = getRowSpanCount(tableData, 'xzgzap', index);
-                    if (rowspan === 0) {
-                        if (index > 1) {
-                            let arr = tableData[index - 1];
-                            item['txr' + item.id] = [...arr['txr' + arr.id]];
-                            item['ldyj' + item.id] = arr['ldyj' + arr.id];
+                let submitTable = tableData.map(item => {
+                    const getCurP = (txt) => {
+                        switch (txt) {
+                            case '规划中':
+                                return '1';
+                            case '进行中':
+                                return '2';
+                            case '已完成':
+                                return '3'
                         }
-                    }
-                    // //填写人数据替换
-                    // let txrArr = item['txr' + item.id]?.map(el => {
-                    //     return txrData?.filter(x => x.name === el)[0]?.id;
-                    // })
+                    };
+                    const getCurS = (txt) => {
+                        switch (txt) {
+                            case '低风险':
+                                return '1';
+                            case '进度正常':
+                                return '2';
+                        }
+                    };
                     return {
                         V_ID: String(item.id),
-                        V_BYWCQK: String(item['bywcqk' + item.id]).trim(),
-                        V_XYGZJH: String(item['xygzjh' + item.id]).trim(),
-                        V_LDYJ: String(item['ldyj' + item.id]).trim(),
-                        V_TXR: item['txr' + item.id]?.join(';'),
+                        V_NDGH: String(item['annualPlan' + item.id]),
+                        V_WCSJ: String(moment(item['cplTime' + item.id]).format('YYYYMM')),
+                        V_DQJZ: String(getCurP(item['curProgress' + item.id])),
+                        V_DQJD: String(item['curRate' + item.id]),
+                        V_DQZT: String(getCurS(item['curStatus' + item.id])),
+                        V_FXSM: String(item['riskDesc' + item.id]),
                     }
-                });
+                })
                 submitTable.push({});
-                // console.log("🚀submitTable", submitTable)
+                console.log('submitTable', submitTable);
                 let submitData = {
                     json: JSON.stringify(submitTable),
                     count: tableData.length,
                     type: 'UPDATE'
                 };
-                OperateMonthly({ ...submitData }).then(res => {
+                OperateSZHZBWeekly({ ...submitData }).then(res => {
                     if (res?.code === 1) {
                         message.success('保存成功', 1);
                         setIsSaved(true);
@@ -132,14 +146,14 @@ const TableBox = (props) => {
             count: 1,
             type: 'BACK'
         }
-        OperateMonthly({ ...sendBackData }).then(res => {
+        OperateSZHZBWeekly({ ...sendBackData }).then(res => {
             if (res.success) {
+                queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), Number(currentXmid));
                 message.success('操作成功', 1);
-                queryTableData(Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
             }
         }).catch(e => {
             message.error('操作失败', 1);
-        });
+        })
     };
     const handleDelete = (id) => {
         let deleteData = {
@@ -149,22 +163,47 @@ const TableBox = (props) => {
             count: 1,
             type: 'DELETE'
         }
-        OperateMonthly({ ...deleteData }).then(res => {
+        OperateSZHZBWeekly({ ...deleteData }).then(res => {
             if (res.success) {
+                queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), Number(currentXmid));
                 message.success('操作成功', 1);
-                queryTableData(Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
             }
         }).catch(e => {
             message.error('操作失败', 1);
-        });
+        })
     };
-
+    const handleSkipCurWeek = () => {
+        Modal.confirm({
+            // title: '跳过本周',
+            className: 'skip-current-week',
+            content: '确定要跳过本周吗？',
+            onOk: () => {
+                let curWeek = getCurrentWeek(new Date());
+                let skipCurWeekData = {
+                    json: JSON.stringify([{
+                        V_KSSJ: curWeek[0].format('YYYYMMDD'),
+                        V_JSSJ: curWeek[1].format('YYYYMMDD'),
+                    }, {}]),
+                    count: 1,
+                    type: 'SKIP'
+                }
+                OperateSZHZBWeekly({ ...skipCurWeekData }).then(res => {
+                    if (res.success) {
+                        message.success('操作成功', 1);
+                        queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
+                    }
+                }).catch(e => {
+                    message.error('操作失败', 1);
+                })
+            }
+        });
+    }
     const handleExport = () => {
         let params = new URLSearchParams();
-        params.append("month", Number(monthData.format('YYYYMM')));
+        params.append("startTime", Number(monthData.startOf('month').format('YYYYMMDD')));
+        params.append("endTime", Number(monthData.endOf('month').format('YYYYMMDD')));
         params.append("xmmc", Number(currentXmid));
-        params.append("czr", 0);
-        fetch(digitalSpecialClassMonthReportExcel, {
+        fetch(digitalSpecialClassWeeklyReportExcel, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -182,19 +221,42 @@ const TableBox = (props) => {
             message.success('请求成功，正在导出中', 1);
         }).catch(e => {
             message.error('导出失败', 1);
-            // console.error(e);
         });
     };
     const handleTableScroll = (direction) => {
-        const tableNode = document.querySelector('.weekly-report-summary .ant-table .ant-table-body');
+        const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
         if (direction === 'left') {
             tableNode.scrollLeft = 0;
         }
         if (direction === 'right') {
             tableNode.scrollLeft = tableNode.scrollWidth;
         }
-        console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
+        // console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
     }
+    const handleSummary = () => {
+        const params = {
+            "attribute": 0,
+            "authFlag": 0,
+            "objectName": "V_XSZHZBHZ",
+            "operateName": "V_XSZHZBHZ_SUMMIT",
+            "parameter": [
+                // {
+                //     "name": "ZBID",
+                //     "value": String(id)
+                // },
+            ],
+            "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
+        }
+        CreateOperateHyperLink(params).then((ret = {}) => {
+            const { code, message, url } = ret;
+            if (code === 1) {
+                setSummaryModalUrl(url);
+                setSummaryModalVisible(true);
+            }
+        }).catch((error) => {
+            message.error(!error.success ? error.message : error.note);
+        });
+    };
     const tableColumns = [
         {
             title: '工作模块',
@@ -303,23 +365,21 @@ const TableBox = (props) => {
             },
         },
     ];
-    const columns = tableColumns.map((col) => {
+    const columns = tableColumns.map(col => {
         if (!col.editable) {
             return col;
         }
         return {
             ...col,
-            onCell: (record, index) => {
+            onCell: record => {
                 return ({
                     record,
                     editable: col.editable,
                     dataIndex: col.dataIndex,
                     handleSave: handleTableSave,
+                    key: col.key,
                     formdecorate: form,
-                    txrdata: txrData,
                     issaved: isSaved,
-                    recordindex: index,
-                    tabledata: tableData,
                 })
             },
         };
@@ -330,48 +390,26 @@ const TableBox = (props) => {
             cell: EditableCell,
         },
     };
-    const lcbqkModalProps = {
+    const summaryModalProps = {
         isAllWindow: 1,
         // defaultFullScreen: true,
-        title: '详细信息',
-        width: '60%',
-        height: '80rem',
+        title: '手动汇总',
+        width: '40%',
+        height: '60rem',
         style: { top: '5%' },
-        visible: lcbqkModalVisible,
+        visible: summaryModalVisible,
         footer: null,
     };
-    const getLcbqkModalUrl = (id) => {
-        const params = {
-            "attribute": 0,
-            "authFlag": 0,
-            "objectName": "V_YBHZ",
-            "operateName": "V_YBHZ_VIEW",
-            "parameter": [
-                {
-                    "name": "YBID",
-                    "value": String(id)
-                },
-            ],
-            "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
-        }
-        CreateOperateHyperLink(params).then((ret = {}) => {
-            const { code, message, url } = ret;
-            if (code === 1) {
-                setLcbqkModalUrl(url);
-                setLcbqkModalVisible(true);
-            }
-        }).catch((error) => {
-            message.error(!error.success ? error.message : error.note);
-        });
-    };
-
     return (<>
-        {lcbqkModalVisible &&
-            <BridgeModel modalProps={lcbqkModalProps} onSucess={() => setLcbqkModalVisible(false)}
-                onCancel={() => setLcbqkModalVisible(false)}
-                src={lcbqkModalUrl} />}
+        {summaryModalVisible &&
+            <BridgeModel modalProps={summaryModalProps} onSucess={() => {
+                queryTableData(Number(monthData.startOf('month').format('YYYYMMDD')), Number(monthData.endOf('month').format('YYYYMMDD')), Number(currentXmid));
+                setSummaryModalVisible(false);
+                message.success('汇总成功', 1);
+            }}
+                onCancel={() => setSummaryModalVisible(false)}
+                src={summaryModalUrl} />}
         <div className='table-box'>
-            {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
                 <div className='console-date'>
                     <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
@@ -380,9 +418,10 @@ const TableBox = (props) => {
                 <div className='console-btn-submit'>
                     <Button style={{ marginLeft: 'auto' }} disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" />上一列</Button>
                     <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}>下一列<Icon type="right" /></Button>
+                    {/* <Button style={{ marginRight: '1.1904rem'}} onClick={handleSummary}>手动汇总</Button> */}
                     <Button disabled={!edited} onClick={handleSubmit}>保存</Button>
                     <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                        <Button style={{ marginLeft: '1.1904rem' }}>导出</Button>
+                        <Button className='ss' style={{ marginLeft: '1.1904rem' }}>导出</Button>
                     </Popconfirm>
                 </div>
             </div>
@@ -391,11 +430,10 @@ const TableBox = (props) => {
                     loading={tableLoading}
                     columns={columns}
                     components={components}
-                    rowKey={'id'}
+                    rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    // scroll={tableData.length > 11 ? { y: 573, x: 2200 } : { x: 2200 }}
-                    scroll={{ y: true, x: 2200 }}
+                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 2020 }}
                     pagination={false}
                     bordered
                 ></Table>
