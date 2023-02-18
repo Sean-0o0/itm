@@ -575,6 +575,7 @@ class ContractSigning extends React.Component {
                                    validateStatus={pbbgTurnRed ? 'error' : 'success'}
                         >
                           <Upload
+                            action={'/api/projectManage/queryfileOnlyByupload'}
                             onDownload={(file) => {
                               if (!file.url) {
                                 let reader = new FileReader();
