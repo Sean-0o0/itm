@@ -159,22 +159,40 @@ export default function request(options, config = {}) {
       if (success) {
         return Promise.reject(response);
       }
-      console.log("statusCode", response.status)
       statusCode = response.status;
       msg = data.note || statusText;
     } else {
-      statusCode = 900;
-      msg = error.note || '会话过期';
+      // statusCode = 600;
+      // msg = error.note || '网络错误';
+      // 重新加载页面,刷新页面会去掉各个model里面的数据
+      console.log("校验登录状态")
+      let loginname = JSON.parse(sessionStorage.getItem("user"))?.loginName;
+      if (loginname === "admin") {
+        window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
+        sessionStorage.setItem('user', null); // 清除用户基本信息
+        sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
+        sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
+        localStorage.setItem('loginStatus', '0');
+        window.location.href = '/#/login';
+      } else {
+        window.location.href = 'http://10.52.50.238/cas/login?service=http%3A%2F%2F10.56.36.46%3A8011%2Fftq%2Fcas%2Flogin';
+      }
     }
     if (statusCode === 900) {
       const loginStatus = window.sessionStorage.getItem('loginStatus') || '0'; // 登录状态: 0|未登录;1|已登录;-1|过期;
-      if (loginStatus === '1') {
-        message.error('会话过期', /* duration */3);
-      }
-      sessionStorage.setItem('user', null); // 清空会话
-      window.sessionStorage.setItem('loginStatus', '-1'); // 登录状态为未登录
-      if (window.location.href.indexOf('/login') === -1) {
-        router.push('/login');
+      // if (loginStatus === '1') {
+      //   message.error('会话过期', /* duration */3);
+      // }
+      let loginname = JSON.parse(sessionStorage.getItem("user"))?.loginName;
+      if (loginname === "admin") {
+        window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
+        sessionStorage.setItem('user', null); // 清除用户基本信息
+        sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
+        sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
+        localStorage.setItem('loginStatus', '0');
+        window.location.href = '/#/login';
+      } else {
+        window.location.href = 'http://10.52.50.238/cas/login?service=http%3A%2F%2F10.56.36.46%3A8011%2Fftq%2Fcas%2Flogin';
       }
     }
     return Promise.reject({ success: false, statusCode, message: msg }); // eslint-disable-line
