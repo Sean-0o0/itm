@@ -8,7 +8,7 @@ import {
     CreateOperateHyperLink,
     QueryPaymentAccountList,
 } from "../../../../services/pmsServices";
-import RadioGroup from 'antd/lib/radio/group';
+import { PluginsUrl } from "../../../../utils/config";
 const { Option } = Select;
 
 const PASE_SIZE = 10;  //关联供应商选择器分页长度
@@ -789,6 +789,7 @@ class BidInfoUpdate extends React.Component {
                                 validateStatus={pbbgTurnRed ? 'error' : 'success'}
                             >
                                 <Upload
+                                    action={'/api/projectManage/queryfileOnlyByupload'}
                                     onDownload={(file) => {
                                         if (!file.url) {
                                             let reader = new FileReader();
