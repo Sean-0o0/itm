@@ -24,6 +24,7 @@ import {FetchQueryGysInZbxx, IndividuationGetOAResult} from "../../../../service
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import moment from "moment";
 import RichTextEditor from "./RichTextEditor";
+import {FetchQueryOrganizationInfo} from "../../../../services/projectManage";
 
 class ContractSigning extends React.Component {
   state = {
@@ -53,6 +54,7 @@ class ContractSigning extends React.Component {
     LCJJCD: [],
     //印章类型
     YZLX: [],
+    loginUser: {}
     //表单信息
     // contractSigningFormInfo:{
     //   bm:'',
@@ -74,7 +76,33 @@ class ContractSigning extends React.Component {
 
   componentDidMount() {
     this.fetchQueryGysInZbxx()
+    this.fetchQueryOrganizationInfo()
   }
+
+  // 查询组织机构信息
+  fetchQueryOrganizationInfo() {
+    return FetchQueryOrganizationInfo({
+      type: 'ZZJG'
+    }).then((result) => {
+      const {code = -1, record = []} = result;
+      if (code > 0) {
+        const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+        loginUser.id = String(loginUser.id);
+        record.forEach(e => {
+          // 获取登录用户的部门名称
+          if (String(e.orgId) === String(loginUser.org)) {
+            loginUser.orgName = e.orgName;
+          }
+        });
+        this.setState({
+          loginUser: loginUser,
+        });
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
 
   // 查询供应商下拉列表
   fetchQueryGysInZbxx = (current, pageSize) => {
@@ -235,10 +263,10 @@ class ContractSigning extends React.Component {
       contractInfoCollapse = false,
       attachmentInfoCollapse = false,
       flowInfoCollapse = false,
+      loginUser = {},
     } = this.state;
     const {contractSigningVisible, dictionary: {LCJJCD = [], YZLX = []}} = this.props;
     const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
-    const userBasicInfo = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
     const basicFormItemLayout = {
       labelCol: {
         xs: {span: 24},
@@ -307,7 +335,7 @@ class ContractSigning extends React.Component {
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="部门">
-                          <Input placeholder="请输入部门" disabled={true} value={userBasicInfo[0]?.extAttr?.orgname}/>
+                          <Input placeholder="请输入部门" disabled={true} value={loginUser.orgName}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -327,7 +355,7 @@ class ContractSigning extends React.Component {
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="拟稿人">
-                          <Input placeholder="请输入拟稿人" disabled={true} value={userBasicInfo[0]?.name}/>
+                          <Input placeholder="请输入拟稿人" disabled={true} value={loginUser.name}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>

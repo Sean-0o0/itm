@@ -32,6 +32,16 @@ export async function AccountLogout() {
   };
   return request(option);
 }
+
+// 退出接口
+export async function AccountCasLogIn() {
+  const option = {
+    url: logerin,
+    method: 'post',
+  };
+  return request(option);
+}
+
 // 查询用户信息
 export async function AccountUser(params) {
   const option = {
@@ -41,6 +51,7 @@ export async function AccountUser(params) {
   };
   return request(option);
 }
+
 // 查询系统授权业务角色
 export async function UserBusinessRole(params) {
   const option = {

@@ -73,7 +73,6 @@ class AssociatedFile extends React.Component {
     } = this.state;
     const {associatedFileVisible, dictionary: {LCJJCD = [], YZLX = []}} = this.props;
     const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
-    const userBasicInfo = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
     const basicFormItemLayout = {
       labelCol: {
         xs: {span: 24},

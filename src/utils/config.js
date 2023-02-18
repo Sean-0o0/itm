@@ -10,7 +10,6 @@ module.exports = {
   logo: '/logo.png',
   footerText: '武汉顶点软件有限公司 © 2018',
   api: getAPIs && getAPIs(),
-  isCas: false, // 否是开启单点登录
   //wps预览插件地址
   // 开发
   PluginsUrl: 'http://192.168.4.159:6011/wps/jsplugins.xml',
