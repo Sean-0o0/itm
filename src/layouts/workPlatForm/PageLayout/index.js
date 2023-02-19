@@ -18,6 +18,7 @@ import styles from './index.less';
 import ViewFile from "../../../components/pmsPage/ViewFile";
 import WpsUrl from "./WpsUrl";
 import PersonWorkBench from '../../../pages/pmsPage/PersonWorkBench';
+import { translate } from '@antv/g6/lib/util/math';
 // import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
 
 const { Header, Sider, Content } = Layout;
@@ -410,7 +411,11 @@ class MainPageLayout extends React.PureComponent {
           </React.Fragment>
         ) : (
           <ConfigProvider locale={zhCN}>
-            <Layout className={theme} style={{ minHeight: '100%', height: '100%', minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth, overflow: 'hidden' }}>
+            <Layout className={theme} style={{
+              minHeight: '100%', height: '100%',
+              minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth,
+              overflow: 'hidden', position: 'relative'
+            }}>
               <Header className="zy-header-wrap">
                 <PageHeader
                   menuTree={menuTree}
@@ -428,7 +433,10 @@ class MainPageLayout extends React.PureComponent {
                   theme={theme}
                 />
               </Header>
-              <Layout style={{ background: '#4bafee', height: '100%', overflow: 'hidden' }}>
+              <Layout style={{
+                background: '#000', height: '100%', overflow: 'hidden',
+                position: 'relative'
+              }}>
                 <Sider
                   className="siderContent cf-menu-wp"
                   trigger={null}
@@ -501,8 +509,14 @@ class MainPageLayout extends React.PureComponent {
                   { !menuTreeLoaded && <Route render={loading} /> } */}
                     </CacheSwitch>
                   </TrackRouter>
+                  <div style={{
+                    textAlign: 'right',
+                    height: 0,
+                    transform: 'translateX(-3.5712rem) translateY(-2.5rem)'
+                  }}>V1.0.0</div>
                 </Content>
                 <Content id="modalContent" />
+
               </Layout>
             </Layout>
           </ConfigProvider>

@@ -1,8 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Icon, DatePicker, Input, Table, Select } from 'antd';
-import TopConsole from './topConsole';
 import TableBox from './TableBox';
-const { RangePicker } = DatePicker;
 import { FetchQueryOwnerProjectList, QueryUserInfo, QueryMonthlyList } from '../../../services/pmsServices';
 import moment from 'moment';
 
@@ -14,20 +11,19 @@ export default function MonthlyReportTable() {
     const [currentXmid, setCurrentXmid] = useState(-1);
     const [edited, setEdited] = useState(false);
     const [txrData, setTxrData] = useState([]);
-    const [txrChange, setTxrChange] = useState(false);
 
     useEffect(() => {
         queryProjectData();
         getTxrData();
     }, []);
-    
+
     //填写人下拉框数据
     const getTxrData = () => {
         QueryUserInfo({
             type: '信息技术事业部'
         }).then(res => {
-            if(res.success){
-                setTxrData(p=>[...res.record]);
+            if (res.success) {
+                setTxrData(p => [...res.record]);
                 queryTableData(monthData.format('YYYYMM'), currentXmid, [...res.record]);
             }
         })
@@ -52,6 +48,7 @@ export default function MonthlyReportTable() {
             xmmc: Number(xmid)
         }).then(res => {
             if (res.code === 1) {
+                console.log("🚀 ~ file: index.js ~ line 55 ~ queryTableData ~ res", res)
                 const newArr = res.record.map(item => {
                     const getStatus = (num) => {
                         switch (num) {
@@ -63,7 +60,7 @@ export default function MonthlyReportTable() {
                                 return '被退回'
                         }
                     };
-                    let arr = item.txr?.trim()===''?[]:item.txr?.trim()?.split(';');
+                    let arr = item.txr?.trim() === '' ? [] : item.txr?.trim()?.split(';');
                     // let txrArr = arr?.map(item => {
                     //     return txrData?.filter(x => String(x?.id) === String(item))[0]?.name;
                     // });
@@ -115,17 +112,6 @@ export default function MonthlyReportTable() {
     }
     return (
         <div className='monthly-report-detail'>
-            <TopConsole
-                setTableLoading={setTableLoading}
-                queryTableData={queryTableData}
-                projectData={projectData}
-                currentXmid={currentXmid}
-                setCurrentXmid={setCurrentXmid}
-                monthData={monthData}
-                setMonthData={setMonthData}
-                txrData={txrData}
-            >
-            </TopConsole>
             <TableBox tableData={tableData}
                 queryTableData={queryTableData}
                 setTableData={setTableData}
@@ -137,6 +123,9 @@ export default function MonthlyReportTable() {
                 edited={edited}
                 setEdited={setEdited}
                 txrData={txrData}
+                projectData={projectData}
+                setCurrentXmid={setCurrentXmid}
+                setMonthData={setMonthData}
             >
             </TableBox>
         </div>
