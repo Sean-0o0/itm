@@ -547,7 +547,6 @@ const TableBox = (props) => {
             message.error(!error.success ? error.message : error.note);
         });
     };
-
     return (<>
         {summaryModalVisible &&
             <BridgeModel modalProps={summaryModalProps} onSucess={() => {
