@@ -513,7 +513,7 @@ class MainPageLayout extends React.PureComponent {
                     textAlign: 'right',
                     height: 0,
                     transform: 'translateX(-3.5712rem) translateY(-2.5rem)',
-                    color: '#dbdbdb'
+                    color: '#000'
                   }}>V1.0.0</div>
                 </Content>
                 <Content id="modalContent" />
