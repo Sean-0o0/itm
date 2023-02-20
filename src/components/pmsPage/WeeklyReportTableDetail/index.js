@@ -1,12 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Icon, DatePicker, Input, Table, Select } from 'antd';
-import TopConsole from './topConsole';
+import { Tabs } from 'antd';
 import TableBox from './TableBox';
-const { RangePicker } = DatePicker;
+import MonthlyReportTable from '../MonthlyReportTable';
+import WeeklyReportSummary from '../WeeklyReportSummary/index';
 import { FetchQueryOwnerProjectList, QueryDigitalSpecialClassWeeklyReport } from '../../../services/pmsServices';
 import moment from 'moment';
+const { TabPane } = Tabs;
 
-export default function WeeklyReportSummary() {
+
+export default function WeeklyReportTableDetail() {
     const [dateRange, setDateRange] = useState([null, null]);
     const [tableData, setTableData] = useState([]);
     const [groupData, setGroupData] = useState({});
@@ -15,6 +17,7 @@ export default function WeeklyReportSummary() {
     const [currentXmid, setCurrentXmid] = useState(-1);
     const [edited, setEdited] = useState(false);
     const [monthData, setMonthData] = useState(new moment());
+    const [activeKey, setActiveKey] = useState("3");
 
 
     useEffect(() => {
@@ -44,24 +47,6 @@ export default function WeeklyReportSummary() {
             xmmc: xmid
         }).then(res => {
             if (res.code === 1) {
-                // const getCurP = (num) => {
-                //     switch (num) {
-                //         case '1':
-                //             return '规划中';
-                //         case '2':
-                //             return '进行中';
-                //         case '3':
-                //             return '已完成'
-                //     }
-                // };
-                // const getCurS = (num) => {
-                //     switch (num) {
-                //         case '1':
-                //             return '低风险';
-                //         case '2':
-                //             return '进度正常';
-                //     }
-                // };
                 const getStatus = (num) => {
                     switch (num) {
                         case '1':
@@ -84,7 +69,9 @@ export default function WeeklyReportSummary() {
                             arr.push(item.fzr.trim())
                         }
                     });
-                    x.fzr = arr.join('、');
+                    // x.fzr = arr.join(';');
+                    x.fzr = arr;
+
                 });
                 // console.log('@@', uniqueArr);
                 const newArr = uniqueArr?.map(item => {
@@ -92,7 +79,7 @@ export default function WeeklyReportSummary() {
                         id: item.id,
                         module: item.mk.trim(),
                         sysBuilding: item.xtjs.trim(),
-                        manager: item.fzr.trim(),
+                        ['manager' + item.id]: [...item.fzr],
                         ['annualPlan' + item.id]: item.ndgh.trim(),
                         ['cplTime' + item.id]: item.wcsj,
                         ['curProgress' + item.id]: item.dqjz.trim(),
@@ -109,7 +96,7 @@ export default function WeeklyReportSummary() {
                     pre[current.module].push({
                         id: current.id,
                         sysBuilding: current.sysBuilding,
-                        manager: current.manager,
+                        ['manager' + current.id]: current['manager' + current.id],
                         ['annualPlan' + current.id]: current['annualPlan' + current.id],
                         ['cplTime' + current.id]: current['cplTime' + current.id],
                         ['curProgress' + current.id]: current['curProgress' + current.id],
@@ -133,6 +120,7 @@ export default function WeeklyReportSummary() {
                     })
                 }
                 setTableData(preState => [...finalArr]);
+                // console.log("🚀 ~ file: index.js ~ line 136 ~ queryTableData ~ finalArr]", finalArr)
                 setTableLoading(false);
             }
         })
@@ -151,35 +139,42 @@ export default function WeeklyReportSummary() {
         }
         return [moment(monday), moment(sunday)];
     };
+    const handleTabsChange = (key) => {
+        setActiveKey(key);
+        if (key === '1') queryProjectData();
+    }
+
     return (
         <div className='weekly-report-detail'>
-            <TopConsole dateRange={dateRange}
-                setDateRange={setDateRange}
-                getCurrentWeek={getCurrentWeek}
-                setTableLoading={setTableLoading}
-                queryTableData={queryTableData}
-                projectData={projectData}
-                currentXmid={currentXmid}
-                setCurrentXmid={setCurrentXmid}
-                setEdited={setEdited}
-                monthData={monthData}
-                setMonthData={setMonthData}
-            >
-            </TopConsole>
-            <TableBox tableData={tableData}
-                queryTableData={queryTableData}
-                groupData={groupData}
-                setTableData={setTableData}
-                tableLoading={tableLoading}
-                setTableLoading={setTableLoading}
-                dateRange={dateRange}
-                edited={edited}
-                setEdited={setEdited}
-                getCurrentWeek={getCurrentWeek}
-                currentXmid={currentXmid}
-                monthData={monthData}
-            >
-            </TableBox>
+            <div className='top-console'>
+                <Tabs defaultActiveKey="3" activeKe={activeKey} onChange={handleTabsChange} size={'large'}>
+                    <TabPane tab="数字化专班月报" key="1">
+                    </TabPane>
+                    <TabPane tab="信息技术事业部月报" key="2">
+                    </TabPane>
+                    <TabPane tab="汇金谷零售业务周报" key="3">
+                    </TabPane>
+                </Tabs>
+            </div>
+            {activeKey === "1" &&
+                <TableBox tableData={tableData}
+                    queryTableData={queryTableData}
+                    groupData={groupData}
+                    setTableData={setTableData}
+                    tableLoading={tableLoading}
+                    setTableLoading={setTableLoading}
+                    dateRange={dateRange}
+                    edited={edited}
+                    setEdited={setEdited}
+                    getCurrentWeek={getCurrentWeek}
+                    currentXmid={currentXmid}
+                    monthData={monthData}
+                    setCurrentXmid={setCurrentXmid}
+                    setMonthData={setMonthData}
+                    projectData={projectData}
+                />}
+            {activeKey === "2" && <MonthlyReportTable />}
+            {activeKey === "3" && <WeeklyReportSummary />}
         </div>
     )
 }

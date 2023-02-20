@@ -1465,6 +1465,23 @@ class LifeCycleManagementTabs extends React.Component {
                                                                 <span
                                                                   className='lifecycle-text-overflow'>{item.sxmc}</span>
                                                             }
+                                                            {/* </div> */}
+                                                          </div>
+                                                          <div style={{
+                                                            width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '41.67%' : '25%',
+                                                            textAlign: 'left', width: '29%'
+                                                          }} >
+                                                            <Tooltips type={item.swlx}
+                                                              item={item}
+                                                              status={item.zxqk}
+                                                              xmid={xmid}
+                                                              projectInfo={projectInfo}
+                                                              handleUpload={() => this.handleUpload(item)}
+                                                              handleSend={this.handleSend}
+                                                              handleFillOut={() => this.handleFillOut(item)}
+                                                              handleEdit={() => this.handleEdit(item)}
+                                                              handleMessageEdit={this.handleMessageEdit}
+                                                            />
                                                           </div>
                                                           <div style={{
                                                             width: '35%',

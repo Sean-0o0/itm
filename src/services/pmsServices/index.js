@@ -40,6 +40,8 @@ const {
     checkInvoice,
     queryUserRole,
     individuationGetOAResult,
+    queryHjgWeeklyInfo,
+    operateHjgWeeklyReport,
   },
 } = api;
 
@@ -395,6 +397,26 @@ export async function QueryUserRole(payload) {
 export async function IndividuationGetOAResult(payload, configObj) {
   const option = {
     url: individuationGetOAResult,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 获取汇金谷零售周报汇总信息
+export async function QueryHjgWeeklyInfo(payload, configObj) {
+  const option = {
+    url: queryHjgWeeklyInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 更新、提交、删除、跳过周报信息
+export async function OperateHjgWeeklyReport(payload, configObj) {
+  const option = {
+    url: operateHjgWeeklyReport,
     method: 'post',
     data: payload,
   };

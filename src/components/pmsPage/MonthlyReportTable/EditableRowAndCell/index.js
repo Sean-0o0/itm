@@ -82,6 +82,8 @@ const EditableCell = (props) => {
                 style={{ width: '28rem', borderRadius: '1.1904rem !important' }}
                 placeholder="请选择填报人"
                 mode="multiple"
+                showSearch
+                optionFilterProp="children"
                 onChange={onChange}
                 open={open}
                 onDropdownVisibleChange={(visible) => setOpen(visible)}

@@ -17,12 +17,14 @@ const EditableFormRow = Form.create()(EditableRow);
 const EditableCell = (props) => {
     const [editing, setEditing] = useState(false);
     const [edited, setEdited] = useState(false);
-    const [curPOpen, setcurPOpen] = useState(false);
-    const [curSOpen, setcurSOpen] = useState(false);
+    const [curPOpen, setCurPOpen] = useState(false);
+    const [curSOpen, setCurSOpen] = useState(false);
+    const [managerOpen, setManagerOpen] = useState(false);
 
     const targetNode = useRef(null);
     const editingRef = useRef(false);
     const {
+        managerdata,
         issaved,
         editable,
         dataIndex,
@@ -86,6 +88,8 @@ const EditableCell = (props) => {
                 return '专班人数';
             case 'orgName':
                 return '使用部门';
+            case 'manager':
+                return '负责人';
             default:
                 return '';
         }
@@ -98,6 +102,7 @@ const EditableCell = (props) => {
                 case 'cplTime':
                 case 'curProgress':
                 case 'curStatus':
+                case 'manager':
                     return [{ required, message, }];
                 case 'annualPlan':
                 case 'riskDesc':
@@ -228,14 +233,55 @@ const EditableCell = (props) => {
             </Select>
         );
     }
+    const handleManagerChange = (arr, a, b) => {
+        const { record, handleSave, tabledata, recordindex } = props;
+        toggleEdit();
+        let newVal = {
+            ['manager' + record['id']]: [...arr],
+        };
+        setEdited(true);
+        handleSave({ ...record, ...newVal });
+        // const rowNode = document.querySelectorAll(`.ant-select-selection--multiple`);
+        // const rowIndex = recordindex > rowNode.length - 1 ? rowNode.length - 1 : recordindex;
+        // // console.log(cellHeight, rowNode[rowIndex]);
+        // rowNode[rowIndex].scrollIntoView(false);
+    };
+    const getManagerSelect = () => {
+        return (
+            <Select
+                style={{ width: '28rem', borderRadius: '1.1904rem !important' }}
+                placeholder="请选择负责人"
+                mode="multiple"
+                showSearch
+                optionFilterProp="children"
+                onChange={handleManagerChange}
+                open={managerOpen}
+                onDropdownVisibleChange={(visible) => setManagerOpen(visible)}
+                ref={targetNode} onPressEnter={toggleEdit} onBlur={toggleEdit}
+                onDeselect={() => {
+                    setTimeout(() => {
+                        window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
+                    }, 200);
+                }}
+            >
+                {
+                    managerdata?.map((item = {}, ind) => {
+                        return <Option key={ind} value={item.id}>{item.name}</Option>
+                    })
+                }
+            </Select>
+        );
+    }
     const renderItem = (form, dataIndex, record) => {
         let idDataIndex = dataIndex + record['id'];
         const cplTimeNode = <MonthPicker ref={node => targetNode.current = node} placeholder="请选择月份" onChange={handleMonthChange} />;
         const cplTimeValue = moment(String(record[idDataIndex])) || null;
-        const curProgressNode = getSelect(handlecurPChange, curPOpen, setcurPOpen, curPData);
-        const curStatusNode = getSelect(handlecurSChange, curSOpen, setcurSOpen, curSData);
-
+        const curProgressNode = getSelect(handlecurPChange, curPOpen, setCurPOpen, curPData);
+        const curStatusNode = getSelect(handlecurSChange, curSOpen, setCurSOpen, curSData);
+        const managerNode = getManagerSelect();
         switch (dataIndex) {
+            case 'manager':
+                return getFormDec(form, idDataIndex, dataIndex, true, String(record[idDataIndex]), managerNode);
             case 'cplTime':
                 return getFormDec(form, idDataIndex, dataIndex, true, cplTimeValue, cplTimeNode);
             case 'riskDesc':
@@ -255,7 +301,7 @@ const EditableCell = (props) => {
         return (editing ?
             (<Form.Item style={{ margin: 0 }}>
                 {renderItem(formdecorate, dataIndex, record)}
-            </Form.Item>) : dataIndex !== 'cplTime' ? (
+            </Form.Item>) : !['cplTime', 'manager'].includes(dataIndex) ? (
                 <Tooltip title={String(record[dataIndex + record['id']])}>
                     <div
                         className="editable-cell-value-wrap"

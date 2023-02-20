@@ -1,24 +1,30 @@
 import React, { useState, useEffect } from 'react'
-import { Button, Table, Form, message, Popconfirm, Icon } from 'antd';
+import { Button, Table, Form, message, Popconfirm, Icon, DatePicker, Select } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import { CreateOperateHyperLink, OperateMonthly, QueryUserInfo } from '../../../../services/pmsServices';
 import config from '../../../../utils/config';
 import moment from 'moment';
 
+const { MonthPicker } = DatePicker;
+const { Option } = Select;
 const { api } = config;
 const { pmsServices: { digitalSpecialClassMonthReportExcel } } = api;
 const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
     const { form, tableData, setTableData, tableLoading, setTableLoading, edited, setEdited,
-        monthData, getRowSpanCount, currentXmid, queryTableData, txrData } = props;
+        monthData, getRowSpanCount, currentXmid, queryTableData, txrData,
+        projectData,
+        setCurrentXmid,
+        setMonthData } = props;
     const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
     const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
     const [authIdAData, setAuthIdData] = useState([]);//权限用户id
     const [isSaved, setIsSaved] = useState(false);
     const [toLeft, setToLeft] = useState(false);//是否允许左滚
     const [toRight, setToRight] = useState(true);
+    const [open, setOpen] = useState(false);
 
     useEffect(() => {
         getAutnIdData();
@@ -72,12 +78,12 @@ const TableBox = (props) => {
             ['ldyj' + row.id]: row['ldyj' + row.id]?.trim(),
             ['txr' + row.id]: row['txr' + row.id],
         };
-        console.log('newRow', newRow);
+        // console.log('newRow', newRow);
         newData.splice(index, 1, {
             ...item,//old row data
             ...newRow,//new row data
         });
-        console.log('newTable', newData);
+        // console.log('newTable', newData);
         setEdited(true);
         setTableData(preState => [...newData]);
     };
@@ -87,16 +93,12 @@ const TableBox = (props) => {
                 let submitTable = tableData.map((item, index) => {
                     let rowspan = getRowSpanCount(tableData, 'rwfl', index);
                     if (rowspan === 0) {
-                        if (index > 1) {
+                        if (index >= 1) {
                             let arr = tableData[index - 1];
                             item['txr' + item.id] = [...arr['txr' + arr.id]];
                             item['ldyj' + item.id] = arr['ldyj' + arr.id];
                         }
                     }
-                    // //填写人数据替换
-                    // let txrArr = item['txr' + item.id]?.map(el => {
-                    //     return txrData?.filter(x => x.name === el)[0]?.id;
-                    // })
                     return {
                         V_ID: String(item.id),
                         V_BYWCQK: String(item['bywcqk' + item.id]).trim(),
@@ -396,18 +398,75 @@ const TableBox = (props) => {
         });
     };
 
+
+    const handleMonthChange = (txt) => {
+        let time = monthData;
+        if (txt === 'last') {//上
+            time = monthData.subtract(1, "month");
+        } else if (txt === 'next') {//下
+            time = monthData.add(1, "month");
+        } else if (txt === 'current') {//当前
+            time = new moment();
+        } else {
+            return;
+        }
+        setMonthData(time);
+        setTableLoading(true);
+        queryTableData(Number(time.format('YYYYMM')), currentXmid, txrData);
+    };
+    const handleDateChange = (d, ds) => {
+        setMonthData(d)
+        setTableLoading(true);
+        queryTableData(Number(d.format('YYYYMM')), currentXmid, txrData);
+    };
+    const handleProjectChange = (value) => {
+        setCurrentXmid(Number(value));
+        setTableLoading(true);
+        queryTableData(Number(monthData.format('YYYYMM')), Number(value), txrData);
+    };
+
     return (<>
         {lcbqkModalVisible &&
             <BridgeModel modalProps={lcbqkModalProps} onSucess={() => setLcbqkModalVisible(false)}
                 onCancel={() => setLcbqkModalVisible(false)}
                 src={lcbqkModalUrl} />}
         <div className='table-box'>
-            {/* <div ref={downloadRef} style={{ display: 'none' }}></div> */}
             <div className='table-console'>
                 <div className='console-date'>
-                    <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img>
-                    <div className='console-txt'>{monthData.format('YYYY-MM')}</div>
+                    {/* <img className='console-icon' src={require('../../../../image/pms/WeeklyReportDetail/icon_date@2x.png')} alt=''></img> */}
+                    {/* <div className='console-txt'>{monthData.format('YYYY-MM')}</div> */}
                 </div>
+                <Button onClick={handleMonthChange.bind(this, 'current')} style={{ marginRight: '2.3808rem' }}>回到本月</Button>
+                <Button onClick={handleMonthChange.bind(this, 'last')}>
+                    <Icon type="left" />
+                    上月
+                </Button>
+                <MonthPicker
+                    value={monthData}
+                    onChange={handleDateChange}
+                    style={{ margin: '0 1.488rem', width: '16.368rem' }} />
+                <Button onClick={handleMonthChange.bind(this, 'next')}>
+                    下月
+                    <Icon type="right" />
+                </Button>
+                <Select
+                    style={{ width: '34rem', borderRadius: '1.1904rem !important', marginLeft: '2.3808rem', marginRight: 'auto' }}
+                    showSearch
+                    placeholder="请选择项目名称"
+                    optionFilterProp="children"
+                    onChange={handleProjectChange}
+                    filterOption={(input, option) =>
+                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    open={open}
+                    onDropdownVisibleChange={(visible) => { setOpen(visible); }}
+                >
+                    {
+                        projectData?.map((item = {}, ind) => {
+                            return <Option key={ind} value={item.xmid}>{item.xmmc}</Option>
+                        })
+                    }
+                </Select>
                 <div className='console-btn-submit'>
                     <Button style={{ marginLeft: 'auto' }} disabled={!toLeft} onClick={() => handleTableScroll('left')}><Icon type="left" />上一列</Button>
                     <Button disabled={!toRight} style={{ margin: '0 1.1904rem' }} onClick={() => handleTableScroll('right')}>下一列<Icon type="right" /></Button>
