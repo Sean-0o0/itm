@@ -30,6 +30,8 @@ class LoginPageLayout extends React.PureComponent {
     // this.fetchData();
     // 进入登录页面先获取用户ip保存起来
     this.getIp();
+    //跳转到
+    // window.location.href = '/api/cas/login';
   }
 
   getIp = () => {

@@ -47,31 +47,7 @@ export default {
     },
     checkAuth: [
       function* (_, { call, put, all }) {  // eslint-disable-line
-        let data = [];
-        try {
-          data = yield call(AccountUser); // 此处不捕获异常,将异常抛到dva最外层的onError事件捕捉,如果过期就跳转到登录页面
-        } catch (e) {
-          // console.log("window.location.href", window.location.href)
-          // if (isCas) {
-          // 让提示停留0.5s
-          //如果过期就跳转到cas登录页面
-          console.log("------校验登录状态------")
-          let loginname = JSON.parse(sessionStorage.getItem("user"))?.loginName;
-          // console.log("itemitem",JSON.parse(sessionStorage.getItem("user")));
-          // 重新加载页面,刷新页面会去掉各个model里面的数据
-          if (loginname === "admin") {
-            window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
-            sessionStorage.setItem('user', null); // 清除用户基本信息
-            sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
-            sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
-            localStorage.setItem('loginStatus', '0');
-            window.location.href = '/#/login';
-          } else {
-            window.location.href = 'http://10.52.50.238/cas/login?service=http%3A%2F%2F10.56.36.46%3A8011%2Fftq%2Fcas%2Flogin';
-            // window.location.reload();
-          }
-          // }
-        }
+        const data = yield call(AccountUser); // 此处不捕获异常,将异常抛到dva最外层的onError事件捕捉,如果过期就跳转到登录页面
         if (data.success) {
           yield put({
             type: 'onAuthDataChange',
@@ -99,22 +75,14 @@ export default {
     // 注销操作
     *logout(_, { call, put }) {
       // // 改变登录的状态
-      let loginname = JSON.parse(sessionStorage.getItem("user")).loginName;
-      console.log("loginname", loginname);
       yield call(AccountLogout);
-      // console.log("itemitem",JSON.parse(sessionStorage.getItem("user")));
+      window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
+      sessionStorage.setItem('user', null); // 清除用户基本信息
+      sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
+      sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
+      localStorage.setItem('loginStatus', '0');
       // 重新加载页面,刷新页面会去掉各个model里面的数据
-      if (loginname === "admin") {
-        window.sessionStorage.setItem('loginStatus', '0'); // 登录状态为未登录
-        sessionStorage.setItem('user', null); // 清除用户基本信息
-        sessionStorage.setItem('cacheUrl', ''); // 清除tab页缓存信息
-        sessionStorage.setItem('recentlyVisited', '');// 清除历史记录
-        localStorage.setItem('loginStatus', '0');
-        window.location.href = '/#/login';
-      } else {
-        window.location.href = 'http://10.52.50.238/cas/login?service=http%3A%2F%2F10.56.36.46%3A8011%2Fftq%2Fcas%2Flogin';
-        // window.location.reload();
-      }
+      window.location.reload();
       yield put({
         type: 'onAuthDataChange',
         payload: {hasAuthed: false},

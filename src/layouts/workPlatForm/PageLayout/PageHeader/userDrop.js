@@ -374,8 +374,10 @@ export default class UserDrop extends React.Component {
     e.target.src = avatorPng;
   }
   handleLogout = (dispatch) => {
-    dispatch({ type: 'login/fetOperationLogOut' });
-    dispatch({ type: 'global/logout' });
+    dispatch({type: 'login/fetOperationLogOut'});
+    dispatch({type: 'global/logout'});
+    //登出调用单点登录的登出
+    window.location.href = '/api/cas/logout';
   }
 
   showRoleModal = () => {
