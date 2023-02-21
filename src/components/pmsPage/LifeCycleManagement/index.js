@@ -930,8 +930,8 @@ class LifeCycleManagementTabs extends React.Component {
     //打包时修改config.js文件里的插件地址PluginsUrl。
     // WpsClient.jsPluginsXml = PluginsUrl;
     WpsClient.InvokeAsHttp(
-      name, // 组件类型
-      // "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
+      // clientType, // 组件类型
+      name, // 插件名，与wps客户端加载的加载的插件名对应
       "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
       JSON.stringify(param), // 传递给插件的数据
       function (result) { // 调用回调，status为0为成功，其他是错误

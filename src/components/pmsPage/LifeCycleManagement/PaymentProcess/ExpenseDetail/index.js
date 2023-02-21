@@ -32,36 +32,36 @@ const ExpenseDetail = (props) => {
 
     //唤起WPS
     const WPSInvoke = (param) => {
-        let clientType = WpsInvoke.ClientType.wps;
-        let name = "HelloWps";
-        if (param.filepath.includes(".docx") || param.filepath.includes(".doc")) {
-            clientType = WpsInvoke.ClientType.wps;
-            name = "HelloWps";
-        }
-        if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
-            clientType = WpsInvoke.ClientType.et;
-            name = "HelloWp s-et";
-        }
-        if (param.filepath.includes(".pdf")) {
-            window.open(param.filepath)
-            return;
+      let clientType = WpsInvoke.ClientType.wps;
+      let name = "WpsOAAssist";
+      if (param.filepath.includes(".docx") || param.filepath.includes(".doc") || param.filepath.includes(".DOCX") || param.filepath.includes(".DOC")) {
+        clientType = WpsInvoke.ClientType.wps;
+        name = "WpsOAAssist";
+      }
+      if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
+        clientType = WpsInvoke.ClientType.et;
+        name = "EtOAAssist";
+      }
+      if (param.filepath.includes(".pdf")) {
+        window.open(param.filepath)
+        return;
         }
         const WpsClient = new WpsClientOpen.WpsClient(clientType);
         //打包时修改config.js文件里的插件地址PluginsUrl。
         WpsClient.jsPluginsXml = PluginsUrl;
         WpsClient.InvokeAsHttp(
-            name, // 组件类型
-            // "HelloWps", // 插件名，与wps客户端加载的加载的插件名对应
-            "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
-            JSON.stringify(param), // 传递给插件的数据
-            function (result) { // 调用回调，status为0为成功，其他是错误
-                // console.log("🚀 ~ file: index.js ~ line 79 ~ WPSInvoke ~ result", result)
-                if (result.status) {
-                    if (result.status === 100) {
-                        message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
-                        return;
-                    }
-                    message.info(result.message)
+          // clientType, // 组件类型
+          name, // 插件名，与wps客户端加载的加载的插件名对应
+          "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
+          JSON.stringify(param), // 传递给插件的数据
+          function (result) { // 调用回调，status为0为成功，其他是错误
+            // console.log("🚀 ~ file: index.js ~ line 79 ~ WPSInvoke ~ result", result)
+            if (result.status) {
+              if (result.status === 100) {
+                message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
+                return;
+              }
+              message.info(result.message)
                 } else {
                     message.info(result.response)
                 }

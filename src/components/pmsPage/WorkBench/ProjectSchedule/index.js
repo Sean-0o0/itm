@@ -721,14 +721,14 @@ class ProjectSchedule extends React.Component {
 
   singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
     let clientType = WpsInvoke.ClientType.wps;
-    let name = "HelloWps";
-    if (param.filepath.includes(".docx") || param.filepath.includes(".doc")) {
+    let name = "WpsOAAssist";
+    if (param.filepath.includes(".docx") || param.filepath.includes(".doc") || param.filepath.includes(".DOCX") || param.filepath.includes(".DOC")) {
       clientType = WpsInvoke.ClientType.wps;
-      name = "HelloWps";
+      name = "WpsOAAssist";
     }
     if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
       clientType = WpsInvoke.ClientType.et;
-      name = "HelloWp s-et";
+      name = "EtOAAssist";
     }
     if (param.filepath.includes(".pdf")) {
       // clientType = WpsInvoke.ClientType.wpp;
