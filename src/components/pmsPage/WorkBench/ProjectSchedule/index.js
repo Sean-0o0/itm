@@ -86,6 +86,12 @@ class ProjectSchedule extends React.Component {
     fileAddUrl: '/OperateProcessor?operate=TXMXX_XMXX_NEWPROGRAM&Table=TXMXX_XMXX',
     src_fileAdd: `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`,
     page: 1,//当前分页
+    //合同签署流程发起
+    contractSigningVisible: false,
+    // //
+    // associatedFileVisible: false,
+    //项目编码 -合同签署流程发起
+    xmbh: '',
   };
 
   componentDidMount() {
@@ -124,17 +130,17 @@ class ProjectSchedule extends React.Component {
       ],
       Loginname
     )
-    if (item.sxmc.includes("合同签署")) {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
-        [
-          {
-            "name": "XMMC",
-            "value": item.xmid
-          }
-        ],
-        Loginname
-      )
-    }
+    // if (item.sxmc.includes("合同签署")) {
+    //   params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
+    //     [
+    //       {
+    //         "name": "XMMC",
+    //         "value": item.xmid
+    //       }
+    //     ],
+    //     Loginname
+    //   )
+    // }
     if (item.sxmc.includes("付款")) {
       params = getParams("LC_XMFKLC", "LC_XMFKLC_XMFKLCFQ",
         [
@@ -405,13 +411,27 @@ class ProjectSchedule extends React.Component {
   };
 
   //流程发起
-  handleSend = (item) => {
+  handleSend = (item, xmbh='') => {
     if (item.sxmc.includes('付款流程')) {
       // this.setState({
       //   paymentModalVisible: true,
       //   currentXmid: item.xmid,
       // });
       message.info('功能开发中，暂时无法使用', 1);
+      return;
+    }
+    //合同签署流程弹窗个性化,不走livebos弹窗了
+    if (item.sxmc.includes("合同签署")) {
+      let index = this.state.operationListData?.findIndex(x => {
+        return Number(x.xmid) === Number(item.xmid)
+      })
+      this.setState({
+        currentXmmc: this.state.operationListData[index].xmmc,
+        contractSigningVisible: true,
+        xmbh: xmbh,
+      }, () => {
+        console.log('合同签署 - 项目编号：', this.state.xmbh);
+      })
       return;
     }
     this.getSendUrl(item);
@@ -896,6 +916,8 @@ class ProjectSchedule extends React.Component {
       fileAddVisible,
       src_fileAdd,
       page,
+      contractSigningVisible,
+      xmbh,
     } = this.state;
     //data里是所有的项目名称和id 再调用接口去取项目当前所处阶段信息。
     const uploadModalProps = {
@@ -1088,6 +1110,17 @@ class ProjectSchedule extends React.Component {
           loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
         ></BidInfoUpdate>}
 
+
+        {/*合同签署流程弹窗*/}
+        {contractSigningVisible && <ContractSigning
+          currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
+          contractSigningVisible={contractSigningVisible}
+          closeContractModal={() => this.setState({ contractSigningVisible: false })}
+          onSuccess={() => this.onSuccess("合同签署")}
+          xmbh={xmbh}
+        ></ContractSigning>}
+
         {/*阶段信息修改弹窗*/}
         {editModelVisible &&
           <div>
@@ -1245,6 +1278,7 @@ class ProjectSchedule extends React.Component {
                                                         item={item}
                                                         userId={items.userid}
                                                         status={item.zxqk}
+                                                        xmbh={items.xmbh}
                                                         handleUpload={() => this.handleUpload(item)}
                                                         handleSend={this.handleSend}
                                                         handleFillOut={() => this.handleFillOut(item)}

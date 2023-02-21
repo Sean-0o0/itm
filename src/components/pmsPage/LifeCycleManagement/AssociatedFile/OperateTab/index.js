@@ -11,34 +11,47 @@ import {
   Button,
 } from 'antd';
 
-const {Option} = Select;
-const {RangePicker} = DatePicker;
+const { Option } = Select;
+const { RangePicker } = DatePicker;
 import React from 'react';
-import {connect} from "dva";
+import { connect } from "dva";
 
 class OperateTab extends React.Component {
-  state = {}
+  state = {
+    inputSearch: '',
+    dateSearch: [],
+  }
 
   componentDidMount() {
 
   }
+  onInputChange(e) {
+    console.log("🚀 ~ file: index.js ~ line 27 ~ OperateTab ~ onInputChange ~ e.target.value", e.target.value)
+    this.setState({
+      inputSearch: e.target.value,
+    })
+  }
 
-  onChange(date, dateString) {
-    console.log(date, dateString);
+  onRangePickerChange(date, dateString) {
+    console.log("🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString", date, dateString)
+    this.setState({
+      dateSearch: dateString[0] === '' && dateString[1] === '' ? [] : [...dateString],
+    });
   }
 
 
   render() {
-    const {} = this.state;
+    const { inputSearch, dateSearch } = this.state;
+    const { handleTableFilter } = this.props;
     return (
-      <div style={{margin: '2rem 0 0 0'}}>
+      <div style={{ margin: '2rem 0 0 0' }}>
         <Row gutter={24}>
           <Col span={8}>
-            <Form.Item label="文件类别" labelCol={{span: 6}} wrapperCol={{span: 18}}>
-              <Input placeholder="请输入标题"/>
+            <Form.Item label="文件类别" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+              <Input placeholder="请输入标题" onChange={(e) => this.onInputChange(e)} />
             </Form.Item>
           </Col>
-          <Col span={8}>
+          {/* <Col span={8}>
             <Form.Item label="标题" labelCol={{span: 6}} wrapperCol={{span: 18}}>
               <Input placeholder="请输入标题"/>
             </Form.Item>
@@ -49,19 +62,22 @@ class OperateTab extends React.Component {
             </Form.Item>
           </Col>
         </Row>
-        <Row gutter={24}>
+        <Row gutter={24}> 
           <Col span={8}>
             <Form.Item label="流程状态" labelCol={{span: 6}} wrapperCol={{span: 18}}>
               <Input placeholder="请输入流程状态"/>
             </Form.Item>
-          </Col>
+          </Col> */}
           <Col span={8}>
-            <Form.Item label="拟稿日期" labelCol={{span: 6}} wrapperCol={{span: 18}}>
-              <RangePicker onChange={this.onChange}/>
+            <Form.Item label="拟稿日期" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
+              <RangePicker onChange={(d, ds) => this.onRangePickerChange(d, ds)} />
             </Form.Item>
           </Col>
-          <Col span={8}>
-            <Button>查询</Button>
+          <Col span={8} style={{ paddingTop: '0.8928rem' }}>
+            <Button onClick={() => handleTableFilter({
+              fileType: inputSearch,
+              draftDate: dateSearch,
+            })}>查询</Button>
           </Col>
         </Row>
       </div>
@@ -69,6 +85,6 @@ class OperateTab extends React.Component {
   }
 }
 
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(Form.create()(OperateTab));

@@ -49,8 +49,8 @@ class Tooltips extends React.Component {
     this.props.handleUpload();
   }
 
-  handleSend = (item) => {
-    this.props.handleSend(item);
+  handleSend = (item, xmbh) => {
+    this.props.handleSend(item, xmbh);
   }
 
   handleEdit = () => {
@@ -106,12 +106,12 @@ class Tooltips extends React.Component {
     });
   }
 
-  handleAuthority = (fn, txt, arg) => {
+  handleAuthority = (fn, txt, ...arg) => {
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
-    console.log(Number(this.props.userId), LOGIN_USER_ID, this.props);
+    // console.log(Number(this.props.userId), LOGIN_USER_ID, this.props);
     if (Number(this.props?.userId || this.props?.projectInfo?.userid) === LOGIN_USER_ID) {
-      if (arg) {
-        fn.call(this, arg);
+      if (arg.length!==0) {
+        fn.call(this, ...arg);
       } else {
         fn.call(this);
       }
@@ -147,10 +147,12 @@ class Tooltips extends React.Component {
   getSpan = txt => <span style={{ marginLeft: '0.5952rem' }}>{txt}</span>;
   //流程发起查看
   getLcfqck = (status, item, isFklc = false) => {
+    const { xmbh } = this.props;
+    // console.log("🚀 ~ file: index.js ~ line 151 ~ Tooltips ~ xmbh", xmbh)
     // status === ' '
     if (status === ' ') {
       return (
-        <div title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item)}>
+        <div title="发起" onClick={this.handleAuthority.bind(this, this.handleSend, '发起', item, xmbh)}>
           <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('发起')}</a>
         </div>
       );
@@ -161,7 +163,7 @@ class Tooltips extends React.Component {
         menu = (
           <Menu>
             <Menu.Item>
-              <div title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
+              <div title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item, xmbh)}>
                 <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('重新发起')}</a>
               </div>
             </Menu.Item>
@@ -176,7 +178,7 @@ class Tooltips extends React.Component {
         menu = (
           <Menu>
             <Menu.Item>
-              <div title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item)}>
+              <div title="重新发起" onClick={this.handleAuthority.bind(this, this.handleSend, '重新发起', item, xmbh)}>
                 <a style={this.state.txtStyle} className="iconfont icon-send">{this.getSpan('重新发起')}</a>
               </div>
             </Menu.Item>

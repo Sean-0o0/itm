@@ -113,8 +113,10 @@ class LifeCycleManagementTabs extends React.Component {
     open: false,
     //合同签署流程发起
     contractSigningVisible: false,
-    //
-    associatedFileVisible: false,
+    // //
+    // associatedFileVisible: false,
+    //项目编码 -合同签署流程发起
+    xmbh: '',
   };
 
   componentDidMount() {
@@ -203,7 +205,7 @@ class LifeCycleManagementTabs extends React.Component {
   //查询自己名下还在执行的项目
   fetchQueryOwnerProjectListUser = (xmid = '') => {
     const { params } = this.props;
-    console.log("11111", params)
+    // console.log("11111", params)
     FetchQueryOwnerProjectList(
       {
         // paging: 1,
@@ -296,17 +298,6 @@ class LifeCycleManagementTabs extends React.Component {
       ],
       Loginname
     )
-    // if (name.includes("合同签署")) {
-    // params = getParams("TLC_LCFQ", "TLC_LCFQ_HTLYY",
-    //   [
-    //     {
-    //       "name": "XMMC",
-    //       "value": this.state.xmid
-    //     }
-    //   ],
-    //   Loginname
-    // )
-    // }
     if (name.includes("付款")) {
       params = getParams("LC_XMFKLC", "LC_XMFKLC_XMFKLCFQ",
         [
@@ -598,8 +589,8 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //流程发起
-  handleSend = (item) => {
-    console.log("item", item)
+  handleSend = (item, xmbh='') => {
+    console.log("🚀 ~ file: index.js ~ line 593 ~ LifeCycleManagementTabs ~ item, xmbh", item, xmbh)
     if (item.sxmc.includes('付款流程')) {
       // this.setState({
       //   paymentModalVisible: true,
@@ -615,8 +606,11 @@ class LifeCycleManagementTabs extends React.Component {
       this.setState({
         currentXmmc: this.state.operationListData[index].xmmc,
         contractSigningVisible: true,
+        xmbh: xmbh,
+      }, () => {
+        console.log('合同签署 - 项目编号：', this.state.xmbh);
       })
-      return
+      return;
     }
     this.getSendUrl(item.sxmc);
     this.setState({
@@ -1063,6 +1057,7 @@ class LifeCycleManagementTabs extends React.Component {
       allItemsDataFirst,
       contractSigningVisible,
       associatedFileVisible,
+      xmbh,
     } = this.state;
     console.log("contractSigningVisible", contractSigningVisible)
     const uploadModalProps = {
@@ -1260,6 +1255,7 @@ class LifeCycleManagementTabs extends React.Component {
           contractSigningVisible={contractSigningVisible}
           closeContractModal={this.closeContractModal}
           onSuccess={() => this.onSuccess("合同签署")}
+          xmbh={xmbh}
         ></ContractSigning>}
 
         {/*合同签署流程弹窗*/}
@@ -1283,10 +1279,10 @@ class LifeCycleManagementTabs extends React.Component {
             <Tabs tabBarStyle={{ backgroundColor: 'white', margin: '0', padding: '3.571rem 0 0 3.571rem' }}
               onChange={this.callback} type="card" activeKey={xmid} tabBarExtraContent={operations}>
               {
-                allItemsDataFirst.map(item => {
+                allItemsDataFirst.map(items => {
                   // console.log("1111",item)
                   return (
-                    <TabPane tab={item.xmmc} key={item.xmid}>
+                    <TabPane tab={items.xmmc} key={items.xmid}>
                       <div style={{ height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem' }}>
                         <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
                           fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
@@ -1462,26 +1458,10 @@ class LifeCycleManagementTabs extends React.Component {
                                                                     onClick={() => this.handleClick(item)}>{item.sxmc}</a>
                                                               )
                                                                 :
-                                                                <span
+                                                                 <span
                                                                   className='lifecycle-text-overflow'>{item.sxmc}</span>
                                                             }
                                                             {/* </div> */}
-                                                          </div>
-                                                          <div style={{
-                                                            width: (item.zxqk !== " ") && item.sxmc.includes('付款流程') ? '41.67%' : '25%',
-                                                            textAlign: 'left', width: '29%'
-                                                          }} >
-                                                            <Tooltips type={item.swlx}
-                                                              item={item}
-                                                              status={item.zxqk}
-                                                              xmid={xmid}
-                                                              projectInfo={projectInfo}
-                                                              handleUpload={() => this.handleUpload(item)}
-                                                              handleSend={this.handleSend}
-                                                              handleFillOut={() => this.handleFillOut(item)}
-                                                              handleEdit={() => this.handleEdit(item)}
-                                                              handleMessageEdit={this.handleMessageEdit}
-                                                            />
                                                           </div>
                                                           <div style={{
                                                             width: '35%',
@@ -1491,6 +1471,7 @@ class LifeCycleManagementTabs extends React.Component {
                                                               item={item}
                                                               status={item.zxqk}
                                                               xmid={xmid}
+                                                              xmbh={items.xmbh}
                                                               projectInfo={projectInfo}
                                                               handleUpload={() => this.handleUpload(item)}
                                                               handleSend={this.handleSend}

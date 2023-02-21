@@ -223,8 +223,8 @@ const TableBox = (props) => {
     //导出
     const handleExport = () => {
         let params = new URLSearchParams();
-        params.append("startTime", Number(monthData.startOf('month').format('YYYYMMDD')));
-        params.append("endTime", Number(monthData.endOf('month').format('YYYYMMDD')));
+        params.append("startTime", Number(dateRange[0].format('YYYYMMDD')));
+        params.append("endTime", Number(dateRange[1].format('YYYYMMDD')));
         params.append("xmmc", Number(currentXmid));
         fetch(hJGWeeklyReportExcel, {
             method: 'POST',

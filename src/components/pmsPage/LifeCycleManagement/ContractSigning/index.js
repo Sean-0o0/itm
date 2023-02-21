@@ -17,20 +17,22 @@ import {
   TreeSelect, InputNumber, Upload, Button, Icon
 } from 'antd';
 
-const {Option} = Select;
+const { Option } = Select;
 import React from 'react';
-import {connect} from "dva";
-import {FetchQueryGysInZbxx, IndividuationGetOAResult} from "../../../../services/pmsServices";
+import { connect } from "dva";
+import { FetchQueryGysInZbxx, IndividuationGetOAResult } from "../../../../services/pmsServices";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 import moment from "moment";
 import RichTextEditor from "./RichTextEditor";
-import {FetchQueryOrganizationInfo} from "../../../../services/projectManage";
+import { FetchQueryOrganizationInfo } from "../../../../services/projectManage";
+import AssociatedFile from '../AssociatedFile';
 
 class ContractSigning extends React.Component {
   state = {
     isSpinning: false,
     isSelectorOpen: false,
     addGysModalVisible: false,
+    associatedFileVisible: false,
     pbbgTurnRed: true,
     fileList: [],
     uploadFileParams: {
@@ -54,7 +56,7 @@ class ContractSigning extends React.Component {
     LCJJCD: [],
     //印章类型
     YZLX: [],
-    loginUser: {}
+    loginUser: {},
     //表单信息
     // contractSigningFormInfo:{
     //   bm:'',
@@ -72,6 +74,7 @@ class ContractSigning extends React.Component {
     //   QSBGNR:'',
     //   filerela:"",
     // }
+    processListData: [],
   }
 
   componentDidMount() {
@@ -84,7 +87,7 @@ class ContractSigning extends React.Component {
     return FetchQueryOrganizationInfo({
       type: 'ZZJG'
     }).then((result) => {
-      const {code = -1, record = []} = result;
+      const { code = -1, record = [] } = result;
       if (code > 0) {
         const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
         loginUser.id = String(loginUser.id);
@@ -102,7 +105,6 @@ class ContractSigning extends React.Component {
       message.error(!error.success ? error.message : error.note);
     });
   }
-
 
   // 查询供应商下拉列表
   fetchQueryGysInZbxx = (current, pageSize) => {
@@ -124,14 +126,14 @@ class ContractSigning extends React.Component {
   }
 
   OnGysSuccess = () => {
-    this.setState({addGysModalVisible: false});
+    this.setState({ addGysModalVisible: false });
     this.fetchQueryGysInZbxx();
   }
 
   // 保存数据操作
   handleFormValidate = (e) => {
     e.preventDefault();
-    const {currentXmid, currentXmmc} = this.props;
+    const { currentXmid, currentXmmc } = this.props;
     console.log("currentXmid", currentXmid)
     console.log("currentXmmc", currentXmmc)
     const _this = this;
@@ -185,7 +187,7 @@ class ContractSigning extends React.Component {
   individuationGetOAResult = (values) => {
     console.log("params", this.handleParams(values))
     return IndividuationGetOAResult(this.handleParams(values)).then((result) => {
-      const {code = -1, record = []} = result;
+      const { code = -1, record = [] } = result;
       if (code > 0) {
         this.props.closeContractModal()
         this.props.onSuccess("合同签署")
@@ -196,8 +198,8 @@ class ContractSigning extends React.Component {
   }
 
   handleParams = (values) => {
-    const {uploadFileParams} = this.state;
-    const {currentXmid, currentXmmc} = this.props;
+    const { uploadFileParams } = this.state;
+    const { currentXmid, currentXmmc } = this.props;
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
     //表单数据
@@ -251,6 +253,29 @@ class ContractSigning extends React.Component {
     return params;
   }
 
+  //关联文件 - 打开
+  handleAssociateFileOpen = () => {
+    this.setState({ associatedFileVisible: true });
+  }
+  //关联文件 - 确认
+  handleAssociateFileConfirm = (data = []) => {
+    this.setState({
+      associatedFileVisible: false,
+      processListData: [...data]
+    });
+  }
+  //关联流程 - 点击
+  handleProcessItemClick = (id) => {
+    window.open('http://10.52.130.12/ZSZQOA/getURLSyncBPM.do?_BPM_FUNCCODE=C_FormSetFormData&_mode=4&_form_control_design=LABEL&_tf_file_id=' + id);
+  }
+  //关联流程 - 删除
+  handleProcessItemDelete = (id) => {
+    this.setState({
+      associatedFileVisible: false,
+      processListData: [...data]
+    });
+  }
+
   render() {
     const {
       isSpinning = false,
@@ -264,17 +289,19 @@ class ContractSigning extends React.Component {
       attachmentInfoCollapse = false,
       flowInfoCollapse = false,
       loginUser = {},
+      associatedFileVisible,
+      processListData,
     } = this.state;
-    const {contractSigningVisible, dictionary: {LCJJCD = [], YZLX = []}} = this.props;
-    const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
+    const { contractSigningVisible, xmbh, dictionary: { LCJJCD = [], YZLX = [] } } = this.props;
+    const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
-        xs: {span: 24},
-        sm: {span: 8},
+        xs: { span: 24 },
+        sm: { span: 8 },
       },
       wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 16},
+        xs: { span: 24 },
+        sm: { span: 16 },
       },
     };
     const addGysModalProps = {
@@ -283,7 +310,7 @@ class ContractSigning extends React.Component {
       title: '新增供应商',
       width: '120rem',
       height: '90rem',
-      style: {top: '20rem'},
+      style: { top: '20rem' },
       visible: addGysModalVisible,
       footer: null,
     };
@@ -292,19 +319,26 @@ class ContractSigning extends React.Component {
       {
         addGysModalVisible &&
         <BridgeModel modalProps={addGysModalProps}
-                     onCancel={() => this.setState({addGysModalVisible: false})}
-                     onSucess={this.OnGysSuccess}
-                     src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'}/>
+          onCancel={() => this.setState({ addGysModalVisible: false })}
+          onSucess={this.OnGysSuccess}
+          src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'} />
       }
+      {associatedFileVisible && <AssociatedFile
+        associatedFileVisible={associatedFileVisible}
+        onConfirm={(data) => this.handleAssociateFileConfirm(data)}
+        closeAssociatedFileModal={() => this.setState({ associatedFileVisible: false })}
+        onSuccess={() => this.onSuccess("关联文件")}
+        xmbh={xmbh}
+      ></AssociatedFile>}
       <Modal wrapClassName='editMessage-modify' width={'148.8rem'}
-             title={null}
-             zIndex={100}
-             bodyStyle={{
-               padding: '0'
-             }}
-             onOk={e => this.handleFormValidate(e)}
-             onCancel={this.props.closeContractModal}
-             visible={contractSigningVisible}>
+        title={null}
+        zIndex={100}
+        bodyStyle={{
+          padding: '0'
+        }}
+        onOk={e => this.handleFormValidate(e)}
+        onCancel={this.props.closeContractModal}
+        visible={contractSigningVisible}>
         <div style={{
           height: '6.2496rem',
           width: '100%',
@@ -320,22 +354,22 @@ class ContractSigning extends React.Component {
           <strong>合同签署流程发起</strong>
         </div>
         <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
-          <div style={{padding: '0 3.5712rem'}}>
+          <div style={{ padding: '0 3.5712rem' }}>
             <div className="steps-content"><React.Fragment>
-              <Form {...basicFormItemLayout} ref={e => this.basicForm = e} style={{width: '98%'}}>
-                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+              <Form {...basicFormItemLayout} ref={e => this.basicForm = e} style={{ width: '98%' }}>
+                <div className="title" style={{ borderBottom: '1px solid #F1F1F1' }}>
                   <Icon type={basicInfoCollapse ? "caret-right" : "caret-down"}
-                        onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}
-                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>基本信息</span>
+                    onClick={() => this.setState({ basicInfoCollapse: !basicInfoCollapse })}
+                    style={{ fontSize: '2rem', cursor: 'pointer' }} />
+                  <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>基本信息</span>
                 </div>
                 {
                   !basicInfoCollapse &&
-                  <div style={{margin: '2rem 0 0 0'}}>
+                  <div style={{ margin: '2rem 0 0 0' }}>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="部门">
-                          <Input placeholder="请输入部门" disabled={true} value={loginUser.orgName}/>
+                          <Input placeholder="请输入部门" disabled={true} value={loginUser.orgName} />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -348,19 +382,19 @@ class ContractSigning extends React.Component {
                                 message: '报告日期不允许空值',
                               },
                             ],
-                          })(<DatePicker style={{width: '100%'}}/>)}
+                          })(<DatePicker style={{ width: '100%' }} />)}
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="拟稿人">
-                          <Input placeholder="请输入拟稿人" disabled={true} value={loginUser.name}/>
+                          <Input placeholder="请输入拟稿人" disabled={true} value={loginUser.name} />
                         </Form.Item>
                       </Col>
                       <Col span={12}>
                         <Form.Item label="类别">
-                          <Input placeholder="请输入类别" disabled={true} value="总部部门发起"/>
+                          <Input placeholder="请输入类别" disabled={true} value="总部部门发起" />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -374,7 +408,7 @@ class ContractSigning extends React.Component {
                             }],
                             initialValue: ""
                           })(
-                            <Input placeholder="请输入标题"/>
+                            <Input placeholder="请输入标题" />
                           )}
                         </Form.Item>
                       </Col>
@@ -411,19 +445,18 @@ class ContractSigning extends React.Component {
                   </div>
                 }
 
-
-                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                <div className="title" style={{ borderBottom: '1px solid #F1F1F1' }}>
                   <Icon type={contractInfoCollapse ? "caret-right" : "caret-down"}
-                        onClick={() => this.setState({contractInfoCollapse: !contractInfoCollapse})}
-                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>合同信息</span>
+                    onClick={() => this.setState({ contractInfoCollapse: !contractInfoCollapse })}
+                    style={{ fontSize: '2rem', cursor: 'pointer' }} />
+                  <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>合同信息</span>
                 </div>
                 {
                   !contractInfoCollapse &&
-                  <div style={{margin: '2rem 0 0 0'}}>
+                  <div style={{ margin: '2rem 0 0 0' }}>
                     <Row gutter={24}>
-                      <Col span={12} style={{display: 'flex'}}>
-                        <Form.Item label="供应商" style={{width: '100%'}}>
+                      <Col span={12} style={{ display: 'flex' }}>
+                        <Form.Item label="供应商" style={{ width: '100%' }}>
                           {getFieldDecorator('gys', {
                             // initialValue: '1',
                             // rules: [
@@ -433,12 +466,12 @@ class ContractSigning extends React.Component {
                             //   },
                             // ],
                           })(<Select
-                            style={{width: '100%', borderRadius: '1.1904rem !important'}}
+                            style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                             placeholder="请选择供应商"
                             showSearch
                             allowClear
                             open={isSelectorOpen}
-                            onDropdownVisibleChange={(visible) => this.setState({isSelectorOpen: visible})}
+                            onDropdownVisibleChange={(visible) => this.setState({ isSelectorOpen: visible })}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }>
@@ -449,23 +482,23 @@ class ContractSigning extends React.Component {
                             }
                           </Select>)}
                         </Form.Item>
-                        <div style={{position: 'absolute', right: '9.5%', marginTop: '1%'}}>
+                        <div style={{ position: 'absolute', right: '9.5%', marginTop: '1%' }}>
                           <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                               onClick={() => {
-                                 this.setState({addGysModalVisible: true});
-                               }}
-                               alt='' style={{
-                            height: '2.976rem',
-                            marginLeft: '1.0416rem',
-                            marginTop: '1.488rem',
-                            cursor: 'pointer'
-                          }}
+                            onClick={() => {
+                              this.setState({ addGysModalVisible: true });
+                            }}
+                            alt='' style={{
+                              height: '2.976rem',
+                              marginLeft: '1.0416rem',
+                              marginTop: '1.488rem',
+                              cursor: 'pointer'
+                            }}
                           />
                         </div>
                       </Col>
                       <Col span={12} className="glys">
                         <Form.Item label="合同编号">
-                          <Input placeholder="请输入合同编号" disabled={true}/>
+                          <Input placeholder="请输入合同编号" disabled={true} />
                         </Form.Item>
                       </Col>
                     </Row>
@@ -492,7 +525,7 @@ class ContractSigning extends React.Component {
                             }],
                             // initialValue: "外采项目"
                           })(
-                            <Input placeholder="请输入合同金额"/>
+                            <Input placeholder="请输入合同金额" />
                           )}
                         </Form.Item>
                       </Col>
@@ -508,12 +541,12 @@ class ContractSigning extends React.Component {
                             // initialValue: "外采项目"
                           })(
                             <Select showSearch
-                                    showArrow={true}
-                                    defaultValue={1}
-                                    mode="multiple"
-                                    filterOption={(input, option) =>
-                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                    }>
+                              showArrow={true}
+                              defaultValue={1}
+                              mode="multiple"
+                              filterOption={(input, option) =>
+                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                              }>
                               {
                                 YZLX.length > 0 && YZLX.map((item, index) => {
                                   return (
@@ -528,7 +561,7 @@ class ContractSigning extends React.Component {
                     </Row>
                     <Row gutter={24}>
                       <Col span={24}>
-                        <Form.Item label="用途" labelCol={{span: 4}} wrapperCol={{span: 20}}>
+                        <Form.Item label="用途" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                           {getFieldDecorator('YT', {
                             rules: [{
                               required: true,
@@ -536,14 +569,14 @@ class ContractSigning extends React.Component {
                             }],
                             // initialValue: "外采项目"
                           })(
-                            <Input placeholder="请输入用途"/>
+                            <Input placeholder="请输入用途" />
                           )}
                         </Form.Item>
                       </Col>
                     </Row>
                     <Row gutter={24}>
                       <Col span={24}>
-                        <Form.Item label="请示报告内容" labelCol={{span: 4}} wrapperCol={{span: 20}}>
+                        <Form.Item label="请示报告内容" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
                           {getFieldDecorator('QSBGNR', {
                             rules: [{
                               required: true,
@@ -551,7 +584,7 @@ class ContractSigning extends React.Component {
                             }],
                             // initialValue: "外采项目"
                           })(
-                            <RichTextEditor className="w-e-menu w-e-text-container w-e-toolbar"/>
+                            <RichTextEditor className="w-e-menu w-e-text-container w-e-toolbar" />
                           )}
                         </Form.Item>
                       </Col>
@@ -559,20 +592,20 @@ class ContractSigning extends React.Component {
                   </div>
                 }
 
-                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                <div className="title" style={{ borderBottom: '1px solid #F1F1F1' }}>
                   <Icon type={attachmentInfoCollapse ? "caret-right" : "caret-down"}
-                        onClick={() => this.setState({attachmentInfoCollapse: !attachmentInfoCollapse})}
-                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>附件</span>
+                    onClick={() => this.setState({ attachmentInfoCollapse: !attachmentInfoCollapse })}
+                    style={{ fontSize: '2rem', cursor: 'pointer' }} />
+                  <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>附件</span>
                 </div>
                 {
                   !attachmentInfoCollapse &&
-                  <div style={{margin: '2rem 0 0 0'}}>
+                  <div style={{ margin: '2rem 0 0 0' }}>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="合同" required
                           // help={pbbgTurnRed ? '请上传合同附件' : ''}
-                                   validateStatus={pbbgTurnRed ? 'error' : 'success'}
+                          validateStatus={pbbgTurnRed ? 'error' : 'success'}
                         >
                           <Upload
                             action={'/api/projectManage/queryfileOnlyByupload'}
@@ -607,7 +640,7 @@ class ContractSigning extends React.Component {
                               console.log("fileList", fileList)
                               console.log("uploadFileParams", this.state.uploadFileParams)
                               fileList = fileList.slice(-1);
-                              this.setState({fileList}, () => {
+                              this.setState({ fileList }, () => {
                                 // console.log('目前fileList', this.state.fileList);
                               });
                               if (fileList.length === 0) {
@@ -639,7 +672,7 @@ class ContractSigning extends React.Component {
                             accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
                             fileList={[...fileList]}>
                             <Button type="dashed">
-                              <Icon type="upload"/>点击上传
+                              <Icon type="upload" />点击上传
                             </Button>
                           </Upload>
                         </Form.Item></Col>
@@ -647,25 +680,33 @@ class ContractSigning extends React.Component {
                   </div>
                 }
 
-                <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                <div className="title" style={{ borderBottom: '1px solid #F1F1F1' }}>
                   <Icon type={flowInfoCollapse ? "caret-right" : "caret-down"}
-                        onClick={() => this.setState({flowInfoCollapse: !flowInfoCollapse})}
-                        style={{fontSize: '2rem', cursor: 'pointer'}}/>
-                  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>关联流程</span>
+                    onClick={() => this.setState({ flowInfoCollapse: !flowInfoCollapse })}
+                    style={{ fontSize: '2rem', cursor: 'pointer' }} />
+                  <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>关联流程</span>
                   <Icon type="plus-circle" theme="filled"
-                        style={{color: '#3461FF', paddingLeft: '1rem', fontSize: '3rem',}}/>
+                    onClick={() => this.handleAssociateFileOpen()}
+                    style={{ color: '#3461FF', paddingLeft: '1rem', fontSize: '3rem', }} />
                 </div>
                 {
-                  !flowInfoCollapse &&
-                  <div style={{margin: '2rem 7rem'}}>
-                    <Row gutter={24}>
-                      <Col span={12} style={{display: 'flex'}}>
-                        <a>关联流程名称</a>
-                      </Col>
-                    </Row>
-                  </div>
+                  !flowInfoCollapse && processListData.map((item, index) => (
+                    <div style={{ margin: '2rem 7rem' }} key={index}>
+                      <Row gutter={24}>
+                        <Col span={16} className="contract-signing-process-item" style={{ display: 'flex', justifyContent: 'space-between' }}>
+                          <a style={{ color: '#3361ff' }} F onClick={() => this.handleProcessItemClick(item.id)}>{item?.title}</a>
+                          <Popconfirm title="确定要删除吗?" onConfirm={() => {
+                            const dataSource = [...processListData];
+                            this.setState({ processListData: dataSource.filter(x => x.id !== item.id) });
+                          }}>
+                            <a><Icon style={{ color: 'red' }} type="close" /></a>
+                          </Popconfirm>
+                        </Col>
+                      </Row>
+                    </div>
+                  )
+                  )
                 }
-
               </Form>
               {/*</Form>*/}
             </React.Fragment></div>
@@ -677,6 +718,6 @@ class ContractSigning extends React.Component {
 
 }
 
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(Form.create()(ContractSigning));
