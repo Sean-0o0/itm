@@ -8,7 +8,7 @@ import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 const { WeekPicker } = DatePicker;
 const { Option } = Select;
 const { api } = config;
-const { pmsServices: { digitalSpecialClassWeeklyReportExcel } } = api;
+const { pmsServices: { hJGWeeklyReportExcel } } = api;
 const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem("user")).id);
 
 const TableBox = (props) => {
@@ -131,7 +131,7 @@ const TableBox = (props) => {
                         V_BZNR: String(item[getKeyStr('bznr')]).trim(),
                         V_XZJH: String(item[getKeyStr('xzjh')]).trim(),
                         V_BBH: String(item[getKeyStr('bbh')]).trim(),
-                        V_JHSXRQ: String(item[getKeyStr('jhsxrq')]).trim(),
+                        V_JHSXRQ: String(item[getKeyStr('jhsxrq')] === null ? '' : item[getKeyStr('jhsxrq')]).trim(),
                         V_DQZT: String(getCurS(item[getKeyStr('dqzt')])).trim(),
                         V_DQJD: String(item[getKeyStr('dqjd')]).trim(),
                         V_ZYSJSM: String(item[getKeyStr('zysjsm')]).trim()
@@ -160,10 +160,10 @@ const TableBox = (props) => {
     //退回
     const handleSendBack = (id) => {
         let sendBackData = {
-            json: JSON.stringify([{
+            jsoninfo: JSON.stringify([{
                 V_ID: String(id)
             }, {}]),
-            count: 1,
+            infocount: 1,
             type: 'BACK'
         }
         OperateHjgWeeklyReport({ ...sendBackData }).then(res => {
@@ -178,10 +178,10 @@ const TableBox = (props) => {
     //删除
     const handleDelete = (id) => {
         let deleteData = {
-            json: JSON.stringify([{
+            jsoninfo: JSON.stringify([{
                 V_ID: String(id)
             }, {}]),
-            count: 1,
+            infocount: 1,
             type: 'DELETE'
         }
         OperateHjgWeeklyReport({ ...deleteData }).then(res => {
@@ -202,14 +202,14 @@ const TableBox = (props) => {
             onOk: () => {
                 let curWeek = getCurrentWeek(new Date());
                 let skipCurWeekData = {
-                    json: JSON.stringify([{
+                    jsoninfo: JSON.stringify([{
                         V_KSSJ: curWeek[0].format('YYYYMMDD'),
                         V_JSSJ: curWeek[1].format('YYYYMMDD'),
                     }, {}]),
-                    count: 1,
+                    infocount: 1,
                     type: 'SKIP'
                 }
-                OperateSZHZBWeekly({ ...skipCurWeekData }).then(res => {
+                OperateHjgWeeklyReport({ ...skipCurWeekData }).then(res => {
                     if (res.success) {
                         message.success('操作成功', 1);
                         queryTableData(Number(dateRange[0].format('YYYYMMDD')), Number(dateRange[1].format('YYYYMMDD')), Number(currentXmid));
@@ -226,7 +226,7 @@ const TableBox = (props) => {
         params.append("startTime", Number(monthData.startOf('month').format('YYYYMMDD')));
         params.append("endTime", Number(monthData.endOf('month').format('YYYYMMDD')));
         params.append("xmmc", Number(currentXmid));
-        fetch(digitalSpecialClassWeeklyReportExcel, {
+        fetch(hJGWeeklyReportExcel, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded'
@@ -235,7 +235,7 @@ const TableBox = (props) => {
         }).then(res => {
             return res.blob();
         }).then(blob => {
-            let fileName = `数字化专班月报(${new moment().format('YYYYMMDD')}).xlsx`;
+            let fileName = `汇金谷零售业务周报(${new moment().format('YYYYMMDD')}).xlsx`;
             var link = document.createElement('a');
             link.href = window.URL.createObjectURL(blob);
             link.download = fileName;
@@ -243,7 +243,7 @@ const TableBox = (props) => {
             window.URL.revokeObjectURL(link.href);
             message.success('请求成功，正在导出中', 1);
         }).catch(e => {
-            message.error('导出失败', 1);
+            console.error('汇金谷零售业务周报导出失败', 1);
         });
     };
     //左右滚动
@@ -343,7 +343,7 @@ const TableBox = (props) => {
             title: '工作模块',
             dataIndex: 'gzmk',
             key: 'gzmk',
-            width: 150,
+            width: 160,
             fixed: 'left',
             ellipsis: true,
             render: (value, row, index) => {
@@ -359,7 +359,7 @@ const TableBox = (props) => {
             title: '本周重点工作',
             dataIndex: 'bznr',
             key: 'bznr',
-            width: 150,
+            width: 160,
             ellipsis: true,
             render: (value, row, index) => {
                 const obj = {
@@ -375,7 +375,7 @@ const TableBox = (props) => {
             title: '下周工作安排',
             dataIndex: 'xzjh',
             key: 'xzjh',
-            width: 150,
+            width: 160,
             ellipsis: true,
             editable: true,
             render: (value, row, index) => {
@@ -392,7 +392,7 @@ const TableBox = (props) => {
             dataIndex: 'bbh',
             key: 'bbh',
             // fixed: 'left',
-            width: 150,
+            width: 140,
             ellipsis: true,
             editable: true,
         },
@@ -400,6 +400,7 @@ const TableBox = (props) => {
             title: '计划上线日期',
             dataIndex: 'jhsxrq',
             key: 'jhsxrq',
+            width: 140,
             ellipsis: true,
             editable: true,
 
@@ -408,6 +409,7 @@ const TableBox = (props) => {
             title: '进度状态',
             dataIndex: 'dqzt',
             key: 'dqzt',
+            width: 110,
             ellipsis: true,
             editable: true,
         },
@@ -415,6 +417,7 @@ const TableBox = (props) => {
             title: '当前进度',
             dataIndex: 'dqjd',
             key: 'dqjd',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -422,7 +425,6 @@ const TableBox = (props) => {
             title: '重要事项说明',
             dataIndex: 'zysjsm',
             key: 'zysjsm',
-            width: 200,
             ellipsis: true,
             editable: true,
         },
@@ -617,7 +619,7 @@ const TableBox = (props) => {
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 2020 }}
+                    scroll={tableData.length > 11 ? { y: 573, x: '100%' } : { x: '100%' }}
                     pagination={false}
                     bordered
                 ></Table>

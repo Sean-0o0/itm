@@ -44,17 +44,19 @@ export default function WeeklyReportSummary() {
                 const newArr = JSON.parse(res.record).map(item => {
                     // let arr = item.txr?.trim() === '' ? [] : item.txr?.trim()?.split(';');
                     const getKeyId = keyStr => keyStr + item.id;
+                    const nullCheck = x => x === null ? '' : x;
                     return {
-                        id: item.id,
-                        gzmk: item.gzmk,
-                        txr: item.txr,
-                        [getKeyId('bznr')]: item.bznr?.trim(),
-                        [getKeyId('xzjh')]: item.xzjh?.trim(),
-                        [getKeyId('bbh')]: item.bbh?.trim(),
-                        [getKeyId('jhsxrq')]: item.jhsxrq?.trim(),
-                        [getKeyId('dqzt')]: item.dqzt?.trim(),
-                        [getKeyId('dqjd')]: item.dqjd?.trim(),
-                        [getKeyId('zysjsm')]: item.zysjsm?.trim(),
+                        id: nullCheck(item.id),
+                        gzmk: nullCheck(item.gzmk),
+                        txr: nullCheck(item.txr),
+                        [getKeyId('bznr')]: nullCheck(item.bznr)?.trim(),
+                        [getKeyId('xzjh')]: nullCheck(item.xzjh)?.trim(),
+                        [getKeyId('bbh')]: nullCheck(item.bbh)?.trim(),
+                        [getKeyId('jhsxrq')]: item.jhsxrq,
+                        [getKeyId('dqzt')]: item.dqzt === null ? '进度正常' : (item.dqzt?.trim()),//默认值
+                        [getKeyId('dqjd')]: nullCheck(item.dqjd)?.trim(),
+                        [getKeyId('zysjsm')]: nullCheck(item.zysjsm)?.trim(),
+                        // submitted: Number(item.id) % 2 === 0 ? false : true, //非提交
                     };
                 })
                 setTableData(preState => [...newArr]);

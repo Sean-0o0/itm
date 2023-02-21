@@ -17,6 +17,7 @@ const EditableCell = (props) => {
     const [editing, setEditing] = useState(false);
     const [edited, setEdited] = useState(false);
     const [curSOpen, setCurSOpen] = useState(false);
+    // const [disabled, setDisabled] = useState(false); //非提交
 
     const targetNode = useRef(null);
     const editingRef = useRef(false);
@@ -176,7 +177,7 @@ const EditableCell = (props) => {
     const getSelect = (onChange, open, setOpen, data) => {
         return (
             <Select
-                style={{ width: '12rem', borderRadius: '1.1904rem !important' }}
+                style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                 placeholder="请选择"
                 onChange={onChange}
                 open={open}
@@ -193,8 +194,12 @@ const EditableCell = (props) => {
     }
     const renderItem = (form, dataIndex, record) => {
         let idDataIndex = dataIndex + record['id'];
-        const cplTimeNode = <DatePicker ref={node => targetNode.current = node} placeholder="请选择日期" onChange={handleDateChange} />;
-        const cplTimeValue = moment(String(record[idDataIndex])) || null;
+        const cplTimeNode = <DatePicker ref={node => targetNode.current = node}
+            placeholder="请选择日期"
+            onChange={handleDateChange}
+        // disabled={disabled} //非提交
+        />;
+        const cplTimeValue = record[idDataIndex] === null ? null : moment(String(record[idDataIndex]));
         const curStatusNode = getSelect(handlecurSChange, curSOpen, setCurSOpen, curSData);
         switch (dataIndex) {
             case 'jhsxrq':
@@ -207,6 +212,10 @@ const EditableCell = (props) => {
     };
     const renderCell = form => {
         const { children, dataIndex, record, formdecorate } = props;
+        // if (!record.submitted) { //非提交
+        //     setDisabled(true);
+        // }
+        // return (editing && record.submitted ?
         return (editing ?
             (<Form.Item style={{ margin: 0 }}>
                 {renderItem(formdecorate, dataIndex, record)}

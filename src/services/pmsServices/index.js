@@ -42,6 +42,7 @@ const {
     individuationGetOAResult,
     queryHjgWeeklyInfo,
     operateHjgWeeklyReport,
+    hJGWeeklyReportExcel
   },
 } = api;
 
@@ -417,6 +418,16 @@ export async function QueryHjgWeeklyInfo(payload, configObj) {
 export async function OperateHjgWeeklyReport(payload, configObj) {
   const option = {
     url: operateHjgWeeklyReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 导出汇金谷零售周报汇总excel
+export async function HJGWeeklyReportExcel(payload, configObj) {
+  const option = {
+    url: hJGWeeklyReportExcel,
     method: 'post',
     data: payload,
   };
