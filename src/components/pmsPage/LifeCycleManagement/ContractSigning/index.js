@@ -198,10 +198,14 @@ class ContractSigning extends React.Component {
   }
 
   handleParams = (values) => {
-    const { uploadFileParams } = this.state;
+    const { uploadFileParams, processListData } = this.state;
     const { currentXmid, currentXmmc } = this.props;
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
+    let arr = [];
+    arr = processListData?.map(item => {
+      return item?.id;
+    });
     //表单数据
     const formdata = {
       "extinfo": {
@@ -219,7 +223,7 @@ class ContractSigning extends React.Component {
         },
       },
       //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
-      "filerela": "",
+      "filerela": arr,
       "issend": 1,//是否直接送审，固定传1
       "je": values.je,//金额
       "loginname": loginUser.loginName,//登录用户userid
@@ -693,8 +697,8 @@ class ContractSigning extends React.Component {
                   !flowInfoCollapse && processListData.map((item, index) => (
                     <div style={{ margin: '2rem 7rem' }} key={index}>
                       <Row gutter={24}>
-                        <Col span={16} className="contract-signing-process-item" style={{ display: 'flex', justifyContent: 'space-between' }}>
-                          <a style={{ color: '#3361ff' }} F onClick={() => this.handleProcessItemClick(item.id)}>{item?.title}</a>
+                        <Col span={24} className="contract-signing-process-item" style={{ display: 'flex' }}>
+                          <a style={{ color: '#3361ff', marginRight: '1.2rem' }} F onClick={() => this.handleProcessItemClick(item.id)}>{item?.title}</a>
                           <Popconfirm title="确定要删除吗?" onConfirm={() => {
                             const dataSource = [...processListData];
                             this.setState({ processListData: dataSource.filter(x => x.id !== item.id) });

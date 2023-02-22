@@ -47,48 +47,48 @@ class AssociatedFile extends React.Component {
 
   //查询表格数据
   getTableData() {
-    let data = {
-      code: "0",
-      message: "",
-      result: [
-        {
-          objectname: "666项目立项申请流程",
-          createdate: "20221215",
-          id: 1739778,
-          title: "测试1"
-        }, {
-          objectname: "555项目立项申请流程",
-          createdate: "20221214",
-          id: 1739777,
-          title: "测试2"
-        }, {
-          objectname: "444项目立项申请流程",
-          createdate: "20221213",
-          id: 1739776,
-          title: "测试3"
-        }, {
-          objectname: "333项目立项申请流程",
-          createdate: "20221212",
-          id: 1739775,
-          title: "测试4"
-        }, {
-          objectname: "222项目立项申请流程",
-          createdate: "20221211",
-          id: 1739774,
-          title: "测试5"
-        }, {
-          objectname: "111项目立项申请流程",
-          createdate: "20221210",
-          id: 1739773,
-          title: "测试6"
-        },
-      ]
-    };
-    this.setState({
-      tableData: [...data?.result],
-      tbFilterData: [...data?.result],
-    });
-    fetch("http://10.53.188.39/openapi/api/1626044720314580992?no=" + this.props.xmbh || '')
+    // let data = {
+    //   code: "0",
+    //   message: "",
+    //   result: [
+    //     {
+    //       objectname: "666项目立项申请流程",
+    //       createdate: "20221215",
+    //       id: 1739778,
+    //       title: "测试1"
+    //     }, {
+    //       objectname: "555项目立项申请流程",
+    //       createdate: "20221214",
+    //       id: 1739777,
+    //       title: "测试2"
+    //     }, {
+    //       objectname: "444项目立项申请流程",
+    //       createdate: "20221213",
+    //       id: 1739776,
+    //       title: "测试3"
+    //     }, {
+    //       objectname: "333项目立项申请流程",
+    //       createdate: "20221212",
+    //       id: 1739775,
+    //       title: "测试4"
+    //     }, {
+    //       objectname: "222项目立项申请流程",
+    //       createdate: "20221211",
+    //       id: 1739774,
+    //       title: "测试5"
+    //     }, {
+    //       objectname: "111项目立项申请流程",
+    //       createdate: "20221210",
+    //       id: 1739773,
+    //       title: "测试6"
+    //     },
+    //   ]
+    // };
+    // this.setState({
+    //   tableData: [...data?.result],
+    //   tbFilterData: [...data?.result],
+    // });
+    fetch("http://10.53.188.39/openapi/api/1626044720314580992?no=" + (this.props.xmbh || ''))
       .then(res => {
         if (res.status === 200) {
           return res.json();
@@ -134,7 +134,7 @@ class AssociatedFile extends React.Component {
       this.setState({
         tbFilterData: [...arr2],
       });
-    } else if (fileType !== '' && draftDate.length === 0 ||fileType !== '' &&draftDate.length === 0) {
+    } else if (fileType !== '' && draftDate.length === 0 || fileType !== '' && draftDate.length === 0) {
       let arr = [...this.state.tableData];
       this.setState({
         tbFilterData: fuzzySearch(arr, fileType),
@@ -161,12 +161,12 @@ class AssociatedFile extends React.Component {
         arr.push(item);
       }
     });
-    console.log("🚀 ~ file: index.js ~ line 152 ~ AssociatedFile ~ getDataSelected ~ [...arr]", keys, data, [...arr])
+    // console.log("🚀 ~ file: index.js ~ line 152 ~ AssociatedFile ~ getDataSelected ~ [...arr]", keys, data, [...arr])
     return [...arr];
   }
 
   onSelectChange = selectedRowKeys => {
-    console.log('selectedRowKeys changed: ', selectedRowKeys);
+    // console.log('selectedRowKeys changed: ', selectedRowKeys);
     this.setState({ selectedRowKeys });
   };
 

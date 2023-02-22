@@ -26,14 +26,14 @@ class OperateTab extends React.Component {
 
   }
   onInputChange(e) {
-    console.log("🚀 ~ file: index.js ~ line 27 ~ OperateTab ~ onInputChange ~ e.target.value", e.target.value)
+    // console.log("🚀 ~ file: index.js ~ line 27 ~ OperateTab ~ onInputChange ~ e.target.value", e.target.value)
     this.setState({
       inputSearch: e.target.value,
     })
   }
 
   onRangePickerChange(date, dateString) {
-    console.log("🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString", date, dateString)
+    // console.log("🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString", date, dateString)
     this.setState({
       dateSearch: dateString[0] === '' && dateString[1] === '' ? [] : [...dateString],
     });
