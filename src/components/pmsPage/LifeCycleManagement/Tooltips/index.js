@@ -3,6 +3,7 @@ import { Select, message, Icon, Dropdown, Menu } from 'antd';
 import { connect } from 'dva';
 import icon_flag from '../../../../image/pms/icon_flag.png';
 import {
+  CreateOperateHyperLink,
   FetchQueryLifecycleStuff,
   FetchQueryOAUrl,
   FetchQueryOwnerWorkflow,
@@ -11,6 +12,7 @@ import {
 } from "../../../../services/pmsServices";
 import axios from 'axios'
 import config from '../../../../utils/config';
+import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 
 const { api } = config;
 const { pmsServices: { getStreamByLiveBos } } = api;
@@ -24,22 +26,14 @@ class Tooltips extends React.Component {
     txtStyle: {
       marginLeft: '0.6rem',
     },
+    xwhlaModalVisible: false,
+    xwhlaModalUrl: '#',
   };
 
   componentDidMount() {
     // this.fetchQueryProjectInfoInCycle(this.props.xmid);
   }
 
-  //获取项目经理id
-  // fetchQueryProjectInfoInCycle = (xmid) => {
-  //   FetchQueryProjectInfoInCycle({
-  //     xmmc: xmid,
-  //   }).then(res => {
-  //     this.setState({
-  //       xmUserId: Number(res?.record?.userid),
-  //     });
-  //   });
-  // };
   handleFillOut = (item) => {
     // console.log("item", item);
     this.props.handleFillOut(item);
@@ -63,6 +57,7 @@ class Tooltips extends React.Component {
 
   getOAUrl = (item) => {
     if (item.sxmc.includes('付款流程')) {
+      
       FetchQueryOwnerWorkflow({
         paging: 1,
         current: 1,
@@ -93,6 +88,34 @@ class Tooltips extends React.Component {
       });
       return;
     }
+    if (item.sxmc.includes('信委会议案流程')) {
+      const { xwhid } = this.props;
+      let params = {
+        "attribute": 0,
+        "authFlag": 0,
+        "objectName": "LC_XWHYALC",
+        "operateName": "View",
+        "parameter": [
+          {
+            "name": "ID",
+            "value": Number(xwhid),
+          }
+        ],
+        "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
+      }
+      CreateOperateHyperLink(params).then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            xwhlaModalVisible: true,
+            xwhlaModalUrl: url
+          })
+        }
+      }).catch((error) => {
+        message.error(!error.success ? error.message : error.note);
+      });
+      return;
+    }
     FetchQueryOAUrl({
       sxid: item.sxid,
       xmmc: item.xmid,
@@ -110,7 +133,7 @@ class Tooltips extends React.Component {
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem("user")).id);
     // console.log(Number(this.props.userId), LOGIN_USER_ID, this.props);
     if (Number(this.props?.userId || this.props?.projectInfo?.userid) === LOGIN_USER_ID) {
-      if (arg.length!==0) {
+      if (arg.length !== 0) {
         fn.call(this, ...arg);
       } else {
         fn.call(this);
@@ -185,7 +208,24 @@ class Tooltips extends React.Component {
           </Menu>
         );
       }
-      return (
+      const xwhlaModalProps = {
+        isAllWindow: 1,
+        // defaultFullScreen: true,
+        title: '信委会立案流程查看',
+        width: '120rem',
+        height: '90rem',
+        style: { top: '20rem' },
+        visible: this.state.xwhlaModalVisible,
+        footer: null,
+      };
+      return (<>
+        {
+          this.state.xwhlaModalVisible &&
+          <BridgeModel modalProps={xwhlaModalProps}
+            onCancel={() => this.setState({ xwhlaModalVisible: false })}
+            // onSucess={this.OnSuccess}
+            src={this.state.xwhlaModalUrl} />
+        }
         <div style={{ display: 'flex', alignItems: 'center' }}>
           <div title="查看" onClick={this.handleAuthority.bind(this, this.getOAUrl, '查看', item)}>
             <a style={this.state.txtStyle} className="iconfont icon-see" rel="noopener noreferrer" target="_blank"
@@ -197,6 +237,8 @@ class Tooltips extends React.Component {
             </i>
           </Dropdown>
         </div>
+      </>
+
       );
     }
 

@@ -46,7 +46,7 @@ class OperateTab extends React.Component {
     return (
       <div style={{ margin: '2rem 0 0 0' }}>
         <Row gutter={24}>
-          <Col span={8}>
+          <Col span={10}>
             <Form.Item label="文件类别" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
               <Input placeholder="请输入标题" onChange={(e) => this.onInputChange(e)} />
             </Form.Item>
@@ -68,16 +68,19 @@ class OperateTab extends React.Component {
               <Input placeholder="请输入流程状态"/>
             </Form.Item>
           </Col> */}
-          <Col span={8}>
+          <Col span={11}>
             <Form.Item label="拟稿日期" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
               <RangePicker onChange={(d, ds) => this.onRangePickerChange(d, ds)} />
             </Form.Item>
           </Col>
-          <Col span={8} style={{ paddingTop: '0.8928rem' }}>
-            <Button onClick={() => handleTableFilter({
-              fileType: inputSearch,
-              draftDate: dateSearch,
-            })}>查询</Button>
+          <Col span={3} style={{ paddingTop: '0.25rem' }}>
+            <Form.Item>
+              <Button onClick={() => handleTableFilter({
+                fileType: inputSearch,
+                draftDate: dateSearch,
+              })}>查询
+              </Button>
+            </Form.Item>
           </Col>
         </Row>
       </div>

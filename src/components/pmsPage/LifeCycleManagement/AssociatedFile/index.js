@@ -21,6 +21,7 @@ import { connect } from "dva";
 import OperateTab from "./OperateTab";
 import moment from 'moment';
 import { isArrayLike } from 'lodash';
+import { QueryOafilerela } from '../../../../services/pmsServices';
 
 // const data = [];
 // for (let i = 0; i < 21; i++) {
@@ -82,23 +83,49 @@ class AssociatedFile extends React.Component {
     //       id: 1739773,
     //       title: "测试6"
     //     },
+    //     {
+    //       objectname: "666项目立项申请流程",
+    //       createdate: "20221215",
+    //       id: 1739778,
+    //       title: "测试1"
+    //     }, {
+    //       objectname: "555项目立项申请流程",
+    //       createdate: "20221214",
+    //       id: 1739777,
+    //       title: "测试2"
+    //     }, {
+    //       objectname: "444项目立项申请流程",
+    //       createdate: "20221213",
+    //       id: 1739776,
+    //       title: "测试3"
+    //     }, {
+    //       objectname: "333项目立项申请流程",
+    //       createdate: "20221212",
+    //       id: 1739775,
+    //       title: "测试4"
+    //     }, {
+    //       objectname: "222项目立项申请流程",
+    //       createdate: "20221211",
+    //       id: 1739774,
+    //       title: "测试5"
+    //     }, {
+    //       objectname: "111项目立项申请流程",
+    //       createdate: "20221210",
+    //       id: 1739773,
+    //       title: "测试6"
+    //     },
     //   ]
     // };
     // this.setState({
     //   tableData: [...data?.result],
     //   tbFilterData: [...data?.result],
     // });
-    fetch("http://10.53.188.39/openapi/api/1626044720314580992?no=" + (this.props.xmbh || ''))
+    QueryOafilerela({ projectCode: String(this.props.xmbh || '') })
       .then(res => {
-        if (res.status === 200) {
-          return res.json();
-        }
-        return {}
-      }).then(res => {
         console.log('表格数据：', res);
         this.setState({
-          tableData: [...res?.result],
-          tbFilterData: [...res?.result],
+          tableData: [...JSON.parse(res?.responseBody)],
+          tbFilterData: [...JSON.parse(res?.responseBody)],
         });
       });
   }
@@ -216,7 +243,7 @@ class AssociatedFile extends React.Component {
       onChange: this.onSelectChange,
     };
     return (<>
-      <Modal wrapClassName='editMessage-modify' width={'180rem'}
+      <Modal wrapClassName='editMessage-modify' width={'120rem'}
         title={null}
         zIndex={100}
         bodyStyle={{

@@ -185,7 +185,7 @@ class ContractSigning extends React.Component {
 
   //发起流程到oa
   individuationGetOAResult = (values) => {
-    console.log("params", this.handleParams(values))
+    // console.log("params", this.handleParams(values))
     return IndividuationGetOAResult(this.handleParams(values)).then((result) => {
       const { code = -1, record = [] } = result;
       if (code > 0) {
@@ -420,6 +420,12 @@ class ContractSigning extends React.Component {
                         <Form.Item label="紧急程度">
                           {getFieldDecorator('urgent', {
                             // initialValue: "一般"
+                            rules: [
+                              {
+                                required: true,
+                                message: '紧急程度不允许空值',
+                              },
+                            ],
                           })(
                             // <Select showSearch
                             //         filterOption={(input, option) =>
@@ -486,7 +492,7 @@ class ContractSigning extends React.Component {
                             }
                           </Select>)}
                         </Form.Item>
-                        <div style={{ position: 'absolute', right: '9.5%', marginTop: '1%' }}>
+                        <div style={{ position: 'absolute', right: '7.5%', top: '14%' }}>
                           <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
                             onClick={() => {
                               this.setState({ addGysModalVisible: true });
@@ -693,6 +699,7 @@ class ContractSigning extends React.Component {
                     onClick={() => this.handleAssociateFileOpen()}
                     style={{ color: '#3461FF', paddingLeft: '1rem', fontSize: '3rem', }} />
                 </div>
+                <div  style={{overflow: 'hidden', overflowY: 'auto', maxHeight: '52.08rem'}}>
                 {
                   !flowInfoCollapse && processListData.map((item, index) => (
                     <div style={{ margin: '2rem 7rem' }} key={index}>
@@ -711,6 +718,7 @@ class ContractSigning extends React.Component {
                   )
                   )
                 }
+               </div>
               </Form>
               {/*</Form>*/}
             </React.Fragment></div>

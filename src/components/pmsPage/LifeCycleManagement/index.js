@@ -46,7 +46,7 @@ import AssociatedFile from "./AssociatedFile";
 const { TabPane } = Tabs;
 
 const PASE_SIZE = 10;
-const Loginname = localStorage.getItem("firstUserID");
+const Loginname = String(JSON.parse(sessionStorage.getItem("user")).loginName);
 
 class LifeCycleManagementTabs extends React.Component {
   state = {
@@ -880,9 +880,10 @@ class LifeCycleManagementTabs extends React.Component {
   }
 
   reflush = () => {
-    this.fetchQueryProjectInfoInCycle(this.state.xmid);
-    this.fetchQueryLiftcycleMilestone(this.state.xmid);
-    this.fetchQueryLifecycleStuff(this.state.xmid);
+    this.fetchQueryOwnerProjectListUser(this.state.xmid);
+    // this.fetchQueryProjectInfoInCycle(this.state.xmid);
+    // this.fetchQueryLiftcycleMilestone(this.state.xmid);
+    // this.fetchQueryLifecycleStuff(this.state.xmid);
   }
 
   //文件wps预览-勿删
@@ -1472,6 +1473,7 @@ class LifeCycleManagementTabs extends React.Component {
                                                               status={item.zxqk}
                                                               xmid={xmid}
                                                               xmbh={items.xmbh}
+                                                              xwhid={items.xwhid}
                                                               projectInfo={projectInfo}
                                                               handleUpload={() => this.handleUpload(item)}
                                                               handleSend={this.handleSend}

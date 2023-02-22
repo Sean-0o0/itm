@@ -42,7 +42,8 @@ const {
     individuationGetOAResult,
     queryHjgWeeklyInfo,
     operateHjgWeeklyReport,
-    hJGWeeklyReportExcel
+    hJGWeeklyReportExcel,
+    queryOafilerela
   },
 } = api;
 
@@ -428,6 +429,16 @@ export async function OperateHjgWeeklyReport(payload, configObj) {
 export async function HJGWeeklyReportExcel(payload, configObj) {
   const option = {
     url: hJGWeeklyReportExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 调用oa接口获取关联文件
+export async function QueryOafilerela(payload, configObj) {
+  const option = {
+    url: queryOafilerela,
     method: 'post',
     data: payload,
   };

@@ -44,4 +44,5 @@ export default [
   { code: '', key: 'queryHjgWeeklyInfo', url: '/projectManage/queryHjgWeeklyInfo', dis: '获取汇金谷零售周报汇总信息' },
   { code: '', key: 'operateHjgWeeklyReport', url: '/projectManage/operateHjgWeeklyReport', dis: '更新、提交、删除、跳过周报信息' },
   { code: '', key: 'hJGWeeklyReportExcel', url: '/projectManage/v1/HJGWeeklyReportExcel', dis: '导出数字化专班周报excel' },
+  { code: '', key: 'queryOafilerela', url: '/ZSZQ/v1/queryOafilerela', dis: '调用oa接口获取关联文件' },
 ];

@@ -2170,6 +2170,23 @@
 .newProject {
   height: 100%;
 
+  //关联预算点父级展开
+  .ant-select-tree-switcher {
+    position: relative;
+  }
+
+  //关联预算点父级展开
+  .ant-select-tree-switcher:after {
+    content: 'dddd';
+    // width: 200px;
+    // height: 100%;
+    position: absolute;
+    right: -200px;
+    top: 0;
+    left: 0;
+    bottom: 0;
+  }
+
   .ant-form label {
     font-size: 2.5rem !important;
   }

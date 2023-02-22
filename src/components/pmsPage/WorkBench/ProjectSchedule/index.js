@@ -411,7 +411,7 @@ class ProjectSchedule extends React.Component {
   };
 
   //流程发起
-  handleSend = (item, xmbh='') => {
+  handleSend = (item, xmbh = '') => {
     if (item.sxmc.includes('付款流程')) {
       // this.setState({
       //   paymentModalVisible: true,
@@ -1279,6 +1279,7 @@ class ProjectSchedule extends React.Component {
                                                         userId={items.userid}
                                                         status={item.zxqk}
                                                         xmbh={items.xmbh}
+                                                        xwhid={items.xwhid}
                                                         handleUpload={() => this.handleUpload(item)}
                                                         handleSend={this.handleSend}
                                                         handleFillOut={() => this.handleFillOut(item)}
