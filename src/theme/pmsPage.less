@@ -2167,25 +2167,31 @@
   }
 }
 
-.newProject {
-  height: 100%;
 
+.newproject-treeselect {
+
+  // :global {
   //关联预算点父级展开
-  .ant-select-tree-switcher {
+  .ant-select-tree li span.ant-select-tree-switcher {
     position: relative;
   }
 
   //关联预算点父级展开
-  .ant-select-tree-switcher:after {
-    content: 'dddd';
-    // width: 200px;
-    // height: 100%;
+  .ant-select-tree-switcher_open::before,
+  .ant-select-tree-switcher_close::before {
+    content: '';
     position: absolute;
-    right: -200px;
-    top: 0;
+    right: -56.64rem;
+    top: -4px;
     left: 0;
-    bottom: 0;
+    bottom: -4px;
   }
+
+  // }
+}
+
+.newProject {
+  height: 100%;
 
   .ant-form label {
     font-size: 2.5rem !important;

@@ -17,7 +17,7 @@ export default function WeeklyReportTableDetail() {
     const [currentXmid, setCurrentXmid] = useState(-1);
     const [edited, setEdited] = useState(false);
     const [monthData, setMonthData] = useState(new moment());
-    const [activeKey, setActiveKey] = useState("3");
+    const [activeKey, setActiveKey] = useState("1");
 
 
     useEffect(() => {
@@ -147,7 +147,7 @@ export default function WeeklyReportTableDetail() {
     return (
         <div className='weekly-report-detail'>
             <div className='top-console'>
-                <Tabs defaultActiveKey="3" activeKe={activeKey} onChange={handleTabsChange} size={'large'}>
+                <Tabs defaultActiveKey="1" activeKe={activeKey} onChange={handleTabsChange} size={'large'}>
                     <TabPane tab="数字化专班月报" key="1">
                     </TabPane>
                     <TabPane tab="信息技术事业部月报" key="2">

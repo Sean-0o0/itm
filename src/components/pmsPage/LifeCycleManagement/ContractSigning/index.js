@@ -492,15 +492,13 @@ class ContractSigning extends React.Component {
                             }
                           </Select>)}
                         </Form.Item>
-                        <div style={{ position: 'absolute', right: '7.5%', top: '14%' }}>
+                        <div style={{ position: 'absolute', right: '8%', top: '14%' }}>
                           <img src={require('../../../../image/pms/LifeCycleManagement/add.png')}
                             onClick={() => {
                               this.setState({ addGysModalVisible: true });
                             }}
                             alt='' style={{
                               height: '2.976rem',
-                              marginLeft: '1.0416rem',
-                              marginTop: '1.488rem',
                               cursor: 'pointer'
                             }}
                           />

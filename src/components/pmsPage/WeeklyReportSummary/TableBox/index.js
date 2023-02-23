@@ -344,7 +344,7 @@ const TableBox = (props) => {
             dataIndex: 'gzmk',
             key: 'gzmk',
             width: 160,
-            fixed: 'left',
+            // fixed: 'left',
             ellipsis: true,
             render: (value, row, index) => {
                 const obj = {
@@ -425,6 +425,7 @@ const TableBox = (props) => {
             title: '重要事项说明',
             dataIndex: 'zysjsm',
             key: 'zysjsm',
+            width: 200,
             ellipsis: true,
             editable: true,
         },
@@ -432,8 +433,8 @@ const TableBox = (props) => {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
-            width: 180,
-            fixed: 'right',
+            // width: 180,
+            // fixed: 'right',
             render: (text, row, index) => {
                 return <div>
                     <a style={{ color: '#3361ff', marginRight: '1.488rem' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
