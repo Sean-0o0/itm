@@ -344,7 +344,7 @@ const TableBox = (props) => {
             dataIndex: 'gzmk',
             key: 'gzmk',
             width: 160,
-            // fixed: 'left',
+            fixed: 'left',
             ellipsis: true,
             render: (value, row, index) => {
                 const obj = {
@@ -433,8 +433,8 @@ const TableBox = (props) => {
             title: '操作',
             dataIndex: 'operation',
             key: 'operation',
-            // width: 180,
-            // fixed: 'right',
+            width: 180,
+            fixed: 'right',
             render: (text, row, index) => {
                 return <div>
                     <a style={{ color: '#3361ff', marginRight: '1.488rem' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>
@@ -620,7 +620,8 @@ const TableBox = (props) => {
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    scroll={tableData.length > 11 ? { y: 573, x: '100%' } : { x: '100%' }}
+                    // scroll={tableData.length > 11 ? { y: 573, x: '1350' } : { x: '1350' }}
+                    scroll={{ y: true, x: 1350 }}
                     pagination={false}
                     bordered
                 ></Table>
