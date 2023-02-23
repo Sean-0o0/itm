@@ -121,6 +121,8 @@ class NewProjectModelV2 extends React.Component {
     orgExpendKeys: [],
     //可执行预算
     ysKZX: 0,
+    //本项目预算改变标志
+    projectBudgetChangeFlag: false,
   }
   componentDidMount = async () => {
     const _this = this;
@@ -203,6 +205,7 @@ class NewProjectModelV2 extends React.Component {
 
   //是否已经填完所有必填项
   isFinish = (current) => {
+    // console.log("current",current)
     let basicFlag = false;
     let lcbFlag = false;
     const {basicInfo = {}, budgetInfo = {}} = this.state
@@ -226,6 +229,14 @@ class NewProjectModelV2 extends React.Component {
         isFinish: 2
       })
       // lcbFlag = true;
+    } else if (flag === milePostInfo.length && current === 0 && !this.basicisFinish()) {
+      this.setState({
+        isFinish: 1
+      })
+    } else if (flag === milePostInfo.length && current === 0 && this.basicisFinish()) {
+      this.setState({
+        isFinish: 2
+      })
     } else if (flag === milePostInfo.length && current === 1 && !this.basicisFinish()) {
       this.setState({
         isFinish: 1
@@ -291,7 +302,8 @@ class NewProjectModelV2 extends React.Component {
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
-      label: ''
+      label: '',
+      queryType: "ALL"
     });
 
     // 修改项目时查询项目详细信息
@@ -355,23 +367,39 @@ class NewProjectModelV2 extends React.Component {
   fetchQueryMilepostInfo(params) {
     return FetchQueryMilepostInfo(params).then((record) => {
       const {code = -1, result = ''} = record;
-      const {nowTime, tomorrowTime} = this.state;
+      const {nowTime, tomorrowTime, mileInfo: {milePostInfo}} = this.state;
       if (code > 0) {
         let data = JSON.parse(result);
-        // console.log("data-cccc", data)
         const arr = this.filterGridLayOut(data);
-        // 赋予初始时间和结束时间
-        arr.forEach(item => {
-          if (item.kssj === "0") {
-            item.kssj = nowTime;
+        // console.log("arr-cccc", arr)
+        if (params.queryType === "ALL") {
+          // 赋予初始时间和结束时间
+          arr.forEach(item => {
+            if (item.kssj === "0") {
+              item.kssj = nowTime;
 
+            }
+            if (item.jssj === "0") {
+              item.jssj = tomorrowTime;
+            }
+          });
+          // console.log("arr-cccc", arr)
+          // console.log("this.state.mileInfo", this.state.mileInfo)
+          this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+        } else if (params.queryType === "ONLYLX") {
+          //预算变更-更改项目立场里程碑里面的事项
+          let lxMatterInfos = [];
+          for (let i = 0; i < data.length; i++) {
+            if (data[i].lcbmc === "项目立项") {
+              milePostInfo.map(item => {
+                if (item.lcbmc === "项目立项") {
+                  item.matterInfos = data[i].matterInfos
+                }
+              })
+            }
           }
-          if (item.jssj === "0") {
-            item.jssj = tomorrowTime;
-          }
-        });
-
-        this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
+          this.setState({milePostInfo, mileInfo: {...this.state.mileInfo, milePostInfo}})
+        }
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -963,7 +991,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 数组对象排序
   sortByKey = (array, key, order) => {
-    return array.sort(function (a, b) {
+    return array?.sort(function (a, b) {
       const x = Number(a[key]);
       const y = Number(b[key]);
       if (order) {
@@ -986,14 +1014,14 @@ class NewProjectModelV2 extends React.Component {
         const {staffJobList, rygwSelectDictionary, rygwDictionary} = _this.state;
         const newStaffJobList = staffJobList.filter(item => item.ibm !== e);
         let newArr = newStaffJobList.concat()
-        console.log("newArr", newArr)
-        console.log("rygwDictionary", rygwDictionary)
+        // console.log("newArr", newArr)
+        // console.log("rygwDictionary", rygwDictionary)
         let newArray = rygwDictionary.filter(function (item) {
           return newArr.indexOf(item) === -1
         });
         // const filter = rygwDictionary.filter(item => item.ibm === e)
         // rygwSelectDictionary.push(filter[0])
-        console.log("newArray", newArray)
+        // console.log("newArray", newArray)
         // _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true), rygwSelectDictionary: newArray})
         _this.setState({staffJobList: newStaffJobList, rygwSelectDictionary: newArray})
       },
@@ -1201,6 +1229,7 @@ class NewProjectModelV2 extends React.Component {
         jssj: moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'),
         kssj: moment(item.kssj, 'YYYY-MM-DD').format('YYYYMMDD')
       });
+      // console.log("item.matterInfos",item.matterInfos)
       item.matterInfos.forEach(i => {
         // X轴升序排序
         let gridLayoutByX = this.sortByKey(i.gridLayout, 'x', true);
@@ -1399,6 +1428,7 @@ class NewProjectModelV2 extends React.Component {
     const mile = JSON.parse(JSON.stringify(data));
 
     mile.forEach((item, index) => {
+      let indexNum = []
       item.matterInfos.forEach((e, i) => {
         let sxlb = [];
         e.sxlb.forEach((sx, sx_index) => {
@@ -1407,7 +1437,15 @@ class NewProjectModelV2 extends React.Component {
           }
         });
         e.sxlb = sxlb;
+        if (e.sxlb.length === 0) {
+          indexNum.push(i);
+        }
       });
+      if (indexNum.length > 0) {
+        for (let i = 0; i < indexNum.length; i++) {
+          item.matterInfos.splice(indexNum[i], 1)
+        }
+      }
     });
 
     return mile;
@@ -1428,7 +1466,7 @@ class NewProjectModelV2 extends React.Component {
     });
     matterInfo[i].sxlb = sxlb;
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-
+    // console.log("milePostInfo-ccc",removeTitleMile)
     this.setState({
       mileInfo: {
         ...this.state.mileInfo,
@@ -1712,12 +1750,17 @@ class NewProjectModelV2 extends React.Component {
     } else if (flag !== sxlb.length) {
       message.warn("已存在,请勿重复添加！")
     }
-    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
+    // console.log("milemile",mile)
+    const arr = this.filterGridLayOut(mile);
+    // console.log("arrarr",arr)
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
     // console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
   };
 
   //添加事项
   addSwlx = (e, index) => {
+    // console.log("eeee",e)
+    // console.log("index",index)
     this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
     //添加事项类型
     // console.log("eeeee", e)
@@ -1733,25 +1776,47 @@ class NewProjectModelV2 extends React.Component {
   }
 
   addSwlxMx = (e, index, i, sx_index) => {
-    const { mileInfo: { milePostInfo = [] }, } = this.state;
-    // 多层数组的深拷贝方式  真暴力哦
-    const mile = JSON.parse(JSON.stringify(milePostInfo));
-    let swlxmc = ""
-    this.state.swlxarr.map((mi, mi_index) => {
-      if (mi.swlxid === e) {
-        swlxmc = mi.swlx;
+    if (e !== undefined) {
+      const {mileInfo: {milePostInfo = []},} = this.state;
+      // 多层数组的深拷贝方式  真暴力哦
+      const mile = JSON.parse(JSON.stringify(milePostInfo));
+      let swlxmc = ""
+      this.state.swlxarr.map((mi, mi_index) => {
+        if (mi.swlxid === e) {
+          swlxmc = mi.swlx;
+        }
+      })
+      const matterInfo = mile[index].matterInfos;
+      let flag = false;
+      matterInfo.map(item => {
+        if (swlxmc === item.swlxmc) {
+          flag = true;
+        }
+      })
+      // console.log("matterInfo", matterInfo);
+      if (flag) {
+        let num = -1;
+        message.warn("已存在,请勿重复添加！")
+        matterInfo.map((item, index) => {
+          if (item.swlxmc === "new") {
+            num = index
+          }
+        })
+        if (num !== -1) {
+          matterInfo.splice(num, 1)
+        }
+      } else {
+        const sxlbparam = {type: 'title'};
+        matterInfo.map(item => {
+          if (item.swlxmc === "new") {
+            item.swlxmc = swlxmc
+            item.sxlb[0] = sxlbparam;
+          }
+        })
       }
-    })
-    const matterInfo = mile[index].matterInfos;
-    // console.log("matterInfo", matterInfo);
-    const sxlbparam = {type: 'title'};
-    matterInfo.map(item => {
-      if (item.swlxmc === "new") {
-        item.swlxmc = swlxmc
-        item.sxlb[0] = sxlbparam;
-      }
-    })
-    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+      // console.log("arr", arr);
+      this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    }
   }
 
   onRygwSelectChange = (e) => {
@@ -1773,7 +1838,7 @@ class NewProjectModelV2 extends React.Component {
         return newArr.indexOf(item) === -1
       });
       // let newArray = rygwSelectDictionary.filter(item => item.ibm !== filter[0].ibm)
-      console.log("newArray", newArray)
+      // console.log("newArray", newArray)
       this.setState({
         rygwSelectDictionary: newArray,
         rygwSelect: false,
@@ -1829,6 +1894,7 @@ class NewProjectModelV2 extends React.Component {
       orgExpendKeys = [],
       ysKZX = 0,
       loginUser = [],
+      projectBudgetChangeFlag = false,
     } = this.state;
     // console.log("orgExpendKeys", orgExpendKeys)
     // console.log("organizationTreeList", organizationTreeList)
@@ -1951,7 +2017,8 @@ class NewProjectModelV2 extends React.Component {
                                 xmid: basicInfo.projectId,
                                 biddingMethod: basicInfo.biddingMethod,
                                 budget: budgetInfo.projectBudget,
-                                label: ''
+                                label: '',
+                                queryType: "ALL"
                               });
                             }}>
                               <Radio value={1}>外采项目</Radio>
@@ -2085,7 +2152,8 @@ class NewProjectModelV2 extends React.Component {
                                     xmid: this.state.basicInfo.projectId,
                                     biddingMethod: e.target.value,
                                     budget: budgetInfo.projectBudget,
-                                    label: ''
+                                    label: '',
+                                    queryType: "ALL"
                                   });
                                 }}>
                                   <Radio value={1}>邀请招标</Radio>
@@ -2191,7 +2259,7 @@ class NewProjectModelV2 extends React.Component {
                                 budgetProjectList.forEach(item => {
                                   item?.children?.forEach(ite => {
                                     if (e === '0') {
-                                      console.log("iteiteiteite",ite)
+                                      // console.log("iteiteiteite",ite)
                                       const _this = this;
                                       this.setState({
                                         budgetInfo: {
@@ -2210,7 +2278,7 @@ class NewProjectModelV2 extends React.Component {
                                     }
                                     ite?.children?.forEach(i => {
                                       if (i.key === e) {
-                                        console.log("iiiiii",i)
+                                        // console.log("iiiiii",i)
                                         const _this = this;
                                         this.setState({
                                           budgetInfo: {
@@ -2277,16 +2345,24 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: budgetInfo.projectBudget
                           })(
                             <InputNumber onBlur={(e) => {
-                              this.fetchQueryMilepostInfo({
-                                type: basicInfo.projectType,
-                                xmid: this.state.basicInfo.projectId,
-                                biddingMethod: basicInfo.biddingMethod,
-                                budget: budgetInfo.projectBudget,
-                                label: ''
-                              });
+                              if (projectBudgetChangeFlag) {
+                                this.fetchQueryMilepostInfo({
+                                  type: basicInfo.projectType,
+                                  xmid: this.state.basicInfo.projectId,
+                                  biddingMethod: basicInfo.biddingMethod,
+                                  budget: budgetInfo.projectBudget,
+                                  label: '',
+                                  queryType: "ONLYLX"
+                                });
+                              }
                             }} style={{width: '100%'}} onChange={e => {
+                              let projectBudgetChangeFlag = false
+                              if (e !== this.state.budgetInfo.projectBudget) {
+                                projectBudgetChangeFlag = true;
+                              }
                               this.setState({
-                                budgetInfo: {...budgetInfo, projectBudget: e,}
+                                projectBudgetChangeFlag,
+                                budgetInfo: {...budgetInfo, projectBudget: e}
                               });
                             }} precision={0}/>
                           )}
@@ -2433,7 +2509,7 @@ class NewProjectModelV2 extends React.Component {
                                       </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                          console.log("e.sxlb", e.sxlb)
+                                          // console.log("e.sxlb", e.sxlb)
                                           return (
                                             <div className="flow" key={i}
                                                  style={{
@@ -2464,7 +2540,10 @@ class NewProjectModelV2 extends React.Component {
                                                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                                             }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                            onChange={(e) => {
+                                                              // console.log("eeee-cc",e)
+                                                              this.setState({inputValue: e})
+                                                            }}
                                                       //milePostInfo[index].matterInfos[i].length
                                                             onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                             style={{
@@ -2723,7 +2802,7 @@ class NewProjectModelV2 extends React.Component {
                                       </div>
                                       {
                                         item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                          console.log("e.sxlb", e.sxlb)
+                                          // console.log("e.sxlb", e.sxlb)
                                           return (
                                             <div className="flow" key={i} style={{
                                               display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
@@ -2759,7 +2838,10 @@ class NewProjectModelV2 extends React.Component {
                                                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                                             }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                            onChange={(e) => this.setState({inputValue: e})}
+                                                            onChange={(e) => {
+                                                              // console.log("eeee-cc",e)
+                                                              this.setState({inputValue: e})
+                                                            }}
                                                       //milePostInfo[index].matterInfos[i].length
                                                             onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                             style={{
