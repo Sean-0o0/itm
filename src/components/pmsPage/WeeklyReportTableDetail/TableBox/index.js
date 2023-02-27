@@ -584,7 +584,7 @@ const TableBox = (props) => {
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    scroll={{ y: true, x: 2200 }}
+                    scroll={{ y: true, x: 2500 }}
                     pagination={false}
                     bordered
                 ></Table>
