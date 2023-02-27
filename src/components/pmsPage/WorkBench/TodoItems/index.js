@@ -202,6 +202,9 @@ class TodoItems extends React.Component {
     if (item.sxmc === "非资本性年中预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
+    if (item.sxmc === "信委会议案被退回") {
+      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
+    }
   }
 
   handleRyxztx = (record) => {

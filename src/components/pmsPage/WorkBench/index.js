@@ -109,7 +109,7 @@ class WorkBench extends React.Component {
         this.setState({
           AllTodoItemsData: record,
         });
-        this.queryOverBudgetData();
+        // this.queryOverBudgetData();
       }
     }).catch(error => {
       console.error(!error.success ? error.message : error.note);

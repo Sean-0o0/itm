@@ -151,11 +151,13 @@ class NewProjectModelV2 extends React.Component {
   next() {
     //验证项目名称必填，在点击下一步的时候就要验证
     if (this.state.current === 0) {
+      let bool = false; //
       this.props.form.validateFields((err, values) => {
         if (err) {
           const errs = Object.keys(err);
           if (errs.includes('projectName')) {
-            message.warn("请填写项目名称！");
+            message.warn("请填写项目名称！", 1);
+            bool = true;
             return;
           }
         } else {
@@ -163,6 +165,7 @@ class NewProjectModelV2 extends React.Component {
           this.setState({ current });
         }
       });
+      if (bool) rerturn;
     } else if (this.state.current === 1) {
       const { mileInfo: { milePostInfo = [] } } = this.state;
       const reg1 = new RegExp("-", "g");
@@ -567,7 +570,7 @@ class NewProjectModelV2 extends React.Component {
                   treeDatamini.ysKZX = Number(item.ysKZX)
                   treeDatamini.zdbm = item.zdbm
                   treeDatamini.dropdownStyle = { color: '#666' }
-                  treeDatamini.selectable=false;
+                  treeDatamini.selectable = false;
                   treeDatamini.children = b[item.zdbm]
                 }
                 childrenDatamini.push(treeDatamini)
@@ -576,7 +579,7 @@ class NewProjectModelV2 extends React.Component {
               childrenData.value = key;
               childrenData.title = item.ysLX;
               childrenData.dropdownStyle = { color: '#666' };
-              childrenData.selectable=false;;
+              childrenData.selectable = false;;
               childrenData.children = childrenDatamini;
             }
           })
@@ -1653,17 +1656,20 @@ class NewProjectModelV2 extends React.Component {
     // console.log("index", current)
     //验证项目名称必填，在点击下一步的时候就要验证
     if (this.state.current === 0) {
+      let bool = false; //为true时结束该函数
       this.props.form.validateFields((err, values) => {
         if (err) {
           const errs = Object.keys(err);
           if (errs.includes('projectName')) {
-            message.warn("请填写项目名称！");
+            message.warn("请填写项目名称！", 1);
+            bool = true;
             return;
           }
         } else {
           this.setState({ current });
         }
       });
+      if (bool) return;
     } else if (this.state.current === 1) {
       const { mileInfo: { milePostInfo = [] } } = this.state;
       const reg1 = new RegExp("-", "g");
@@ -2252,7 +2258,7 @@ class NewProjectModelV2 extends React.Component {
                               treeNodeFilterProp="title"
                               style={{ width: '100%' }}
                               dropdownClassName="newproject-treeselect"
-                              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                              dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
                               treeData={budgetProjectList}
                               placeholder="请选择关联预算项目"
                               // treeDefaultExpandAll

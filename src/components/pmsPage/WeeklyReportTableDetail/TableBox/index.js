@@ -40,7 +40,7 @@ const TableBox = (props) => {
             if (tableNode.scrollLeft === 0) {
                 setToLeft(false);
                 setToRight(true);
-            } else if (tableNode.scrollLeft > 0 && tableNode.scrollLeft <= Math.floor(tableNode.scrollWidth - tableNode.clientWidth)) {
+            } else if (tableNode.scrollLeft > 0 && tableNode.scrollLeft < Math.floor(tableNode.scrollWidth - tableNode.clientWidth)) {
                 setToLeft(true);
                 setToRight(true);
             }
@@ -249,7 +249,7 @@ const TableBox = (props) => {
             tableNode.scrollLeft = 0;
         }
         if (direction === 'right') {
-            tableNode.scrollLeft = tableNode.scrollWidth;
+            tableNode.scrollLeft = Math.floor(tableNode.scrollWidth - tableNode.clientWidth);
         }
         // console.log("🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode", tableNode, tableNode.scrollLeft, tableNode.scrollWidth, tableNode.clientWidth)
     }
@@ -365,6 +365,7 @@ const TableBox = (props) => {
             title: '专班人数',
             dataIndex: 'peopleNumber',
             key: 'peopleNumber',
+            width: 100,
             ellipsis: true,
             editable: true,
         },
@@ -583,8 +584,7 @@ const TableBox = (props) => {
                     rowKey={record => record.id}
                     rowClassName={() => 'editable-row'}
                     dataSource={tableData}
-                    // scroll={tableData.length > 11 ? { y: 573, x: 2020 } : { x: 1600 }}
-                    scroll={{ y: true, x: 1600 }}
+                    scroll={{ y: true, x: 2200 }}
                     pagination={false}
                     bordered
                 ></Table>
