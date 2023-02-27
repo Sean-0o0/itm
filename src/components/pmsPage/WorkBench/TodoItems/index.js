@@ -188,7 +188,7 @@ class TodoItems extends React.Component {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
     if (item.sxmc === "月报填写") {
-      window.location.href = `/#/UIProcessor?Table=V_YBTX&hideTitlebar=true`
+      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
     }
     if (item.sxmc === "资本性年初预算录入") {
       window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
@@ -290,14 +290,28 @@ class TodoItems extends React.Component {
       // });
       message.info('功能开发中，暂时无法使用', 1);
       return;
-    } else {
-      this.getSendUrl(item);
-      this.setState({
-        sendTitle: item.sxmc + '发起',
-        // sendUrl: url,
-        sendVisible: true,
-      });
     }
+    //合同签署流程弹窗个性化,不走livebos弹窗了
+    // if (item.sxmc.includes("合同签署")) {
+    //   let index = this.state.operationListData?.findIndex(x => {
+    //     return Number(x.xmid) === Number(item.xmid)
+    //   })
+    //   this.setState({
+    //     currentXmmc: this.state.operationListData[index].xmmc,
+    //     contractSigningVisible: true,
+    //     xmbh: xmbh,
+    //   }, () => {
+    //     console.log('合同签署 - 项目编号：', this.state.xmbh);
+    //   })
+    //   return;
+    // }
+    this.getSendUrl(item);
+    this.setState({
+      sendTitle: item.sxmc + '发起',
+      // sendUrl: url,
+      sendVisible: true,
+    });
+
   };
 
   //流程发起url
@@ -657,7 +671,9 @@ class TodoItems extends React.Component {
         render: (text, record) => {
           return record.wdsl < 0 ? <span
             style={{ fontSize: '2.083rem', color: 'red', ...textOverflow }}>逾期{record.wdsl * -1}天</span>
-            : <span style={{ fontSize: '2.083rem', ...textOverflow }}>{record.txrq?.slice(4, 8) + '-' + record.jzrq?.slice(4, 8)}</span>
+            : <span style={{ fontSize: '2.083rem', ...textOverflow }}>
+              {record.txrq?.slice(4, 6) + '月' + record.txrq?.slice(6, 8) + '日-' + record.jzrq?.slice(4, 6) + '月' + record.jzrq?.slice(6, 8) + '日'}
+            </span>
         },
       },
     ];

@@ -33,7 +33,7 @@ class WorkBench extends React.Component {
     ProjectScheduleStatusData: [],
     ProjectScheduleDetailData: [],
     ProjectScheduleTotal: 0,
-    sliderData: [],
+    // sliderData: [],
     isSpinning: false, //项目进度加载状态
   };
 
@@ -117,26 +117,26 @@ class WorkBench extends React.Component {
     });
   }
 
-  queryOverBudgetData = () => {
-    FetchQueryOwnerMessage({
-      cxlx: "OVERBUDGET",
-      date: 20220101,
-      paging: -1,
-      current: 0,
-      pageSize: 1000,
-      total: 1,
-      sort: 1
-    }).then(res => {
-      if (res.success) {
-        this.setState({
-          sliderData: [...res.record]
-        });
-      }
-    }).catch(error => {
-      console.error(!error.success ? error.message : error.note);
-      // console.log('问题处在这',3);
-    });
-  };
+  // queryOverBudgetData = () => {
+  //   FetchQueryOwnerMessage({
+  //     cxlx: "OVERBUDGET",
+  //     date: 20220101,
+  //     paging: -1,
+  //     current: 0,
+  //     pageSize: 1000,
+  //     total: 1,
+  //     sort: 1
+  //   }).then(res => {
+  //     if (res.success) {
+  //       this.setState({
+  //         sliderData: [...res.record]
+  //       });
+  //     }
+  //   }).catch(error => {
+  //     console.error(!error.success ? error.message : error.note);
+  //     // console.log('问题处在这',3);
+  //   });
+  // };
 
   fetchQueryOwnerWorkflow = (page, pageSize) => {
     FetchQueryOwnerWorkflow({
@@ -286,7 +286,7 @@ class WorkBench extends React.Component {
       ProjectScheduleData,
       ProjectScheduleTotal = 0,
       ProjectScheduleDetailData = [],
-      sliderData,
+      // sliderData,
       isSpinning,
     } = this.state;
     return (
@@ -313,7 +313,7 @@ class WorkBench extends React.Component {
                 height: '100%',
               }}>
                 <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
-                  sliderData={sliderData}
+                  // sliderData={sliderData}
                   data={ProcessSituationData}
                   fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
                   total={ProcessSituationTotal} />

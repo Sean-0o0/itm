@@ -190,7 +190,7 @@ class ProjectSchedule extends React.Component {
         [
           {
             "name": "XMMC",
-            "value": this.state.xmid
+            "value": item.xmid
           }
         ],
         Loginname
