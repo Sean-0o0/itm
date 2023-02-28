@@ -162,7 +162,8 @@ class NewProjectModelV2 extends React.Component {
           }
         } else {
           const current = this.state.current + 1;
-          this.setState({ current });
+          this.setState({current});
+          this.isFinish(current - 1);
         }
       });
       if (bool) return;
@@ -191,18 +192,19 @@ class NewProjectModelV2 extends React.Component {
             content: '有里程碑信息的默认起止时间没有修改，是否确认？',
             onOk() {
               const current = _this.state.current + 1;
-              _this.setState({ current });
+              _this.setState({current});
+              _this.isFinish(current - 1);
             },
             onCancel() {
             },
           });
         } else {
           const current = _this.state.current + 1;
-          _this.setState({ current });
+          _this.setState({current});
+          _this.isFinish(current - 1);
         }
       }
     }
-    this.isFinish(this.state.current);
   }
 
   //是否已经填完所有必填项
@@ -217,11 +219,11 @@ class NewProjectModelV2 extends React.Component {
     for (let i = 0; i < milePostInfo.length; i++) {
       const jssj = milePostInfo[i].jssj.replace(reg1, "");
       const kssj = milePostInfo[i].kssj.replace(reg1, "");
-      const timeList = milePostInfo.filter(item => item.jssj !== this.state.tomorrowTime || item.kssj !== this.state.nowTime);
+      const timeList = milePostInfo.filter(item => item.jssj !== this.state.tomorrowTime && item.kssj !== this.state.nowTime);
       //存在开始时间大于结束时间的数据
       if (Number(kssj) > Number(jssj)) {
         break;
-      } else if (timeList && timeList.length > 0) {
+      } else if (timeList && timeList.length === milePostInfo.length) {
         //所有数据都符合开始时间小于结束时间且存在改过默认时间的数据
         flag++;
       }
@@ -294,6 +296,7 @@ class NewProjectModelV2 extends React.Component {
     if (this.state.current === 2) {
       const current = this.state.current - 1;
       this.setState({current});
+      this.isFinish(current + 1);
     } else if (this.state.current === 1) {
       const {mileInfo: {milePostInfo = []}} = this.state;
       const reg1 = new RegExp("-", "g");
@@ -320,6 +323,7 @@ class NewProjectModelV2 extends React.Component {
             onOk() {
               const current = _this.state.current - 1;
               _this.setState({current});
+              _this.isFinish(current + 1);
             },
             onCancel() {
             },
@@ -327,11 +331,11 @@ class NewProjectModelV2 extends React.Component {
         } else {
           const current = _this.state.current - 1;
           _this.setState({current});
+          _this.isFinish(current + 1);
         }
       }
     }
     // console.log("current", this.state.current)
-    this.isFinish(this.state.current);
   }
 
   fetchInterface = async () => {
@@ -1705,6 +1709,8 @@ class NewProjectModelV2 extends React.Component {
   onChange0 = current => {
     // console.log("this.state.current", this.state.current)
     // console.log("index", current)
+    let currentindex = this.state.current;
+    // console.log("currentindex", currentindex)
     //验证项目名称必填，在点击下一步的时候就要验证
     if (this.state.current === 0) {
       let bool = false; //为true时结束该函数
@@ -1717,7 +1723,8 @@ class NewProjectModelV2 extends React.Component {
             return;
           }
         } else {
-          this.setState({ current });
+          this.setState({current});
+          this.isFinish(currentindex);
         }
       });
       if (bool) return;
@@ -1745,19 +1752,21 @@ class NewProjectModelV2 extends React.Component {
             title: '提示',
             content: '有里程碑信息的默认起止时间没有修改，是否确认？',
             onOk() {
-              _this.setState({ current });
+              _this.setState({current});
+              _this.isFinish(currentindex);
             },
             onCancel() {
             },
           });
         } else {
-          _this.setState({ current });
+          _this.setState({current});
+          _this.isFinish(currentindex);
         }
       }
     } else {
-      this.setState({ current });
+      this.setState({current});
+      this.isFinish(currentindex);
     }
-    this.isFinish(this.state.current);
   };
 
   handleClose = removedTag => {
