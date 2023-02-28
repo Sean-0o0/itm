@@ -1036,7 +1036,7 @@ class ProjectSchedule extends React.Component {
     }
     const getTagData = (tag) => {
       let arr = [];
-      if (tag !== '') {
+      if (tag !== '' && tag !== null && tag !== undefined) {
         if (tag.includes(';')) {
           arr = tag.split(';');
         }

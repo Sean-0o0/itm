@@ -244,7 +244,9 @@ class TodoItems extends React.Component {
       <ul style={{ margin: '0.1rem', paddingLeft: '1rem' }}>
         {listData.map(item => (
           <li key={item.content}>
-            <Tooltip title={item.content}><Badge status={item.type} /></Tooltip>
+            {/* <Tooltip title={item.content}> */}
+            <Badge status={item.type} />
+            {/* </Tooltip> */}
           </li>
         ))}
       </ul>

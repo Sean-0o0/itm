@@ -14,21 +14,21 @@ exports.routes = [
     // models: () => [import('../models/workPlatForm/mainPage/mot/motEvent')],
     component: './pmsPage/LifeCycleManagement',
   },
+  // {
+  //   //周报汇总
+  //   path: `${prefix}/WeeklyReportSummary`,
+  //   component: './pmsPage/WeeklyReportSummary',
+  // },
   {
-    //周报汇总
-    path: `${prefix}/WeeklyReportSummary`,
-    component: './pmsPage/WeeklyReportSummary',
-  },
-  {
-    //数字化专班月报
+    //报告汇总
     path: `${prefix}/WeeklyReportTable`,
     component: './pmsPage/WeeklyReportTable',
   },
-  {
-    //月报汇总
-    path: `${prefix}/MonthlyReportTable`,
-    component: './pmsPage/MonthlyReportTable',
-  },
+  // {
+  //   //月报汇总
+  //   path: `${prefix}/MonthlyReportTable`,
+  //   component: './pmsPage/MonthlyReportTable',
+  // },
   {
     //外包生命周期页面
     path: `${prefix}/EpibolyLifeCycle`,
@@ -48,6 +48,11 @@ exports.routes = [
     // 统计分析 - 领导看板页面
     path: `${prefix}/StatisticAnalysis`,
     component: './pmsPage/StatisticAnalysis',
+  },
+  {
+    // 项目信息
+    path: `${prefix}/ProjectInfo`,
+    component: './pmsPage/ProjectInfo',
   },
   // {
   //   path: `${prefix}/`,
