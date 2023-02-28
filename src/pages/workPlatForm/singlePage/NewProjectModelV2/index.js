@@ -165,7 +165,7 @@ class NewProjectModelV2 extends React.Component {
           this.setState({ current });
         }
       });
-      if (bool) rerturn;
+      if (bool) return;
     } else if (this.state.current === 1) {
       const { mileInfo: { milePostInfo = [] } } = this.state;
       const reg1 = new RegExp("-", "g");
@@ -202,16 +202,12 @@ class NewProjectModelV2 extends React.Component {
         }
       }
     }
-    // console.log("current", this.state.current)
     this.isFinish(this.state.current);
   }
 
   //是否已经填完所有必填项
   isFinish = (current) => {
-    // console.log("current",current)
-    let basicFlag = false;
-    let lcbFlag = false;
-    const { basicInfo = {}, budgetInfo = {} } = this.state
+    console.log("current", current)
     if (current === 0) {
       this.basicisFinish(current)
     }
@@ -221,16 +217,25 @@ class NewProjectModelV2 extends React.Component {
     for (let i = 0; i < milePostInfo.length; i++) {
       const jssj = milePostInfo[i].jssj.replace(reg1, "");
       const kssj = milePostInfo[i].kssj.replace(reg1, "");
+      const timeList = milePostInfo.filter(item => item.jssj !== this.state.tomorrowTime || item.kssj !== this.state.nowTime);
+      //存在开始时间大于结束时间的数据
       if (Number(kssj) > Number(jssj)) {
         break;
-      } else {
+      } else if (timeList && timeList.length > 0) {
+        //所有数据都符合开始时间小于结束时间且存在改过默认时间的数据
         flag++;
       }
     }
-    if (flag === milePostInfo.length && current === 1 && this.basicisFinish()) {
-      this.setState({
-        isFinish: 2
-      })
+    if (current === 1 && this.basicisFinish()) {
+      if (flag === milePostInfo.length) {
+        this.setState({
+          isFinish: 2
+        })
+      } else {
+        this.setState({
+          isFinish: 0
+        })
+      }
       // lcbFlag = true;
     } else if (flag === milePostInfo.length && current === 0 && !this.basicisFinish()) {
       this.setState({
@@ -240,10 +245,16 @@ class NewProjectModelV2 extends React.Component {
       this.setState({
         isFinish: 2
       })
-    } else if (flag === milePostInfo.length && current === 1 && !this.basicisFinish()) {
-      this.setState({
-        isFinish: 1
-      })
+    } else if (current === 1 && !this.basicisFinish()) {
+      if (flag === milePostInfo.length) {
+        this.setState({
+          isFinish: 1
+        })
+      } else {
+        this.setState({
+          isFinish: -1
+        })
+      }
     } else if (flag !== milePostInfo.length && current === 1) {
       this.setState({
         isFinish: -1
@@ -279,8 +290,48 @@ class NewProjectModelV2 extends React.Component {
   }
 
   prev() {
-    const current = this.state.current - 1;
-    this.setState({ current });
+    //验证项目名称必填，在点击下一步的时候就要验证
+    if (this.state.current === 2) {
+      const current = this.state.current - 1;
+      this.setState({current});
+    } else if (this.state.current === 1) {
+      const {mileInfo: {milePostInfo = []}} = this.state;
+      const reg1 = new RegExp("-", "g");
+      let flag = 0
+      for (let i = 0; i < milePostInfo.length; i++) {
+        const jssj = milePostInfo[i].jssj.replace(reg1, "");
+        const kssj = milePostInfo[i].kssj.replace(reg1, "");
+        if (Number(kssj) > Number(jssj)) {
+          message.warn("开始时间需要小于结束时间")
+          break;
+        } else {
+          flag++;
+        }
+      }
+      if (flag === milePostInfo.length) {
+        const _this = this;
+        const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
+        if (timeList && timeList.length > 0) {
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '有里程碑信息的默认起止时间没有修改，是否确认？',
+            onOk() {
+              const current = _this.state.current - 1;
+              _this.setState({current});
+            },
+            onCancel() {
+            },
+          });
+        } else {
+          const current = _this.state.current - 1;
+          _this.setState({current});
+        }
+      }
+    }
+    // console.log("current", this.state.current)
+    this.isFinish(this.state.current);
   }
 
   fetchInterface = async () => {
