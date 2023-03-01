@@ -45,4 +45,6 @@ export default [
   { code: '', key: 'operateHjgWeeklyReport', url: '/projectManage/operateHjgWeeklyReport', dis: '更新、提交、删除、跳过周报信息' },
   { code: '', key: 'hJGWeeklyReportExcel', url: '/projectManage/v1/HJGWeeklyReportExcel', dis: '导出数字化专班周报excel' },
   { code: '', key: 'queryOafilerela', url: '/ZSZQ/v1/queryOafilerela', dis: '调用oa接口获取关联文件' },
+  { code: '', key: 'queryProjectListInfo', url: '/projectManage/v1/queryProjectListInfo', dis: '查询项目信息列表的项目信息' },
+  { code: '', key: 'queryProjectListPara', url: '/projectManage/v1/queryProjectListPara', dis: '查询项目信息列表的查询条件' },
 ];

@@ -43,7 +43,9 @@ const {
     queryHjgWeeklyInfo,
     operateHjgWeeklyReport,
     hJGWeeklyReportExcel,
-    queryOafilerela
+    queryOafilerela,
+    queryProjectListInfo,
+    queryProjectListPara,
   },
 } = api;
 
@@ -439,6 +441,26 @@ export async function HJGWeeklyReportExcel(payload, configObj) {
 export async function QueryOafilerela(payload, configObj) {
   const option = {
     url: queryOafilerela,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 查询项目信息列表的项目信息
+export async function QueryProjectListInfo(payload, configObj) {
+  const option = {
+    url: queryProjectListInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 查询项目信息列表的查询条件
+export async function QueryProjectListPara(payload, configObj) {
+  const option = {
+    url: queryProjectListPara,
     method: 'post',
     data: payload,
   };

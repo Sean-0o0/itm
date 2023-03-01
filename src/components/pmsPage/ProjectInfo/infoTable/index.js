@@ -261,7 +261,7 @@ export default function InfoTable() {
             key: 'xmbq',
             ellipsis: true,
             render: (text, row, index) => {
-                return (<div className='prj-tags' id={'prj-tags' + index}>
+                return (<div className='prj-tags'>
                     {getTagData(text).length !== 0 && <>
                         {getTagData(text)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
                         {getTagData(text)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(

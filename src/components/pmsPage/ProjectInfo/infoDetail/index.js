@@ -6,7 +6,7 @@ const { TabPane } = Tabs;
 
 export default function InfoDetail(props) {
     const [isSpinning, setIsSpinning] = useState(false); //弹窗加载状态
-    const [activekey, setActiveKey] = useState('1'); //高亮tab的key值
+    const [activekey, setActiveKey] = useState('3'); //高亮tab的key值
 
     const { modalVisible, setModalVisible } = props;
     const handleEdit = ()=>{ 
@@ -36,7 +36,7 @@ export default function InfoDetail(props) {
                     onClick={handleEdit} />
             </div>
             <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin payment-process-box'>
-                <Tabs defaultActiveKey="1" onChange={handleTabChange} size='large'>
+                <Tabs activeKey={activekey} onChange={handleTabChange} size='large'>
                     <TabPane tab="基本信息" key="1">
                         <BasicInfo />
                     </TabPane>
