@@ -205,6 +205,9 @@ class TodoItems extends React.Component {
     if (item.sxmc === "信委会议案被退回") {
       window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
     }
+    if (item.sxmc === "流程待处理") {
+      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
+    }
   }
 
   handleRyxztx = (record) => {
