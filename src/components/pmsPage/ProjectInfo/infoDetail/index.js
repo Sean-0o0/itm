@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Spin } from 'antd';
+import { Modal, Spin, Tabs } from 'antd';
+import BasicInfo from './basicInfo';
+import OtherInfo from './otherInfo';
+const { TabPane } = Tabs;
 
 export default function InfoDetail(props) {
     const [isSpinning, setIsSpinning] = useState(false); //example
@@ -25,7 +28,17 @@ export default function InfoDetail(props) {
                     onClick={() => { }} />
             </div>
             <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin payment-process-box'>
-                TO DO ...
+                <Tabs defaultActiveKey="1" onChange={() => { }}>
+                    <TabPane tab="基本信息" key="1">
+                        <BasicInfo />
+                    </TabPane>
+                    <TabPane tab="里程碑信息" key="2">
+                        Content of Tab Pane 2
+                    </TabPane>
+                    <TabPane tab="其他信息" key="3">
+                        <OtherInfo />
+                    </TabPane>
+                </Tabs>
             </Spin>
         </Modal>
     )
