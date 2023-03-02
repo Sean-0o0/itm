@@ -364,19 +364,19 @@ class NewProjectModelV2 extends React.Component {
       queryType: "ALL"
     });
 
-    // 修改项目时查询项目详细信息
-    if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
-      await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
-    }
     // 修改加载状态
-    this.setState({ loading: false });
+    this.setState({loading: false});
+    // 查询岗位信息
+    await this.fetchQueryStationInfo();
     // 查询组织机构信息
     await this.fetchQueryOrganizationInfo();
     // 查询人员信息
     await this.fetchQueryMemberInfo();
 
-    // 查询岗位信息
-    await this.fetchQueryStationInfo();
+    // 修改项目时查询项目详细信息
+    if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
+      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+    }
 
     //判断完成状态
     this.isFinish();
@@ -696,8 +696,10 @@ class NewProjectModelV2 extends React.Component {
           let jobArr = [];
           let searchStaffList = [];
           let memberInfo = JSON.parse(result.memberInfo);
-          memberInfo.push({ gw: '10', rymc: result.projectManager });
+          memberInfo.push({gw: '10', rymc: result.projectManager});
           let arr = [];
+          console.log("memberInfomemberInfo", memberInfo)
+          console.log("this.state.staffList", this.state.staffList)
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
@@ -718,8 +720,9 @@ class NewProjectModelV2 extends React.Component {
               searchStaffList: [loginUser],
               loginUser: loginUser,
               // staffJobList: RYGW,
-              staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
+              staffInfo: {...this.state.staffInfo, jobStaffList: arr}
             });
+            console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
               if (String(i.ibm) === String(item.gw)) {
                 newStaffJobList.push(i)
@@ -755,6 +758,7 @@ class NewProjectModelV2 extends React.Component {
           if (result.orgId) {
             newOrg = result.orgId.split(";");
           }
+          console.log("searchStaffListsearchStaffList222", searchStaffList)
           this.setState({
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
@@ -3091,6 +3095,7 @@ class NewProjectModelV2 extends React.Component {
                     <div className="job">
                       {
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
+                          console.log("staffJobList", staffJobList)
                           if (item.ibm === '10') {
                             return (
                               <div className="jobItem">
@@ -3129,10 +3134,10 @@ class NewProjectModelV2 extends React.Component {
                                   >
                                     {
                                       searchStaffList.length > 0 && searchStaffList.map((item, index) => {
-                                        // console.log("searchStaffList",searchStaffList)
+                                        console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
-                                            value={item.id}>{item.name}({loginUser.orgName})</Select.Option>
+                                                         value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -3180,6 +3185,7 @@ class NewProjectModelV2 extends React.Component {
                                   >
                                     {
                                       searchStaffList.map((item, index) => {
+                                        console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
                                             value={item.id}>{item.name}({item.orgName})</Select.Option>
