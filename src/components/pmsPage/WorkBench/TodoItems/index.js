@@ -208,6 +208,18 @@ class TodoItems extends React.Component {
     if (item.sxmc === "流程待处理") {
       window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
     }
+    if (item.sxmc === "信委会流程待审批") {
+      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
+    }
+    if (item.sxmc === "信委会议案待上会前审批") {
+      window.location.href = `/#/UIProcessor?Table=V_XWHYALC_LDSP&hideTitlebar=true`
+    }
+    if (item.sxmc === "信委会议案待上会") {
+      window.location.href = `/#/UIProcessor?Table=XWHYAGL&hideTitlebar=true`
+    }
+    if (item.sxmc === "信委会议案待提交领导审批") {
+      window.location.href = `/#/UIProcessor?Table=XWHYAGL&hideTitlebar=true`
+    }
   }
 
   handleRyxztx = (record) => {
