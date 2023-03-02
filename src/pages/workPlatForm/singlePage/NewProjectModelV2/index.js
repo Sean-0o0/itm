@@ -344,16 +344,16 @@ class NewProjectModelV2 extends React.Component {
     this.fetchQuerySoftwareList();
     // 查询项目标签
     this.fetchQueryProjectLabel();
-    // 查询关联预算项目信息
-    this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY")) });
+    // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
+    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
 
     // 查询组织机构信息-应用部门
     this.fetchQueryOrganizationYYBMInfo();
 
     // 查询里程碑阶段信息
-    this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
+    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
     // 查询里程碑事项信息
-    this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
+    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
     // 查询里程碑信息
     this.fetchQueryMilepostInfo({
       type: 1,
@@ -633,8 +633,8 @@ class NewProjectModelV2 extends React.Component {
               childrenData.key = key;
               childrenData.value = key;
               childrenData.title = item.ysLX;
-              childrenData.dropdownStyle = { color: '#666' };
-              childrenData.selectable = false;;
+              childrenData.dropdownStyle = {color: '#666'};
+              childrenData.selectable = false;
               childrenData.children = childrenDatamini;
             }
           })
@@ -642,6 +642,7 @@ class NewProjectModelV2 extends React.Component {
         }
       }
     }
+    // console.log("treeData",treeData)
     return treeData;
   }
 
@@ -735,15 +736,17 @@ class NewProjectModelV2 extends React.Component {
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({ rygwSelectDictionary: newArray, staffJobList: newStaffJobList })
           // console.log("arr",arr)
-          // console.log("newStaffJobList",newStaffJobList)
+          // console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
+          let ysKZX = 0;
           this.state.budgetProjectList.forEach(item => {
             item.children.forEach(ite => {
               ite.children.forEach(i => {
                 if (i.key === result.budgetProject) {
                   totalBudget = Number(i.ysZJE);
                   relativeBudget = Number(i.ysKGL);
+                  ysKZX = Number(i.ysKZX);
                 }
               })
             })
@@ -753,6 +756,7 @@ class NewProjectModelV2 extends React.Component {
             newOrg = result.orgId.split(";");
           }
           this.setState({
+            ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             basicInfo: {
               projectId: result.projectId,
