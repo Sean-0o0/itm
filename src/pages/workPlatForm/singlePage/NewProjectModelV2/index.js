@@ -2041,7 +2041,7 @@ class NewProjectModelV2 extends React.Component {
       }
       ministeps.push(params)
     })
-    current = 1;
+    // current = 1;
 
     //过滤里程碑
     const milePostInfoIds = milePostInfo.map(item => item.lcblxid)
@@ -2909,7 +2909,7 @@ class NewProjectModelV2 extends React.Component {
                                           *
                                         </div>
                                       </div>
-                                      <RiskOutline/>
+                                      {/* <RiskOutline/> */}
                                     </div>
                                     {
                                       item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {

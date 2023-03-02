@@ -307,7 +307,7 @@ export default function InfoTable() {
     ];
     return (
         <div className='info-table'>
-            {true &&
+            {fileAddVisible &&
                 <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onSucess={() => {
                     closeFileAddModal();
                     message.success('保存成功', 1);
