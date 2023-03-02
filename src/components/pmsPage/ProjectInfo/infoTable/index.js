@@ -1,12 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover } from 'antd';
+import { Button, Table, Popover, message } from 'antd';
 import InfoDetail from '../infoDetail';
+import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
+import {EncryptBase64} from '../../../Common/Encrypt';
 
 export default function InfoTable() {
     const [tableLoading, setTableLoading] = useState(false); //表格加载状态
     const [tableData, setTableData] = useState([]); //表格数据
     const [sortedInfo, setSortedInfo] = useState({}); //金额排序
     const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
+    const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
+
     useEffect(() => {
         const data = [{
             xmmc: '一二三四五六七八九十一二三',
@@ -209,6 +213,23 @@ export default function InfoTable() {
         setModalVisible(true);
         return;
     };
+    const fileAddModalProps = {
+        isAllWindow: 1,
+        // defaultFullScreen: true,
+        title: '新建项目',
+        width: '70%',
+        height: '120rem',
+        style: {top: '2rem'},
+        visible: true,
+        footer: null,
+      };
+    const openVisible = () =>{
+        setFileAddVisible(true);
+    }
+    const closeFileAddModal = () =>{
+        setFileAddVisible(false);
+    }
+    const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`;
     const columns = [
         {
             title: '项目名称',
@@ -286,8 +307,14 @@ export default function InfoTable() {
     ];
     return (
         <div className='info-table'>
-            <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible}/>
-            <Button type='primary' className='btn-add-prj'>新建项目</Button>
+            {true &&
+                <BridgeModel isSpining="customize" modalProps={fileAddModalProps} onSucess={() => {
+                    closeFileAddModal();
+                    message.success('保存成功', 1);
+                }} onCancel={closeFileAddModal}
+                    src={src_fileAdd} />}
+            <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible} />
+            <Button type='primary' className='btn-add-prj' onClick={openVisible}>新建项目</Button>
             <Table
                 loading={tableLoading}
                 columns={columns}
