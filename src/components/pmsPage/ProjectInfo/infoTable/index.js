@@ -4,204 +4,25 @@ import InfoDetail from '../infoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import {EncryptBase64} from '../../../Common/Encrypt';
 
-export default function InfoTable() {
+export default function InfoTable(props) {
     const [tableLoading, setTableLoading] = useState(false); //表格加载状态
-    const [tableData, setTableData] = useState([]); //表格数据
     const [sortedInfo, setSortedInfo] = useState({}); //金额排序
     const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
     const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
+    const { tableData } = props; //表格数据
 
     useEffect(() => {
-        const data = [{
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '12345678',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '迭代项目;数字化专班;项目课题;抵税扣除;信创项目;软著专利;党建项目'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '迭代项目;数字化专班;项目课题;抵税扣除;信创项目;软著专利;党建项目'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '1234567891',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '迭代项目;数字化专班;项目课题;抵税扣除;信创项目;软著专利;党建项目'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '迭代项目;数字化专班;项目课题;抵税扣除;信创项目;软著专利;党建项目'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '迭代项目;数字化专班;项目课题;抵税扣除;信创项目;软著专利;党建项目'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三;一二三四五六七八九十一二三;一二三四五六七八九十一二三;一二三四五六七八九十一二三;一二三四五六七八九十一二三;一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        }, {
-            xmmc: '一二三四五六七八九十一二三',
-            xmjl: '一二三四五六七八九十一二三',
-            xmlx: '一二三四五六七八九十一二三',
-            glys: '一二三四五六七八九十一二三',
-            xmje: '123456789123456789',
-            yybm: '一二三四五六七八九十一二三',
-            xmbq: '一二三四五六七八九十一二三'
-        },];
-        setTableData(p => [...data]);
+
         return () => {
         }
     }, []);
-    const handleTableChange = (pagination, filters, sorter) => {
-        console.log('Various parameters', pagination, filters, sorter);
-        setSortedInfo(sorter);
-    };
+
+    //获取标签数据
     const getTagData = (tag) => {
         let arr = [];
         if (tag !== '' && tag !== null && tag !== undefined) {
-            if (tag.includes(';')) {
-                arr = tag.split(';');
+            if (tag.includes(',')) {
+                arr = tag.split(',');
             }
             else {
                 arr.push(tag);
@@ -230,64 +51,65 @@ export default function InfoTable() {
         setFileAddVisible(false);
     }
     const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`;
+
     const columns = [
         {
             title: '项目名称',
-            dataIndex: 'xmmc',
+            dataIndex: 'projectName',
             width: 200,
-            key: 'xmmc',
+            key: 'projectName',
             ellipsis: true,
         },
         {
             title: '项目经理',
-            dataIndex: 'xmjl',
+            dataIndex: 'projectManager',
             width: 100,
-            key: 'xmjl',
+            key: 'projectManager',
             ellipsis: true,
         },
         {
             title: '项目类型',
-            dataIndex: 'xmlx',
+            dataIndex: 'projectType',
             width: 100,
-            key: 'xmlx',
+            key: 'projectType',
             ellipsis: true,
         },
         {
             title: '关联预算',
-            dataIndex: 'glys',
+            dataIndex: 'budgetProject',
             width: 140,
-            key: 'glys',
+            key: 'budgetProject',
             ellipsis: true,
         },
         {
             title: '项目金额(元)',
-            dataIndex: 'xmje',
+            dataIndex: 'projectBudget',
             width: 120,
             align: 'right',
-            key: 'xmje',
+            key: 'projectBudget',
             ellipsis: true,
             sorter: (a, b) => Number(a.xmje) - Number(b.xmje),
         },
         {
             title: '应用部门',
-            dataIndex: 'yybm',
+            dataIndex: 'orgs',
             width: 150,
-            key: 'yybm',
+            key: 'orgs',
             ellipsis: true,
         },
         {
             title: '项目标签',
-            dataIndex: 'xmbq',
-            width: 300,
-            key: 'xmbq',
+            dataIndex: 'projectLabel',
+            width: 205,
+            key: 'projectLabel',
             ellipsis: true,
             render: (text, row, index) => {
                 return (<div className='prj-tags'>
                     {getTagData(text).length !== 0 && <>
-                        {getTagData(text)?.slice(0, 3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
-                        {getTagData(text)?.length > 3 && <Popover overlayClassName='tag-more-popover' content={(
+                        {getTagData(text)?.slice(0, 2).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                        {getTagData(text)?.length > 2 && <Popover overlayClassName='tag-more-popover' content={(
                             <div className='tag-more'>
-                                {getTagData(text)?.slice(3).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
+                                {getTagData(text)?.slice(2).map((x, i) => <div key={i} className='tag-item'>{x}</div>)}
                             </div>
                         )} title={null}>
                             <div className='tag-item'>...</div>
@@ -318,9 +140,8 @@ export default function InfoTable() {
             <Table
                 loading={tableLoading}
                 columns={columns}
-                rowKey={'id'}
+                rowKey={'projectId'}
                 dataSource={tableData}
-                handleTableChange={handleTableChange}
                 pagination={{
                     pageSizeOptions: ['10', '20', '30', '40'],
                     showSizeChanger: true,
@@ -328,7 +149,7 @@ export default function InfoTable() {
                     showQuickJumper: true,
                     showTotal: total => `共 ${total} 条数据`
                 }}
-            // bordered
+                bordered
             ></Table>
         </div>
     )
