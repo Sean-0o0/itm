@@ -27,7 +27,7 @@ import BidInfoUpdate from '../../LifeCycleManagement/BidInfoUpdate';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 
 const PASE_SIZE = 10;
-const Loginname = localStorage.getItem("firstUserID");
+const Loginname = String(JSON.parse(sessionStorage.getItem("user")).loginName);
 
 class ProjectSchedule extends React.Component {
   state = {
@@ -1209,7 +1209,7 @@ class ProjectSchedule extends React.Component {
                                   setIsSpinning={setIsSpinning}
                                   loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
                                   state={items.fxnr} item={items}
-                                  lcbid={ProjectScheduleDetailData[0]?.List[0]?.lcbid} />
+                                  lcbid={ProjectScheduleDetailData[index]?.List[0]?.lcbid} />
                               </div>
                             </div>
                             {items.extend ?

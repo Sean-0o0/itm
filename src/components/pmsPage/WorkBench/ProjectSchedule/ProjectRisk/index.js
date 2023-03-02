@@ -108,6 +108,7 @@ class ProjectRisk extends React.Component {
             <Tooltip title="添加风险">
               <Icon type="plus-circle" style={{ color: '#3361ff', marginLeft: '0.5952rem' }} onClick={() => {
                 const { userId, loginUserId } = this.props;
+                console.log("🚀 ~ file: index.js ~ line 111 ~ ProjectRisk ~ render ~ userId, loginUserId", this.props)
                 if (Number(userId) === Number(loginUserId)) {
                   this.hanldeRisk(xmid, lcbid);
                 } else {

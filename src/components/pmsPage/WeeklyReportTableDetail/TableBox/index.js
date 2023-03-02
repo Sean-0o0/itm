@@ -124,8 +124,14 @@ const TableBox = (props) => {
                         switch (txt) {
                             case '低风险':
                                 return '1';
-                            case '进度正常':
+                            case '中风险':
                                 return '2';
+                            case '高风险':
+                                return '3';
+                            case '进度正常':
+                                return '4';
+                            case '延期':
+                                return '5';
                         }
                     };
                     return {
@@ -383,13 +389,13 @@ const TableBox = (props) => {
             width: 100,
             ellipsis: true,
         },
-        {
-            title: '项目说明',
-            dataIndex: 'annualPlan',
-            key: 'annualPlan',
-            ellipsis: true,
-            editable: true,
-        },
+        // {
+        //     title: '项目说明',
+        //     dataIndex: 'annualPlan',
+        //     key: 'annualPlan',
+        //     ellipsis: true,
+        //     editable: true,
+        // },
         {
             title: '操作',
             dataIndex: 'operation',
