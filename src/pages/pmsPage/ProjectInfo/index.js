@@ -1,10 +1,10 @@
-import React, {Fragment} from 'react';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
 import ProjectInfoTab from '../../../components/pmsPage/ProjectInfo/index';
-const ProjectInfo = () => {
+const ProjectInfo = (props) => {
     return (
         <Fragment>
-            <ProjectInfoTab></ProjectInfoTab>
+            <ProjectInfoTab dictionary={props.dictionary}></ProjectInfoTab>
         </Fragment>
     );
 };

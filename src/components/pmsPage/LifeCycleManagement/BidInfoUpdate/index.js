@@ -602,7 +602,7 @@ class BidInfoUpdate extends React.Component {
                                 let submitdata = {
                                     columnName: 'PBBG',
                                     documentData,
-                                    fileLength,
+                                    fileLength, 
                                     glgys: 0,
                                     gysfkzh: -1,
                                     // gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
