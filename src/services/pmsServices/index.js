@@ -46,6 +46,7 @@ const {
     queryOafilerela,
     queryProjectListInfo,
     queryProjectListPara,
+    queryProjectInfoAll
   },
 } = api;
 
@@ -461,6 +462,16 @@ export async function QueryProjectListInfo(payload, configObj) {
 export async function QueryProjectListPara(payload, configObj) {
   const option = {
     url: queryProjectListPara,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 查询项目信息所有基本信息
+export async function QueryProjectInfoAll(payload, configObj) {
+  const option = {
+    url: queryProjectInfoAll,
     method: 'post',
     data: payload,
   };

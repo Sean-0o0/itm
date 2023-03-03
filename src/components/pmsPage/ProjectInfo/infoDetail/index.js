@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Spin, Tabs } from 'antd';
 import BasicInfo from './basicInfo';
 import OtherInfo from './otherInfo';
+import ProgressInfo from './ProgressInfo';
 const { TabPane } = Tabs;
 
 export default function InfoDetail(props) {
@@ -41,7 +42,7 @@ export default function InfoDetail(props) {
                         <BasicInfo />
                     </TabPane>
                     <TabPane tab="里程碑信息" key="2">
-                        Content of Tab Pane 2
+                        <ProgressInfo />
                     </TabPane>
                     <TabPane tab="其他信息" key="3">
                         <OtherInfo />

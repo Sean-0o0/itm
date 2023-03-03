@@ -1,140 +1,253 @@
 @charset "utf-8";
 
 //progress
-.m-progress-warp{
+.m-progress-warp {
 
-    padding-bottom: 1rem;
+  padding-bottom: 1rem;
 
-    .m-progress-name{
-        line-height: 1.5rem;
-        .m-progress-name-left{
-            .font-s16();
-            .font-wb();
-            .fl();
-            color:@title-color;
-        }
-        .m-progress-name-right{
-            .font-s14();
-            .font-wn();
-            .fr();
-            color:@view-color;
+  .m-progress-name {
+    line-height: 1.5rem;
 
-        }
+    .m-progress-name-left {
+      .font-s16();
+      .font-wb();
+      .fl();
+      color: @title-color;
     }
 
-    .m-progress{
-        &.ant-progress{
-            line-height: 0;
-            .ant-progress-bg {
-                border-radius: 0px;
-                background-color: @blue;
-                position: relative;
-                height: 0.416rem !important
-            }
-            .ant-progress-inner {
-                border-radius: 0px;
-            }
-
-        }
-
-        &.ant-progress-status-exception{
-            .ant-progress-bg {
-                background-color: @pink;
-            }
-        }
-        &.ant-progress-status-success{
-             .ant-progress-bg {
-                background-color: @green;
-
-            }
-        }
-        &.ant-progress-status-orange{
-             .ant-progress-bg {
-                background-color: @orange;
-
-            }
-        }
+    .m-progress-name-right {
+      .font-s14();
+      .font-wn();
+      .fr();
+      color: @view-color;
 
     }
-    //任务中心使用的红色处理中，蓝色处理完成的样式
-    .m-progress-taskCenter{
-      &.ant-progress{
-          line-height: 0;
-          .ant-progress-bg {
-              border-radius: 0px;
-              background-color: #ff7676;
-              position: relative;
-              height: 0.416rem !important
-          }
-          .ant-progress-inner {
-              border-radius: 0px;
-          }
+  }
 
+  .m-progress {
+    &.ant-progress {
+      line-height: 0;
+
+      .ant-progress-bg {
+        border-radius: 0px;
+        background-color: @blue;
+        position: relative;
+        height: 0.416rem !important
       }
 
-      &.ant-progress-status-exception{
-          .ant-progress-bg {
-              background-color: @green;
-          }
-      }
-      &.ant-progress-status-success{
-           .ant-progress-bg {
-              background-color: #4090f7;
-
-          }
-      }
-      &.ant-progress-status-orange{
-           .ant-progress-bg {
-              background-color: @orange;
-
-          }
+      .ant-progress-inner {
+        border-radius: 0px;
       }
 
     }
 
-    //新数字营销
-    &.m-zxr-progress-warp{
-        width: 40%;
-        .dib();
-        padding: 0 0 0 1rem;
-        .m-progress{
-            .ant-progress-text{
-                .font-s14();
-                color: @title-color;
-            }
-        }
+    &.ant-progress-status-exception {
+      .ant-progress-bg {
+        background-color: @pink;
+      }
     }
+
+    &.ant-progress-status-success {
+      .ant-progress-bg {
+        background-color: @green;
+
+      }
+    }
+
+    &.ant-progress-status-orange {
+      .ant-progress-bg {
+        background-color: @orange;
+
+      }
+    }
+
+  }
+
+  //任务中心使用的红色处理中，蓝色处理完成的样式
+  .m-progress-taskCenter {
+    &.ant-progress {
+      line-height: 0;
+
+      .ant-progress-bg {
+        border-radius: 0px;
+        background-color: #ff7676;
+        position: relative;
+        height: 0.416rem !important
+      }
+
+      .ant-progress-inner {
+        border-radius: 0px;
+      }
+
+    }
+
+    &.ant-progress-status-exception {
+      .ant-progress-bg {
+        background-color: @green;
+      }
+    }
+
+    &.ant-progress-status-success {
+      .ant-progress-bg {
+        background-color: #4090f7;
+
+      }
+    }
+
+    &.ant-progress-status-orange {
+      .ant-progress-bg {
+        background-color: @orange;
+
+      }
+    }
+
+  }
+
+  //新数字营销
+  &.m-zxr-progress-warp {
+    width: 40%;
+    .dib();
+    padding: 0 0 0 1rem;
+
+    .m-progress {
+      .ant-progress-text {
+        .font-s14();
+        color: @title-color;
+      }
+    }
+  }
 }
 
 //m-progress-status-exception 2018-03-14
-.m-progress-status-exception{
+.m-progress-status-exception {
 
-    &.ant-progress-status-exception{
+  &.ant-progress-status-exception {
 
-        .ant-progress-bg {
-            background-color: @pink;
-        }
-
-        .ant-progress-text{
-            .fl();
-            line-height: 2rem;
-            color: @pink;
-            margin-right: .666rem;
-        }
-
+    .ant-progress-bg {
+      background-color: @pink;
     }
+
+    .ant-progress-text {
+      .fl();
+      line-height: 2rem;
+      color: @pink;
+      margin-right: .666rem;
+    }
+
+  }
 
 }
 
-.m-xscp-progress{
-    &.ant-progress-show-info{
-        .ant-progress-outer {
-            margin-right: -5rem;
-            padding-right: 5rem;
-        }
-    } 
-    .ant-progress-text{
-        width: 4.25rem;
-        margin-left: .75rem
+.m-xscp-progress {
+  &.ant-progress-show-info {
+    .ant-progress-outer {
+      margin-right: -5rem;
+      padding-right: 5rem;
     }
+  }
+
+  .ant-progress-text {
+    width: 4.25rem;
+    margin-left: .75rem;
+  }
 }
+
+//里程碑页面
+.progress-info {
+  padding: 2rem 4rem;
+  font-size: 2.0832rem;
+
+  .data-item {
+    font-size: 2.0832rem;
+
+    .data-header {
+      display: flex;
+
+      .data-title {
+        font-weight: bold;
+      }
+
+      .data-item-time {
+        text-align: right;
+      }
+    }
+
+    .data-box {
+      background: #FAFAFB;
+      padding-top: 2rem;
+      margin-top: 2rem;
+      border-radius: 0.5rem;
+
+      .data-sx {
+        display: inline-block;
+        width: 50%;
+        padding: 0rem 2rem 2rem;
+
+        .data-label {
+          color: #909399;
+        }
+
+        .data-value {
+          color: #303133;
+          padding-left: 2rem;
+        }
+      }
+    }
+  }
+
+  .ant-timeline-item-head {
+    border-color: #3461FF !important;
+    background: #3461FF;
+
+  }
+}
+
+.main-tooltip {
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+}
+
+
+.risk-item-box {
+  font-size: 2.0832rem;
+  color: #303133;
+  margin: 2rem;
+  padding-bottom: 1rem;
+
+  .risk-item-header {
+    height: 4rem;
+    line-height: 4rem;
+
+    .risk-item-title {
+      font-weight: bold;
+    }
+
+    .risk-item-status {
+      height: 4rem;
+      border-radius: 2rem;
+      padding: 0 2rem;
+    }
+  }
+
+  .risk-item-body {
+
+    .risk-item-cont {
+      padding: 1rem 0;
+
+      .risk-item-name {
+        color: rgb(144, 147, 153)
+      }
+    }
+  }
+
+}
+
+.empty-box{
+    height: 20rem;
+    width: 60rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+

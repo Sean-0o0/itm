@@ -47,4 +47,5 @@ export default [
   { code: '', key: 'queryOafilerela', url: '/ZSZQ/v1/queryOafilerela', dis: '调用oa接口获取关联文件' },
   { code: '', key: 'queryProjectListInfo', url: '/projectManage/v1/queryProjectListInfo', dis: '查询项目信息列表的项目信息' },
   { code: '', key: 'queryProjectListPara', url: '/projectManage/v1/queryProjectListPara', dis: '查询项目信息列表的查询条件' },
+  { code: '', key: 'queryProjectInfoAll', url: '/projectManage/v1/queryProjectInfoAll', dis: '查询项目信息所有基本信息' },
 ];
