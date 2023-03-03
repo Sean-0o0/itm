@@ -618,7 +618,7 @@ class TodoItems extends React.Component {
         }
       },
       {
-        width: '25%',
+        width: '20%',
         title: <span style={{ textAlign: 'center' }}>待办事项</span>,
         dataIndex: 'sxmc',
         align: 'center',
@@ -647,7 +647,7 @@ class TodoItems extends React.Component {
         },
       },
       {
-        width: '31%',
+        width: '30%',
         title: '待办内容',
         dataIndex: 'txnr',
         align: 'center',
@@ -664,7 +664,7 @@ class TodoItems extends React.Component {
         },
       },
       {
-        width: '25%',
+        width: '24%',
         title: '相关项目',
         dataIndex: 'xmmc',
         align: 'center',
@@ -682,7 +682,7 @@ class TodoItems extends React.Component {
         },
       },
       {
-        width: '15%',
+        width: '22%',
         title: '日期',
         align: 'center',
         dataIndex: 'jzrq',
@@ -879,7 +879,7 @@ class TodoItems extends React.Component {
             }} onClick={this.onclickdb}>待办事项
             </div>
             <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
-              {wzxsl !== 0 && isDateSelected &&
+              { isDateSelected &&
                 <>
                   <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
                     className="iconfont icon-shijian" />

@@ -346,15 +346,15 @@ class NewProjectModelV2 extends React.Component {
     // 查询项目标签
     this.fetchQueryProjectLabel();
     // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
-    await this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    await this.fetchQueryBudgetProjects({ type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY")) });
 
     // 查询组织机构信息-应用部门
     this.fetchQueryOrganizationYYBMInfo();
 
     // 查询里程碑阶段信息
-    this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    this.fetchQueryMilestoneStageInfo({ type: 'ALL' });
     // 查询里程碑事项信息
-    this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
     // 查询里程碑信息
     this.fetchQueryMilepostInfo({
       type: 1,
@@ -366,7 +366,7 @@ class NewProjectModelV2 extends React.Component {
     });
 
     // 修改加载状态
-    this.setState({loading: false});
+    this.setState({ loading: false });
     // 查询岗位信息
     await this.fetchQueryStationInfo();
     // 查询组织机构信息
@@ -376,7 +376,7 @@ class NewProjectModelV2 extends React.Component {
 
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
-      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+      await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
     }
 
     //判断完成状态
@@ -634,7 +634,7 @@ class NewProjectModelV2 extends React.Component {
               childrenData.key = key;
               childrenData.value = key;
               childrenData.title = item.ysLX;
-              childrenData.dropdownStyle = {color: '#666'};
+              childrenData.dropdownStyle = { color: '#666' };
               childrenData.selectable = false;
               childrenData.children = childrenDatamini;
             }
@@ -697,7 +697,7 @@ class NewProjectModelV2 extends React.Component {
           let jobArr = [];
           let searchStaffList = [];
           let memberInfo = JSON.parse(result.memberInfo);
-          memberInfo.push({gw: '10', rymc: result.projectManager});
+          memberInfo.push({ gw: '10', rymc: result.projectManager });
           let arr = [];
           console.log("memberInfomemberInfo", memberInfo)
           console.log("this.state.staffList", this.state.staffList)
@@ -721,7 +721,7 @@ class NewProjectModelV2 extends React.Component {
               searchStaffList: [loginUser],
               loginUser: loginUser,
               // staffJobList: RYGW,
-              staffInfo: {...this.state.staffInfo, jobStaffList: arr}
+              staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
             });
             console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
@@ -2138,10 +2138,20 @@ class NewProjectModelV2 extends React.Component {
                             <Select showSearch
                               showArrow={true}
                               mode="multiple"
-                              onChange={e => {
+                              onChange={(e, nodeArr)=>{
                                 this.setState({
                                   basicInfo: { ...basicInfo, projectLabel: e }
-                                })
+                                });
+                                let labelTxt = nodeArr.map(x => x.props.children);
+                                labelTxt = labelTxt.join(';');
+                                this.fetchQueryMilepostInfo({
+                                  type: basicInfo.projectType,
+                                  xmid: basicInfo.projectId,
+                                  biddingMethod: basicInfo.biddingMethod,
+                                  budget: budgetInfo.projectBudget,
+                                  label: labelTxt === '' ? '无' : labelTxt,
+                                  queryType: "ALL"
+                                });
                               }}
                               filterOption={(input, option) =>
                                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -3192,7 +3202,7 @@ class NewProjectModelV2 extends React.Component {
                                         console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
-                                                         value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
+                                            value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
                                         )
                                       })
                                     }

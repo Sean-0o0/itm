@@ -57,7 +57,7 @@ class Tooltips extends React.Component {
 
   getOAUrl = (item) => {
     if (item.sxmc.includes('付款流程')) {
-      
+
       FetchQueryOwnerWorkflow({
         paging: 1,
         current: 1,
@@ -292,7 +292,8 @@ class Tooltips extends React.Component {
         return this.getWdscxg(status, item);
       case '总办会提案':
         return this.getWdscxg(status, item);
-      case '软件费用审批流程':
+      case '软件费用审批流程-有合同':
+      case '软件费用审批流程-无合同':
         return this.getLcfqck(status, item);
       case '项目立项申请':
         return this.getLcfqck(status, item);

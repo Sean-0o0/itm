@@ -5,24 +5,16 @@ import { QueryProjectListInfo } from "../../../services/pmsServices";
 
 export default function ProjectInfo(props) {
     const [tableData, setTableData] = useState([]); //表格数据-项目列表
+    const [tableLoading, setTableLoading] = useState(false); //表格加载状态
     useEffect(() => {
         getTableData();
         return () => {
         }
     }, []);
     const getTableData = (v) => {
+        setTableLoading(true);
         QueryProjectListInfo({
-            // "amountBig": 0,
-            // "amountSmall": 0,
-            // "amountType": "string",
-            // "budgetProject": 0,
-            // "budgetType": 0,
-            // "orgId": 0,
-            // "projectLabel": "string",
-            // "projectManager": 0,
-            // "projectType": 0,
             "current": 1,
-            "projectId": 0,
             "pageSize": 10,
             "paging": -1,
             "sort": "string",
@@ -30,14 +22,18 @@ export default function ProjectInfo(props) {
         }).then(res => {
             if (res?.success) {
                 setTableData(p => [...JSON.parse(res.record)]);
+                setTableLoading(false);
             }
             console.log("🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res", JSON.parse(res.record))
-        }).catch(e => console.error('getTableData', e));
+        }).catch(e => {
+            console.error('getTableData', e);
+            setTableLoading(false);
+        });
     };
     return (
         <div className='project-info-box'>
-            <TopConsole dictionary={props.dictionary} setTableData={setTableData} />
-            <InfoTable tableData={tableData} />
+            <TopConsole dictionary={props.dictionary} setTableData={setTableData} setTableLoading={setTableLoading}/>
+            <InfoTable tableData={tableData} tableLoading={tableLoading}/>
         </div>
     )
 };

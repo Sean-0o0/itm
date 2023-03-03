@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Button, Table, Popover, message } from 'antd';
 import InfoDetail from '../infoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
-import {EncryptBase64} from '../../../Common/Encrypt';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function InfoTable(props) {
-    const [tableLoading, setTableLoading] = useState(false); //表格加载状态
     const [sortedInfo, setSortedInfo] = useState({}); //金额排序
     const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
     const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-    const { tableData } = props; //表格数据
+    const { tableData, tableLoading } = props; //表格数据
 
     useEffect(() => {
 
@@ -32,6 +31,9 @@ export default function InfoTable(props) {
     }
     const handleModalOpen = (v) => {
         setModalVisible(true);
+    };
+    const handleTableChange = (v, c) => {
+        console.log('handleTableChange', v, c);
         return;
     };
     const fileAddModalProps = {
@@ -40,14 +42,14 @@ export default function InfoTable(props) {
         title: '新建项目',
         width: '70%',
         height: '120rem',
-        style: {top: '2rem'},
+        style: { top: '2rem' },
         visible: true,
         footer: null,
-      };
-    const openVisible = () =>{
+    };
+    const openVisible = () => {
         setFileAddVisible(true);
     }
-    const closeFileAddModal = () =>{
+    const closeFileAddModal = () => {
         setFileAddVisible(false);
     }
     const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`;
@@ -88,7 +90,8 @@ export default function InfoTable(props) {
             align: 'right',
             key: 'projectBudget',
             ellipsis: true,
-            sorter: (a, b) => Number(a.xmje) - Number(b.xmje),
+            sorter: (a, b) => Number(a.projectBudget) - Number(b.projectBudget),
+            sortDirections: ['descend', 'ascend'],
         },
         {
             title: '应用部门',
@@ -142,6 +145,7 @@ export default function InfoTable(props) {
                 columns={columns}
                 rowKey={'projectId'}
                 dataSource={tableData}
+                onChange={handleTableChange}
                 pagination={{
                     pageSizeOptions: ['10', '20', '30', '40'],
                     showSizeChanger: true,

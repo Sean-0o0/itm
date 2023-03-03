@@ -152,8 +152,19 @@ class ProjectSchedule extends React.Component {
         Loginname
       )
     }
-    if (item.sxmc.includes("软件费用审批")) {
+    if (item.sxmc.includes("软件费用审批流程-有合同")) {
       params = getParams("TLC_LCFQ", "TLC_LCFQ_SUBMIT_RJGMHT",
+        [
+          {
+            "name": "GLXM",
+            "value": Number(item.xmid)
+          }
+        ],
+        Loginname
+      )
+    }
+    if (item.sxmc.includes("软件费用审批流程-无合同")) {
+      params = getParams("TLC_LCFQ", "TLC_LCFQ_RJGMWHT",
         [
           {
             "name": "GLXM",

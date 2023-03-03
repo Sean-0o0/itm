@@ -15,15 +15,18 @@ export default function TopConsole(props) {
     const [orgData, setOrgData] = useState([]); //应用部门
     const { XMLX } = props.dictionary; //项目类型
     //查询的值
-    const [budget, setBudget] = useState(''); //关联预算
+    const [budget, setBudget] = useState(undefined); //关联预算
+    const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
     const [label, setLabel] = useState([]); //项目标签
-    const [prjName, setprjName] = useState(''); //项目名称
-    const [prjMnger, setPrjMnger] = useState(''); //项目经理
-    const [org, setOrg] = useState([]); //应用部门
-    const [prjType, setPrjType] = useState(''); //项目类型
-    const [gtAmount, setGtAmount] = useState(''); //项目金额，大于
-    const [minAmount, setMinAmount] = useState([]); //项目金额，最小
-    const [maxAmount, setMaxAmount] = useState([]); //项目金额，最大
+    const [prjName, setPrjName] = useState(undefined); //项目名称
+    const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
+    const [org, setOrg] = useState([]); //应用部门  待定------->需要改成单选*****
+    const [prjType, setPrjType] = useState(undefined); //项目类型
+    const [gtAmount, setGtAmount] = useState(undefined); //项目金额，大于
+    const [minAmount, setMinAmount] = useState(undefined); //项目金额，最小
+    const [maxAmount, setMaxAmount] = useState(undefined); //项目金额，最大
+
+    const { setTableLoading, setTableData } = props;
 
     useEffect(() => {
         getFilterData()
@@ -42,6 +45,7 @@ export default function TopConsole(props) {
         }).then(res => {
             if (res?.success) {
                 setBudgetData(p => [...JSON.parse(res.budgetProjectRecord)]);
+                console.log("🚀 ~ file: index.js:47 ~ getFilterData ~ JSON.parse(res.budgetProjectRecord):", JSON.parse(res.budgetProjectRecord))
                 setLabelData(p => [...JSON.parse(res.labelRecord)]);
                 setOrgData(p => [...JSON.parse(res.orgRecord)]);
                 setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
@@ -50,6 +54,70 @@ export default function TopConsole(props) {
         }).catch(e => {
             console.error('QueryProjectListPara', e);
         });
+    };
+
+    //查询按钮
+    const handleSearch = () => {
+        setTableLoading(true);
+        let params = {
+            // "projectType": 0,
+            "current": 1,
+            "pageSize": 10,
+            "paging": -1,
+            "sort": "string",
+            "total": -1
+        };
+        if (budget !== undefined && budget !== '') {
+            params.budgetProject = Number(budget);
+            params.budgetType = Number(budgetType);
+        }
+        if (prjName !== undefined && prjName !== '') {
+            params.projectId = Number(prjName);
+        }
+        if (prjMnger !== undefined && prjMnger !== '') {
+            params.projectId = Number(prjMnger);
+        }
+        if (amountSelector === '1') {//区间 ,目前暂定只有均不为空时才查
+            if (minAmount !== undefined && minAmount !== '' && maxAmount !== undefined && maxAmount !== '') {
+                params.amountType = 'SCOPE';
+                params.amountBig = Number(maxAmount);
+                params.amountSmall = Number(minAmount);
+            }
+        } else {
+            if (maxAmount !== undefined && maxAmount !== '') {
+                params.amountType = 'BIGGER';
+                params.amountBig = Number(maxAmount);
+            }
+        }
+        if (org.length !== 0) {
+            params.orgId = org.join(';');
+        }
+        if (label.length !== 0) {
+            params.projectLabel = label.join(';');
+        }
+
+        QueryProjectListInfo(params).then(res => {
+            if (res?.success) {
+                setTableData(p => [...JSON.parse(res.record)]);
+                setTableLoading(false);
+            }
+        }).catch(e => {
+            console.error('handleSearch', e);
+            setTableLoading(false);
+        });
+    };
+
+    //重置按钮
+    const handleReset = (v) => {
+        setBudget(undefined); //关联预算
+        setLabel([]); //项目标签
+        setPrjName(undefined); //项目名称
+        setPrjMnger(undefined); //项目经理
+        setOrg([]); //应用部门
+        setPrjType(undefined); //项目类型
+        setGtAmount(undefined); //项目金额，大于
+        setMinAmount(undefined); //项目金额，最小
+        setMaxAmount(undefined); //项目金额，最大
     };
 
     // onChange-start
@@ -86,24 +154,25 @@ export default function TopConsole(props) {
         setOrg(p => [...v]);
     };
     //关联预算
-    const handleBudgetChange = (v) => {
-        // console.log('handleBudgetChange', v);
+    const handleBudgetChange = (v, node) => {
+        // console.log('handleBudgetChange', v,node.props.yslxid);
         if (v === undefined) v = '';
         setBudget(v);
+        setBudgetType(v, node.props.yslxid);
     };
     //项目金额，大于
     const handleGtAmountChange = (v) => {
-        console.log('handleGtAmountChange', v);
+        // console.log('handleGtAmountChange', v);
         setGtAmount(v);
     };
     //项目金额，最小
     const handleMinAmountChange = (v) => {
-        console.log('handleBtAmountChange', v);
+        // console.log('handleBtAmountChange', v);
         setMinAmount(v);
     };
     //项目金额，最大
     const handleMaxAmountChange = (v) => {
-        console.log('handleBtAmountChange', v);
+        // console.log('handleBtAmountChange', v);
         setMaxAmount(v);
     };
     // onChange-end
@@ -112,24 +181,24 @@ export default function TopConsole(props) {
             <div className='item-box'>
                 <div className='console-item'>
                     <div className='item-label'>项目经理</div>
-                    <Select className='item-selector' showSearch allowClear onChange={handlePrjMngerChange} placeholder='请选择'>
+                    <Select className='item-selector' value={prjMnger} showSearch allowClear onChange={handlePrjMngerChange} placeholder='请选择'>
                         {prjMngerData.map((x, i) => <Option key={i} value={x.ID}>{x.USERNAME}</Option>)}
                     </Select>
                 </div>
                 <div className='console-item'>
                     <div className='item-label'>项目名称</div>
-                    <Select className='item-selector' showSearch allowClear onChange={handlePrjNameChange} placeholder='请选择'>
+                    <Select className='item-selector' value={prjName} showSearch allowClear onChange={handlePrjNameChange} placeholder='请选择'>
                         {prjNameData.map((x, i) => <Option key={i} value={x.XMID}>{x.XMMC}</Option>)}
                     </Select>
                 </div>
                 <div className='console-item' >
                     <div className='item-label'>项目类型</div>
-                    <Select className='item-selector' showSearch allowClear onChange={handlePrjTypeChange} placeholder='请选择'>
+                    <Select className='item-selector' value={prjType} showSearch allowClear onChange={handlePrjTypeChange} placeholder='请选择'>
                         {XMLX?.map((x, i) => <Option key={i} value={x.cbm}>{x.note}</Option>)}
                     </Select>
                 </div>
-                <Button className='btn-search' type='primary'>查询</Button>
-                <Button className='btn-reset'>重置</Button>
+                <Button className='btn-search' type='primary' onClick={handleSearch}>查询</Button>
+                <Button className='btn-reset' onClick={handleReset}>重置</Button>
             </div>
             <div className='item-box'>
                 <div className='console-item' >
@@ -140,6 +209,7 @@ export default function TopConsole(props) {
                         // maxTagPlaceholder={(extraArr) => {
                         //     return `等${extraArr.length + 2}个`
                         // }}
+                        value={label}
                         placeholder='请选择'
                         allowClear mode='multiple'
                         onChange={handleLabelChange}>
@@ -148,14 +218,14 @@ export default function TopConsole(props) {
                 </div>
                 <div className='console-item'>
                     <div className='item-label'>应用部门</div>
-                    <Select className='item-selector' allowClear mode='multiple' onChange={handleOrgChange} placeholder='请选择'>
+                    <Select className='item-selector' value={org} allowClear mode='multiple' onChange={handleOrgChange} placeholder='请选择'>
                         {orgData.map((x, i) => <Option key={i} value={x.ID}>{x.NAME}</Option>)}
                     </Select>
                 </div>
                 <div className='console-item'>
                     <div className='item-label'>关联预算</div>
-                    <Select className='item-selector' showSearch allowClear onChange={handleBudgetChange} placeholder='请选择'>
-                        {budgetData.map((x, i) => <Option key={i} value={x.ID}>{x.YSXM}</Option>)}
+                    <Select className='item-selector' value={budget} showSearch allowClear onChange={handleBudgetChange} placeholder='请选择'>
+                        {budgetData.map((x, i) => <Option key={i} value={x.ID} yslxid={x.YSLXID}>{x.YSXM}</Option>)}
                     </Select>
                 </div>
                 {filterFold &&
@@ -175,12 +245,12 @@ export default function TopConsole(props) {
                                 <Option value="2">大于</Option>
                             </Select>
                             {amountSelector === '2' ?
-                                <Input className='item-input' onChange={handleGtAmountChange} placeholder='请输入' />
+                                <Input className='item-input' value={gtAmount} onChange={handleGtAmountChange} placeholder='请输入' />
                                 :
                                 <div className='input-between'>
-                                    <Input className='input-min' onChange={handleMinAmountChange} placeholder="请输入下限" />
+                                    <Input className='input-min' value={minAmount} onChange={handleMinAmountChange} placeholder="请输入下限" />
                                     <Input className='input-to' placeholder="~" disabled />
-                                    <Input className='input-max' onChange={handleMaxAmountChange} placeholder="请输入上限" />
+                                    <Input className='input-max' value={maxAmount} onChange={handleMaxAmountChange} placeholder="请输入上限" />
                                 </div>}
                         </div>
                     </div>
