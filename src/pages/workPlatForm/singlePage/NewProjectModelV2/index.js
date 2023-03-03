@@ -86,6 +86,7 @@ class NewProjectModelV2 extends React.Component {
       org: '',
       software: '',
       biddingMethod: 3,
+      labelTxt: '无',
     },
     mileInfo: {
       milePostInfo: []  // 进行变更操作的里程碑信息
@@ -361,7 +362,7 @@ class NewProjectModelV2 extends React.Component {
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
-      label: '',
+      label: this.state.basicInfo.labelTxt,
       queryType: "ALL"
     });
 
@@ -2118,7 +2119,7 @@ class NewProjectModelV2 extends React.Component {
                                 xmid: basicInfo.projectId,
                                 biddingMethod: basicInfo.biddingMethod,
                                 budget: budgetInfo.projectBudget,
-                                label: '',
+                                label: basicInfo.labelTxt,
                                 queryType: "ALL"
                               });
                             }}>
@@ -2138,18 +2139,19 @@ class NewProjectModelV2 extends React.Component {
                             <Select showSearch
                               showArrow={true}
                               mode="multiple"
-                              onChange={(e, nodeArr)=>{
-                                this.setState({
-                                  basicInfo: { ...basicInfo, projectLabel: e }
-                                });
+                              onChange={(e, nodeArr) => {
                                 let labelTxt = nodeArr.map(x => x.props.children);
                                 labelTxt = labelTxt.join(';');
+                                labelTxt = labelTxt === '' ? '无' : labelTxt;
+                                this.setState({
+                                  basicInfo: { ...basicInfo, projectLabel: e, labelTxt }
+                                });
                                 this.fetchQueryMilepostInfo({
                                   type: basicInfo.projectType,
                                   xmid: basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
-                                  label: labelTxt === '' ? '无' : labelTxt,
+                                  label: labelTxt,
                                   queryType: "ALL"
                                 });
                               }}
@@ -2246,7 +2248,6 @@ class NewProjectModelV2 extends React.Component {
                               top: '13%',
                               right: '83.5%'
                             }}>
-                              *
                             </div>
                             <Form.Item label="采购方式">
                               {getFieldDecorator('biddingMethod', {
@@ -2263,7 +2264,7 @@ class NewProjectModelV2 extends React.Component {
                                     xmid: this.state.basicInfo.projectId,
                                     biddingMethod: e.target.value,
                                     budget: budgetInfo.projectBudget,
-                                    label: '',
+                                    label: basicInfo.labelTxt,
                                     queryType: "ALL"
                                   });
                                 }}>
@@ -2463,7 +2464,7 @@ class NewProjectModelV2 extends React.Component {
                                   xmid: this.state.basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
-                                  label: '',
+                                  label: basicInfo.labelTxt,
                                   queryType: "ONLYLX"
                                 });
                               }
