@@ -86,7 +86,7 @@ class NewProjectModelV2 extends React.Component {
       org: '',
       software: '',
       biddingMethod: 3,
-      labelTxt: '无',
+      labelTxt: '',
     },
     mileInfo: {
       milePostInfo: []  // 进行变更操作的里程碑信息
@@ -2142,7 +2142,6 @@ class NewProjectModelV2 extends React.Component {
                               onChange={(e, nodeArr) => {
                                 let labelTxt = nodeArr.map(x => x.props.children);
                                 labelTxt = labelTxt.join(';');
-                                labelTxt = labelTxt === '' ? '无' : labelTxt;
                                 this.setState({
                                   basicInfo: { ...basicInfo, projectLabel: e, labelTxt }
                                 });
@@ -2248,6 +2247,7 @@ class NewProjectModelV2 extends React.Component {
                               top: '13%',
                               right: '83.5%'
                             }}>
+                              *
                             </div>
                             <Form.Item label="采购方式">
                               {getFieldDecorator('biddingMethod', {
