@@ -343,7 +343,7 @@ const TableBox = (props) => {
             title: '工作模块',
             dataIndex: 'gzmk',
             key: 'gzmk',
-            width: 160,
+            width: 180,
             fixed: 'left',
             ellipsis: true,
             render: (value, row, index) => {
@@ -359,7 +359,7 @@ const TableBox = (props) => {
             title: '本周重点工作',
             dataIndex: 'bznr',
             key: 'bznr',
-            width: 160,
+            width: 240,
             ellipsis: true,
             render: (value, row, index) => {
                 const obj = {
@@ -375,7 +375,7 @@ const TableBox = (props) => {
             title: '下周工作安排',
             dataIndex: 'xzjh',
             key: 'xzjh',
-            width: 160,
+            width: 240,
             ellipsis: true,
             editable: true,
             render: (value, row, index) => {
@@ -425,7 +425,7 @@ const TableBox = (props) => {
             title: '重要事项说明',
             dataIndex: 'zysjsm',
             key: 'zysjsm',
-            width: 200,
+            width: 300,
             ellipsis: true,
             editable: true,
         },
@@ -434,7 +434,7 @@ const TableBox = (props) => {
             dataIndex: 'operation',
             key: 'operation',
             width: 180,
-            fixed: 'right',
+            fixed: 'right', 
             render: (text, row, index) => {
                 return <div>
                     <a style={{ color: '#3361ff', marginRight: '1.488rem' }} onClick={() => getLcbqkModalUrl(row.id)}>查看</a>

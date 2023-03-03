@@ -186,6 +186,8 @@ const EditableCell = (props) => {
                 return '高风险';
             case '4':
                 return '进度正常';
+            case '5':
+                return '延期';
         }
     };
     const curPData = [
@@ -213,6 +215,9 @@ const EditableCell = (props) => {
         }, {
             txt: '进度正常',
             num: '4'
+        }, {
+            txt: '延期',
+            num: '5'
         }
     ];
     const getSelect = (onChange, open, setOpen, data) => {
