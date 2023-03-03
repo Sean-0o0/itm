@@ -1184,7 +1184,7 @@ class ProjectSchedule extends React.Component {
                               </div>
                               {items.extend ? <div style={{ width: items.extend ? 'calc(20% - 25rem)' : '20%' }}></div>
                                 : <div className='current-milestone'>
-                                  {moment().isBetween(moment(items?.kssj), moment(items?.jssj)) ? '当前' : '待开始'}里程碑：
+                                  {getMileStoneName(items.xmid) === '项目付款' ? '当前' : moment().isBetween(moment(items?.kssj), moment(items?.jssj)) ? '当前' : '待开始'}里程碑：
                                   <div className='milestone-item'>{getMileStoneName(items.xmid)}</div>
                                 </div>}
 
@@ -1220,7 +1220,7 @@ class ProjectSchedule extends React.Component {
                                   setIsSpinning={setIsSpinning}
                                   loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
                                   state={items.fxnr} item={items}
-                                  lcbid={ProjectScheduleDetailData[index]?.List[0]?.lcbid} />
+                                  lcbid={((ProjectScheduleDetailData.filter(x => x?.xmid === items.xmid)[0])?.List[0])?.lcbid} />
                               </div>
                             </div>
                             {items.extend ?

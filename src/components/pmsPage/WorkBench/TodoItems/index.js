@@ -856,8 +856,8 @@ class TodoItems extends React.Component {
     const ryxztxModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
-      width: '60%',
-      height: '45rem',
+      width: '30%',
+      height: '47rem',
       title: '人员新增提醒',
       style: { top: '10rem' },
       visible: ryxztxVisible,
