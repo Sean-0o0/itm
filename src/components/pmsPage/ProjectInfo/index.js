@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import InfoTable from './infoTable';
 import TopConsole from './topConsole';
 import { QueryProjectListInfo } from "../../../services/pmsServices";
+import { message } from 'antd';
 
 export default function ProjectInfo(props) {
     const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -24,7 +25,7 @@ export default function ProjectInfo(props) {
                 setTableData(p => [...JSON.parse(res.record)]);
                 setTableLoading(false);
             }
-            console.log("🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res", JSON.parse(res.record))
+            // console.log("🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res", JSON.parse(res.record))
         }).catch(e => {
             console.error('getTableData', e);
             setTableLoading(false);
@@ -32,8 +33,8 @@ export default function ProjectInfo(props) {
     };
     return (
         <div className='project-info-box'>
-            <TopConsole dictionary={props.dictionary} setTableData={setTableData} setTableLoading={setTableLoading}/>
-            <InfoTable tableData={tableData} tableLoading={tableLoading}/>
+            <TopConsole dictionary={props.dictionary} setTableData={setTableData} setTableLoading={setTableLoading} />
+            <InfoTable tableData={tableData} tableLoading={tableLoading} />
         </div>
     )
 };
