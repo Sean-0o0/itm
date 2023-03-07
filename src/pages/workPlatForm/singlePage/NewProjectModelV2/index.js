@@ -551,7 +551,7 @@ class NewProjectModelV2 extends React.Component {
       pre[current.ysLXID].push({
         key: current.ysLXID,
         title: current.ysLX,
-        value: current.ysLXID,
+        value: current.ysLXID + current.ysName,
         ysID: current.ysID,
         ysKGL: Number(current.ysKGL),
         ysLB: current.ysLB,
@@ -578,7 +578,7 @@ class NewProjectModelV2 extends React.Component {
             pre[current.zdbm].push({
               key: current.ysID,
               title: current.ysName,
-              value: current.ysID,
+              value: current.ysID + current.ysName,
               ysID: current.ysID,
               ysKGL: Number(current.ysKGL),
               ysLB: current.ysLB,
@@ -600,7 +600,7 @@ class NewProjectModelV2 extends React.Component {
                   // console.log("b[item.zdbm]",b["6"])
                   b[item.zdbm].map(i => {
                     treeDatamini.key = i.ysID
-                    treeDatamini.value = i.ysID
+                    treeDatamini.value = i.ysID + i.ysName
                     treeDatamini.title = i.ysName
                     treeDatamini.ysID = i.ysID
                     treeDatamini.ysKGL = Number(i.ysKGL)
@@ -615,7 +615,7 @@ class NewProjectModelV2 extends React.Component {
                   // treeDatamini.children = b[item.zdbm]
                 } else {
                   treeDatamini.key = item.zdbm
-                  treeDatamini.value = item.zdbm
+                  treeDatamini.value = item.zdbm + item.ysName
                   treeDatamini.title = item.ysLB
                   treeDatamini.ysID = item.ysID
                   treeDatamini.ysKGL = Number(item.ysKGL)
@@ -892,6 +892,7 @@ class NewProjectModelV2 extends React.Component {
       const { code = -1, record = [] } = result;
       if (code > 0) {
         this.setState({ budgetProjectList: this.toItemTree(record) });
+        console.log(this.toItemTree(record));
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -2377,7 +2378,7 @@ class NewProjectModelV2 extends React.Component {
                                       this.setState({
                                         budgetInfo: {
                                           ...this.state.budgetInfo,
-                                          budgetProjectId: e,
+                                          budgetProjectId: ite.ysID,
                                           totalBudget: 0,
                                           relativeBudget: 0,
                                           projectBudget: 0,
@@ -2396,7 +2397,7 @@ class NewProjectModelV2 extends React.Component {
                                         this.setState({
                                           budgetInfo: {
                                             ...this.state.budgetInfo,
-                                            budgetProjectId: e,
+                                            budgetProjectId: i.ysID,
                                             totalBudget: Number(i.ysZJE),
                                             relativeBudget: Number(i.ysKGL),
                                             budgetType: i.ysLX

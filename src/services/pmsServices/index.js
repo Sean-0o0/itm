@@ -46,7 +46,8 @@ const {
     queryOafilerela,
     queryProjectListInfo,
     queryProjectListPara,
-    queryProjectInfoAll
+    queryProjectInfoAll,
+    queryXWHYAFJ,
   },
 } = api;
 
@@ -472,6 +473,16 @@ export async function QueryProjectListPara(payload, configObj) {
 export async function QueryProjectInfoAll(payload, configObj) {
   const option = {
     url: queryProjectInfoAll,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 查询要导出的信委会议案
+export async function QueryXWHYAFJ(payload, configObj) {
+  const option = {
+    url: queryXWHYAFJ,
     method: 'post',
     data: payload,
   };

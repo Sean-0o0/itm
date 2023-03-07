@@ -94,7 +94,7 @@ class Tooltips extends React.Component {
         "attribute": 0,
         "authFlag": 0,
         "objectName": "LC_XWHYALC",
-        "operateName": "View",
+        "operateName": "TrackWork",
         "parameter": [
           {
             "name": "ID",
