@@ -1268,12 +1268,12 @@ class NewProjectModelV2 extends React.Component {
       };
       const _this = this;
       const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
-      if (timeList && timeList.length > 0 && this.state.type === 1) {
+      if (budgetInfo.projectBudget > budgetInfo.relativeBudget) {
         confirm({
           okText: '确认',
           cancelText: '取消',
           title: '提示',
-          content: '有里程碑信息的默认起止时间没有修改，是否确认？',
+          content: '超过当前预算项目的预算，是否确认？',
           onOk() {
             _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
           },
@@ -1281,7 +1281,17 @@ class NewProjectModelV2 extends React.Component {
           },
         });
       } else {
-        _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+        confirm({
+          okText: '确认',
+          cancelText: '取消',
+          title: '提示',
+          content: '确认完成？',
+          onOk() {
+            _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+          },
+          onCancel() {
+          },
+        });
       }
     }
 
@@ -1828,6 +1838,7 @@ class NewProjectModelV2 extends React.Component {
       message.warn("已存在,请勿重复添加！")
     }
     // console.log("milemile",mile)
+    mile[index].flag = false;
     const arr = this.filterGridLayOut(mile);
     // console.log("arrarr",arr)
     this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
@@ -1838,17 +1849,22 @@ class NewProjectModelV2 extends React.Component {
   addSwlx = (e, index) => {
     // console.log("eeee",e)
     // console.log("index",index)
-    this.fetchQueryMatterUnderMilepost({ type: 'SINGLE', lcbid: e });
+    this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
     //添加事项类型
     // console.log("eeeee", e)
     // console.log("index", index)
-    const { mileInfo: { milePostInfo = [] }, } = this.state;
+    const {mileInfo: {milePostInfo = []},} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
-    let matterInfos = { swlxmc: "new", sxlb: [] }
+    let matterInfos = {swlxmc: "new", sxlb: []}
     matterInfo.push(matterInfos)
-    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
+    if (!mile[index].flag || mile[index].flag === undefined) {
+      mile[index].flag = true;
+      this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
+    } else {
+      message.warn("请完成当前事项的添加！")
+    }
     //添加内的流程
   }
 
@@ -1908,6 +1924,7 @@ class NewProjectModelV2 extends React.Component {
         }
       })
       const matterInfo = mile[index].matterInfos;
+      mile[index].flag = false;
       matterInfo.pop();
       this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
     }
