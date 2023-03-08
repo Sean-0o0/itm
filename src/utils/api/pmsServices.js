@@ -48,5 +48,5 @@ export default [
   { code: '', key: 'queryProjectListInfo', url: '/projectManage/v1/queryProjectListInfo', dis: '查询项目信息列表的项目信息' },
   { code: '', key: 'queryProjectListPara', url: '/projectManage/v1/queryProjectListPara', dis: '查询项目信息列表的查询条件' },
   { code: '', key: 'queryProjectInfoAll', url: '/projectManage/v1/queryProjectInfoAll', dis: '查询项目信息所有基本信息' },
-
+  { code: '', key: 'queryXWHYAFJ', url: '/projectManage/queryXWHYAFJ', dis: '查询要导出的信委会议案' },
 ];

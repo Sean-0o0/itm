@@ -2129,6 +2129,9 @@
 
 .newproject-treeselect {
   // :global {
+  .ant-select-tree {
+    font-size: 2rem !important;
+  }
   //关联预算点父级展开
   .ant-select-tree li span.ant-select-tree-switcher {
     position: relative;
@@ -3827,6 +3830,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       & > .btn-search {
+        padding: 9px 12px 10px 12px;
+        font-size: 2.0832rem;
+        line-height: unset;
+        height: unset;
         background-color: #3361ff;
         color: #fff !important;
 
@@ -3836,6 +3843,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       & > .btn-reset {
+        padding: 9px 12px 10px 12px;
+        font-size: 2.0832rem;
+        line-height: unset;
+        height: unset;
         margin-left: 8px;
 
         &:hover {
@@ -3858,7 +3869,47 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .item-selector {
           margin-left: 8px;
           margin-right: 24px;
-          flex: auto;
+          // flex: auto;
+          width: 75%;
+
+          //自适应适配
+          .ant-select-selection.ant-select-selection--single,
+          .ant-select-selection.ant-select-selection--multiple {
+            min-height: unset;
+            height: unset;
+            .ant-select-selection__rendered {
+              line-height: unset;
+              padding: 5px 0;
+            }
+            .ant-select-selection__placeholder {
+              top: 5px;
+              line-height: unset;
+              height: unset;
+              margin-top: 0;
+            }
+            .ant-select-search--inline,
+            ul {
+              margin-top: -5px;
+              margin-bottom: -5px;
+            }
+            .ant-select-selection__choice {
+              line-height: unset;
+              height: unset;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+            }
+          }
+          .ant-select-selection.ant-select-selection--multiple {
+            .ant-select-selection__rendered {
+              padding: 7.5px 0;
+            }
+            .ant-select-search--inline {
+              margin-top: 0;
+              line-height: unset;
+              height: unset;
+            }
+          }
         }
       }
 
@@ -3905,11 +3956,34 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           justify-content: center;
 
           .item-selector {
-            // width: 13rem;
             flex: auto;
             margin-right: 8px;
+            //自适应适配
+            .ant-select-selection.ant-select-selection--single,
+            .ant-select-selection.ant-select-selection--multiple {
+              min-height: unset;
+              height: unset;
+              .ant-select-selection__rendered {
+                line-height: unset;
+                padding: 5px 0;
+              }
+              .ant-select-selection__placeholder {
+                top: 5px;
+                line-height: unset;
+                height: unset;
+                margin-top: 0;
+              }
+              .ant-select-search--inline,
+              ul {
+                margin: -5px 0;
+              }
+            }
           }
-
+          .ant-input {
+            line-height: unset;
+            height: unset;
+            padding: 7px 11px;
+          }
           .item-input {
             // flex: auto;
             width: 75%;
@@ -3962,9 +4036,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
   & > .info-table {
     margin: 16px 24px 24px 24px;
-    height: calc(100vh - 226px);
+    height: calc(100vh - 235px);
 
     & > .btn-add-prj {
+      padding: 9px 12px 10px 12px;
+      font-size: 2.0832rem;
+      line-height: unset;
+      height: unset;
       color: #fff !important;
       background-color: #3361ff;
       margin-bottom: 2.3808rem;
@@ -3976,27 +4054,40 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
     .ant-table {
       td {
-        padding: 10px;
-        line-height: 29.5px;
+        padding: 8px;
+        font-size: 2.0832rem;
+        font-family: Roboto-Regular, Roboto;
+        font-weight: 400;
+        color: #303133;
       }
 
       th {
-        font-weight: 600;
-        // text-align: center;
-        padding: 16px;
+        padding: 10.5px;
+        font-size: 2.0832rem;
+        background-color: #f5f7fa;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #606266;
       }
 
       .ant-table-body {
-        height: calc(100vh - 421px);
+        height: calc(100vh - 414px);
       }
 
       .ant-table-scroll .ant-table-header {
         margin-bottom: -16.5px !important; //表格表头底部边框
+        background-color: #f5f7fa;
       }
       .ant-table-placeholder {
         position: absolute;
         width: 100%;
-        top: 56px;
+        top: 6.696rem;
+        border-top: 0;
+        height: calc(100vh - 356px);
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
       }
 
       //项目标签
@@ -4009,11 +4100,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .tag-item {
           color: #3361ff;
-          font-size: 12px;
+          font-size: 1.7856rem;
           border: 1px solid hsla(226, 100%, 60%, 0.561);
           border-radius: 4px;
           background-color: #3363ff14;
-          padding: 5px 7px;
+          padding: 2px 8px 3px 8px;
           margin-right: 5%;
           max-width: 38%;
           text-overflow: ellipsis;
@@ -4027,7 +4118,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
     }
-
+    .ant-table-pagination {
+      font-size: 2.0832rem;
+      .ant-select {
+        font-size: 2.0832rem !important;
+      }
+    }
     .ant-pagination-total-text {
       position: absolute;
       left: 0;
@@ -4036,6 +4132,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
   }
 }
+//项目信息-单选下拉 - 自适应适配
+.item-selector-dropdown {
+  .ant-select-dropdown-menu-item {
+    font-size: 2rem !important;
+  }
+}
+//项目信息-多选下拉 - 自适应适配
+
+//项目信息-单选下拉 - 自适应适配
 
 //项目详情查看弹窗
 .info-detail-modal {

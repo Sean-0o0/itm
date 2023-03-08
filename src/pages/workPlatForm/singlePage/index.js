@@ -32,7 +32,7 @@ class SinglePage extends Component {
     const {
       match: { url: parentUrl = '' },
     } = this.props;
-    console.log('urlurlurl', parentUrl, this.props);
+    // console.log('urlurlurl', parentUrl, this.props);
     return (
       <Fragment>
         <Switch>
@@ -71,7 +71,7 @@ class SinglePage extends Component {
           />
           <Route
             exact
-            path={`${parentUrl}/AnnexExport`}
+            path={`${parentUrl}/AnnexExport/:params`}
             render={props => (
               <AnnexExport
                 {...props}

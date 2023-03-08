@@ -60,25 +60,35 @@ export default function InfoTable(props) {
       width: 200,
       key: 'projectName',
       ellipsis: true,
+      render: (text, row, index) => (
+        <a
+          style={{ color: '#3361ff' }}
+          onClick={() => {
+            handleModalOpen();
+          }}
+        >
+          {text}
+        </a>
+      ),
     },
     {
       title: '项目经理',
       dataIndex: 'projectManager',
-      width: 100,
+      width: 90,
       key: 'projectManager',
       ellipsis: true,
     },
     {
       title: '项目类型',
       dataIndex: 'projectType',
-      width: 100,
+      width: 90,
       key: 'projectType',
       ellipsis: true,
     },
     {
       title: '关联预算',
       dataIndex: 'budgetProject',
-      width: 140,
+      width: 160,
       key: 'budgetProject',
       ellipsis: true,
     },
@@ -143,21 +153,10 @@ export default function InfoTable(props) {
       },
     },
     {
-      title: '操作',
-      dataIndex: 'operation',
-      align: 'center',
-      key: 'operation',
+      title: '项目状态',
+      dataIndex: 'projectStatus',
+      key: 'projectStatus',
       width: 100,
-      render: (text, row, index) => (
-        <a
-          style={{ color: '#3361ff' }}
-          onClick={() => {
-            handleModalOpen();
-          }}
-        >
-          查看
-        </a>
-      ),
     },
   ];
   return (

@@ -480,11 +480,11 @@ export async function QueryProjectInfoAll(payload, configObj) {
 }
 
 // 查询要导出的信委会议案
-export async function QueryXWHYAFJ(payload, configObj) {
+export async function QueryXWHYAFJ(payload) {
   const option = {
     url: queryXWHYAFJ,
     method: 'post',
     data: payload,
   };
-  return request(option, configObj);
+  return request(option);
 }
