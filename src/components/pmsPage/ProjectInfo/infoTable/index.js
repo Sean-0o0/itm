@@ -9,8 +9,9 @@ export default function InfoTable(props) {
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
   const { tableData, tableLoading } = props; //表格数据
-
+  
   useEffect(() => {
+    
     return () => {};
   }, []);
 
@@ -60,16 +61,20 @@ export default function InfoTable(props) {
       width: 200,
       key: 'projectName',
       ellipsis: true,
-      render: (text, row, index) => (
-        <a
-          style={{ color: '#3361ff' }}
-          onClick={() => {
-            handleModalOpen();
-          }}
-        >
-          {text}
-        </a>
-      ),
+      render: (text, row, index) => {
+        if (row.projectStatus !== '草稿')
+          return (
+            <a
+              style={{ color: '#3361ff' }}
+              onClick={() => {
+                handleModalOpen();
+              }}
+            >
+              {text}
+            </a>
+          );
+        return <span>{text}</span>;
+      },
     },
     {
       title: '项目经理',
@@ -181,7 +186,7 @@ export default function InfoTable(props) {
         loading={tableLoading}
         columns={columns}
         rowKey={'projectId'}
-        dataSource={[]}
+        dataSource={tableData}
         onChange={handleTableChange}
         scroll={{ y: true }}
         pagination={{
