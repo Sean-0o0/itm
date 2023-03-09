@@ -57,7 +57,8 @@ export default function InfoTable(props) {
     {
       title: '项目名称',
       dataIndex: 'projectName',
-      width: 200,
+      // width: 200,
+      width: '15%',
       key: 'projectName',
       ellipsis: true,
       render: (text, row, index) => {
@@ -78,28 +79,32 @@ export default function InfoTable(props) {
     {
       title: '项目经理',
       dataIndex: 'projectManager',
-      width: 90,
+      // width: 90,
+      width: '7%',
       key: 'projectManager',
       ellipsis: true,
     },
     {
       title: '项目类型',
       dataIndex: 'projectType',
-      width: 90,
+      // width: 90,
+      width: '7%',
       key: 'projectType',
       ellipsis: true,
     },
     {
       title: '关联预算',
       dataIndex: 'budgetProject',
-      width: 160,
+      // width: 160,
+      width: '18%',
       key: 'budgetProject',
       ellipsis: true,
     },
     {
       title: '项目金额(元)',
       dataIndex: 'projectBudget',
-      width: 120,
+      // width: 120,
+      width: '12%',
       align: 'right',
       key: 'projectBudget',
       ellipsis: true,
@@ -109,14 +114,16 @@ export default function InfoTable(props) {
     {
       title: '应用部门',
       dataIndex: 'orgs',
-      width: 150,
+      // width: 150,
+      width: '15%',
       key: 'orgs',
       ellipsis: true,
     },
     {
       title: '项目标签',
       dataIndex: 'projectLabel',
-      width: 205,
+      // width: 205,
+      width: '18%',
       key: 'projectLabel',
       ellipsis: true,
       render: (text, row, index) => {
@@ -160,7 +167,8 @@ export default function InfoTable(props) {
       title: '项目状态',
       dataIndex: 'projectStatus',
       key: 'projectStatus',
-      width: 100,
+      // width: 100,
+      ellipsis: true,
     },
   ];
   return (
@@ -178,25 +186,29 @@ export default function InfoTable(props) {
         />
       )}
       <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible} />
-      <Button type="primary" className="btn-add-prj" onClick={openVisible}>
-        新建项目
-      </Button>
-      <Table
-        loading={tableLoading}
-        columns={columns}
-        rowKey={'projectId'}
-        dataSource={tableData}
-        onChange={handleTableChange}
-        // scroll={{ x: true }}
-        pagination={{
-          pageSizeOptions: ['10', '20', '30', '40'],
-          showSizeChanger: true,
-          hideOnSinglePage: true,
-          showQuickJumper: true,
-          showTotal: total => `共 ${total} 条数据`,
-        }}
-        // bordered
-      />
+      <div className="btn-add-prj-box">
+        <Button type="primary" className="btn-add-prj" onClick={openVisible}>
+          新建项目
+        </Button>
+      </div>
+      <div className="project-info-table-box">
+        <Table
+          loading={tableLoading}
+          columns={columns}
+          rowKey={'projectId'}
+          dataSource={tableData}
+          onChange={handleTableChange}
+          // scroll={{ y: 500 }}
+          pagination={{
+            pageSizeOptions: ['10', '20', '30', '40'],
+            showSizeChanger: true,
+            hideOnSinglePage: true,
+            showQuickJumper: true,
+            showTotal: total => `共 ${total} 条数据`,
+          }}
+          // bordered
+        />
+      </div>
     </div>
   );
 }

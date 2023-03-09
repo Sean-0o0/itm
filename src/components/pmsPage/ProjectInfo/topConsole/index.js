@@ -562,7 +562,6 @@ export default function TopConsole(props) {
             className="item-selector"
             showSearch
             treeCheckable
-            multiple={false}
             maxTagCount={2}
             maxTagTextLength={42}
             maxTagPlaceholder={extraArr => {

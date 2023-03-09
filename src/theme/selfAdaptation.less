@@ -225,27 +225,34 @@
     }
 
     .ant-table-placeholder {
-      position: absolute;
-      width: 100%;
-      top: 6.696rem;
-      border-top: 0;
-      display: flex;
-      flex-direction: row;
-      align-items: center;
-      justify-content: center;
+      // height: 450px;
+      border-bottom: 0;
+      .ant-empty-description {
+        font-size: 2.0832rem;
+      }
+    }
+    .ant-table-thead {
+      position: sticky;
+      top: 0;
     }
   }
 
   .ant-table-pagination {
     font-size: 2.0832rem;
+    width: 100%;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    position: sticky;
+    bottom: 0;
+    background-color: #fff;
+    padding-left: 0;
     .ant-select {
       font-size: 2.0832rem !important;
     }
   }
-
   .ant-pagination-total-text {
-    position: absolute;
-    left: 0;
+    margin-right: auto;
     color: #909399;
   }
 
