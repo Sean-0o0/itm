@@ -66,6 +66,7 @@ class NewProjectModelV2 extends React.Component {
     budgetInfo: {
       year: moment(new Date()), // 年份
       budgetProjectId: '', // 预算项目id
+      budgetProjectName: '',// 预算项目名称
       totalBudget: 0, // 总预算(元)
       relativeBudget: 0, // 可关联总预算(元)
       projectBudget: 0, // 本项目预算
@@ -739,23 +740,30 @@ class NewProjectModelV2 extends React.Component {
           });
           // console.log("rygwSelectDictionary",newArray)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
-          this.setState({ rygwSelectDictionary: newArray, staffJobList: newStaffJobList })
+          this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList})
           // console.log("arr",arr)
           // console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
-          this.state.budgetProjectList.forEach(item => {
-            item.children.forEach(ite => {
-              ite.children.forEach(i => {
-                if (i.key === result.budgetProject) {
-                  totalBudget = Number(i.ysZJE);
-                  relativeBudget = Number(i.ysKGL);
-                  ysKZX = Number(i.ysKZX);
-                }
+          let budgetProjectName = ""
+          if (result.budgetProject === '0') {
+            budgetProjectName = "备用预算"
+          } else {
+            this.state.budgetProjectList.forEach(item => {
+              item.children.forEach(ite => {
+                ite.children.forEach(i => {
+                  if (i.key === result.budgetProject) {
+                    budgetProjectName = i.title
+                    totalBudget = Number(i.ysZJE);
+                    relativeBudget = Number(i.ysKGL);
+                    ysKZX = Number(i.ysKZX);
+                  }
+                })
               })
-            })
-          });
+            });
+          }
+          console.log("budgetProjectName", budgetProjectName)
           let newOrg = []
           if (result.orgId) {
             newOrg = result.orgId.split(";");
@@ -776,6 +784,7 @@ class NewProjectModelV2 extends React.Component {
             budgetInfo: {
               year: moment(moment(result.year, 'YYYY').format()),
               budgetProjectId: result.budgetProject,
+              budgetProjectName,
               totalBudget: totalBudget,
               relativeBudget: relativeBudget,
               projectBudget: Number(result.projectBudget),
@@ -2118,7 +2127,7 @@ class NewProjectModelV2 extends React.Component {
                           fontSize: '14px',
                           position: 'absolute',
                           top: '13%',
-                          right: '83.5%'
+                          right: '85.5%'
                         }}>
                           *
                         </div>
@@ -2192,7 +2201,7 @@ class NewProjectModelV2 extends React.Component {
                           fontSize: '14px',
                           position: 'absolute',
                           top: '13%',
-                          right: '83.5%'
+                          right: '85.5%'
                         }}>
                           *
                         </div>
@@ -2263,7 +2272,7 @@ class NewProjectModelV2 extends React.Component {
                               fontSize: '14px',
                               position: 'absolute',
                               top: '13%',
-                              right: '83.5%'
+                              right: '85.5%'
                             }}>
                               *
                             </div>
@@ -2365,7 +2374,7 @@ class NewProjectModelV2 extends React.Component {
                           fontSize: '14px',
                           position: 'absolute',
                           top: '13%',
-                          right: '88.5%'
+                          right: '91.5%'
                         }}>
                           *
                         </div>
@@ -2375,7 +2384,7 @@ class NewProjectModelV2 extends React.Component {
                             //   required: true,
                             //   message: '请选择关联预算项目'
                             // }],
-                            initialValue: budgetInfo.budgetProjectId
+                            initialValue: budgetInfo.budgetProjectName
                           })(
                             <TreeSelect
                               showSearch
@@ -2461,7 +2470,7 @@ class NewProjectModelV2 extends React.Component {
                           fontSize: '14px',
                           position: 'absolute',
                           top: '13%',
-                          right: '90.5%'
+                          right: '93.5%'
                         }}>
                           *
                         </div>
