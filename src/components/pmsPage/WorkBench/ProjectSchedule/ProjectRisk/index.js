@@ -98,7 +98,8 @@ class ProjectRisk extends React.Component {
             <span style={{ color: 'red', marginLeft: '0.5952rem' }}>存在
             </span>
             <Tooltip title="查看风险">
-              <Icon type="eye" style={{ color: 'red', marginLeft: '0.5952rem' }} onClick={() => window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`}></Icon>
+              <Icon type="eye" style={{color: 'red', marginLeft: '4px'}}
+                    onClick={() => window.location.href = `/#/UIProcessor?Table=V_FXXX&hideTitlebar=true`}></Icon>
             </Tooltip>
           </div>
         }
@@ -106,15 +107,15 @@ class ProjectRisk extends React.Component {
           state === "0" && <div style={{ display: 'flex', alignItems: 'center' }}>
             暂无风险
             <Tooltip title="添加风险">
-              <Icon type="plus-circle" style={{ color: '#3361ff', marginLeft: '0.5952rem' }} onClick={() => {
-                const { userId, loginUserId } = this.props;
+              <Icon type="plus-circle" style={{color: '#3361ff', marginLeft: '4px'}} onClick={() => {
+                const {userId, loginUserId} = this.props;
                 console.log("🚀 ~ file: index.js ~ line 111 ~ ProjectRisk ~ render ~ userId, loginUserId", this.props)
                 if (Number(userId) === Number(loginUserId)) {
                   this.hanldeRisk(xmid, lcbid);
                 } else {
                   message.error(`抱歉，只有当前项目经理可以进行该操作`);
                 }
-              }} />
+              }}/>
             </Tooltip>
           </div>
         }

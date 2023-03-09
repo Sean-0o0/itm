@@ -72,33 +72,33 @@ class ProcessSituation extends React.Component {
       footer: null,
     };
     return (
-      <Row className='workBench' style={{ height: '100%', padding: '3.5712rem 1.7856rem 3.5712rem 3.5712rem' }}>
-        <div style={{ width: '100%', lineHeight: '3.5712rem', paddingBottom: '2.381rem' }}>
-          <div style={{ display: 'flex', }}>
-            <i style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem' }}
-              className="iconfont icon-procedure" />
-            <div style={{ height: '10%', fontSize: '2.3808rem', fontWeight: 700, color: '#303133', }}>流程情况
+      <Row className='workBench' style={{padding: '24px'}}>
+        <div style={{width: '100%', paddingBottom: '16px'}}>
+          <div style={{display: 'flex',}}>
+            <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '6.5px'}}
+               className="iconfont icon-procedure"/>
+            <div style={{height: '10%', fontSize: '2.3808rem', fontWeight: 700, color: '#303133',}}>流程情况
             </div>
           </div>
         </div>
         {/*立项流程查看弹窗*/}
         {seeVisible &&
-          <BridgeModel modalProps={seeModalProps} onSucess={this.onSuccess} onCancel={this.closeSeeModal}
+        <BridgeModel modalProps={seeModalProps} onSucess={this.onSuccess} onCancel={this.closeSeeModal}
             src={src_see} />}
         <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
           <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '100%' }}>
-            <Card title='' bordered={false} className='ProcessStatus' headStyle={{ padding: '0' }}
-              bodyStyle={{ padding: '0rem', height: '100%', }}>
+            <Card title='' bordered={false} className='ProcessStatus' headStyle={{padding: '0'}}
+                  bodyStyle={{padding: '1px', height: '100%',}}>
               {
                 data?.map((item = {}, index) => {
                   return <div className='ProcessStatus-Div' style={{}} key={index}>
                     <div className='title'>
-                      <Points status={item.state} />
-                      <a target="_blank" className='title-link' style={{ fontSize: '2.083rem' }}
-                        rel="noopener noreferrer" onClick={() => this.handleToggle(item.url)}>{item.subject}</a>&nbsp;
+                      <Points status={item.state}/>
+                      <a target="_blank" className='title-link' style={{fontSize: '2.083rem'}}
+                         rel="noopener noreferrer" onClick={() => this.handleToggle(item.url)}>{item.subject}</a>&nbsp;
                       <i
                         className={'iconfont icon-right'}
-                        style={{ fontSize: '2.381rem' }}
+                        style={{fontSize: '2.381rem'}}
                       />
                     </div>
                     <Row className='cont'>

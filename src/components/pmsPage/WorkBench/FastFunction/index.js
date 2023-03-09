@@ -100,25 +100,24 @@ class FastFunction extends React.Component {
                 message.success('保存成功', 1);
               }} onCancel={this.closeFileAddModal}
                 src={src_fileAdd} />}
-            <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
-              <div style={{ display: 'flex', }}>
-                <i style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem' }}
-                  className="iconfont icon-send" />
-                <div style={{ height: '10%', fontSize: '2.381rem', fontWeight: 700, color: '#303133', }}>快捷入口
+            <div className="top-box-title" style={{width: '100%'}}>
+              <div style={{display: 'flex',}}>
+                <i className="top-box-title-i iconfont icon-send"/>
+                <div className="top-box-title-div" style={{height: '10%'}}>快捷入口
                 </div>
               </div>
             </div>
-            <Col xs={24} sm={24} lg={24} xl={24} className='fastFun' style={{ display: 'flex' }}>
-              <a style={{ width: '25%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                onClick={() => this.setState({ fileAddVisible: true })}>
-                <div><img src={icon_01} alt="" style={{ width: '7.143rem', height: '7.143rem' }} /></div>
-                <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>新建项目</div>
+            <Col xs={24} sm={24} lg={24} xl={24} className='fastFun' style={{display: 'flex'}}>
+              <a className="fastFun-a" style={{width: '25%'}}
+                 onClick={() => this.setState({fileAddVisible: true})}>
+                <div><img src={icon_01} alt="" style={{}}/></div>
+                <div className='fastFun-head'>新建项目</div>
               </a>
-              <a style={{ width: '25%', display: 'grid', justifyContent: 'center', textAlign: 'center' }}
-                onClick={() => window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`}>
-                <div><img src={icon_04} alt="" style={{ width: '7.143rem', height: '7.143rem' }} />
+              <a className="fastFun-a" style={{width: '25%'}}
+                 onClick={() => window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`}>
+                <div><img src={icon_04} alt="" style={{}}/>
                 </div>
-                <div className='fastFun-head' style={{ margin: '1.19rem 0 0 0', fontSize: '2.083rem' }}>月报填写</div>
+                <div className='fastFun-head'>月报填写</div>
               </a>
             </Col>
           </div>

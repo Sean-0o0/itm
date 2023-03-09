@@ -290,52 +290,39 @@ class WorkBench extends React.Component {
       isSpinning,
     } = this.state;
     return (
-      <div style={{ height: 'calc(100% - 4.5rem)' }}>
-        <div style={{ height: '40%', margin: '0 3.571rem 3.571rem 3.571rem' }}>
-          <Row style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '3.571rem' }}>
-            <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
-              <div style={{
-                boxSizing: 'border-box',
-                boxShadow: '#ececec 0 0.4464rem 1.488rem',
-                borderRadius: '1.488rem',
-                width: '75%',
-                background: 'white'
-              }}>
-                <div style={{ height: '100%' }}>
+      <div className="workBench">
+        <div className="workBench-div" style={{height: '40%'}}>
+          <Row className="workBench-div-Row" style={{height: '100%', width: '100%'}}>
+            <Col className="workBench-div-Row-Col" xs={24} sm={24} lg={24} xl={24}>
+              <div className="workBench-div-Row-Col-div1" style={{width: '75%'}}>
+                <div style={{height: '100%'}}>
                   <TodoItems wzxsl={wzxsl} allData={AllTodoItemsData} data={TodoItemsData} total={TodoItemsTotal}
-                    fetchQueryOwnerMessage={this.fetchQueryOwnerMessage} />
+                             fetchQueryOwnerMessage={this.fetchQueryOwnerMessage}/>
                 </div>
               </div>
-              <div style={{
-                marginLeft: '3.571rem',
+              <div className="workBench-div-Row-Col-div2" style={{
                 width: '25%',
-                overflow: 'hidden',
-                height: '100%',
               }}>
                 <FastFunction fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
                   // sliderData={sliderData}
-                  data={ProcessSituationData}
-                  fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
-                  total={ProcessSituationTotal} />
+                              data={ProcessSituationData}
+                              fetchQueryOwnerWorkflow={this.fetchQueryOwnerWorkflow}
+                              total={ProcessSituationTotal}/>
               </div>
             </Col>
           </Row>
         </div>
-        <div style={{ height: '60%', margin: '0 3.571rem 3.571rem 3.571rem' }}>
-          <Row style={{ height: '100%', width: '100%', display: 'flex', flexDirection: 'row', marginTop: '3.571rem' }}>
-            <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', }}>
-              <div style={{
-                boxSizing: 'border-box',
-                boxShadow: '#ececec 0 0.4464rem 1.488rem',
-                borderRadius: '1.488rem',
+        <div className="workBench-div" style={{height: '60%'}}>
+          <Row className="workBench-div-Row" style={{height: '100%', width: '100%',}}>
+            <Col className="workBench-div-Row-Col" xs={24} sm={24} lg={24} xl={24}>
+              <div className="workBench-div-Row-Col-div1" style={{
                 width: '100%',
-                background: 'white'
               }}>
-                <div style={{ height: '100%' }}>
+                <div style={{height: '100%'}}>
                   <ProjectSchedule data={ProjectScheduleData} total={ProjectScheduleTotal}
-                    fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
-                    ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend}
-                    isSpinning={isSpinning} setIsSpinning={this.setIsSpinning} />
+                                   fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+                                   ProjectScheduleDetailData={ProjectScheduleDetailData} extend={this.extend}
+                                   isSpinning={isSpinning} setIsSpinning={this.setIsSpinning}/>
                 </div>
               </div>
             </Col>

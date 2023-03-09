@@ -27,10 +27,10 @@ export default class PageHeader extends React.PureComponent {
     const routerList = LocalPathUtils.getRoutesHaveName();
     const sysName = localStorage.getItem('sysName');
     return (
-      <div style={{ width: '100%'}}>
+      <div style={{width: '100%'}}>
         {/* <GuideCover data={guidesRecords} /> */}
-        <div className="zj-header">
-          <div style={{ width: '34rem', textAlign: 'center', borderRight: '1px solid #EBEEF5'}}>
+        <div className="zj-header" style={{width: '100%', height: '45px'}}>
+          <div style={{width: '16%', textAlign: 'center', borderRight: '1px solid #EBEEF5'}}>
             <span><img className="logo" src={require('../../../../assets/apex-logo-zszq-left.png')} alt=""/>
             </span>
             <span style={{
@@ -42,18 +42,19 @@ export default class PageHeader extends React.PureComponent {
             }}>{"信息技术综合管理平台"}</span>
           </div>
           {/* <Divider style={{height:'3rem'}} type="vertical" /> */}
-          <div id="visited_routes_container" style={{ flex: 1, overflow: 'hidden' }} className={`${styles.historyContainer}`} >
+          <div id="visited_routes_container" style={{flex: 1, overflow: 'hidden'}}
+               className={`${styles.historyContainer}`}>
             <span><Scrollbars
               autoHide
-              style={{ width: '100%' }}
+              style={{width: '100%'}}
             >
               <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList}
-                projectName={projectName} />
+                             projectName={projectName}/>
             </Scrollbars>
             </span>
           </div>
-          <div id="fma_opertion_drops" className="dis-fx">
-            <div style={{ width: '4rem' }}></div>
+          <div id="fma_opertion_drops" className="dis-fx" style={{width: '5%'}}>
+            {/*<div style={{ width: '4rem' }}></div>*/}
             {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
             {/*  <a onClick={() => {*/}
             {/*    window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;*/}

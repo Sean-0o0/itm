@@ -256,11 +256,11 @@ class TodoItems extends React.Component {
   dateCellRender = (value) => {
     const listData = this.getListData(value);
     return (
-      <ul style={{ margin: '0.1rem', paddingLeft: '1rem' }}>
+      <ul style={{margin: '0.5px', paddingLeft: '6.5px'}}>
         {listData.map(item => (
           <li key={item.content}>
             {/* <Tooltip title={item.content}> */}
-            <Badge status={item.type} />
+            <Badge status={item.type}/>
             {/* </Tooltip> */}
           </li>
         ))}
@@ -600,20 +600,18 @@ class TodoItems extends React.Component {
         width: '4%',
         title: '',
         dataIndex: '',
+        align: "center",
         render: (text, record) => {
-          const { flag } = this.state;
+          const {flag} = this.state;
           return (flag ? <Popconfirm
-            title={<span style={{ fontSize: '2.083rem' }}>确认已完成？</span>}
-            onConfirm={() => this.updateState(record, 'EXECUTE')}
-            onCancel={this.oncancel}
-            okText={<span style={{ fontSize: '1.785rem' }}>确认</span>}
-            cancelText={<span style={{ fontSize: '1.785rem' }}>取消</span>}
-          ><a href="#" style={{
-            color: 'grey',
-          }}>
-              <Icon type="check-circle"
-                style={{ color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem' }} /></a></Popconfirm> :
-            <Icon type="check-circle" style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem' }} />
+                title={<span style={{fontSize: '2.083rem'}}>确认已完成？</span>}
+                onConfirm={() => this.updateState(record, 'EXECUTE')}
+                onCancel={this.oncancel}
+                okText={<span style={{fontSize: '1.785rem'}}>确认</span>}
+                cancelText={<span style={{fontSize: '1.785rem'}}>取消</span>}
+              ><Icon type="check-circle"
+                     style={{color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem'}}/></Popconfirm> :
+              <Icon type="check-circle" style={{color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem'}}/>
           )
         }
       },
@@ -630,15 +628,15 @@ class TodoItems extends React.Component {
               <span style={{ display: 'flex', alignItems: 'center' }}>
                 {
                   record.xxlx === "1" && <span style={{
-                    height: '3rem',
+                    height: '20.5px',
                     display: 'flex',
                     alignItems: 'center',
                   }}>
                     <i style={{ color: 'red', fontSize: '2.381rem' }} className="iconfont icon-fill-star" />
                   </span>
                 }
-                <a style={{ fontSize: '2.083rem', color: '#3361ff', paddingLeft: '0.5rem', ...textOverflow }}
-                  onClick={() => this.handleUrl(record)}>
+                <a style={{fontSize: '2.083rem', color: '#3361ff', paddingLeft: '3.5px', ...textOverflow}}
+                   onClick={() => this.handleUrl(record)}>
                   {text}
                 </a>
               </span>
@@ -865,47 +863,46 @@ class TodoItems extends React.Component {
     };
 
     return (
-      <Row style={{ height: '100%', padding: '3.571rem' }}>
-        <div style={{ width: '100%', lineHeight: '3.571rem', paddingBottom: '2.381rem' }}>
-          <div style={{ display: 'flex', }}>
-            <i style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '1rem' }}
-              className="iconfont icon-detail" />
+      <Row style={{height: '100%', padding: '24px'}}>
+        <div style={{width: '100%', paddingBottom: '16px'}}>
+          <div style={{display: 'flex',}}>
+            <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '6.5px'}}
+               className="iconfont icon-detail"/>
             <div style={{
               width: '25%',
               fontSize: '2.381rem',
               fontWeight: 700,
               color: '#303133',
-              height: '100%'
             }} onClick={this.onclickdb}>待办事项
             </div>
-            <div style={{ width: '75%', height: '100%', textAlign: 'end' }}>
-              { isDateSelected &&
-                <>
-                  <i style={{ color: 'red', fontSize: '2.381rem', padding: "0 .5rem 0 3rem", verticalAlign: 'middle' }}
-                    className="iconfont icon-shijian" />
-                  <span
-                    style={{ fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle' }}>未完成
+            <div style={{width: '75%', textAlign: 'end'}}>
+              {isDateSelected &&
+              <>
+                <i style={{color: 'red', fontSize: '2.381rem', padding: "0 3.5px 0 0", verticalAlign: 'middle'}}
+                   className="iconfont icon-shijian"/>
+                <span
+                  style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成
                     <span
-                      style={{ color: 'rgba(215, 14, 25, 1)' }}>{wzxsl}
-                      <a style={{ color: '#3361ff' }} onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a>
+                      style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}
+                      <a style={{color: '#3361ff'}} onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a>
                     </span>
                   </span>
-                </>
+              </>
               }
 
             </div>
           </div>
         </div>
-        <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'row', height: '95%' }}>
-          <div style={{ width: '24%', height: 'calc(100% - 3.571rem)' }}>
-            <div style={{ border: '1px solid #d9d9d9', borderRadius: 4, height: '100%' }} className="calendar-style">
+        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row', height: '95%'}}>
+          <div style={{width: '24%'}}>
+            <div style={{border: '1px solid #d9d9d9', borderRadius: 4}} className="calendar-style">
               <Calendar
                 // monthCellRender={this.monthCellRender}
                 dateCellRender={this.dateCellRender}
-                style={{ fontSize: '2.083rem' }}
+                style={{fontSize: '2.083rem'}}
                 onSelect={this.handleDateChange}
                 fullscreen={false}
-                headerRender={({ value, type, onChange, onTypeChange }) => {
+                headerRender={({value, type, onChange, onTypeChange}) => {
                   const start = 0;
                   const end = 12;
                   const monthOptions = [];
@@ -937,11 +934,11 @@ class TodoItems extends React.Component {
                     );
                   }
                   return (
-                    <div style={{ padding: '1.488rem' }}>
+                    <div style={{padding: '10px'}}>
                       <Row type="flex" justify="space-between">
                         <Col>
                           <Select
-                            style={{ fonsSize: '2.083rem', }}
+                            style={{fonsSize: '2.083rem',}}
                             size="small"
                             dropdownMatchSelectWidth={false}
                             className="my-year-select"
@@ -976,18 +973,18 @@ class TodoItems extends React.Component {
               />
             </div>
           </div>
-          <div style={{ marginLeft: '2rem', width: '76%' }}>
-            <div style={{ height: '100%' }}>
-              <Col xs={24} sm={24} lg={24} xl={24} style={{ display: 'flex', flexDirection: 'column', height: '97%' }}>
-                <div style={{ height: '90%' }}>
+          <div style={{marginLeft: '13.5px', width: '76%'}}>
+            <div style={{height: '100%'}}>
+              <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '97%'}}>
+                <div style={{height: '90%'}}>
                   {/*文档上传弹窗*/}
                   {uploadVisible &&
-                    <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传待办")}
-                      onCancel={this.closeUploadModal}
-                      src={uploadUrl} />}
+                  <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传待办")}
+                               onCancel={this.closeUploadModal}
+                               src={uploadUrl}/>}
                   {/*文档修改弹窗*/}
                   {editVisible &&
-                    <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改待办")}
+                  <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改待办")}
                       onCancel={this.closeEditModal}
                       src={uploadUrl} />}
                   {/*立项流程发起弹窗*/}
@@ -1052,8 +1049,8 @@ class TodoItems extends React.Component {
                   ></BidInfoUpdate>}
 
                   <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
-                    locale={{ emptyText: <Empty description={"暂无待办事项"} /> }} dataSource={data}
-                    style={{ height: '100%' }} />
+                         locale={{emptyText: <Empty description={"暂无待办事项"}/>}} dataSource={data}
+                         style={{}}/>
 
                 </div>
                 <div style={{ height: '10%' }}>
