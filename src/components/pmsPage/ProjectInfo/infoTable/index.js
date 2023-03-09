@@ -9,9 +9,8 @@ export default function InfoTable(props) {
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
   const { tableData, tableLoading } = props; //表格数据
-  
+
   useEffect(() => {
-    
     return () => {};
   }, []);
 
@@ -188,7 +187,7 @@ export default function InfoTable(props) {
         rowKey={'projectId'}
         dataSource={tableData}
         onChange={handleTableChange}
-        scroll={{ y: true }}
+        // scroll={{ x: true }}
         pagination={{
           pageSizeOptions: ['10', '20', '30', '40'],
           showSizeChanger: true,
@@ -196,8 +195,8 @@ export default function InfoTable(props) {
           showQuickJumper: true,
           showTotal: total => `共 ${total} 条数据`,
         }}
-        bordered
-      ></Table>
+        // bordered
+      />
     </div>
   );
 }
