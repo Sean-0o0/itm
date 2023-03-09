@@ -1,0 +1,249 @@
+//自适应样式
+
+//字体大小 - 以UI为准，默认14px
+.font-size-12() {
+  font-size: 1.7856rem;
+}
+.font-size-13() {
+  font-size: 1.9344rem;
+}
+.font-size-14() {
+  font-size: 2.0832rem;
+}
+.font-size-15() {
+  font-size: 2.232rem;
+}
+.font-size-16() {
+  font-size: 2.3808rem;
+}
+.font-size-18() {
+  font-size: 2.6784rem;
+}
+.font-size-default() {
+  font-size: 2.0832rem;
+}
+
+//字体
+.font-family-roboto() {
+  font-family: Roboto-Regular, Roboto;
+}
+.font-family-pingfangsc() {
+  font-family: PingFangSC-Medium, PingFang SC;
+}
+
+//字重
+.font-weight-400() {
+  font-weight: 400;
+}
+.font-weight-500() {
+  font-weight: bold;
+}
+
+//内边距
+.padding-24() {
+  padding: 24px;
+}
+.padding-16() {
+  padding: 16px;
+}
+.padding-16-24() {
+  padding: 16px 24px;
+}
+
+//外边距
+.margin-24() {
+  margin: 24px;
+}
+.margin-16() {
+  margin: 16px;
+}
+.margin-16-24() {
+  margin: 16px 24px;
+}
+
+//ANTD
+
+//输入框、下拉框字体大小
+.ant-font-size-adaptation() {
+  // .ant-checkbox-wrapper,
+  .ant-input,
+  .ant-select {
+    font-size: 1.9344rem !important;
+  }
+}
+
+//按钮-蓝底
+.antd-btn-primary() {
+  padding: 9px 12px 10px 12px;
+  font-size: 2.0832rem; //14px
+  line-height: unset;
+  height: unset;
+  background-color: #3361ff;
+  color: #fff !important;
+
+  &:hover {
+    background-color: #3361ffaf;
+  }
+}
+
+//按钮-白底
+.antd-btn-default() {
+  padding: 9px 12px 10px 12px;
+  font-size: 2.0832rem; //14px
+  line-height: unset;
+  height: unset;
+  margin-left: 8px;
+
+  &:hover {
+    color: #3361ffaf;
+    border-color: #3361ffaf;
+  }
+}
+
+//输入框
+.ant-input-adaptation() {
+  .ant-input {
+    line-height: unset;
+    height: unset;
+    padding: 7px 11px;
+  }
+}
+
+//下拉单选
+.antd-select-single() {
+  .ant-select-selection.ant-select-selection--single {
+    min-height: unset;
+    height: unset;
+    .ant-select-selection__rendered {
+      line-height: unset;
+      padding: 5px 0;
+    }
+    .ant-select-selection__placeholder {
+      top: 5px;
+      line-height: unset;
+      height: unset;
+      margin-top: 0;
+    }
+    .ant-select-search--inline {
+      margin-top: -5px;
+      margin-bottom: -5px;
+    }
+  }
+}
+
+//下拉多选
+.antd-select-multiple() {
+  min-height: unset;
+  height: unset;
+  .ant-select-selection__rendered {
+    margin-right: 11px;
+    line-height: unset;
+    padding: 7.5px 0;
+  }
+  .ant-select-selection__placeholder {
+    top: 5px;
+    line-height: unset;
+    height: unset;
+    margin-top: 0;
+    margin-left: 0;
+  }
+  .ant-select-search--inline {
+    margin-top: 0;
+    line-height: unset;
+    height: unset;
+  }
+  ul {
+    margin-top: -5px;
+    margin-bottom: -5px;
+  }
+  .ant-select-selection__choice {
+    line-height: unset;
+    height: unset;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+  }
+}
+
+//树形下拉 - 父级不可选，点击展开子级 实现, 需写在下拉菜单类名里
+.antd-select-tree() {
+  .ant-select-tree li span.ant-select-tree-switcher {
+    position: relative;
+  }
+  .ant-select-tree-switcher_open::before,
+  .ant-select-tree-switcher_close::before {
+    content: '';
+    position: absolute;
+    right: -56.64rem;
+    top: -4px;
+    left: 0;
+    bottom: -4px;
+  }
+}
+
+//表格
+.ants-table-adaptation() {
+  .ant-table {
+    td {
+      padding: 9px;
+      .font-size-14();
+      .font-family-roboto();
+      font-weight: 400;
+      color: #303133;
+    }
+
+    th {
+      padding: 9px;
+      .font-size-14();
+      background-color: #f5f7fa;
+      .font-family-pingfangsc();
+      font-weight: bold;
+      color: #606266;
+    }
+
+    .ant-table-body {
+      table {
+        border: 1px solid #e8e8e8;
+      }
+    }
+
+    .ant-table-scroll .ant-table-header {
+      margin-bottom: -16.5px !important; //表格表头底部边框
+      background-color: #f5f7fa;
+    }
+
+    .ant-table-placeholder {
+      position: absolute;
+      width: 100%;
+      top: 6.696rem;
+      border-top: 0;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
+  }
+
+  .ant-table-pagination {
+    font-size: 2.0832rem;
+    .ant-select {
+      font-size: 2.0832rem !important;
+    }
+  }
+
+  .ant-pagination-total-text {
+    position: absolute;
+    left: 0;
+    color: #909399;
+  }
+
+  .ant-pagination-options-quick-jumper input {
+    &:hover {
+      border-color: #3361ff;
+    }
+    &:focus {
+      border-color: #3361ff;
+      box-shadow: 0 0 0 2px #3361ff33;
+    }
+  }
+}
