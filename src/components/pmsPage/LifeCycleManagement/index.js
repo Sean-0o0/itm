@@ -12,7 +12,7 @@ import {
   Spin,
   Select,
   Input,
-  Empty
+  Empty,
 } from 'antd';
 import React from 'react';
 import OperationList from './OperationList';
@@ -21,7 +21,7 @@ import Tooltips from './Tooltips';
 import Points from './Points';
 import Imgs from './Imgs';
 import ProjectProgress from './ProjectProgress';
-import BridgeModel from "../../Common/BasicModal/BridgeModel";
+import BridgeModel from '../../Common/BasicModal/BridgeModel';
 import { FetchLivebosLink } from '../../../services/amslb/user';
 import {
   CreateOperateHyperLink,
@@ -30,23 +30,23 @@ import {
   FetchQueryOwnerProjectList,
   FetchQueryProjectInfoInCycle,
   FetchQueryWpsWDXX,
-} from "../../../services/pmsServices";
+} from '../../../services/pmsServices';
 import ContractInfoUpdate from './ContractInfoUpdate';
 import BidInfoUpdate from './BidInfoUpdate';
 
-import WPSFrame from '../../../js/wps_general'
+import WPSFrame from '../../../js/wps_general';
 import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
-import { PluginsUrl } from "../../../utils/config";
+import { PluginsUrl } from '../../../utils/config';
 import PaymentProcess from './PaymentProcess';
 import moment from 'moment';
-import { DecryptBase64 } from "../../Common/Encrypt";
-import ContractSigning from "./ContractSigning";
-import AssociatedFile from "./AssociatedFile";
+import { DecryptBase64 } from '../../Common/Encrypt';
+import ContractSigning from './ContractSigning';
+import AssociatedFile from './AssociatedFile';
 
 const { TabPane } = Tabs;
 
 const PASE_SIZE = 10;
-const Loginname = String(JSON.parse(sessionStorage.getItem("user")).loginName);
+const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
 class LifeCycleManagementTabs extends React.Component {
   state = {
@@ -77,14 +77,15 @@ class LifeCycleManagementTabs extends React.Component {
     ygpjVisible: false,
     ygpjUrl: '#',
     //信息修改
-    editMessageVisible: false,//合同
-    bidInfoModalVisible: false,//中标
-    defMsgModifyModalVisible: false,//默认
+    editMessageVisible: false, //合同
+    bidInfoModalVisible: false, //中标
+    defMsgModifyModalVisible: false, //默认
     currentXmmc: '',
     //信息修改url
     editMessageUrl: '/OperateProcessor?operate=TXMXX_XMXX_ADDCONTRACTAINFO&Table=TXMXX_XMXX',
     editMessageTitle: '',
-    editModelUrl: '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
+    editModelUrl:
+      '/OperateProcessor?operate=TXMXX_XMXX_INTERFACE_MODOTHERINFO&Table=TXMXX_XMXX&XMID=5&LCBID=18',
     editModelTitle: '',
     editModelVisible: false,
     //所有项目
@@ -120,14 +121,13 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   componentDidMount() {
-
     // const params = this.getUrlParams();
     const { params } = this.props;
-    console.log("params@@", params)
+    console.log('params@@', params);
     if (params !== undefined && params.projectId && params.projectId !== -1) {
       this.setState({
         xmid: params.projectId,
-      })
+      });
       this.fetchQueryOwnerProjectListUser(params.projectId);
     } else {
       this.fetchQueryOwnerProjectListUser(params.projectId);
@@ -141,9 +141,15 @@ class LifeCycleManagementTabs extends React.Component {
       this.setState({
         xmid: nextProps.params.projectId,
       });
-      this.fetchQueryLiftcycleMilestone(nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid)
-      this.fetchQueryLifecycleStuff(nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid)
-      this.fetchQueryProjectInfoInCycle(nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid)
+      this.fetchQueryLiftcycleMilestone(
+        nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid,
+      );
+      this.fetchQueryLifecycleStuff(
+        nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid,
+      );
+      this.fetchQueryProjectInfoInCycle(
+        nextProps.params.projectId ? nextProps.params.projectId : this.state.xmid,
+      );
     }
   }
 
@@ -151,85 +157,92 @@ class LifeCycleManagementTabs extends React.Component {
   getUrlParams = () => {
     let params;
     if (this.props.match !== undefined) {
-      const { match: { params: { params: encryptParams = '' } } } = this.props;
+      const {
+        match: {
+          params: { params: encryptParams = '' },
+        },
+      } = this.props;
       params = JSON.parse(DecryptBase64(encryptParams));
     }
     return params;
-  }
+  };
 
   fetchQueryOwnerProjectList = (current, pageSize) => {
     const { params } = this.props;
-    FetchQueryOwnerProjectList(
-      {
-        // paging: 1,
-        paging: -1,
-        current,
-        pageSize,
-        total: -1,
-        sort: '',
-        cxlx: 'ALL',
-      }
-    ).then((ret = {}) => {
-      const { record, code, totalrows } = ret;
-      if (code === 1) {
-        const rec = [];
-        // console.log()
-        // if(this.state.xmid !== -1){
-        //   record.map((item = {}, index) => {
-        //     if(item.xmid === this.state.xmid){
-        //       rec[0] = record[index];
-        //     }
-        //   })
-        // }else{
-        //   rec[0] = record[0];
-        // }
-        rec[0] = record[0];
-        this.setState({
-          isHaveItem: false,
-          defaultValue: params.projectId,
-          xmid: record[0].xmid,
-          allItemsData: record,
-          allItemsDataFirst: rec,
-          operationListData: record,
-        }, () => {
-          this.fetchQueryProjectInfoInCycle(this.props.params?.xmid || Number(this.state.allItemsData[0]?.xmid));
-        });
-      }
-      this.fetchQueryLiftcycleMilestone(params.projectId);
-      this.fetchQueryLifecycleStuff(params.projectId);
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    FetchQueryOwnerProjectList({
+      // paging: 1,
+      paging: -1,
+      current,
+      pageSize,
+      total: -1,
+      sort: '',
+      cxlx: 'ALL',
+    })
+      .then((ret = {}) => {
+        const { record, code, totalrows } = ret;
+        if (code === 1) {
+          const rec = [];
+          // console.log()
+          // if(this.state.xmid !== -1){
+          //   record.map((item = {}, index) => {
+          //     if(item.xmid === this.state.xmid){
+          //       rec[0] = record[index];
+          //     }
+          //   })
+          // }else{
+          //   rec[0] = record[0];
+          // }
+          rec[0] = record[0];
+          this.setState(
+            {
+              isHaveItem: false,
+              defaultValue: params.projectId,
+              xmid: record[0].xmid,
+              allItemsData: record,
+              allItemsDataFirst: rec,
+              operationListData: record,
+            },
+            () => {
+              this.fetchQueryProjectInfoInCycle(
+                this.props.params?.xmid || Number(this.state.allItemsData[0]?.xmid),
+              );
+            },
+          );
+        }
+        this.fetchQueryLiftcycleMilestone(params.projectId);
+        this.fetchQueryLifecycleStuff(params.projectId);
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //查询自己名下还在执行的项目
   fetchQueryOwnerProjectListUser = (xmid = '') => {
     const { params } = this.props;
     // console.log("11111", params)
-    FetchQueryOwnerProjectList(
-      {
-        // paging: 1,
-        paging: -1,
-        current: 1,
-        pageSize: 999,
-        total: -1,
-        sort: '',
-        cxlx: 'USER',
-      }
-    ).then((ret = {}) => {
-      const { record, code, totalrows } = ret;
-      //名下有项目-展示所有正在执行的项目,搜索框展示所有项目
-      if (code === 1 && record.length > 0) {
-        // console.log("recordcccc",record)
-        this.setState({
-          // defaultValue: params.projectId,
-          isHaveItem: true,
-          xmid: xmid === '' ? record[0]?.xmid : xmid,
-          allItemsDataFirst: record,
-          operationListData: record,
-        })
-        FetchQueryOwnerProjectList(
-          {
+    FetchQueryOwnerProjectList({
+      // paging: 1,
+      paging: -1,
+      current: 1,
+      pageSize: 999,
+      total: -1,
+      sort: '',
+      cxlx: 'USER',
+    })
+      .then((ret = {}) => {
+        const { record, code, totalrows } = ret;
+        //名下有项目-展示所有正在执行的项目,搜索框展示所有项目
+        if (code === 1 && record.length > 0) {
+          // console.log("recordcccc",record)
+          this.setState({
+            // defaultValue: params.projectId,
+            isHaveItem: true,
+            xmid: xmid === '' ? record[0]?.xmid : xmid,
+            allItemsDataFirst: record,
+            operationListData: record,
+          });
+          FetchQueryOwnerProjectList({
             // paging: 1,
             paging: -1,
             current: 1,
@@ -237,35 +250,37 @@ class LifeCycleManagementTabs extends React.Component {
             total: -1,
             sort: '',
             cxlx: 'ALL',
-          }
-        ).then((ret = {}) => {
-          const { record, code, totalrows } = ret;
-          if (code === 1) {
-            this.setState({
-              allItemsData: record,
+          })
+            .then((ret = {}) => {
+              const { record, code, totalrows } = ret;
+              if (code === 1) {
+                this.setState({
+                  allItemsData: record,
+                });
+              }
             })
-          }
-        }).catch((error) => {
-          message.error(!error.success ? error.message : error.note);
-        });
-      }
-      //名下没有项目,展示所有项目的第一个,搜索框展示所有的
-      else {
-        this.fetchQueryOwnerProjectList(1, PASE_SIZE);
-      }
-      if (this.state.xmid) {
-        this.fetchQueryProjectInfoInCycle(this.state.xmid);
-        this.fetchQueryLiftcycleMilestone(this.state.xmid);
-        this.fetchQueryLifecycleStuff(this.state.xmid);
-      }
-    }).catch((error) => {
-      // console.log('问题出在这！');
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+            .catch(error => {
+              message.error(!error.success ? error.message : error.note);
+            });
+        }
+        //名下没有项目,展示所有项目的第一个,搜索框展示所有的
+        else {
+          this.fetchQueryOwnerProjectList(1, PASE_SIZE);
+        }
+        if (this.state.xmid) {
+          this.fetchQueryProjectInfoInCycle(this.state.xmid);
+          this.fetchQueryLiftcycleMilestone(this.state.xmid);
+          this.fetchQueryLifecycleStuff(this.state.xmid);
+        }
+      })
+      .catch(error => {
+        // console.log('问题出在这！');
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //获取项目展示信息
-  fetchQueryProjectInfoInCycle = (e) => {
+  fetchQueryProjectInfoInCycle = e => {
     FetchQueryProjectInfoInCycle({
       xmmc: e ? e : this.state.xmid,
     }).then(res => {
@@ -278,290 +293,370 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //流程发起url
-  getSendUrl = (name) => {
+  getSendUrl = name => {
     const getParams = (objName, oprName, data, userName) => {
       return {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": objName,
-        "operateName": oprName,
-        "parameter": data,
-        "userId": userName,
-      }
-    }
-    let params = getParams("TLC_LCFQ", "TLC_LCFQ_LXSQLCFQ",
+        attribute: 0,
+        authFlag: 0,
+        objectName: objName,
+        operateName: oprName,
+        parameter: data,
+        userId: userName,
+      };
+    };
+    let params = getParams(
+      'TLC_LCFQ',
+      'TLC_LCFQ_LXSQLCFQ',
       [
         {
-          "name": "GLXM",
-          "value": this.state.xmid
-        }
+          name: 'GLXM',
+          value: this.state.xmid,
+        },
       ],
-      Loginname
-    )
-    if (name.includes("付款")) {
-      params = getParams("LC_XMFKLC", "LC_XMFKLC_XMFKLCFQ",
+      Loginname,
+    );
+    if (name.includes('付款')) {
+      params = getParams(
+        'LC_XMFKLC',
+        'LC_XMFKLC_XMFKLCFQ',
         [
           {
-            "name": "XMMC",
-            "value": this.state.xmid
-          }
+            name: 'XMMC',
+            value: this.state.xmid,
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
-    if (name.includes("软件费用审批流程-有合同")) {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_SUBMIT_RJGMHT",
+    if (name.includes('软件费用审批流程-有合同')) {
+      params = getParams(
+        'TLC_LCFQ',
+        'TLC_LCFQ_SUBMIT_RJGMHT',
         [
           {
-            "name": "GLXM",
-            "value": Number(this.state.xmid)
-          }
+            name: 'GLXM',
+            value: Number(this.state.xmid),
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
-    if (name.includes("软件费用审批流程-无合同")) {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_RJGMWHT",
+    if (name.includes('软件费用审批流程-无合同')) {
+      params = getParams(
+        'TLC_LCFQ',
+        'TLC_LCFQ_RJGMWHT',
         [
           {
-            "name": "GLXM",
-            "value": Number(this.state.xmid)
-          }
+            name: 'GLXM',
+            value: Number(this.state.xmid),
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
-    if (name.includes("申请餐券")) {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_CQSQLC",
+    if (name.includes('申请餐券')) {
+      params = getParams(
+        'TLC_LCFQ',
+        'TLC_LCFQ_CQSQLC',
         [
           {
-            "name": "GLXM",
-            "value": this.state.xmid
-          }
+            name: 'GLXM',
+            value: this.state.xmid,
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
-    if (name.includes("申请权限") || name.includes("申请VPN")) {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_VPNSQ",
+    if (name.includes('申请权限') || name.includes('申请VPN')) {
+      params = getParams(
+        'TLC_LCFQ',
+        'TLC_LCFQ_VPNSQ',
         [
           {
-            "name": "GLXM",
-            "value": this.state.xmid
-          }
+            name: 'GLXM',
+            value: this.state.xmid,
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
-    if (name.includes("信委会议案流程")) {
-      params = getParams("LC_XWHYALC", "LC_XWHYALC_TAFQ",
+    if (name.includes('信委会议案流程')) {
+      params = getParams(
+        'LC_XWHYALC',
+        'LC_XWHYALC_TAFQ',
         [
           {
-            "name": "XMMC",
-            "value": this.state.xmid
-          }
+            name: 'XMMC',
+            value: this.state.xmid,
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
     if (name === '会议议案提交') {
-      params = getParams("TLC_LCFQ", "TLC_LCFQ_HYYA",
+      params = getParams(
+        'TLC_LCFQ',
+        'TLC_LCFQ_HYYA',
         [
           {
-            "name": "GLXM",
-            "value": this.state.xmid
-          }
+            name: 'GLXM',
+            value: this.state.xmid,
+          },
         ],
-        Loginname
-      )
+        Loginname,
+      );
     }
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          sendUrl: url,
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            sendUrl: url,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //文档上传/修改url
-  getUploadUrl = (item) => {
-    const params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "TWD_XM",
-      "operateName": "TWD_XM_INTERFACE_UPLOD",
-      "parameter": [
+  getUploadUrl = (item, txt = '') => {
+    let params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'TWD_XM',
+      operateName: 'TWD_XM_INTERFACE_UPLOD',
+      parameter: [
         {
-          "name": "XMMC",
-          "value": this.state.xmid
+          name: 'XMMC',
+          value: this.state.xmid,
         },
         {
-          "name": "LCBMC",
-          "value": item.lcbid
+          name: 'LCBMC',
+          value: item.lcbid,
         },
         {
-          "name": "SXID",
-          "value": item.sxid
-        }
+          name: 'SXID',
+          value: item.sxid,
+        },
       ],
-      "userId": Loginname
-    }
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          uploadUrl: url,
-        });
+      userId: Loginname,
+    };
+    if (txt === 'modify') {
+      if (item.sxmc === '中标公告') {
+        params = {
+          attribute: 0,
+          authFlag: 0,
+          objectName: 'TXMXX_ZBGG',
+          operateName: 'TXMXX_ZBGG_Add',
+          parameter: [
+            {
+              name: 'XMMC2',
+              value: this.state.xmid,
+            },
+            // {
+            //   "name": "LCBMC",
+            //   "value": item.lcbid
+            // },
+            // {
+            //   "name": "SXID",
+            //   "value": item.sxid
+            // }
+          ],
+          userId: Loginname,
+        };
       }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    } else {
+      if (item.sxmc === '中标公告') {
+        params = {
+          attribute: 0,
+          authFlag: 0,
+          objectName: 'TXMXX_ZBGG',
+          operateName: 'TXMXX_ZBGG_MOD',
+          parameter: [
+            {
+              name: 'XMMC2',
+              value: this.state.xmid,
+            },
+            // {
+            //   "name": "LCBMC",
+            //   "value": item.lcbid
+            // },
+            // {
+            //   "name": "SXID",
+            //   "value": item.sxid
+            // }
+          ],
+          userId: Loginname,
+        };
+      }
+    }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            uploadUrl: url,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //信息录入url
   getFileOutUrl = (params, callBack) => {
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      // console.log("🚀 ~ file: index.js ~ line 233 ~ LifeCycleManagementTabs ~ CreateOperateHyperLink ~ url", url)
-      if (code === 1) {
-        this.setState({
-          fillOutUrl: url,
-          fillOutVisible: true,
-        });
-        // window.location.href = url;
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        // console.log("🚀 ~ file: index.js ~ line 233 ~ LifeCycleManagementTabs ~ CreateOperateHyperLink ~ url", url)
+        if (code === 1) {
+          this.setState({
+            fillOutUrl: url,
+            fillOutVisible: true,
+          });
+          // window.location.href = url;
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //默认信息修改url
   getEditMessageUrl = (params, msg = '修改') => {
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          editMessageUrl: url,
-          defMsgModifyModalVisible: true,
-          editMessageTitle: msg,
-        });
-        // window.location.href = url;
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            editMessageUrl: url,
+            defMsgModifyModalVisible: true,
+            editMessageTitle: msg,
+          });
+          // window.location.href = url;
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //阶段信息修改url
-  getEditModelUrl = (params) => {
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          editModelUrl: url,
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+  getEditModelUrl = params => {
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            editModelUrl: url,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
-
-  fetchQueryLiftcycleMilestone = (e) => {
+  fetchQueryLiftcycleMilestone = e => {
     FetchQueryLiftcycleMilestone({
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
-    }).then((ret = {}) => {
-      const { record = [], code = 0 } = ret;
-      // console.log("basicData",record);
-      if (code === 1) {
-        //zxxh排序
-        record.map((item = {}, index) => {
-          item.extend = item.zt === "2";
-        })
-        // console.log("basicData",record)
-        record.sort(this.compare('zxxh'))
-        this.setState({
-          loading: false,
-          basicData: record,
-        });
-      }
-    }).catch((error) => {
-      this.setState({ loading: false });
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    })
+      .then((ret = {}) => {
+        const { record = [], code = 0 } = ret;
+        // console.log("basicData",record);
+        if (code === 1) {
+          //zxxh排序
+          record.map((item = {}, index) => {
+            item.extend = item.zt === '2';
+          });
+          // console.log("basicData",record)
+          record.sort(this.compare('zxxh'));
+          this.setState({
+            loading: false,
+            basicData: record,
+          });
+        }
+      })
+      .catch(error => {
+        this.setState({ loading: false });
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
-  compare = (property) => {
-    return function (a, b) {
+  compare = property => {
+    return function(a, b) {
       var value1 = Number(a[property]);
       var value2 = Number(b[property]);
       return value1 - value2;
-    }
-  }
+    };
+  };
 
-  fetchQueryWpsWDXX = (item) => {
+  fetchQueryWpsWDXX = item => {
     FetchQueryWpsWDXX({
       lcb: item.lcbid,
       sxid: item.sxid,
-      xmmc: this.state.xmid
-    }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
-      // console.log("WpsWDXXData", record);
-      if (code === 1) {
-        if (record.url.includes("[")) {
-          let obj = JSON.parse(record.url);
-          obj.push([item.sxmc])
-          this.setState({
-            fileList: obj,
-            fileListVisible: true,
-          })
-        } else {
-          this._WpsInvoke({
-            Index: 'OpenFile',
-            // AppType:'wps',
-            filepath: record.url,
-          })
+      xmmc: this.state.xmid,
+    })
+      .then((ret = {}) => {
+        const { code = 0, record = [] } = ret;
+        // console.log("WpsWDXXData", record);
+        if (code === 1) {
+          if (record.url.includes('[')) {
+            let obj = JSON.parse(record.url);
+            obj.push([item.sxmc]);
+            this.setState({
+              fileList: obj,
+              fileListVisible: true,
+            });
+          } else {
+            this._WpsInvoke({
+              Index: 'OpenFile',
+              // AppType:'wps',
+              filepath: record.url,
+            });
+          }
         }
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
-  fetchQueryLifecycleStuff = (e) => {
+  fetchQueryLifecycleStuff = e => {
     FetchQueryLifecycleStuff({
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
-    }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
-      // console.log("detailData",record);
-      if (code === 1) {
-        this.setState({
-          detailData: record,
-          loading: false,
-        });
-      }
-      if (e) {
-        this.setState({
-          xmid: e,
-        });
-      }
-    }).catch((error) => {
-      this.setState({ loading: false });
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    })
+      .then((ret = {}) => {
+        const { code = 0, record = [] } = ret;
+        // console.log("detailData",record);
+        if (code === 1) {
+          this.setState({
+            detailData: record,
+            loading: false,
+          });
+        }
+        if (e) {
+          this.setState({
+            xmid: e,
+          });
+        }
+      })
+      .catch(error => {
+        this.setState({ loading: false });
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
-  onChange = (key) => {
+  onChange = key => {
     // console.log(key);
   };
 
-  extend = (number) => {
+  extend = number => {
     const { basicData } = this.state;
     basicData.map((item = {}, index) => {
       if (index === number) {
@@ -575,14 +670,14 @@ class LifeCycleManagementTabs extends React.Component {
       // }else{
       //   item.height = '9.55rem'.toString();
       // }
-    })
+    });
     this.setState({
       basicData,
-    })
-  }
+    });
+  };
 
   //文档上传
-  handleUpload = (item) => {
+  handleUpload = item => {
     this.getUploadUrl(item);
     this.setState({
       uploadVisible: true,
@@ -591,8 +686,8 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //文档上传的修改
-  handleEdit = (item) => {
-    this.getUploadUrl(item);
+  handleEdit = item => {
+    this.getUploadUrl(item, 'modify');
     this.setState({
       editVisible: true,
       editTitle: item.sxmc + '修改',
@@ -600,8 +695,12 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //流程发起
-  handleSend = (item, xmbh='') => {
-    console.log("🚀 ~ file: index.js ~ line 593 ~ LifeCycleManagementTabs ~ item, xmbh", item, xmbh)
+  handleSend = (item, xmbh = '') => {
+    console.log(
+      '🚀 ~ file: index.js ~ line 593 ~ LifeCycleManagementTabs ~ item, xmbh',
+      item,
+      xmbh,
+    );
     if (item.sxmc.includes('付款流程')) {
       // this.setState({
       //   paymentModalVisible: true,
@@ -610,17 +709,20 @@ class LifeCycleManagementTabs extends React.Component {
       return;
     }
     //合同签署流程弹窗个性化,不走livebos弹窗了
-    if (item.sxmc.includes("合同签署")) {
+    if (item.sxmc.includes('合同签署')) {
       let index = this.state.operationListData?.findIndex(x => {
-        return Number(x.xmid) === Number(item.xmid)
-      })
-      this.setState({
-        currentXmmc: this.state.operationListData[index].xmmc,
-        contractSigningVisible: true,
-        xmbh: xmbh,
-      }, () => {
-        console.log('合同签署 - 项目编号：', this.state.xmbh);
-      })
+        return Number(x.xmid) === Number(item.xmid);
+      });
+      this.setState(
+        {
+          currentXmmc: this.state.operationListData[index].xmmc,
+          contractSigningVisible: true,
+          xmbh: xmbh,
+        },
+        () => {
+          console.log('合同签署 - 项目编号：', this.state.xmbh);
+        },
+      );
       return;
     }
     this.getSendUrl(item.sxmc);
@@ -632,38 +734,41 @@ class LifeCycleManagementTabs extends React.Component {
 
   //livebos弹窗配置，默认入参值为员工评价开启弹窗的
   handleModalConfig = ({
-    objName = "View_XMRYPF",
-    oprName = "View_XMRYPF_OPENCOMMENT",
+    objName = 'View_XMRYPF',
+    oprName = 'View_XMRYPF_OPENCOMMENT',
     data = [
       {
-        "name": "XMMC",
-        "value": this.state.xmid
+        name: 'XMMC',
+        value: this.state.xmid,
       },
-    ], userName = Loginname,
+    ],
+    userName = Loginname,
     urlName = 'ygpjUrl',
-    visibleName = 'ygpjVisible'
+    visibleName = 'ygpjVisible',
   }) => {
     let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": objName,
-      "operateName": oprName,
-      "parameter": data,
-      "userId": userName
+      attribute: 0,
+      authFlag: 0,
+      objectName: objName,
+      operateName: oprName,
+      parameter: data,
+      userId: userName,
     };
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          [urlName]: url,
-          [visibleName]: true
-        });
-        // window.location.href = url;
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            [urlName]: url,
+            [visibleName]: true,
+          });
+          // window.location.href = url;
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
   //其他
   // handleOther = (item) => {
   //   if (item.sxmc.includes("员工评价开启开启")) {
@@ -673,65 +778,64 @@ class LifeCycleManagementTabs extends React.Component {
   // };
 
   //信息录入
-  handleFillOut = (item) => {
+  handleFillOut = item => {
     let params = {};
-    if (item.sxmc.includes("周报填写")) {
+    if (item.sxmc.includes('周报填写')) {
       window.location.href = this.state.weelyReportUrl;
       return;
     }
     //暂时放信息录入，以后多了放-其他
-    if (item.sxmc.includes("员工评价开启")) {
+    if (item.sxmc.includes('员工评价开启')) {
       this.handleModalConfig({});
       return;
     }
-    if (item.sxmc.includes("合同信息录入")) {
+    if (item.sxmc.includes('合同信息录入')) {
       params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "V_HTXX",
-        "operateName": "V_HTXX_ADD",
-        "parameter": [
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'V_HTXX',
+        operateName: 'V_HTXX_ADD',
+        parameter: [
           {
-            "name": "XMMC",
-            "value": this.state.xmid
+            name: 'XMMC',
+            value: this.state.xmid,
           },
         ],
-        "userId": Loginname
-      };
-
-    }
-    if (item.sxmc.includes("中标信息录入")) {
-      params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "View_TBXX",
-        "operateName": "View_TBXX_ADD",
-        "parameter": [
-          {
-            "name": "XMMC",
-            "value": this.state.xmid
-          },
-          {
-            "name": "LCB",
-            "value": item.lcbid
-          },
-        ],
-        "userId": Loginname
+        userId: Loginname,
       };
     }
-    if (item.sxmc.includes("中标公告")) {
+    if (item.sxmc.includes('中标信息录入')) {
       params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "TXMXX_ZBGG",
-        "operateName": "TXMXX_ZBGG_Add",
-        "parameter": [
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'View_TBXX',
+        operateName: 'View_TBXX_ADD',
+        parameter: [
           {
-            "name": "XMMC2",
-            "value": this.state.xmid
-          }
+            name: 'XMMC',
+            value: this.state.xmid,
+          },
+          {
+            name: 'LCB',
+            value: item.lcbid,
+          },
         ],
-        "userId": Loginname
+        userId: Loginname,
+      };
+    }
+    if (item.sxmc.includes('中标公告')) {
+      params = {
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'TXMXX_ZBGG',
+        operateName: 'TXMXX_ZBGG_Add',
+        parameter: [
+          {
+            name: 'XMMC2',
+            value: this.state.xmid,
+          },
+        ],
+        userId: Loginname,
       };
     }
     this.getFileOutUrl(params);
@@ -742,73 +846,73 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   //信息修改
-  handleMessageEdit = (item) => {
+  handleMessageEdit = item => {
     //获取当前项目名称，打开弹窗
     let index = this.state.operationListData?.findIndex(x => {
-      return Number(x.xmid) === Number(item.xmid)
-    })
-    this.setState({
-      currentXmmc: this.state.operationListData[index].xmmc
+      return Number(x.xmid) === Number(item.xmid);
     });
-    if (item.sxmc.includes("合同信息录入")) {
+    this.setState({
+      currentXmmc: this.state.operationListData[index].xmmc,
+    });
+    if (item.sxmc.includes('合同信息录入')) {
       this.setState({
         // editMessageTitle: item.sxmc + '修改',
         editMessageVisible: true,
       });
     }
-    if (item.sxmc.includes("中标信息录入")) {
+    if (item.sxmc.includes('中标信息录入')) {
       this.setState({
         bidInfoModalVisible: true,
-        currentXmmc: this.state.operationListData[index].xmmc
+        currentXmmc: this.state.operationListData[index].xmmc,
       });
     }
-    if (item.sxmc.includes("员工评价开启")) {
+    if (item.sxmc.includes('员工评价开启')) {
       this.handleModalConfig({});
       // console.log('kkkk');
       return;
     }
-    if (item.sxmc.includes("中标公告")) {
+    if (item.sxmc.includes('中标公告')) {
       let params = {
-        "attribute": 0,
-        "authFlag": 0,
-        "objectName": "TXMXX_ZBGG",
-        "operateName": "TXMXX_ZBGG_MOD",
-        "parameter": [
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'TXMXX_ZBGG',
+        operateName: 'TXMXX_ZBGG_MOD',
+        parameter: [
           {
-            "name": "XMMC2",
-            "value": this.state.xmid
-          }
+            name: 'XMMC2',
+            value: this.state.xmid,
+          },
         ],
-        "userId": Loginname
-      }
-      this.getEditMessageUrl(params, "中标公告修改");//livebos
+        userId: Loginname,
+      };
+      this.getEditMessageUrl(params, '中标公告修改'); //livebos
     }
-  }
+  };
 
-  handleEditModel = (item) => {
+  handleEditModel = item => {
     let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "TXMXX_XMXX",
-      "operateName": "TXMXX_XMXX_INTERFACE_MODOTHERINFO",
-      "parameter": [
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'TXMXX_XMXX',
+      operateName: 'TXMXX_XMXX_INTERFACE_MODOTHERINFO',
+      parameter: [
         {
-          "name": "XMID",
-          "value": this.state.xmid,
+          name: 'XMID',
+          value: this.state.xmid,
         },
         {
-          "name": "LCBID",
-          "value": item.lcbid,
+          name: 'LCBID',
+          value: item.lcbid,
         },
       ],
-      "userId": Loginname
-    }
+      userId: Loginname,
+    };
     this.getEditModelUrl(params);
     this.setState({
       editModelTitle: '信息修改',
       editModelVisible: true,
     });
-  }
+  };
 
   closePaymentProcessModal = () => {
     this.setState({
@@ -862,74 +966,80 @@ class LifeCycleManagementTabs extends React.Component {
     });
   };
 
-
-  groupBy = (arr) => {
+  groupBy = arr => {
     let dataArr = [];
     arr.map(mapItem => {
       if (dataArr.length === 0) {
-        dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
+        dataArr.push({ swlx: mapItem.swlx, List: [mapItem] });
       } else {
-        let res = dataArr.some(item => {//判断相同swlx，有就添加到当前项
+        let res = dataArr.some(item => {
+          //判断相同swlx，有就添加到当前项
           if (item.swlx === mapItem.swlx) {
-            item.List.push(mapItem)
-            return true
+            item.List.push(mapItem);
+            return true;
           }
-        })
-        if (!res) {//如果没找相同swlx添加一个新对象
-          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] })
+        });
+        if (!res) {
+          //如果没找相同swlx添加一个新对象
+          dataArr.push({ swlx: mapItem.swlx, List: [mapItem] });
         }
       }
-    })
+    });
     return dataArr;
-  }
-
+  };
 
   //成功回调
-  onSuccess = (name) => {
-    message.success(name + "成功");
+  onSuccess = name => {
+    message.success(name + '成功');
     this.reflush();
-  }
+  };
 
   reflush = () => {
     this.fetchQueryOwnerProjectListUser(this.state.xmid);
     // this.fetchQueryProjectInfoInCycle(this.state.xmid);
     // this.fetchQueryLiftcycleMilestone(this.state.xmid);
     // this.fetchQueryLifecycleStuff(this.state.xmid);
-  }
+  };
 
   //文件wps预览-勿删
-  handleClick = (item) => {
+  handleClick = item => {
     // console.log(item);
     this.fetchQueryWpsWDXX(item);
-  }
+  };
 
   //文件wps预览-勿删
   _WpsInvoke(funcs, front, jsPluginsXml, isSilent) {
-    if (isSilent) {//隐藏启动时，front必须为false
+    if (isSilent) {
+      //隐藏启动时，front必须为false
       front = false;
     }
     /**
      * 下面函数为调起WPS，并且执行加载项WpsOAAssist中的函数dispatcher,该函数的参数为业务系统传递过去的info
      */
     // console.log("funcs", funcs)
-    this.singleInvoke(funcs, front, jsPluginsXml, isSilent)
+    this.singleInvoke(funcs, front, jsPluginsXml, isSilent);
   }
 
   singleInvoke(param, showToFront, jsPluginsXml, silentMode) {
     let clientType = WpsInvoke.ClientType.wps;
-    let name = "WpsOAAssist";
-    if (param.filepath.includes(".docx") || param.filepath.includes(".doc") || param.filepath.includes(".DOCX") || param.filepath.includes(".DOC")) {
+    let name = 'WpsOAAssist';
+    if (
+      param.filepath.includes('.docx') ||
+      param.filepath.includes('.doc') ||
+      param.filepath.includes('.DOCX') ||
+      param.filepath.includes('.DOC')
+    ) {
       clientType = WpsInvoke.ClientType.wps;
-      name = "WpsOAAssist";
+      name = 'WpsOAAssist';
     }
-    if (param.filepath.includes(".xlsx") || param.filepath.includes(".xls")) {
+    if (param.filepath.includes('.xlsx') || param.filepath.includes('.xls')) {
       clientType = WpsInvoke.ClientType.et;
-      name = "EtOAAssist";
+      name = 'EtOAAssist';
     }
-    if (param.filepath.includes(".pdf")) {
+    if (param.filepath.includes('.pdf')) {
       // clientType = WpsInvoke.ClientType.wpp;
       // name = "HelloWps-wpp";
-      window.open(param.filepath)
+      window.open(param.filepath);
       return;
     }
     const WpsClient = new WpsClientOpen.WpsClient(clientType);
@@ -938,97 +1048,102 @@ class LifeCycleManagementTabs extends React.Component {
     WpsClient.InvokeAsHttp(
       // clientType, // 组件类型
       name, // 插件名，与wps客户端加载的加载的插件名对应
-      "InvokeFromSystemDemo", // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
+      'InvokeFromSystemDemo', // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
       JSON.stringify(param), // 传递给插件的数据
-      function (result) { // 调用回调，status为0为成功，其他是错误
+      function(result) {
+        // 调用回调，status为0为成功，其他是错误
         if (result.status) {
           if (result.status === 100) {
-            message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。')
+            message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。');
             return;
           }
-          message.info(result.message)
+          message.info(result.message);
         } else {
-          message.info(result.response)
+          message.info(result.response);
         }
       },
-      true)
+      true,
+    );
   }
 
   handleVisibleChange = visible => {
     this.setState({ fileListVisible: visible });
   };
 
-  callback = (key) => {
-    console.log("keyccccc", key)
+  callback = key => {
+    console.log('keyccccc', key);
     // console.log("loadingloading000", this.state.loading)
     // console.log("isHaveItem", this.state.isHaveItem)
     const { operationListData, allItemsData } = this.state;
-    this.setState({
-      xmid: key,
-      loading: true,
-    }, () => {
-      console.log('##xmid', this.state.xmid);
-      //名下没有项目 展示所有项目的第一条 名下有项目展示 所有正在执行的项目 搜索框始终展示所有项目
-      if (!this.state.isHaveItem) {
-        // console.log("没项目")
-        operationListData.map((item = {}, index) => {
-          const rec = [];
-          if (item.xmid === this.state.xmid) {
-            rec[0] = item;
-            this.setState({
-              allItemsDataFirst: rec
-            })
-          }
-        })
-      } else {
-        //名下有项目,选择了非名下的项目
-        // console.log("有项目")
-        let rec = [];
-        let recnew = [];
-        operationListData.map((item = {}, index) => {
-          if (item.xmid === this.state.xmid) {
-            rec.push(item);
-          }
-          recnew.push(item)
-        })
-        // console.log("rec.length === 0",rec.length === 0)
-        if (rec.length === 0) {
-          allItemsData.map((item = {}, index) => {
+    this.setState(
+      {
+        xmid: key,
+        loading: true,
+      },
+      () => {
+        console.log('##xmid', this.state.xmid);
+        //名下没有项目 展示所有项目的第一条 名下有项目展示 所有正在执行的项目 搜索框始终展示所有项目
+        if (!this.state.isHaveItem) {
+          // console.log("没项目")
+          operationListData.map((item = {}, index) => {
+            const rec = [];
             if (item.xmid === this.state.xmid) {
-              recnew.unshift(item)
+              rec[0] = item;
               this.setState({
-                allItemsDataFirst: recnew,
-              })
+                allItemsDataFirst: rec,
+              });
             }
-          })
-          // console.log("ccccccc",this.state.allItemsDataFirst)
-          // console.log("ccccccc1111",recnew)
+          });
         } else {
-          // console.log("ccccccc22222",recnew)
-          this.setState({
-            allItemsDataFirst: recnew,
-          })
+          //名下有项目,选择了非名下的项目
+          // console.log("有项目")
+          let rec = [];
+          let recnew = [];
+          operationListData.map((item = {}, index) => {
+            if (item.xmid === this.state.xmid) {
+              rec.push(item);
+            }
+            recnew.push(item);
+          });
+          // console.log("rec.length === 0",rec.length === 0)
+          if (rec.length === 0) {
+            allItemsData.map((item = {}, index) => {
+              if (item.xmid === this.state.xmid) {
+                recnew.unshift(item);
+                this.setState({
+                  allItemsDataFirst: recnew,
+                });
+              }
+            });
+            // console.log("ccccccc",this.state.allItemsDataFirst)
+            // console.log("ccccccc1111",recnew)
+          } else {
+            // console.log("ccccccc22222",recnew)
+            this.setState({
+              allItemsDataFirst: recnew,
+            });
+          }
         }
-      }
-    })
+      },
+    );
     // console.log("loadingloading1111", this.state.loading)
     this.fetchQueryLiftcycleMilestone(key);
     this.fetchQueryLifecycleStuff(key);
     this.fetchQueryProjectInfoInCycle(key);
-  }
+  };
 
-  changeTab = (xmid) => {
+  changeTab = xmid => {
     this.setState({ xmid });
     console.log(hhh, xmid);
   };
 
   closeContractModal = () => {
-    this.setState({ contractSigningVisible: false })
-  }
+    this.setState({ contractSigningVisible: false });
+  };
 
   closeAssociatedFileModal = () => {
-    this.setState({ associatedFileVisible: false })
-  }
+    this.setState({ associatedFileVisible: false });
+  };
 
   render() {
     const {
@@ -1071,12 +1186,12 @@ class LifeCycleManagementTabs extends React.Component {
       associatedFileVisible,
       xmbh,
     } = this.state;
-    console.log("contractSigningVisible", contractSigningVisible)
+    console.log('contractSigningVisible', contractSigningVisible);
     const uploadModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '50%',
-      height: '78rem',
+      height: uploadTitle==='中标公告上传'?'50rem':'78rem',
       title: uploadTitle,
       style: { top: '10rem' },
       visible: uploadVisible,
@@ -1159,366 +1274,586 @@ class LifeCycleManagementTabs extends React.Component {
     );
     const content = (
       <>
-        {
-          fileList.map(item => item.length === 3 &&
-            <div key={item.index} className="file-item">
-              <a onClick={() => this._WpsInvoke({
-                Index: 'OpenFile',
-                // AppType:'wps',
-                filepath: item[2],
-              })}>{item[1]}</a>
-            </div>
-          )}
+        {fileList.map(
+          item =>
+            item.length === 3 && (
+              <div key={item.index} className="file-item">
+                <a
+                  onClick={() =>
+                    this._WpsInvoke({
+                      Index: 'OpenFile',
+                      // AppType:'wps',
+                      filepath: item[2],
+                    })
+                  }
+                >
+                  {item[1]}
+                </a>
+              </div>
+            ),
+        )}
       </>
     );
     //搜索框
-    const operations = <Input.Group compact>
-      <div onMouseDown={(e) => {
-        e.preventDefault()
-      }} style={{ position: 'relative' }} className="operationListSelectBox">
-        <img src={require('../../../image/pms/LifeCycleManagement/search.png')}
-          alt='' style={{ marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem' }}
-        />
-        <Select
-          // ref={this.selectRef}
-          style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
-          showSearch
-          placeholder="请选择项目名称"
-          optionFilterProp="children"
-          key={xmid}
-          defaultValue={xmid}
-          onChange={this.callback}
-          // onSearch={this.onSearch}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }
-          onFocus={this.handleSelectFocus}
-          open={open}
-          onDropdownVisibleChange={(visible) => {
-            this.setState({ open: visible })
+    const operations = (
+      <Input.Group compact>
+        <div
+          onMouseDown={e => {
+            e.preventDefault();
           }}
+          style={{ position: 'relative' }}
+          className="operationListSelectBox"
         >
-          {
-            allItemsData?.map((item = {}, ind) => {
-              return <Option key={ind} value={item.xmid}>{item.xmmc}</Option>
-            })
-          }
-        </Select></div>
-    </Input.Group>;
+          <img
+            src={require('../../../image/pms/LifeCycleManagement/search.png')}
+            alt=""
+            style={{ marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem' }}
+          />
+          <Select
+            // ref={this.selectRef}
+            style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
+            showSearch
+            placeholder="请选择项目名称"
+            optionFilterProp="children"
+            key={xmid}
+            defaultValue={xmid}
+            onChange={this.callback}
+            // onSearch={this.onSearch}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            onFocus={this.handleSelectFocus}
+            open={open}
+            onDropdownVisibleChange={visible => {
+              this.setState({ open: visible });
+            }}
+          >
+            {allItemsData?.map((item = {}, ind) => {
+              return (
+                <Option key={ind} value={item.xmid}>
+                  {item.xmmc}
+                </Option>
+              );
+            })}
+          </Select>
+        </div>
+      </Input.Group>
+    );
     return (
       <Row style={{ height: '100%' }}>
         {/*文档上传弹窗*/}
-        {uploadVisible &&
-          <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传")}
+        {uploadVisible && (
+          <BridgeModel
+            modalProps={uploadModalProps}
+            onSucess={() => this.onSuccess('文档上传')}
             onCancel={this.closeUploadModal}
-            src={uploadUrl} />}
+            src={uploadUrl}
+          />
+        )}
         {/*文档修改弹窗*/}
-        {editVisible &&
-          <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改")}
+        {editVisible && (
+          <BridgeModel
+            modalProps={editModalProps}
+            onSucess={() => this.onSuccess('文档上传修改')}
             onCancel={this.closeEditModal}
-            src={uploadUrl} />}
+            src={uploadUrl}
+          />
+        )}
         {/*流程发起弹窗*/}
-        {sendVisible &&
-          <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起")} onCancel={this.closeSendModal}
-            src={sendUrl} />}
+        {sendVisible && (
+          <BridgeModel
+            modalProps={sendModalProps}
+            onSucess={() => this.onSuccess('流程发起')}
+            onCancel={this.closeSendModal}
+            src={sendUrl}
+          />
+        )}
         {/*信息录入弹窗*/}
-        {fillOutVisible &&
-          <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入")}
+        {fillOutVisible && (
+          <BridgeModel
+            modalProps={fillOutModalProps}
+            onSucess={() => this.onSuccess('信息录入')}
             onCancel={this.closeFillOutModal}
-            src={fillOutUrl} />}
+            src={fillOutUrl}
+          />
+        )}
         {/*员工评价开启弹窗*/}
-        {ygpjVisible &&
-          <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+        {ygpjVisible && (
+          <BridgeModel
+            modalProps={ygpjModalProps}
+            onSucess={() => this.onSuccess('操作')}
             onCancel={() => this.setState({ ygpjVisible: false })}
-            src={ygpjUrl} />}
+            src={ygpjUrl}
+          />
+        )}
         {/*默认信息修改弹窗*/}
-        {defMsgModifyModalVisible &&
-          <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改")}
+        {defMsgModifyModalVisible && (
+          <BridgeModel
+            modalProps={editMessageModalProps}
+            onSucess={() => this.onSuccess('信息修改')}
             onCancel={this.closeDefMsgModifyModal}
-            src={editMessageUrl} />}
+            src={editMessageUrl}
+          />
+        )}
         {/*阶段信息修改弹窗*/}
-        {editModelVisible &&
+        {editModelVisible && (
           <div>
-            <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+            <BridgeModel
+              modalProps={editModelModalProps}
+              onSucess={() => this.onSuccess('信息修改')}
               onCancel={this.closeModelEditModal}
-              src={editModelUrl} /></div>}
+              src={editModelUrl}
+            />
+          </div>
+        )}
 
         {/* 付款流程发起弹窗 */}
-        {paymentModalVisible && <PaymentProcess paymentModalVisible={paymentModalVisible}
-          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
-          closePaymentProcessModal={this.closePaymentProcessModal}
-          onSuccess={() => this.onSuccess("流程发起")}
-        />}
+        {paymentModalVisible && (
+          <PaymentProcess
+            paymentModalVisible={paymentModalVisible}
+            fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+            currentXmid={
+              Number(this.state.xmid) !== 0
+                ? Number(this.state.xmid)
+                : Number(this.props.params.projectId) ||
+                  Number(this.state.operationListData[0].xmid)
+            }
+            closePaymentProcessModal={this.closePaymentProcessModal}
+            onSuccess={() => this.onSuccess('流程发起')}
+          />
+        )}
 
         {/*合同信息修改弹窗*/}
-        {editMessageVisible && <ContractInfoUpdate
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
-          currentXmmc={currentXmmc}
-          editMessageVisible={editMessageVisible}
-          closeMessageEditModal={this.closeMessageEditModal}
-          onSuccess={() => this.onSuccess("信息修改")}
-        ></ContractInfoUpdate>}
+        {editMessageVisible && (
+          <ContractInfoUpdate
+            currentXmid={
+              Number(this.state.xmid) !== 0
+                ? Number(this.state.xmid)
+                : Number(this.props.params.projectId) ||
+                  Number(this.state.operationListData[0].xmid)
+            }
+            currentXmmc={currentXmmc}
+            editMessageVisible={editMessageVisible}
+            closeMessageEditModal={this.closeMessageEditModal}
+            onSuccess={() => this.onSuccess('信息修改')}
+          ></ContractInfoUpdate>
+        )}
 
         {/*合同签署流程弹窗*/}
-        {contractSigningVisible && <ContractSigning
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
-          currentXmmc={currentXmmc}
-          contractSigningVisible={contractSigningVisible}
-          closeContractModal={this.closeContractModal}
-          onSuccess={() => this.onSuccess("合同签署")}
-          xmbh={xmbh}
-        ></ContractSigning>}
+        {contractSigningVisible && (
+          <ContractSigning
+            currentXmid={
+              Number(this.state.xmid) !== 0
+                ? Number(this.state.xmid)
+                : Number(this.props.params.projectId) ||
+                  Number(this.state.operationListData[0].xmid)
+            }
+            currentXmmc={currentXmmc}
+            contractSigningVisible={contractSigningVisible}
+            closeContractModal={this.closeContractModal}
+            onSuccess={() => this.onSuccess('合同签署')}
+            xmbh={xmbh}
+          ></ContractSigning>
+        )}
 
         {/*合同签署流程弹窗*/}
-        {associatedFileVisible && <AssociatedFile
-          associatedFileVisible={associatedFileVisible}
-          closeAssociatedFileModal={this.closeAssociatedFileModal}
-          onSuccess={() => this.onSuccess("合同签署")}
-        ></AssociatedFile>}
+        {associatedFileVisible && (
+          <AssociatedFile
+            associatedFileVisible={associatedFileVisible}
+            closeAssociatedFileModal={this.closeAssociatedFileModal}
+            onSuccess={() => this.onSuccess('合同签署')}
+          ></AssociatedFile>
+        )}
 
         {/*中标信息修改弹窗*/}
-        {bidInfoModalVisible && <BidInfoUpdate
-          currentXmid={Number(this.state.xmid) !== 0 ? Number(this.state.xmid) : Number(this.props.params.projectId) || Number(this.state.operationListData[0].xmid)}
-          currentXmmc={currentXmmc}
-          bidInfoModalVisible={bidInfoModalVisible}
-          closeBidInfoModal={this.closeBidInfoModal}
-          loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-          onSuccess={() => this.onSuccess("信息修改")}
-        ></BidInfoUpdate>}
+        {bidInfoModalVisible && (
+          <BidInfoUpdate
+            currentXmid={
+              Number(this.state.xmid) !== 0
+                ? Number(this.state.xmid)
+                : Number(this.props.params.projectId) ||
+                  Number(this.state.operationListData[0].xmid)
+            }
+            currentXmmc={currentXmmc}
+            bidInfoModalVisible={bidInfoModalVisible}
+            closeBidInfoModal={this.closeBidInfoModal}
+            loginUserId={JSON.parse(sessionStorage.getItem('user')).id}
+            onSuccess={() => this.onSuccess('信息修改')}
+          ></BidInfoUpdate>
+        )}
         <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
           {
-            <Tabs tabBarStyle={{ backgroundColor: 'white', margin: '0', padding: '3.571rem 0 0 3.571rem' }}
-              onChange={this.callback} type="card" activeKey={xmid} tabBarExtraContent={operations}>
-              {
-                allItemsDataFirst.map(items => {
-                  // console.log("1111",item)
-                  return (
-                    <TabPane tab={items.xmmc} key={items.xmid}>
-                      <div style={{ height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem' }}>
-                        <OperationList fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
-                          fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-                          // fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
-                          fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
-                          data={operationListData}
-                          // totalRows={operationListTotalRows}
-                          defaultValue={xmid}
-                          projectInfo={projectInfo} />
-                        {/*<span onClick={e =>{this.setState({associatedFileVisible:true})}}>点击事件</span>*/}
-                      </div>
-                      <div className='lifecyclemanage-box-wrapper'>
-                        <div className='lifecyclemanage-box'>
-                          {
-                            basicData.map((item = {}, index) => {
-                              let detail = [];
-                              detailData.map((childItem = {}, index) => {
-                                if (childItem.lcbid === item.lcbid) {
-                                  detail.push(childItem);
-                                }
-                              })
-                              // console.log('detail', detail);
-                              let sort = this.groupBy(detail);
-                              // console.log('sort', sort);
-                              return <div className='LifeCycleManage' style={{
-                                borderTopLeftRadius: (index === 0 ? '1.1904rem' : ''),
-                                borderTopRightRadius: (index === 0 ? '1.1904rem' : ''),
-                                borderBottomLeftRadius: (index === basicData.length - 1 ? '1.1904rem' : ''),
-                                borderBottomRightRadius: (index === basicData.length - 1 ? '1.1904rem' : '')
-                              }}>
-                                <div className='head'>
-                                  <Imgs status={item.zt} />
-                                  <i
-                                    className={item.extend ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}
-                                    onClick={() => this.extend(index)} />&nbsp;
-                                  <div className='head1'>
-                                    {item.lcbmc}
-                                  </div>
-                                  {item.lcbmc !== '项目付款' ? <>
-                                    <div className='head6'>
+            <Tabs
+              tabBarStyle={{
+                backgroundColor: 'white',
+                margin: '0',
+                padding: '3.571rem 0 0 3.571rem',
+              }}
+              onChange={this.callback}
+              type="card"
+              activeKey={xmid}
+              tabBarExtraContent={operations}
+            >
+              {allItemsDataFirst.map(items => {
+                // console.log("1111",item)
+                return (
+                  <TabPane tab={items.xmmc} key={items.xmid}>
+                    <div style={{ height: '8%', margin: '2.381rem 3.571rem 2.381rem 3.571rem' }}>
+                      <OperationList
+                        fetchQueryLiftcycleMilestone={this.fetchQueryLiftcycleMilestone}
+                        fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                        // fetchQueryOwnerProjectList={this.fetchQueryOwnerProjectList}
+                        fetchQueryProjectInfoInCycle={this.fetchQueryProjectInfoInCycle}
+                        data={operationListData}
+                        // totalRows={operationListTotalRows}
+                        defaultValue={xmid}
+                        projectInfo={projectInfo}
+                      />
+                      {/*<span onClick={e =>{this.setState({associatedFileVisible:true})}}>点击事件</span>*/}
+                    </div>
+                    <div className="lifecyclemanage-box-wrapper">
+                      <div className="lifecyclemanage-box">
+                        {basicData.map((item = {}, index) => {
+                          let detail = [];
+                          detailData.map((childItem = {}, index) => {
+                            if (childItem.lcbid === item.lcbid) {
+                              detail.push(childItem);
+                            }
+                          });
+                          // console.log('detail', detail);
+                          let sort = this.groupBy(detail);
+                          // console.log('sort', sort);
+                          return (
+                            <div
+                              className="LifeCycleManage"
+                              style={{
+                                borderTopLeftRadius: index === 0 ? '1.1904rem' : '',
+                                borderTopRightRadius: index === 0 ? '1.1904rem' : '',
+                                borderBottomLeftRadius:
+                                  index === basicData.length - 1 ? '1.1904rem' : '',
+                                borderBottomRightRadius:
+                                  index === basicData.length - 1 ? '1.1904rem' : '',
+                              }}
+                            >
+                              <div className="head">
+                                <Imgs status={item.zt} />
+                                <i
+                                  className={
+                                    item.extend
+                                      ? 'iconfont icon-fill-down head-icon'
+                                      : 'iconfont icon-fill-right head-icon'
+                                  }
+                                  onClick={() => this.extend(index)}
+                                />
+                                &nbsp;
+                                <div className="head1">{item.lcbmc}</div>
+                                {item.lcbmc !== '项目付款' ? (
+                                  <>
+                                    <div className="head6">
                                       进度：<span style={{ color: 'black' }}>{item.jd}</span>
                                     </div>
-                                    <div style={{
-                                      lineHeight: '2.976rem',
-                                      width: '33%',
-                                      minWidth: '59.52rem',
-                                      fontSize: '2.232rem',
-                                      fontWeight: 400,
-                                      color: '#606266',
-                                      paddingTop: '3.2736rem'
-                                    }}>
-                                      <span
-                                        style={{ color: 'rgba(48, 49, 51, 1)' }}>现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~ {moment(item.jssj).format('YYYY.MM.DD')} </span>
-                                      {((moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 || moment(item.yckssj).diff(moment(item.kssj), 'day') !== 0)) &&
-                                        <div style={{
-                                          display: 'flex',
-                                          justifyContent: 'space-between',
-                                          fontSize: '2.0832rem',
-                                          color: '#909399'
-                                        }}>
+                                    <div
+                                      style={{
+                                        lineHeight: '2.976rem',
+                                        width: '33%',
+                                        minWidth: '59.52rem',
+                                        fontSize: '2.232rem',
+                                        fontWeight: 400,
+                                        color: '#606266',
+                                        paddingTop: '3.2736rem',
+                                      }}
+                                    >
+                                      <span style={{ color: 'rgba(48, 49, 51, 1)' }}>
+                                        现计划：{moment(item.kssj).format('YYYY.MM.DD')} ~{' '}
+                                        {moment(item.jssj).format('YYYY.MM.DD')}{' '}
+                                      </span>
+                                      {(moment(item.ycjssj).diff(moment(item.jssj), 'day') !== 0 ||
+                                        moment(item.yckssj).diff(moment(item.kssj), 'day') !==
+                                          0) && (
+                                        <div
+                                          style={{
+                                            display: 'flex',
+                                            justifyContent: 'space-between',
+                                            fontSize: '2.0832rem',
+                                            color: '#909399',
+                                          }}
+                                        >
                                           <span>
-                                            原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~ {moment(item.ycjssj).format('YYYY.MM.DD')}
-                                            （{`${moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 || (moment(item.yckssj).diff(moment(item.kssj), 'day') > 0)
-                                              ?
-                                              '提前' + (moment(item.ycjssj).diff(moment(item.jssj), 'day') > moment(item.yckssj).diff(moment(item.kssj), 'day') ? moment(item.ycjssj).diff(moment(item.jssj), 'day') : moment(item.yckssj).diff(moment(item.kssj), 'day'))
-                                              :
-                                              '延迟' + (moment(item.jssj).diff(moment(item.ycjssj), 'day') > moment(item.kssj).diff(moment(item.yckssj), 'day') ? moment(item.jssj).diff(moment(item.ycjssj), 'day') : moment(item.kssj).diff(moment(item.yckssj), 'day'))
-                                              }天，`}
+                                            原计划：{moment(item.yckssj).format('YYYY.MM.DD')} ~{' '}
+                                            {moment(item.ycjssj).format('YYYY.MM.DD')}（
+                                            {`${
+                                              moment(item.ycjssj).diff(moment(item.jssj), 'day') >
+                                                0 ||
+                                              moment(item.yckssj).diff(moment(item.kssj), 'day') > 0
+                                                ? '提前' +
+                                                  (moment(item.ycjssj).diff(
+                                                    moment(item.jssj),
+                                                    'day',
+                                                  ) >
+                                                  moment(item.yckssj).diff(moment(item.kssj), 'day')
+                                                    ? moment(item.ycjssj).diff(
+                                                        moment(item.jssj),
+                                                        'day',
+                                                      )
+                                                    : moment(item.yckssj).diff(
+                                                        moment(item.kssj),
+                                                        'day',
+                                                      ))
+                                                : '延迟' +
+                                                  (moment(item.jssj).diff(
+                                                    moment(item.ycjssj),
+                                                    'day',
+                                                  ) >
+                                                  moment(item.kssj).diff(moment(item.yckssj), 'day')
+                                                    ? moment(item.jssj).diff(
+                                                        moment(item.ycjssj),
+                                                        'day',
+                                                      )
+                                                    : moment(item.kssj).diff(
+                                                        moment(item.yckssj),
+                                                        'day',
+                                                      ))
+                                            }天，`}
                                             修改{item.xgcs}次）
                                           </span>
                                         </div>
-                                      }
+                                      )}
                                     </div>
-                                    <div className='head4'>
-                                      项目风险：<ProjectRisk userId={projectInfo?.userid}
-                                        fetchQueryOwnerProjectListUser={this.fetchQueryOwnerProjectListUser}
+                                    <div className="head4">
+                                      项目风险：
+                                      <ProjectRisk
+                                        userId={projectInfo?.userid}
+                                        fetchQueryOwnerProjectListUser={
+                                          this.fetchQueryOwnerProjectListUser
+                                        }
                                         changeTab={this.changeTab}
-                                        loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                                        item={item} xmid={this.state.xmid} />
+                                        loginUserId={JSON.parse(sessionStorage.getItem('user')).id}
+                                        item={item}
+                                        xmid={this.state.xmid}
+                                      />
                                     </div>
-                                    <div className='head2'>
-                                      状态：<ProjectProgress state={item.zt} />
+                                    <div className="head2">
+                                      状态：
+                                      <ProjectProgress state={item.zt} />
                                     </div>
-                                    <div className='head5'>
-                                      <div className='head5-title'>
-                                        <div className='head5-cont'>
-                                          <a style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3rem' }}
-                                            className="iconfont icon-edit" onClick={() => {
-                                              if (Number(projectInfo?.userid) === Number(JSON.parse(sessionStorage.getItem("user")).id)) {
+                                    <div className="head5">
+                                      <div className="head5-title">
+                                        <div className="head5-cont">
+                                          <a
+                                            style={{
+                                              color: 'rgba(51, 97, 255, 1)',
+                                              fontSize: '3rem',
+                                            }}
+                                            className="iconfont icon-edit"
+                                            onClick={() => {
+                                              if (
+                                                Number(projectInfo?.userid) ===
+                                                Number(
+                                                  JSON.parse(sessionStorage.getItem('user')).id,
+                                                )
+                                              ) {
                                                 this.handleEditModel(item);
                                               } else {
-                                                message.error(`抱歉，只有当前项目经理可以进行该操作`);
+                                                message.error(
+                                                  `抱歉，只有当前项目经理可以进行该操作`,
+                                                );
                                               }
-                                            }
-                                            } />
+                                            }}
+                                          />
                                         </div>
                                       </div>
                                     </div>
-                                  </> : ''}
-                                </div>
-                                {
-                                  item.extend ?
-                                    <Row style={{
-                                      height: '80%',
-                                      width: '100%',
-                                      padding: (index === basicData.length - 1 ? '0 6.571rem 3.571rem 10.571rem' : '0 6.571rem 0 10.571rem')
-                                    }} className='card' id={index}>
-                                      {
-                                        <Col span={24} style={{
-                                          width: '100%',
-                                          padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
-                                          borderRadius: '1.1904rem',
-                                          maxHeight: '50rem'
-                                        }}
-                                          className='cont'>
-                                          {
-                                            sort.map((item = {}, index) => {
-                                              let num = 0
-                                              sort[index].List.map((item = {}, ind) => {
-                                                if (item.zxqk !== " ") {
-                                                  num = num + 1;
-                                                }
-                                              })
-                                              return <Col span={8} className='cont-col-self'
-                                                style={{ marginBottom: '2.3808rem' }} key={index}>
-                                                <div className='cont-col'>
-                                                  <div className='cont-col1'>
-                                                    <div className='right'>
-                                                      {item.swlx}({num}/{sort[index].List.length})
-                                                    </div>
-                                                  </div>
-                                                  <div>
-                                                    {sort[index].List.map((item = {}, ind) => {
-                                                      return <>
-                                                        <div key={ind} className='cont-row' style={{
-                                                          marginTop: ind === 0 ? '2.6784rem' : '2.3808rem',
-                                                          display: 'flex', alignItems: 'center',
-                                                          height: '4.65rem'
-                                                        }}>
-                                                          <Points status={item.zxqk} />
-                                                          <div style={{ width: '65%' }}>
-                                                            {
-                                                              item.swlx.includes("文档") ||
-                                                                item.swlx.includes("信委会") ||
-                                                                item.swlx.includes("总办会") ||
-                                                                item.swlx.includes("需求调研") ||
-                                                                item.swlx.includes("产品设计") ||
-                                                                item.swlx.includes("系统框架搭建") ||
-                                                                item.swlx.includes("功能开发") ||
-                                                                item.swlx.includes("外部系统对接") ||
-                                                                item.swlx.includes("需求设计") ||
-                                                                item.sxmc.includes("中标公告") ||
-                                                                item.sxmc.includes("报告") ||
-                                                                item.sxmc.includes("图") ||
-                                                                item.sxmc.includes("功能清单") ||
-                                                                item.sxmc.includes("说明书") ||
-                                                                item.sxmc.includes("手册") ||
-                                                                item.swlx.includes("系统测试") ? (
-                                                                fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc ?
-                                                                  <Popover
-                                                                    content={content}
-                                                                    title="文件列表"
-                                                                    trigger="hover"
-                                                                    overlayClassName="popover-filelist"
-                                                                    visible={this.state.fileListVisible && fileList.length > 0 && fileList[fileList.length - 1][0] === item.sxmc}
-                                                                    onVisibleChange={this.handleVisibleChange}
-                                                                  >
-                                                                    <a className='lifecycle-text-overflow'
-                                                                      style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}>{item.sxmc}</a>
-                                                                  </Popover> :
-                                                                  <a className='lifecycle-text-overflow'
-                                                                    style={item.zxqk === " " ? { color: '#333' } : { color: 'rgb(51, 97, 255)' }}
-                                                                    onClick={() => this.handleClick(item)}>{item.sxmc}</a>
-                                                              )
-                                                                :
-                                                                 <span
-                                                                  className='lifecycle-text-overflow'>{item.sxmc}</span>
-                                                            }
-                                                            {/* </div> */}
-                                                          </div>
-                                                          <div style={{
+                                  </>
+                                ) : (
+                                  ''
+                                )}
+                              </div>
+                              {item.extend ? (
+                                <Row
+                                  style={{
+                                    height: '80%',
+                                    width: '100%',
+                                    padding:
+                                      index === basicData.length - 1
+                                        ? '0 6.571rem 3.571rem 10.571rem'
+                                        : '0 6.571rem 0 10.571rem',
+                                  }}
+                                  className="card"
+                                  id={index}
+                                >
+                                  {
+                                    <Col
+                                      span={24}
+                                      style={{
+                                        width: '100%',
+                                        padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
+                                        borderRadius: '1.1904rem',
+                                        maxHeight: '50rem',
+                                      }}
+                                      className="cont"
+                                    >
+                                      {sort.map((item = {}, index) => {
+                                        let num = 0;
+                                        sort[index].List.map((item = {}, ind) => {
+                                          if (item.zxqk !== ' ') {
+                                            num = num + 1;
+                                          }
+                                        });
+                                        return (
+                                          <Col
+                                            span={8}
+                                            className="cont-col-self"
+                                            style={{ marginBottom: '2.3808rem' }}
+                                            key={index}
+                                          >
+                                            <div className="cont-col">
+                                              <div className="cont-col1">
+                                                <div className="right">
+                                                  {item.swlx}({num}/{sort[index].List.length})
+                                                </div>
+                                              </div>
+                                              <div>
+                                                {sort[index].List.map((item = {}, ind) => {
+                                                  return (
+                                                    <>
+                                                      <div
+                                                        key={ind}
+                                                        className="cont-row"
+                                                        style={{
+                                                          marginTop:
+                                                            ind === 0 ? '2.6784rem' : '2.3808rem',
+                                                          display: 'flex',
+                                                          alignItems: 'center',
+                                                          height: '4.65rem',
+                                                        }}
+                                                      >
+                                                        <Points status={item.zxqk} />
+                                                        <div style={{ width: '65%' }}>
+                                                          {item.swlx.includes('文档') ||
+                                                          item.swlx.includes('信委会') ||
+                                                          item.swlx.includes('总办会') ||
+                                                          item.swlx.includes('需求调研') ||
+                                                          item.swlx.includes('产品设计') ||
+                                                          item.swlx.includes('系统框架搭建') ||
+                                                          item.swlx.includes('功能开发') ||
+                                                          item.swlx.includes('外部系统对接') ||
+                                                          item.swlx.includes('需求设计') ||
+                                                          item.sxmc.includes('中标公告') ||
+                                                          item.sxmc.includes('报告') ||
+                                                          item.sxmc.includes('图') ||
+                                                          item.sxmc.includes('功能清单') ||
+                                                          item.sxmc.includes('说明书') ||
+                                                          item.sxmc.includes('手册') ||
+                                                          item.swlx.includes('系统测试') ? (
+                                                            fileList.length > 0 &&
+                                                            fileList[fileList.length - 1][0] ===
+                                                              item.sxmc ? (
+                                                              <Popover
+                                                                content={content}
+                                                                title="文件列表"
+                                                                trigger="hover"
+                                                                overlayClassName="popover-filelist"
+                                                                visible={
+                                                                  this.state.fileListVisible &&
+                                                                  fileList.length > 0 &&
+                                                                  fileList[
+                                                                    fileList.length - 1
+                                                                  ][0] === item.sxmc
+                                                                }
+                                                                onVisibleChange={
+                                                                  this.handleVisibleChange
+                                                                }
+                                                              >
+                                                                <a
+                                                                  className="lifecycle-text-overflow"
+                                                                  style={
+                                                                    item.zxqk === ' '
+                                                                      ? { color: '#333' }
+                                                                      : {
+                                                                          color: 'rgb(51, 97, 255)',
+                                                                        }
+                                                                  }
+                                                                >
+                                                                  {item.sxmc}
+                                                                </a>
+                                                              </Popover>
+                                                            ) : (
+                                                              <a
+                                                                className="lifecycle-text-overflow"
+                                                                style={
+                                                                  item.zxqk === ' '
+                                                                    ? { color: '#333' }
+                                                                    : { color: 'rgb(51, 97, 255)' }
+                                                                }
+                                                                onClick={() =>
+                                                                  this.handleClick(item)
+                                                                }
+                                                              >
+                                                                {item.sxmc}
+                                                              </a>
+                                                            )
+                                                          ) : (
+                                                            <span className="lifecycle-text-overflow">
+                                                              {item.sxmc}
+                                                            </span>
+                                                          )}
+                                                          {/* </div> */}
+                                                        </div>
+                                                        <div
+                                                          style={{
                                                             width: '35%',
                                                             // textAlign: 'right',
-                                                          }} >
-                                                            <Tooltips type={item.swlx}
-                                                              item={item}
-                                                              status={item.zxqk}
-                                                              xmid={xmid}
-                                                              xmbh={items.xmbh}
-                                                              xwhid={items.xwhid}
-                                                              projectInfo={projectInfo}
-                                                              handleUpload={() => this.handleUpload(item)}
-                                                              handleSend={this.handleSend}
-                                                              handleFillOut={() => this.handleFillOut(item)}
-                                                              handleEdit={() => this.handleEdit(item)}
-                                                              handleMessageEdit={this.handleMessageEdit}
-                                                            />
-                                                          </div>
+                                                          }}
+                                                        >
+                                                          <Tooltips
+                                                            type={item.swlx}
+                                                            item={item}
+                                                            status={item.zxqk}
+                                                            xmid={xmid}
+                                                            xmbh={items.xmbh}
+                                                            xwhid={items.xwhid}
+                                                            projectInfo={projectInfo}
+                                                            handleUpload={() =>
+                                                              this.handleUpload(item)
+                                                            }
+                                                            handleSend={this.handleSend}
+                                                            handleFillOut={() =>
+                                                              this.handleFillOut(item)
+                                                            }
+                                                            handleEdit={() => this.handleEdit(item)}
+                                                            handleMessageEdit={
+                                                              this.handleMessageEdit
+                                                            }
+                                                          />
                                                         </div>
-                                                        <div className='cont-row-zxqk'>{item.zxqk}</div>
-                                                      </>
-                                                    })}
-                                                  </div>
-                                                </div>
-                                              </Col>
-                                            })
-                                          }
-                                        </Col>
-                                      }
-                                    </Row>
-                                    : ''
-                                }
-                              </div>
-                            })
-                          }
-                        </div>
+                                                      </div>
+                                                      <div className="cont-row-zxqk">
+                                                        {item.zxqk}
+                                                      </div>
+                                                    </>
+                                                  );
+                                                })}
+                                              </div>
+                                            </div>
+                                          </Col>
+                                        );
+                                      })}
+                                    </Col>
+                                  }
+                                </Row>
+                              ) : (
+                                ''
+                              )}
+                            </div>
+                          );
+                        })}
                       </div>
-                    </TabPane>
-                  )
-                })
-              }
+                    </div>
+                  </TabPane>
+                );
+              })}
             </Tabs>
           }
-
         </Spin>
       </Row>
     );

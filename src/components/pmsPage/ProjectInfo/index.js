@@ -16,7 +16,7 @@ export default function ProjectInfo(props) {
   const getTableData = v => {
     setTableLoading(true);
     QueryProjectListInfo({
-      projectManager: LOGIN_USER_ID || 0,
+      projectManager: -1,
       current: 1,
       pageSize: 10,
       paging: -1,

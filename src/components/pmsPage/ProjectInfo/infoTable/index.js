@@ -62,17 +62,18 @@ export default function InfoTable(props) {
       key: 'projectName',
       ellipsis: true,
       render: (text, row, index) => {
-        if (row.projectStatus !== '草稿')
-          return (
-            <a
-              style={{ color: '#3361ff' }}
-              onClick={() => {
-                handleModalOpen();
-              }}
-            >
-              {text}
-            </a>
-          );
+        // if (row.projectStatus !== '草稿')
+        //   return (
+        //     <a
+        //       style={{ color: '#3361ff' }}
+        //       onClick={() => {
+        //         // handleModalOpen();
+                // message.info('功能开发中，暂时无法使用', 1);
+        //       }}
+        //     >
+        //       {text}
+        //     </a>
+        //   );
         return <span>{text}</span>;
       },
     },

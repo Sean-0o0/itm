@@ -187,6 +187,18 @@ class TodoItems extends React.Component {
     if (item.sxmc === "非资本性预算年中录入被退回") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
+    if (item.sxmc === "资本性年初预算录入被退回") {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "资本性年中预算录入被退回") {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "非资本性年初预算录入被退回") {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "非资本性年中预算录入被退回") {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
+    }
     if (item.sxmc === "月报填写") {
       window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
     }
@@ -200,6 +212,18 @@ class TodoItems extends React.Component {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
     }
     if (item.sxmc === "非资本性年中预算录入") {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "资本性预算年初录入") {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "资本性预算年中录入") {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "非资本性预算年初录入") {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    }
+    if (item.sxmc === "非资本性预算年中录入") {
       window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
     }
     if (item.sxmc === "信委会议案被退回") {
