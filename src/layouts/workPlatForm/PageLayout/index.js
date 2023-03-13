@@ -15,8 +15,8 @@ import { FetchMenu } from '../../../services/amslb/user';
 import Watermark from './Watermark';
 import SpecialUrl from './specialUrl';
 import styles from './index.less';
-import ViewFile from "../../../components/pmsPage/ViewFile";
-import WpsUrl from "./WpsUrl";
+import ViewFile from '../../../components/pmsPage/ViewFile';
+import WpsUrl from './WpsUrl';
 import PersonWorkBench from '../../../pages/pmsPage/PersonWorkBench';
 import { translate } from '@antv/g6/lib/util/math';
 // import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
@@ -49,21 +49,24 @@ class MainPageLayout extends React.PureComponent {
   checkTime = () => {
     const staticEndTime = new Date(); // 得到当前时间放入变量
     this.staticTimeCount = localStorage.getItem('sessionTimeout'); // 超时时间
-    if ((staticEndTime - this.staticStartTime) > parseInt(this.staticTimeCount)) {
+    if (staticEndTime - this.staticStartTime > parseInt(this.staticTimeCount)) {
       clearInterval(this.staticTimer);
       // 如果当前时间减去初始时间大于超时时间，就执行自动跳转
-      this.props.dispatch && this.props.dispatch({
-        type: 'global/logout',
-      });
+      this.props.dispatch &&
+        this.props.dispatch({
+          type: 'global/logout',
+        });
     }
-  }
+  };
 
   reTime = () => {
     this.staticStartTime = new Date(); // 重置静止起始时间
-  }
+  };
 
   componentDidMount() {
-    const { location: { pathname, search } } = this.props;
+    const {
+      location: { pathname, search },
+    } = this.props;
     this.fetcUserMenuProject(pathname, search);
     // 监听鼠标/键盘静止时间，超时后则退回到登录页面
     document.onmousemove = this.reTime;
@@ -78,64 +81,73 @@ class MainPageLayout extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-
     const { menuTree = [], menuTreeLoaded } = this.state;
-    const { hasAuthed, location: { pathname, search } } = nextProps;
-    const { location: { pathname: prePathname, search: preSearch } } = this.props;
+    const {
+      hasAuthed,
+      location: { pathname, search },
+    } = nextProps;
+    const {
+      location: { pathname: prePathname, search: preSearch },
+    } = this.props;
     let flag = !menuTreeLoaded && hasAuthed;
     if (prePathname === '/' || pathname === '/') {
       flag = true;
     }
     if (flag) {
       // 获取默认菜单方案
-      this.fetcUserMenuProject(pathname, search)
+      this.fetcUserMenuProject(pathname, search);
     }
   }
 
   fetcUserMenuProject = (pathname, search) => {
-    FetcUserMenuProject({}).then((response) => {
-      const { records = [] } = response || [];
-      // const new_records = [];
-      // records.forEach((item) => {
-      //   const { name = '' } = item;
-      //   if (name === 'YYPT') {
-      //     new_records.push(item);
-      //   }
-      // });
-      // const { name } = records[0]?.name;
-      // 如果用户没有配菜单方案就跳转403
-      // if (!(new_records[0] || {})) {
-      //   window.location.href = '/#/403';
-      //   return;
-      // }
-      // if (name !== this.state.name) {
-      // 获取权限菜单树
-      this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
-      // }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    FetcUserMenuProject({})
+      .then(response => {
+        const { records = [] } = response || [];
+        // const new_records = [];
+        // records.forEach((item) => {
+        //   const { name = '' } = item;
+        //   if (name === 'YYPT') {
+        //     new_records.push(item);
+        //   }
+        // });
+        // const { name } = records[0]?.name;
+        // 如果用户没有配菜单方案就跳转403
+        // if (!(new_records[0] || {})) {
+        //   window.location.href = '/#/403';
+        //   return;
+        // }
+        // if (name !== this.state.name) {
+        // 获取权限菜单树
+        this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
+        // }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   fetchUserTodoWorkflowNum = () => {
     // 流程中心
-    fetchUserTodoWorkflowNum().then((response) => {
-      const { records = [] } = response;
-      const numbers = records[0] ? (records[0].dblcs ? records[0].dblcs : 0) : 0; // eslint-disable-line
-      this.setState({ userTodoWorkflowNum: numbers });
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    fetchUserTodoWorkflowNum()
+      .then(response => {
+        const { records = [] } = response;
+        const numbers = records[0] ? (records[0].dblcs ? records[0].dblcs : 0) : 0; // eslint-disable-line
+        this.setState({ userTodoWorkflowNum: numbers });
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   toggleCollapsed = () => {
     localStorage.setItem('menuExpansion', this.state.collapsed ? '1' : '0');
     this.setState({
       collapsed: !this.state.collapsed,
     });
-  }
+  };
 
-  getUrl = (item) => { // 找到目录的第一个菜单
+  getUrl = item => {
+    // 找到目录的第一个菜单
     let url = lodash.get(item, 'url', '');
     if (item.children && item.children.length > 0) {
       return this.getFirstChildren(item);
@@ -147,7 +159,7 @@ class MainPageLayout extends React.PureComponent {
       return url;
     }
     return '';
-  }
+  };
 
   // 获取权限菜单树
   fetchMenuDatas = async (name = '', isChangeTheme = false, purl = '') => {
@@ -157,9 +169,12 @@ class MainPageLayout extends React.PureComponent {
       });
       return false;
     }
-    await FetchMenu({ project: name }).then((response) => {
+    await FetchMenu({ project: name }).then(response => {
       const { data = {} } = response;
-      const menuData = data.menuTree && data.menuTree.menu && data.menuTree.menu.item ? data.menuTree.menu.item : [];
+      const menuData =
+        data.menuTree && data.menuTree.menu && data.menuTree.menu.item
+          ? data.menuTree.menu.item
+          : [];
       const menuTreeTemp = this.handleMenuData(menuData);
       // 刷新session缓存
       sessionStorage.setItem('menuTree', JSON.stringify(menuTreeTemp));
@@ -173,7 +188,7 @@ class MainPageLayout extends React.PureComponent {
         return;
       }
       if (isChangeTheme) {
-        let url = this.getUrl(menuTree[0] || {});//
+        let url = this.getUrl(menuTree[0] || {}); //
         if (url) {
           this.props.dispatch(routerRedux.push(url));
         } else {
@@ -202,24 +217,29 @@ class MainPageLayout extends React.PureComponent {
         name,
       });
     });
-  }
+  };
   // 处理menu数据
-  handleMenuData = (treeData) => {
+  handleMenuData = treeData => {
     const menuTree = treeData || this.tmplMenuTree;
     menuTree.forEach((item, index) => {
       menuTree[index] = {
         ...item,
         url: this.handleMenuUrl(item.url),
       };
-      if (item.menu && item.menu.item && Array.isArray(item.menu.item) && item.menu.item.length > 0) {
+      if (
+        item.menu &&
+        item.menu.item &&
+        Array.isArray(item.menu.item) &&
+        item.menu.item.length > 0
+      ) {
         menuTree[index].menu.item = this.handleMenuData(item.menu.item);
       }
     });
     return menuTree;
-  }
+  };
 
   // 处理menu的URL
-  handleMenuUrl = (url) => {
+  handleMenuUrl = url => {
     const repStr = '/livebos/UIProcessor';
     const repStr2 = '/livebos/WorkProcessor';
     let tmplUrl = url;
@@ -229,21 +249,30 @@ class MainPageLayout extends React.PureComponent {
     // else if (url.indexOf(repStr2) < 0) {
     //   tmplUrl = tmplUrl.replace('/livebos/', '/');
     // }
-    if (url.indexOf('/UIProcessor') !== -1 || url.indexOf('/OperateProcessor') !== -1 || url.indexOf('/WorkProcessor') !== -1) {
-      if (url.indexOf('lbFunAuthorize') === -1 && url.indexOf('lbFunAuthScope') === -1 && url.indexOf('lbFunAuthorizeTemp') === -1 && url.indexOf('lbAuthorizationState') === -1) {
-        tmplUrl = `${tmplUrl}&hideTitlebar=true`
+    if (
+      url.indexOf('/UIProcessor') !== -1 ||
+      url.indexOf('/OperateProcessor') !== -1 ||
+      url.indexOf('/WorkProcessor') !== -1
+    ) {
+      if (
+        url.indexOf('lbFunAuthorize') === -1 &&
+        url.indexOf('lbFunAuthScope') === -1 &&
+        url.indexOf('lbFunAuthorizeTemp') === -1 &&
+        url.indexOf('lbAuthorizationState') === -1
+      ) {
+        tmplUrl = `${tmplUrl}&hideTitlebar=true`;
       }
     }
     return tmplUrl;
-  }
+  };
 
   //生成uuid
   guid = () => {
     const S4 = () => (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1); // eslint-disable-line
-    return (`${S4() + S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`);
+    return `${S4() + S4()}-${S4()}-${S4()}-${S4()}-${S4()}${S4()}${S4()}`;
   };
 
-  parseUrl = (data) => {
+  parseUrl = data => {
     if (!data) {
       return { code: this.guid() };
     }
@@ -258,12 +287,12 @@ class MainPageLayout extends React.PureComponent {
       } else if (type === 'page') {
         code = url;
         openType = '_blank';
-      };
+      }
     } catch (err) {
       code = data;
     }
     return { code, openType };
-  }
+  };
 
   formatSideMenu = (data, fid, root) => {
     const children = [];
@@ -285,7 +314,7 @@ class MainPageLayout extends React.PureComponent {
     return children;
   };
 
-  formatMenu = (menuData) => {
+  formatMenu = menuData => {
     let menuTree1 = [];
     // menuTree1.push({
     //   url: '/index',
@@ -303,24 +332,28 @@ class MainPageLayout extends React.PureComponent {
       let icon = '';
       const { code, openType = 'self' } = this.parseUrl(url);
       //使用浙商管理平台的图标
-      if (text === "首页") {
+      if (text === '首页') {
         icon = 'icon-home';
-      } if (text === "项目管理") {
+      }
+      if (text === '项目管理') {
         icon = 'icon-detail';
-      } if (text === "项目预算") {
+      }
+      if (text === '项目预算') {
         icon = 'icon-cash';
-      } if (text === "系统管理") {
+      }
+      if (text === '系统管理') {
         icon = 'icon-set';
-      } if (text === "统计分析") {
+      }
+      if (text === '统计分析') {
         icon = 'icon-barchart';
       }
-      if (text === "生命周期管理") {
+      if (text === '生命周期管理') {
         icon = 'icon-work';
       }
-      if (text === "外包人员项目") {
+      if (text === '人力外包项目') {
         icon = 'icon-system';
       }
-      if (text === "流程管理") {
+      if (text === '流程管理') {
         icon = 'icon-procedure';
       }
       menuTree1.push({
@@ -336,23 +369,23 @@ class MainPageLayout extends React.PureComponent {
     return { menuTree: menuTree1 };
   };
 
-
   // 主题样式改变
-  handleThemeChange = (theme) => {
+  handleThemeChange = theme => {
     this.props.dispatch({
       type: 'global/changeTheme',
       payload: { theme },
     });
-  }
+  };
 
-  getFirstChildren = (menu) => {
+  getFirstChildren = menu => {
     if (menu.children && menu.children.length > 0) {
       return this.getFirstChildren(menu.children[0]);
     }
     return menu.url;
   };
 
-  pageTrack = async (loc, preLoc) => { // eslint-disable-line
+  pageTrack = async (loc, preLoc) => {
+    // eslint-disable-line
     // ApexCountAction.recordPage(loc.pathname, preLoc ? preLoc.pathname : '', `{from:${linkToName(loc.pathname)},to:${linkToName(preLoc ? preLoc.pathname : '')}}`);
     // 获取签署状态标识
     const { pathname: preLocPath = '' } = preLoc || {};
@@ -364,10 +397,27 @@ class MainPageLayout extends React.PureComponent {
   };
   render() {
     // const menuTree1 = JSON.parse(sessionStorage.getItem('menuTree1')) || [];
-    const { history, theme, authorities = {}, dispatch, route = {}, userBusinessRole, location, userBasicInfo = {}, dictionary, authUserInfo } = this.props;
+    const {
+      history,
+      theme,
+      authorities = {},
+      dispatch,
+      route = {},
+      userBusinessRole,
+      location,
+      userBasicInfo = {},
+      dictionary,
+      authUserInfo,
+    } = this.props;
     const routes = lodash.get(route, 'routes', []);
     const { hasAuthed } = this.props;
-    const { menuTree = [], collapsed, menuTreeLoaded, userTodoWorkflowNum, name: projectName } = this.state;
+    const {
+      menuTree = [],
+      collapsed,
+      menuTreeLoaded,
+      userTodoWorkflowNum,
+      name: projectName,
+    } = this.state;
     if (!hasAuthed) {
       return null;
     }
@@ -380,116 +430,134 @@ class MainPageLayout extends React.PureComponent {
     const isOpenSecureMarker = localStorage.getItem('openSecureMarker') === '1';
     // 判断是否为特殊链接
     const specialUrl = SpecialUrl.filter(item => location.pathname.startsWith(item));
-    {/*WPS预览页面单独处理*/
+    {
+      /*WPS预览页面单独处理*/
     }
     const wpsUrl = WpsUrl.filter(item => location.pathname.startsWith(item));
-    return (
-      wpsUrl && wpsUrl.length > 0 ? (
-        <React.Fragment>
-          {/*WPS预览页面单独处理*/}
-          <ViewFile />
-        </React.Fragment>
-      ) :
-        (specialUrl && specialUrl.length > 0 ? (
-          <React.Fragment>
-            <Switch>
+    return wpsUrl && wpsUrl.length > 0 ? (
+      <React.Fragment>
+        {/*WPS预览页面单独处理*/}
+        <ViewFile />
+      </React.Fragment>
+    ) : specialUrl && specialUrl.length > 0 ? (
+      <React.Fragment>
+        <Switch>
+          {// 路由
+          routes.map(({ key, path, component }) => {
+            return (
+              <Route
+                key={key || path}
+                path={path}
+                unmount={false}
+                saveScrollPosition
+                component={component}
+              />
+            );
+          })}
+        </Switch>
+      </React.Fragment>
+    ) : (
+      <ConfigProvider locale={zhCN}>
+        <Layout
+          className={theme}
+          style={{
+            minHeight: '100%',
+            height: '100%',
+            minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth,
+            overflow: 'hidden',
+            position: 'relative',
+          }}
+        >
+          <Header className="zy-header-wrap">
+            <PageHeader
+              menuTree={menuTree}
+              fetchMenuDatas={this.fetchMenuDatas}
+              history={history}
+              dispatch={dispatch}
+              dictionary={dictionary}
+              userBasicInfo={userBasicInfo}
+              userBusinessRole={userBusinessRole}
+              authUserInfo={authUserInfo}
+              authorities={authorities}
+              location={location}
+              userTodoWorkflowNum={userTodoWorkflowNum}
+              projectName={projectName}
+              theme={theme}
+            />
+          </Header>
+          <Layout
+            style={{
+              background: '#000',
+              height: '100%',
+              overflow: 'hidden',
+              position: 'relative',
+            }}
+          >
+            <Sider
+              className="siderContent cf-menu-wp"
+              trigger={null}
+              collapsible
+              width={240}
+              collapsedWidth={100}
+              collapsed={collapsed}
+            >
+              <PageSider
+                menuTree={menuTree}
+                collapsed={collapsed}
+                location={location}
+                history={history}
+              ></PageSider>
               {
-                // 路由
-                routes.map(({ key, path, component }) => {
-                  return (
-                    <Route
-                      key={key || path}
-                      path={path}
-                      unmount={false}
-                      saveScrollPosition
-                      component={component}
-                    />
-                  );
-                }
-                )}
-            </Switch>
-          </React.Fragment>
-        ) : (
-          <ConfigProvider locale={zhCN}>
-            <Layout className={theme} style={{
-              minHeight: '100%', height: '100%',
-              minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth,
-              overflow: 'hidden', position: 'relative'
-            }}>
-              <Header className="zy-header-wrap">
-                <PageHeader
-                  menuTree={menuTree}
-                  fetchMenuDatas={this.fetchMenuDatas}
-                  history={history}
-                  dispatch={dispatch}
-                  dictionary={dictionary}
-                  userBasicInfo={userBasicInfo}
-                  userBusinessRole={userBusinessRole}
-                  authUserInfo={authUserInfo}
-                  authorities={authorities}
-                  location={location}
-                  userTodoWorkflowNum={userTodoWorkflowNum}
-                  projectName={projectName}
-                  theme={theme}
-                />
-              </Header>
-              <Layout style={{
-                background: '#000', height: '100%', overflow: 'hidden',
-                position: 'relative'
-              }}>
-                <Sider
-                  className="siderContent cf-menu-wp"
-                  trigger={null}
-                  collapsible
-                  width={240}
-                  collapsedWidth={100}
-                  collapsed={collapsed}
+                <div
+                  style={{ transform: !collapsed && 'rotate(180deg)' }}
+                  className={`${styles.collapsedBar} cf-menu-bottom`}
+                  onClick={this.toggleCollapsed}
                 >
-                  <PageSider menuTree={menuTree} collapsed={collapsed} location={location} history={history}></PageSider>
-                  {<div style={{ transform: !collapsed && 'rotate(180deg)' }}
-                    className={`${styles.collapsedBar} cf-menu-bottom`} onClick={this.toggleCollapsed}>
-                    {collapsed ? <Icon type="menu-unfold" className='menu-sider-icon' /> :
-                      <Icon type="menu-fold" className='menu-sider-icon' />}
-                  </div>}
-                </Sider>
-                <Content id="htmlContent" style={{
-                  borderRadius: '0 0 0 1rem',
-                  height: '100%',
-                  overflowY: 'auto',
-                  overflowX: 'hidden',
-                  width: '100%'
-                }} className="m-layout-content">
-                  {/* <TopMenu></TopMenu> */}
-                  <TrackRouter history={history} onEnter={(loc, preLoc) => {
-                    this.pageTrack(loc, preLoc);
-                  }}>
-                    {/* 水印 */}
-                    { /* 系统监控/system/monitor页面不需要水印 */
-                      isOpenSecureMarker && userBasicInfo.userid && lodash.get(location, 'pathname', '').indexOf('/system/monitor/view') === -1 &&
-                      <Watermark userBasicInfo={userBasicInfo} location={location} elementID='htmlContent' />
-                    }
-                    <CacheSwitch>
-                      {
-                        // 路由
-                        routes.map(({ key, path, component, keepAlive = true }, index) => {
-                          if (path && !path.includes('/index')) {
-                            return (
-                              path && (
-                                <CacheRoute
-                                  key={index}
-                                  when={() => {
-                                    return keepAlive;
-                                  }}
-                                  cacheKey={key || path}
-                                  path={path}
-                                  unmount={false}
-                                  saveScrollPosition
-                                  component={component}
-                                />
-                              )
-                            );
-                          }
-                          return <CacheRoute key={index}
+                  {collapsed ? (
+                    <Icon type="menu-unfold" className="menu-sider-icon" />
+                  ) : (
+                    <Icon type="menu-fold" className="menu-sider-icon" />
+                  )}
+                </div>
+              }
+            </Sider>
+            <Content
+              id="htmlContent"
+              style={{
+                borderRadius: '0 0 0 1rem',
+                height: '100%',
+                overflowY: 'auto',
+                overflowX: 'hidden',
+                width: '100%',
+              }}
+              className="m-layout-content"
+            >
+              {/* <TopMenu></TopMenu> */}
+              <TrackRouter
+                history={history}
+                onEnter={(loc, preLoc) => {
+                  this.pageTrack(loc, preLoc);
+                }}
+              >
+                {/* 水印 */}
+                {/* 系统监控/system/monitor页面不需要水印 */
+                isOpenSecureMarker &&
+                  userBasicInfo.userid &&
+                  lodash.get(location, 'pathname', '').indexOf('/system/monitor/view') === -1 && (
+                    <Watermark
+                      userBasicInfo={userBasicInfo}
+                      location={location}
+                      elementID="htmlContent"
+                    />
+                  )}
+                <CacheSwitch>
+                  {// 路由
+                  routes.map(({ key, path, component, keepAlive = true }, index) => {
+                    if (path && !path.includes('/index')) {
+                      return (
+                        path && (
+                          <CacheRoute
+                            key={index}
                             when={() => {
                               return keepAlive;
                             }}
@@ -497,31 +565,50 @@ class MainPageLayout extends React.PureComponent {
                             path={path}
                             unmount={false}
                             saveScrollPosition
-                            render={p => <PersonWorkBench {...p}></PersonWorkBench>}
+                            component={component}
                           />
-                        }
-                        )}
-                      <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
-                      {menuTree && menuTree.length > 0 && <Redirect exact from={`${prefix}/`} to={toDefaultLink} />}
-                      {/* {menuTreeLoaded && menuTree.length === 0 && <Redirect exact from={`${prefix}/`} to={`${prefix}/404`} />} */}
-                      {/* { menuTreeLoaded && menuTree.length === 0 && <Route render={NotPermit} />}
+                        )
+                      );
+                    }
+                    return (
+                      <CacheRoute
+                        key={index}
+                        when={() => {
+                          return keepAlive;
+                        }}
+                        cacheKey={key || path}
+                        path={path}
+                        unmount={false}
+                        saveScrollPosition
+                        render={p => <PersonWorkBench {...p}></PersonWorkBench>}
+                      />
+                    );
+                  })}
+                  <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
+                  {menuTree && menuTree.length > 0 && (
+                    <Redirect exact from={`${prefix}/`} to={toDefaultLink} />
+                  )}
+                  {/* {menuTreeLoaded && menuTree.length === 0 && <Redirect exact from={`${prefix}/`} to={`${prefix}/404`} />} */}
+                  {/* { menuTreeLoaded && menuTree.length === 0 && <Route render={NotPermit} />}
                   { !menuTreeLoaded && <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} /> }
                   { !menuTreeLoaded && <Route render={loading} /> } */}
-                    </CacheSwitch>
-                  </TrackRouter>
-                  <div style={{
-                    textAlign: 'right',
-                    height: 0,
-                    transform: 'translateX(-3.5712rem) translateY(-2.5rem)',
-                    color: '#000'
-                  }}>V1.0.0</div>
-                </Content>
-                <Content id="modalContent" />
-
-              </Layout>
-            </Layout>
-          </ConfigProvider>
-        ))
+                </CacheSwitch>
+              </TrackRouter>
+              <div
+                style={{
+                  textAlign: 'right',
+                  height: 0,
+                  transform: 'translateX(-3.5712rem) translateY(-2.5rem)',
+                  color: '#000',
+                }}
+              >
+                V1.0.0
+              </div>
+            </Content>
+            <Content id="modalContent" />
+          </Layout>
+        </Layout>
+      </ConfigProvider>
     );
   }
 }
