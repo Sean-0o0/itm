@@ -548,11 +548,11 @@ class NewProjectModelV2 extends React.Component {
 
   toItemTree(list, parId) {
     let a = list.reduce((pre, current, index) => {
-      pre[current.ysLXID] = pre[current.ysLXID] || [];
-      pre[current.ysLXID].push({
-        key: current.ysLXID,
+      pre[current.ysLX] = pre[current.ysLX] || [];
+      pre[current.ysLX].push({
+        key: current.ysLX,
         title: current.ysLX,
-        value: current.ysLXID + current.ysLX,
+        value: current.ysLX,
         ysID: current.ysID,
         ysKGL: Number(current.ysKGL),
         ysLB: current.ysLB,
@@ -565,7 +565,6 @@ class NewProjectModelV2 extends React.Component {
       });
       return pre;
     }, []);
-
     const treeData = [];
     for (const key in a) {
       const indexData = [];
@@ -1819,9 +1818,13 @@ class NewProjectModelV2 extends React.Component {
   };
 
   handleInputConfirm = (e, index, i, sx_index) => {
-    // console.log("sx_index",sx_index)
+    //没选的话直接ruturn掉
+    if (e === undefined) {
+      this.setState({inputVisible: '-1-1'});
+      return;
+    }
     //matterInfos
-    const { mileInfo: { milePostInfo = [] }, mileItemInfo = [] } = this.state;
+    const {mileInfo: {milePostInfo = []}, mileItemInfo = []} = this.state;
     let sxmc = '';
     let swlx = '';
     mileItemInfo.forEach(item => {
