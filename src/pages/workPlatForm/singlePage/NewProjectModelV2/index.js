@@ -2411,6 +2411,7 @@ class NewProjectModelV2 extends React.Component {
                                           totalBudget: 0,
                                           relativeBudget: 0,
                                           projectBudget: 0,
+                                          budgetProjectName: '备用预算',
                                           budgetType: '资本性预算'
                                         },
                                         ysKZX: ite.ysKZX,
@@ -2427,6 +2428,7 @@ class NewProjectModelV2 extends React.Component {
                                           budgetInfo: {
                                             ...this.state.budgetInfo,
                                             budgetProjectId: i.ysID,
+                                            budgetProjectName: i.value,
                                             totalBudget: Number(i.ysZJE),
                                             relativeBudget: Number(i.ysKGL),
                                             budgetType: i.ysLX
