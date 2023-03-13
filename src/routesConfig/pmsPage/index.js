@@ -54,6 +54,11 @@ exports.routes = [
     path: `${prefix}/ProjectInfo`,
     component: './pmsPage/ProjectInfo',
   },
+  {
+    // 文档库
+    path: `${prefix}/attachLibrary`,
+    component: './pmsPage/AttachLibrary',
+  },
   // {
   //   path: `${prefix}/`,
   //   component: './workPlatForm/singlePage',
