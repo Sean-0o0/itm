@@ -261,7 +261,7 @@ class ProjectSchedule extends React.Component {
           attribute: 0,
           authFlag: 0,
           objectName: 'TXMXX_ZBGG',
-          operateName: 'TXMXX_ZBGG_Add',
+          operateName: 'TXMXX_ZBGG_MOD',
           parameter: [
             {
               name: 'XMMC2',
@@ -277,7 +277,7 @@ class ProjectSchedule extends React.Component {
           attribute: 0,
           authFlag: 0,
           objectName: 'TXMXX_ZBGG',
-          operateName: 'TXMXX_ZBGG_MOD',
+          operateName: 'TXMXX_ZBGG_Add',
           parameter: [
             {
               name: 'XMMC2',
@@ -968,7 +968,7 @@ class ProjectSchedule extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '50%',
-      height: uploadTitle==='中标公告上传'?'50rem':'78rem',
+      height: uploadTitle==='中标公告上传'||uploadTitle==='中标公告修改'?'50rem':'78rem',
       title: uploadTitle,
       style: { top: '10rem' },
       visible: uploadVisible,
