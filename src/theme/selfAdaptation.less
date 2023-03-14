@@ -38,14 +38,18 @@
   src: url('../assets//fonts/THSMoneyfont-Medium.otf');
   /* IE9*/
   src: url('../assets//fonts/THSMoneyfont-Medium.otf#iefix') format('embedded-opentype'),
-  /* IE6-IE8 */ 
-  url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype'),
+    /* IE6-IE8 */ url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype');
 }
 .font-family-roboto() {
   font-family: Roboto-Regular, Roboto;
 }
 .font-family-pingfangsc() {
   font-family: PingFangSC-Regular, PingFang SC;
+}
+.font-family-default() {
+  font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
+    'Segoe UI Symbol', 'Noto Color Emoji';
 }
 
 //字重
@@ -157,74 +161,74 @@
 
 //下拉单选
 .antd-select-single() {
-  .ant-select-selection.ant-select-selection--single {
-    min-height: unset;
-    height: unset;
-    .ant-select-selection__rendered {
-      line-height: unset;
-      padding: 5px 0;
-    }
-    .ant-select-selection__placeholder {
-      top: 5px;
-      line-height: unset;
-      height: unset;
-      margin-top: 0;
-    }
-    .ant-select-search--inline {
-      margin-top: -5px;
-      margin-bottom: -5px;
-    }
-  }
+  // .ant-select-selection.ant-select-selection--single {
+  //   min-height: unset;
+  //   height: unset;
+  //   .ant-select-selection__rendered {
+  //     line-height: unset;
+  //     padding: 5px 0;
+  //   }
+  //   .ant-select-selection__placeholder {
+  //     top: 5px;
+  //     line-height: unset;
+  //     height: unset;
+  //     margin-top: 0;
+  //   }
+  //   .ant-select-search--inline {
+  //     margin-top: -5px;
+  //     margin-bottom: -5px;
+  //   }
+  // }
 }
 
 //下拉多选
 .antd-select-multiple() {
-  min-height: unset;
-  height: unset;
-  .ant-select-selection__rendered {
-    margin-right: 11px;
-    line-height: unset;
-    padding: 7.5px 0;
-  }
-  .ant-select-selection__placeholder {
-    top: 5px;
-    line-height: unset;
-    height: unset;
-    margin-top: 0;
-    margin-left: 0;
-  }
-  .ant-select-search--inline {
-    margin-top: 0;
-    line-height: unset;
-    height: unset;
-  }
-  ul {
-    margin-top: -5px;
-    margin-bottom: -5px;
-  }
-  .ant-select-selection__choice {
-    line-height: unset;
-    height: unset;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
-  }
+  // min-height: unset;
+  // height: unset;
+  // .ant-select-selection__rendered {
+  //   margin-right: 11px;
+  //   line-height: unset;
+  //   padding: 7.5px 0;
+  // }
+  // .ant-select-selection__placeholder {
+  //   top: 5px;
+  //   line-height: unset;
+  //   height: unset;
+  //   margin-top: 0;
+  //   margin-left: 0;
+  // }
+  // .ant-select-search--inline {
+  //   margin-top: 0;
+  //   line-height: unset;
+  //   height: unset;
+  // }
+  // ul {
+  //   margin-top: -5px;
+  //   margin-bottom: -5px;
+  // }
+  // .ant-select-selection__choice {
+  //   line-height: unset;
+  //   height: unset;
+  //   display: flex;
+  //   flex-direction: row;
+  //   align-items: center;
+  // }
 }
 
 //树形下拉 - 父级不可选，点击展开子级 实现, 需写在下拉菜单类名里
 .antd-select-tree() {
-  // .ant-select-tree li span.ant-select-tree-switcher {
-  //   position: relative;
-  // }
-  // .ant-select-tree-switcher_open::before,
-  // .ant-select-tree-switcher_close::before {
-  //   content: '';
-  //   position: absolute;
-  //   right: -56.64rem;
-  //   top: -4px;
-  //   left: 0;
-  //   bottom: -4px;
-  // }
+  .ant-select-tree li span.ant-select-tree-switcher {
+    position: relative;
+  }
+  .ant-select-tree-switcher_open::before,
+  .ant-select-tree-switcher_close::before {
+    content: '';
+    position: absolute;
+    right: -56.64rem;
+    top: -4px;
+    left: 0;
+    bottom: -4px;
+  }
 }
 
 //表格
@@ -302,11 +306,11 @@
 }
 
 //弹窗样式
-.ant-modal{
-  .ant-modal-content{
+.ant-modal {
+  .ant-modal-content {
     border-radius: 8px;
 
-    .ant-modal-close-x{
+    .ant-modal-close-x {
       width: 42px;
       height: 42px;
       line-height: 42px;
@@ -324,14 +328,14 @@
     border-radius: 8px 8px 0 0;
     .font-s15();
 
-    &>img {
+    & > img {
       height: 14px;
       margin-left: auto;
       margin-right: 25px;
       cursor: pointer;
     }
   }
-  .body-cont{
+  .body-cont {
     padding: 25px;
   }
 }
