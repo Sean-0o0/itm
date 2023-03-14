@@ -1675,6 +1675,7 @@ class NewProjectModelV2 extends React.Component {
       //
       // }
       mile[index].kssj = date;
+      mile[index].jssj = moment(date).add(1, 'days').format('YYYY-MM-DD');
     } else if (type === 'end') {
       // const kssj = mile[index].kssj.replace(reg1, "");
       // if (Number(newDate) < Number(kssj)) {
