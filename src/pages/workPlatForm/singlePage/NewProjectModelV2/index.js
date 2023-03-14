@@ -2086,11 +2086,11 @@ class NewProjectModelV2 extends React.Component {
         <div className="newProject" style={{ overflow: 'hidden', height: "100%" }}>
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{ height: "100%" }}>
             <div style={{ overflow: 'hidden', height: "100%" }}>
-              <div style={{ margin: '0 20rem 0 20rem', height: "11%" }}>
-                <Steps current={current} onChange={this.onChange0} type="navigation" style={{ height: "100%" }}>
+              <div style={{margin: '0 120px 0 120px', height: "11%"}}>
+                <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
                     <Step key={index} title={item.title}
-                      status={isFinish === 2 ? (index === 2 ? 'wait' : 'finish') : (isFinish === index ? 'finish' : 'wait')} />
+                          status={isFinish === 2 ? (index === 2 ? 'wait' : 'finish') : (isFinish === index ? 'finish' : 'wait')}/>
                   ))}
                 </Steps>
               </div>
@@ -2100,14 +2100,16 @@ class NewProjectModelV2 extends React.Component {
                     {/*<Icon type="caret-down" onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}*/}
                     {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
                     <span style={{
-                      paddingLeft: '1rem',
-                      fontSize: '3rem',
-                      fontWeight: 'bold',
+                      paddingLeft: '6px',
                       borderLeft: '4px solid #3461FF'
+                    }}></span>
+                    <span style={{
+                      fontSize: '3rem',
+                      fontWeight: 'bold'
                     }}>基本信息</span>
                   </div>
                   <Form {...basicFormItemLayout} ref={e => this.basicForm = e}
-                    onSubmit={e => this.handleFormValidate(e)} style={{ width: '98%' }}>
+                        onSubmit={e => this.handleFormValidate(e)}>
                     <Row gutter={24}>
                       <Col span={12}>
                         <Form.Item label="项目名称">
@@ -2125,16 +2127,12 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <div style={{
+                        <Form.Item label={<span><span style={{
+                          fontFamily: 'SimSun, sans-serif',
                           color: '#f5222d',
-                          fontSize: '14px',
-                          position: 'absolute',
-                          top: '13%',
-                          right: '85.5%'
-                        }}>
-                          *
-                        </div>
-                        <Form.Item label="项目类型">
+                          marginRight: '4px',
+                          lineHeight: 1
+                        }}>*</span>项目类型</span>}>
                           {getFieldDecorator('projectType', {
                             // rules: [{
                             //   required: true,
@@ -2143,7 +2141,7 @@ class NewProjectModelV2 extends React.Component {
                             initialValue: basicInfo.projectType
                           })(
                             <Radio.Group onChange={e => {
-                              this.setState({ basicInfo: { ...basicInfo, projectType: e.target.value } });
+                              this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
                               this.fetchQueryMilepostInfo({
                                 type: e.target.value,
                                 xmid: basicInfo.projectId,
@@ -2199,16 +2197,12 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <div style={{
+                        <Form.Item label={<span><span style={{
+                          fontFamily: 'SimSun, sans-serif',
                           color: '#f5222d',
-                          fontSize: '14px',
-                          position: 'absolute',
-                          top: '13%',
-                          right: '85.5%'
-                        }}>
-                          *
-                        </div>
-                        <Form.Item label="应用部门">
+                          marginRight: '4px',
+                          lineHeight: 1
+                        }}>*</span>应用部门</span>}>
                           {getFieldDecorator('org', {
                             // rules: [{
                             //   required: true,
@@ -2270,16 +2264,12 @@ class NewProjectModelV2 extends React.Component {
                       {
                         basicInfo.projectType === 1 ? (
                           <Col span={12}>
-                            <div style={{
+                            <Form.Item label={<span><span style={{
+                              fontFamily: 'SimSun, sans-serif',
                               color: '#f5222d',
-                              fontSize: '14px',
-                              position: 'absolute',
-                              top: '13%',
-                              right: '85.5%'
-                            }}>
-                              *
-                            </div>
-                            <Form.Item label="采购方式">
+                              marginRight: '4px',
+                              lineHeight: 1
+                            }}>*</span>采购方式</span>}>
                               {getFieldDecorator('biddingMethod', {
                                 // rules: [{
                                 //   required: true,
@@ -2288,7 +2278,7 @@ class NewProjectModelV2 extends React.Component {
                                 initialValue: basicInfo.biddingMethod
                               })(
                                 <Radio.Group onChange={e => {
-                                  this.setState({ basicInfo: { ...basicInfo, biddingMethod: e.target.value } });
+                                  this.setState({basicInfo: {...basicInfo, biddingMethod: e.target.value}});
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
                                     xmid: this.state.basicInfo.projectId,
@@ -2364,35 +2354,31 @@ class NewProjectModelV2 extends React.Component {
                               }, function () {
                                 _this.props.form.resetFields(['projectBudget']);
                                 _this.props.form.validateFields(['projectBudget']);
-                                _this.fetchQueryBudgetProjects({ type: 'NF', year: Number(v.format("YYYY")) });
+                                _this.fetchQueryBudgetProjects({type: 'NF', year: Number(v.format("YYYY"))});
                               })
                             }}
-                            format="YYYY" mode="year" />
+                                      format="YYYY" mode="year"/>
                           {/*)}*/}
                         </Form.Item>
                       </Col>
                       <Col span={12} className="glys">
-                        <div style={{
+                        <Form.Item label={<span><span style={{
+                          fontFamily: 'SimSun, sans-serif',
                           color: '#f5222d',
-                          fontSize: '14px',
-                          position: 'absolute',
-                          top: '13%',
-                          right: '91.5%'
-                        }}>
-                          *
-                        </div>
-                        <Form.Item label="关联预算项目">
+                          marginRight: '4px',
+                          lineHeight: 1
+                        }}>*</span>关联预算项目</span>}>
                           {getFieldDecorator('budgetProjectId', {
                             // rules: [{
                             //   required: true,
                             //   message: '请选择关联预算项目'
                             // }],
-                            initialValue: budgetInfo.budgetProjectName
+                            initialValue: budgetInfo.budgetProjectName ? budgetInfo.budgetProjectName : null
                           })(
                             <TreeSelect
                               showSearch
                               treeNodeFilterProp="title"
-                              style={{ width: '100%' }}
+                              style={{width: '100%'}}
                               dropdownClassName="newproject-treeselect"
                               dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
                               treeData={budgetProjectList}
@@ -2470,16 +2456,12 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       <Col span={12}>
-                        <div style={{
+                        <Form.Item label={<span><span style={{
+                          fontFamily: 'SimSun, sans-serif',
                           color: '#f5222d',
-                          fontSize: '14px',
-                          position: 'absolute',
-                          top: '13%',
-                          right: '93.5%'
-                        }}>
-                          *
-                        </div>
-                        <Form.Item label="本项目预算(元)">
+                          marginRight: '4px',
+                          lineHeight: 1
+                        }}>*</span>本项目预算(元)</span>}>
                           {getFieldDecorator('projectBudget', {
                             // rules: [{
                             //   required: true,
@@ -2509,7 +2491,7 @@ class NewProjectModelV2 extends React.Component {
                                 projectBudgetChangeFlag,
                                 budgetInfo: { ...budgetInfo, projectBudget: e }
                               });
-                            }} precision={0} />
+                            }} precision={0}/>
                           )}
                         </Form.Item>
                       </Col>
@@ -2519,22 +2501,23 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{ display: 'flex', height: '75%', margin: '2rem 0 2rem 20rem' }}>
-                  <Steps progressDot style={{ height: '100rem', width: '20%', padding: '3rem 0' }} direction="vertical"
-                    current={minicurrent} onChange={this.onChange}>
+                current === 1 && <div style={{display: 'flex', height: '75%', margin: '12px 0 12px 120px'}}>
+                  <Steps progressDot style={{height: '71vh', width: '20%', padding: '18px 0'}} direction="vertical"
+                         current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
                       <Step status={minicurrent === index ? 'finish' : 'wait'}
-                        style={{ height: (100 / (ministeps.length * 1.8)) + 'rem' }} key={index} title={item.title} />
+                            style={{height: (71 / (ministeps.length * 1.8)) + 'vh'}} key={index} title={item.title}/>
                     ))}
                   </Steps>
                   <div className="steps-content" id="lcbxxClass"
-                    style={{
-                      overflowY: 'scroll',
-                      overflowX: 'hidden',
-                      height: '100%',
-                      width: '80%',
-                    }}
+                       style={{
+                         overflowY: 'scroll',
+                         overflowX: 'hidden',
+                         height: '100%',
+                         paddingBottom: '18px',
+                         width: '80%',
+                       }}
                     ref={c => {
                       this.scrollRef = c;
                     }}
@@ -2595,59 +2578,65 @@ class NewProjectModelV2 extends React.Component {
                                         } */}
                                         {
                                           <Tooltip title="删除">
-                                            <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
-                                              className="iconfont delete"
-                                              onClick={() => this.removeMilePostInfo(index)} />
+                                            <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                               className="iconfont delete"
+                                               onClick={() => this.removeMilePostInfo(index)}/>
                                           </Tooltip>
                                         }
                                       </div>
                                     </div>
-                                    <div style={{ display: 'flex', margin: '0 3rem', padding: '1rem', }}>
-                                      <div style={{ marginTop: '2rem', textAlign: 'end', width: '6.5%', }}>
-                                        <span style={{
-                                          paddingLeft: '1rem',
-                                          fontSize: '2.5rem',
-                                          // fontWeight: 'bold',
-                                        }}>时间</span>
+                                    <div style={{display: 'flex', padding: '6px 0 0 0',}}>
+                                      <div style={{
+                                        display: 'grid',
+                                        alignItems: 'center',
+                                        justifyContent: 'end',
+                                        width: '10%',
+                                      }}>
+                                          <span style={{
+                                            paddingLeft: '6px',
+                                            fontSize: '2.5rem',
+                                            // fontWeight: 'bold',
+                                          }}><span style={{
+                                            fontFamily: 'SimSun, sans-serif',
+                                            color: '#f5222d',
+                                            marginRight: '4px',
+                                            lineHeight: 1
+                                          }}>
+                                          *</span>
+                                            时间
+                                        </span>
                                       </div>
                                       <div style={{
                                         paddingLeft: '2rem',
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        width: '45%'
+                                        width: 'auto'
                                       }} id="datePicker">
-                                        <DatePicker format="YYYY-MM-DD" style={{ width: '40%' }}
-                                          value={moment(item.kssj, 'YYYY-MM-DD')}
-                                          allowClear={false}
-                                          onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
-                                          onFocus={() => this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false
-                                          })} />
+                                        <DatePicker format="YYYY-MM-DD"
+                                                    value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                    allowClear={false}
+                                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                    onFocus={() => this.setState({
+                                                      isEditMile: true,
+                                                      isCollapse: false
+                                                    })}/>
                                         <div style={{
                                           fontSize: '2.5rem',
                                           fontWeight: 'bold',
-                                          padding: '2rem 2rem 0 2rem'
+                                          padding: '0 12px',
+                                          display: 'flex',
+                                          alignItems: 'center',
                                         }}>~
                                         </div>
-                                        <DatePicker format="YYYY-MM-DD" style={{ width: '40%' }}
-                                          value={moment(item.jssj, 'YYYY-MM-DD')}
-                                          allowClear={false}
-                                          onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
-                                          onFocus={() => this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false
-                                          })} />
-                                        <div style={{
-                                          color: 'rgb(245, 34, 45)',
-                                          fontSize: '3.5rem',
-                                          position: 'absolute',
-                                          top: '2.5rem',
-                                          left: '-7rem'
-                                        }}>
-                                          *
-                                        </div>
+                                        <DatePicker format="YYYY-MM-DD"
+                                                    value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                    allowClear={false}
+                                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                    onFocus={() => this.setState({
+                                                      isEditMile: true,
+                                                      isCollapse: false
+                                                    })}/>
                                       </div>
                                     </div>
                                     {
@@ -2661,16 +2650,20 @@ class NewProjectModelV2 extends React.Component {
                                         })
                                         return (
                                           <div className="flow" key={i}
-                                            style={{
-                                              display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                               style={{
+                                                 display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
+                                               }}>
+                                            <div style={{
+                                              width: e.swlxmc === "new" && e.sxlb?.length === 0 ? '100%' : '10%',
+                                              alignItems: 'center',
+                                              display: 'grid',
                                             }}>
-                                            <div style={{ width: e.swlxmc === "new" && e.sxlb?.length === 0 ? '100%' : '10%' }}>
                                               {
                                                 e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                   if (sx.type && sx.type === 'title' && sx_index === 0) {
                                                     return (
                                                       <div key={String(sx_index + 1)} style={{
-                                                        paddingTop: '3rem',
+                                                        // paddingTop: '3rem',
                                                         // fontWeight: 'bold',
                                                         fontSize: '2.5rem',
                                                         textAlign: 'end'
@@ -2787,11 +2780,11 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
-                                                  <div style={{ margin: '1.5rem' }}><Tag
-                                                    style={{ background: '#fff', borderStyle: 'dashed' }}>
+                                                  <div style={{margin: '9px'}}><Tag
+                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
                                                     <a className="iconfont circle-add"
-                                                      style={{ fontSize: '2.038rem', color: 'rgb(51, 97, 255)', }}
-                                                      onClick={() => this.showInput(index, i)}>新增</a>
+                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                       onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag></div>)
                                                 }
                                                 {
@@ -2847,19 +2840,21 @@ class NewProjectModelV2 extends React.Component {
                                       })
                                     }
                                     {
-                                      <div className="addMilePost" style={{ width: 'calc(46% + 3.5rem)', marginTop: '2rem' }} onClick={() => this.addSwlx(item?.lcblxid, index)}>
-                                        <Icon type="plus" style={{ fontSize: '1.7rem' }} /><span
-                                          style={{ paddingLeft: '1rem', fontSize: '2.5rem' }}>添加事项</span>
+                                      <div className="addMilePost"
+                                           style={{width: 'calc(46% + 3.5rem)', marginTop: '12px'}}
+                                           onClick={() => this.addSwlx(item?.lcblxid, index)}>
+                                        <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
+                                        style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>添加事项</span>
                                       </div>
                                     }
                                   </div>
                                 ) : (
                                   <div key={index} className="milePost" id={`milePost${index}`}>
-                                    <div className="title">
+                                    <div style={{padding: '12px 12px 12px 0'}} className='title'>
                                       <div className="left">
-                                        <div style={{ marginTop: '2rem' }}>
+                                        <div style={{marginTop: '12px'}}>
                                           <span style={{
-                                            paddingLeft: '1rem',
+                                            paddingLeft: '6px',
                                             fontSize: '2.5rem',
                                             fontWeight: 'bold',
                                             borderLeft: '4px solid #3461FF'
@@ -2867,22 +2862,22 @@ class NewProjectModelV2 extends React.Component {
                                         </div>
                                       </div>
                                       {
-                                        <div className="right" style={{ marginTop: '2rem', }}>
+                                        <div className="right" style={{marginTop: '12px',}}>
                                           {
                                             index > 0 ? (
                                               <Tooltip title="上移">
-                                                <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
-                                                  className="iconfont collapse"
-                                                  onClick={() => this.moveMilePostInfo(index, 'top')} />
+                                                <a style={{color: '#666', marginTop: '12px', marginLeft: '6px'}}
+                                                   className="iconfont collapse"
+                                                   onClick={() => this.moveMilePostInfo(index, 'top')}/>
                                               </Tooltip>
                                             ) : null
                                           }
                                           {
                                             index !== milePostInfo.length - 1 ? (
                                               <Tooltip title="下移">
-                                                <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
-                                                  className="iconfont expand"
-                                                  onClick={() => this.moveMilePostInfo(index, 'down')} />
+                                                <a style={{color: '#666', marginTop: '12px', marginLeft: '6px'}}
+                                                   className="iconfont expand"
+                                                   onClick={() => this.moveMilePostInfo(index, 'down')}/>
                                               </Tooltip>
                                             ) : null
                                           }
@@ -2896,61 +2891,67 @@ class NewProjectModelV2 extends React.Component {
                                           {
                                             !item.lcbmc.includes("立项") && !item.lcbmc.includes("实施") && !item.lcbmc.includes("上线")
                                             && <Tooltip title="删除">
-                                              <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
-                                                className="iconfont delete"
-                                                onClick={() => this.removeMilePostInfo(index)} />
+                                              <a style={{color: '#666', marginTop: '12px', marginLeft: '6px'}}
+                                                 className="iconfont delete"
+                                                 onClick={() => this.removeMilePostInfo(index)}/>
                                             </Tooltip>
                                           }
                                         </div>
                                       }
 
                                     </div>
-                                    <div style={{ display: 'flex', padding: '1rem 0 0 0', }}>
-                                      <div style={{ marginTop: '2rem', textAlign: 'end', width: '10%', }}>
-                                        <span style={{
-                                          paddingLeft: '1rem',
-                                          fontSize: '2.5rem',
-                                          // fontWeight: 'bold',
-                                        }}>时间</span>
+                                    <div style={{display: 'flex', padding: '6px 0 0 0',}}>
+                                      <div style={{
+                                        display: 'grid',
+                                        alignItems: 'center',
+                                        justifyContent: 'end',
+                                        width: '10%',
+                                      }}>
+                                          <span style={{
+                                            paddingLeft: '6px',
+                                            fontSize: '2.5rem',
+                                            // fontWeight: 'bold',
+                                          }}><span style={{
+                                            fontFamily: 'SimSun, sans-serif',
+                                            color: '#f5222d',
+                                            marginRight: '4px',
+                                            lineHeight: 1
+                                          }}>
+                                          *</span>
+                                            时间
+                                        </span>
                                       </div>
                                       <div style={{
-                                        paddingLeft: '2rem',
+                                        paddingLeft: '12px',
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        width: '45%'
+                                        width: 'auto'
                                       }} id="datePicker">
-                                        <DatePicker format="YYYY-MM-DD" style={{ width: '40%' }}
-                                          value={moment(item.kssj, 'YYYY-MM-DD')}
-                                          allowClear={false}
-                                          onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
-                                          onFocus={() => this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false
-                                          })} />
+                                        <DatePicker format="YYYY-MM-DD"
+                                                    value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                    allowClear={false}
+                                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
+                                                    onFocus={() => this.setState({
+                                                      isEditMile: true,
+                                                      isCollapse: false
+                                                    })}/>
                                         <div style={{
                                           fontSize: '2.5rem',
                                           fontWeight: 'bold',
-                                          padding: '2rem 2rem 0 2rem'
+                                          padding: '0 12px',
+                                          display: 'flex',
+                                          alignItems: 'center',
                                         }}>~
                                         </div>
-                                        <DatePicker format="YYYY-MM-DD" style={{ width: '40%' }}
-                                          value={moment(item.jssj, 'YYYY-MM-DD')}
-                                          allowClear={false}
-                                          onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
-                                          onFocus={() => this.setState({
-                                            isEditMile: true,
-                                            isCollapse: false
-                                          })} />
-                                        <div style={{
-                                          color: 'rgb(245, 34, 45)',
-                                          fontSize: '3.5rem',
-                                          position: 'absolute',
-                                          top: '2.5rem',
-                                          left: '-7rem'
-                                        }}>
-                                          *
-                                        </div>
+                                        <DatePicker format="YYYY-MM-DD"
+                                                    value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                    allowClear={false}
+                                                    onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
+                                                    onFocus={() => this.setState({
+                                                      isEditMile: true,
+                                                      isCollapse: false
+                                                    })}/>
                                       </div>
                                       {/* <RiskOutline/> */}
                                     </div>
@@ -2974,13 +2975,17 @@ class NewProjectModelV2 extends React.Component {
                                             {/*            className="layout" layout={e.gridLayout} rowHeight={3}*/}
                                             {/*            cols={5}*/}
                                             {/*            width={900}>*/}
-                                            <div style={{ width: e.swlxmc === "new" && e.sxlb?.length === 0 ? '100%' : '10%' }}>
+                                            <div style={{
+                                              width: e.swlxmc === "new" && e.sxlb?.length === 0 ? '100%' : '10%',
+                                              alignItems: 'center',
+                                              display: 'grid',
+                                            }}>
                                               {
                                                 e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                   if (sx.type && sx.type === 'title' && sx_index === 0) {
                                                     return (
                                                       <div key={String(sx_index + 1)} style={{
-                                                        paddingTop: '3rem',
+                                                        // paddingTop: '3rem',
                                                         // fontWeight: 'bold',
                                                         fontSize: '2.5rem',
                                                         textAlign: 'end',
@@ -3098,11 +3103,11 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
-                                                  <div style={{ margin: '1.5rem' }}><Tag
-                                                    style={{ background: '#fff', borderStyle: 'dashed' }}>
+                                                  <div style={{margin: '9px'}}><Tag
+                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
                                                     <a className="iconfont circle-add"
-                                                      style={{ fontSize: '2.038rem', color: 'rgb(51, 97, 255)', }}
-                                                      onClick={() => this.showInput(index, i)}>新增</a>
+                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                       onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag></div>)}
                                                 {
                                                   e.sxlb?.length === 1 && e.swlxmc !== "new" &&
@@ -3190,6 +3195,24 @@ class NewProjectModelV2 extends React.Component {
                   {/*  <span style={{paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF'}}>人员信息</span>*/}
                   {/*</div>*/}
                   <div className="staffInfo">
+                    <div className="tree">
+                      {
+                        organizationStaffTreeList.length > 0 &&
+                        <Tree
+                          defaultExpandedKeys={[11167]}
+                          checkable
+                          checkedKeys={checkedStaffKey}
+                          onCheck={this.onCheckTreeStaff}
+                        >
+                          {this.renderTreeNodes(organizationStaffTreeList)}
+                        </Tree>
+                      }
+
+                    </div>
+                    <div className="button">
+                      <Button onClick={this.clickAddStaff}>添加<a className="iconfont icon-right"
+                                                                style={{fontSize: '14px', color: 'inherit'}}/></Button>
+                    </div>
                     <div className="job">
                       {
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
@@ -3198,14 +3221,14 @@ class NewProjectModelV2 extends React.Component {
                             return (
                               <div className="jobItem">
                                 <div className="name"
-                                  style={{ color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : '' }}><span
-                                    style={{ color: '#de3741', paddingRight: '1rem' }}>*</span><span>{item.note}：</span>
+                                     style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}><span
+                                  style={{color: '#de3741', paddingRight: '1rem'}}>*</span><span>{item.note}：</span>
                                 </div>
-                                <div style={{ width: '65%' }}>
+                                <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={jobStaffList.length > 0 ? jobStaffList[9] : []}
-                                    onBlur={() => this.setState({ height: 0 })}
+                                    onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'manage')}
                                     onFocus={() => this.setState({
                                       staffInfo: {
@@ -3235,7 +3258,7 @@ class NewProjectModelV2 extends React.Component {
                                         console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
-                                            value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
+                                                         value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -3252,15 +3275,15 @@ class NewProjectModelV2 extends React.Component {
                             return (
                               <div className="jobItem">
                                 <div className="name"
-                                  style={{ color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : '' }}>
+                                     style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}>
                                   <Icon onClick={this.removeJob.bind(this, item.ibm)} type="close"
-                                    style={{ paddingRight: '1rem', cursor: 'pointer' }} /><span>{item.note}：</span>
+                                        style={{paddingRight: '1rem', cursor: 'pointer'}}/><span>{item.note}：</span>
                                 </div>
-                                <div style={{ width: '65%' }}>
+                                <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm) - 1] : []}
-                                    onBlur={() => this.setState({ height: 0 })}
+                                    onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() => this.setState({
                                       staffInfo: {
@@ -3286,7 +3309,7 @@ class NewProjectModelV2 extends React.Component {
                                         console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
-                                            value={item.id}>{item.name}({item.orgName})</Select.Option>
+                                                         value={item.id}>{item.name}({item.orgName})</Select.Option>
                                         )
                                       })
                                     }
@@ -3303,25 +3326,25 @@ class NewProjectModelV2 extends React.Component {
                           <Tag
                             style={{ background: '#fff', borderStyle: 'dashed' }}>
                             <a className="iconfont circle-add"
-                              style={{ fontSize: '2.038rem', color: 'rgb(51, 97, 255)', }}
-                              onClick={() => {
-                                this.setState({ rygwSelect: true })
-                              }}>新增岗位</a>
+                               style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                               onClick={() => {
+                                 this.setState({rygwSelect: true})
+                               }}>新增岗位</a>
                           </Tag>
                         </div>
                       }
                       {
                         rygwSelect &&
                         <Select showSearch
-                          showArrow={true}
+                                showArrow={true}
                           // mode="multiple"
-                          placeholder="请选择岗位"
-                          onChange={e => this.onRygwSelectChange(e)}
-                          style={{ padding: '1.5rem 0 0 2rem', width: '25rem' }}
-                          onBlur={this.onRygwSelectConfirm}
-                          filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                          }>
+                                placeholder="请选择岗位"
+                                onChange={e => this.onRygwSelectChange(e)}
+                                style={{padding: '1.5rem 0 0 2rem', width: '25rem'}}
+                                onBlur={this.onRygwSelectConfirm}
+                                filterOption={(input, option) =>
+                                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                }>
                           {
                             rygwSelectDictionary.length > 0 && rygwSelectDictionary.map((item, index) => {
                               return (
@@ -3331,23 +3354,6 @@ class NewProjectModelV2 extends React.Component {
                           }
                         </Select>
                       }
-                    </div>
-                    <div className="button">
-                      <Button onClick={this.clickAddStaff} icon="left">添加</Button>
-                    </div>
-                    <div className="tree">
-                      {
-                        organizationStaffTreeList.length > 0 &&
-                        <Tree
-                          defaultExpandedKeys={[11167]}
-                          checkable
-                          checkedKeys={checkedStaffKey}
-                          onCheck={this.onCheckTreeStaff}
-                        >
-                          {this.renderTreeNodes(organizationStaffTreeList)}
-                        </Tree>
-                      }
-
                     </div>
                   </div>
                 </React.Fragment></div>
