@@ -2,33 +2,50 @@
 
 //字体大小 - 以UI为准，默认14px
 .font-size-12() {
-  font-size: 1.7856rem;
+  font-size: 12px;
 }
 .font-size-13() {
-  font-size: 1.9344rem;
+  font-size: 13px;
 }
 .font-size-14() {
-  font-size: 2.0832rem;
+  font-size: 14px;
 }
 .font-size-15() {
-  font-size: 2.232rem;
+  font-size: 15px;
 }
 .font-size-16() {
-  font-size: 2.3808rem;
+  font-size: 16px;
 }
 .font-size-18() {
-  font-size: 2.6784rem;
+  font-size: 18px;
+}
+.font-size-20() {
+  font-size: 20px;
+}
+.font-size-24() {
+  font-size: 24px;
+}
+.font-size-32() {
+  font-size: 32px;
 }
 .font-size-default() {
-  font-size: 2.0832rem;
+  font-size: 14px;
 }
 
 //字体
+@font-face {
+  font-family: 'THSMoneyfont-Medium';
+  src: url('../assets//fonts/THSMoneyfont-Medium.otf');
+  /* IE9*/
+  src: url('../assets//fonts/THSMoneyfont-Medium.otf#iefix') format('embedded-opentype'),
+  /* IE6-IE8 */ 
+  url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype'),
+}
 .font-family-roboto() {
   font-family: Roboto-Regular, Roboto;
 }
 .font-family-pingfangsc() {
-  font-family: PingFangSC-Medium, PingFang SC;
+  font-family: PingFangSC-Regular, PingFang SC;
 }
 
 //字重
@@ -65,6 +82,23 @@
   margin: 0 24px 24px 24px;
 }
 
+//圆角
+.border-radius-4() {
+  -moz-border-radius: 4px;
+  -webkit-border-radius: 4px;
+  border-radius: 4px;
+}
+.border-radius-8() {
+  -moz-border-radius: 8px;
+  -webkit-border-radius: 8px;
+  border-radius: 8px;
+}
+.border-radius-10() {
+  -moz-border-radius: 10px;
+  -webkit-border-radius: 10px;
+  border-radius: 10px;
+}
+
 //功能块
 .function-block() {
   box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
@@ -80,14 +114,14 @@
   // .ant-checkbox-wrapper,
   .ant-input,
   .ant-select {
-    font-size: 1.9344rem !important;
+    font-size: 13px !important;
   }
 }
 
 //按钮-蓝底
 .antd-btn-primary() {
-  padding: 9px 12px 10px 12px;
-  font-size: 2.0832rem; //14px
+  padding: 8px 12px;
+  font-size: 14px; //14px
   line-height: unset;
   height: unset;
   background-color: #3361ff;
@@ -100,8 +134,8 @@
 
 //按钮-白底
 .antd-btn-default() {
-  padding: 9px 12px 10px 12px;
-  font-size: 2.0832rem; //14px
+  padding: 8px 12px;
+  font-size: 14px; //14px
   line-height: unset;
   height: unset;
   margin-left: 8px;
@@ -179,18 +213,18 @@
 
 //树形下拉 - 父级不可选，点击展开子级 实现, 需写在下拉菜单类名里
 .antd-select-tree() {
-  .ant-select-tree li span.ant-select-tree-switcher {
-    position: relative;
-  }
-  .ant-select-tree-switcher_open::before,
-  .ant-select-tree-switcher_close::before {
-    content: '';
-    position: absolute;
-    right: -56.64rem;
-    top: -4px;
-    left: 0;
-    bottom: -4px;
-  }
+  // .ant-select-tree li span.ant-select-tree-switcher {
+  //   position: relative;
+  // }
+  // .ant-select-tree-switcher_open::before,
+  // .ant-select-tree-switcher_close::before {
+  //   content: '';
+  //   position: absolute;
+  //   right: -56.64rem;
+  //   top: -4px;
+  //   left: 0;
+  //   bottom: -4px;
+  // }
 }
 
 //表格
@@ -228,7 +262,7 @@
       // height: 450px;
       border-bottom: 0;
       .ant-empty-description {
-        font-size: 2.0832rem;
+        font-size: 14px;
       }
     }
     .ant-table-thead {
@@ -238,7 +272,7 @@
   }
 
   .ant-table-pagination {
-    font-size: 2.0832rem;
+    font-size: 14px;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -248,7 +282,7 @@
     background-color: #fff;
     padding-left: 0;
     .ant-select {
-      font-size: 2.0832rem !important;
+      font-size: 14px !important;
     }
   }
   .ant-pagination-total-text {

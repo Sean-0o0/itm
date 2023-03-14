@@ -1,4 +1,5 @@
-//font weight
+@import 'selfAdaptation';
+
 .font-w700() {
   font-weight: 700;
 }
@@ -67,9 +68,9 @@
 //统计分析
 .statistic-analysis-box {
   overflow: hidden;
-  margin: 3.5712rem;
+  margin: 24px;
 
-  &>.contrast-box {
+  & > .contrast-box {
     display: flex;
     flex-direction: row;
     overflow: hidden;
@@ -81,7 +82,7 @@
       width: 20%;
       background-color: #fff;
       padding: 3rem 1.5rem;
-      border-radius: 1.1904rem;
+      border-radius: 8px;
       margin-right: 1.5rem;
       position: relative;
 
@@ -128,7 +129,7 @@
             font-family: Roboto-Medium, Roboto;
             font-weight: 600;
             color: #303133;
-            margin-right: 0.5952rem;
+            margin-right: 4px;
             overflow: hidden;
             max-width: 16.37rem;
           }
@@ -151,7 +152,7 @@
             .font-s12();
             font-family: Roboto-Regular, Roboto;
             font-weight: 400;
-            margin-left: 0.5952rem;
+            margin-left: 4px;
             overflow: hidden;
             max-width: 9.97rem;
           }
@@ -160,20 +161,20 @@
     }
   }
 
-  &>.digital-class-box {
+  & > .digital-class-box {
     height: 59.52rem;
     background-color: #fff;
-    border-radius: 1.1904rem;
+    border-radius: 8px;
     overflow: hidden;
-    padding: 2.3808rem 3.5712rem;
-    margin-top: 2.3808rem;
+    padding: 16px 24px;
+    margin-top: 16px;
 
     & .digital-class-title {
       .font-s18();
       font-family: PingFangSC-Medium, PingFang SC;
       font-weight: 600;
       color: #303133;
-      margin-bottom: 3.5712rem;
+      margin-bottom: 24px;
       margin-top: 0.8928rem;
     }
 
@@ -196,7 +197,7 @@
           display: flex;
           flex-direction: row;
           align-items: center;
-          height: 3.5712rem;
+          height: 24px;
           .font-s14();
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: 600;
@@ -210,7 +211,7 @@
             align-items: center;
             text-align: center;
             border-radius: 50%;
-            margin-right: 1.1904rem;
+            margin-right: 8px;
             background-color: #3361ff;
             font-weight: normal;
             color: #fff;
@@ -246,36 +247,36 @@
     }
   }
 
-  &>.project-overview-box {
+  & > .project-overview-box {
     height: 63.984rem;
     overflow: hidden;
-    margin-top: 2.3808rem;
+    margin-top: 16px;
 
     & .overview-top-box {
       height: 37.2rem;
       display: flex;
       flex-direction: row;
 
-      &>.project-profile-box {
+      & > .project-profile-box {
         width: 50%;
-        border-radius: 1.1904rem;
+        border-radius: 8px;
         background-color: #fff;
-        margin-right: 2.3808rem;
-        padding: 2.3808rem 3.5712rem 3.5712rem 3.5712rem;
+        margin-right: 16px;
+        padding: 16px 24px 24px 24px;
 
         .tab-top-box {
           display: flex;
           flex-direction: row;
-          margin-bottom: 3.5712rem;
+          margin-bottom: 24px;
 
           .title {
-            height: 3.5712rem;
+            height: 24px;
             max-width: 100%;
             .font-s18();
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: bold;
             color: #303133;
-            line-height: 3.5712rem;
+            line-height: 24px;
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
@@ -283,11 +284,11 @@
 
           .tab-btn-box {
             margin-left: auto;
-            // height: 3.5712rem;
+            // height: 24px;
             width: 30rem;
             display: flex;
             flex-direction: row;
-            line-height: 3.5712rem;
+            line-height: 24px;
             text-align: center;
             .font-s14();
             color: #606266;
@@ -296,13 +297,13 @@
 
             .tab-btn-left {
               width: 55%;
-              border-radius: 0.5952rem 0 0 0.5952rem;
+              border-radius: 4px 0 0 4px;
               border: 0.1488rem solid #dbdfe6;
             }
 
             .tab-btn-right {
               width: 45%;
-              border-radius: 0 0.5952rem 0.5952rem 0;
+              border-radius: 0 4px 4px 0;
               border: 0.1488rem solid #dbdfe6;
             }
           }
@@ -313,11 +314,13 @@
 
           .lcbjd-box {
             position: relative;
-            padding: 2.3808rem;
-            background: linear-gradient(360deg,
-                rgba(51, 97, 255, 0.05) 0%,
-                rgba(98, 154, 255, 0) 100%);
-            border-radius: 0.5952rem;
+            padding: 16px;
+            background: linear-gradient(
+              360deg,
+              rgba(51, 97, 255, 0.05) 0%,
+              rgba(98, 154, 255, 0) 100%
+            );
+            border-radius: 4px;
             height: 100%;
             box-shadow: 0 0 0.2976rem #ebf0ff;
             display: flex;
@@ -341,13 +344,13 @@
               flex: 1;
               background-color: #fff;
               box-shadow: 0 0 0.2976rem #b4b4b4;
-              border-radius: 0.5952rem;
+              border-radius: 4px;
               .font-s12();
               font-family: PingFangSC-Medium, PingFang SC;
               font-weight: bold;
               color: #303133;
-              padding: 0 2.3808rem;
-              margin-bottom: 2.3808rem;
+              padding: 0 16px;
+              margin-bottom: 16px;
 
               .trapezoid {
                 position: absolute;
@@ -426,24 +429,24 @@
         }
       }
 
-      &>.glory-profile-box {
+      & > .glory-profile-box {
         width: 50%;
-        border-radius: 1.1904rem;
+        border-radius: 8px;
         background-color: #fff;
-        padding: 2.3808rem 3.5712rem 3.5712rem 3.5712rem;
+        padding: 16px 24px 24px 24px;
 
         .title {
-          height: 3.5712rem;
+          height: 24px;
           max-width: 100%;
           .font-s18();
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: bold;
           color: #303133;
-          line-height: 3.5712rem;
+          line-height: 24px;
           overflow: hidden;
           text-overflow: ellipsis;
           white-space: nowrap;
-          margin-bottom: 3.5712rem;
+          margin-bottom: 24px;
         }
 
         .content-box {
@@ -456,10 +459,12 @@
             width: 50%;
             height: 100%;
             box-shadow: 0 0 0.2976rem #ebf0ff;
-            background: linear-gradient(360deg,
-                rgba(51, 97, 255, 27%) 0%,
-                rgba(98, 154, 255, 0) 100%);
-            padding: 2.3808rem;
+            background: linear-gradient(
+              360deg,
+              rgba(51, 97, 255, 27%) 0%,
+              rgba(98, 154, 255, 0) 100%
+            );
+            padding: 16px;
 
             .info-num {
               display: flex;
@@ -488,12 +493,12 @@
             }
 
             .info-medal {
-              margin-top: 1.7856rem;
+              margin-top: 12px;
               display: flex;
               flex-direction: row;
 
-              &>.medal-item {
-                padding: 2.3808rem;
+              & > .medal-item {
+                padding: 16px;
                 .font-s16();
                 font-family: PingFangSC-Medium, PingFang SC;
                 font-weight: bold;
@@ -502,7 +507,7 @@
                 height: 14.5824rem;
                 margin-right: 2%;
                 background-color: #ffffff;
-                border-radius: 0.5952rem;
+                border-radius: 4px;
                 position: relative;
                 overflow: hidden;
 
@@ -511,7 +516,7 @@
                 }
 
                 .medal-num {
-                  font-size: 3.5712rem;
+                  font-size: 24px;
                   font-family: Roboto-Medium, Roboto;
                   font-weight: bold;
                   color: #3361ff;
@@ -538,38 +543,38 @@
 
     & .overview-bottom-box {
       height: 24.4032rem;
-      border-radius: 1.1904rem;
-      margin-top: 2.3808rem;
-      padding: 2.3808rem 3.5712rem 3.5712rem 3.5712rem;
+      border-radius: 8px;
+      margin-top: 16px;
+      padding: 16px 24px 24px 24px;
       background-color: #fff;
 
       & .overview-bottom-title {
-        height: 3.5712rem;
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 2.3808rem;
+        margin-bottom: 16px;
       }
 
       & .overview-bottom-contrast-box {
         display: flex;
         flex-direction: row;
 
-        &>.contrast-item {
+        & > .contrast-item {
           display: flex;
           width: 33%;
           flex-direction: row;
           align-items: center;
           background-color: #fafafb;
-          padding: 2.3808rem 3.5712rem;
-          margin-right: 2.3808rem;
-          border-radius: 1.1904rem;
+          padding: 16px 24px;
+          margin-right: 16px;
+          border-radius: 8px;
 
           &:last-child {
             margin-right: 0;
@@ -584,7 +589,7 @@
             border-radius: 50%;
             background-color: #3361ff;
             color: #fff;
-            margin-right: 3.5712rem;
+            margin-right: 24px;
           }
 
           .contrast-item-right {
@@ -604,7 +609,7 @@
             .contrast-item-data {
               display: flex;
               flex-direction: row;
-              margin-top: 1.1904rem;
+              margin-top: 8px;
 
               .data-txt {
                 .font-s12();
@@ -613,12 +618,12 @@
                 color: #303133;
 
                 .data-txt-num {
-                  height: 3.5712rem;
+                  height: 24px;
                   font-size: 2.976rem;
                   font-family: Roboto-Medium, Roboto;
                   font-weight: 600;
                   color: #303133;
-                  line-height: 3.5712rem;
+                  line-height: 24px;
                   margin-right: 0.744rem;
                 }
               }
@@ -628,7 +633,7 @@
                 line-height: 4.464rem;
 
                 .data-contrast-num {
-                  margin-left: 0.5952rem;
+                  margin-left: 4px;
                 }
               }
             }
@@ -638,43 +643,42 @@
     }
   }
 
-  &>.budget-box {
+  & > .budget-box {
     display: flex;
     flex-direction: row;
-    margin-top: 2.3808rem;
+    margin-top: 16px;
 
-    &>.capital {
+    & > .capital {
       width: 50%;
       height: 100%;
-      border-radius: 1.1904rem;
-      margin-right: 2.3808rem;
+      border-radius: 8px;
+      margin-right: 16px;
       background-color: #fff;
-      padding: 2.3808rem 3.5712rem 3.5712rem 3.5712rem;
+      padding: 16px 24px 24px 24px;
 
       .capital-title {
-        height: 3.5712rem;
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 3.5712rem;
+        margin-bottom: 24px;
       }
 
       .capital-top {
         display: flex;
         flex-direction: row;
 
-        &>.progress-box {
+        & > .progress-box {
           width: 40%;
           padding-right: 10%;
 
           .progress-bar {
-
             .progress-top,
             .progress-bottom {
               display: flex;
@@ -685,7 +689,7 @@
               font-family: PingFangSC-Medium, PingFang SC;
               font-weight: bold;
               color: #303133;
-              margin-bottom: 1.1904rem;
+              margin-bottom: 8px;
             }
 
             .progress-bottom {
@@ -694,7 +698,7 @@
               font-weight: normal;
               color: #909399;
               margin-top: 0.8928rem;
-              margin-bottom: 3.5712rem;
+              margin-bottom: 24px;
             }
           }
         }
@@ -709,25 +713,25 @@
         width: 100%;
         height: 35rem;
         background-color: #fafafb;
-        border-radius: 1.1904rem;
+        border-radius: 8px;
       }
     }
 
-    &>.non-capital {
+    & > .non-capital {
       width: 50%;
       height: 100%;
-      border-radius: 1.1904rem;
-      padding: 2.3808rem 3.5712rem 3.5712rem 3.5712rem;
+      border-radius: 8px;
+      padding: 16px 24px 24px 24px;
       background-color: #fff;
 
       .non-capital-title {
-        height: 3.5712rem;
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
@@ -741,40 +745,40 @@
       }
 
       .non-capital-bottom {
-        border-radius: 1.1904rem;
+        border-radius: 8px;
         background-color: #fafafb;
         height: 35rem;
       }
     }
   }
 
-  &>.team-statistic-box {
+  & > .team-statistic-box {
     display: flex;
     flex-direction: row;
-    margin-top: 2.3808rem;
+    margin-top: 16px;
 
-    &>.team-left {
+    & > .team-left {
       width: 50%;
-      margin-right: 2.3808rem;
+      margin-right: 16px;
       background-color: #fff;
-      border-radius: 1.1904rem;
-      padding: 2.3807rem 3.5712rem 3.5712rem 3.5712rem;
+      border-radius: 8px;
+      padding: 2.3807rem 24px 24px 24px;
 
-      &>.left-title {
-        height: 3.5712rem;
+      & > .left-title {
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 3.5712rem;
+        margin-bottom: 24px;
       }
 
-      &>.left-content {
+      & > .left-content {
         display: flex;
         flex-direction: row;
         height: 29.76rem;
@@ -784,11 +788,11 @@
           padding-right: 10%;
           height: 100%;
 
-          &>.contrast-item {
+          & > .contrast-item {
             margin-bottom: 2.6784rem;
-            padding: 2.3808rem 3.5712rem;
+            padding: 16px 24px;
             background-color: #fafafb;
-            border-radius: 1.1904rem;
+            border-radius: 8px;
 
             &:last-child {
               margin-bottom: 0;
@@ -807,7 +811,7 @@
             .contrast-item-data {
               display: flex;
               flex-direction: row;
-              margin-top: 1.1904rem;
+              margin-top: 8px;
 
               .data-txt {
                 .font-s12();
@@ -820,12 +824,12 @@
                 max-width: 8.928rem;
 
                 .data-txt-num {
-                  height: 3.5712rem;
+                  height: 24px;
                   font-size: 2.976rem;
                   font-family: Roboto-Medium, Roboto;
                   font-weight: 600;
                   color: #303133;
-                  line-height: 3.5712rem;
+                  line-height: 24px;
                   margin-right: 0.744rem;
                 }
               }
@@ -835,7 +839,7 @@
                 line-height: 4.464rem;
 
                 .data-contrast-num {
-                  margin-left: 0.5952rem;
+                  margin-left: 4px;
                 }
               }
             }
@@ -849,61 +853,61 @@
       }
     }
 
-    &>.team-right {
+    & > .team-right {
       width: 50%;
       background-color: #fff;
-      border-radius: 1.1904rem;
-      padding: 2.3807rem 3.5712rem 3.5712rem 3.5712rem;
+      border-radius: 8px;
+      padding: 2.3807rem 24px 24px 24px;
 
-      &>.right-title {
-        height: 3.5712rem;
+      & > .right-title {
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 3.5712rem;
+        margin-bottom: 24px;
       }
 
-      &>.right-content {
+      & > .right-content {
         background-color: #fafafb;
-        border-radius: 1.1904rem;
+        border-radius: 8px;
         width: 100%;
         height: 29.76rem;
       }
     }
   }
 
-  &>.supplier-statistic-box {
+  & > .supplier-statistic-box {
     display: flex;
     flex-direction: row;
-    margin-top: 2.3808rem;
+    margin-top: 16px;
 
-    &>.supplier-left,
-    &>.supplier-right {
+    & > .supplier-left,
+    & > .supplier-right {
       width: 50%;
-      margin-right: 2.3808rem;
+      margin-right: 16px;
       background-color: #fff;
-      border-radius: 1.1904rem;
-      padding: 2.3807rem 3.5712rem 3.5712rem 3.5712rem;
+      border-radius: 8px;
+      padding: 2.3807rem 24px 24px 24px;
 
       .left-title,
       .right-title {
-        height: 3.5712rem;
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 3.5712rem;
+        margin-bottom: 24px;
       }
 
       .left-chart,
@@ -913,37 +917,37 @@
       }
     }
 
-    &>.supplier-right {
+    & > .supplier-right {
       margin-right: 0;
     }
   }
 
-  &>.personnel-statistic-box {
+  & > .personnel-statistic-box {
     display: flex;
     flex-direction: row;
-    margin-top: 2.3808rem;
+    margin-top: 16px;
 
-    &>.personnel-left,
-    &>.personnel-right {
+    & > .personnel-left,
+    & > .personnel-right {
       width: 50%;
-      margin-right: 2.3808rem;
+      margin-right: 16px;
       background-color: #fff;
-      border-radius: 1.1904rem;
-      padding: 2.3807rem 3.5712rem 3.5712rem 3.5712rem;
+      border-radius: 8px;
+      padding: 2.3807rem 24px 24px 24px;
 
       .left-title,
       .right-title {
-        height: 3.5712rem;
+        height: 24px;
         max-width: 100%;
         .font-s18();
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
         color: #303133;
-        line-height: 3.5712rem;
+        line-height: 24px;
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
-        margin-bottom: 3.5712rem;
+        margin-bottom: 24px;
       }
 
       .left-chart,
@@ -953,7 +957,7 @@
       }
     }
 
-    &>.personnel-right {
+    & > .personnel-right {
       margin-right: 0;
     }
   }
@@ -967,14 +971,14 @@
 
   & .top-console {
     height: 9.5232rem;
-    margin: 3.5712rem 3.5712rem 0 3.5712rem;
+    margin: 24px 24px 0 24px;
     background-color: white;
-    box-shadow: 0 0.5952rem 0.5952rem 0 rgb(20 38 98 / 4%);
-    border-radius: 1.1904rem 1.1904rem 0 0;
+    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
+    border-radius: 8px 8px 0 0;
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0 3.5712rem;
+    padding: 0 24px;
     .font-s14();
     font-family: PingFangSC-Regular;
     font-weight: 400;
@@ -1010,10 +1014,10 @@
 
   & .table-box {
     height: calc(100vh - 21.44rem);
-    margin: 0 3.5712rem 3.5712rem 3.5712rem;
+    margin: 0 24px 24px 24px;
     background-color: white;
-    box-shadow: 0 4px 0.5952rem 0 rgb(20 38 98 / 4%);
-    border-radius: 0 0 1.1904rem 1.1904rem;
+    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
+    border-radius: 0 0 8px 8px;
     margin-top: -1.86rem;
 
     & .table-console {
@@ -1023,7 +1027,7 @@
       width: 100%;
       height: 9.5232rem;
       border-bottom: 0.1488rem #edf1f4 solid;
-      padding: 0 3.5712rem;
+      padding: 0 24px;
 
       & .console-date {
         display: flex;
@@ -1031,8 +1035,8 @@
         align-items: center;
 
         & .console-icon {
-          height: 3.5712rem;
-          margin-right: 1.1904rem;
+          height: 24px;
+          margin-right: 8px;
         }
 
         & .console-txt {
@@ -1046,14 +1050,13 @@
 
     & .table-content {
       // display: flex;
-      padding: 0 3.5712rem;
+      padding: 0 24px;
       margin-top: 2.232rem;
       text-align: right;
     }
   }
 
   .ant-table {
-
     th,
     td {
       padding: 5px;
@@ -1063,7 +1066,7 @@
 
     th {
       font-weight: 600;
-      padding: 2.3808rem;
+      padding: 16px;
     }
 
     //与下边ant-table-body-inner高度差要差1rem
@@ -1134,7 +1137,6 @@
   }
 
   .ant-table-row-cell-ellipsis {
-
     // height: 51px;
     // .ant-calendar-picker-clear,
     .ant-calendar-picker-icon {
@@ -1145,7 +1147,7 @@
   .editable-cell-value-wrap {
     // height: 13.8rem;
     min-height: 4.7616rem;
-    padding: 0.744rem 1.7856rem;
+    padding: 0.744rem 12px;
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1157,8 +1159,8 @@
 
   .editable-row:hover .editable-cell-value-wrap {
     border: 0.1488rem solid #d9d9d9;
-    border-radius: 0.5952rem;
-    padding: 0.5952rem 1.6368rem;
+    border-radius: 4px;
+    padding: 4px 1.6368rem;
   }
 }
 
@@ -1177,35 +1179,35 @@
 
   & .top-console {
     height: 9.5232rem;
-    margin: 3.5712rem 3.5712rem 2.6784rem 3.5712rem;
+    margin: 24px 24px 2.6784rem 24px;
     background-color: white;
-    box-shadow: 0 0.1488rem 0.5952rem 0 rgba(20, 38, 98, 0.04);
-    border-radius: 1.1904rem;
+    box-shadow: 0 0.1488rem 4px 0 rgba(20, 38, 98, 0.04);
+    border-radius: 8px;
     display: flex;
     flex-direction: row;
     align-items: center;
-    padding: 0 3.5712rem;
+    padding: 0 24px;
   }
 
   & .projects-box {
     & .project-item {
       height: 53.2944rem;
-      margin: 3.5712rem 3.5712rem 2.6784rem 3.5712rem;
+      margin: 24px 24px 2.6784rem 24px;
       background-color: white;
-      box-shadow: 0 0.1488rem 0.5952rem 0 rgba(20, 38, 98, 0.04);
-      border-radius: 1.1904rem;
-      padding: 0 3.5712rem;
+      box-shadow: 0 0.1488rem 4px 0 rgba(20, 38, 98, 0.04);
+      border-radius: 8px;
+      padding: 0 24px;
 
       & .item-header {
         height: 10.7136rem;
-        border-radius: 1.1904rem 1.1904rem 0 0;
+        border-radius: 8px 8px 0 0;
         display: flex;
         flex-direction: row;
         align-items: center;
 
         & .header-icon {
-          height: 3.5712rem;
-          width: 3.5712rem;
+          height: 24px;
+          width: 24px;
         }
 
         & .header-txt {
@@ -1213,7 +1215,7 @@
           font-family: PingFangSC-Medium;
           font-weight: 600;
           color: #303133;
-          margin-left: 2.3808rem;
+          margin-left: 16px;
         }
       }
 
@@ -1221,7 +1223,7 @@
         height: 31.7184rem;
         border-top: 0.29rem dashed #ebeef5;
         border-bottom: 0.29rem dashed #ebeef5;
-        padding: 3.5712rem 0;
+        padding: 24px 0;
         overflow: hidden;
         overflow-x: auto;
 
@@ -1245,11 +1247,14 @@
             border-color: #3361ff;
           }
 
-          .ant-steps-item-finish .ant-steps-item-icon>.ant-steps-icon {
+          .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon {
             color: #3361ff;
           }
 
-          .ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title::after {
+          .ant-steps-item-finish
+            > .ant-steps-item-container
+            > .ant-steps-item-content
+            > .ant-steps-item-title::after {
             background-color: #3361ff;
           }
 
@@ -1266,7 +1271,7 @@
         & .content-processes {
           display: flex;
           flex-direction: row;
-          padding-top: 1.1904rem;
+          padding-top: 8px;
 
           & .process-box-wrapper {
             margin-top: 1.3392rem;
@@ -1280,21 +1285,21 @@
               .font-s15();
               color: #fafafb;
               left: 0.6696rem;
-              top: -1.1904rem;
+              top: -8px;
               transition: all 0.5s;
             }
 
             & .process-box {
               background: #fafafb;
               border: 0.1488rem solid #ebeef5;
-              box-shadow: 0.1488rem 0.1488rem 1.1904rem 0.4464rem rgba(64, 84, 128, 0.08);
-              -o-box-shadow: 0.1488rem 0.1488rem 1.1904rem 0.4464rem rgba(64, 84, 128, 0.08);
-              -moz-box-shadow: 0.1488rem 0.1488rem 1.1904rem 0.4464rem rgba(64, 84, 128, 0.08);
-              -webkit-border-shadow: 0.1488rem 0.1488rem 1.1904rem 0.4464rem rgba(64, 84, 128, 0.08);
-              border-radius: 0.5952rem;
+              box-shadow: 0.1488rem 0.1488rem 8px 0.4464rem rgba(64, 84, 128, 0.08);
+              -o-box-shadow: 0.1488rem 0.1488rem 8px 0.4464rem rgba(64, 84, 128, 0.08);
+              -moz-box-shadow: 0.1488rem 0.1488rem 8px 0.4464rem rgba(64, 84, 128, 0.08);
+              -webkit-border-shadow: 0.1488rem 0.1488rem 8px 0.4464rem rgba(64, 84, 128, 0.08);
+              border-radius: 4px;
               width: 35.712rem;
               height: 16.8144rem;
-              padding: 2.3808rem;
+              padding: 16px;
               // transition: background-color 0.5s;
 
               &:hover {
@@ -1314,7 +1319,7 @@
                 font-family: PingFangSC-Regular;
                 font-weight: 400;
                 color: #333333;
-                margin-bottom: 2.3808rem;
+                margin-bottom: 16px;
                 overflow: hidden;
                 cursor: pointer;
 
@@ -1349,7 +1354,7 @@
 
       & .item-footer {
         height: 10.5648rem;
-        border-radius: 0 0 1.1904rem 1.1904rem;
+        border-radius: 0 0 8px 8px;
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -1359,23 +1364,23 @@
           font-family: PingFangSC-Regular;
           font-weight: 600;
           color: #303133;
-          margin-right: 3.5712rem;
+          margin-right: 24px;
         }
 
         & .daily-task {
           display: flex;
           flex-direction: row;
           align-items: center;
-          height: 3.5712rem;
-          padding-right: 1.7856rem;
-          border-radius: 3.5712rem;
+          height: 24px;
+          padding-right: 12px;
+          border-radius: 24px;
           border: 0.1488rem solid #ebeef5;
-          margin-right: 3.5712rem;
+          margin-right: 24px;
           cursor: pointer;
 
           & .footer-icon {
-            height: 3.5712rem;
-            width: 3.5712rem;
+            height: 24px;
+            width: 24px;
             margin-left: -0.0744rem;
           }
 
@@ -1384,7 +1389,7 @@
             font-family: PingFangSC-Medium;
             font-weight: 500;
             color: #303133;
-            margin-left: 1.1904rem;
+            margin-left: 8px;
           }
 
           &:nth-last-child(1) {
@@ -1418,23 +1423,23 @@
 
   .addexpense-recepit-list {
     margin-top: 0.2976rem;
-    margin-bottom: 3.5712rem;
-    padding-bottom: 0.5952rem;
+    margin-bottom: 24px;
+    padding-bottom: 4px;
     overflow: hidden;
 
-    &>.recepit-item {
+    & > .recepit-item {
       position: relative;
-      padding: 2.3808rem;
+      padding: 16px;
       border-left: 0.2976rem solid #3361ff;
       box-shadow: #ececec 0 0.4464rem 1.488rem;
-      margin: 0.5952rem 0.5952rem 2.3808rem 0;
+      margin: 4px 4px 16px 0;
       overflow: hidden;
 
       &:last-child {
         margin-bottom: 0;
       }
 
-      &>.recepit-hover-icon {
+      & > .recepit-hover-icon {
         position: absolute;
         top: 0;
         right: 0;
@@ -1449,17 +1454,17 @@
         padding: 0 1em;
       }
 
-      &>.recepit-info {
+      & > .recepit-info {
         display: flex;
         flex-direction: row;
         justify-content: space-between;
 
-        &>.item-top-left {
+        & > .item-top-left {
           display: flex;
           flex-direction: row;
           align-items: center;
 
-          &>.top-left-icon {
+          & > .top-left-icon {
             height: 5.952rem;
             width: 5.952rem;
             background-color: #3361ff;
@@ -1468,25 +1473,25 @@
             color: #fff;
             margin-right: 1.488rem;
             font-size: 3.2736rem;
-            border-radius: 0.5952rem;
+            border-radius: 4px;
           }
 
-          &>.top-left-txt {
+          & > .top-left-txt {
             .font-s14();
 
-            &>.recepit-name {
+            & > .recepit-name {
               font-weight: bold;
               color: #142234;
               cursor: pointer;
             }
 
-            &>.recepit-time {
+            & > .recepit-time {
               color: rgba(20, 34, 52, 0.5);
             }
           }
         }
 
-        &>.item-top-right {
+        & > .item-top-right {
           display: flex;
           flex-direction: row;
           font-size: 12px;
@@ -1542,10 +1547,10 @@
         }
       }
 
-      &>.recepit-amount-sum,
-      &>.recepit-tax-rate,
-      &>.recepit-deductible-tax,
-      &>.recepit-bottom {
+      & > .recepit-amount-sum,
+      & > .recepit-tax-rate,
+      & > .recepit-deductible-tax,
+      & > .recepit-bottom {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -1553,17 +1558,17 @@
         margin-left: 7.44rem;
       }
 
-      &>.recepit-amount-sum {
+      & > .recepit-amount-sum {
         padding-top: 1.488rem;
         padding-bottom: 1.4888rem;
       }
 
-      &>.recepit-tax-rate {
+      & > .recepit-tax-rate {
         padding-top: 1.488rem;
-        margin-bottom: 0.5952rem;
+        margin-bottom: 4px;
       }
 
-      &>.recepit-deductible-tax {
+      & > .recepit-deductible-tax {
         border-bottom: 0.1488rem #c4c4c4 dashed;
         padding-bottom: 1.4888rem;
         margin-bottom: 1.4888rem;
@@ -1576,7 +1581,7 @@
 .select-receipt-content {
   background-color: #f7f8fa;
 
-  &>.top-console {
+  & > .top-console {
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1588,7 +1593,7 @@
     background-color: #fff;
   }
 
-  &>.receipt-list {
+  & > .receipt-list {
     width: 100%;
     height: 55vh;
     overflow: hidden;
@@ -1606,7 +1611,7 @@
       border-radius: 1.3392rem;
     }
 
-    &>.receipt-item {
+    & > .receipt-item {
       padding: 14px;
       background-color: #fff;
       margin-bottom: 16px;
@@ -1615,7 +1620,7 @@
         margin-bottom: 0;
       }
 
-      &>.item-title {
+      & > .item-title {
         font-weight: bold;
         padding-left: 1.488rem;
         margin-bottom: 24px;
@@ -1627,7 +1632,7 @@
         box-shadow: 0 1px 0 0 rgb(29 43 61 / 6%);
       }
 
-      &>.item-info {
+      & > .item-info {
         padding: 16px 1.488rem;
 
         .info-title {
@@ -1661,7 +1666,7 @@
               border-radius: 4px;
               background: #f2faec;
               color: #52c41a;
-              margin-left: 0.5952rem;
+              margin-left: 4px;
             }
           }
         }
@@ -1728,9 +1733,9 @@
   max-width: 100%;
   color: #595959;
   background-color: #fafafa;
-  border-radius: 0.5952rem;
-  padding: 2.3808rem 3.5712rem;
-  margin: 3.5712rem;
+  border-radius: 4px;
+  padding: 16px 24px;
+  margin: 24px;
   line-height: 4.464rem;
 
   & p {
@@ -1768,7 +1773,7 @@
     border-bottom: 0.1488rem solid #e5e5e5;
     color: #54a9df;
     height: 5.952rem;
-    margin-bottom: 2.3808rem;
+    margin-bottom: 16px;
   }
 
   .yfkje-input-number,
@@ -1778,22 +1783,22 @@
 
   //付款流程发起弹窗 - 费用明细
   .expense-detail-box {
-    margin: 2.976rem 3.5712rem;
+    margin: 2.976rem 24px;
     margin-top: 0;
 
-    &>.expense-title {
+    & > .expense-title {
       .font-s18();
       border-bottom: 0.1488rem solid #e5e5e5;
       color: #54a9df;
       height: 5.952rem;
     }
 
-    &>.expense-add-btn {
-      margin: 2.3808rem 0;
+    & > .expense-add-btn {
+      margin: 16px 0;
       transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
     }
 
-    &>.expense-add-btn-help {
+    & > .expense-add-btn-help {
       color: #f5222d;
       font-size: 14px;
       margin-left: 8px;
@@ -1802,20 +1807,20 @@
       font-feature-settings: 'tnum';
     }
 
-    &>.expense-detail-spin {
+    & > .expense-detail-spin {
       max-height: none;
 
       .content-box {
         background-color: rgba(246, 245, 245, 0.5);
         padding-bottom: 1.1904r;
-        border-radius: 1.1904rem;
-        margin-bottom: 1.1904rem;
+        border-radius: 8px;
+        margin-bottom: 8px;
 
-        &>.expense-info {
+        & > .expense-info {
           display: flex;
           flex-direction: row;
           align-items: center;
-          padding: 2.0832rem;
+          padding: 14px;
           color: black;
 
           .info-icon-num {
@@ -1827,8 +1832,8 @@
             color: #fff;
             .font-s19();
             font-weight: bold;
-            border-radius: 1.1904rem;
-            margin-right: 1.1904rem;
+            border-radius: 8px;
+            margin-right: 8px;
           }
 
           .info-type {
@@ -1853,7 +1858,7 @@
           }
         }
 
-        &>.expense-content {
+        & > .expense-content {
           display: flex;
           flex-direction: row;
           justify-content: space-between;
@@ -1862,10 +1867,10 @@
           .receipt-box {
             width: 49%;
             max-height: 28.7184rem;
-            padding: 2.0832rem;
+            padding: 14px;
             overflow: hidden;
-            border-radius: 1.1904rem;
-            padding-top: 1.1904rem;
+            border-radius: 8px;
+            padding-top: 8px;
 
             .receipt-title {
               .font-s14();
@@ -1875,11 +1880,11 @@
               flex-direction: row;
               align-items: center;
 
-              &>.divider {
+              & > .divider {
                 width: 0.4464rem;
-                height: 2.0832rem;
+                height: 14px;
                 border-radius: 0.4464rem;
-                margin-right: 1.1904rem;
+                margin-right: 8px;
                 background-color: #3361ff;
               }
             }
@@ -1910,7 +1915,7 @@
                 height: 5.5056rem;
                 margin-bottom: 2%;
                 background-color: #ffffff;
-                border-radius: 1.1904rem;
+                border-radius: 8px;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -1944,14 +1949,14 @@
           }
         }
 
-        &>.attachment-box {
+        & > .attachment-box {
           height: 50px;
           display: flex;
           flex-direction: row;
           justify-content: space-between;
           align-items: center;
           width: 100%;
-          margin-top: 2.3808rem;
+          margin-top: 16px;
 
           .attachment-item {
             width: 49%;
@@ -1959,13 +1964,13 @@
             flex-direction: row;
             align-items: center;
             padding: 0 1.488rem;
-            border-radius: 1.1904rem;
+            border-radius: 8px;
             height: 60px;
             color: black;
 
             .file-item {
               margin-left: 0.2976rem;
-              border-radius: 1.1904rem;
+              border-radius: 8px;
               width: 88%;
               background-color: #ffffff;
               height: 5.3568rem;
@@ -1992,11 +1997,11 @@
               }
             }
 
-            &>.ht {
+            & > .ht {
               width: 79%;
             }
 
-            &>.ys {
+            & > .ys {
               width: 73%;
             }
           }
@@ -2009,7 +2014,7 @@
 //信息修改弹窗
 .editMessage-modify {
   & .diy-style-spin {
-    padding-top: 2.3808rem;
+    padding-top: 16px;
     max-height: 89.28rem;
     overflow: hidden;
     overflow-y: auto;
@@ -2026,8 +2031,8 @@
     }
   }
 
-  &>.ant-modal>.ant-modal-content {
-    border-radius: 1.1904rem;
+  & > .ant-modal > .ant-modal-content {
+    border-radius: 8px;
 
     & .ant-modal-close-x {
       color: white;
@@ -2036,8 +2041,8 @@
       line-height: 42px;
     }
 
-    &>.ant-modal-body {
-      &>.body-title-box {
+    & > .ant-modal-body {
+      & > .body-title-box {
         height: 42px;
         width: 100%;
         display: flex;
@@ -2048,7 +2053,7 @@
         border-radius: 8px 8px 0 0;
         .font-s15();
 
-        &>img {
+        & > img {
           height: 14px;
           margin-left: auto;
           margin-right: 25px;
@@ -2140,7 +2145,6 @@
 }
 
 .newproject-treeselect {
-
   // :global {
   .ant-select-tree {
     .font-s14() !important;
@@ -2180,7 +2184,7 @@
     }
   }
 
-  .ant-spin-nested-loading>div>.ant-spin {
+  .ant-spin-nested-loading > div > .ant-spin {
     position: fixed !important;
     top: 10% !important;
   }
@@ -2248,13 +2252,13 @@
     user-select: none;
   }
 
-  .react-grid-item>.react-resizable-handle {
+  .react-grid-item > .react-resizable-handle {
     position: absolute;
     width: 20px;
     height: 20px;
   }
 
-  .react-grid-item>.react-resizable-handle::after {
+  .react-grid-item > .react-resizable-handle::after {
     content: '';
     position: absolute;
     right: 3px;
@@ -2265,67 +2269,67 @@
     border-bottom: 2px solid rgba(0, 0, 0, 0.4);
   }
 
-  .react-resizable-hide>.react-resizable-handle {
+  .react-resizable-hide > .react-resizable-handle {
     display: none;
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-sw {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-sw {
     bottom: 0;
     left: 0;
     cursor: sw-resize;
     transform: rotate(90deg);
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-se {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-se {
     bottom: 0;
     right: 0;
     cursor: se-resize;
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-nw {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-nw {
     top: 0;
     left: 0;
     cursor: nw-resize;
     transform: rotate(180deg);
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-ne {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-ne {
     top: 0;
     right: 0;
     cursor: ne-resize;
     transform: rotate(270deg);
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-w,
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-e {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-w,
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-e {
     top: 50%;
     margin-top: -10px;
     cursor: ew-resize;
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-w {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-w {
     left: 0;
     transform: rotate(135deg);
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-e {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-e {
     right: 0;
     transform: rotate(315deg);
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-n,
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-s {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-n,
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-s {
     left: 50%;
     margin-left: -10px;
     cursor: ns-resize;
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-n {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-n {
     top: 0;
     transform: rotate(225deg);
   }
 
-  .react-grid-item>.react-resizable-handle.react-resizable-handle-s {
+  .react-grid-item > .react-resizable-handle.react-resizable-handle-s {
     bottom: 0;
     transform: rotate(45deg);
   }
@@ -2721,18 +2725,17 @@
 }
 
 .popover-filelist {
-
   // :global {
   .ant-popover-content {
     .ant-popover-inner {
       .ant-popover-inner-content {
-        padding: 1.1904rem 2.3808rem;
+        padding: 8px 16px;
         max-height: 240px;
         overflow: hidden;
         overflow-y: auto;
 
         & .file-item {
-          margin-bottom: 1.1904rem;
+          margin-bottom: 8px;
 
           &:nth-last-child(1) {
             margin-bottom: 0;
@@ -2748,12 +2751,12 @@
 .lifecyclemanage-box-wrapper {
   height: calc(100vh - 34rem);
   margin: 0 3.571rem;
-  border-radius: 1.1904rem;
-  padding: 1.7856rem 1.7856rem 1.7856rem 0;
+  border-radius: 8px;
+  padding: 12px 12px 12px 0;
   background-color: #fff;
   overflow: hidden;
 
-  &>.lifecyclemanage-box {
+  & > .lifecyclemanage-box {
     height: 100%;
     overflow: hidden;
     overflow-y: auto;
@@ -2993,8 +2996,8 @@
 
             .lifecycle-text-overflow {
               overflow: hidden;
-              height: 2.3808rem;
-              line-height: 2.3808rem;
+              height: 16px;
+              line-height: 16px;
               text-overflow: ellipsis;
               white-space: nowrap;
             }
@@ -3102,7 +3105,6 @@
 }
 
 .workBench {
-
   //height: 100%;
   .workBench-div {
     margin: 0 24px 24px 24px;
@@ -3468,7 +3470,7 @@
           }
         }
 
-        border-radius: 1.1904rem 1.1904rem 0 0;
+        border-radius: 8px 8px 0 0;
         background: rgba(20, 38, 98, 0.04);
         //width: 98%;
         display: block;
@@ -3534,7 +3536,7 @@
             font-family: PingFangSC-Regular;
             font-weight: 400;
             color: #909399;
-            margin: 5px 0 0 2.0832rem;
+            margin: 5px 0 0 14px;
             padding-left: 0;
           }
 
@@ -3569,7 +3571,7 @@
         //   font-weight: 400;
         //   color: #909399;
         //   // line-height: 20px;
-        //   // margin: 5px 0 0 2.0832rem;
+        //   // margin: 5px 0 0 14px;
         //   padding-left: 3.2736rem;
         // }
       }
@@ -3580,7 +3582,7 @@
     height: 155px;
     overflow: hidden;
     overflow-y: auto;
-    //padding-right: 1.7856rem;
+    //padding-right: 12px;
 
     &::-webkit-scrollbar {
       width: 1.488rem;
@@ -3673,7 +3675,6 @@
 
 //首页日历颜色样式
 .calendar-style {
-
   .ant-fullcalendar-selected-day .ant-fullcalendar-value,
   .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value {
     background-color: #3361ff;
@@ -3703,15 +3704,14 @@
 }
 
 .tableStyle {
-
-  .ant-table-thead>tr>th,
-  .ant-table-tbody>tr>td {
+  .ant-table-thead > tr > th,
+  .ant-table-tbody > tr > td {
     padding: 8px 0px;
   }
 }
 
 //spin图标垂直居中
-.ant-spin-nested-loading.diy-style-spin>div>.ant-spin {
+.ant-spin-nested-loading.diy-style-spin > div > .ant-spin {
   max-height: none;
 }
 
@@ -3729,7 +3729,7 @@
 }
 
 //首页加载
-.ant-spin-nested-loading.person-workbench-spin-style>div>.ant-spin {
+.ant-spin-nested-loading.person-workbench-spin-style > div > .ant-spin {
   max-height: calc(100vh - 6.5rem);
 }
 
@@ -3741,14 +3741,14 @@
 //首页滚动条
 .m-layout-content {
   &::-webkit-scrollbar {
-    width: 2.3808rem;
+    width: 16px;
     background-color: #fafafa;
-    border-radius: 1.1904rem;
+    border-radius: 8px;
   }
 
   &::-webkit-scrollbar-thumb {
     background-color: #c1c1c1;
-    border-radius: 1.1904rem;
+    border-radius: 8px;
   }
 }
 
@@ -3756,7 +3756,7 @@
   .ant-popover-content {
     .ant-popover-inner {
       .ant-popover-inner-content {
-        padding: 1.1904rem 2.3808rem 0 2.3808rem;
+        padding: 8px 16px 0 16px;
         max-height: 14.6rem;
         overflow: hidden;
         overflow-y: auto;
@@ -3764,12 +3764,12 @@
         &::-webkit-scrollbar {
           width: 0.8928rem;
           background-color: #fafafa;
-          border-radius: 1.1904rem;
+          border-radius: 8px;
         }
 
         &::-webkit-scrollbar-thumb {
           background-color: #c1c1c1;
-          border-radius: 1.1904rem;
+          border-radius: 8px;
         }
 
         & .tag-more {
@@ -3779,16 +3779,16 @@
           // align-items: center;
           // justify-content: space-between;
 
-          &>.tag-item {
+          & > .tag-item {
             color: #3361ff;
             .font-s12();
             border: 0.1488rem solid #3361ff8f;
-            border-radius: 0.5952rem;
+            border-radius: 4px;
             background-color: #3363ff14;
             padding: 0 1.488rem;
             height: 3.2736rem;
             line-height: 3.2736rem;
-            margin-bottom: 1.1904rem;
+            margin-bottom: 8px;
             width: fit-content;
             max-width: 21.1296rem;
             text-overflow: ellipsis;
@@ -3801,9 +3801,9 @@
   }
 }
 
-li.ant-select-tree-treenode-disabled>span:not(.ant-select-tree-switcher),
-li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper,
-li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span {
+li.ant-select-tree-treenode-disabled > span:not(.ant-select-tree-switcher),
+li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper,
+li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper span {
   color: rgba(0, 0, 0, 0.65) !important;
 }
 
@@ -3845,15 +3845,18 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   background-color: rgb(51, 97, 255) !important;
 }
 
-.ant-steps-item-finish .ant-steps-item-icon>.ant-steps-icon .ant-steps-icon-dot {
+.ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot {
   background-color: rgb(51, 97, 255) !important;
 }
 
-.ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-tail::after {
+.ant-steps-item-finish > .ant-steps-item-container > .ant-steps-item-tail::after {
   background-color: rgb(51, 97, 255) !important;
 }
 
-.ant-steps-item-finish>.ant-steps-item-container>.ant-steps-item-content>.ant-steps-item-title {
+.ant-steps-item-finish
+  > .ant-steps-item-container
+  > .ant-steps-item-content
+  > .ant-steps-item-title {
   color: rgb(51, 97, 255) !important;
 }
 
@@ -3874,25 +3877,25 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   display: flex;
   flex-direction: column;
 
-  &>.top-console,
-  &>.info-table {
+  & > .top-console,
+  & > .info-table {
     padding: 16px 24px;
     background-color: #fff;
     box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
-    border-radius: 1.1904rem;
+    border-radius: 8;
     overflow: hidden;
   }
 
-  &>.top-console {
+  & > .top-console {
     margin: 24px 24px 0 24px;
     flex-shrink: 0;
 
-    &>.item-box {
+    & > .item-box {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 16px;
-      font-size: 2.0832rem;
+      font-size: 14px;
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #222222;
@@ -3901,9 +3904,9 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         margin-bottom: 0;
       }
 
-      &>.btn-search {
+      & > .btn-search {
         padding: 9px 12px 10px 12px;
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: unset;
         height: unset;
         background-color: #3361ff;
@@ -3914,9 +3917,9 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.btn-reset {
+      & > .btn-reset {
         padding: 9px 12px 10px 12px;
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: unset;
         height: unset;
         margin-left: 8px;
@@ -3927,7 +3930,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.console-item {
+      & > .console-item {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -3945,55 +3948,55 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           // width: 75%;
           flex-grow: 1;
 
-          //自适应适配
-          .ant-select-selection.ant-select-selection--single,
-          .ant-select-selection.ant-select-selection--multiple {
-            min-height: unset;
-            height: unset;
+          // //自适应适配
+          // .ant-select-selection.ant-select-selection--single,
+          // .ant-select-selection.ant-select-selection--multiple {
+          //   min-height: unset;
+          //   height: unset;
 
-            .ant-select-selection__rendered {
-              line-height: unset;
-              padding: 5px 0;
-            }
+          //   .ant-select-selection__rendered {
+          //     line-height: unset;
+          //     padding: 5px 0;
+          //   }
 
-            .ant-select-selection__placeholder {
-              top: 5px;
-              line-height: unset;
-              height: unset;
-              margin-top: 0;
-            }
+          //   .ant-select-selection__placeholder {
+          //     top: 5px;
+          //     line-height: unset;
+          //     height: unset;
+          //     margin-top: 0;
+          //   }
 
-            .ant-select-search--inline,
-            ul {
-              margin-top: -5px;
-              margin-bottom: -5px;
-            }
+          //   .ant-select-search--inline,
+          //   ul {
+          //     margin-top: -5px;
+          //     margin-bottom: -5px;
+          //   }
 
-            .ant-select-selection__choice {
-              line-height: unset;
-              height: unset;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-            }
-          }
+          //   .ant-select-selection__choice {
+          //     line-height: unset;
+          //     height: unset;
+          //     display: flex;
+          //     flex-direction: row;
+          //     align-items: center;
+          //   }
+          // }
 
-          .ant-select-selection.ant-select-selection--multiple {
-            .ant-select-selection__rendered {
-              padding: 7.5px 0;
-            }
+          // .ant-select-selection.ant-select-selection--multiple {
+          //   .ant-select-selection__rendered {
+          //     padding: 7.5px 0;
+          //   }
 
-            .ant-select-search--inline {
-              margin-top: 0;
-              line-height: unset;
-              height: unset;
-            }
-          }
+          //   .ant-select-search--inline {
+          //     margin-top: 0;
+          //     line-height: unset;
+          //     height: unset;
+          //   }
+          // }
         }
       }
 
-      &>.filter-fold,
-      &>.filter-unfold {
+      & > .filter-fold,
+      & > .filter-unfold {
         color: #3361ff;
         cursor: pointer;
         display: flex;
@@ -4002,7 +4005,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
         i {
           margin-left: 8px;
-          font-size: 1rem;
+          font-size: 1em;
         }
 
         &:hover {
@@ -4010,12 +4013,12 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.console-last-item {
+      & > .console-last-item {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        font-size: 2.0832rem;
+        font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #222222;
@@ -4040,36 +4043,36 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             flex-shrink: 0;
             margin-right: 8px;
 
-            //自适应适配
-            .ant-select-selection.ant-select-selection--single,
-            .ant-select-selection.ant-select-selection--multiple {
-              min-height: unset;
-              height: unset;
+            // //自适应适配
+            // .ant-select-selection.ant-select-selection--single,
+            // .ant-select-selection.ant-select-selection--multiple {
+            //   min-height: unset;
+            //   height: unset;
 
-              .ant-select-selection__rendered {
-                line-height: unset;
-                padding: 5px 0;
-              }
+            //   .ant-select-selection__rendered {
+            //     line-height: unset;
+            //     padding: 5px 0;
+            //   }
 
-              .ant-select-selection__placeholder {
-                top: 5px;
-                line-height: unset;
-                height: unset;
-                margin-top: 0;
-              }
+            //   .ant-select-selection__placeholder {
+            //     top: 5px;
+            //     line-height: unset;
+            //     height: unset;
+            //     margin-top: 0;
+            //   }
 
-              .ant-select-search--inline,
-              ul {
-                margin: -5px 0;
-              }
-            }
+            //   .ant-select-search--inline,
+            //   ul {
+            //     margin: -5px 0;
+            //   }
+            // }
           }
 
-          .ant-input {
-            line-height: unset;
-            height: unset;
-            padding: 7px 11px;
-          }
+          // .ant-input {
+          //   line-height: unset;
+          //   height: unset;
+          //   padding: 7px 11px;
+          // }
 
           .item-input {
             // flex: auto;
@@ -4103,7 +4106,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .input-min {
               border-right: 0.1488rem solid #fff;
-              border-radius: 0.5952rem 0 0 0.5952rem;
+              border-radius: 4px 0 0 4px;
 
               &:hover {
                 border-right: 0.1488rem solid #3361ff;
@@ -4112,7 +4115,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .input-max {
               border-left: 0.1488rem solid #fff;
-              border-radius: 0 0.5952rem 0.5952rem 0;
+              border-radius: 0 4px 4px 0;
 
               &:hover {
                 border-left: 0.1488rem solid #3361ff;
@@ -4124,19 +4127,19 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
     }
   }
 
-  &>.info-table {
+  & > .info-table {
     margin: 16px 24px 24px 24px;
     // height: calc(100vh - 235px);
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 
-    &>.btn-add-prj-box {
-      margin-bottom: 2.3808rem;
+    & > .btn-add-prj-box {
+      margin-bottom: 16px;
 
       .btn-add-prj {
         padding: 9px 12px 10px 12px;
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: unset;
         height: unset;
         color: #fff !important;
@@ -4168,7 +4171,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       .ant-table {
         td {
           padding: 9px;
-          font-size: 2.0832rem;
+          font-size: 14px;
           font-family: Roboto-Regular, Roboto;
           font-weight: 400;
           color: #303133;
@@ -4176,7 +4179,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
         th {
           padding: 9px;
-          font-size: 2.0832rem;
+          font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: bold;
@@ -4184,7 +4187,6 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
 
         .ant-table-body {
-
           // min-height: 560px;
           table {
             border: 1px solid #e8e8e8;
@@ -4200,7 +4202,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           border-bottom: 0;
 
           .ant-empty-description {
-            font-size: 2.0832rem;
+            font-size: 14px;
           }
         }
 
@@ -4219,7 +4221,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
           .tag-item {
             color: #3361ff;
-            font-size: 1.7856rem;
+            font-size: 12px;
             border: 1px solid hsla(226, 100%, 60%, 0.561);
             border-radius: 4px;
             background-color: #3363ff14;
@@ -4239,7 +4241,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
 
       .ant-table-pagination {
-        font-size: 2.0832rem;
+        font-size: 14px;
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -4250,7 +4252,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         padding-left: 0;
 
         .ant-select {
-          font-size: 2.0832rem !important;
+          font-size: 14px !important;
         }
       }
 
@@ -4274,16 +4276,11 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 }
 
 //项目信息-单选下拉 - 自适应适配
-.item-selector-dropdown {
-  .ant-select-dropdown-menu-item {
-    font-size: 2rem !important;
-  }
-}
-
-//项目信息-多选下拉 - 自适应适配
-
-//项目信息-单选下拉 - 自适应适配
-
+// .item-selector-dropdown {
+//   .ant-select-dropdown-menu-item {
+//     font-size: 2rem !important;
+//   }
+// }
 //项目详情查看弹窗
 .info-detail-modal {
   & .diy-style-spin {
@@ -4303,7 +4300,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
     }
   }
 
-  &>.ant-modal>.ant-modal-content {
+  & > .ant-modal > .ant-modal-content {
     border-radius: 8px;
 
     & .ant-modal-close-x {
@@ -4313,8 +4310,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       line-height: 42px;
     }
 
-    &>.ant-modal-body {
-      &>.body-title-box {
+    & > .ant-modal-body {
+      & > .body-title-box {
         height: 42px;
         width: 100%;
         display: flex;
@@ -4323,9 +4320,9 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         color: white;
         padding: 0 24px;
         border-radius: 8px 8px 0 0;
-        font-size: 2.333rem;
+        font-size: 15px;
 
-        &>img {
+        & > img {
           height: 14px;
           margin-left: auto;
           margin-right: 25px;
@@ -4363,28 +4360,28 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
     display: flex;
     flex-direction: row;
     align-items: center;
-    font-size: 2.0832rem;
+    font-size: 14px;
     font-family: PingFangSC-Medium, PingFang SC;
     font-weight: bold;
     color: #333333;
     margin-bottom: 16px;
 
-    &>.blue-bar {
+    & > .blue-bar {
       background-color: #3361ff;
       height: 1em;
-      width: 0.5952rem;
+      width: 4px;
       margin-right: 8px;
     }
   }
 
   .basic-info-box,
   .other-info-box {
-    padding: calc(3.5712rem - 2.3808rem) 3.5712rem 3.5712rem 3.5712rem;
+    padding: calc(24px - 16px) 24px 24px 24px;
     height: 100%;
-    font-size: 2.0832rem;
+    font-size: 14px;
     overflow: hidden;
 
-    &>.info-row {
+    & > .info-row {
       margin: 0 12px 16px 12px;
       width: calc(100% - 24px);
       display: flex;
@@ -4392,8 +4389,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       align-items: start;
 
       // justify-content: space-between;
-      &>.info-item {
-        font-size: 2.0832rem;
+      & > .info-item {
+        font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #303133;
@@ -4409,7 +4406,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
         span {
           color: #909399;
-          margin-right: 1.1904rem;
+          margin-right: 8px;
         }
       }
     }
@@ -4418,7 +4415,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   .basic-info-box {
     .info-table {
       .ant-table {
-        font-size: 2.0832rem;
+        font-size: 14px;
       }
     }
 
@@ -4437,9 +4434,9 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
         .tag-item {
           color: #3361ff;
-          font-size: 1.7856rem;
+          font-size: 12px;
           border: 1px solid #3361ff8f;
-          border-radius: 0.5952rem;
+          border-radius: 4px;
           background-color: #3363ff14;
           padding: 3px 6px;
           margin-right: 7px;
@@ -4457,8 +4454,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   }
 
   .other-info-box {
-    &>.info-row {
-      &>.info-item {
+    & > .info-row {
+      & > .info-item {
         .info-item-title {
           color: #909399;
           margin-bottom: 4px;
@@ -4500,7 +4497,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         .file-list {
           overflow: hidden;
           overflow-y: auto;
-          max-height: 13.6896rem;
+          max-height: 92px;
 
           &::-webkit-scrollbar {
             width: 10px;
@@ -4561,7 +4558,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       margin-bottom: 16px;
 
       .ant-table {
-        font-size: 2.0832rem;
+        font-size: 14px;
       }
     }
   }
@@ -4574,28 +4571,28 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
   display: flex;
   flex-direction: column;
 
-  &>.top-console,
-  &>.info-table {
+  & > .top-console,
+  & > .info-table {
     padding: 16px 24px;
     background-color: #fff;
     box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
-    border-radius: 1.1904rem;
+    border-radius: 8px;
     overflow: hidden;
   }
 
-  &>.info-table {
+  & > .info-table {
     margin: 16px 24px 24px 24px;
     // height: calc(100vh - 235px);
     flex-grow: 1;
     display: flex;
     flex-direction: column;
 
-    &>.btn-add-prj-box {
-      margin-bottom: 2.3808rem;
+    & > .btn-add-prj-box {
+      margin-bottom: 16px;
 
       .btn-add-prj {
         padding: 9px 12px 10px 12px;
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: unset;
         height: unset;
         color: #fff !important;
@@ -4614,14 +4611,14 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       padding-right: 4px;
 
       .opr-btn {
-        color: #3361FF;
+        color: #3361ff;
         cursor: pointer;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
       }
 
-      .opr-btn:hover{
+      .opr-btn:hover {
         opacity: 0.7;
       }
 
@@ -4639,7 +4636,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       .ant-table {
         td {
           padding: 9px;
-          font-size: 2.0832rem;
+          font-size: 14px;
           font-family: Roboto-Regular, Roboto;
           font-weight: 400;
           color: #303133;
@@ -4647,7 +4644,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
         th {
           padding: 9px;
-          font-size: 2.0832rem;
+          font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: bold;
@@ -4655,7 +4652,6 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
 
         .ant-table-body {
-
           // min-height: 560px;
           table {
             border: 1px solid #e8e8e8;
@@ -4671,7 +4667,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           border-bottom: 0;
 
           .ant-empty-description {
-            font-size: 2.0832rem;
+            font-size: 14px;
           }
         }
 
@@ -4690,7 +4686,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
           .tag-item {
             color: #3361ff;
-            font-size: 1.7856rem;
+            font-size: 12px;
             border: 1px solid hsla(226, 100%, 60%, 0.561);
             border-radius: 4px;
             background-color: #3363ff14;
@@ -4710,7 +4706,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
 
       .ant-table-pagination {
-        font-size: 2.0832rem;
+        font-size: 14px;
         width: 100%;
         display: flex;
         flex-direction: row;
@@ -4721,7 +4717,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         padding-left: 0;
 
         .ant-select {
-          font-size: 2.0832rem !important;
+          font-size: 14px !important;
         }
       }
 
@@ -4743,16 +4739,16 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
     }
   }
 
-  &>.top-console {
+  & > .top-console {
     margin: 24px 24px 0 24px;
     flex-shrink: 0;
 
-    &>.item-box {
+    & > .item-box {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 16px;
-      font-size: 2.0832rem;
+      font-size: 14px;
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #222222;
@@ -4761,9 +4757,9 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         margin-bottom: 0;
       }
 
-      &>.btn-search {
+      & > .btn-search {
         padding: 9px 12px 10px 12px;
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: unset;
         height: unset;
         background-color: #3361ff;
@@ -4774,9 +4770,9 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.btn-reset {
+      & > .btn-reset {
         padding: 9px 12px 10px 12px;
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: unset;
         height: unset;
         margin-left: 8px;
@@ -4787,7 +4783,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.console-item {
+      & > .console-item {
         display: flex;
         flex-direction: row;
         align-items: center;
@@ -4852,8 +4848,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.filter-fold,
-      &>.filter-unfold {
+      & > .filter-fold,
+      & > .filter-unfold {
         color: #3361ff;
         cursor: pointer;
         display: flex;
@@ -4870,12 +4866,12 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.console-last-item {
+      & > .console-last-item {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        font-size: 2.0832rem;
+        font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #222222;
@@ -4963,7 +4959,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .input-min {
               border-right: 0.1488rem solid #fff;
-              border-radius: 0.5952rem 0 0 0.5952rem;
+              border-radius: 4px 0 0 4px;
 
               &:hover {
                 border-right: 0.1488rem solid #3361ff;
@@ -4972,7 +4968,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .input-max {
               border-left: 0.1488rem solid #fff;
-              border-radius: 0 0.5952rem 0.5952rem 0;
+              border-radius: 0 4px 4px 0;
 
               &:hover {
                 border-left: 0.1488rem solid #3361ff;
@@ -4995,14 +4991,14 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       padding-right: 4px;
 
       .opr-btn {
-        color: #3361FF;
+        color: #3361ff;
         cursor: pointer;
         white-space: nowrap;
         text-overflow: ellipsis;
         overflow: hidden;
       }
 
-      .opr-btn:hover{
+      .opr-btn:hover {
         opacity: 0.7;
       }
 
@@ -5020,7 +5016,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       .ant-table {
         td {
           padding: 9px;
-          font-size: 2.0832rem;
+          font-size: 14px;
           font-family: Roboto-Regular, Roboto;
           font-weight: 400;
           color: #303133;
@@ -5028,7 +5024,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
         th {
           padding: 9px;
-          font-size: 2.0832rem;
+          font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: bold;
@@ -5036,7 +5032,6 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
 
         .ant-table-body {
-
           // min-height: 560px;
           table {
             border: 1px solid #e8e8e8;
@@ -5052,7 +5047,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           border-bottom: 0;
 
           .ant-empty-description {
-            font-size: 2.0832rem;
+            font-size: 14px;
           }
         }
 
@@ -5063,7 +5058,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
 
       .ant-table-pagination {
-        font-size: 2.0832rem;
+        font-size: 14px;
         // width: 100%;
         display: flex;
         flex-direction: row;
@@ -5074,7 +5069,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         padding-left: 0;
 
         .ant-select {
-          font-size: 2.0832rem !important;
+          font-size: 14px !important;
         }
       }
 
@@ -5095,13 +5090,12 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
     }
 
-
-    &>.item-box {
+    & > .item-box {
       display: flex;
       flex-direction: row;
       align-items: center;
       margin-bottom: 16px;
-      font-size: 2.0832rem;
+      font-size: 14px;
       font-family: PingFangSC-Regular, PingFang SC;
       font-weight: 400;
       color: #222222;
@@ -5111,7 +5105,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
 
       .btn-search {
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: 32px;
         height: 32px;
         background-color: #3361ff;
@@ -5123,7 +5117,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
 
       .btn-reset {
-        font-size: 2.0832rem;
+        font-size: 14px;
         line-height: 32px;
         height: 32px;
         margin-left: 8px;
@@ -5197,12 +5191,12 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         }
       }
 
-      &>.console-last-item {
+      & > .console-last-item {
         display: flex;
         flex-direction: row;
         align-items: center;
         justify-content: center;
-        font-size: 2.0832rem;
+        font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #222222;
@@ -5290,7 +5284,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .input-min {
               border-right: 0.1488rem solid #fff;
-              border-radius: 0.5952rem 0 0 0.5952rem;
+              border-radius: 4px 0 0 4px;
 
               &:hover {
                 border-right: 0.1488rem solid #3361ff;
@@ -5299,7 +5293,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .input-max {
               border-left: 0.1488rem solid #fff;
-              border-radius: 0 0.5952rem 0.5952rem 0;
+              border-radius: 0 4px 4px 0;
 
               &:hover {
                 border-left: 0.1488rem solid #3361ff;
@@ -5307,6 +5301,378 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             }
           }
         }
+      }
+    }
+  }
+}
+
+//新 - 首页工作台
+.home-page-box {
+  padding: 24px;
+  font-family: PingFangSC-Regular, PingFang SC;
+  color: #303133;
+  .home-card-title-box {
+    .font-size-16();
+    font-family: PingFangSC-Medium, PingFang SC;
+    .font-weight-500();
+    color: #303133;
+    line-height: 1em;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 16px;
+    span {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .font-size-14();
+      font-family: PingFangSC-Regular, PingFang SC;
+      .font-weight-400();
+      color: #606266;
+      i {
+        margin-left: 4px;
+        font-size: 1em;
+      }
+    }
+  }
+  & > .row-box {
+    display: flex;
+    flex-direction: row;
+    width: 100%;
+    margin-bottom: 16px;
+    overflow: hidden;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+
+    .avatar-card-box,
+    .cptbudget-card-box,
+    .guide-card-box,
+    .overview-card-box,
+    .process-card-box,
+    .project-card-box,
+    .shortcut-card-box,
+    .supplier-card-box,
+    .team-card-box,
+    .todo-card-box {
+      .function-block();
+      padding: 16px 24px 24px 24px;
+    }
+    & > .avatar-card-box,
+    & > .overview-card-box,
+    & > .col-left {
+      width: 70%;
+      flex-shrink: 0;
+      margin-right: 16px;
+    }
+    & > .guide-card-box,
+    & > .shortcut-card-box,
+    & > .col-right {
+      // width: 30%;
+      flex-grow: 1;
+    }
+    & > .avatar-card-box {
+      padding: 32px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      background-image: url(../assets/homePage/avatar_card_bg.png);
+      background-position: right center;
+      background-repeat: no-repeat;
+      background-size: 40% 100%;
+      // background-attachment: fixed;
+      border-right: 1px solid #e0dede80;
+
+      .avatar {
+        .font-size-24();
+        // height: 3.083em;
+        width: 3.083em;
+        margin-right: 24px;
+        flex-shrink: 0;
+        img {
+          .border-radius-8();
+        }
+      }
+      .title {
+        .font-size-24();
+        font-family: PingFangSC-Medium, PingFang SC;
+        .font-weight-500();
+        color: #303133;
+        line-height: 1em;
+        flex-grow: 1;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        .desc {
+          margin-top: 12px;
+          line-height: 1em;
+          .font-size-16();
+          font-family: PingFangSC-Regular, PingFang SC;
+          .font-weight-400();
+          color: #606266;
+          max-width: 100%;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+      }
+    }
+    & > .guide-card-box {
+      padding: 24px;
+      background-image: url(../assets/homePage/guide_card_bg.png);
+      background-position: right center;
+      background-repeat: no-repeat;
+      background-size: 45% 100%;
+      .font-size-16();
+      font-family: SourceHanSansCN-Medium, SourceHanSansCN;
+      .font-weight-500();
+      color: #303133;
+      line-height: 1em;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      justify-content: space-between;
+      .system-name {
+        .font-size-20();
+        font-family: SourceHanSerifSC-Bold, SourceHanSerifSC;
+        font-weight: bold;
+        color: #333333;
+        line-height: 1em;
+        margin-top: 8px;
+        margin-bottom: auto;
+        max-width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+      .guide-btn {
+        .antd-btn-primary();
+        .font-size-14();
+      }
+    }
+    & .overview-card-box {
+      .font-size-16();
+      font-family: PingFangSC-Medium, PingFang SC;
+      .font-weight-500();
+      color: #303133;
+      line-height: 1em;
+
+      & > .overview-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        .overview-item {
+          margin-top: 16px;
+          overflow: hidden;
+          flex-shrink: 0;
+          width: 24%;
+          .item-top {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+
+            .top-img {
+              width: 2em;
+            }
+            .top-txt {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              .font-size-14();
+              font-family: PingFangSC-Regular, PingFang SC;
+              .font-weight-400();
+              color: #606266;
+              line-height: 1em;
+              margin-left: 8px;
+              i {
+                margin-left: 4px;
+                font-size: 1em;
+              }
+            }
+          }
+          .item-middle {
+            .middle-padding {
+              .font-size-14();
+              height: 1px;
+              width: 2em;
+              margin-right: 8px;
+              display: inline-block;
+            }
+            .font-size-32();
+            font-family: THSMoneyfont-Medium;
+            .font-weight-500();
+            color: #303133;
+            line-height: 1em;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin: 10px 0;
+            span {
+              margin-left: 4px;
+              .font-size-20();
+              line-height: 1em;
+            }
+          }
+          .item-bottom {
+            .font-size-12();
+            font-family: PingFangSC-Regular, PingFang SC;
+            .font-weight-400();
+            color: #909399;
+            line-height: 1.5em;
+            text-align: center;
+            span {
+              color: #d70e19ff;
+              .font-size-14();
+              font-family: THSMoneyfont-Medium;
+              .font-weight-500();
+              margin: 0 4px;
+            }
+          }
+        }
+      }
+    }
+    & > .shortcut-card-box {
+      padding-bottom: 32px;
+      .font-size-16();
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #303133;
+      line-height: 1em;
+      .shortcut-box {
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        // align-content: flex-start;
+        align-items: center;
+        // justify-content: space-between;
+        margin-top: 32px;
+        margin-bottom: -16px;
+        .shortcut-item {
+          .font-size-14();
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #333333;
+          line-height: 1em;
+          text-align: center;
+          width: 25%;
+          margin-bottom: 16px;
+          .item-txt {
+            margin-top: 8px;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+          .item-img {
+            width: 2.86em;
+          }
+        }
+      }
+    }
+    .cptbudget-card-box {
+      & > .budget-box {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: space-between;
+        & > .budget-item {
+          padding: 16px 32px 16px 16px;
+          overflow: hidden;
+          border-radius: 4px;
+          background-color: #fafafbff;
+          color: #303133;
+          font-family: PingFangSC-Regular, PingFang SC;
+          .font-weight-400();
+          line-height: 1em;
+
+          .item-top {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 20px;
+            .font-size-14();
+            line-height: 1em;
+            i {
+              color: #3361ff;
+              margin-right: 4px;
+              font-size: 1em;
+            }
+          }
+          .item-middle,
+          .item-bottom {
+            .font-size-20();
+            font-family: THSMoneyfont-Medium;
+            .font-weight-500();
+            line-height: 1em;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 12px;
+            span {
+              max-width: 50%;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
+          }
+          .item-bottom {
+            margin-top: 16px;
+            margin-bottom: 0;
+            .font-size-12();
+            .font-weight-400();
+            font-family: PingFangSC-Regular, PingFang SC;
+            color: #909399;
+          }
+        }
+      }
+    }
+    & > .col-left {
+      & > .todo-card-box {
+        padding-bottom: 12px;
+        & > .todo-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          justify-content: space-between;
+          & > .todo-item {
+            width: 32%;
+            padding: 16px;
+            background: #ffffff;
+            border-radius: 4px;
+            border: 1px solid #ebeef5;
+            overflow: hidden;
+            .font-size-12();
+            font-family: PingFangSC-Medium, PingFang SC;
+            .font-weight-500();
+            .item-title {
+              i {
+                color: #3361ff;
+                margin-right: 4px;
+              }
+            }
+          }
+        }
+      }
+      & > .project-card-box {
+      }
+    }
+    & > .col-right {
+      & > .supplier-card-box {
+      }
+      & > .team-card-box {
+      }
+      & > .process-card-box {
       }
     }
   }

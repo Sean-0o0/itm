@@ -594,17 +594,20 @@ class MainPageLayout extends React.PureComponent {
                   { !menuTreeLoaded && <Route render={loading} /> } */}
                 </CacheSwitch>
               </TrackRouter>
-              <div
-                style={{
-                  textAlign: 'right',
-                  height: 0,
-                  transform: 'translateX(-3.5712rem) translateY(-2.5rem)',
-                  color: '#000',
-                }}
-              >
-                V1.0.0
-              </div>
             </Content>
+            <div
+              style={{
+                // textAlign: 'right',
+                // height: 0,
+                // transform: 'translateX(-3.5712rem) translateY(-2.5rem)',
+                color: '#000',
+                position: 'absolute',
+                right: '20px',
+                bottom: '4px',
+              }}
+            >
+              V1.0.0
+            </div>
             <Content id="modalContent" />
           </Layout>
         </Layout>
