@@ -214,8 +214,8 @@ export default class UserDrop extends React.Component {
       <a href="#" onClick={(e) => { e.preventDefault(); }} style={{ display: 'inline-block', width: '100%', height: '100%' }}>
         {/* <img className="m-avatar" style={{width: '3rem', height: '3rem'}} src={showPic} title="头像" alt="avator" onError={this.showDefaultImgError} /> */}
         <span style={{ paddingLeft: '0.5rem' }}>
-          <span className="name" style={{ fontSize: '1.888rem' }}>{name}</span>
-          <i className="iconfont icon-down-solid-arrow" style={{ fontSize: '1rem', paddingLeft: '0.5rem' }} />
+          <span className="name" style={{fontSize: '15px'}}>{name}</span>
+          <i className="iconfont icon-down-solid-arrow" style={{fontSize: '1rem', paddingLeft: '0.5rem'}}/>
         </span>
       </a>
     );

@@ -516,7 +516,7 @@ class MainPageLayout extends React.PureComponent {
                   {collapsed ? (
                     <Icon type="menu-unfold" className="menu-sider-icon" />
                   ) : (
-                    <Icon type="menu-fold" className="menu-sider-icon" />
+                    <Icon type="menu-fold" className="menu-sider-icon"/>
                   )}
                 </div>
               }
