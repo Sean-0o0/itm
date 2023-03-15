@@ -37,7 +37,7 @@ export default class PageHeader extends React.PureComponent {
               fontSize: '16px',
               color: '#333',
               fontWeight: 'bold',
-              letterSpacing: '0.25rem',
+              letterSpacing: '1.68px',
               verticalAlign: 'middle'
             }}>{"信息技术综合管理平台"}</span>
           </div>
