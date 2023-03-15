@@ -63,4 +63,9 @@ exports.routes = [
   //   path: `${prefix}/`,
   //   component: './workPlatForm/singlePage',
   // },
-]
+  {
+    //新首页
+    path: `/HomePage`,
+    component: './pmsPage/HomePage',
+  },
+];
