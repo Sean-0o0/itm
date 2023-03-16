@@ -24,8 +24,8 @@ class Watermark extends React.Component {
       content: 'text',
       rotate: -30,
       font: '30px microsoft yahei',
-      width: 300,
-      height: 210,
+      width: 900,
+      height: 400,
       ...payload,
     };
     // 生成新水印

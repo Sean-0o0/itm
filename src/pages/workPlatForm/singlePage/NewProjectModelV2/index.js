@@ -443,10 +443,22 @@ class NewProjectModelV2 extends React.Component {
             if (item.jssj === "0") {
               item.jssj = tomorrowTime;
             }
+            // if(item.matterInfos.length === ){
+            //
+            // }
+            //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
+            item.matterInfos.map(item => {
+              if (item.sxlb.length - 1 === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc).length) {
+                item.addFlag = false;
+              } else {
+                item.addFlag = true;
+              }
+            })
           });
-          // console.log("arr-cccc", arr)
+          console.log("arr-2222", this.state.mileItemInfo)
+          console.log("arr-cccc", arr)
           // console.log("this.state.mileInfo", this.state.mileInfo)
-          this.setState({ milePostInfo: arr, mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
+          this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
         } else if (params.queryType === "ONLYLX") {
           //预算变更-更改项目立场里程碑里面的事项
           let lxMatterInfos = [];
@@ -664,7 +676,8 @@ class NewProjectModelV2 extends React.Component {
                 arr.push(sx)
               });
             });
-            this.setState({ mileItemInfo: arr });
+            this.setState({mileItemInfo: arr});
+            console.log("arr", arr)
           } else if (params.type === 'SINGLE') {
             // console.log("datadata", data)
             const idarr = [];
@@ -809,6 +822,7 @@ class NewProjectModelV2 extends React.Component {
         if (code > 0) {
           this.setState({ mileStageList: record });
         }
+        console.log("record", record)
       }).catch((error) => {
         message.error(!error.success ? error.message : error.note);
       });
@@ -1552,6 +1566,13 @@ class NewProjectModelV2 extends React.Component {
       }
     });
     matterInfo[i].sxlb = sxlb;
+    console.log("matterInfo[i]", matterInfo[i])
+    //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
+    if (matterInfo[i].sxlb.filter((i) => i.sxmc).length === this.state.mileItemInfo.filter((i) => i.swlx === matterInfo[i]?.swlxmc).length) {
+      matterInfo[i].addFlag = false;
+    } else {
+      matterInfo[i].addFlag = true;
+    }
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
     // console.log("milePostInfo-ccc",removeTitleMile)
     this.setState({
@@ -1674,8 +1695,9 @@ class NewProjectModelV2 extends React.Component {
       // } else {
       //
       // }
+      const diff = moment(mile[index].jssj).diff(mile[index].kssj, 'day')
       mile[index].kssj = date;
-      mile[index].jssj = moment(date).add(1, 'days').format('YYYY-MM-DD');
+      mile[index].jssj = moment(date).add(diff, 'days').format('YYYY-MM-DD');
     } else if (type === 'end') {
       // const kssj = mile[index].kssj.replace(reg1, "");
       // if (Number(newDate) < Number(kssj)) {
@@ -1853,8 +1875,19 @@ class NewProjectModelV2 extends React.Component {
     // console.log("milemile",mile)
     mile[index].flag = false;
     const arr = this.filterGridLayOut(mile);
+    console.log("arrarrarrarr", arr)
+    arr.forEach(item => {
+      //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
+      item.matterInfos.map(item => {
+        if (item.sxlb.filter((i) => i.sxmc).length === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc).length) {
+          item.addFlag = false;
+        } else {
+          item.addFlag = true;
+        }
+      })
+    });
     // console.log("arrarr",arr)
-    this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
+    this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
     // console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
   };
 
@@ -2101,12 +2134,10 @@ class NewProjectModelV2 extends React.Component {
                     {/*<Icon type="caret-down" onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}*/}
                     {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
                     <span style={{
-                      paddingLeft: '6px',
-                      borderLeft: '4px solid #3461FF'
-                    }}></span>
-                    <span style={{
+                      paddingLeft: '1rem',
                       fontSize: '3rem',
-                      fontWeight: 'bold'
+                      fontWeight: 'bold',
+                      borderLeft: '4px solid #3461FF'
                     }}>基本信息</span>
                   </div>
                   <Form {...basicFormItemLayout} ref={e => this.basicForm = e}
@@ -2612,7 +2643,7 @@ class NewProjectModelV2 extends React.Component {
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        width: 'auto'
+                                        width: '335px'
                                       }} id="datePicker">
                                         <DatePicker format="YYYY-MM-DD"
                                                     value={moment(item.kssj, 'YYYY-MM-DD')}
@@ -2739,7 +2770,10 @@ class NewProjectModelV2 extends React.Component {
                                                           {
                                                             <React.Fragment>
                                                               <span title={sx.sxmc}
-                                                                style={{ fontSize: '2.5rem' }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
+                                                                    style={{
+                                                                      fontSize: '2.5rem',
+                                                                      padding: '8px 0'
+                                                                    }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                               {
                                                                 <span
                                                                   onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
@@ -2765,26 +2799,28 @@ class NewProjectModelV2 extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                     onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                     style={{
-                                                      width: '20rem',
+                                                      width: '25rem',
                                                       marginTop: '0.7rem',
                                                       marginLeft: '1rem'
                                                     }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
+                                                        // console.log("mileItemInfo.length",mileItemInfo.length)
                                                         if (mi.swlx === e.swlxmc) {
+                                                          console.log("flag")
                                                           return (
                                                             <Option title={mi.sxmc} key={mi_index}
-                                                              value={mi.sxid}>{mi.sxmc}</Option>
+                                                                    value={mi.sxid}>{mi.sxmc}</Option>
                                                           )
                                                         }
                                                       })
                                                     }
                                                   </Select>
-                                                ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
-                                                  <div style={{margin: '9px'}}><Tag
-                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
+                                                  <div style={{margin: '6px'}}><Tag
+                                                    style={{background: '#fff'}}>
                                                     <a className="iconfont circle-add"
-                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                       style={{fontSize: '2.381rem', color: 'rgb(51, 97, 255)',}}
                                                        onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag></div>)
                                                 }
@@ -2927,7 +2963,7 @@ class NewProjectModelV2 extends React.Component {
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        width: 'auto'
+                                        width: '335px'
                                       }} id="datePicker">
                                         <DatePicker format="YYYY-MM-DD"
                                                     value={moment(item.kssj, 'YYYY-MM-DD')}
@@ -2960,12 +2996,14 @@ class NewProjectModelV2 extends React.Component {
                                       item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
                                         // console.log("e.sxlb", e.sxlb)
                                         //过滤已有条目
-                                        const { sxlb = {} } = e;
+                                        const {sxlb = {}} = e;
                                         const sxids = sxlb.map(item => item.sxid)
                                         mileItemInfo = mileItemInfo.filter(item => {
-                                          const { sxid } = item;
+                                          const {sxid} = item;
                                           return !sxids.includes(sxid)
                                         })
+                                        // console.log("mileItemInfo", mileItemInfo)
+                                        // console.log("e.swlxmc", e)
                                         return (
                                           <div className="flow" key={i} style={{
                                             display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
@@ -3062,7 +3100,10 @@ class NewProjectModelV2 extends React.Component {
                                                           {
                                                             <React.Fragment>
                                                               <span title={sx.sxmc}
-                                                                style={{ fontSize: '2.5rem' }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
+                                                                    style={{
+                                                                      fontSize: '2.5rem',
+                                                                      padding: '8px 0'
+                                                                    }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                               {
                                                                 <span
                                                                   onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
@@ -3088,26 +3129,27 @@ class NewProjectModelV2 extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                     onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                     style={{
-                                                      width: '20rem',
+                                                      width: '25rem',
                                                       marginTop: '0.7rem',
                                                       marginLeft: '1rem'
                                                     }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                         if (mi.swlx === e.swlxmc) {
+                                                          console.log("flag")
                                                           return (
                                                             <Option title={mi.sxmc} key={mi_index}
-                                                              value={mi.sxid}>{mi.sxmc}</Option>
+                                                                    value={mi.sxid}>{mi.sxmc}</Option>
                                                           )
                                                         }
                                                       })
                                                     }
                                                   </Select>
-                                                ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
+                                                ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
                                                   <div style={{margin: '9px'}}><Tag
-                                                    style={{background: '#fff', borderStyle: 'dashed'}}>
+                                                    style={{background: '#fff',}}>
                                                     <a className="iconfont circle-add"
-                                                       style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}
+                                                       style={{fontSize: '2.381rem', color: 'rgb(51, 97, 255)',}}
                                                        onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag></div>)}
                                                 {
