@@ -434,6 +434,13 @@ class NewProjectModelV2 extends React.Component {
         const arr = this.filterGridLayOut(data);
         // console.log("arr-cccc", arr)
         if (params.queryType === "ALL") {
+          //cccccccc
+          let hash = {}
+          let spliceList = [];
+          spliceList = this.state.mileItemInfo.reduce((item, next) => {
+            hash[next.swlx] ? '' : hash[next.swlx] = item.push(next);
+            return item
+          }, []);
           // 赋予初始时间和结束时间
           arr.forEach(item => {
             if (item.kssj === "0") {
@@ -443,9 +450,11 @@ class NewProjectModelV2 extends React.Component {
             if (item.jssj === "0") {
               item.jssj = tomorrowTime;
             }
-            // if(item.matterInfos.length === ){
-            //
-            // }
+            if (item.matterInfos.length === spliceList.filter((i) => i.lcbid === item.lcblxid).length) {
+              item.addSxFlag = false;
+            } else {
+              item.addSxFlag = true;
+            }
             //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
             item.matterInfos.map(item => {
               if (item.sxlb.length - 1 === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc).length) {
@@ -673,6 +682,7 @@ class NewProjectModelV2 extends React.Component {
               item.sxlb.forEach(sx => {
                 sx.swlxid = item.swlxid;
                 sx.swlx = item.swlx;
+                sx.lcbid = item.lcbid;
                 arr.push(sx)
               });
             });
@@ -1573,6 +1583,19 @@ class NewProjectModelV2 extends React.Component {
     } else {
       matterInfo[i].addFlag = true;
     }
+    //cccccccc
+    let hash = {}
+    let spliceList = [];
+    spliceList = this.state.mileItemInfo.reduce((item, next) => {
+      hash[next.swlx] ? '' : hash[next.swlx] = item.push(next);
+      return item
+    }, []);
+    if (matterInfo[i].sxlb.filter((i) => i.sxmc).length === spliceList.filter((i) => i.lcbid === mile[index].lcblxid).length) {
+      mile[index].addSxFlag = false;
+    } else {
+      mile[index].addSxFlag = true;
+    }
+    console.log("77777777", mile[index]);
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
     // console.log("milePostInfo-ccc",removeTitleMile)
     this.setState({
@@ -1581,6 +1604,7 @@ class NewProjectModelV2 extends React.Component {
         milePostInfo: this.filterGridLayOut(JSON.parse(JSON.stringify(removeTitleMile)))
       }
     });
+    console.log("88888888", this.state.mileInfo);
   };
 
   // 添加里程碑事项信息-ccccc
@@ -1945,7 +1969,7 @@ class NewProjectModelV2 extends React.Component {
           matterInfo.splice(num, 1)
         }
       } else {
-        const sxlbparam = { type: 'title' };
+        const sxlbparam = {type: 'title'};
         matterInfo.map(item => {
           if (item.swlxmc === "new") {
             item.swlxmc = swlxmc
@@ -1953,8 +1977,20 @@ class NewProjectModelV2 extends React.Component {
           }
         })
       }
-      // console.log("arr", arr);
-      this.setState({ inputVisible: '-1', mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
+      //cccccccc
+      let hash = {}
+      let spliceList = [];
+      spliceList = this.state.mileItemInfo.reduce((item, next) => {
+        hash[next.swlx] ? '' : hash[next.swlx] = item.push(next);
+        return item
+      }, []);
+      if (matterInfo.length === spliceList.filter((i) => i.lcbid === mile[index].lcblxid).length) {
+        mile[index].addSxFlag = false;
+      } else {
+        mile[index].addSxFlag = true;
+      }
+      console.log("77777777", mile[index]);
+      this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
     }
   }
 
@@ -2534,7 +2570,8 @@ class NewProjectModelV2 extends React.Component {
               }
               {
                 current === 1 && <div style={{display: 'flex', height: '75%', margin: '12px 0 12px 120px'}}>
-                  <Steps progressDot style={{height: '71vh', width: '20%', padding: '18px 0'}} direction="vertical"
+                  <Steps progressDot style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '18px 0'}}
+                         direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
 
                     {ministeps.map((item, index) => (
@@ -2876,13 +2913,13 @@ class NewProjectModelV2 extends React.Component {
 
                                       })
                                     }
-                                    {
-                                      <div className="addMilePost"
-                                           style={{width: 'calc(46% + 3.5rem)', marginTop: '12px'}}
-                                           onClick={() => this.addSwlx(item?.lcblxid, index)}>
-                                        <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
-                                        style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>添加事项</span>
-                                      </div>
+                                    {item.addSxFlag &&
+                                    <div className="addMilePost"
+                                         style={{width: 'calc(46% + 3.5rem)', marginTop: '12px'}}
+                                         onClick={() => this.addSwlx(item?.lcblxid, index)}>
+                                      <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
+                                      style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>添加事项</span>
+                                    </div>
                                     }
                                   </div>
                                 ) : (
@@ -3203,11 +3240,13 @@ class NewProjectModelV2 extends React.Component {
                                         )
                                       })
                                     }
-                                    {
-                                      <div className="addMilePost" style={{ width: 'calc(46% + 3.5rem)', marginTop: '2rem' }} onClick={() => this.addSwlx(item?.lcblxid, index)}>
-                                        <Icon type="plus" style={{ fontSize: '1.7rem' }} /><span
-                                          style={{ paddingLeft: '1rem', fontSize: '2.5rem' }}>添加事项</span>
-                                      </div>
+                                    {item.addSxFlag &&
+                                    <div className="addMilePost"
+                                         style={{width: 'calc(46% + 3.5rem)', marginTop: '2rem'}}
+                                         onClick={() => this.addSwlx(item?.lcblxid, index)}>
+                                      <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
+                                      style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>添加事项</span>
+                                    </div>
                                     }
 
                                   </div>
