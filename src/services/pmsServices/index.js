@@ -48,6 +48,8 @@ const {
     queryProjectListPara,
     queryProjectInfoAll,
     queryXWHYAFJ,
+    queryAttachLibraryList,
+    queryHistoryAttach
   },
 } = api;
 
@@ -483,6 +485,26 @@ export async function QueryProjectInfoAll(payload, configObj) {
 export async function QueryXWHYAFJ(payload) {
   const option = {
     url: queryXWHYAFJ,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询文档列表
+export async function QueryAttachLibraryList(payload) {
+  const option = {
+    url: queryAttachLibraryList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询历史文档
+export async function QueryHistoryAttach(payload) {
+  const option = {
+    url: queryHistoryAttach,
     method: 'post',
     data: payload,
   };

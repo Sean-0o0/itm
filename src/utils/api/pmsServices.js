@@ -49,4 +49,8 @@ export default [
   { code: '', key: 'queryProjectListPara', url: '/projectManage/v1/queryProjectListPara', dis: '查询项目信息列表的查询条件' },
   { code: '', key: 'queryProjectInfoAll', url: '/projectManage/v1/queryProjectInfoAll', dis: '查询项目信息所有基本信息' },
   { code: '', key: 'queryXWHYAFJ', url: '/projectManage/queryXWHYAFJ', dis: '查询要导出的信委会议案' },
+  { code: '', key: 'queryAttachLibraryList', url: '/projectManage/queryAttachLibraryList', dis: '查询文档列表' },
+  { code: '', key: 'queryHistoryAttach', url: '/projectManage/queryHistoryAttach', dis: '查询历史文档' },
+  { code: '', key: 'queryFileStream', url: '/projectManage/v1/queryFileStream', dis: '下载文件' },
+  { code: '', key: 'zipLivebosFilesRowsPost', url: '/projectManage/zipLivebosFilesRowsPost', dis: '下载文件(压缩)' },
 ];

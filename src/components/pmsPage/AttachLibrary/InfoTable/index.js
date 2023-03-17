@@ -1,53 +1,153 @@
 import React, { Component } from 'react'
-import { Button, Table } from 'antd'
+import { Button, Table, Popover, Empty, message } from 'antd'
 import HistoryAttach from './HistoryAttach'
+import axios from 'axios';
+import config from '../../../../utils/config';
+import moment from 'moment';
+const { api } = config;
+const { pmsServices: { queryFileStream, zipLivebosFilesRowsPost } } = api;
+
 
 class InfoTable extends Component {
     state = {
         modalVisible: false,
-        record: {}
-    }
-    handleTableChange = () => {
-
+        record: {},
+        selectedRows: []
     }
 
-    handleModifyVisible = (record) =>{
+    handleTableChange = (pagination, filters, sorter) => {
+        const { handleSearch } = this.props;
+        const { order = '', field = '' } = sorter;
+        if (handleSearch) {
+            handleSearch({
+                current: pagination.current,
+                pageSize: pagination.pageSize,
+                paging: 1,
+                total: -1,
+                sort: order ? `${field} ${order.slice(0, -3)}` : ''
+            })
+        }
+    };
+
+    handleModifyVisible = (record) => {
         this.setState({
             record: record,
             modalVisible: true
         })
     }
 
-    closeModalVisible = () =>{
+    closeModalVisible = () => {
         this.setState({
             modalVisible: false
         })
     }
 
-    openVisible = () =>{
+    openVisible = () => {
 
     }
 
-    render() {
-        let { tableLoading = false, tableData = [] } = this.props;
-
-        tableData = [
-            {
-                projectId: '1',
-                projectName: '测试项目2423',
-                attachType: '信委会议案',
-                attach: '这是很长很长很长很长很长的一个附件很长的一个附件',
-                version: '1.0',
-                uploader: '张三',
-                uploadTime: '20231201',
-                remarks: '这是一段备注文字',
+    downlown = (id, title, wdid) => {
+        axios({
+            method: 'POST',
+            url: queryFileStream,
+            responseType: 'blob',
+            data: {
+                objectName: 'TWD_XM',
+                columnName: 'DFJ',
+                id: wdid,
+                title: title,
+                extr: id
             }
-        ] 
-        const { modalVisible = false } = this.state;
+        }).then(res => {
+            const href = URL.createObjectURL(res.data)
+            const a = document.createElement('a')
+            a.download = title
+            a.href = href
+            a.click()
+        }).catch(err => {
+            message.error(err)
+        })
+    }
+
+    downlownRow = (items = [], wdid) => {
+        items.forEach(element => {
+            const [id, title] = element;
+            axios({
+                method: 'post',
+                url: queryFileStream,
+                responseType: 'blob',
+                data: {
+                    objectName: 'TWD_XM',
+                    columnName: 'DFJ',
+                    id: wdid,
+                    title: title,
+                    extr: id
+                }
+            }).then(res => {
+                const href = URL.createObjectURL(res.data)
+                const a = document.createElement('a')
+                a.download = title
+                a.href = href
+                a.click()
+            }).catch(err => {
+                message.error(err)
+            })
+        });
+    }
+
+    downlownRows = () => {
+        const { selectedRows } = this.state
+        let param = {
+            objectName: 'TWD_XM',
+            columnName: 'DFJ',
+            title: '文档库-' + moment().format('YYYYMMDD') + '.zip'
+        }
+        let attBaseInfos = []
+        selectedRows.forEach((ele, index) => {
+            const { wdid, wdmc } = ele;
+            if (wdmc) {
+                const list = JSON.parse(wdmc)
+                const { items = [] } = list;
+                items.forEach((item, index) => {
+                    const [id, title] = item;
+                    attBaseInfos.push({
+                        id: id,
+                        rowid: wdid,
+                        title: title
+                    })
+                })
+            }
+        })
+        param.attBaseInfos=attBaseInfos;
+        if(attBaseInfos.length){
+            axios({
+                method: 'POST',
+                url: zipLivebosFilesRowsPost,
+                responseType: 'blob',
+                data: param
+            }).then(res => {
+                const href = URL.createObjectURL(res.data)
+                const a = document.createElement('a')
+                a.download = '文档库-' + moment().format('YYYYMMDD') + '.zip'
+                a.href = href
+                a.click()
+            }).catch(err => {
+                message.error(err)
+            })
+        }else{
+           message.error('未选中文件！') 
+        }
+    }
+
+    render() {
+        const { tableLoading = false, tableData = [], pageParams = {} } = this.props;
+        const { modalVisible = false, record } = this.state;
 
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
-                console.log(`selectedRowKeys: ${selectedRowKeys}`, 'selectedRows: ', selectedRows);
+                this.setState({
+                    selectedRows: selectedRows
+                })
             },
             getCheckboxProps: (record) => ({
                 disabled: record.name === 'Disabled User',
@@ -58,59 +158,96 @@ class InfoTable extends Component {
         const columns = [
             {
                 title: '项目名称',
-                dataIndex: 'projectName',
+                dataIndex: 'xmmc',
                 width: '17%',
-                key: 'projectName',
+                key: 'xmmc',
                 ellipsis: true,
             },
             {
                 title: '文档类型',
-                dataIndex: 'attachType',
+                dataIndex: 'wdlx',
                 width: '10%',
-                key: 'attachType',
+                key: 'wdlx',
                 ellipsis: true,
             },
             {
                 title: '附件',
-                dataIndex: 'attach',
+                dataIndex: 'wdmc',
                 width: '23%',
-                key: 'attach',
+                key: 'wdmc',
                 ellipsis: true,
                 render: (text, record) => {
-                    if (record.lcId !== '-') {
-                        return <div className='opr-btn' onClick={() => { this.handleModifyVisible(record)}} >{text}</div>
+                    if (text) {
+                        const { wdid = '' } = record;
+                        const wdmc = JSON.parse(text)
+                        const { items = [] } = wdmc;
+                        let content = <div className='fj-box'>
+                            <div className='fj-header'>
+                                <div className='fj-title flex1'>附件</div>
+                                <div className='fj-header-btn' onClick={() => this.downlownRow(items, wdid)}>全部下载</div>
+                            </div>
+                            {items.length ?
+                                <div
+                                    style={{ height: 'auto', width: 320 }}
+                                >
+                                    {items.map((item, index) => {
+                                        const [id, title] = item;
+                                        return <div className='fj-item flex-r'>
+                                            <div className='fj-title flex1'><i className='iconfont icon-file-word' />&nbsp;{title}</div>
+                                            <div className='fj-btn' onClick={() => this.downlown(id, title, wdid)}><i className='iconfont icon-download' /></div>
+                                        </div>
+                                    })
+                                    }
+                                </div> :
+                                <div className='empty-box'><Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无风险信息" /></div>
+
+                            }
+                        </div>
+                        return <Popover placement="bottomLeft" overlayClassName="main-tooltip" content={content} >
+                            <div className='opr-btn-box'>
+                                {
+                                    items.map((item, index) => {
+                                        const [id, title] = item;
+                                        return <a key={id} className='opr-btn' onClick={() => { this.downlown(id, title, wdid) }}>{title};&nbsp;</a>
+                                    })
+                                }
+                            </div>
+                        </Popover>
+                    } else {
+                        return ''
                     }
-    
+
+
                 }
             },
             {
                 title: '版本',
-                dataIndex: 'version',
+                dataIndex: 'bb',
                 width: '7%',
-                key: 'version',
+                key: 'bb',
                 ellipsis: true,
             },
             {
                 title: '上传人',
-                dataIndex: 'uploader',
+                dataIndex: 'scr',
                 width: '9%',
-                key: 'uploader',
+                key: 'scr',
                 ellipsis: true,
                 sorter: true,
                 sortDirections: ['descend', 'ascend'],
             },
             {
                 title: '上传时间',
-                dataIndex: 'uploadTime',
+                dataIndex: 'scsj',
                 width: '10%',
-                key: 'uploadTime',
+                key: 'scsj',
                 ellipsis: true,
             },
             {
                 title: '备注',
-                dataIndex: 'remarks',
+                dataIndex: 'bz',
                 width: '14%',
-                key: 'remarks',
+                key: 'bz',
                 ellipsis: true
             },
             {
@@ -121,16 +258,16 @@ class InfoTable extends Component {
                     if (record.lcId !== '-') {
                         return <div className='opr-btn' onClick={() => { this.handleModifyVisible(record) }}>查看历史</div>
                     }
-    
+
                 }
             },
         ];
 
         return (
             <div className="info-table">
-                {modalVisible&&<HistoryAttach modalVisible={modalVisible} closeModalVisible={this.closeModalVisible} />}
+                {modalVisible && <HistoryAttach record={record} modalVisible={modalVisible} closeModalVisible={this.closeModalVisible} />}
                 <div className="btn-add-prj-box">
-                    <Button type="primary" className="btn-add-prj" onClick={this.openVisible}>
+                    <Button type="primary" className="btn-add-prj" onClick={this.downlownRows}>
                         批量下载
                     </Button>
                 </div>
@@ -146,6 +283,9 @@ class InfoTable extends Component {
                             ...rowSelection,
                         }}
                         pagination={{
+                            pageSize: pageParams.pageSize,
+                            current: pageParams.current,
+                            total: pageParams.total,
                             pageSizeOptions: ['10', '20', '30', '40'],
                             showSizeChanger: true,
                             hideOnSinglePage: true,
