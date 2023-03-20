@@ -16,8 +16,8 @@ class HistoryAttach extends Component {
             total: -1,
             sort: ''
         },
-        startDate: moment(new Date()),
-        endDate: moment(new Date()).add(1, 'days'),
+        startDate: undefined,
+        endDate: undefined,
         scr: undefined,
         tableLoading: false
     }
@@ -47,14 +47,14 @@ class HistoryAttach extends Component {
 
     changeStartDate = (date, str) => {
         this.setState({
-            startDate: moment(date),
-            endDate: moment(date).add(1, 'days'),
+            startDate: date?moment(date):undefined,
+            endDate: date?moment(date).add(1, 'days'):undefined,
         })
     }
 
     changeEndDate = (date, str) => {
         this.setState({
-            endDate: moment(date)
+            endDate: date?moment(date):undefined,
         })
     }
 
@@ -166,7 +166,7 @@ class HistoryAttach extends Component {
                     <div className="console-item" style={{ width: '50%' }}>
                         <div className="item-label" >上传时间</div>
                         <div style={{
-                            paddingLeft: '2rem',
+                            paddingLeft: '8px',
                             position: 'relative',
                             display: 'flex',
                             flexDirection: 'row',
@@ -174,7 +174,7 @@ class HistoryAttach extends Component {
                         }} id="datePicker">
                             <DatePicker format="YYYY-MM-DD"
                                 value={startDate}
-                                allowClear={false}
+                                allowClear={true}
                                 onChange={this.changeStartDate}
                             />
                             <div style={{
@@ -187,7 +187,7 @@ class HistoryAttach extends Component {
                             </div>
                             <DatePicker format="YYYY-MM-DD"
                                 value={endDate}
-                                allowClear={false}
+                                allowClear={true}
                                 onChange={this.changeEndDate}
                             />
                         </div>

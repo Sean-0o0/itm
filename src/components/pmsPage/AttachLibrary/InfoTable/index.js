@@ -159,14 +159,14 @@ class InfoTable extends Component {
             {
                 title: '项目名称',
                 dataIndex: 'xmmc',
-                width: '17%',
+                width: '14%',
                 key: 'xmmc',
-                ellipsis: true,
+                ellipsis: true
             },
             {
                 title: '文档类型',
                 dataIndex: 'wdlx',
-                width: '10%',
+                width: '15%',
                 key: 'wdlx',
                 ellipsis: true,
             },
@@ -246,7 +246,7 @@ class InfoTable extends Component {
             {
                 title: '备注',
                 dataIndex: 'bz',
-                width: '14%',
+                width: '12%',
                 key: 'bz',
                 ellipsis: true
             },

@@ -11,8 +11,7 @@ class ToConsole extends Component {
         xmjlList: [],
         glysList: [],
         filterFold: true,
-        glysid: undefined,
-        xmbqid: [],
+        glysid: [],
         params: {
             xmid: undefined,
             xmlx: undefined,
@@ -40,6 +39,7 @@ class ToConsole extends Component {
                 const { code = 0 } = res;
                 if (code > 0) {
                     const wdlx = JSON.parse(res.fileTypeRecord)
+                    const label = JSON.parse(res.labelRecord)
                     const wdlxList = TreeUtils.toTreeData(
                         wdlx,
                         {
@@ -51,11 +51,22 @@ class ToConsole extends Component {
                         },
                         true
                     )
+                    const labelList = TreeUtils.toTreeData(
+                        label,
+                        {
+                            keyName: 'ID',
+                            pKeyName: 'FID',
+                            titleName: 'BQMC',
+                            normalizeTitleName: 'title',
+                            normalizeKeyName: 'value'
+                        },
+                        true
+                    )
                     this.setState({
                         glysList: [...this.toItemTree(JSON.parse(res.budgetProjectRecord))],
                         xmlist: [...JSON.parse(res.projectRecord)],
                         xmjlList: [...JSON.parse(res.projectManagerRecord)],
-                        labelList: [...JSON.parse(res.labelRecord)],
+                        labelList: labelList.length ? labelList[0]?.children : [],
                         wdlxList: wdlxList.length ? wdlxList[0]?.children : []
                     });
                 }
@@ -175,6 +186,7 @@ class ToConsole extends Component {
     //重置按钮
     handleReset = () => {
         this.setState({
+            glysid: [],
             params: {
                 xmid: undefined,
                 xmlx: undefined,
@@ -194,7 +206,7 @@ class ToConsole extends Component {
         this.setState({
             params: {
                 ...params,
-                xmid: v
+                xmid: v.join(';')
             }
         })
     }
@@ -204,7 +216,7 @@ class ToConsole extends Component {
         this.setState({
             params: {
                 ...params,
-                xmlx: v
+                xmlx: v.join(';')
             }
         })
     }
@@ -212,7 +224,6 @@ class ToConsole extends Component {
     handleXmbq = v => {
         const { params = {} } = this.state;
         this.setState({
-            xmbqid: v,
             params: {
                 ...params,
                 xmbq: v.join(';')
@@ -225,7 +236,7 @@ class ToConsole extends Component {
         this.setState({
             params: {
                 ...params,
-                xmjl: v
+                xmjl: v.join(';')
             }
         })
     }
@@ -235,18 +246,19 @@ class ToConsole extends Component {
         this.setState({
             params: {
                 ...params,
-                wdlx: v
+                wdlx: v.join(';')
             }
         })
     }
 
     handleGlys = (v, txt, node) => {
         const { params = {} } = this.state;
+        const { glys = '' } = params;
         this.setState({
             glysid: v,
             params: {
                 ...params,
-                glys: node?.triggerNode?.props?.ID
+                glys: v.length?(glys?glys+','+node?.triggerNode?.props?.ID:node?.triggerNode?.props?.ID):undefined
             }
         })
     }
@@ -293,10 +305,10 @@ class ToConsole extends Component {
             xmjlList,
             glysList,
             filterFold,
-            xmbqid,
             glysid,
             params: {
                 xmid,
+                xmbq,
                 xmlx,
                 wdlx,
                 xmjl,
@@ -321,8 +333,14 @@ class ToConsole extends Component {
                         showSearch
                         allowClear
                         placeholder="请选择"
+                        maxTagCount={1}
+                        maxTagTextLength={8}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 1}个`;
+                        }}
+                        mode="multiple"
                         onChange={this.handleXmid}
-                        value={xmid}
+                        value={xmid?xmid.split(';'):[]}
                     >
                         {xmlist.map((x, i) => (
                             <Select.Option key={i} value={x.XMID}>
@@ -342,8 +360,14 @@ class ToConsole extends Component {
                         showSearch
                         allowClear
                         placeholder="请选择"
+                        maxTagCount={1}
+                        maxTagTextLength={8}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 1}个`;
+                        }}
+                        mode="multiple"
+                        value={xmlx?xmlx.split(';'):[]}
                         onChange={this.handleXmlx}
-                        value={xmlx}
                     >
                         {xmlxList.map((x, i) => (
                             <Select.Option key={i} value={x.ibm}>
@@ -354,29 +378,24 @@ class ToConsole extends Component {
                 </div>
                 <div className="console-item">
                     <div className="item-label">项目标签</div>
-                    <Select
-                        className="item-selector"
-                        maxTagCount={2}
-                        maxTagTextLength={42}
-                        maxTagPlaceholder={extraArr => {
-                            return `等${extraArr.length + 2}个`;
-                        }}
-                        dropdownClassName={'item-selector-dropdown'}
-                        filterOption={(input, option) =>
-                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                        }
-                        placeholder="请选择"
+                    <TreeSelect
                         allowClear
-                        mode="multiple"
+                        className="item-selector"
+                        showSearch
+                        treeNodeFilterProp="title"
+                        treeCheckable
+                        maxTagCount={1}
+                        maxTagTextLength={8}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 1}个`;
+                        }}
+                        dropdownClassName="newproject-treeselect"
+                        dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                        treeData={labelList}
+                        placeholder="请选择"
                         onChange={this.handleXmbq}
-                        value={xmbqid}
-                    >
-                        {labelList.map((x, i) => (
-                            <Select.Option key={i} value={x.ID}>
-                                {x.BQMC}
-                            </Select.Option>
-                        ))}
-                    </Select>
+                        value={xmbq?xmbq.split(';'):[]}
+                    />
                 </div>
                 <Button
                     className="btn-search"
@@ -400,9 +419,15 @@ class ToConsole extends Component {
                         dropdownClassName="newproject-treeselect"
                         dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                         treeData={wdlxList}
+                        treeCheckable
+                        maxTagCount={1}
+                        maxTagTextLength={8}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 1}个`;
+                        }}
                         placeholder="请选择"
                         onChange={this.handleWdlx}
-                        value={wdlx}
+                        value={wdlx?wdlx.split(';'):[]}
                     />
                 </div>
                 <div className="console-item">
@@ -415,9 +440,15 @@ class ToConsole extends Component {
                         }
                         showSearch
                         allowClear
-                        onChange={this.handleXmjl}
-                        value={xmjl}
                         placeholder="请选择"
+                        maxTagCount={1}
+                        maxTagTextLength={8}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 1}个`;
+                        }}
+                        mode="multiple"
+                        onChange={this.handleXmjl}
+                        value={xmjl?xmjl.split(';'):[]}
                     >
                         {xmjlList.map((x, i) => (
                             <Select.Option key={i} value={x.ID}>
@@ -434,9 +465,15 @@ class ToConsole extends Component {
                         showSearch
                         treeNodeFilterProp="title"
                         dropdownClassName="newproject-treeselect"
+                        maxTagCount={1}
+                        maxTagTextLength={8}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 1}个`;
+                        }}
                         dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                         treeData={glysList}
                         placeholder="请选择"
+                        multiple={true}
                         onChange={this.handleGlys}
                         value={glysid}
                     />
