@@ -2,92 +2,105 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as echarts from 'echarts';
 
 export default function SupplierCard(props) {
-  const {} = props;
+  const { supplierData } = props;
   const radarChartRef = useRef(null);
+  //防抖定时器
+  let timer = null;
 
   useEffect(() => {
-    const radarChartOption = {
-      legend: {
-        data: ['采购金额(万元)', '采购数量'],
-        bottom: 0,
-        icon: 'circle',
-        itemWidth: 8,
-        itemHeight: 8,
-      },
-      tooltip: {
-        // trigger: 'axis',
-      },
-      zlevel: 10,
-
-      radar: {
-        // shape: 'circle',
-        splitNumber: 4,
-        center: ['50%', '50%'],
-        radius: '60%',
-        indicator: [
-          { name: 'Sales', max: 6500 },
-          { name: 'Administration', max: 16000 },
-          { name: 'Information Technology', max: 30000 },
-          { name: 'Customer Support', max: 38000 },
-          { name: 'Development', max: 52000 },
-          { name: 'Marketing', max: 25000 },
-        ],
-        splitArea: {
-          areaStyle: {
-            color: ['#fafafbFF', '#fafafbFF', '#fafafbFF', '#fff'],
-          },
-        },
-        splitLine: {
-          lineStyle: {
-            color: ['#EBEEF5FF'],
-            width: 2,
-          },
-        },
-        axisName: {
-          color: '#606266FF',
-
-          fontFamily: 'Roboto-Regular, Roboto',
-          fontSize: 14,
-        },
-        // triggerEvent: true,
-      },
-      series: [
-        {
-          name: 'Budget vs spending',
-          type: 'radar',
-          data: [
-            {
-              value: [4200, 3000, 20000, 35000, 50000, 18000],
-              name: '采购金额(万元)',
-            },
-            {
-              value: [5000, 14000, 28000, 26000, 42000, 21000],
-              name: '采购数量',
-            },
-          ],
-        },
-      ],
-      color: [
-        '#3361FF',
-        '#FDC041',
-        '#FF8D84',
-        '#86E0FF',
-        '#02E4DD',
-        '#6B74FF',
-        '#7392CA',
-        '#9DBCFF',
-      ],
-    };
     const radarChart = echarts.init(radarChartRef.current);
-    radarChart.setOption(radarChartOption);
+    if (JSON.stringify(supplierData) !== '{}') {
+      // console.log('🚀 ~ file: index.js ~ line 11 ~ useEffect ~ supplierData', supplierData);
+      const radarChartOption = {
+        legend: {
+          data: ['采购金额(万元)', '采购数量'],
+          bottom: 0,
+          icon: 'circle',
+          itemWidth: 8,
+          itemHeight: 8,
+        },
+        tooltip: {
+          // trigger: 'axis',
+        },
+        zlevel: 10,
+
+        radar: {
+          // shape: 'circle',
+          splitNumber: 4,
+          center: ['50%', '50%'],
+          radius: '50%',
+          indicator: supplierData?.gysmc,
+          splitArea: {
+            areaStyle: {
+              color: ['#fafafbFF', '#fafafbFF', '#fafafbFF', '#fff'],
+            },
+          },
+          splitLine: {
+            lineStyle: {
+              color: ['#EBEEF5FF'],
+              width: 2,
+            },
+          },
+          axisName: {
+            color: '#606266FF',
+
+            fontFamily: 'Roboto-Regular, Roboto',
+            fontSize: 14,
+          },
+          // triggerEvent: true,
+        },
+        series: [
+          {
+            name: 'Budget vs spending',
+            type: 'radar',
+            data: [
+              {
+                value: supplierData?.cgje,
+                name: '采购金额(万元)',
+              },
+              {
+                value: supplierData?.cgsl,
+                name: '采购数量',
+              },
+            ],
+          },
+        ],
+        color: [
+          '#3361FF',
+          '#FDC041',
+          '#FF8D84',
+          '#86E0FF',
+          '#02E4DD',
+          '#6B74FF',
+          '#7392CA',
+          '#9DBCFF',
+        ],
+      };
+      radarChart.setOption(radarChartOption);
+      window.onresize = function() {
+        radarChart.resize();
+      };
+    }
     return () => {
-      radarChart.dispose();
+      if (supplierData !== '{}') radarChart.dispose();
     };
-  }, []);
+  }, [props]);
+
+  //防抖
+  const debounce = (fn, waits) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
+
   return (
     <div className="supplier-card-box">
       <div className="home-card-title-box">
-        部门队伍建设(含外包)
+        供应商情况
         <span>
           全部
           <i className="iconfont icon-right" />

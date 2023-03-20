@@ -75,7 +75,8 @@ const PaymentProcess = (props) => {
                 let rec = res.record;
                 setSkzh(p => [...rec]);
                 setDgskzh(p => [...rec]);
-                fetchQueryPaymentFlowInfo();
+                // fetchQueryPaymentFlowInfo();
+                setIsSpinning(false);
             }
         }).catch(e => console.error(e));
     };

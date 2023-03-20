@@ -463,7 +463,7 @@ class MainPageLayout extends React.PureComponent {
           style={{
             minHeight: '100%',
             height: '100%',
-            minWidth: window.screen.availWidth > 1520 ? '1520px' : window.screen.availWidth,
+            minWidth: window.screen.availWidth > 1440 ? '1440px' : window.screen.availWidth,
             overflow: 'hidden',
             position: 'relative',
           }}
@@ -491,6 +491,8 @@ class MainPageLayout extends React.PureComponent {
               height: '100%',
               overflow: 'hidden',
               position: 'relative',
+              // maxWidth: '1440px',
+              // margin:' 0 auto',
             }}
           >
             <Sider

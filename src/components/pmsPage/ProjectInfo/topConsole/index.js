@@ -150,11 +150,20 @@ export default function TopConsole(props) {
       paging: 1,
       sort: 'string',
       total: -1,
+      cxlx: 'XMLB'
     })
       .then(res => {
         if (res?.success) {
           setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
-          setLabelData(p => [...JSON.parse(res.labelRecord)]);
+          let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
+            keyName: 'ID',
+            pKeyName: 'FID',
+            titleName: 'BQMC',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          })[0].children[0];
+          console.log("🚀 ~ file: index.js ~ line 165 ~ labelTree ~ labelTree", labelTree)
+          setLabelData(p => [...[labelTree]]);
           let orgTree = TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
@@ -163,15 +172,6 @@ export default function TopConsole(props) {
             normalizeKeyName: 'value',
           })[0].children[0];
           setOrgData(p => [...[orgTree]]);
-          // console.log(
-          //   TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
-          //     keyName: 'ID',
-          //     pKeyName: 'FID',
-          //     titleName: 'NAME',
-          //     normalizeTitleName: 'title',
-          //     normalizeKeyName: 'value',
-          //   })[0].children[0],
-          // );
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
           setprjNameData(p => [...JSON.parse(res.projectRecord)]);
         }
@@ -531,7 +531,7 @@ export default function TopConsole(props) {
       <div className="item-box">
         <div className="console-item">
           <div className="item-label">项目标签</div>
-          <Select
+          {/* <Select
             className="item-selector"
             maxTagCount={2}
             maxTagTextLength={42}
@@ -553,7 +553,26 @@ export default function TopConsole(props) {
                 {x.BQMC}
               </Option>
             ))}
-          </Select>
+          </Select> */}
+           <TreeSelect
+            allowClear
+            className="item-selector"
+            showSearch
+            treeCheckable
+            maxTagCount={2}
+            maxTagTextLength={42}
+            maxTagPlaceholder={extraArr => {
+              return `等${extraArr.length + 2}个`;
+            }}
+            showCheckedStrategy={TreeSelect.SHOW_PARENT}
+            treeNodeFilterProp="title"
+            dropdownClassName="newproject-treeselect"
+            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+            treeData={labelData}
+            placeholder="请选择"
+            onChange={handleLabelChange}
+            value={label}
+          />
         </div>
         <div className="console-item">
           <div className="item-label">应用部门</div>

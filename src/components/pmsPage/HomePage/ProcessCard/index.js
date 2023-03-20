@@ -1,25 +1,48 @@
 import React, { useEffect, useState } from 'react';
+import { FetchQueryOwnerWorkflow } from '../../../../services/pmsServices';
+import moment from 'moment';
 
 export default function ProcessCard(props) {
   const {} = props;
+  const [processData, setProcessData] = useState([]); //流程情况
   useEffect(() => {
+    getProcessData();
     return () => {};
   }, []);
-  const getProcessItem = ({ type = '1', content = '--', date = '--', isDone = false }) => {
+  //获取流程情况
+  const getProcessData = () => {
+    FetchQueryOwnerWorkflow({
+      paging: -1,
+      current: 1,
+      pageSize: 9999,
+      total: -1,
+      sort: '',
+    })
+      .then(res => {
+        if (res?.success) {
+          console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
+          setProcessData(p => [...res?.record]);
+        }
+      })
+      .catch(e => {
+        console.error('FetchQueryOwnerWorkflow', e);
+      });
+  };
+  const getProcessItem = ({ type = '1', content = '--', date = '--', isDone = false, key }) => {
     let backgroundColor = '#FDC041CC';
-    if (type === '2') {
+    if (type.includes('易快报')) {
       backgroundColor = '#05BEFECC';
     }
-    if (type === '3') {
+    if (type.includes('本系统')) {
       backgroundColor = '#3361FFCC';
     }
     return (
-      <div className="process-item">
+      <div className="process-item" key={key}>
         <div className="item-top">
           <div className="left-tag" style={{ backgroundColor }}>
             {type}
           </div>
-          {content}
+          <div className="content">{content}</div>
         </div>
         {isDone && (
           <div className="right-tag">
@@ -35,15 +58,15 @@ export default function ProcessCard(props) {
     <div className="process-card-box">
       <div className="home-card-title-box">流程情况</div>
       <div className="process-box">
-        {getProcessItem({
-          type: 'OA',
-          content: '项目信息管理系统立项申请',
-          date: '2023-03-06',
-          isDone: true,
-        })}
-        {getProcessItem({ type: '2' })}
-        {getProcessItem({ type: '2' })}
-        {getProcessItem({ type: '3' })}
+        {processData?.map((item, index) =>
+          getProcessItem({
+            type: item.type,
+            content: item.subject,
+            date: moment(item.startdate).format('YYYY-MM-DD'),
+            isDone: item.type === '本系统' ? item.state === '2' : item.state === '4',
+            key: index,
+          }),
+        )}
       </div>
     </div>
   );

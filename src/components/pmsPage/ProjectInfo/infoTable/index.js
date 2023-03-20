@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button, Table, Popover, message } from 'antd';
-import InfoDetail from '../infoDetail';
+import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 

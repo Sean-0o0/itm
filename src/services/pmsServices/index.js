@@ -49,7 +49,12 @@ const {
     queryProjectInfoAll,
     queryXWHYAFJ,
     queryAttachLibraryList,
-    queryHistoryAttach
+    queryHistoryAttach,
+    queryStagingOverviewInfo,
+    queryBudgetOverviewInfo,
+    queryMemberOverviewInfo,
+    querySupplierOverviewInfo,
+    queryProjectGeneralInfo,
   },
 } = api;
 
@@ -485,6 +490,57 @@ export async function QueryProjectInfoAll(payload, configObj) {
 export async function QueryXWHYAFJ(payload) {
   const option = {
     url: queryXWHYAFJ,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询工作台的零散信息
+export async function QueryStagingOverviewInfo(payload) {
+  const option = {
+    url: queryStagingOverviewInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询预算概览信息
+export async function QueryBudgetOverviewInfo(payload) {
+  const option = {
+    url: queryBudgetOverviewInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员概览信息
+export async function QueryMemberOverviewInfo(payload) {
+  const option = {
+    url: queryMemberOverviewInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+
+// 查询供应商信息
+export async function QuerySupplierOverviewInfo(payload) {
+  const option = {
+    url: querySupplierOverviewInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询首页项目综合信息
+export async function QueryProjectGeneralInfo(payload) {
+  const option = {
+    url: queryProjectGeneralInfo,
     method: 'post',
     data: payload,
   };

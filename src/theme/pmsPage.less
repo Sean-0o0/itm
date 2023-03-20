@@ -5404,6 +5404,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       width: 70%;
       flex-shrink: 0;
       margin-right: 16px;
+      overflow: hidden;
+      transition: width 0.3s;
     }
 
     &>.guide-card-box,
@@ -5411,6 +5413,8 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
     &>.col-right {
       // width: 30%;
       flex-grow: 1;
+      overflow: hidden;
+      transition: width 0.3s;
     }
 
     &>.avatar-card-box {
@@ -5553,14 +5557,6 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           }
 
           .item-middle {
-            .middle-padding {
-              .font-size-14();
-              height: 1px;
-              width: 2em;
-              margin-right: 8px;
-              display: inline-block;
-            }
-
             .font-size-32();
             font-family: THSMoneyfont-Medium;
             .font-weight-500();
@@ -5571,7 +5567,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             overflow: hidden;
             white-space: nowrap;
             margin: 10px 0;
-
+            padding-left: 39px;
             span {
               margin-left: 4px;
               .font-size-20();
@@ -5584,9 +5580,13 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             font-family: PingFangSC-Regular, PingFang SC;
             .font-weight-400();
             color: #909399;
+            height: 1.5em;
             line-height: 1.5em;
-            text-align: center;
-
+            padding-left: 39px;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
             span {
               color: #d70e19ff;
               .font-size-14();
@@ -5626,7 +5626,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           text-align: center;
           width: 25%;
           margin-bottom: 16px;
-
+          cursor: pointer;
           .item-txt {
             margin-top: 8px;
             max-width: 100%;
@@ -5719,7 +5719,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           flex-direction: row;
           align-items: center;
           flex-wrap: wrap;
-          // justify-content: space-between;
+          justify-content: space-between;
           margin-bottom: -16px;
 
           &>.todo-item {
@@ -5733,14 +5733,14 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             .font-size-12();
             font-family: PingFangSC-Medium, PingFang SC;
             .font-weight-500();
-            margin-right: 2%;
+            // margin-right: 2%;
             margin-bottom: 16px;
             position: relative;
+            // transition: width 0.3s;
 
-            &:nth-child(3n) {
-              margin-right: 0;
-            }
-
+            // &:nth-child(3n) {
+            //   margin-right: 0 !important;
+            // }
             .status-tag-2,
             .status-tag-3 {
               padding: 4px 8px;
@@ -5763,6 +5763,10 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
             }
 
             .item-title {
+              max-width: 100%;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
               i {
                 color: #3361ff;
                 margin-right: 6px;
@@ -5842,21 +5846,23 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
           display: flex;
           flex-direction: row;
           align-items: center;
+          justify-content: space-between;
           flex-wrap: wrap;
           margin-bottom: -16px;
 
-          &>.project-item {
-            width: 32%;
-            margin-right: 2%;
+          & > .project-item {
+            // width: 32%;
+            // margin-right: 2%;
             overflow: hidden;
             margin-bottom: 16px;
             box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
             border-radius: 4px;
             border: 1px solid #fafafb;
+            // transition: width 0.5s;
 
-            &:nth-child(3n) {
-              margin-right: 0;
-            }
+            // &:nth-child(3n) {
+            //   margin-right: 0;
+            // }
 
             .item-top {
               padding: 13px 16px;
@@ -5866,9 +5872,11 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
               .font-weight-500();
               color: #303133;
               line-height: 1em;
-              background: linear-gradient(270deg,
-                  rgba(51, 97, 255, 0) 0%,
-                  rgba(51, 97, 255, 0.1) 100%);
+              background: linear-gradient(
+                270deg,
+                rgba(51, 97, 255, 0) 0%,
+                rgba(51, 97, 255, 0.1) 100%
+              );
 
               .tag {
                 position: absolute;
@@ -5888,7 +5896,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
             .item-middle {
               padding: 16px;
-
+              text-align: center;
               .middle-top {
                 .font-size-12();
                 .font-weight-400();
@@ -5917,11 +5925,17 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
               .middle-bottom {
                 padding: 6px 16px;
+                padding-left: 0;
+                text-align: left;
                 .font-size-12();
                 .font-weight-400();
                 font-family: PingFangSC-Regular, PingFang SC;
                 color: #d70e19;
                 line-height: 1em;
+                height: 1em;
+              }
+              img {
+                width: 91px;
               }
             }
 
@@ -5929,7 +5943,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
               display: flex;
               flex-direction: row;
               align-items: center;
-              padding: 16px 0;
+              padding: 18.33px 0;
               border-top: 2px dashed #ebeef5ff;
 
               .btn-edit,
@@ -5960,6 +5974,11 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
               justify-content: space-between;
               border-top: 2px dashed #ebeef5ff;
               padding-right: 16px;
+              .font-size-12();
+              font-family: PingFangSC-Regular, PingFang SC;
+              .font-weight-400();
+              color: #909399;
+              line-height: 1em;
               .avatar-box {
                 display: flex;
                 flex-direction: row;
@@ -5972,6 +5991,12 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
                   border-radius: 50%;
                   overflow: hidden;
                 }
+              }
+              .txt {
+                max-width: 60%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
               }
             }
           }
@@ -6027,18 +6052,22 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
               .font-weight-500();
               color: #303133;
               line-height: 1em;
-              max-width: 100%;
-              text-overflow: ellipsis;
-              overflow: hidden;
-              white-space: nowrap;
               display: flex;
               flex-direction: row;
               align-items: center;
               margin-bottom: 10px;
+              .content {
+                max-width: calc(100% - 110px);
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+              }
 
               .left-tag {
-                width: 48px;
+                // width: 48px;
+                padding: 0 6px;
                 .font-size-12();
+                flex-shrink: 0;
                 height: 20px;
                 line-height: 20px;
                 background: rgba(253, 192, 65, 0.8);

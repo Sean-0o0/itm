@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Modal, Spin, Tabs } from 'antd';
-import BasicInfo from './basicInfo';
-import OtherInfo from './otherInfo';
+import BasicInfo from './BasicInfo';
+import OtherInfo from './OtherInfo';
 import ProgressInfo from './ProgressInfo';
 const { TabPane } = Tabs;
 

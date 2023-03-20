@@ -65,7 +65,7 @@ exports.routes = [
   // },
   {
     //新首页
-    path: `/HomePage`,
+    path: `${prefix}/HomePage`,
     component: './pmsPage/HomePage',
   },
 ];

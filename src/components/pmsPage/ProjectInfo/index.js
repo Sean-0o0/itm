@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import InfoTable from './infoTable';
-import TopConsole from './topConsole';
+import InfoTable from './InfoTable';
+import TopConsole from './TopConsole';
 import { QueryProjectListInfo } from '../../../services/pmsServices';
 import { message } from 'antd';
 
@@ -21,7 +21,7 @@ export default function ProjectInfo(props) {
       pageSize: 10,
       paging: -1,
       sort: 'string',
-      total: -1,
+      total: -1
     })
       .then(res => {
         if (res?.success) {
