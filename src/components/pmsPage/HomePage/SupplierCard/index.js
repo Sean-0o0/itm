@@ -2,7 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import * as echarts from 'echarts';
 
 export default function SupplierCard(props) {
-  const { supplierData } = props;
+  const { supplierData, time } = props;
   const radarChartRef = useRef(null);
   //防抖定时器
   let timer = null;
@@ -99,12 +99,15 @@ export default function SupplierCard(props) {
 
   return (
     <div className="supplier-card-box">
-      <div className="home-card-title-box">
+      <div className="home-card-title-box" style={{ marginBottom: 6 }}>
         供应商情况
         <span>
           全部
           <i className="iconfont icon-right" />
         </span>
+      </div>
+      <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px' }}>
+        {time + ' 更新'}
       </div>
       <div className="supplier-chart" ref={radarChartRef} />
     </div>

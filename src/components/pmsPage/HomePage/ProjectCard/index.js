@@ -278,34 +278,33 @@ export default function ProjectCard(props) {
                 content={riskContent()}
                 overlayStyle={{ overflow: 'hidden', overflowY: 'auto' }}
               >
-                {isLate && `存在${riskData?.length}个未处理风险！`}
+                {riskData?.length !== 0 && `存在${riskData?.length}个未处理风险！`}
               </Popover>
             </div>
           </div>
         )}
         {isDraft !== true && (
-          <div className="item-bottom-person">
-            <div className="avatar-box">
-              {participantData?.slice(0, 4).map(x => (
-                <div className="avatar" key={x.USERID}>
-                  <img
-                    src={require(`../../../../assets/homePage/img_avatar_${
-                      x.XB === '男' ? 'male' : 'female'
-                    }.png`)}
-                    alt=""
-                  />
-                </div>
-              ))}
-            </div>
-            <Popover
-              title={null}
-              placement="rightTop"
-              content={participantContent(participantData)}
-              overlayStyle={{ overflow: 'hidden', overflowY: 'auto' }}
-            >
+          <Popover
+            title={null}
+            placement="rightTop"
+            content={participantContent(participantData)}
+            overlayStyle={{ overflow: 'hidden', overflowY: 'auto' }}
+          >
+            <div className="item-bottom-person">
+              <div className="avatar-box">
+                {participantData?.slice(0, 4).map(x => (
+                  <div className="avatar" key={x.USERID}>
+                    <img
+                      src={require(`../../../../assets/homePage/img_avatar_${
+                        x.XB === '男' ? 'male' : 'female'
+                      }.png`)}
+                      alt=""
+                    />
+                  </div>
+                ))}
+              </div>
               <div className="txt">{getParticipantName()}</div>
-            </Popover>
-          </div>
+          </div></Popover>
         )}
         {isDraft && (
           <div className="item-middle">

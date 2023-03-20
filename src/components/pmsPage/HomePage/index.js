@@ -36,13 +36,14 @@ export default function HomePage(props) {
   const [budgetData, setBudgetData] = useState({}); //预算执行情况
   const [teamData, setTeamData] = useState([]); //队伍建设
   const [supplierData, setSupplierData] = useState({}); //供应商情况
-  const [budgetTime, setbudgetTime] = useState(''); //预算执行情况接口调用时间
+  const [updateTime, setUpdateTime] = useState(''); //预算执行情况接口调用时间
 
   //防抖定时器
   let timer = null;
 
   useEffect(() => {
     getUserRole();
+    setUpdateTime(moment().format('YYYY-MM-DD'));
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
@@ -139,9 +140,8 @@ export default function HomePage(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ QueryBudgetOverviewInfo ~ res', JSON.parse(res?.ysglxx));
+          // console.log('🚀 ~ QueryBudgetOverviewInfo ~ res', JSON.parse(res?.ysglxx));
           setBudgetData(JSON.parse(res?.ysglxx)[0]);
-          setbudgetTime(moment().format('YYYY-MM-DD'));
         }
       })
       .catch(e => {
@@ -274,7 +274,7 @@ export default function HomePage(props) {
           {['二级部门领导', '普通人员'].includes(userRole) ? (
             <ToDoCard itemWidth={itemWidth} getAfterItem={getAfterItem} />
           ) : (
-            <CptBudgetCard userRole={userRole} budgetData={budgetData} time={budgetTime} />
+            <CptBudgetCard userRole={userRole} budgetData={budgetData} time={updateTime} />
           )}
           <ProjectCard
             itemWidth={itemWidth}
@@ -290,7 +290,7 @@ export default function HomePage(props) {
               isVertical={true}
               userRole={userRole}
               budgetData={budgetData}
-              time={budgetTime}
+              time={updateTime}
             />
           ) : (
             <TeamCard teamData={teamData} />
@@ -298,10 +298,10 @@ export default function HomePage(props) {
           {['二级部门领导', '普通人员'].includes(userRole) ? (
             <ProcessCard />
           ) : (
-            <SupplierCard supplierData={supplierData} />
+            <SupplierCard supplierData={supplierData} time={updateTime}/>
           )}
-          <SupplierCard supplierData={supplierData} />
-          <TeamCard teamData={teamData} />
+          {/* <SupplierCard supplierData={supplierData} time={updateTime}/>
+          <TeamCard teamData={teamData} /> */}
         </div>
       </div>
     </div>

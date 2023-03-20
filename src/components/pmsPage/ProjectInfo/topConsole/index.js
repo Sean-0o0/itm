@@ -245,7 +245,7 @@ export default function TopConsole(props) {
     //   params.orgId = Number(org);
     // }
     if (label.length !== 0) {
-      params.projectLabel = label.join(';');
+      params.projectLabel = label.join(';|;');
     }
     if (prjType !== undefined && prjType !== '') {
       params.projectType = Number(prjType);
