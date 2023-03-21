@@ -58,6 +58,7 @@ export default function OverviewCard(props) {
             amount: getAmountFormat(overviewInfo?.db),
             addNum: overviewInfo?.dbjrxz,
             unit: '项',
+            more: false,
           })}
           {getOverviewItem({
             title: '现有风险',
@@ -65,6 +66,7 @@ export default function OverviewCard(props) {
             amount: getAmountFormat(overviewInfo?.xyfx),
             addNum: overviewInfo?.fxjrxz,
             unit: '项',
+            more: false,
           })}
           {getOverviewItem({
             title: '发起项目',

@@ -21,8 +21,9 @@ export default function SupplierCard(props) {
         },
         tooltip: {
           // trigger: 'axis',
+          confine: true
         },
-        zlevel: 10,
+        zlevel: 100,
 
         radar: {
           // shape: 'circle',

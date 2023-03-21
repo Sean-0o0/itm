@@ -55,6 +55,7 @@ const {
     queryMemberOverviewInfo,
     querySupplierOverviewInfo,
     queryProjectGeneralInfo,
+    queryCreatePaymentInfo,
   },
 } = api;
 
@@ -561,6 +562,16 @@ export async function QueryAttachLibraryList(payload) {
 export async function QueryHistoryAttach(payload) {
   const option = {
     url: queryHistoryAttach,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询发起付款流程所需的基本信息
+export async function QueryCreatePaymentInfo(payload) {
+  const option = {
+    url: queryCreatePaymentInfo,
     method: 'post',
     data: payload,
   };

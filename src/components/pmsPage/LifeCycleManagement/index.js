@@ -696,16 +696,16 @@ class LifeCycleManagementTabs extends React.Component {
 
   //流程发起
   handleSend = (item, xmbh = '') => {
-    console.log(
-      '🚀 ~ file: index.js ~ line 593 ~ LifeCycleManagementTabs ~ item, xmbh',
-      item,
-      xmbh,
-    );
+    // console.log(
+    //   '🚀 ~ file: index.js ~ line 593 ~ LifeCycleManagementTabs ~ item, xmbh',
+    //   item,
+    //   xmbh,
+    // );
     if (item.sxmc.includes('付款流程')) {
-      this.setState({
-        paymentModalVisible: true,
-      });
-      // message.info('功能开发中，暂时无法使用', 1);
+      // this.setState({
+      //   paymentModalVisible: true,
+      // });
+      message.info('功能开发中，暂时无法使用', 1);
       return;
     }
     //合同签署流程弹窗个性化,不走livebos弹窗了
@@ -1408,9 +1408,9 @@ class LifeCycleManagementTabs extends React.Component {
         )}
 
         {/* 付款流程发起弹窗 */}
-        {paymentModalVisible && (
+        {true && (
           <PaymentProcess
-            paymentModalVisible={paymentModalVisible}
+            paymentModalVisible={true}
             fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
             currentXmid={
               Number(this.state.xmid) !== 0

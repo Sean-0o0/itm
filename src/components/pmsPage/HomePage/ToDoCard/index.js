@@ -1,4 +1,4 @@
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import { FetchQueryOwnerMessage } from '../../../../services/pmsServices';
 import moment from 'moment';
@@ -97,7 +97,9 @@ export default function ToDoCard(props) {
         <div className="item-title">
           <i style={{ color: fontColor }}>#</i>
           {title}
-          <div className="content">{content}</div>
+          <Tooltip title={content}>
+            <div className="content">{content}</div>
+          </Tooltip>
           <div className="deadline">{deadline}</div>
         </div>
         <div className="item-btn">去{btnTxt}</div>

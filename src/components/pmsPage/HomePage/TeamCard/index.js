@@ -47,7 +47,7 @@ export default function TeamCard(props) {
           {
             name: 'Access From',
             type: 'pie',
-            radius: ['50%', '70%'],
+            radius: ['50%', '60%'],
             avoidLabelOverlap: false,
             center: ['25%', '50%'],
             label: {

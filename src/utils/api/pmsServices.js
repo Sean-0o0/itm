@@ -283,4 +283,10 @@ export default [
     url: '/projectManage/queryProjectGeneralInfo',
     dis: '查询首页项目综合信息',
   },
+  {
+    code: '',
+    key: 'queryCreatePaymentInfo',
+    url: '/EKB/v1/queryCreatePaymentInfo',
+    dis: '查询发起付款流程所需的基本信息',
+  },
 ];

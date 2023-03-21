@@ -641,7 +641,7 @@ export default function TopConsole(props) {
                     onChange={handleMinAmountChange}
                     placeholder="下限"
                   />
-                  <Input className="input-to" placeholder="~" disabled />
+                  <Input className="input-to" placeholder="-" disabled />
                   <Input
                     className="input-max"
                     value={maxAmount}

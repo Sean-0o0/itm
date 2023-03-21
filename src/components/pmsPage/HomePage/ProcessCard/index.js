@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { FetchQueryOwnerWorkflow } from '../../../../services/pmsServices';
 import moment from 'moment';
+import { Tooltip } from 'antd';
 
 export default function ProcessCard(props) {
   const {} = props;
@@ -20,7 +21,7 @@ export default function ProcessCard(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
+          // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
           setProcessData(p => [...res?.record]);
         }
       })
@@ -42,7 +43,9 @@ export default function ProcessCard(props) {
           <div className="left-tag" style={{ backgroundColor }}>
             {type}
           </div>
-          <div className="content">{content}</div>
+          <Tooltip title={content}>
+            <div className="content">{content}</div>
+          </Tooltip>
         </div>
         {isDone && (
           <div className="right-tag">

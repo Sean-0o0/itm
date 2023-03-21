@@ -119,17 +119,13 @@ export default function FormOperate(props) {
                         style={{ width: '100%', borderRadius: '1.1904rem !important' }}
                         showSearch
                         placeholder="请选择收款账户"
-                        optionFilterProp="children"
                         onChange={handleSkzhChange}
-                        filterOption={(input, option) =>
-                            (option.props.children)?.toLowerCase().includes(input.toLowerCase())
-                        }
                         open={isSkzhOpen}
                         onDropdownVisibleChange={(visible) => setIsSkzhOpen(visible)}
                     >
                         {
                             skzh?.map((item = {}, ind) => {
-                                return <Select.Option key={ind} value={item.khmc}>
+                                return <Select.Option key={item.id} value={item.khmc}>
                                     {item.khmc}
                                     {isSkzhOpen && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>}
                                 </Select.Option>

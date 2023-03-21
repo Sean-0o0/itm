@@ -1,4 +1,4 @@
-import { Progress, Popover } from 'antd';
+import { Progress, Popover, Empty } from 'antd';
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { OperateCreatProject } from '../../../../services/projectManage';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -239,7 +239,7 @@ export default function ProjectCard(props) {
         key={key}
       >
         <div className="item-top" style={{ backgroundImage: bgImg }}>
-          {title}
+          <span>{title}</span>
           {isDraft && (
             <div className="tag" style={{ backgroundColor: fontColor }}>
               草稿
@@ -276,7 +276,11 @@ export default function ProjectCard(props) {
                 title={null}
                 placement="rightTop"
                 content={riskContent()}
-                overlayStyle={{ overflow: 'hidden', overflowY: 'auto' }}
+                overlayStyle={{
+                  overflow: 'hidden',
+                  overflowY: 'auto',
+                  // boxShadow: '0 0 0.2976rem #ebf0ff',
+                }}
               >
                 {riskData?.length !== 0 && `存在${riskData?.length}个未处理风险！`}
               </Popover>
@@ -288,7 +292,11 @@ export default function ProjectCard(props) {
             title={null}
             placement="rightTop"
             content={participantContent(participantData)}
-            overlayStyle={{ overflow: 'hidden', overflowY: 'auto' }}
+            overlayStyle={{
+              overflow: 'hidden',
+              overflowY: 'auto',
+              // boxShadow: '0 0 0.2976rem #ebf0ff',
+            }}
           >
             <div className="item-bottom-person">
               <div className="avatar-box">
@@ -304,7 +312,8 @@ export default function ProjectCard(props) {
                 ))}
               </div>
               <div className="txt">{getParticipantName()}</div>
-          </div></Popover>
+            </div>
+          </Popover>
         )}
         {isDraft && (
           <div className="item-middle">
@@ -314,9 +323,12 @@ export default function ProjectCard(props) {
         {isDraft && (
           <div className="item-bottom-operate">
             <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
-              <i className="iconfont edit" />
-              编辑
+              <div className="btn-edit-wrapper">
+                <i className="iconfont edit" />
+                编辑
+              </div>
             </div>
+            <div className="divider"></div>
             <div className="btn-delete" onClick={() => handleDraftDelete(xmid)}>
               <i className="iconfont delete" />
               删除
@@ -371,6 +383,11 @@ export default function ProjectCard(props) {
             xmid: item.XMID,
           });
         })}
+        {prjInfo?.length === 0 && (
+          <div style={{ width: '100%', margin: '0 auto' }}>
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
+          </div>
+        )}
         {getAfterItem(itemWidth)}
       </div>
       {prjInfo?.length > getColNum(itemWidth) * 2 &&

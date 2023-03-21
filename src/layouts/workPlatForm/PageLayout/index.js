@@ -17,7 +17,7 @@ import SpecialUrl from './specialUrl';
 import styles from './index.less';
 import ViewFile from '../../../components/pmsPage/ViewFile';
 import WpsUrl from './WpsUrl';
-import PersonWorkBench from '../../../pages/pmsPage/PersonWorkBench';
+import HomePage from '../../../pages/pmsPage/HomePage';
 import { translate } from '@antv/g6/lib/util/math';
 // import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
 
@@ -582,7 +582,7 @@ class MainPageLayout extends React.PureComponent {
                         path={path}
                         unmount={false}
                         saveScrollPosition
-                        render={p => <PersonWorkBench {...p}></PersonWorkBench>}
+                        render={p => <HomePage {...p}></HomePage>}
                       />
                     );
                   })}
