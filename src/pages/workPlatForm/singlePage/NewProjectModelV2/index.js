@@ -131,7 +131,7 @@ class NewProjectModelV2 extends React.Component {
     const _this = this;
     const params = this.getUrlParams();
     if (params.xmid && params.xmid !== -1) {
-      // console.log("paramsparams", params)
+      // //console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
         // operateType: 'MOD',
@@ -212,7 +212,7 @@ class NewProjectModelV2 extends React.Component {
 
   //是否已经填完所有必填项
   isFinish = (current) => {
-    console.log("current", current)
+    //console.log("current", current)
     if (current === 0) {
       this.basicisFinish(current)
     }
@@ -338,7 +338,7 @@ class NewProjectModelV2 extends React.Component {
         }
       }
     }
-    // console.log("current", this.state.current)
+    // //console.log("current", this.state.current)
   }
 
   fetchInterface = async () => {
@@ -432,7 +432,7 @@ class NewProjectModelV2 extends React.Component {
       if (code > 0) {
         let data = JSON.parse(result);
         const arr = this.filterGridLayOut(data);
-        // console.log("arr-cccc", arr)
+        // //console.log("arr-cccc", arr)
         if (params.queryType === "ALL") {
           //cccccccc
           let hash = {}
@@ -464,9 +464,9 @@ class NewProjectModelV2 extends React.Component {
               }
             })
           });
-          console.log("arr-2222", this.state.mileItemInfo)
-          console.log("arr-cccc", arr)
-          // console.log("this.state.mileInfo", this.state.mileInfo)
+          //console.log("arr-2222", this.state.mileItemInfo)
+          //console.log("arr-cccc", arr)
+          // //console.log("this.state.mileInfo", this.state.mileInfo)
           this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
         } else if (params.queryType === "ONLYLX") {
           //预算变更-更改项目立场里程碑里面的事项
@@ -527,7 +527,7 @@ class NewProjectModelV2 extends React.Component {
   toOrgTree(list, parId) {
     let obj = {};
     let result = [];
-    // console.log("list",list)
+    // //console.log("list",list)
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
     list.map(el => {
       el.title = el.orgName;
@@ -535,7 +535,7 @@ class NewProjectModelV2 extends React.Component {
       el.key = el.orgId;
       obj[el.orgId] = el;
     });
-    // console.log("objobj",obj)
+    // //console.log("objobj",obj)
     for (let i = 0, len = list.length; i < len; i++) {
       let id = list[i].orgFid;
       if (id == parId) {
@@ -551,7 +551,7 @@ class NewProjectModelV2 extends React.Component {
     //设置默认展开的节点
     let expend = [];
     let exp = {};
-    // console.log("result",result)
+    // //console.log("result",result)
     exp = JSON.parse(JSON.stringify(result[0]));
     exp.children.map(item => {
       delete item.children;
@@ -563,7 +563,35 @@ class NewProjectModelV2 extends React.Component {
     this.setState({
       orgExpendKeys: expend
     })
-    // console.log("result-cccc",result)
+    // //console.log("result-cccc",result)
+    return result;
+  }
+
+  toLabelTree(list, parId) {
+    let obj = {};
+    let result = [];
+    // //console.log("list",list)
+    //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
+    list.map(el => {
+      el.title = el.bqmc;
+      el.value = el.id;
+      el.key = el.id;
+      obj[el.id] = el;
+    });
+    console.log("listlist", list)
+    for (let i = 0, len = list.length; i < len; i++) {
+      let id = list[i].fid;
+      if (id == parId) {
+        result.push(list[i]);
+        continue;
+      }
+      if (obj[id].children) {
+        obj[id].children.push(list[i]);
+      } else {
+        obj[id].children = [list[i]];
+      }
+    }
+    // //console.log("result-cccc",result)
     return result;
   }
 
@@ -593,7 +621,7 @@ class NewProjectModelV2 extends React.Component {
       const childrenDatamini = [];
       if (a.hasOwnProperty(key)) {
         if (a[key] !== null) {
-          // console.log("item",a[key]);
+          // //console.log("item",a[key]);
           let b = a[key].reduce((pre, current, index) => {
             pre[current.zdbm] = pre[current.zdbm] || [];
             pre[current.zdbm].push({
@@ -618,7 +646,7 @@ class NewProjectModelV2 extends React.Component {
               if (b[item.zdbm]) {
                 let treeDatamini = { children: [] }
                 if (item.zdbm === "6") {
-                  // console.log("b[item.zdbm]",b["6"])
+                  // //console.log("b[item.zdbm]",b["6"])
                   b[item.zdbm].map(i => {
                     treeDatamini.key = i.ysID
                     treeDatamini.value = i.ysID + i.ysName
@@ -665,7 +693,7 @@ class NewProjectModelV2 extends React.Component {
         }
       }
     }
-    // console.log("treeData",treeData)
+    // //console.log("treeData",treeData)
     return treeData;
   }
 
@@ -687,9 +715,9 @@ class NewProjectModelV2 extends React.Component {
               });
             });
             this.setState({mileItemInfo: arr});
-            console.log("arr", arr)
+            //console.log("arr", arr)
           } else if (params.type === 'SINGLE') {
-            // console.log("datadata", data)
+            // //console.log("datadata", data)
             const idarr = [];
             const swlxarr = [];
             data.forEach(item => {
@@ -721,10 +749,10 @@ class NewProjectModelV2 extends React.Component {
           let jobArr = [];
           let searchStaffList = [];
           let memberInfo = JSON.parse(result.memberInfo);
-          memberInfo.push({ gw: '10', rymc: result.projectManager });
+          memberInfo.push({gw: '10', rymc: result.projectManager});
           let arr = [];
-          console.log("memberInfomemberInfo", memberInfo)
-          console.log("this.state.staffList", this.state.staffList)
+          //console.log("memberInfomemberInfo", memberInfo)
+          //console.log("this.state.staffList", this.state.staffList)
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
@@ -747,7 +775,7 @@ class NewProjectModelV2 extends React.Component {
               // staffJobList: RYGW,
               staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
             });
-            console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
+            //console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
               if (String(i.ibm) === String(item.gw)) {
                 newStaffJobList.push(i)
@@ -760,11 +788,11 @@ class NewProjectModelV2 extends React.Component {
           let newArray = rygwSelectDictionary.filter(function (item) {
             return newArr.indexOf(item) === -1
           });
-          // console.log("rygwSelectDictionary",newArray)
+          // //console.log("rygwSelectDictionary",newArray)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList})
-          // console.log("arr",arr)
-          // console.log("budgetProjectList",this.state.budgetProjectList)
+          // //console.log("arr",arr)
+          // //console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
@@ -785,12 +813,12 @@ class NewProjectModelV2 extends React.Component {
               })
             });
           }
-          console.log("budgetProjectName", budgetProjectName)
+          //console.log("budgetProjectName", budgetProjectName)
           let newOrg = []
           if (result.orgId) {
             newOrg = result.orgId.split(";");
           }
-          console.log("searchStaffListsearchStaffList222", searchStaffList)
+          //console.log("searchStaffListsearchStaffList222", searchStaffList)
           this.setState({
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
@@ -832,7 +860,7 @@ class NewProjectModelV2 extends React.Component {
         if (code > 0) {
           this.setState({ mileStageList: record });
         }
-        console.log("record", record)
+        //console.log("record", record)
       }).catch((error) => {
         message.error(!error.success ? error.message : error.note);
       });
@@ -924,7 +952,7 @@ class NewProjectModelV2 extends React.Component {
       const { code = -1, record = [] } = result;
       if (code > 0) {
         this.setState({ budgetProjectList: this.toItemTree(record) });
-        console.log(this.toItemTree(record));
+        //console.log(this.toItemTree(record));
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -949,7 +977,10 @@ class NewProjectModelV2 extends React.Component {
     return FetchQueryProjectLabel({}).then((result) => {
       const { code = -1, record = [] } = result;
       if (code > 0) {
-        this.setState({ projectLabelList: record });
+        // console.log("this.toLabelTree(record,0) ",this.toLabelTree(record,0))
+        this.setState({projectLabelList: this.toLabelTree(record, 0)});
+        // console.log("this.toLabelTree(record,0) ",this.state.projectLabelList)
+        // this.setState({ projectLabelList: record});
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -960,7 +991,7 @@ class NewProjectModelV2 extends React.Component {
   getUrlParams = () => {
     const { match: { params: { params: encryptParams = '' } } } = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
-    // console.log("paramsparams", params)
+    // //console.log("paramsparams", params)
     return params;
   }
 
@@ -1051,7 +1082,7 @@ class NewProjectModelV2 extends React.Component {
     } else if ((jobStaffList[9].length > 0 && focusJob === '10') || (focusJob === '10' && checkedStaffKey.length > 1)) {
       message.warning('项目经理最多一个！');
     } else {
-      // console.log(jobStaffList);
+      // //console.log(jobStaffList);
       let arr = jobStaffList[Number(focusJob) - 1] ? jobStaffList[Number(focusJob) - 1] : [];
       let searchStaffList = [];
       checkedStaffKey.forEach(item => {
@@ -1112,19 +1143,19 @@ class NewProjectModelV2 extends React.Component {
       title: '提示',
       content: '确定要删除此岗位？',
       onOk() {
-        const { staffJobList, rygwSelectDictionary, rygwDictionary } = _this.state;
+        const {staffJobList, rygwSelectDictionary, rygwDictionary} = _this.state;
         const newStaffJobList = staffJobList.filter(item => item.ibm !== e);
         let newArr = newStaffJobList.concat()
-        // console.log("newArr", newArr)
-        // console.log("rygwDictionary", rygwDictionary)
+        // //console.log("newArr", newArr)
+        // //console.log("rygwDictionary", rygwDictionary)
         let newArray = rygwDictionary.filter(function (item) {
           return newArr.indexOf(item) === -1
         });
         // const filter = rygwDictionary.filter(item => item.ibm === e)
         // rygwSelectDictionary.push(filter[0])
-        // console.log("newArray", newArray)
+        // //console.log("newArray", newArray)
         // _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true), rygwSelectDictionary: newArray})
-        _this.setState({ staffJobList: newStaffJobList, rygwSelectDictionary: newArray })
+        _this.setState({staffJobList: newStaffJobList, rygwSelectDictionary: newArray})
       },
       onCancel() {
       },
@@ -1255,7 +1286,7 @@ class NewProjectModelV2 extends React.Component {
       return;
     }
     let staffJobParam = [];
-    // console.log("staffJobList保存",staffJobList);
+    // //console.log("staffJobList保存",staffJobList);
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
@@ -1331,7 +1362,7 @@ class NewProjectModelV2 extends React.Component {
 
   makeOperateParams = (params, milePostInfo, staffJobParams, projectManager, type) => {
     this.setState({ loading: true, });
-    // console.log("statestate", this.state)
+    // //console.log("statestate", this.state)
     let milepostInfo = [];
     let matterInfo = [];
     milePostInfo.forEach(item => {
@@ -1340,7 +1371,7 @@ class NewProjectModelV2 extends React.Component {
         jssj: moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'),
         kssj: moment(item.kssj, 'YYYY-MM-DD').format('YYYYMMDD')
       });
-      // console.log("item.matterInfos",item.matterInfos)
+      // //console.log("item.matterInfos",item.matterInfos)
       item.matterInfos.forEach(i => {
         // X轴升序排序
         let gridLayoutByX = this.sortByKey(i.gridLayout, 'x', true);
@@ -1365,9 +1396,9 @@ class NewProjectModelV2 extends React.Component {
       operateType = 'SAVE';
     }
     //修改项目的时候隐藏暂存草稿,点完成type传MOD
-    // console.log("handleType", type)
-    // console.log("projectStatus", this.state.projectStatus === "")
-    // console.log("projectStatus22", this.state.projectStatus === null)
+    // //console.log("handleType", type)
+    // //console.log("projectStatus", this.state.projectStatus === "")
+    // //console.log("projectStatus22", this.state.projectStatus === null)
     if (type === 1 && this.state.projectStatus === 'MOD') {
       this.setState({
         operateType: 'MOD'
@@ -1408,9 +1439,9 @@ class NewProjectModelV2 extends React.Component {
       item.gw = String(item.gw);
     });
     params.members = memberInfo;
-    // console.log("params.projectId", this.state.basicInfo.projectId)
+    // //console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
-    // console.log("operateType", operateType)
+    // //console.log("operateType", operateType)
     params.type = operateType;
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
@@ -1441,7 +1472,7 @@ class NewProjectModelV2 extends React.Component {
         message.error(note);
       }
 
-      // console.log("333333")
+      // //console.log("333333")
     }).catch((error) => {
       this.setState({ loading: false });
       message.error(!error.success ? error.message : error.note);
@@ -1576,7 +1607,7 @@ class NewProjectModelV2 extends React.Component {
       }
     });
     matterInfo[i].sxlb = sxlb;
-    console.log("matterInfo[i]", matterInfo[i])
+    //console.log("matterInfo[i]", matterInfo[i])
     //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
     if (matterInfo[i].sxlb.filter((i) => i.sxmc).length === this.state.mileItemInfo.filter((i) => i.swlx === matterInfo[i]?.swlxmc).length) {
       matterInfo[i].addFlag = false;
@@ -1595,28 +1626,28 @@ class NewProjectModelV2 extends React.Component {
     } else {
       mile[index].addSxFlag = true;
     }
-    console.log("77777777", mile[index]);
+    //console.log("77777777", mile[index]);
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-    // console.log("milePostInfo-ccc",removeTitleMile)
+    // //console.log("milePostInfo-ccc",removeTitleMile)
     this.setState({
       mileInfo: {
         ...this.state.mileInfo,
         milePostInfo: this.filterGridLayOut(JSON.parse(JSON.stringify(removeTitleMile)))
       }
     });
-    console.log("88888888", this.state.mileInfo);
+    //console.log("88888888", this.state.mileInfo);
   };
 
   // 添加里程碑事项信息-ccccc
   addMilePostInfoItem = (index, i) => {
     const { mileInfo: { milePostInfo = [] } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
-    // console.log("milePostInfo", milePostInfo)
+    // //console.log("milePostInfo", milePostInfo)
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
     matterInfo[i].sxlb.push({ sxid: '', sxmc: '', type: 'new' });
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-    // console.log("milePostInfo222", removeTitleMile)
+    // //console.log("milePostInfo222", removeTitleMile)
     const arr = this.filterGridLayOut(removeTitleMile);
     this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: arr } });
   };
@@ -1736,18 +1767,18 @@ class NewProjectModelV2 extends React.Component {
   };
 
   onChange = minicurrent => {
-    // console.log('onChange:', minicurrent);
+    // //console.log('onChange:', minicurrent);
     this.setState({ minicurrent });
     let heightTotal = 0;
     //滚动到指定高度
     if (minicurrent) {
       for (let i = 0; i < minicurrent; i++) {
-        // console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
+        // //console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
         heightTotal = heightTotal + document.getElementById("milePost" + i).offsetHeight;
       }
     }
     heightTotal = heightTotal + (7.8 * (minicurrent - 1) + 11.8)
-    // console.log('height222', heightTotal);
+    // //console.log('height222', heightTotal);
     document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
     // document.getElementById("milePost" + minicurrent).style.backgroundColor='red'
   };
@@ -1783,10 +1814,10 @@ class NewProjectModelV2 extends React.Component {
   }
 
   onChange0 = current => {
-    // console.log("this.state.current", this.state.current)
-    // console.log("index", current)
+    // //console.log("this.state.current", this.state.current)
+    // //console.log("index", current)
     let currentindex = this.state.current;
-    // console.log("currentindex", currentindex)
+    // //console.log("currentindex", currentindex)
     //验证项目名称必填，在点击下一步的时候就要验证
     if (this.state.current === 0) {
       let bool = false; //为true时结束该函数
@@ -1847,16 +1878,16 @@ class NewProjectModelV2 extends React.Component {
 
   handleClose = removedTag => {
     const tags = this.state.tags.filter(tag => tag !== removedTag);
-    // console.log(tags);
+    // //console.log(tags);
     this.setState({ tags });
   };
 
   showInput = (index, i) => {
-    // console.log("iiiii", i)
-    // console.log("index", index)
+    // //console.log("iiiii", i)
+    // //console.log("index", index)
     this[`${index}inputRef${i}`] = React.createRef();
     // this.setState({inputVisible: i}, () => this.mySelect.focus());
-    this.setState({ inputVisible: `${index}+${i}` }, () => this[`${index}inputRef${i}`].current.focus());
+    this.setState({inputVisible: `${index}+${i}`}, () => this[`${index}inputRef${i}`].current.focus());
   };
 
 
@@ -1896,10 +1927,10 @@ class NewProjectModelV2 extends React.Component {
     } else if (flag !== sxlb.length) {
       message.warn("已存在,请勿重复添加！")
     }
-    // console.log("milemile",mile)
+    // //console.log("milemile",mile)
     mile[index].flag = false;
     const arr = this.filterGridLayOut(mile);
-    console.log("arrarrarrarr", arr)
+    //console.log("arrarrarrarr", arr)
     arr.forEach(item => {
       //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
       item.matterInfos.map(item => {
@@ -1910,19 +1941,19 @@ class NewProjectModelV2 extends React.Component {
         }
       })
     });
-    // console.log("arrarr",arr)
+    // //console.log("arrarr",arr)
     this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
-    // console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
+    // //console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
   };
 
   //添加事项
   addSwlx = (e, index) => {
-    // console.log("eeee",e)
-    // console.log("index",index)
+    // //console.log("eeee",e)
+    // //console.log("index",index)
     this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
     //添加事项类型
-    // console.log("eeeee", e)
-    // console.log("index", index)
+    // //console.log("eeeee", e)
+    // //console.log("index", index)
     const {mileInfo: {milePostInfo = []},} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
@@ -1956,7 +1987,7 @@ class NewProjectModelV2 extends React.Component {
           flag = true;
         }
       })
-      // console.log("matterInfo", matterInfo);
+      // //console.log("matterInfo", matterInfo);
       if (flag) {
         let num = -1;
         message.warn("已存在,请勿重复添加！")
@@ -1989,7 +2020,7 @@ class NewProjectModelV2 extends React.Component {
       } else {
         mile[index].addSxFlag = true;
       }
-      console.log("77777777", mile[index]);
+      //console.log("77777777", mile[index]);
       this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
     }
   }
@@ -2013,7 +2044,7 @@ class NewProjectModelV2 extends React.Component {
   }
 
   onRygwSelectChange = (e) => {
-    // console.log("eeee",e)
+    // //console.log("eeee",e)
     this.setState({
       onRygwSelectValue: e,
     })
@@ -2024,14 +2055,14 @@ class NewProjectModelV2 extends React.Component {
     if (onRygwSelectValue !== '') {
       const filter = rygwDictionary.filter(item => item.ibm === onRygwSelectValue)
       staffJobList.push(filter[0]);
-      // console.log("staffJobList",staffJobList)
-      // console.log("rygwSelectDictionary",rygwSelectDictionary)
+      // //console.log("staffJobList",staffJobList)
+      // //console.log("rygwSelectDictionary",rygwSelectDictionary)
       let newArr = staffJobList.concat()
       let newArray = rygwDictionary.filter(function (item) {
         return newArr.indexOf(item) === -1
       });
       // let newArray = rygwSelectDictionary.filter(item => item.ibm !== filter[0].ibm)
-      // console.log("newArray", newArray)
+      // //console.log("newArray", newArray)
       this.setState({
         rygwSelectDictionary: newArray,
         rygwSelect: false,
@@ -2089,17 +2120,17 @@ class NewProjectModelV2 extends React.Component {
       loginUser = [],
       projectBudgetChangeFlag = false,
     } = this.state;
-    // console.log("orgExpendKeys", orgExpendKeys)
-    // console.log("organizationTreeList", organizationTreeList)
-    const { getFieldDecorator } = this.props.form;
+    // //console.log("orgExpendKeys", orgExpendKeys)
+    // //console.log("organizationTreeList", organizationTreeList)
+    const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
-        xs: { span: 24 },
-        sm: { span: 7 },
+        xs: {span: 24},
+        sm: {span: 7},
       },
       wrapperCol: {
-        xs: { span: 24 },
-        sm: { span: 14 },
+        xs: {span: 24},
+        sm: {span: 14},
       },
     };
     const budgetFormItemLayout = {
@@ -2115,30 +2146,30 @@ class NewProjectModelV2 extends React.Component {
     const steps = [
       {
         title: <span>
-          <div>项目基本及预算信息</div>
-          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>项目信息填写</div>
+          <div style={{color: this.state.current === 0 && '#292929'}}>项目基本及预算信息</div>
+          <div style={{fontSize: '12px', color: '#999', fontWeight: 500, lineHeight: '24px'}}>项目信息填写</div>
         </span>,
         content: '',
       },
       {
         title: <span>
           <div>里程碑信息</div>
-          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>里程碑信息填写</div>
+          <div style={{fontSize: '12px', color: '#999', fontWeight: 500, lineHeight: '24px'}}>里程碑信息填写</div>
         </span>,
       },
       {
         title: <span>
           <div>人员信息</div>
-          <div style={{ fontSize: '2.038rem', color: '#999', lineHeight: '3rem' }}>项目参与人员信息填写</div>
+          <div style={{fontSize: '12px', color: '#999', fontWeight: 500, lineHeight: '24px'}}>项目参与人员信息填写</div>
         </span>,
       },
     ];
     const ministeps = [];
-    // console.log("milePostInfo", milePostInfo)
+    // //console.log("milePostInfo", milePostInfo)
     milePostInfo.map(item => {
       let params;
       params = {
-        title: <div style={{ fontSize: '2.7rem' }}>{item.lcbmc}</div>
+        title: <div style={{fontSize: '14px'}}>{item.lcbmc}</div>
       }
       ministeps.push(params)
     })
@@ -2160,7 +2191,7 @@ class NewProjectModelV2 extends React.Component {
                 <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
                     <Step key={index} title={item.title}
-                          status={isFinish === 2 ? (index === 2 ? 'wait' : 'finish') : (isFinish === index ? 'finish' : 'wait')}/>
+                          status={isFinish === 2 ? (index === 2 ? 'wait' : 'finish') : (current === index ? (isFinish === index ? 'finish' : 'process') : (isFinish === index ? 'finish' : 'wait'))}/>
                   ))}
                 </Steps>
               </div>
@@ -2170,11 +2201,17 @@ class NewProjectModelV2 extends React.Component {
                     {/*<Icon type="caret-down" onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}*/}
                     {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
                     <span style={{
-                      paddingLeft: '1rem',
-                      fontSize: '3rem',
+                      paddingLeft: '6px',
+                      fontSize: '14px',
+                      lineHeight: '19px',
                       fontWeight: 'bold',
-                      borderLeft: '4px solid #3461FF'
-                    }}>基本信息</span>
+                      color: '#333333',
+                      display: 'flex',
+                      // borderLeft: '4px solid #3461FF'
+                    }}><div style={{
+                      width: '4px',
+                      height: '12px', background: '#3461FF', lineHeight: '19px', margin: '3.5px 3.5px 0 0'
+                    }}> </div>基本信息</span>
                   </div>
                   <Form {...basicFormItemLayout} ref={e => this.basicForm = e}
                         onSubmit={e => this.handleFormValidate(e)}>
@@ -2232,14 +2269,35 @@ class NewProjectModelV2 extends React.Component {
                           {getFieldDecorator('projectLabel', {
                             initialValue: basicInfo.projectLabel
                           })(
-                            <Select showSearch
-                              showArrow={true}
-                              mode="multiple"
-                              onChange={(e, nodeArr) => {
-                                let labelTxt = nodeArr.map(x => x.props.children);
+                            <TreeSelect
+                              multiple
+                              showSearch
+                              treeNodeFilterProp="title"
+                              style={{width: '100%'}}
+                              tagRender={item => {
+                                return "weqweqwe" + item;
+                              }}
+                              maxTagCount={2}
+                              maxTagTextLength={42}
+                              maxTagPlaceholder={extraArr => {
+                                return `等${extraArr.length + 2}个`;
+                              }}
+                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                              treeData={projectLabelList}
+                              treeCheckable
+                              placeholder="请选择项目标签"
+                              // treeDefaultExpandAll
+                              // treeDefaultExpandedKeys={orgExpendKeys}
+                              getPopupContainer={triggerNode => triggerNode.parentNode}
+                              onChange={(e, nodeArr, extra) => {
+                                //选根节点的话入参就是把这个根节点里面的标签都选上
+                                console.log("extraextra", extra)
+                                let labelTxt = nodeArr.map(x => x);
                                 labelTxt = labelTxt.join(';');
+                                console.log("labelTxt", labelTxt)
+                                console.log("eeeeee", e)
                                 this.setState({
-                                  basicInfo: { ...basicInfo, projectLabel: e, labelTxt }
+                                  basicInfo: {...basicInfo, projectLabel: e, labelTxt}
                                 });
                                 this.fetchQueryMilepostInfo({
                                   type: basicInfo.projectType,
@@ -2250,17 +2308,7 @@ class NewProjectModelV2 extends React.Component {
                                   queryType: "ALL"
                                 });
                               }}
-                              filterOption={(input, option) =>
-                                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                              }>
-                              {
-                                projectLabelList.length > 0 && projectLabelList.map((item, index) => {
-                                  return (
-                                    <Option key={index} value={item.id}>{item.bqmc}</Option>
-                                  )
-                                })
-                              }
-                            </Select>
+                            />
                           )}
                         </Form.Item>
                       </Col>
@@ -2282,15 +2330,22 @@ class NewProjectModelV2 extends React.Component {
                               multiple
                               showSearch
                               treeNodeFilterProp="title"
-                              style={{ width: '100%' }}
-                              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                              style={{width: '100%'}}
+                              maxTagCount={2}
+                              maxTagTextLength={42}
+                              maxTagPlaceholder={extraArr => {
+                                return `等${extraArr.length + 2}个`;
+                              }}
+                              dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={organizationTreeList}
                               placeholder="请选择应用部门"
+                              treeCheckable
                               // treeDefaultExpandAll
+                              getPopupContainer={triggerNode => triggerNode.parentNode}
                               treeDefaultExpandedKeys={orgExpendKeys}
                               onChange={e => {
                                 this.setState({
-                                  basicInfo: { ...basicInfo, org: e }
+                                  basicInfo: {...basicInfo, org: e}
                                 })
                               }}
                             />
@@ -2375,11 +2430,17 @@ class NewProjectModelV2 extends React.Component {
                       {/*<Icon type="caret-down" onClick={() => this.setState({budgetInfoCollapse: !budgetInfoCollapse})}*/}
                       {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
                       <span style={{
-                        paddingLeft: '1rem',
-                        fontSize: '3rem',
+                        paddingLeft: '6px',
+                        fontSize: '14px',
+                        lineHeight: '19px',
                         fontWeight: 'bold',
-                        borderLeft: '4px solid #3461FF'
-                      }}>预算信息</span>
+                        color: '#333333',
+                        display: 'flex',
+                        // borderLeft: '4px solid #3461FF'
+                      }}><div style={{
+                        width: '4px',
+                        height: '12px', background: '#3461FF', lineHeight: '19px', margin: '3.5px 3.5px 0 0'
+                      }}> </div>预算信息</span>
                     </div>
                     {/*<Form {...budgetFormItemLayout} onSubmit={e => this.handleFormValidate(e)} style={{width: '98%'}}>*/}
                     <Row gutter={24}>
@@ -2456,7 +2517,7 @@ class NewProjectModelV2 extends React.Component {
                                 budgetProjectList.forEach(item => {
                                   item?.children?.forEach(ite => {
                                     if (e === '0备用预算') {
-                                      // console.log("iteiteiteite",ite)
+                                      // //console.log("iteiteiteite",ite)
                                       const _this = this;
                                       this.setState({
                                         budgetInfo: {
@@ -2476,7 +2537,7 @@ class NewProjectModelV2 extends React.Component {
                                     }
                                     ite?.children?.forEach(i => {
                                       if (i.value === e) {
-                                        // console.log("iiiiii",i)
+                                        // //console.log("iiiiii",i)
                                         const _this = this;
                                         this.setState({
                                           budgetInfo: {
@@ -2594,7 +2655,7 @@ class NewProjectModelV2 extends React.Component {
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
-                          // console.log("itemitemitem", item)
+                          // //console.log("itemitemitem", item)
                           const { matterInfos = {} } = item;
                           const swlxmcs = matterInfos.map(item => item.swlxmc)
                           swlxarr = swlxarr.filter(item => {
@@ -2663,8 +2724,9 @@ class NewProjectModelV2 extends React.Component {
                                       }}>
                                           <span style={{
                                             paddingLeft: '6px',
-                                            fontSize: '2.5rem',
-                                            // fontWeight: 'bold',
+                                            fontSize: '14px',
+                                            lineHeight: '20px',
+                                            fontWeight: 500,
                                           }}><span style={{
                                             fontFamily: 'SimSun, sans-serif',
                                             color: '#f5222d',
@@ -2676,13 +2738,13 @@ class NewProjectModelV2 extends React.Component {
                                         </span>
                                       </div>
                                       <div style={{
-                                        paddingLeft: '2rem',
+                                        paddingLeft: '12px',
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        width: '335px'
+                                        width: '270px'
                                       }} id="datePicker">
-                                        <DatePicker format="YYYY-MM-DD"
+                                        <DatePicker format="YYYY.MM.DD"
                                                     value={moment(item.kssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
@@ -2691,14 +2753,14 @@ class NewProjectModelV2 extends React.Component {
                                                       isCollapse: false
                                                     })}/>
                                         <div style={{
-                                          fontSize: '2.5rem',
+                                          fontSize: '14px',
                                           fontWeight: 'bold',
-                                          padding: '0 12px',
+                                          padding: '0 8px',
                                           display: 'flex',
                                           alignItems: 'center',
                                         }}>~
                                         </div>
-                                        <DatePicker format="YYYY-MM-DD"
+                                        <DatePicker format="YYYY.MM.DD"
                                                     value={moment(item.jssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
@@ -2710,7 +2772,7 @@ class NewProjectModelV2 extends React.Component {
                                     </div>
                                     {
                                       item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                        // console.log("e.sxlb", e.sxlb)
+                                        // //console.log("e.sxlb", e.sxlb)
                                         const { sxlb = {} } = e;
                                         const sxids = sxlb.map(item => item.sxid)
                                         mileItemInfo = mileItemInfo.filter(item => {
@@ -2732,10 +2794,10 @@ class NewProjectModelV2 extends React.Component {
                                                   if (sx.type && sx.type === 'title' && sx_index === 0) {
                                                     return (
                                                       <div key={String(sx_index + 1)} style={{
-                                                        // paddingTop: '3rem',
-                                                        // fontWeight: 'bold',
-                                                        fontSize: '2.5rem',
-                                                        textAlign: 'end'
+                                                        fontSize: '14px',
+                                                        lineHeight: '20px',
+                                                        fontWeight: 500,
+                                                        textAlign: 'end',
                                                       }}>
                                                         {e.swlxmc || ''}
                                                       </div>
@@ -2752,7 +2814,7 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                     // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
                                                     onChange={(e) => {
-                                                      // console.log("eeee-cc",e)
+                                                      // //console.log("eeee-cc",e)
                                                       this.setState({ inputValue: e })
                                                     }}
                                                     //milePostInfo[index].matterInfos[i].length
@@ -2799,7 +2861,7 @@ class NewProjectModelV2 extends React.Component {
                                               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                    // console.log("sxsxsx",sx)
+                                                    // //console.log("sxsxsx",sx)
                                                     if (!sx.type && sx_index !== 0) {
                                                       return (
                                                         <div key={String(sx_index + 1)}
@@ -2808,8 +2870,10 @@ class NewProjectModelV2 extends React.Component {
                                                             <React.Fragment>
                                                               <span title={sx.sxmc}
                                                                     style={{
-                                                                      fontSize: '2.5rem',
-                                                                      padding: '8px 0'
+                                                                      fontSize: '12px',
+                                                                      padding: '8px 0',
+                                                                      color: '#666666',
+                                                                      lineHeight: '16px'
                                                                     }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                               {
                                                                 <span
@@ -2842,9 +2906,9 @@ class NewProjectModelV2 extends React.Component {
                                                     }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                        // console.log("mileItemInfo.length",mileItemInfo.length)
+                                                        // //console.log("mileItemInfo.length",mileItemInfo.length)
                                                         if (mi.swlx === e.swlxmc) {
-                                                          console.log("flag")
+                                                          //console.log("flag")
                                                           return (
                                                             <Option title={mi.sxmc} key={mi_index}
                                                                     value={mi.sxid}>{mi.sxmc}</Option>
@@ -2854,10 +2918,10 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{margin: '6px'}}><Tag
-                                                    style={{background: '#fff'}}>
+                                                  <div style={{margin: '12px 6px'}}><Tag
+                                                    style={{background: '#fff', border: 'none'}}>
                                                     <a className="iconfont circle-add"
-                                                       style={{fontSize: '2.381rem', color: 'rgb(51, 97, 255)',}}
+                                                       style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
                                                        onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag></div>)
                                                 }
@@ -2917,8 +2981,8 @@ class NewProjectModelV2 extends React.Component {
                                     <div className="addMilePost"
                                          style={{width: 'calc(46% + 3.5rem)', marginTop: '12px'}}
                                          onClick={() => this.addSwlx(item?.lcblxid, index)}>
-                                      <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
-                                      style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>添加事项</span>
+                                      <Icon type="plus" style={{fontSize: '12px'}}/><span
+                                      style={{paddingLeft: '6px', fontSize: '14px'}}>添加事项</span>
                                     </div>
                                     }
                                   </div>
@@ -2929,10 +2993,20 @@ class NewProjectModelV2 extends React.Component {
                                         <div style={{marginTop: '12px'}}>
                                           <span style={{
                                             paddingLeft: '6px',
-                                            fontSize: '2.5rem',
+                                            fontSize: '14px',
+                                            lineHeight: '19px',
                                             fontWeight: 'bold',
-                                            borderLeft: '4px solid #3461FF'
-                                          }}>{item.lcbmc}</span>
+                                            color: '#333333',
+                                            display: 'flex',
+                                            // borderLeft: '4px solid #3461FF'
+                                          }}><div style={{
+                                            width: '4px',
+                                            height: '12px',
+                                            background: '#3461FF',
+                                            lineHeight: '19px',
+                                            margin: '3.5px 3.5px 0 0'
+                                          }}> </div>
+                                            {item.lcbmc}</span>
                                         </div>
                                       </div>
                                       {
@@ -2983,8 +3057,9 @@ class NewProjectModelV2 extends React.Component {
                                       }}>
                                           <span style={{
                                             paddingLeft: '6px',
-                                            fontSize: '2.5rem',
-                                            // fontWeight: 'bold',
+                                            fontSize: '14px',
+                                            lineHeight: '20px',
+                                            fontWeight: 500,
                                           }}><span style={{
                                             fontFamily: 'SimSun, sans-serif',
                                             color: '#f5222d',
@@ -3000,9 +3075,9 @@ class NewProjectModelV2 extends React.Component {
                                         position: 'relative',
                                         display: 'flex',
                                         flexDirection: 'row',
-                                        width: '335px'
+                                        width: '270px'
                                       }} id="datePicker">
-                                        <DatePicker format="YYYY-MM-DD"
+                                        <DatePicker format="YYYY.MM.DD"
                                                     value={moment(item.kssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
@@ -3011,14 +3086,14 @@ class NewProjectModelV2 extends React.Component {
                                                       isCollapse: false
                                                     })}/>
                                         <div style={{
-                                          fontSize: '2.5rem',
+                                          fontSize: '14px',
                                           fontWeight: 'bold',
-                                          padding: '0 12px',
+                                          padding: '0 8px',
                                           display: 'flex',
                                           alignItems: 'center',
                                         }}>~
                                         </div>
-                                        <DatePicker format="YYYY-MM-DD"
+                                        <DatePicker format="YYYY.MM.DD"
                                                     value={moment(item.jssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
@@ -3031,7 +3106,7 @@ class NewProjectModelV2 extends React.Component {
                                     </div>
                                     {
                                       item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                        // console.log("e.sxlb", e.sxlb)
+                                        // //console.log("e.sxlb", e.sxlb)
                                         //过滤已有条目
                                         const {sxlb = {}} = e;
                                         const sxids = sxlb.map(item => item.sxid)
@@ -3039,8 +3114,8 @@ class NewProjectModelV2 extends React.Component {
                                           const {sxid} = item;
                                           return !sxids.includes(sxid)
                                         })
-                                        // console.log("mileItemInfo", mileItemInfo)
-                                        // console.log("e.swlxmc", e)
+                                        // //console.log("mileItemInfo", mileItemInfo)
+                                        // //console.log("e.swlxmc", e)
                                         return (
                                           <div className="flow" key={i} style={{
                                             display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
@@ -3061,9 +3136,9 @@ class NewProjectModelV2 extends React.Component {
                                                   if (sx.type && sx.type === 'title' && sx_index === 0) {
                                                     return (
                                                       <div key={String(sx_index + 1)} style={{
-                                                        // paddingTop: '3rem',
-                                                        // fontWeight: 'bold',
-                                                        fontSize: '2.5rem',
+                                                        fontSize: '14px',
+                                                        lineHeight: '20px',
+                                                        fontWeight: 500,
                                                         textAlign: 'end',
                                                       }}>
                                                         {e.swlxmc || ''}
@@ -3082,7 +3157,7 @@ class NewProjectModelV2 extends React.Component {
                                                       }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
                                                       onChange={(e) => {
-                                                        // console.log("eeee-cc",e)
+                                                        // //console.log("eeee-cc",e)
                                                         this.setState({ inputValue: e })
                                                       }}
                                                       //milePostInfo[index].matterInfos[i].length
@@ -3129,7 +3204,7 @@ class NewProjectModelV2 extends React.Component {
                                               <div style={{ display: 'flex', flexWrap: 'wrap' }}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                    // console.log("sxsxsx",sx)
+                                                    // //console.log("sxsxsx",sx)
                                                     if (!sx.type && sx_index !== 0) {
                                                       return (
                                                         <div key={String(sx_index + 1)}
@@ -3138,8 +3213,10 @@ class NewProjectModelV2 extends React.Component {
                                                             <React.Fragment>
                                                               <span title={sx.sxmc}
                                                                     style={{
-                                                                      fontSize: '2.5rem',
-                                                                      padding: '8px 0'
+                                                                      fontSize: '12px',
+                                                                      padding: '8px 0',
+                                                                      color: '#666666',
+                                                                      lineHeight: '16px'
                                                                     }}>{sx.sxmc.length > 10 ? (sx.sxmc.substring(0, 10) + '...') : sx.sxmc}</span>
                                                               {
                                                                 <span
@@ -3173,7 +3250,7 @@ class NewProjectModelV2 extends React.Component {
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                         if (mi.swlx === e.swlxmc) {
-                                                          console.log("flag")
+                                                          //console.log("flag")
                                                           return (
                                                             <Option title={mi.sxmc} key={mi_index}
                                                                     value={mi.sxid}>{mi.sxmc}</Option>
@@ -3183,10 +3260,10 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{margin: '9px'}}><Tag
-                                                    style={{background: '#fff',}}>
+                                                  <div style={{margin: '12px 6px'}}><Tag
+                                                    style={{background: '#fff', border: 'none'}}>
                                                     <a className="iconfont circle-add"
-                                                       style={{fontSize: '2.381rem', color: 'rgb(51, 97, 255)',}}
+                                                       style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
                                                        onClick={() => this.showInput(index, i)}>新增</a>
                                                   </Tag></div>)}
                                                 {
@@ -3244,8 +3321,8 @@ class NewProjectModelV2 extends React.Component {
                                     <div className="addMilePost"
                                          style={{width: 'calc(46% + 3.5rem)', marginTop: '2rem'}}
                                          onClick={() => this.addSwlx(item?.lcblxid, index)}>
-                                      <Icon type="plus" style={{fontSize: '1.7rem'}}/><span
-                                      style={{paddingLeft: '1rem', fontSize: '2.5rem'}}>添加事项</span>
+                                      <Icon type="plus" style={{fontSize: '12px'}}/><span
+                                      style={{paddingLeft: '6px', fontSize: '14px'}}>添加事项</span>
                                     </div>
                                     }
 
@@ -3260,8 +3337,8 @@ class NewProjectModelV2 extends React.Component {
                       }
                       {
                         <div className="addMilePost" onClick={this.addMilePostInfo}>
-                          <Icon type="plus" style={{ fontSize: '1.7rem' }} /><span
-                            style={{ paddingLeft: '1rem', fontSize: '2.5rem' }}>新增里程碑</span>
+                          <Icon type="plus" style={{fontSize: '12px'}}/><span
+                          style={{paddingLeft: '6px', fontSize: '14px'}}>新增里程碑</span>
                         </div>
                       }
 
@@ -3292,13 +3369,17 @@ class NewProjectModelV2 extends React.Component {
 
                     </div>
                     <div className="button">
-                      <Button onClick={this.clickAddStaff}>添加<a className="iconfont icon-right"
-                                                                style={{fontSize: '14px', color: 'inherit'}}/></Button>
+                      <Button style={{border: '1px solid #3461FF', color: '#3461FF'}}
+                              onClick={this.clickAddStaff}>添加&nbsp;<a className="iconfont icon-right"
+                                                                      style={{
+                                                                        fontSize: '12px',
+                                                                        color: 'inherit'
+                                                                      }}/></Button>
                     </div>
                     <div className="job">
                       {
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
-                          console.log("staffJobList", staffJobList)
+                          //console.log("staffJobList", staffJobList)
                           if (item.ibm === '10') {
                             return (
                               <div className="jobItem">
@@ -3337,7 +3418,7 @@ class NewProjectModelV2 extends React.Component {
                                   >
                                     {
                                       searchStaffList.length > 0 && searchStaffList.map((item, index) => {
-                                        console.log("searchStaffList", searchStaffList)
+                                        //console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
                                                          value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
@@ -3388,7 +3469,7 @@ class NewProjectModelV2 extends React.Component {
                                   >
                                     {
                                       searchStaffList.map((item, index) => {
-                                        console.log("searchStaffList", searchStaffList)
+                                        //console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
                                                          value={item.id}>{item.name}({item.orgName})</Select.Option>
