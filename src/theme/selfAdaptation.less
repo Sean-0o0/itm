@@ -404,3 +404,48 @@
     background-color: #3361ffaf;
   }
 }
+
+//可选按钮
+.input-between {
+  // width: 75%;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  // justify-content: center;
+
+  .input-min,
+  .input-max {
+    // width: 14.88rem;
+    text-align: left;
+  }
+
+  .input-to {
+    width: 1em;
+    padding: 7px 0;
+    border-left: 0;
+    border-right: 0;
+    pointer-events: none;
+    background-color: #fff0;
+    border-radius: unset;
+    text-align: center;
+  }
+
+  .input-min {
+    border-right: 0.1488rem solid #fff;
+    border-radius: 4px 0 0 4px;
+
+    &:hover {
+      border-right: 0.1488rem solid #3361ff;
+    }
+  }
+
+  .input-max {
+    border-left: 0.1488rem solid #fff;
+    border-radius: 0 4px 4px 0;
+
+    &:hover {
+      border-left: 0.1488rem solid #3361ff;
+    }
+  }
+}
