@@ -31,9 +31,10 @@ class ToConsole extends Component {
 
     //顶部下拉框查询数据
     getFilterData = () => {
+        const { cxlx = 'FQCY'} = this.props
         QueryProjectListPara({
             paging: -1,
-            cxlx: 'WDLBPT',
+            cxlx: cxlx ==='FQCY'?'WDLBPT':'WDLBLD',
         })
             .then(res => {
                 const { code = 0 } = res;
@@ -282,7 +283,7 @@ class ToConsole extends Component {
         this.setState({
             params: {
                 ...params,
-                ysje1: v
+                ysje1: v.target.value
             }
         })
     };
@@ -292,7 +293,7 @@ class ToConsole extends Component {
         this.setState({
             params: {
                 ...params,
-                ysje2: v
+                ysje2: v.target.value
             }
         })
     };
@@ -495,6 +496,7 @@ class ToConsole extends Component {
                                 className="item-selector"
                                 dropdownClassName="item-selector-dropdown"
                                 onChange={this.handleAmtSltChange}
+                                value = {yssxlx}
                             >
                                 <Select.Option value="SCOPE">区间</Select.Option>
                                 <Select.Option value="BIGGER">大于</Select.Option>

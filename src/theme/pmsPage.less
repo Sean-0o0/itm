@@ -4625,6 +4625,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         height: unset;
         color: #fff !important;
         background-color: #3361ff;
+        border-color: unset;
 
         &:hover {
           background-color: #3361ffaf;
@@ -4633,6 +4634,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .project-info-table-box {
+      .ants-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -4708,68 +4710,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .ant-table-thead {
           position: sticky;
           top: 0;
+          z-index: 1;
         }
 
-        //项目标签
-        .prj-tags {
-          width: 100%;
-          color: #606266;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
-
-          .tag-item {
-            color: #3361ff;
-            font-size: 12px;
-            border: 1px solid hsla(226, 100%, 60%, 0.561);
-            border-radius: 4px;
-            background-color: #3363ff14;
-            padding: 1px 8px 2px 8px;
-            margin-right: 5%;
-            max-width: 38%;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            line-height: initial;
-
-            &:last-child {
-              margin-right: 0;
-            }
-          }
-        }
       }
 
-      .ant-table-pagination {
-        font-size: 14px;
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position: sticky;
-        bottom: 0;
-        background-color: #fff;
-        padding-left: 0;
-
-        .ant-select {
-          font-size: 14px !important;
-        }
-      }
-
-      .ant-pagination-total-text {
-        margin-right: auto;
-        color: #909399;
-      }
-
-      .ant-pagination-options-quick-jumper input {
-        &:hover {
-          border-color: #3361ff;
-        }
-
-        &:focus {
-          border-color: #3361ff;
-          box-shadow: 0 0 0 2px #3361ff33;
-        }
-      }
     }
   }
 
@@ -4798,6 +4743,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         height: unset;
         background-color: #3361ff;
         color: #fff !important;
+        border-color: unset;
 
         &:hover {
           background-color: #3361ffaf;
@@ -5019,6 +4965,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .history-attach-modal {
   .history-attach-body {
     .table-box {
+      .ants-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -5096,38 +5043,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           top: 0;
         }
       }
-
-      .ant-table-pagination {
-        font-size: 14px;
-        // width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position: sticky;
-        bottom: 0;
-        background-color: #fff;
-        padding-left: 0;
-
-        .ant-select {
-          font-size: 14px !important;
-        }
-      }
-
-      .ant-pagination-total-text {
-        // margin-right: auto;
-        color: #303133;
-      }
-
-      .ant-pagination-options-quick-jumper input {
-        &:hover {
-          border-color: #3361ff;
-        }
-
-        &:focus {
-          border-color: #3361ff;
-          box-shadow: 0 0 0 2px #3361ff33;
-        }
-      }
     }
 
     & > .item-box {
@@ -5142,18 +5057,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       &:last-child {
         margin-bottom: 0;
-      }
-
-      .btn-search {
-        font-size: 14px;
-        line-height: 32px;
-        height: 32px;
-        background-color: #3361ff;
-        color: #fff !important;
-
-        &:hover {
-          background-color: #3361ffaf;
-        }
       }
 
       .btn-reset {
@@ -6056,6 +5959,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               .font-weight-400();
               color: #909399;
               line-height: 1em;
+
               .avatar-box {
                 display: flex;
                 flex-direction: row;
@@ -6228,6 +6132,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
     .fj-btn {
       color: #909399;
+
       i {
         font-size: 18px;
       }
@@ -6239,4 +6144,258 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       cursor: pointer;
     }
   }
+}
+
+//人员详情
+.staff-detail-box {
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  &>.top-console,
+  &>.info-table {
+    padding: 16px 24px;
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  &>.info-table {
+    margin: 16px 24px 24px 24px;
+    // height: calc(100vh - 235px);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    &>.btn-add-prj-box {
+      margin-bottom: 16px;
+
+      .btn-add-prj {
+        padding: 9px 12px 10px 12px;
+        font-size: 14px;
+        line-height: unset;
+        height: unset;
+        color: #fff !important;
+        background-color: #3361ff;
+        border-color: unset;
+
+        &:hover {
+          background-color: #3361ffaf;
+        }
+      }
+    }
+
+    .project-info-table-box {
+      .ants-table-adaptation();
+      flex-grow: 1;
+      overflow: hidden;
+      overflow-y: auto;
+      padding-right: 4px;
+
+      .opr-btn-box {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .opr-btn {
+        color: #3361ff;
+        cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .opr-btn:hover {
+        opacity: 0.7;
+      }
+
+      &::-webkit-scrollbar {
+        width: 10px;
+        background-color: #fafafa;
+        border-radius: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 8px;
+      }
+
+      .ant-table {
+        td {
+          padding: 9px;
+          font-size: 14px;
+          font-family: Roboto-Regular, Roboto;
+          font-weight: 400;
+          color: #303133;
+        }
+
+        th {
+          padding: 9px;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: bold;
+          color: #606266;
+        }
+
+        .ant-table-body {
+
+          // min-height: 560px;
+          table {
+            border: 1px solid #e8e8e8;
+          }
+        }
+
+        .ant-table-scroll .ant-table-header {
+          margin-bottom: -16.5px !important; //表格表头底部边框
+          background-color: #f5f7fa;
+        }
+
+        .ant-table-placeholder {
+          border-bottom: 0;
+
+          .ant-empty-description {
+            font-size: 14px;
+          }
+        }
+
+        .ant-table-thead {
+          position: sticky;
+          top: 0;
+        }
+
+        //项目标签
+        .prj-tags {
+          width: 100%;
+          color: #606266;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .tag-item {
+            color: #3361ff;
+            font-size: 12px;
+            border: 1px solid hsla(226, 100%, 60%, 0.561);
+            border-radius: 4px;
+            background-color: #3363ff14;
+            padding: 1px 8px 2px 8px;
+            margin-right: 5%;
+            max-width: 38%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: initial;
+
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+
+      .ant-table-pagination {
+        font-size: 14px;
+        width: 100%;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        position: sticky;
+        bottom: 0;
+        background-color: #fff;
+        padding-left: 0;
+
+        .ant-select {
+          font-size: 14px !important;
+        }
+      }
+      .ant-pagination-item-active {
+        background-color: #3361ff;
+        a {
+          color: #fff;
+        }
+      }
+      .ant-pagination-item {
+        border: 0;
+      }
+      .ant-pagination-total-text {
+        margin-right: auto;
+        color: #909399;
+      }
+      .ant-pagination-disabled {
+        background-color: #f5f7fa;
+        a {
+          background-color: #f5f7fa;
+        }
+      }
+
+      .ant-pagination-options-quick-jumper input {
+        &:hover {
+          border-color: #3361ff;
+        }
+
+        &:focus {
+          border-color: #3361ff;
+          box-shadow: 0 0 0 2px #3361ff33;
+        }
+      }
+    }
+  }
+
+  &>.top-console {
+    flex-shrink: 0;
+    border-radius: 0;
+    padding: 0;
+
+    .back-img {
+      padding: 16px 24px;
+      width: 100%;
+      background: url(/static/bg_bianzu.4dab31c7.png) no-repeat bottom right;
+      background-size: 60% 50%;
+
+      .staff-info-header {
+        padding: 0 12px;
+        margin: 20px 0 8px;
+
+        .header-left {
+          .staff-img {
+            height: 90px;
+          }
+
+          .staff-info-cont {
+            padding-left: 16px;
+
+            .staff-line-import {
+              .staff-name {
+                font-size: 24px;
+                font-family: PingFangSC-Medium, PingFang SC;
+                font-weight: 500;
+                color: #303133;
+                line-height: 34px;
+                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+              }
+
+              .staff-experience {
+                font-size: 14px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: #999999;
+                line-height: 34px;
+                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+              }
+            }
+
+            .staff-line{
+              align-items: flex-end;
+              
+            }
+          }
+        }
+
+      }
+    }
+  }
+
 }

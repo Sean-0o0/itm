@@ -68,4 +68,9 @@ exports.routes = [
     path: `${prefix}/HomePage`,
     component: './pmsPage/HomePage',
   },
+  {
+    // 人员详情
+    path: `${prefix}/staffDetail`,
+    component: './pmsPage/StaffDetail',
+  },
 ];

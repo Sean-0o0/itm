@@ -4,30 +4,39 @@
 .font-size-12() {
   font-size: 12px;
 }
+
 .font-size-13() {
   font-size: 13px;
 }
+
 .font-size-14() {
   font-size: 14px;
 }
+
 .font-size-15() {
   font-size: 15px;
 }
+
 .font-size-16() {
   font-size: 16px;
 }
+
 .font-size-18() {
   font-size: 18px;
 }
+
 .font-size-20() {
   font-size: 20px;
 }
+
 .font-size-24() {
   font-size: 24px;
 }
+
 .font-size-32() {
   font-size: 32px;
 }
+
 .font-size-default() {
   font-size: 14px;
 }
@@ -38,14 +47,18 @@
   src: url('../assets//fonts/THSMoneyfont-Medium.otf');
   /* IE9*/
   src: url('../assets//fonts/THSMoneyfont-Medium.otf#iefix') format('embedded-opentype'),
-    /* IE6-IE8 */ url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype');
+    /* IE6-IE8 */
+    url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype');
 }
+
 .font-family-roboto() {
   font-family: Roboto-Regular, Roboto;
 }
+
 .font-family-pingfangsc() {
   font-family: PingFangSC-Regular, PingFang SC;
 }
+
 .font-family-default() {
   font-family: ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto,
     'Helvetica Neue', Arial, 'Noto Sans', sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji',
@@ -56,6 +69,7 @@
 .font-weight-400() {
   font-weight: 400;
 }
+
 .font-weight-500() {
   font-weight: bold;
 }
@@ -64,9 +78,11 @@
 .padding-24() {
   padding: 24px;
 }
+
 .padding-16() {
   padding: 16px;
 }
+
 .padding-16-24() {
   padding: 16px 24px;
 }
@@ -75,9 +91,11 @@
 .margin-24() {
   margin: 24px;
 }
+
 .margin-16() {
   margin: 16px;
 }
+
 .margin-16-24() {
   margin: 16px 24px;
 }
@@ -92,11 +110,13 @@
   -webkit-border-radius: 4px;
   border-radius: 4px;
 }
+
 .border-radius-8() {
   -moz-border-radius: 8px;
   -webkit-border-radius: 8px;
   border-radius: 8px;
 }
+
 .border-radius-10() {
   -moz-border-radius: 10px;
   -webkit-border-radius: 10px;
@@ -115,6 +135,7 @@
 
 //输入框、下拉框字体大小
 .ant-font-size-adaptation() {
+
   // .ant-checkbox-wrapper,
   .ant-input,
   .ant-select {
@@ -221,6 +242,7 @@
   .ant-select-tree li span.ant-select-tree-switcher {
     position: relative;
   }
+
   .ant-select-tree-switcher_open::before,
   .ant-select-tree-switcher_close::before {
     content: '';
@@ -266,10 +288,12 @@
     .ant-table-placeholder {
       // height: 450px;
       border-bottom: 0;
+
       .ant-empty-description {
         font-size: 14px;
       }
     }
+
     .ant-table-thead {
       position: sticky;
       top: 0;
@@ -285,20 +309,43 @@
     position: sticky;
     bottom: 0;
     background-color: #fff;
-    padding-left: 0;
+    padding: 8px 0;
+
     .ant-select {
       font-size: 14px !important;
     }
   }
+
+  .ant-pagination-item-active {
+    background-color: #3361ff;
+
+    a {
+      color: #fff;
+    }
+  }
+
+  .ant-pagination-item {
+    border: 0;
+  }
+
   .ant-pagination-total-text {
     margin-right: auto;
     color: #909399;
+  }
+
+  .ant-pagination-disabled {
+    background-color: #f5f7fa;
+
+    a {
+      background-color: #f5f7fa;
+    }
   }
 
   .ant-pagination-options-quick-jumper input {
     &:hover {
       border-color: #3361ff;
     }
+
     &:focus {
       border-color: #3361ff;
       box-shadow: 0 0 0 2px #3361ff33;
@@ -318,6 +365,7 @@
       color: #fff;
     }
   }
+
   .body-title-box {
     height: 42px;
     width: 100%;
@@ -329,14 +377,30 @@
     border-radius: 8px 8px 0 0;
     .font-s15();
 
-    & > img {
+    &>img {
       height: 14px;
       margin-left: auto;
       margin-right: 25px;
       cursor: pointer;
     }
   }
+
   .body-cont {
     padding: 25px;
+  }
+}
+
+// 操作按钮
+.btn-search {
+  padding: 9px 12px 10px 12px;
+  font-size: 14px;
+  line-height: unset;
+  height: unset;
+  color: #fff !important;
+  background-color: #3361ff;
+  border-color: unset;
+
+  &:hover {
+    background-color: #3361ffaf;
   }
 }

@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import TopConsole from './TopConsole'
 import InfoTable from './InfoTable'
 import { message } from 'antd'
-import { QueryAttachLibraryList } from '../../../services/pmsServices'
+import { QueryAttachLibraryList, QueryUserRole } from '../../../services/pmsServices'
 
 class AttachLibrary extends Component {
     state = {
@@ -12,24 +12,41 @@ class AttachLibrary extends Component {
             pageSize: 10,
             paging: 1,
             total: -1,
-            sort: ''
+            sort: '',
         },
+        cxlx: 'FQCY',
         tableLoading: false
     }
 
     componentDidMount() {
-        this.handleSearch()
+        const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
+        if (LOGIN_USERID) {
+            QueryUserRole({
+                userId: Number(LOGIN_USERID),
+            }).then(res => {
+                const { code = 0, role } = res
+                if (code > 0) {
+                    this.setState({
+                        cxlx: role === '普通人员' ? 'FQCY' : 'BM'
+                    },()=>{
+                        this.handleSearch()
+                    })
+                }
+            })
+        }
     }
 
-    handleSearch = (params = {}) => {
-        const { pageParams = {} } = this.state
+    handleSearch = async (params = {}) => {
+        const { pageParams = {}, cxlx } = this.state
         this.setState({
             tableLoading: true,
         })
+
         QueryAttachLibraryList({
             ...pageParams,
             ...params,
             total: -1,
+            cxlx
         })
             .then((res = {}) => {
                 const { code, record = [], total = 0 } = res;
@@ -43,7 +60,7 @@ class AttachLibrary extends Component {
                             total,
                         }
                     })
-                }else {
+                } else {
                     this.setState({
                         tableLoading: false,
                     })
@@ -57,10 +74,10 @@ class AttachLibrary extends Component {
     }
 
     render() {
-        const { tableLoading = false, attachList = [], pageParams } = this.state
+        const { tableLoading = false, attachList = [], pageParams, cxlx } = this.state
         const { dictionary } = this.props;
         return (<div className="attach-library-box">
-            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} />
+            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx}/>
             <InfoTable tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
         </div>);
     }
