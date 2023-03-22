@@ -300,6 +300,21 @@
     }
   }
 
+  &::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+
+  &::-webkit-scrollbar-thumb {
+    border-radius: 4px;
+    background: #D8D8D8;
+  }
+
+  &::-webkit-scrollbar-track {
+    border-radius: 4px;
+    background: #FFFFFF;
+  }
+
   .ant-table-pagination {
     font-size: 14px;
     width: 100%;
@@ -399,6 +414,7 @@
   color: #fff !important;
   background-color: #3361ff;
   border-color: unset;
+  box-shadow: unset;
 
   &:hover {
     background-color: #3361ffaf;
