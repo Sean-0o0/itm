@@ -22,6 +22,7 @@ import UploadReceipt from './UploadReceipt';
 import SelectReceipt from './SelectReceipt';
 import { QueryCreatePaymentInfo } from '../../../../../../services/pmsServices';
 import TreeUtils from '../../../../../../utils/treeUtils';
+import { set } from 'store';
 const { TextArea } = Input;
 
 const AddExpense = props => {
@@ -64,9 +65,18 @@ const AddExpense = props => {
   const [selectReceiptVisible, setSelectReceiptVisible] = useState(false);
   //下拉框数据
   const [selectorData, setSelectorData] = useState([]);
-  // const [fylxData, setfylxData] = useState([]); //费用类型
-  // const [fplxData, setFplxData] = useState([]); //发票类型
-  // const [ysxmData, setYsxmData] = useState([]); //预算项目
+  //费用类型数据 - 原非树数据
+  const [fylxData, setFylxData] = useState([]);
+  //预算项目数据 - 原非树数据
+  const [ysxmData, setYsxmData] = useState([]);
+  //是否有预算项目
+  const [isBudget, setIsBudget] = useState(false);
+  //费用类型数据
+  const [fylxInfo, setFylxInfo] = useState({});
+  //发票类型数据
+  const [fplxInfo, setFplxInfo] = useState({});
+  //预算项目数据
+  const [ysxmInfo, setYsxmInfo] = useState({});
   //附件上传
   const { visible, setVisible, form, userykbid } = props;
   const { getFieldDecorator, getFieldValue, validateFields } = form;
@@ -75,25 +85,22 @@ const AddExpense = props => {
     return () => {};
   }, []);
 
+  //下拉框数据
   const getSelectorAData = () => {
     QueryCreatePaymentInfo({
       czr: 0,
     })
       .then(res => {
         if (res?.success) {
-          console.log(
-            '🚀 ~ QueryCreatePaymentInfo ~ res',
-            JSON.parse(res.fylxRecord),
-            JSON.parse(res.fplxRecord),
-            JSON.parse(res.ysxmRecord),
-          );
           let fyTree = TreeUtils.toTreeData(JSON.parse(res.fylxRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
             titleName: 'NAME',
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
+            persistPrimaryData: true,
           })[0].children[0];
+          setFylxData(p => [...JSON.parse(res.fylxRecord)]);
           let ysTree = TreeUtils.toTreeData(JSON.parse(res.ysxmRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
@@ -101,12 +108,14 @@ const AddExpense = props => {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
+          setYsxmData(p => [...JSON.parse(res.ysxmRecord)]);
           let obj = {
             fylxData: fyTree,
             fplxData: JSON.parse(res.fplxRecord),
             ysxmData: ysTree,
           };
           setSelectorData(p => obj);
+          // console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorAData ~ obj', obj);
         }
       })
       .catch(e => {
@@ -114,13 +123,43 @@ const AddExpense = props => {
       });
   };
 
+  //提交数据 - 确定
   const handleSubmit = () => {
     validateFields(err => {
       if (!err) {
         setVisible(false);
+        let submitData = {
+          consumptionReasons: getFieldValue('xfsy'),
+          date: '',
+          taxAmount: getFieldValue('se'),
+          je: getFieldValue('je'),
+          fylxInfo,
+          fplxInfo,
+          ysxmInfo,
+          receiptFileInfo:{
+            base64:formData?.receiptFileUrl,
+            name: formData?.receiptFileName,
+          },
+          OAProcessFileInfo:{
+            base64:formData?.OAProcessFileUrl,
+            name: formData?.OAProcessFileName,
+          },
+          contractFileInfo:{
+            base64:formData?.contractFileUrl,
+            name: formData?.contractFileName,
+          },
+          checkFileInfo:{
+            base64:formData?.checkFileUrl,
+            name: formData?.checkFileName,
+          },
+        };
+        console.log("🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData", submitData)
+        // 
       }
     });
   };
+
+  //关闭弹窗
   const handleClose = () => {
     setVisible(false);
   };
@@ -138,32 +177,44 @@ const AddExpense = props => {
   };
   const handleDateChange = () => {};
 
-  const handleFylxChange = (v, node) => {
-    console.log('🚀 ~ file: index.js ~ line 142 ~ handleSelectorChange ~ v,node', v, node);
+  const handleFylxChange = id => {
+    let obj = fylxData?.filter(x => x.ID === id)[0];
+    setFylxInfo(obj);
+    console.log('🚀 ~ file: index.js ~ line 156 ~ handleFylxChange ~ obj', obj);
+    setIsBudget(obj.FID === '20'); //劳务费类型的id 20
   };
-  const handleFplxChange = (v, node) => {
-    console.log('🚀 ~ file: index.js ~ line 142 ~ handleSelectorChange ~ v,node', v, node);
+  const handleFplxChange = (id, node) => {
+    setFplxInfo({ ID: id, NAME: node.props.children, BM: node.props.bm });
+    console.log('🚀 ~ file: index.js ~ line 161 ~ handleFplxChange', {
+      ID: id,
+      NAME: node.props.children,
+      BM: node.props.bm,
+    });
   };
-  const handleYsxmChange = (v, node) => {
-    console.log('🚀 ~ file: index.js ~ line 142 ~ handleSelectorChange ~ v,node', v, node);
-  };
-
-  //日期
-  const getDatePicker = () => {
-    return (
-      <Form.Item label="日期" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-        {getFieldDecorator('date', {
-          initialValue: moment(),
-          rules: [
-            {
-              required: true,
-              message: '日期不允许空值',
-            },
-          ],
-        })(<DatePicker style={{ width: '100%' }} onChange={handleDateChange} />)}
-      </Form.Item>
+  const handleYsxmChange = id => {
+    setYsxmInfo(ysxmData?.filter(x => x.ID === id)[0]);
+    console.log(
+      '🚀 ~ file: index.js ~ line 163 ~ handleYsxmChange ~ ysxmData?.filter(x=>x.ID===id)[0]',
+      ysxmData?.filter(x => x.ID === id)[0],
     );
   };
+
+  // //日期
+  // const getDatePicker = () => {
+  //   return (
+  //     <Form.Item label="日期" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+  //       {getFieldDecorator('date', {
+  //         initialValue: moment(),
+  //         rules: [
+  //           {
+  //             required: true,
+  //             message: '日期不允许空值',
+  //           },
+  //         ],
+  //       })(<DatePicker style={{ width: '100%' }} onChange={handleDateChange} />)}
+  //     </Form.Item>
+  //   );
+  // };
   //输入框
   const getInput = ({
     label,
@@ -190,19 +241,19 @@ const AddExpense = props => {
   const getTextArea = () => {
     return (
       <Form.Item label="消费事由" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-        {getFieldDecorator('csmReason', {
+        {getFieldDecorator('xfsy', {
           initialValue: '',
         })(
           <TextArea
             className="consumeReason-textarea"
-            placeholder="请输入消费事由"
+            placeholder="请简述消费事由"
             maxLength={1000}
             autoSize={{ maxRows: 6, minRows: 3 }}
           ></TextArea>,
         )}
-        <div className="consumeReason-count-txt">
+        {/* <div className="consumeReason-count-txt">
           {String(getFieldValue('csmReason'))?.length}/{1000}
-        </div>
+        </div> */}
       </Form.Item>
     );
   };
@@ -485,13 +536,11 @@ const AddExpense = props => {
           setInputReceiptVisible={setInputReceiptVisible}
         />
         <Form.Item label="费用类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-          {getFieldDecorator(
-            'fylx',
-            {},
-          )(
+          {getFieldDecorator('fylx')(
             <TreeSelect
               allowClear
               showSearch
+              multiple={false}
               style={{ width: '100%' }}
               treeNodeFilterProp="title"
               dropdownClassName="newproject-treeselect"
@@ -503,33 +552,21 @@ const AddExpense = props => {
           )}
         </Form.Item>
         {getInput(amountInputProps)}
-        {getDatePicker()}
         {getRecepit()}
         <Row>{getRecepitList()}</Row>
         {getInput(taxInputProps)}
         <Form.Item label="发票类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-          {getFieldDecorator('fplx', {
-            initialValue: '',
-            // rules: [
-            //     {
-            //         required: true,
-            //         message: '费用类型不允许空值',
-            //     },
-            // ],
-          })(
+          {getFieldDecorator('fplx')(
             <Select
               style={{ width: '100%', borderRadius: '1.1904rem !important' }}
               showSearch
               placeholder="请选择"
               onChange={handleFplxChange}
-              // open={isSelectorOpen}
-              // onDropdownVisibleChange={visible => setIsSelectorOpen(visible)}
             >
               {selectorData?.fplxData?.map((item = {}, ind) => {
                 return (
-                  <Select.Option key={ind} value={item.ID}>
+                  <Select.Option key={ind} value={item.ID} bm={item.BM}>
                     {item.MC}
-                    {/* {isSelectorOpenn && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>} */}
                   </Select.Option>
                 );
               })}
@@ -537,24 +574,24 @@ const AddExpense = props => {
           )}
         </Form.Item>
         {getTextArea()}
-        <Form.Item label="预算项目" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-          {getFieldDecorator(
-            'ysxm',
-            {},
-          )(
-            <TreeSelect
-              allowClear
-              style={{ width: '100%' }}
-              showSearch
-              treeNodeFilterProp="title"
-              dropdownClassName="newproject-treeselect"
-              dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-              treeData={selectorData?.ysxmData}
-              placeholder="请选择"
-              onChange={handleYsxmChange}
-            />,
-          )}
-        </Form.Item>
+        {isBudget && (
+          <Form.Item label="预算项目" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+            {getFieldDecorator('ysxm')(
+              <TreeSelect
+                allowClear
+                style={{ width: '100%' }}
+                showSearch
+                multiple={false}
+                treeNodeFilterProp="title"
+                dropdownClassName="newproject-treeselect"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeData={selectorData?.ysxmData}
+                placeholder="请选择"
+                onChange={handleYsxmChange}
+              />,
+            )}
+          </Form.Item>
+        )}
         <Row>
           {getUpload(contractProps)}
           {getUpload(OAProcessProps)}

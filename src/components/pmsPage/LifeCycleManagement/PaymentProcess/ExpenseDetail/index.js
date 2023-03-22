@@ -25,6 +25,7 @@ const ExpenseDetail = (props) => {
         setIsXzTurnRed(false);
     };
 
+
     //处理点击新增
     const handleAddExpense = () => {
         setAddExpenseModalVisiable(true);
@@ -151,8 +152,8 @@ const ExpenseDetail = (props) => {
                         <div className='content-box' key={item.id}>
                             <div className='expense-info'>
                                 <div className='info-icon-num'>{index + 1}</div>
-                                <div>
-                                    <div className='info-type'>{item.fylx}<Divider type='vertical' className='info-type-divider' />{moment(item.rq).format('YYYY-MM-DD')}
+                                <div className='info-wrapper'>
+                                    <div className='info-type'>{item.fylx}
                                         <span className='info-bwb'>本位币 CNY {getJeFormat(item.je)}</span>
                                     </div>
                                     <div className='info-reason'>消费事由：{item.xfsy}</div>
@@ -188,13 +189,13 @@ const ExpenseDetail = (props) => {
                             </div>
                             {(item.htfyj !== ' ' || item.ysbgfyj !== ' ') && (<div className='attachment-box'>
                                 {item.htfyj !== ' ' && (<div className='attachment-item'>
-                                    合同复印件：
+                                  <span>合同复印件：</span>
                                     <div className='file-item ht' onClick={() => handlePreView(item.id, item.htfyj, '', 'HTFYJ')}>
                                         <img className='attachment-icon' alt='' src={require('../../../../../image/pms/LifeCycleManagement/attachment.png')} />
                                         {item.htfyj}</div>
                                 </div>)}
                                 {item.ysbgfyj !== ' ' && (<div className='attachment-item'>
-                                    验收报告复印件：
+                                    <span>验收报告复印件：</span>
                                     <div className='file-item ys' onClick={() => handlePreView(item.id, item.ysbgfyj, '', 'YSBGFYJ')}>
                                         <img className='attachment-icon' alt='' src={require('../../../../../image/pms/LifeCycleManagement/attachment.png')} />
                                         {item.ysbgfyj}</div>
