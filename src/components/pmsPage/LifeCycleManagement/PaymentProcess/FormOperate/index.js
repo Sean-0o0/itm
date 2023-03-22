@@ -164,18 +164,33 @@ export default function FormOperate(props) {
               </Select>,
             )}
           </Form.Item>
-          <div style={{
-            height: '20px',
-            width: '1px',
-            backgroundColor: '#c7c7c7',
-            marginLeft: '8px',
-            marginTop: '10px',
-            cursor: 'pointer',
-            position: 'absolute',
-            top: '0',
-            right: '40px',
-          }}></div>
-          <img
+          <div
+            style={{
+              height: '20px',
+              width: '1px',
+              backgroundColor: '#c7c7c7',
+              marginLeft: '8px',
+              marginTop: '10px',
+              cursor: 'pointer',
+              position: 'absolute',
+              top: '0',
+              right: '40px',
+            }}
+          ></div>
+          <i
+            className="iconfont circle-add"
+            onClick={() => setAddSkzhModalVisible(true)}
+            style={{
+              marginTop: '6px',
+              cursor: 'pointer',
+              position: 'absolute',
+              top: '0',
+              right: '12px',
+              color: '#c7c7c7',
+              fontSize: '20px',
+            }}
+          />
+          {/* <img
             src={require('../../../../../image/pms/LifeCycleManagement/add.png')}
             onClick={() => setAddSkzhModalVisible(true)}
             alt=""
@@ -188,7 +203,7 @@ export default function FormOperate(props) {
               top: '0',
               right: '12px',
             }}
-          />
+          /> */}
         </Col>
       </>
     );

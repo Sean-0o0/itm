@@ -300,8 +300,8 @@ export default function HomePage(props) {
           ) : (
             <SupplierCard supplierData={supplierData} time={updateTime}/>
           )}
-          <SupplierCard supplierData={supplierData} time={updateTime}/>
-          <TeamCard teamData={teamData} />
+          {/* <SupplierCard supplierData={supplierData} time={updateTime}/>
+          <TeamCard teamData={teamData} /> */}
         </div>
       </div>
     </div>
