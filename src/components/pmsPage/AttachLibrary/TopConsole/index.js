@@ -510,7 +510,7 @@ class ToConsole extends Component {
                                         onChange={this.handleGtAmountChange}
                                         placeholder="下限"
                                     />
-                                    <Input className="input-to" placeholder="~" disabled />
+                                    <Input className="input-to" placeholder="-" disabled />
                                     <Input
                                         className="input-max"
                                         value={ysje2}
