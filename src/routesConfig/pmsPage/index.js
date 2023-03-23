@@ -73,4 +73,9 @@ exports.routes = [
     path: `${prefix}/staffDetail`,
     component: './pmsPage/StaffDetail',
   },
+  {
+    //编辑项目信息
+    path: `${prefix}/EditProjectInfo`,
+    component: './pmsPage/EditProjectInfo',
+  },
 ];

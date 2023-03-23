@@ -600,19 +600,19 @@ class BidInfoUpdate extends React.Component {
                                 const { zbgys, tbbzj, lybzj, zbgysskzh, pbbg } = bidInfo;
                                 const { columnName, documentData, fileLength, fileName, filePath, id, objectName } = uploadFileParams;
                                 let submitdata = {
-                                    columnName: 'PBBG',
-                                    documentData,
-                                    fileLength, 
-                                    glgys: 0,
-                                    gysfkzh: -1,
-                                    // gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
-                                    ijson: JSON.stringify(newArr),
-                                    lybzj: Number(getFieldValue('lybzj')),
-                                    objectName: 'TXMXX_ZBXX',
-                                    pbbg: fileName,
-                                    rowcount: tableData.length,
-                                    tbbzj: Number(getFieldValue('tbbzj')),
-                                    xmmc: Number(currentXmid),
+                                  columnName: 'PBBG',
+                                  documentData,
+                                  fileLength,
+                                  glgys: 0,
+                                  gysfkzh: -1,
+                                  // gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
+                                  ijson: JSON.stringify(newArr),
+                                  lybzj: Number(getFieldValue('lybzj')),
+                                  objectName: 'TXMXX_ZBXX',
+                                  pbbg: fileName,
+                                  rowcount: tableData.length,
+                                  tbbzj: Number(getFieldValue('tbbzj')),
+                                  xmmc: Number(currentXmid),
                                     zbgys: Number(glgys?.filter(x => x.gysmc === getFieldValue('zbgys'))[0]?.id || ''),
                                 };
                                 // console.log("🚀submitdata", submitdata);
