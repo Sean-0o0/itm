@@ -53,7 +53,7 @@ export default function ProjectCard(props) {
   const handleDraftModify = xmid => {
     setFileAddVisible(true);
     setSrc_fileAdd(
-      `/#/single/pms/SaveProject/${EncryptBase64(
+      `/#/single/pms/EditProject/${EncryptBase64(
         JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
       )}`,
     );
@@ -309,7 +309,7 @@ export default function ProjectCard(props) {
     // defaultFullScreen: true,
     title: '新建项目',
     width: '70%',
-    height: '120rem',
+    height: '95vh',
     style: { top: '2rem' },
     visible: fileAddVisible,
     footer: null,
