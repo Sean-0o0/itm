@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Table, Popover, Empty, message } from 'antd'
+import { Button, Table, Popover, Empty, message, Pagination } from 'antd'
 import HistoryAttach from './HistoryAttach'
 import axios from 'axios';
 import config from '../../../../utils/config';
@@ -293,6 +293,7 @@ class InfoTable extends Component {
                             showTotal: total => `共 ${total} 条数据`,
                         }}
                     />
+                    
                 </div>
             </div>
         );

@@ -289,4 +289,10 @@ export default [
     url: '/EKB/v1/queryCreatePaymentInfo',
     dis: '查询发起付款流程所需的基本信息',
   },
+  {
+    code: '',
+    key: 'queryMemberDetailInfo',
+    url: '/projectManage/queryMemberDetailInfo',
+    dis: '查询人员详情信息'
+  }
 ];

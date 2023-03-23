@@ -296,6 +296,7 @@
     .ant-table-thead {
       position: sticky;
       top: 0;
+      z-index: 1;
     }
   }
 
@@ -405,7 +406,7 @@
 }
 
 // 操作按钮
-.btn-search {
+.btn-search() {
   padding: 9px 12px 10px 12px;
   font-size: 14px;
   line-height: unset;
@@ -437,11 +438,11 @@
 
   .input-to {
     width: 1em;
-    padding: 7px 0;
+    padding: 7px 0!important;
     border-left: 0;
     border-right: 0;
     pointer-events: none;
-    background-color: #fff0;
+    background-color: #fff0!important;
     border-radius: unset;
     text-align: center;
   }

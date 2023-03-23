@@ -56,6 +56,7 @@ const {
     querySupplierOverviewInfo,
     queryProjectGeneralInfo,
     queryCreatePaymentInfo,
+    queryMemberDetailInfo
   },
 } = api;
 
@@ -572,6 +573,16 @@ export async function QueryHistoryAttach(payload) {
 export async function QueryCreatePaymentInfo(payload) {
   const option = {
     url: queryCreatePaymentInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员详情信息
+export async function QueryMemberDetailInfo(payload) {
+  const option = {
+    url: queryMemberDetailInfo,
     method: 'post',
     data: payload,
   };

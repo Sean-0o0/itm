@@ -20,7 +20,7 @@ class AttachLibrary extends Component {
 
     componentDidMount() {
         const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
-        if (LOGIN_USERID) {
+        if (LOGIN_USERID!==undefined) {
             QueryUserRole({
                 userId: Number(LOGIN_USERID),
             }).then(res => {

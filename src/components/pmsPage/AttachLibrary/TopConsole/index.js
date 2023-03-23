@@ -97,7 +97,6 @@ class ToConsole extends Component {
             });
             return pre;
         }, []);
-
         const treeData = [];
         for (const key in a) {
             const indexData = [];
@@ -109,7 +108,7 @@ class ToConsole extends Component {
                     let b = a[key].reduce((pre, current, index) => {
                         pre[current.ZDBM] = pre[current.ZDBM] || [];
                         pre[current.ZDBM].push({
-                            key: current.ID,
+                            key: current.ID + current.YSLXID,
                             title: current.YSXM,
                             value: current.ID + current.YSLXID,
                             ID: current.ID,
@@ -132,7 +131,7 @@ class ToConsole extends Component {
                                 if (item.ZDBM === '6') {
                                     // console.log("b[item.ZDBM]",b["6"])
                                     b[item.ZDBM].map(i => {
-                                        treeDatamini.key = i.ID;
+                                        treeDatamini.key = i.ID + i.ZDBM;
                                         treeDatamini.value = i.ID + i.ZDBM;
                                         treeDatamini.title = i.YSXM;
                                         treeDatamini.ID = i.ID;
@@ -147,7 +146,7 @@ class ToConsole extends Component {
                                     // treeDatamini.selectable=false;
                                     // treeDatamini.children = b[item.ZDBM]
                                 } else {
-                                    treeDatamini.key = item.ZDBM;
+                                    treeDatamini.key = item.ZDBM + item.YSLXID;
                                     treeDatamini.value = item.ZDBM + item.YSLXID;
                                     treeDatamini.title = item.YSLB;
                                     treeDatamini.ID = item.ID;
@@ -321,6 +320,7 @@ class ToConsole extends Component {
         const { dictionary = {} } = this.props;
         const { XMLX: xmlxList = [] } = dictionary;
 
+        
         return (<div className="top-console">
             <div className="item-box">
                 <div className="console-item">
