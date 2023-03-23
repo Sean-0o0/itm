@@ -45,7 +45,7 @@ class ToConsole extends Component {
                 </Breadcrumb>
                 <div className='staff-info-header flex-r'>
                     <div className='header-left flex-r'>
-                        <img src={boyImg} className='staff-img' />
+                        <img src={xb==='男'?boyImg:xb==='女'?girlImg:''} className='staff-img' />
                         <div className='staff-info-cont flex-c'>
                             <div className='staff-line-import'>
                                 <span className='staff-name'>{rymc}</span>
