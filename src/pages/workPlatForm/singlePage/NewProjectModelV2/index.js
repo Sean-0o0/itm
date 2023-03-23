@@ -3434,7 +3434,7 @@ class NewProjectModelV2 extends React.Component {
                       }
                       {
                         staffJobList.map((item, index) => {
-                          if (item.ibm !== '10' && item.ibm !== '6') {
+                          if (item.ibm !== '10') {
                             return (
                               <div className="jobItem">
                                 <div className="name"
