@@ -15,14 +15,22 @@ class InfoTable extends Component {
         selectedRows: []
     }
 
+    handleChange = (current,pageSize) =>{
+        const { handleSearch } = this.props;
+        if (handleSearch) {
+            handleSearch({
+                current: current,
+                pageSize: pageSize,
+                total: -1,
+            })
+        }
+    }
+
     handleTableChange = (pagination, filters, sorter) => {
         const { handleSearch } = this.props;
         const { order = '', field = '' } = sorter;
         if (handleSearch) {
             handleSearch({
-                current: pagination.current,
-                pageSize: pagination.pageSize,
-                paging: 1,
                 total: -1,
                 sort: order ? `${field} ${order.slice(0, -3)}` : ''
             })
@@ -118,8 +126,8 @@ class InfoTable extends Component {
                 })
             }
         })
-        param.attBaseInfos=attBaseInfos;
-        if(attBaseInfos.length){
+        param.attBaseInfos = attBaseInfos;
+        if (attBaseInfos.length) {
             axios({
                 method: 'POST',
                 url: zipLivebosFilesRowsPost,
@@ -134,8 +142,8 @@ class InfoTable extends Component {
             }).catch(err => {
                 message.error(err)
             })
-        }else{
-           message.error('未选中文件！') 
+        } else {
+            message.error('未选中文件！')
         }
     }
 
@@ -233,8 +241,6 @@ class InfoTable extends Component {
                 width: '9%',
                 key: 'scr',
                 ellipsis: true,
-                sorter: true,
-                sortDirections: ['descend', 'ascend'],
             },
             {
                 title: '上传时间',
@@ -242,6 +248,8 @@ class InfoTable extends Component {
                 width: '10%',
                 key: 'scsj',
                 ellipsis: true,
+                sorter: true,
+                sortDirections: ['descend', 'ascend'],
             },
             {
                 title: '备注',
@@ -282,18 +290,22 @@ class InfoTable extends Component {
                             type: 'checkbox',
                             ...rowSelection,
                         }}
-                        pagination={{
-                            pageSize: pageParams.pageSize,
-                            current: pageParams.current,
-                            total: pageParams.total,
-                            pageSizeOptions: ['10', '20', '30', '40'],
-                            showSizeChanger: true,
-                            // hideOnSinglePage: true,
-                            showQuickJumper: true,
-                            showTotal: total => `共 ${total} 条数据`,
-                        }}
+                        pagination = {false}
                     />
-                    
+                </div>
+                <div className='page-individual'>
+                    <Pagination
+                        onChange={this.handleChange}
+                        pageSize={pageParams.pageSize}
+                        current={pageParams.current}
+                        total={pageParams.total}
+                        pageSizeOptions={['10', '20', '30', '40']}
+                        showSizeChanger={true}
+                        hideOnSinglePage={true}
+                        showQuickJumper={true}
+                        showTotal={total => `共 ${total} 条数据`}
+                    />
+
                 </div>
             </div>
         );

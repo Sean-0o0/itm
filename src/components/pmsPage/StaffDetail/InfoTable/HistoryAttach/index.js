@@ -3,7 +3,6 @@ import { Modal, Select, DatePicker, Button, message } from 'antd'
 import AttachTable from './AttachTable'
 import { QueryHistoryAttach, QueryProjectListPara } from '../../../../../services/pmsServices'
 import moment from 'moment';
-const { RangePicker } = DatePicker;
 
 class HistoryAttach extends Component {
     state = {

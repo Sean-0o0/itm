@@ -4924,14 +4924,10 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 
       .ant-table-pagination {
         font-size: 14px;
-        width: 100%;
         display: flex;
         flex-direction: row;
         align-items: center;
-        position: sticky;
-        bottom: 0;
         background-color: #fff;
-        padding-left: 0;
 
         .ant-select {
           font-size: 14px !important;
@@ -5641,6 +5637,7 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
         .ant-table-thead {
           position: sticky;
           top: 0;
+          z-index: 0;
         }
       }
     }
@@ -5660,7 +5657,13 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       }
 
       .btn-search {
-        .btn-search();
+        font-size: 14px;
+        line-height: unset;
+        height: unset;
+        color: #fff !important;
+        background-color: #3361ff;
+        border-color: transparent;
+        box-shadow: unset;
       }
 
       .btn-reset {
@@ -6939,58 +6942,6 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
               margin-right: 0;
             }
           }
-        }
-      }
-
-      .ant-table-pagination {
-        font-size: 14px;
-        width: 100%;
-        display: flex;
-        flex-direction: row;
-        align-items: center;
-        position: sticky;
-        bottom: 0;
-        background-color: #fff;
-        padding-left: 0;
-
-        .ant-select {
-          font-size: 14px !important;
-        }
-      }
-
-      .ant-pagination-item-active {
-        background-color: #3361ff;
-
-        a {
-          color: #fff;
-        }
-      }
-
-      .ant-pagination-item {
-        border: 0;
-      }
-
-      .ant-pagination-total-text {
-        margin-right: auto;
-        color: #909399;
-      }
-
-      .ant-pagination-disabled {
-        background-color: #f5f7fa;
-
-        a {
-          background-color: #f5f7fa;
-        }
-      }
-
-      .ant-pagination-options-quick-jumper input {
-        &:hover {
-          border-color: #3361ff;
-        }
-
-        &:focus {
-          border-color: #3361ff;
-          box-shadow: 0 0 0 2px #3361ff33;
         }
       }
     }

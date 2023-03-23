@@ -69,7 +69,7 @@ class HistoryAttach extends Component {
             ...params,
             total: -1,
         }
-        if (type !== 1) {
+        if (endDate&&startDate&&type !== 1) {
             if(endDate.isBefore(startDate)){
                 message.error('开始时间必须早于结束时间！');
                 return;
