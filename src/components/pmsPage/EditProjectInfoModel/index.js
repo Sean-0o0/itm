@@ -3900,7 +3900,8 @@ class EditProjectInfoModel extends React.Component {
               }
               {
                 // 招采信息
-                current == 3 && <div className="steps-content" style={{height: '79%', overflowY: 'auto'}}>
+                current == 3 &&
+                <div className="steps-content" style={{height: '79%', overflowY: 'auto', overflowX: 'hidden'}}>
                   <React.Fragment>
                     {isTableFullScreen && <TableFullScreen
                       isTableFullScreen={isTableFullScreen}
