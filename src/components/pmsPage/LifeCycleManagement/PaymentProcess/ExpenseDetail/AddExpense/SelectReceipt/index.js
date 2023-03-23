@@ -110,23 +110,13 @@ const SelectReceipt = (props) => {
     return (
         <Modal wrapClassName='editMessage-modify'
             centered
-            width={isModalFullScreen ? '100vw' : '47vw'}
+            width={'47vw'}
             maskClosable={false}
             maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
             zIndex={102}
             cancelText={null}
             okText='与该消费绑定'
-            style={isModalFullScreen ? {
-                maxWidth: "100vw",
-                top: 0,
-                paddingBottom: 0,
-                marginBottom: 0
-            } : {}}
-            bodyStyle={isModalFullScreen ? {
-                height: "calc(100vh - 7.8864rem)",
-                overflowY: "auto",
-                padding: '0'
-            } : {
+            bodyStyle={{
                 padding: '0',
                 overflow: 'hidden'
             }}
@@ -135,10 +125,6 @@ const SelectReceipt = (props) => {
             onCancel={handleClose}>
             <div className='body-title-box'>
                 <strong>发票列表</strong>
-                <img src={isModalFullScreen
-                    ? require('../../../../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
-                    : require('../../../../../../../image/pms/LifeCycleManagement/full-screen.png')} alt=''
-                    onClick={() => setIsModalFullScreen(!isModalFullScreen)} />
             </div>
             {getSelectReceipt()}
         </Modal>

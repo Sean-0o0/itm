@@ -7,12 +7,13 @@ const InputReceipt = (props) => {
     //发票类型
     const [receiptType, setReceiptType] = useState(1);
     const [amount, setAmount] = useState(1);
-    const { visible, setVisible, form } = props;
+    const { visible, setVisible, form ,setSelectReceiptVisible} = props;
     const { getFieldDecorator, getFieldValue, validateFields } = form;
     const handleSubmit = () => {
         validateFields(err => {
             if (!err) {
                 setVisible(false);
+                setSelectReceiptVisible(true);
             }
         })
     };
@@ -173,24 +174,15 @@ const InputReceipt = (props) => {
 
 
     return (
-        <Modal wrapClassName='editMessage-modify' width={isModalFullScreen ? '100vw' : '45vw'}
+        <Modal wrapClassName='editMessage-modify' width={'45vw'}
             maskClosable={false}
             maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
             zIndex={103}
             cancelText={'关闭'}
-            style={isModalFullScreen ? {
-                maxWidth: "100vw",
-                top: 0,
-                paddingBottom: 0,
-                marginBottom: 0
-            } : {
+            style={{
                 top: '14rem'
             }}
-            bodyStyle={isModalFullScreen ? {
-                height: "calc(100vh - 7.8864rem)",
-                overflowY: "auto",
-                padding: '0'
-            } : {
+            bodyStyle={{
                 // height: 'calc(100vh - 25.5rem)',
                 padding: '0',
                 overflow: 'hidden'
@@ -200,10 +192,6 @@ const InputReceipt = (props) => {
             onCancel={handleClose}>
             <div className='body-title-box'>
                 <strong>手动录入发票</strong>
-                <img src={isModalFullScreen
-                    ? require('../../../../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
-                    : require('../../../../../../../image/pms/LifeCycleManagement/full-screen.png')} alt=''
-                    onClick={() => setIsModalFullScreen(!isModalFullScreen)} />
             </div>
             <div className='upload-receipt-modal-content'>
                 <FormOperate />

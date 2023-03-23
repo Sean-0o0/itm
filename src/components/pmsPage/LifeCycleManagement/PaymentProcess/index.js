@@ -130,44 +130,44 @@ const PaymentProcess = props => {
       })
       .catch(e => console.error(e));
   };
-  // 获取费用明细
-  const getExpenseDetailData = fn => {
-    QueryPaymentFlowDetail({
-      xmmc: -currentXmid,
-    })
-      .then(res => {
-        if (res.code === 1) {
-          const arr = res.record.map(item => {
-            return {
-              id: item.id,
-              fylx: item.fylx,
-              je: item.je,
-              rq: item.rq,
-              fplx: item.fplx === ' ' ? '无' : item.fplx,
-              fp: JSON.parse(item.fp),
-              ysxm: item.ysxm === ' ' ? '无' : item.ysxm,
-              se: item.se,
-              sl: item.sl,
-              xfsy: item.xfsy,
-              fj: JSON.parse(item.fj),
-              htfyj: item.htfyj,
-              ysbgfyj: item.ysbgfyj,
-              fylxdm: item.fylxdm,
-              fylxmbdm: item.fylxmbdm,
-              fpbm: item.fpbm,
-              ysfydm: item.ysfydm,
-            };
-          });
-          setExpenseDetailData(p => [...arr]);
-          fn && fn(false); //关闭加载状态
-          message.success('新增成功', 1);
-        }
-      })
-      .catch(e => {
-        message.error('新增失败', 1);
-        console.error(e);
-      });
-  };
+  // // 获取费用明细
+  // const getExpenseDetailData = fn => {
+  //   QueryPaymentFlowDetail({
+  //     xmmc: -currentXmid,
+  //   })
+  //     .then(res => {
+  //       if (res.code === 1) {
+  //         const arr = res.record.map(item => {
+  //           return {
+  //             id: item.id,
+  //             fylx: item.fylx,
+  //             je: item.je,
+  //             rq: item.rq,
+  //             fplx: item.fplx === ' ' ? '无' : item.fplx,
+  //             fp: JSON.parse(item.fp),
+  //             ysxm: item.ysxm === ' ' ? '无' : item.ysxm,
+  //             se: item.se,
+  //             sl: item.sl,
+  //             xfsy: item.xfsy,
+  //             fj: JSON.parse(item.fj),
+  //             htfyj: item.htfyj,
+  //             ysbgfyj: item.ysbgfyj,
+  //             fylxdm: item.fylxdm,
+  //             fylxmbdm: item.fylxmbdm,
+  //             fpbm: item.fpbm,
+  //             ysfydm: item.ysfydm,
+  //           };
+  //         });
+  //         setExpenseDetailData(p => [...arr]);
+  //         fn && fn(false); //关闭加载状态
+  //         message.success('新增成功', 1);
+  //       }
+  //     })
+  //     .catch(e => {
+  //       message.error('新增失败', 1);
+  //       console.error(e);
+  //     });
+  // };
 
   const handleSubmit = () => {
     validateFields(err => {
@@ -274,36 +274,19 @@ const PaymentProcess = props => {
       )}
       <Modal
         wrapClassName="editMessage-modify"
-        width={isModalFullScreen ? '100vw' : '50%'}
+        width={'860px'}
         maskClosable={false}
         zIndex={100}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
         cancelText={'关闭'}
-        style={
-          isModalFullScreen
-            ? {
-                maxWidth: '100vw',
-                top: 0,
-                paddingBottom: 0,
-                marginBottom: 0,
-              }
-            : {
-                top: '14px',
-              }
-        }
-        bodyStyle={
-          isModalFullScreen
-            ? {
-                overflowY: 'auto',
-                padding: '0',
-                height: 'calc(100vh - 53px)',
-              }
-            : {
-                height: 'calc(100vh - 94px)',
-                padding: '0',
-                overflow: 'hidden',
-              }
-        }
+        style={{
+          top: '14px',
+        }}
+        bodyStyle={{
+          height: 'calc(100vh - 94px)',
+          padding: '0',
+          overflow: 'hidden',
+        }}
         title={null}
         visible={paymentModalVisible}
         onOk={handleSubmit}
@@ -311,29 +294,12 @@ const PaymentProcess = props => {
       >
         <div className="body-title-box">
           <strong>付款流程发起</strong>
-          <img
-            src={
-              isModalFullScreen
-                ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
-                : require('../../../../image/pms/LifeCycleManagement/full-screen.png')
-            }
-            alt=""
-            style={{
-              height: '2.0832rem',
-              marginLeft: 'auto',
-              marginRight: '3.72rem',
-              cursor: 'pointer',
-            }}
-            onClick={() => setIsModalFullScreen(!isModalFullScreen)}
-          />
         </div>
         <Spin
           spinning={isSpinning}
           tip="加载中"
           size="large"
-          wrapperClassName={
-            'diy-style-spin payment-process-box' + (isModalFullScreen ? ' payment-full-screen' : '')
-          }
+          wrapperClassName="diy-style-spin payment-process-box"
         >
           <FormOperate
             form={form}
@@ -342,8 +308,8 @@ const PaymentProcess = props => {
           />
           <ExpenseDetail
             currentXmid={currentXmid}
-            getExpenseDetailData={getExpenseDetailData}
-            expenseDetailData={expenseDetailData}
+            // getExpenseDetailData={getExpenseDetailData}
+            // expenseDetailData={expenseDetailData}
             isSpinning={isSpinning}
             setIsSpinning={setIsSpinning}
             isXzTurnRed={isXzTurnRed}

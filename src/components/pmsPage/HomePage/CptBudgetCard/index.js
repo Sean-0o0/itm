@@ -16,6 +16,7 @@ export default function CptBudgetCard(props) {
     rate = 0,
     target = '--',
     remain = '--',
+    img = 'software',
   }) => {
     return (
       <div
@@ -27,7 +28,7 @@ export default function CptBudgetCard(props) {
         }
       >
         <div className="item-top">
-          <i className="iconfont software" />
+          <i className={`iconfont ${img}`} />
           {title}
         </div>
         <div className="item-middle">
@@ -85,6 +86,7 @@ export default function CptBudgetCard(props) {
           rate: budgetData?.ZBYJWCL,
           target: (Number(budgetData?.ZBYJMBZ) / 10000).toFixed(2),
           remain: (Number(budgetData?.ZBYJSYZ) / 10000).toFixed(2),
+          img: 'hardware',
         })}
       </div>
     </div>

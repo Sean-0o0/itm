@@ -100,7 +100,7 @@ export default function ToDoCard(props) {
           <Tooltip title={content}>
             <div className="content">{content}</div>
           </Tooltip>
-          <div className="deadline">{deadline}</div>
+          <div className="deadline">截止{deadline}</div>
         </div>
         <div className="item-btn">去{btnTxt}</div>
       </div>

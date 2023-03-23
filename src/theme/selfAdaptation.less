@@ -47,8 +47,7 @@
   src: url('../assets//fonts/THSMoneyfont-Medium.otf');
   /* IE9*/
   src: url('../assets//fonts/THSMoneyfont-Medium.otf#iefix') format('embedded-opentype'),
-    /* IE6-IE8 */
-    url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype');
+    /* IE6-IE8 */ url('../assets//fonts/THSMoneyfont-Medium.otf') format('truetype');
 }
 
 .font-family-roboto() {
@@ -125,8 +124,9 @@
 
 //功能块
 .function-block() {
-  box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
-  border-radius: 8px;
+  box-shadow: 0px 4px 24px -4px rgba(0, 0, 0, 0.06);
+  border-radius: 4px;
+  border: 1px solid #fafafb;
   overflow: hidden;
   background-color: white;
 }
@@ -135,7 +135,6 @@
 
 //输入框、下拉框字体大小
 .ant-font-size-adaptation() {
-
   // .ant-checkbox-wrapper,
   .ant-input,
   .ant-select {
@@ -392,7 +391,7 @@
     border-radius: 8px 8px 0 0;
     .font-s15();
 
-    &>img {
+    & > img {
       height: 14px;
       margin-left: auto;
       margin-right: 25px;

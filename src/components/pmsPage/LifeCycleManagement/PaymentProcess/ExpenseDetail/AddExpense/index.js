@@ -77,8 +77,10 @@ const AddExpense = props => {
   const [fplxInfo, setFplxInfo] = useState({});
   //预算项目数据
   const [ysxmInfo, setYsxmInfo] = useState({});
-  //附件上传
-  const { visible, setVisible, form, userykbid } = props;
+  //发票数据
+  const [receiptData, setReceiptData] = useState([]); //发票数据-name,base64 - 电子上传
+  const [inputReceiptData, setInputReceiptData] = useState([]); //发票数据-name,base64 - 手动录入
+  const { visible, setVisible, form, userykbid, handleAddExpenseSuccess } = props;
   const { getFieldDecorator, getFieldValue, validateFields } = form;
   useEffect(() => {
     getSelectorAData();
@@ -136,25 +138,43 @@ const AddExpense = props => {
           fylxInfo,
           fplxInfo,
           ysxmInfo,
-          receiptFileInfo:{
-            base64:formData?.receiptFileUrl,
-            name: formData?.receiptFileName,
-          },
-          OAProcessFileInfo:{
-            base64:formData?.OAProcessFileUrl,
-            name: formData?.OAProcessFileName,
-          },
-          contractFileInfo:{
-            base64:formData?.contractFileUrl,
-            name: formData?.contractFileName,
-          },
-          checkFileInfo:{
-            base64:formData?.checkFileUrl,
-            name: formData?.checkFileName,
-          },
+          receiptFileInfo:
+            formData?.receiptFileUrl === ''
+              ? []
+              : [
+                  {
+                    base64: formData?.receiptFileUrl,
+                    name: formData?.receiptFileName,
+                  },
+                ],
+          OAProcessFileInfo:
+            formData?.OAProcessFileUrl === ''
+              ? []
+              : [
+                  {
+                    base64: formData?.OAProcessFileUrl,
+                    name: formData?.OAProcessFileName,
+                  },
+                ],
+          contractFileInfo:
+            formData?.contractFileUrl === ''
+              ? ''
+              : {
+                  base64: formData?.contractFileUrl,
+                  name: formData?.contractFileName,
+                },
+          checkFileInfo:
+            formData?.checkFileUrl === ''
+              ? ''
+              : {
+                  base64: formData?.checkFileUrl,
+                  name: formData?.checkFileName,
+                },
+          attachmentLength: 3,
         };
-        console.log("🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData", submitData)
-        // 
+        handleAddExpenseSuccess(submitData);
+        console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
+        //
       }
     });
   };
@@ -175,7 +195,7 @@ const AddExpense = props => {
       return;
     }
   };
-  const handleDateChange = () => {};
+  // const handleDateChange = () => {};
 
   const handleFylxChange = id => {
     let obj = fylxData?.filter(x => x.ID === id)[0];
@@ -522,18 +542,28 @@ const AddExpense = props => {
         zIndex={101}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
       >
-        <InputReceipt visible={inputReceiptVisible} setVisible={setInputReceiptVisible} />
+        <InputReceipt
+          visible={inputReceiptVisible}
+          setVisible={setInputReceiptVisible}
+          setSelectReceiptVisible={setSelectReceiptVisible}
+          setInputReceiptData={setInputReceiptData}
+          inputReceiptData={inputReceiptData}
+        />
         <UploadReceipt
           visible={uploadReceiptVisible}
           setVisible={setUploadReceiptVisible}
           userykbid={userykbid}
           setSelectReceiptVisible={setSelectReceiptVisible}
+          receiptData={receiptData}
+          setReceiptData={setReceiptData}
         />
         <SelectReceipt
           visible={selectReceiptVisible}
           setVisible={setSelectReceiptVisible}
           setUploadReceiptVisible={setUploadReceiptVisible}
           setInputReceiptVisible={setInputReceiptVisible}
+          inputReceiptData={inputReceiptData}
+          receiptData={receiptData}
         />
         <Form.Item label="费用类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
           {getFieldDecorator('fylx')(

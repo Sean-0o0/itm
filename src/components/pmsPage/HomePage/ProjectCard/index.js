@@ -1,4 +1,4 @@
-import { Progress, Popover, Empty } from 'antd';
+import { Progress, Popover, Empty, Popconfirm } from 'antd';
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { OperateCreatProject } from '../../../../services/projectManage';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -137,34 +137,10 @@ export default function ProjectCard(props) {
     const participantContent = data => {
       return (
         <div>
-          <div
-            style={{
-              marginBottom: '-12px',
-              maxWidth: '200px',
-              maxHeight: '125px',
-            }}
-          >
+          <div className="list">
             {data?.map(x => (
-              <div
-                key={x.USERID}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'row',
-                  alignItems: 'center',
-                  marginBottom: '12px',
-                  fontSize: '14px',
-                  color: '#303133FF',
-                  lineHeight: '1em',
-                }}
-              >
-                <div
-                  style={{
-                    width: '32px',
-                    marginRight: '8px',
-                    borderRadius: '50%',
-                    overflow: 'hidden',
-                  }}
-                >
+              <div key={x.USERID} className="item">
+                <div className="img-box">
                   <img
                     src={require(`../../../../assets/homePage/img_avatar_${
                       x.XB === '男' ? 'male' : 'female'
@@ -184,45 +160,24 @@ export default function ProjectCard(props) {
       participantData?.forEach(x => {
         arr.push(x.RYMC);
       });
-      if (participantData?.length > 2) return arr.join('、') + participantData?.length + '等人参与';
+      if (participantData?.length > 2)
+        return arr.slice(0, 2).join('、') + participantData?.length + '等人参与';
       return arr.join('、') + participantData?.length + '人参与';
     };
     const riskContent = () => {
       const getItem = (label, content) => {
         return (
-          <p
-            style={{
-              color: '#303133FF',
-              fontSize: '14px',
-              lineHeight: '1.2em',
-              marginBottom: '16px',
-            }}
-          >
-            <span style={{ color: '#909399FF' }}>{label}内容：</span>
-            {content}
+          <p>
+            <span className="label">{label}内容：</span>
+            <span>{content}</span>
           </p>
         );
       };
       return (
-        <div
-          style={{
-            marginBottom: '-30px',
-            maxWidth: '320px',
-            maxHeight: '400px',
-          }}
-        >
+        <div className="list">
           {riskData?.map(x => (
-            <div key={x.FXID} style={{ borderBottom: '1px solid #EBEEF5FF', marginBottom: '16px' }}>
-              <div
-                style={{
-                  fontSize: '14px',
-                  fontWeight: '500',
-                  color: '#303133FF',
-                  marginBottom: '16px',
-                }}
-              >
-                {x.BT}
-              </div>
+            <div className="item" key={x.FXID}>
+              <div className="title">{x.BT}</div>
               {getItem('风险', x.NR || '')}
               {getItem('处理', x.CLNR || '')}
             </div>
@@ -255,8 +210,8 @@ export default function ProjectCard(props) {
           <div className="item-middle">
             <div className="middle-top">
               <span>
-                <i className="iconfont icon-fill-flag" style={{ color: fontColor }} />
-                {content}
+                <i className="iconfont icon-fill-flag" style={{ color: fontColor }} />「{content}
+                」阶段
               </span>
               <span className="rate" style={{ color: fontColor }}>
                 {rate}%
@@ -276,28 +231,15 @@ export default function ProjectCard(props) {
                 title={null}
                 placement="rightTop"
                 content={riskContent()}
-                overlayStyle={{
-                  overflow: 'hidden',
-                  overflowY: 'auto',
-                  // boxShadow: '0 0 0.2976rem #ebf0ff',
-                }}
+                overlayClassName="risk-content-popover"
               >
                 {riskData?.length !== 0 && `存在${riskData?.length}个未处理风险！`}
               </Popover>
             </div>
           </div>
         )}
-        {isDraft !== true && (
-          <Popover
-            title={null}
-            placement="rightTop"
-            content={participantContent(participantData)}
-            overlayStyle={{
-              overflow: 'hidden',
-              overflowY: 'auto',
-              // boxShadow: '0 0 0.2976rem #ebf0ff',
-            }}
-          >
+        {isDraft !== true &&
+          (participantData?.length === 0 ? (
             <div className="item-bottom-person">
               <div className="avatar-box">
                 {participantData?.slice(0, 4).map(x => (
@@ -313,8 +255,30 @@ export default function ProjectCard(props) {
               </div>
               <div className="txt">{getParticipantName()}</div>
             </div>
-          </Popover>
-        )}
+          ) : (
+            <Popover
+              title={null}
+              placement="rightTop"
+              content={participantContent(participantData)}
+              overlayClassName="participant-content-popover"
+            >
+              <div className="item-bottom-person">
+                <div className="avatar-box">
+                  {participantData?.slice(0, 4).map(x => (
+                    <div className="avatar" key={x.USERID}>
+                      <img
+                        src={require(`../../../../assets/homePage/img_avatar_${
+                          x.XB === '男' ? 'male' : 'female'
+                        }.png`)}
+                        alt=""
+                      />
+                    </div>
+                  ))}
+                </div>
+                <div className="txt">{getParticipantName()}</div>
+              </div>
+            </Popover>
+          ))}
         {isDraft && (
           <div className="item-middle">
             <img src={require('../../../../assets/homePage/img_no data@2x.png')} alt="" />
@@ -329,10 +293,12 @@ export default function ProjectCard(props) {
               </div>
             </div>
             <div className="divider"></div>
-            <div className="btn-delete" onClick={() => handleDraftDelete(xmid)}>
-              <i className="iconfont delete" />
-              删除
-            </div>
+            <Popconfirm title="确定要删除吗？" onConfirm={() => handleDraftDelete(xmid)}>
+              <div className="btn-delete">
+                <i className="iconfont delete" />
+                删除
+              </div>
+            </Popconfirm>
           </div>
         )}
       </div>
