@@ -225,7 +225,7 @@ const PaymentProcess = props => {
             payName: String(skzhId),
             projectId: String(currentXmid),
             projectCode,
-            operateType: 'save',
+            operateType: 'send',
           };
           console.log('submitData', submitData);
           CreatPaymentFlow(submitData)
