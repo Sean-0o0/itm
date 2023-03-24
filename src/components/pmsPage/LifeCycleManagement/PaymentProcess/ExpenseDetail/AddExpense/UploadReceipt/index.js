@@ -1,14 +1,14 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import { Form, Upload, Modal, Icon, Button, Spin, message } from 'antd';
 import { CheckInvoice } from '../../../../../../../services/pmsServices';
 const UploadReceipt = props => {
-  //弹窗全屏
-  const [isModalFullScreen, setIsModalFullScreen] = useState(false);
   const [receiptFileUrl, setReceiptFileUrl] = useState([]);
   const [receiptFileName, setReceiptFileName] = useState([]);
   const [receiptFileList, setReceiptFileList] = useState([]);
   const [receiptIsTurnRed, setReceiptIsTurnRed] = useState(false);
-  const [receiptIsError, setReceiptIsError] = useState(false);
+  const [receiptIsError, setReceiptIsError] = useState(0); //数目
+  const [receiptNew, setReceiptNew] = useState([]); //发票新增的数据
+  const [receiptNew2, setReceiptNew2] = useState([]); //发票新增的数据
   //加载状态
   const [isSpinning, setIsSpinning] = useState(false);
   const {
@@ -28,26 +28,41 @@ const UploadReceipt = props => {
       clearTimeout(timer);
     };
   }, []);
+  useEffect(() => {
+    setReceiptNew2(p => [...receiptNew2, ...receiptNew]);
+    console.log('🚀 ~ file: index.js ~ line 33 ~ useEffect ~ [...receiptNew2, ...receiptNew]', [
+      ...receiptNew2,
+      ...receiptNew,
+    ]);
+    return () => {};
+  }, [receiptNew]);
 
   const handleSubmit = () => {
     if (receiptFileList.length === 0) {
       setReceiptIsTurnRed(true);
-    } else if (receiptIsError) {
+    } else if (isSpinning) {
+      message.info('发票查验中，请稍等', 1);
+      return;
+    } else if (receiptIsError > 0) {
       message.error('存在不合法的发票', 1);
     } else {
       setVisible(false);
       setSelectReceiptVisible(true);
-      setReceiptIsError(false);
-      // console.log(
-      //   '🚀 ~ file: index.js ~ line 42 ~ handleSubmit ~ receiptData',
-      //   receiptData,
-      // );
+      setReceiptIsError(0);
+      setReceiptFileList([]);
+      setReceiptFileName([]);
+      setReceiptFileUrl([]);
+      setReceiptData(p => [...receiptNew2]);
     }
   };
   const handleClose = () => {
+    if (isSpinning) {
+      message.info('发票查验中，请稍等', 1);
+      return;
+    }
     setVisible(false);
     setReceiptIsTurnRed(false);
-    setReceiptIsError(false);
+    setReceiptIsError(0);
     setReceiptFileList([]);
     setReceiptFileName([]);
     setReceiptFileUrl([]);
@@ -66,7 +81,7 @@ const UploadReceipt = props => {
     <Modal
       wrapClassName="editMessage-modify"
       centered
-      width={'33vw'}
+      width={'560px'}
       maskClosable={false}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
       zIndex={103}
@@ -108,6 +123,13 @@ const UploadReceipt = props => {
               } else {
                 setReceiptIsTurnRed(false);
               }
+              let count = 0;
+              receiptFileList?.forEach(x => {
+                if (x.status === 'error') {
+                  count++;
+                }
+              });
+              setReceiptIsError(count);
             }}
             beforeUpload={(file, fileList) => {
               let nameArr = [];
@@ -125,28 +147,39 @@ const UploadReceipt = props => {
                     const fn = () => {
                       CheckInvoice({
                         fileName: nameArr,
-                        receiptData: urlArr,
+                        invoiceData: urlArr,
                         staffId: userykbid,
                       }).then(res => {
                         let unCheckArr = [];
-                        let receiptDataArr= [...receiptData, ...res.result];
-                        receiptDataArr?.forEach(x=>{
-                          x.base64 = arr[1];
-                        })
-                        setReceiptData(p => [...receiptDataArr]);
+                        let checkArr = [];
                         res.result?.forEach((x, i) => {
                           if (x?.isCheck === 'false') {
                             unCheckArr.push(i);
+                          } else {
+                            checkArr.push(x);
                           }
                         });
+                        let receiptDataArr = [...checkArr];
+                        receiptDataArr?.forEach(x => {
+                          x.base64 = e.target.result;
+                          x.source = '电子发票文件';
+                          x.checked = false;
+                          x.loading = false;
+                          x.isHover = false;
+                        });
+                        // console.log(
+                        //   '🚀 ~ file: index.js ~ line 150 ~ fn ~ receiptDataArr',
+                        //   receiptDataArr,
+                        // );
+                        setReceiptNew(p => [...receiptDataArr]);
                         let list = [...fileList];
                         list.forEach((x, i) => {
                           if (unCheckArr.includes(i)) {
                             x.status = 'error';
                             x.response = res?.result[i]?.message;
-                            setReceiptIsError(true);
                           }
                         });
+                        setReceiptIsError(unCheckArr.length);
                         setReceiptFileList(p => [...receiptFileList, ...list]);
                         setIsSpinning(false);
                       });

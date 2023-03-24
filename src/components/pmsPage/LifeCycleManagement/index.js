@@ -701,9 +701,14 @@ class LifeCycleManagementTabs extends React.Component {
     //   item,
     //   xmbh,
     // );
+    let index = this.state.operationListData?.findIndex(x => {
+      return Number(x.xmid) === Number(item.xmid);
+    });
     if (item.sxmc.includes('付款流程')) {
       this.setState({
         paymentModalVisible: true,
+        currentXmmc: this.state.operationListData[index].xmmc,
+        xmbh: xmbh,
       });
       // message.info('功能开发中，暂时无法使用', 1);
       return;
@@ -1191,7 +1196,7 @@ class LifeCycleManagementTabs extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '50%',
-      height: uploadTitle==='中标公告上传'||uploadTitle==='中标公告修改'?'50rem':'78rem',
+      height: uploadTitle === '中标公告上传' || uploadTitle === '中标公告修改' ? '50rem' : '78rem',
       title: uploadTitle,
       style: { top: '10rem' },
       visible: uploadVisible,
@@ -1418,8 +1423,10 @@ class LifeCycleManagementTabs extends React.Component {
                 : Number(this.props.params.projectId) ||
                   Number(this.state.operationListData[0].xmid)
             }
+            currentXmmc={currentXmmc}
             closePaymentProcessModal={this.closePaymentProcessModal}
             onSuccess={() => this.onSuccess('流程发起')}
+            projectCode={xmbh}
           />
         )}
 

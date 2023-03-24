@@ -28,9 +28,9 @@ const PaymentProcess = props => {
   //是否有合同 单选 1是 2否
   const [sfyht, setSfyht] = useState(1);
   //合同金额
-  const [htje, setHtje] = useState('');
+  const [htje, setHtje] = useState(0);
   //已付款金额
-  const [yfkje, setYfkje] = useState('');
+  const [yfkje, setYfkje] = useState(0);
   //申请日期
   const [sqrq, setSqrq] = useState(null);
   //账户范围 单选 1个人 2对公
@@ -64,6 +64,7 @@ const PaymentProcess = props => {
   const [ykbSkzhId, setYkbSkzhId] = useState('');
   //费用明细新增按钮help显示
   const [isXzTurnRed, setIsXzTurnRed] = useState(false);
+  const [expenseDetail, setExpenseDetail] = useState([]); //费用详情数据
 
   const {
     paymentModalVisible,
@@ -71,6 +72,8 @@ const PaymentProcess = props => {
     form,
     currentXmid,
     fetchQueryLifecycleStuff,
+    currentXmmc,
+    projectCode,
   } = props;
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
@@ -96,6 +99,11 @@ const PaymentProcess = props => {
     fetchQueryPaymentAccountList();
     return () => {};
   }, []);
+
+  useEffect(() => {
+    console.log('expenseDetail %%%=>', expenseDetail);
+    return () => {};
+  }, [expenseDetail]);
 
   // 获取收款账户
   const fetchQueryPaymentAccountList = () => {
@@ -130,71 +138,75 @@ const PaymentProcess = props => {
       })
       .catch(e => console.error(e));
   };
-  // // 获取费用明细
-  // const getExpenseDetailData = fn => {
-  //   QueryPaymentFlowDetail({
-  //     xmmc: -currentXmid,
-  //   })
-  //     .then(res => {
-  //       if (res.code === 1) {
-  //         const arr = res.record.map(item => {
-  //           return {
-  //             id: item.id,
-  //             fylx: item.fylx,
-  //             je: item.je,
-  //             rq: item.rq,
-  //             fplx: item.fplx === ' ' ? '无' : item.fplx,
-  //             fp: JSON.parse(item.fp),
-  //             ysxm: item.ysxm === ' ' ? '无' : item.ysxm,
-  //             se: item.se,
-  //             sl: item.sl,
-  //             xfsy: item.xfsy,
-  //             fj: JSON.parse(item.fj),
-  //             htfyj: item.htfyj,
-  //             ysbgfyj: item.ysbgfyj,
-  //             fylxdm: item.fylxdm,
-  //             fylxmbdm: item.fylxmbdm,
-  //             fpbm: item.fpbm,
-  //             ysfydm: item.ysfydm,
-  //           };
-  //         });
-  //         setExpenseDetailData(p => [...arr]);
-  //         fn && fn(false); //关闭加载状态
-  //         message.success('新增成功', 1);
-  //       }
-  //     })
-  //     .catch(e => {
-  //       message.error('新增失败', 1);
-  //       console.error(e);
-  //     });
-  // };
 
   const handleSubmit = () => {
     validateFields(err => {
-      if (expenseDetailData.length === 0) {
+      if (expenseDetail.length === 0) {
         setIsXzTurnRed(true);
+        return;
       }
       if (!err) {
         if (!isXzTurnRed) {
-          let detailData = expenseDetailData.map(item => {
-            const str = [item.fylxdm, item.fylxmbdm, item.fpbm, item.ysfydm].join(',');
-            return [
-              item.id,
-              item.fylx,
-              item.je,
-              item.rq,
-              item.fplx,
-              JSON.stringify(item.fp),
-              item.ysxm,
-              item.se,
-              item.sl,
-              item.xfsy,
-              JSON.stringify(item.fj),
-              item.htfyj,
-              item.ysbgfyj,
-              str,
-            ].join('|');
+          let details = [];
+          expenseDetail?.forEach(item => {
+            let detailInfo = JSON.stringify({
+              FYLX: item.fylxInfo.ID,
+              JE: String(item.je),
+              RQ: item.date,
+              FPLX: item.fplxInfo?.ID,
+              YSXM: item.ysxmInfo?.ID,
+              XFSY: item.consumptionReasons,
+              SFWK: String(item.isFinalPay), //1,2
+            });
+            let invoice = item.receiptFileInfo.map(x => {
+              return { fileName: x.fileName, code64: x.base64.split(',')[1] };
+            });
+            let invoiceCheckInfo = item.receiptFileInfo.map(x => {
+              return {
+                CYXX: x.message,
+                YKBID: x.invoiceId,
+                MXID: x.detailIds,
+                FPMC: x.fileName,
+                ZJE: x.zje,
+                SE: x.se,
+                SL: x.sl,
+                CYJG: x.isCheck,
+                FILEID: x.fileId,
+                KEY: x.key,
+              };
+            });
+            let codeInfo = {
+              FYLXBM: item.fylxInfo.FYLXDM,
+              FYLXMBDM: item.fylxInfo.MBDM,
+              FPBM: item.fplxInfo?.BM,
+              YSFYDM: item.ysxmInfo?.YSFYDM,
+            };
+            let oaFile = item.OAProcessFileInfo?.map(x => {
+              return {
+                fileName: x.name,
+                code64: x.base64.split(',')[1],
+              };
+            });
+            let detailItem = {
+              detailInfo,
+              invoice,
+              codeInfo,
+              contract: (item.contractFileInfo?.base64.split(','))[1],
+              contractName: item.contractFileInfo?.name,
+              report: (item.checkFileInfo?.base64.split(','))[1],
+              reportName: item.checkFileInfo?.name,
+              oaFile,
+              invoiceCheckInfo,
+              invoiceType: item.fplxInfo?.NAME,
+              feeType: item.fylxInfo.NAME,
+              consumptionReasons: item.consumptionReasons,
+              date: item.date,
+              taxAmount: String(item.taxAmount),
+            };
+            details.push(detailItem);
           });
+          console.log('🚀 ~ file: index.js ~ line 205 ~ handleSubmit ~ details', details);
+
           const submitData = {
             title: String(getFieldValue('bt')),
             submitterId: String(userykbid),
@@ -202,22 +214,25 @@ const PaymentProcess = props => {
             expenseDate: String(moment(sqrq).format('YYYYMMDD')),
             payeeId: String(ykbSkzhId),
             description: String(getFieldValue('ms')),
-            details: String(detailData.join('#')),
+            details,
             haveContract: String(sfyht),
             contractAmount: String(getFieldValue('htje')),
             paidAmount: String(getFieldValue('yfkje')),
             attQuantity: String(getFieldValue('fjzs')),
             legalEntity: '浙商证券股份有限公司（ZSZQ）',
             orgId: String(LOGIN_USER_ORG_ID),
-            projectName: String(currentXmid),
+            projectName: String(currentXmmc),
             payName: String(skzhId),
+            projectId: String(currentXmid),
+            projectCode,
+            operateType: 'save',
           };
           console.log('submitData', submitData);
           CreatPaymentFlow(submitData)
             .then(res => {
               if (res.code === 200) {
-                // message.success('付款流程发起成功', 1);
-                onSuccess();
+                message.success('付款流程发起成功', 1);
+                // onSuccess();
                 resetFields();
                 fetchQueryLifecycleStuff(currentXmid);
               }
@@ -244,6 +259,14 @@ const PaymentProcess = props => {
       }
     });
   };
+
+  // const footer = (
+  //   <div className="modal-footer">
+  //     <Button onClick={closePaymentProcessModal}>取消</Button>
+  //     <Button type="primary" onClick={()=>handleSubmit('save')}>暂存草稿</Button>
+  //     <Button type="primary" onClick={()=>handleSubmit('send')}>确定</Button>
+  //   </div>
+  // );
 
   const addSkzhModalProps = {
     isAllWindow: 1,
@@ -273,7 +296,7 @@ const PaymentProcess = props => {
         />
       )}
       <Modal
-        wrapClassName="editMessage-modify"
+        wrapClassName="editMessage-modify payment-process-box-modal"
         width={'860px'}
         maskClosable={false}
         zIndex={100}
@@ -283,7 +306,6 @@ const PaymentProcess = props => {
           top: '14px',
         }}
         bodyStyle={{
-          height: 'calc(100vh - 94px)',
           padding: '0',
           overflow: 'hidden',
         }}
@@ -291,6 +313,7 @@ const PaymentProcess = props => {
         visible={paymentModalVisible}
         onOk={handleSubmit}
         onCancel={closePaymentProcessModal}
+        // footer={footer}
       >
         <div className="body-title-box">
           <strong>付款流程发起</strong>
@@ -308,13 +331,13 @@ const PaymentProcess = props => {
           />
           <ExpenseDetail
             currentXmid={currentXmid}
-            // getExpenseDetailData={getExpenseDetailData}
-            // expenseDetailData={expenseDetailData}
             isSpinning={isSpinning}
             setIsSpinning={setIsSpinning}
             isXzTurnRed={isXzTurnRed}
             setIsXzTurnRed={setIsXzTurnRed}
             userykbid={userykbid}
+            expenseDetail={expenseDetail}
+            setExpenseDetail={setExpenseDetail}
           />
         </Spin>
       </Modal>

@@ -71,7 +71,7 @@ export default function TopConsole(props) {
           let b = a[key].reduce((pre, current, index) => {
             pre[current.ZDBM] = pre[current.ZDBM] || [];
             pre[current.ZDBM].push({
-              key: current.ID,
+              key: current.ID + current.YSLXID,
               title: current.YSXM,
               value: current.ID + current.YSLXID,
               ID: current.ID,
@@ -94,7 +94,7 @@ export default function TopConsole(props) {
                 if (item.ZDBM === '6') {
                   // console.log("b[item.ZDBM]",b["6"])
                   b[item.ZDBM].map(i => {
-                    treeDatamini.key = i.ID;
+                    treeDatamini.key = i.ID + i.ZDBM;
                     treeDatamini.value = i.ID + i.ZDBM;
                     treeDatamini.title = i.YSXM;
                     treeDatamini.ID = i.ID;
@@ -109,7 +109,7 @@ export default function TopConsole(props) {
                   // treeDatamini.selectable=false;
                   // treeDatamini.children = b[item.ZDBM]
                 } else {
-                  treeDatamini.key = item.ZDBM;
+                  treeDatamini.key = item.ZDBM+ item.YSLXID;
                   treeDatamini.value = item.ZDBM + item.YSLXID;
                   treeDatamini.title = item.YSLB;
                   treeDatamini.ID = item.ID;
@@ -155,6 +155,7 @@ export default function TopConsole(props) {
       .then(res => {
         if (res?.success) {
           setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
+          console.log("🚀 ~ file: index.js ~ line 158 ~ getFilterData ~ toItemTree(JSON.parse(res.budgetProjectRecord))", toItemTree(JSON.parse(res.budgetProjectRecord)))
           let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
