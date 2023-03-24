@@ -18,18 +18,31 @@ class StaffDetail extends Component {
         xb: '-',//性别
         zbxm: '-',//专班项目
         attachList: [],
-        tableLoading: false
+        tableLoading: false,
+        pageParams: {
+            current: 1,
+            pageSize: 10,
+            paging: 1,
+            total: -1,
+            sort: '',
+        },
     }
 
     componentDidMount() {
         this.handleSearch()
     }
 
-    handleSearch = () => {
+    handleSearch = (params = {}) => {
+        const { pageParams = {} } = this.state
         this.setState({
             tableLoading: true,
         })
-        QueryMemberDetailInfo({})
+        const { ryid = 12488 } = this.props
+        QueryMemberDetailInfo({
+            ...pageParams,
+            ...params,
+            ryid
+        })
             .then((res = {}) => {
                 const { code = 0,
                     xmxx, //项目列表
@@ -42,7 +55,8 @@ class StaffDetail extends Component {
                     ktxm,//课题项目
                     rymc,//人员名称
                     xb,//性别
-                    zbxm//专班项目
+                    zbxm,//专班项目
+                    totalrows = 0
                 } = res;
                 if (code > 0) {
                     this.setState({
@@ -59,6 +73,11 @@ class StaffDetail extends Component {
                         xb,//性别
                         zbxm,//专班项目
                         tableLoading: false,
+                        pageParams: {
+                            ...pageParams,
+                            ...params,
+                            total:totalrows,
+                        }
                     })
                 } else {
                     this.setState({
@@ -86,7 +105,9 @@ class StaffDetail extends Component {
             xb = '-',//性别
             zbxm = '-',//专班项目
             tableLoading = false,
-            attachList = [] } = this.state
+            attachList = [],
+            pageParams = {}
+         } = this.state
         const { routes } = this.props
 
         return (<div className="staff-detail-box">
@@ -106,7 +127,7 @@ class StaffDetail extends Component {
                     zbxm,//专班项目
                 }}
             />
-            <InfoTable tableData={attachList} tableLoading={tableLoading} routes={routes} />
+            <InfoTable tableData={attachList} pageParams={pageParams} tableLoading={tableLoading} routes={routes} handleSearch={this.handleSearch}/>
         </div>);
     }
 }

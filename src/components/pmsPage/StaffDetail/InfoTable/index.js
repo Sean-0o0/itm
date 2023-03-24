@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, message, Popover } from 'antd'
+import { Table, message, Popover, Pagination } from 'antd'
 import moment from 'moment';
 
 
@@ -20,8 +20,30 @@ class InfoTable extends Component {
         return arr;
     };
 
+    handleChange = (current,pageSize) =>{
+        const { handleSearch } = this.props;
+        if (handleSearch) {
+            handleSearch({
+                current: current,
+                pageSize: pageSize,
+                total: -1,
+            })
+        }
+    }
+
+    handleTableChange = (pagination, filters, sorter) => {
+        const { handleSearch } = this.props;
+        const { order = '', field = '' } = sorter;
+        if (handleSearch) {
+            handleSearch({
+                total: -1,
+                sort: order ? `${field} ${order.slice(0, -3)}` : ''
+            })
+        }
+    };
+
     render() {
-        const { tableLoading = false, tableData = [], } = this.props;
+        const { tableLoading = false, tableData = [], pageParams = {}  } = this.props;
 
         const columns = [
             {
@@ -46,7 +68,7 @@ class InfoTable extends Component {
             {
                 title: '项目标签',
                 dataIndex: 'xmbq',
-                width: '18%',
+                width: 195,
                 key: 'xmbq',
                 ellipsis: true,
                 render: (text, row, index) => {
@@ -131,13 +153,28 @@ class InfoTable extends Component {
                         columns={columns}
                         rowKey={'xmid'}
                         dataSource={tableData}
-                        pagination={{
-                            pageSizeOptions: ['10', '20', '30', '40'],
-                            showSizeChanger: true,
-                            showQuickJumper: true,
-                            showTotal: total => `共 ${tableData.length} 条数据`,
-                        }}
+                        onChange={this.handleTableChange}
+                        pagination = {false}
+                        // pagination={{
+                        //     pageSizeOptions: ['10', '20', '30', '40'],
+                        //     showSizeChanger: true,
+                        //     showQuickJumper: true,
+                        //     showTotal: total => `共 ${tableData.length} 条数据`,
+                        // }}
                     />
+                </div>
+                <div className='page-individual'>
+                    <Pagination
+                        onChange={this.handleChange}
+                        pageSize={pageParams.pageSize}
+                        current={pageParams.current}
+                        total={pageParams.total}
+                        pageSizeOptions={['10', '20', '30', '40']}
+                        showSizeChanger={true}
+                        showQuickJumper={true}
+                        showTotal={total => `共 ${total} 条数据`}
+                    />
+
                 </div>
             </div>
         );
