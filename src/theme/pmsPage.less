@@ -4918,6 +4918,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         align-items: center;
         background-color: #fff;
         width: 100%;
+        position: sticky;
+        bottom: 0;
 
         .ant-select {
           font-size: 14px !important;
@@ -6386,7 +6388,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             // margin-right: 2%;
             overflow: hidden;
             margin-bottom: 16px;
-            box-shadow: 0px 4px 24px -4px rgba(0,0,0,0.06);
+            box-shadow: 0px 4px 24px -4px rgba(0, 0, 0, 0.06);
             border-radius: 4px;
             border: 1px solid #fafafb;
             // transition: width 0.5s;
@@ -6583,10 +6585,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     & > .col-right {
       & > .team-card-box,
       & > .supplier-card-box {
-        .home-card-title-box {
-          padding-left: 24px;
-          padding-right: 24px;
-        }
         margin-bottom: 16px;
         overflow: unset;
         // padding: 16px 8px;
@@ -6606,6 +6604,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         margin-bottom: 0;
         padding-left: 0px;
         padding-right: 0px;
+        .home-card-title-box {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
       }
 
       & > .process-card-box {
