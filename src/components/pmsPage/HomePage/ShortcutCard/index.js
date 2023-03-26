@@ -3,7 +3,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 
 export default function ShortcutCard(props) {
-  const { userRole } = props;
+  const { userRole, getPrjInfo } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   useEffect(() => {
@@ -28,7 +28,6 @@ export default function ShortcutCard(props) {
     );
   };
   const closeFileAddModal = () => {
-    // getPrjInfo(userRole);
     setFileAddVisible(false);
   };
   const getShortcutBox = () => {
@@ -57,17 +56,8 @@ export default function ShortcutCard(props) {
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       closeFileAddModal();
+      getPrjInfo(userRole); //刷新数据
       // message.success('保存成功');
-      //projectId跳转到生命周期页面
-      const handleType = sessionStorage.getItem('projectId');
-      if (handleType === '1') {
-        const params = {
-          projectId: sessionStorage.getItem('projectId'),
-        };
-        window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(
-          JSON.stringify(params),
-        )}`;
-      }
     }
   };
 
@@ -77,7 +67,7 @@ export default function ShortcutCard(props) {
     title: '新建项目',
     width: '1000px',
     height: '95vh',
-    style: {top: '2rem'},
+    style: { top: '2rem' },
     visible: fileAddVisible,
     footer: null,
   };

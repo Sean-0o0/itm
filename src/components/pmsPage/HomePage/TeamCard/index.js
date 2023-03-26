@@ -16,10 +16,10 @@ export default function TeamCard(props) {
           itemHeight: 8,
           icon: 'circle',
           orient: 'vertical',
-          padding: [42, 0],
-          left: '60%', //图例距离左的距离
+          // padding: [42, 0],
+          left: '55%', //图例距离左的距离
           y: 'center', //图例上下居中
-          itemGap: 20,
+          itemGap: 15,
           formatter: name => {
             const nameStr = name.length > 5 ? name.substr(0, 5) + '...' : name;
             return `{a|${nameStr}}{b|${getValue(name)}}`;
@@ -27,9 +27,9 @@ export default function TeamCard(props) {
           textStyle: {
             rich: {
               a: {
-                width: 60,
+                width: 76,
                 fontSize: 12,
-                padding: [0, 0, 0, 8],
+                padding: [0, 0, 0, 4],
                 fontFamily: 'PingFangSC-Regular, PingFang SC',
                 color: '#9198A7',
               },
@@ -47,17 +47,33 @@ export default function TeamCard(props) {
           {
             name: 'Access From',
             type: 'pie',
-            radius: ['50%', '60%'],
+            radius: ['50%', '65%'],
             avoidLabelOverlap: false,
-            center: ['25%', '50%'],
+            center: ['27%', '50%'],
             label: {
               show: false,
               position: 'center',
               formatter: params => {
-                return [params.name, `${getValue(params.name) * 2}人`].join('\n');
+                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;
               },
               color: 'black',
               fontFamily: 'PingFangSC-Regular, PingFang SC',
+              textStyle: {
+                rich: {
+                  a: {
+                    fontSize: 14,
+                    fontFamily: 'THSMoneyfont-Medium, THSMoneyfont',
+                    color: '#606266',
+                    lineHeight: 29,
+                  },
+                  b: {
+                    fontSize: 24,
+                    fontFamily: 'Roboto-Medium, Roboto',
+                    fontWeight: 'bold',
+                    color: '#222222',
+                  },
+                },
+              },
             },
             emphasis: {
               label: {
@@ -88,9 +104,9 @@ export default function TeamCard(props) {
         ],
       };
       pieChart.setOption(pieChartOption);
-      window.onresize = function(){
+      window.onresize = function() {
         pieChart.resize();
-      }
+      };
     }
     return () => {
       if (teamData?.length !== 0) pieChart.dispose();

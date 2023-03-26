@@ -51,6 +51,11 @@ exports.routes = [
   },
   {
     // 项目信息
+    path: `${prefix}/ProjectInfo/:params`,
+    component: './pmsPage/ProjectInfo',
+  },
+  {
+    // 项目信息
     path: `${prefix}/ProjectInfo`,
     component: './pmsPage/ProjectInfo',
   },
@@ -67,6 +72,11 @@ exports.routes = [
     //新首页
     path: `${prefix}/HomePage`,
     component: './pmsPage/HomePage',
+  },
+  {
+    // 人员详情
+    path: `${prefix}/staffDetail/:params`,
+    component: './pmsPage/StaffDetail',
   },
   {
     // 人员详情

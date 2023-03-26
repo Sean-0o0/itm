@@ -11,7 +11,6 @@ export default function ProjectCard(props) {
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
-  const latestInfo = useRef(prjInfo);
 
   useEffect(() => {
     if (prjInfo.length !== 0) {
@@ -139,7 +138,18 @@ export default function ProjectCard(props) {
         <div>
           <div className="list">
             {data?.map(x => (
-              <div key={x.USERID} className="item">
+              <div
+                key={x.USERID}
+                className="item"
+                onClick={() =>
+                  (window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
+                    JSON.stringify({
+                      routes: [{ name: '首页', pathname: '#/pms/manage/HomePage' }],
+                      ryid: x.USERID,
+                    }),
+                  )}`)
+                }
+              >
                 <div className="img-box">
                   <img
                     src={require(`../../../../assets/homePage/img_avatar_${
@@ -304,6 +314,7 @@ export default function ProjectCard(props) {
       </div>
     );
   };
+
   const fileAddModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
@@ -314,6 +325,7 @@ export default function ProjectCard(props) {
     visible: fileAddVisible,
     footer: null,
   };
+
   return (
     <div className="project-card-box">
       {/* 修改项目弹窗 */}
@@ -330,10 +342,12 @@ export default function ProjectCard(props) {
           团队项目
           {/* <i className="iconfont circle-info" /> */}
         </div>
-        <span>
-          全部
-          <i className="iconfont icon-right" />
-        </span>
+        {userRole !== '普通人员' && (
+          <span>
+            全部
+            <i className="iconfont icon-right" />
+          </span>
+        )}
       </div>
       <div className="project-box">
         {infoList?.map(item => {

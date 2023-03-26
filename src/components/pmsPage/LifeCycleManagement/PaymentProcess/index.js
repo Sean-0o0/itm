@@ -1,23 +1,9 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Modal,
-  Form,
-  message,
-  Spin,
-  Drawer,
-  Button,
-  Col,
-  Row,
-  Input,
-  Select,
-  DatePicker,
-  Icon,
-} from 'antd';
+import { Modal, Form, message, Spin, Button } from 'antd';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import FormOperate from './FormOperate';
 import {
   QueryPaymentAccountList,
-  QueryPaymentFlowDetail,
   QueryPaymentFlowInfo,
   CreatPaymentFlow,
 } from '../../../../services/pmsServices';
@@ -45,14 +31,6 @@ const PaymentProcess = props => {
   const [addSkzhModalVisible, setAddSkzhModalVisible] = useState(false);
   //对公收款账户
   const [dgskzh, setDgskzh] = useState([]);
-  // //附件列表
-  // const [fileList, setFileList] = useState([]);
-  // //附件base64
-  // const [fileUrl, setFileUrl] = useState('');
-  // //附件字段校验报红
-  // const [isFjTurnRed, setIsFjTurnRed] = useState(false);
-  // //附件名称
-  // const [fileName, setFileName] = useState('');
   //易快报id
   const [userykbid, setUserykbid] = useState('');
   const [orgykbid, setOrgykbid] = useState('');
@@ -87,8 +65,6 @@ const PaymentProcess = props => {
     skzh,
     setSkzh,
     dgskzh,
-    // fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
-    // fileName, setFileName,
     setskzhId,
     setYkbSkzhId,
   };
@@ -101,7 +77,7 @@ const PaymentProcess = props => {
   }, []);
 
   useEffect(() => {
-    console.log('expenseDetail %%%=>', expenseDetail);
+    // console.log('expenseDetail %%%=>', expenseDetail);
     return () => {};
   }, [expenseDetail]);
 
@@ -139,7 +115,7 @@ const PaymentProcess = props => {
       .catch(e => console.error(e));
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = (operateType = 'send') => {
     validateFields(err => {
       if (expenseDetail.length === 0) {
         setIsXzTurnRed(true);
@@ -191,9 +167,9 @@ const PaymentProcess = props => {
               detailInfo,
               invoice,
               codeInfo,
-              contract: (item.contractFileInfo?.base64.split(','))[1],
+              contract: (item.contractFileInfo?.base64.split(','))[1] || '无',
               contractName: item.contractFileInfo?.name,
-              report: (item.checkFileInfo?.base64.split(','))[1],
+              report: (item.checkFileInfo?.base64.split(','))[1] || '无',
               reportName: item.checkFileInfo?.name,
               oaFile,
               invoiceCheckInfo,
@@ -225,13 +201,13 @@ const PaymentProcess = props => {
             payName: String(skzhId),
             projectId: String(currentXmid),
             projectCode,
-            operateType: 'send',
+            operateType,
           };
           console.log('submitData', submitData);
           CreatPaymentFlow(submitData)
             .then(res => {
               if (res.code === 200) {
-                message.success('付款流程发起成功', 1);
+                message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
                 // onSuccess();
                 resetFields();
                 fetchQueryLifecycleStuff(currentXmid);
@@ -260,21 +236,28 @@ const PaymentProcess = props => {
     });
   };
 
-  // const footer = (
-  //   <div className="modal-footer">
-  //     <Button onClick={closePaymentProcessModal}>取消</Button>
-  //     <Button type="primary" onClick={()=>handleSubmit('save')}>暂存草稿</Button>
-  //     <Button type="primary" onClick={()=>handleSubmit('send')}>确定</Button>
-  //   </div>
-  // );
+  //底部按钮
+  const footer = (
+    <div className="modal-footer">
+      <Button className="btn-default" onClick={closePaymentProcessModal}>
+        取消
+      </Button>
+      <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        暂存草稿
+      </Button>
+      <Button className="btn-primary" type="primary" onClick={() => handleSubmit('send')}>
+        确定
+      </Button>
+    </div>
+  );
 
   const addSkzhModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
     title: '新增收款账户',
-    width: '120rem',
-    height: '90rem',
-    style: { top: '20rem' },
+    width: '800px',
+    height: '600px',
+    style: { top: '134px' },
     visible: addSkzhModalVisible,
     footer: null,
   };
@@ -313,7 +296,7 @@ const PaymentProcess = props => {
         visible={paymentModalVisible}
         onOk={handleSubmit}
         onCancel={closePaymentProcessModal}
-        // footer={footer}
+        footer={footer}
       >
         <div className="body-title-box">
           <strong>付款流程发起</strong>

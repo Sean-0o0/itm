@@ -1795,18 +1795,14 @@
   }
 }
 
+//付款流程发起弹窗 - 底部按钮
 .payment-process-box-modal {
-  .ant-modal-footer {
-    button {
-      &:first-child {
-        &::before {
-          content: 'ddd';
-          height: 50px;
-          width: 200px;
-          color: #fff;
-          background-color: #3361ff;
-        }
-      }
+  .modal-footer {
+    .btn-default {
+      .antd-btn-default();
+    }
+    .btn-primary {
+      .antd-btn-primary();
     }
   }
 }
@@ -4423,9 +4419,9 @@
     height: 100%;
     padding: 0px;
 
-    .ant-fullcalendar-table {
-      //height: 38.0928rem;
-    }
+    // .ant-fullcalendar-table {
+    //height: 38.0928rem;
+    // }
   }
 }
 
@@ -4631,29 +4627,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       & > .btn-search {
-        padding: 9px 12px 10px 12px;
-        font-size: 14px;
-        line-height: unset;
-        height: unset;
-        background-color: #3361ff;
-        color: #fff !important;
-
-        &:hover {
-          background-color: #3361ffaf;
-        }
+        .antd-btn-primary();
       }
 
       & > .btn-reset {
-        padding: 9px 12px 10px 12px;
-        font-size: 14px;
-        line-height: unset;
-        height: unset;
+        .antd-btn-default();
         margin-left: 8px;
-
-        &:hover {
-          color: #3361ffaf;
-          border-color: #3361ffaf;
-        }
       }
 
       & > .console-item {
@@ -4776,51 +4755,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             .ant-select-selection-selected-value {
               color: #303133;
             }
-
-            // //自适应适配
-            // .ant-select-selection.ant-select-selection--single,
-            // .ant-select-selection.ant-select-selection--multiple {
-            //   min-height: unset;
-            //   height: unset;
-
-            //   .ant-select-selection__rendered {
-            //     line-height: unset;
-            //     padding: 5px 0;
-            //   }
-
-            //   .ant-select-selection__placeholder {
-            //     top: 5px;
-            //     line-height: unset;
-            //     height: unset;
-            //     margin-top: 0;
-            //   }
-
-            //   .ant-select-search--inline,
-            //   ul {
-            //     margin: -5px 0;
-            //   }
-            // }
           }
 
-          // .ant-input {
-          //   line-height: unset;
-          //   height: unset;
-          //   padding: 7px 11px;
-          // }
-
           .item-input {
-            // flex: auto;
-            // width: 75%;
             flex-grow: 1;
           }
 
           .input-between {
-            // width: 75%;
             flex-grow: 1;
             display: flex;
             flex-direction: row;
             align-items: center;
-            // justify-content: center;
 
             .input-min,
             .input-max {
@@ -4873,16 +4818,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       margin-bottom: 16px;
 
       .btn-add-prj {
-        padding: 9px 12px 10px 12px;
-        font-size: 14px;
-        line-height: unset;
-        height: unset;
-        color: #fff !important;
-        background-color: #3361ff;
-
-        &:hover {
-          background-color: #3361ffaf;
-        }
+        .antd-btn-primary();
       }
     }
 
@@ -4981,6 +4917,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         flex-direction: row;
         align-items: center;
         background-color: #fff;
+        width: 100%;
 
         .ant-select {
           font-size: 14px !important;
@@ -5914,6 +5851,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-size: 1em;
         margin-bottom: -2px;
         color: #909399;
+        cursor: pointer;
+        &:hover {
+          color: #3361ff;
+        }
       }
     }
   }
@@ -6112,6 +6053,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 font-size: 1em;
                 margin-bottom: -1px;
                 color: #909399;
+                cursor: pointer;
+                &:hover {
+                  color: #3361ff;
+                }
               }
             }
           }
@@ -6371,6 +6316,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 32px;
               background: rgba(51, 97, 255, 0.1);
               border-radius: 16px;
+              cursor: pointer;
+              &:hover {
+                font-weight: bold;
+              }
             }
           }
         }
@@ -6387,11 +6336,14 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             margin-left: 4px;
             font-size: 1em;
             color: #909399;
+            &:hover {
+              color: #3361ff;
+            }
           }
 
-          &:hover {
-            // background-color: #f5f5f5;
-          }
+          // &:hover {
+          // background-color: #f5f5f5;
+          // }
         }
       }
 
@@ -6410,15 +6362,18 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             margin-left: 4px;
             font-size: 1em;
             color: #909399;
+            &:hover {
+              color: #3361ff;
+            }
           }
 
-          &:hover {
-            // background-color: #f5f5f5;
-          }
+          // &:hover {
+          // background-color: #f5f5f5;
+          // }
         }
 
         & > .project-box {
-          overflow: hidden;
+          // overflow: hidden;
           display: flex;
           flex-direction: row;
           align-items: center;
@@ -6431,10 +6386,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             // margin-right: 2%;
             overflow: hidden;
             margin-bottom: 16px;
-            box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+            box-shadow: 0px 4px 24px -4px rgba(0,0,0,0.06);
             border-radius: 4px;
             border: 1px solid #fafafb;
             // transition: width 0.5s;
+            &:hover {
+              box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.12);
+            }
 
             // &:nth-child(3n) {
             //   margin-right: 0;
@@ -6461,6 +6419,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 overflow: hidden;
                 white-space: nowrap;
                 line-height: 1.1em;
+                cursor: pointer;
               }
 
               .tag {
@@ -6588,6 +6547,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 1em;
               height: 54px;
               &:hover {
+                background-color: #fafafb;
                 .txt {
                   color: #303133;
                 }
@@ -6623,8 +6583,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     & > .col-right {
       & > .team-card-box,
       & > .supplier-card-box {
+        .home-card-title-box {
+          padding-left: 24px;
+          padding-right: 24px;
+        }
         margin-bottom: 16px;
         overflow: unset;
+        // padding: 16px 8px;
 
         .team-chart {
           height: 200px;
@@ -6639,6 +6604,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       & > .supplier-card-box {
         margin-bottom: 0;
+        padding-left: 0px;
+        padding-right: 0px;
       }
 
       & > .process-card-box {
@@ -6678,10 +6645,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
               .content {
                 line-height: 1em;
-                max-width: calc(100% - 110px);
+                max-width: 195px;
                 text-overflow: ellipsis;
                 overflow: hidden;
                 white-space: nowrap;
+                cursor: pointer;
               }
 
               .left-tag {

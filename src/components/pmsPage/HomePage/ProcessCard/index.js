@@ -1,5 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { FetchQueryOwnerWorkflow } from '../../../../services/pmsServices';
+import {
+  FetchQueryOwnerWorkflow,
+  GetApplyListProvisionalAuth,
+} from '../../../../services/pmsServices';
 import moment from 'moment';
 import { Tooltip } from 'antd';
 
@@ -29,7 +32,14 @@ export default function ProcessCard(props) {
         console.error('FetchQueryOwnerWorkflow', e);
       });
   };
-  const getProcessItem = ({ type = '1', content = '--', date = '--', isDone = false, key }) => {
+  const getProcessItem = ({
+    type = '1',
+    content = '--',
+    date = '--',
+    isDone = false,
+    key,
+    url,
+  }) => {
     let backgroundColor = '#FDC041CC';
     if (type.includes('易快报')) {
       backgroundColor = '#05BEFECC';
@@ -44,7 +54,29 @@ export default function ProcessCard(props) {
             {type}
           </div>
           <Tooltip title={content}>
-            <div className="content">{content}</div>
+            <div
+              className="content"
+              onClick={() => {
+                if (url.includes('YKB:')) {
+                  const arr = url.split(',');
+                  const id = arr[0].split(':')[1];
+                  const userykbid = arr[1];
+                  GetApplyListProvisionalAuth({
+                    id,
+                    userykbid,
+                  })
+                    .then(res => {
+                      window.open(res.url);
+                    })
+                    .catch(e => console.error('GetApplyListProvisionalAuth', e));
+                } else {
+                  //OA流程
+                  window.open(url);
+                }
+              }}
+            >
+              {content}
+            </div>
           </Tooltip>
         </div>
         {isDone && (
@@ -68,6 +100,7 @@ export default function ProcessCard(props) {
             date: moment(item.startdate).format('YYYY-MM-DD'),
             isDone: item.type === '本系统' ? item.state === '2' : item.state === '4',
             key: index,
+            url: item.url,
           }),
         )}
       </div>

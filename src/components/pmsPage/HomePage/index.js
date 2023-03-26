@@ -47,6 +47,7 @@ export default function HomePage(props) {
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
+
     return () => {
       // 组件销毁时移除监听事件
       window.removeEventListener('resize', resizeUpdate);
@@ -69,19 +70,33 @@ export default function HomePage(props) {
   const resizeUpdate = e => {
     const fn = () => {
       let w = e.target.innerWidth; //屏幕宽度
-      // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
-      if (w < 1850) {
+      console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+      if (w < 1700) {
         setLeftWidth('70%');
-      } else if (1850 <= w && w < 2050) {
+      } else if (w < 1850) {
         setLeftWidth('72%');
-      } else if (2050 <= w && w < 2350) {
+      } else if (w < 2200) {
         setLeftWidth('74%');
-      } else if (2350 <= w && w < 2850) {
-        setLeftWidth('76%');
-      } else if (2850 <= w && w < 3150) {
-        setLeftWidth('78%');
-      } else {
+      } else if (w < 2350) {
+        setLeftWidth('77%');
+      } else if (w < 2500) {
+        setLeftWidth('79%');
+      } else if (w < 2650) {
         setLeftWidth('80%');
+      } else if (w < 2800) {
+        setLeftWidth('81%');
+      } else if (w < 2950) {
+        setLeftWidth('82%');
+      } else if (w < 3100) {
+        setLeftWidth('84%');
+      } else if (w < 3250) {
+        setLeftWidth('84%');
+      } else if (w < 3400) {
+        setLeftWidth('84%');
+      } else if (w < 3550) {
+        setLeftWidth('85%');
+      } else {
+        setLeftWidth('86%');
       }
       if (w < 2020) {
         setItemWidth('32%');
@@ -157,7 +172,7 @@ export default function HomePage(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ getOverviewInfo ~ res', res);
+          // console.log('🚀 ~ getOverviewInfo ~ res', res);
           setOverviewInfo(res?.record[0]);
         }
       })
@@ -248,7 +263,10 @@ export default function HomePage(props) {
           JSON.parse(res?.gysxx)?.forEach(item => {
             obj.cgje.push(Number(item.cgje));
             obj.cgsl.push(Number(item.cgsl));
-            obj.gysmc.push({ name: item.gysmc, max: 255 });
+            obj.gysmc.push({
+              name: item.gysmc,
+              max: Number(item.cgje) === 0 ? 10 : Number(item.cgje) * 1.5,
+            });
           });
           // console.log('🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj', obj);
           setSupplierData(obj);
@@ -267,7 +285,7 @@ export default function HomePage(props) {
       </div>
       <div className="row-box">
         <OverviewCard width={leftWidth} overviewInfo={overviewInfo} userRole={userRole} />
-        <ShortcutCard userRole={userRole} />
+        <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
       </div>
       <div className="row-box">
         <div className="col-left" style={{ width: leftWidth }}>
@@ -298,10 +316,8 @@ export default function HomePage(props) {
           {['二级部门领导', '普通人员'].includes(userRole) ? (
             <ProcessCard />
           ) : (
-            <SupplierCard supplierData={supplierData} time={updateTime}/>
+            <SupplierCard supplierData={supplierData} time={updateTime} />
           )}
-          {/* <SupplierCard supplierData={supplierData} time={updateTime}/>
-          <TeamCard teamData={teamData} /> */}
         </div>
       </div>
     </div>

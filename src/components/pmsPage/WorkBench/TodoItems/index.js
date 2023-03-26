@@ -11,25 +11,27 @@ import {
   Tooltip,
   Empty,
   Pagination,
-  message, Popconfirm,
+  message,
+  Popconfirm,
   Icon,
   Button,
 } from 'antd';
 import React from 'react';
-import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { Link } from 'dva/router';
 import { EncryptBase64 } from '../../../../components/Common/Encrypt';
 import {
   CreateOperateHyperLink,
-  FetchQueryLifecycleStuff, UpdateMessageState
-} from "../../../../services/pmsServices";
+  FetchQueryLifecycleStuff,
+  UpdateMessageState,
+} from '../../../../services/pmsServices';
 import moment from 'moment';
 import 'moment/locale/zh-cn';
-import FastFunction from "../FastFunction";
+import FastFunction from '../FastFunction';
 
 const { Panel } = Collapse;
 
-const Loginname = localStorage.getItem("firstUserID");
+const Loginname = localStorage.getItem('firstUserID');
 
 class TodoItems extends React.Component {
   state = {
@@ -64,8 +66,8 @@ class TodoItems extends React.Component {
     page: 1,
     date: moment(new Date()).format('YYYYMMDD'),
     flag: true,
-    cxlx: "UNDO",
-    currentState: 0,//默认为0，查全部，为1时查具体日期
+    cxlx: 'UNDO',
+    currentState: 0, //默认为0，查全部，为1时查具体日期
     //员工评价开启
     ygpjVisible: false,
     ygpjUrl: '#',
@@ -84,7 +86,6 @@ class TodoItems extends React.Component {
     isDateSelected: false,
   };
 
-
   componentDidMount() {
     // 日历today对象
     // let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
@@ -95,10 +96,9 @@ class TodoItems extends React.Component {
     // }
   }
 
-  onPanelChange = (value, mode) => {
-  }
+  onPanelChange = (value, mode) => {};
 
-  handleUrl = (item) => {
+  handleUrl = item => {
     switch (item?.sxmc) {
       case '信委会议案流程':
         return this.handleSend(item);
@@ -170,121 +170,124 @@ class TodoItems extends React.Component {
         return this.handleSend(item);
       case '人员新增提醒':
         return this.handleRyxztx(item);
-      default: console.error('未配置弹窗');
+      default:
+        console.error('未配置弹窗');
     }
-    if (item.sxmc === "周报填写") {
-      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
+    if (item.sxmc === '周报填写') {
+      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性预算年初录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '资本性预算年初录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性预算年中录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '资本性预算年中录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性预算年初录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性预算年初录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性预算年中录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性预算年中录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性年初预算录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '资本性年初预算录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性年中预算录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '资本性年中预算录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性年初预算录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性年初预算录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性年中预算录入被退回") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性年中预算录入被退回') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "月报填写") {
-      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`
+    if (item.sxmc === '月报填写') {
+      window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性年初预算录入") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '资本性年初预算录入') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性年中预算录入") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '资本性年中预算录入') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性年初预算录入") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性年初预算录入') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性年中预算录入") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性年中预算录入') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性预算年初录入") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '资本性预算年初录入') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "资本性预算年中录入") {
-      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '资本性预算年中录入') {
+      window.location.href = `/#/UIProcessor?Table=V_ZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性预算年初录入") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性预算年初录入') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNCLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "非资本性预算年中录入") {
-      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`
+    if (item.sxmc === '非资本性预算年中录入') {
+      window.location.href = `/#/UIProcessor?Table=V_FZBXYSNZLR&hideTitlebar=true`;
     }
-    if (item.sxmc === "信委会议案被退回") {
-      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
+    if (item.sxmc === '信委会议案被退回') {
+      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`;
     }
-    if (item.sxmc === "流程待处理") {
-      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
+    if (item.sxmc === '流程待处理') {
+      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`;
     }
-    if (item.sxmc === "信委会流程待审批") {
-      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`
+    if (item.sxmc === '信委会流程待审批') {
+      window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true`;
     }
-    if (item.sxmc === "信委会议案待上会前审批") {
-      window.location.href = `/#/UIProcessor?Table=V_XWHYALC_LDSP&hideTitlebar=true`
+    if (item.sxmc === '信委会议案待上会前审批') {
+      window.location.href = `/#/UIProcessor?Table=V_XWHYALC_LDSP&hideTitlebar=true`;
     }
-    if (item.sxmc === "信委会议案待上会") {
-      window.location.href = `/#/UIProcessor?Table=XWHYAGL&hideTitlebar=true`
+    if (item.sxmc === '信委会议案待上会') {
+      window.location.href = `/#/UIProcessor?Table=XWHYAGL&hideTitlebar=true`;
     }
-    if (item.sxmc === "信委会议案待提交领导审批") {
-      window.location.href = `/#/UIProcessor?Table=XWHYAGL&hideTitlebar=true`
+    if (item.sxmc === '信委会议案待提交领导审批') {
+      window.location.href = `/#/UIProcessor?Table=XWHYAGL&hideTitlebar=true`;
     }
-  }
+  };
 
-  handleRyxztx = (record) => {
+  handleRyxztx = record => {
     const params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "V_RYXXGL",
-      "operateName": "TRY_XMRY_COMFIRM",
-      "parameter": [
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'V_RYXXGL',
+      operateName: 'TRY_XMRY_COMFIRM',
+      parameter: [
         {
-          "name": "SSXM",
-          "value": record.xmid
+          name: 'SSXM',
+          value: record.xmid,
         },
         {
-          "name": "RYMC",
-          "value": String(JSON.parse(sessionStorage.getItem("user")).id)
-        }
+          name: 'RYMC',
+          value: String(JSON.parse(sessionStorage.getItem('user')).id),
+        },
       ],
-      "userId": String(JSON.parse(sessionStorage.getItem("user")).loginName),
-    }
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          ryxztxUrl: url,
-          ryxztxVisible: true,
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+      userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+    };
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            ryxztxUrl: url,
+            ryxztxVisible: true,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
-  dateCellRender = (value) => {
+  dateCellRender = value => {
     const listData = this.getListData(value);
     return (
-      <ul style={{margin: '0.5px', paddingLeft: '6.5px'}}>
+      <ul style={{ margin: '0.5px', paddingLeft: '6.5px' }}>
         {listData.map(item => (
           <li key={item.content}>
             {/* <Tooltip title={item.content}> */}
-            <Badge status={item.type}/>
+            <Badge status={item.type} />
             {/* </Tooltip> */}
           </li>
         ))}
@@ -292,41 +295,49 @@ class TodoItems extends React.Component {
     );
   };
 
-  getListData = (value) => {
+  getListData = value => {
     //表格数据
     // console.log(value,"value")
     const { allData } = this.props;
     let t = moment(value._d)
       .format('YY-MM-DD')
-      .substring(0, 5)
-    let curr_t = new Date()
-    let listData
+      .substring(0, 5);
+    let curr_t = new Date();
+    let listData;
 
     curr_t = moment(curr_t)
       .format('YY-MM-DD')
-      .substring(0, 5)
+      .substring(0, 5);
     let content = '';
     if (curr_t) {
       // 过滤掉非本月的数据
       allData &&
         allData.forEach(item => {
-          let date = item.jzrq.slice(0, 4).concat("-").concat(item.jzrq.slice(4, 6)).concat("-").concat(item.jzrq.slice(6, 8));
+          let date = item.jzrq
+            .slice(0, 4)
+            .concat('-')
+            .concat(item.jzrq.slice(4, 6))
+            .concat('-')
+            .concat(item.jzrq.slice(6, 8));
           if (value.month() === new Date(date).getMonth()) {
             if (value.date() === new Date(date).getDate()) {
-              content = <span>{content}<p>{item.txnr}</p></span>;
-              listData = [
-                { type: 'warning', content: content },
-              ]
+              content = (
+                <span>
+                  {content}
+                  <p>{item.txnr}</p>
+                </span>
+              );
+              listData = [{ type: 'warning', content: content }];
             }
           }
-        })
+        });
     }
 
     return listData || [];
   };
 
   //流程发起
-  handleSend = (item) => {
+  handleSend = item => {
     if (item.sxmc === '付款流程') {
       // this.setState({
       //   paymentModalVisible: true,
@@ -355,40 +366,41 @@ class TodoItems extends React.Component {
       // sendUrl: url,
       sendVisible: true,
     });
-
   };
 
   //流程发起url
-  getSendUrl = (record) => {
+  getSendUrl = record => {
     const params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "TLC_LCFQ",
-      "operateName": "TLC_LCFQ_LXSQLCFQ",
-      "parameter": [
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'TLC_LCFQ',
+      operateName: 'TLC_LCFQ_LXSQLCFQ',
+      parameter: [
         {
-          "name": "GLXM",
-          "value": record.xmid
-        }
+          name: 'GLXM',
+          value: record.xmid,
+        },
       ],
-      "userId": Loginname,
-    }
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          // sendTitle: e + '发起',
-          sendUrl: url,
-          // sendVisible: true,
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+      userId: Loginname,
+    };
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            // sendTitle: e + '发起',
+            sendUrl: url,
+            // sendVisible: true,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //文档上传
-  handleUpload = (item) => {
+  handleUpload = item => {
     this.getUploadUrl(item);
     this.setState({
       uploadVisible: true,
@@ -397,7 +409,7 @@ class TodoItems extends React.Component {
   };
 
   //文档上传的修改
-  handleEdit = (item) => {
+  handleEdit = item => {
     this.getUploadUrl(item);
     this.setState({
       editVisible: true,
@@ -406,74 +418,75 @@ class TodoItems extends React.Component {
   };
 
   //文档上传/修改url
-  getUploadUrl = (item) => {
+  getUploadUrl = item => {
     const params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "TWD_XM",
-      "operateName": "TWD_XM_INTERFACE_UPLOD",
-      "parameter": [
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'TWD_XM',
+      operateName: 'TWD_XM_INTERFACE_UPLOD',
+      parameter: [
         {
-          "name": "XMMC",
-          "value": item.xmid
+          name: 'XMMC',
+          value: item.xmid,
         },
         {
-          "name": "LCBMC",
-          "value": item.lcbid
+          name: 'LCBMC',
+          value: item.lcbid,
         },
         {
-          "name": "SXID",
-          "value": item.sxid
-        }
+          name: 'SXID',
+          value: item.sxid,
+        },
       ],
-      "userId": Loginname
-    }
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          uploadUrl: url,
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
-
+      userId: Loginname,
+    };
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            uploadUrl: url,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //信息录入
-  handleFillOut = (record) => {
+  handleFillOut = record => {
     let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "V_HTXX",
-      "operateName": "V_HTXX_ADD",
-      "parameter": [
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'V_HTXX',
+      operateName: 'V_HTXX_ADD',
+      parameter: [
         {
-          "name": "XMMC",
-          "value": record.xmid
+          name: 'XMMC',
+          value: record.xmid,
         },
       ],
-      "userId": Loginname
-    }
+      userId: Loginname,
+    };
     switch (record.sxmc) {
-      case "合同信息录入":
+      case '合同信息录入':
         params = {
-          "attribute": 0,
-          "authFlag": 0,
-          "objectName": "V_HTXX",
-          "operateName": "V_HTXX_ADD",
-          "parameter": [
+          attribute: 0,
+          authFlag: 0,
+          objectName: 'V_HTXX',
+          operateName: 'V_HTXX_ADD',
+          parameter: [
             {
-              "name": "XMMC",
-              "value": record.xmid
+              name: 'XMMC',
+              value: record.xmid,
             },
           ],
-          "userId": Loginname
+          userId: Loginname,
         };
         break;
     }
-    this.getFileOutUrl(params)
+    this.getFileOutUrl(params);
     this.setState({
       fillOutTitle: record.sxmc,
       fillOutVisible: true,
@@ -481,34 +494,34 @@ class TodoItems extends React.Component {
   };
 
   //信息录入修改
-  handleMessageEdit = (record) => {
+  handleMessageEdit = record => {
     let params = {
-      "attribute": 0,
-      "authFlag": 0,
-      "objectName": "V_HTXX",
-      "operateName": "V_HTXX_INTERFACE_MOD",
-      "parameter": [
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'V_HTXX',
+      operateName: 'V_HTXX_INTERFACE_MOD',
+      parameter: [
         {
-          "name": "XMMC",
-          "value": record.xmid
+          name: 'XMMC',
+          value: record.xmid,
         },
       ],
-      "userId": Loginname
-    }
+      userId: Loginname,
+    };
     switch (record.sxmc) {
-      case "合同信息录入":
+      case '合同信息录入':
         params = {
-          "attribute": 0,
-          "authFlag": 0,
-          "objectName": "V_HTXX",
-          "operateName": "V_HTXX_INTERFACE_MOD",
-          "parameter": [
+          attribute: 0,
+          authFlag: 0,
+          objectName: 'V_HTXX',
+          operateName: 'V_HTXX_INTERFACE_MOD',
+          parameter: [
             {
-              "name": "XMMC",
-              "value": record.xmid
+              name: 'XMMC',
+              value: record.xmid,
             },
           ],
-          "userId": Loginname
+          userId: Loginname,
         };
         break;
     }
@@ -517,22 +530,24 @@ class TodoItems extends React.Component {
       editMessageTitle: record.sxmc + '修改',
       editMessageVisible: true,
     });
-  }
+  };
 
   //信息录入url
   getFileOutUrl = (params, callBack) => {
-    CreateOperateHyperLink(params).then((ret = {}) => {
-      const { code, message, url } = ret;
-      if (code === 1) {
-        this.setState({
-          fillOutUrl: url,
-          // fillOutVisible: true,
-        });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          this.setState({
+            fillOutUrl: url,
+            // fillOutVisible: true,
+          });
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   closeUploadModal = () => {
     this.setState({
@@ -565,52 +580,53 @@ class TodoItems extends React.Component {
   };
 
   //成功回调
-  onSuccess = (name) => {
-    message.success(name + "完成");
+  onSuccess = name => {
+    message.success(name + '完成');
     const { fetchQueryOwnerMessage } = this.props;
     fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx);
-  }
+  };
 
   updateFlag = () => {
     this.setState({
       flag: false,
-    })
-  }
+    });
+  };
 
   // onconfirm = (e) => {
   //   console.log(e);
   //   message.success('Click on Yes');
   // }
 
-  oncancel = (e) => {
+  oncancel = e => {
     // console.log(e);
     // message.error('Click on No');
-  }
+  };
 
-  handPageChange = (e) => {
+  handPageChange = e => {
     this.setState({
       page: e,
-    })
+    });
     const { fetchQueryOwnerMessage } = this.props;
-    fetchQueryOwnerMessage(e, this.state.date, this.state.cxlx)
-  }
+    fetchQueryOwnerMessage(e, this.state.date, this.state.cxlx);
+  };
 
   updateState = (record, zxlx) => {
     UpdateMessageState({
       zxlx: zxlx,
       xxid: record.xxid,
-    }).then((ret = {}) => {
-      const { code = 0, note = '', record = [] } = ret;
-      if (code === 1) {
-        const { fetchQueryOwnerMessage } = this.props;
-        fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx)
-        message.success('执行成功', 1);
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
-
+    })
+      .then((ret = {}) => {
+        const { code = 0, note = '', record = [] } = ret;
+        if (code === 1) {
+          const { fetchQueryOwnerMessage } = this.props;
+          fetchQueryOwnerMessage(this.state.page, this.state.date, this.state.cxlx);
+          message.success('执行成功', 1);
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   // 表格当前的列
   renderColumns = () => {
@@ -618,26 +634,35 @@ class TodoItems extends React.Component {
       textOverflow: 'ellipsis',
       overflow: 'hidden',
       whiteSpace: 'nowrap',
-    }
+    };
     const cloums = [
       {
         width: '4%',
         title: '',
         dataIndex: '',
-        align: "center",
+        align: 'center',
         render: (text, record) => {
-          const {flag} = this.state;
-          return (flag ? <Popconfirm
-                title={<span style={{fontSize: '2.083rem'}}>确认已完成？</span>}
-                onConfirm={() => this.updateState(record, 'EXECUTE')}
-                onCancel={this.oncancel}
-                okText={<span style={{fontSize: '1.785rem'}}>确认</span>}
-                cancelText={<span style={{fontSize: '1.785rem'}}>取消</span>}
-              ><Icon type="check-circle"
-                     style={{color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem'}}/></Popconfirm> :
-              <Icon type="check-circle" style={{color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem'}}/>
-          )
-        }
+          const { flag } = this.state;
+          return flag ? (
+            <Popconfirm
+              title={<span style={{ fontSize: '2.083rem' }}>确认已完成？</span>}
+              onConfirm={() => this.updateState(record, 'EXECUTE')}
+              onCancel={this.oncancel}
+              okText={<span style={{ fontSize: '1.785rem' }}>确认</span>}
+              cancelText={<span style={{ fontSize: '1.785rem' }}>取消</span>}
+            >
+              <Icon
+                type="check-circle"
+                style={{ color: 'rgba(192, 196, 204, 1)', fontSize: '1.9836rem' }}
+              />
+            </Popconfirm>
+          ) : (
+            <Icon
+              type="check-circle"
+              style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '1.9836rem' }}
+            />
+          );
+        },
       },
       {
         width: '20%',
@@ -647,25 +672,39 @@ class TodoItems extends React.Component {
         ellipsis: true,
         // key: 'sxmc',
         render: (text, record) => {
-          return <span>
-            <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
-              <span style={{ display: 'flex', alignItems: 'center' }}>
-                {
-                  record.xxlx === "1" && <span style={{
-                    height: '20.5px',
-                    display: 'flex',
-                    alignItems: 'center',
-                  }}>
-                    <i style={{ color: 'red', fontSize: '2.381rem' }} className="iconfont icon-fill-star" />
-                  </span>
-                }
-                <a style={{fontSize: '2.083rem', color: '#3361ff', paddingLeft: '3.5px', ...textOverflow}}
-                   onClick={() => this.handleUrl(record)}>
-                  {text}
-                </a>
-              </span>
-            </Tooltip>
-          </span>
+          return (
+            <span>
+              <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
+                <span style={{ display: 'flex', alignItems: 'center' }}>
+                  {record.xxlx === '1' && (
+                    <span
+                      style={{
+                        height: '20.5px',
+                        display: 'flex',
+                        alignItems: 'center',
+                      }}
+                    >
+                      <i
+                        style={{ color: 'red', fontSize: '2.381rem' }}
+                        className="iconfont icon-fill-star"
+                      />
+                    </span>
+                  )}
+                  <a
+                    style={{
+                      fontSize: '2.083rem',
+                      color: '#3361ff',
+                      paddingLeft: '3.5px',
+                      ...textOverflow,
+                    }}
+                    onClick={() => this.handleUrl(record)}
+                  >
+                    {text}
+                  </a>
+                </span>
+              </Tooltip>
+            </span>
+          );
         },
       },
       {
@@ -676,13 +715,15 @@ class TodoItems extends React.Component {
         ellipsis: true,
         // key: 'sxmc',
         render: (text, record) => {
-          return <span>
-            <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
-              <span style={{ fontSize: '2.083rem', display: 'block', ...textOverflow }}>
-                {text}
-              </span>
-            </Tooltip>
-          </span>
+          return (
+            <span>
+              <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
+                <span style={{ fontSize: '2.083rem', display: 'block', ...textOverflow }}>
+                  {text}
+                </span>
+              </Tooltip>
+            </span>
+          );
         },
       },
       {
@@ -693,14 +734,27 @@ class TodoItems extends React.Component {
         ellipsis: true,
         // key: 'xmmc',
         render: (text, record) => {
-          return <span><Tooltip title={text} style={{ fontSize: '2.381rem' }}>
-            <a style={{ color: '#3361ff', fontSize: '2.083rem', display: 'block', ...textOverflow }}
-              onClick={
-                () => window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify({ projectId: record.xmid }))}`
-              }
-            >
-              {text}
-            </a></Tooltip></span>
+          return (
+            <span>
+              <Tooltip title={text} style={{ fontSize: '2.381rem' }}>
+                <a
+                  style={{
+                    color: '#3361ff',
+                    fontSize: '2.083rem',
+                    display: 'block',
+                    ...textOverflow,
+                  }}
+                  onClick={() =>
+                    (window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(
+                      JSON.stringify({ projectId: record.xmid }),
+                    )}`)
+                  }
+                >
+                  {text}
+                </a>
+              </Tooltip>
+            </span>
+          );
         },
       },
       {
@@ -711,18 +765,29 @@ class TodoItems extends React.Component {
         ellipsis: true,
         // key: 'jzrq',
         render: (text, record) => {
-          return record.wdsl < 0 ? <span
-            style={{ fontSize: '2.083rem', color: 'red', ...textOverflow }}>逾期{record.wdsl * -1}天</span>
-            : <span style={{ fontSize: '2.083rem', ...textOverflow }}>
-              {record.txrq?.slice(4, 6) + '月' + record.txrq?.slice(6, 8) + '日-' + record.jzrq?.slice(4, 6) + '月' + record.jzrq?.slice(6, 8) + '日'}
+          return record.wdsl < 0 ? (
+            <span style={{ fontSize: '2.083rem', color: 'red', ...textOverflow }}>
+              逾期{record.wdsl * -1}天
             </span>
+          ) : (
+            <span style={{ fontSize: '2.083rem', ...textOverflow }}>
+              {record.txrq?.slice(4, 6) +
+                '月' +
+                record.txrq?.slice(6, 8) +
+                '日-' +
+                record.jzrq?.slice(4, 6) +
+                '月' +
+                record.jzrq?.slice(6, 8) +
+                '日'}
+            </span>
+          );
         },
       },
     ];
     return cloums;
   };
 
-  handleDateChange = (e) => {
+  handleDateChange = e => {
     // if (moment(e).format('YYYYMMDD') === new moment().format('YYYYMMDD')) {
     //   let node = document.querySelector('.calendar-style .ant-fullcalendar-selected-day .ant-fullcalendar-value, .calendar-style .ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value');
     //   node.style.backgroundColor = '';
@@ -735,21 +800,28 @@ class TodoItems extends React.Component {
     // }
     this.setState({
       date: moment(e).format('YYYYMMDD'),
-      cxlx: "ALL",
+      cxlx: 'ALL',
       isDateSelected: true,
-    })
+    });
     const { fetchQueryOwnerMessage } = this.props;
-    fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD'), "ALL")
-  }
+    fetchQueryOwnerMessage(this.state.page, moment(e).format('YYYYMMDD'), 'ALL');
+  };
 
   getUndoItems = () => {
-    this.setState({
-      date: moment(new Date()).format('YYYYMMDD'),
-      cxlx: "UNDO",
-    }, () => {
-      const { fetchQueryOwnerMessage } = this.props;
-      fetchQueryOwnerMessage(this.state.page, moment(new Date()).format('YYYYMMDD'), this.state.cxlx)
-    })
+    this.setState(
+      {
+        date: moment(new Date()).format('YYYYMMDD'),
+        cxlx: 'UNDO',
+      },
+      () => {
+        const { fetchQueryOwnerMessage } = this.props;
+        fetchQueryOwnerMessage(
+          this.state.page,
+          moment(new Date()).format('YYYYMMDD'),
+          this.state.cxlx,
+        );
+      },
+    );
 
     // 日历today对象
     // let node = document.querySelector('.ant-fullcalendar-selected-day .ant-fullcalendar-value');
@@ -764,11 +836,13 @@ class TodoItems extends React.Component {
     //   nodeToday.style.color = 'rgba(0, 0, 0, 0.65)';
     //   nodeToday.style.boxShadow = '0 0 0 0 #3361ff inset';
     // }
-  }
+  };
 
   onclickdb = () => {
-    window.open("http://10.52.130.12/ZSZQOA/getURLSyncBPM.do?_BPM_FUNCCODE=C_FormSetFormData&_tf_file_id=1728341&_bpm_task_taskid=63336317");
-  }
+    window.open(
+      'http://10.52.130.12/ZSZQOA/getURLSyncBPM.do?_BPM_FUNCCODE=C_FormSetFormData&_tf_file_id=1728341&_bpm_task_taskid=63336317',
+    );
+  };
 
   render() {
     const { data, total, wzxsl = 0 } = this.props;
@@ -887,46 +961,76 @@ class TodoItems extends React.Component {
     };
 
     return (
-      <Row style={{height: '100%', padding: '24px'}}>
-        <div style={{width: '100%', paddingBottom: '16px'}}>
-          <div style={{display: 'flex',}}>
-            <i style={{color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '6.5px'}}
-               className="iconfont icon-detail"/>
-            <div style={{
-              width: '25%',
-              fontSize: '2.381rem',
-              fontWeight: 700,
-              color: '#303133',
-            }} onClick={this.onclickdb}>待办事项
+      <Row style={{ height: '100%', padding: '24px' }}>
+        <div style={{ width: '100%', paddingBottom: '16px' }}>
+          <div style={{ display: 'flex' }}>
+            <i
+              style={{ color: 'rgba(51, 97, 255, 1)', fontSize: '3.57rem', marginRight: '6.5px' }}
+              className="iconfont icon-detail"
+            />
+            <div
+              style={{
+                width: '25%',
+                fontSize: '2.381rem',
+                fontWeight: 700,
+                color: '#303133',
+              }}
+              onClick={this.onclickdb}
+            >
+              待办事项
             </div>
-            <div style={{width: '75%', textAlign: 'end'}}>
-              {isDateSelected &&
-              <>
-                <i style={{color: 'red', fontSize: '2.381rem', padding: "0 3.5px 0 0", verticalAlign: 'middle'}}
-                   className="iconfont icon-shijian"/>
-                <span
-                  style={{fontSize: '2.083rem', fontWeight: 400, color: '#303133', verticalAlign: 'middle'}}>未完成
-                    <span
-                      style={{color: 'rgba(215, 14, 25, 1)'}}>{wzxsl}
-                      <a style={{color: '#3361ff'}} onClick={this.getUndoItems}>&nbsp;&nbsp;查看</a>
+            <div style={{ width: '75%', textAlign: 'end' }}>
+              {isDateSelected && (
+                <>
+                  <i
+                    style={{
+                      color: 'red',
+                      fontSize: '2.381rem',
+                      padding: '0 3.5px 0 0',
+                      verticalAlign: 'middle',
+                    }}
+                    className="iconfont icon-shijian"
+                  />
+                  <span
+                    style={{
+                      fontSize: '2.083rem',
+                      fontWeight: 400,
+                      color: '#303133',
+                      verticalAlign: 'middle',
+                    }}
+                  >
+                    未完成
+                    <span style={{ color: 'rgba(215, 14, 25, 1)' }}>
+                      {wzxsl}
+                      <a style={{ color: '#3361ff' }} onClick={this.getUndoItems}>
+                        &nbsp;&nbsp;查看
+                      </a>
                     </span>
                   </span>
-              </>
-              }
-
+                </>
+              )}
             </div>
           </div>
         </div>
-        <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'row', height: '95%'}}>
-          <div style={{width: '24%'}}>
-            <div style={{border: '1px solid #d9d9d9', borderRadius: 4}} className="calendar-style">
+        <Col
+          xs={24}
+          sm={24}
+          lg={24}
+          xl={24}
+          style={{ display: 'flex', flexDirection: 'row', height: '95%' }}
+        >
+          <div style={{ width: '24%' }}>
+            <div
+              style={{ border: '1px solid #d9d9d9', borderRadius: 4 }}
+              className="calendar-style"
+            >
               <Calendar
                 // monthCellRender={this.monthCellRender}
                 dateCellRender={this.dateCellRender}
-                style={{fontSize: '2.083rem'}}
+                style={{ fontSize: '2.083rem' }}
                 onSelect={this.handleDateChange}
                 fullscreen={false}
-                headerRender={({value, type, onChange, onTypeChange}) => {
+                headerRender={({ value, type, onChange, onTypeChange }) => {
                   const start = 0;
                   const end = 12;
                   const monthOptions = [];
@@ -958,11 +1062,11 @@ class TodoItems extends React.Component {
                     );
                   }
                   return (
-                    <div style={{padding: '10px'}}>
+                    <div style={{ padding: '10px' }}>
                       <Row type="flex" justify="space-between">
                         <Col>
                           <Select
-                            style={{fonsSize: '2.083rem',}}
+                            style={{ fonsSize: '2.083rem' }}
                             size="small"
                             dropdownMatchSelectWidth={false}
                             className="my-year-select"
@@ -977,7 +1081,7 @@ class TodoItems extends React.Component {
                           &nbsp;
                           <Select
                             size="small"
-                            style={{ fonsSize: '2.083rem', }}
+                            style={{ fonsSize: '2.083rem' }}
                             dropdownMatchSelectWidth={false}
                             value={String(month)}
                             onChange={selectedMonth => {
@@ -997,85 +1101,134 @@ class TodoItems extends React.Component {
               />
             </div>
           </div>
-          <div style={{marginLeft: '13.5px', width: '76%'}}>
-            <div style={{height: '100%'}}>
-              <Col xs={24} sm={24} lg={24} xl={24} style={{display: 'flex', flexDirection: 'column', height: '97%'}}>
-                <div style={{height: '90%'}}>
+          <div style={{ marginLeft: '13.5px', width: '76%' }}>
+            <div style={{ height: '100%' }}>
+              <Col
+                xs={24}
+                sm={24}
+                lg={24}
+                xl={24}
+                style={{ display: 'flex', flexDirection: 'column', height: '97%' }}
+              >
+                <div style={{ height: '90%' }}>
                   {/*文档上传弹窗*/}
-                  {uploadVisible &&
-                  <BridgeModel modalProps={uploadModalProps} onSucess={() => this.onSuccess("文档上传待办")}
-                               onCancel={this.closeUploadModal}
-                               src={uploadUrl}/>}
+                  {uploadVisible && (
+                    <BridgeModel
+                      modalProps={uploadModalProps}
+                      onSucess={() => this.onSuccess('文档上传待办')}
+                      onCancel={this.closeUploadModal}
+                      src={uploadUrl}
+                    />
+                  )}
                   {/*文档修改弹窗*/}
-                  {editVisible &&
-                  <BridgeModel modalProps={editModalProps} onSucess={() => this.onSuccess("文档上传修改待办")}
+                  {editVisible && (
+                    <BridgeModel
+                      modalProps={editModalProps}
+                      onSucess={() => this.onSuccess('文档上传修改待办')}
                       onCancel={this.closeEditModal}
-                      src={uploadUrl} />}
+                      src={uploadUrl}
+                    />
+                  )}
                   {/*立项流程发起弹窗*/}
-                  {sendVisible &&
-                    <BridgeModel modalProps={sendModalProps} onSucess={() => this.onSuccess("流程发起待办")}
+                  {sendVisible && (
+                    <BridgeModel
+                      modalProps={sendModalProps}
+                      onSucess={() => this.onSuccess('流程发起待办')}
                       onCancel={this.closeSendModal}
-                      src={sendUrl} />}
+                      src={sendUrl}
+                    />
+                  )}
                   {/*信息录入弹窗*/}
-                  {fillOutVisible &&
-                    <BridgeModel modalProps={fillOutModalProps} onSucess={() => this.onSuccess("信息录入待办")}
+                  {fillOutVisible && (
+                    <BridgeModel
+                      modalProps={fillOutModalProps}
+                      onSucess={() => this.onSuccess('信息录入待办')}
                       onCancel={this.closeFillOutModal}
-                      src={fillOutUrl} />}
+                      src={fillOutUrl}
+                    />
+                  )}
                   {/*信息修改弹窗*/}
-                  {editMessageVisible &&
-                    <BridgeModel modalProps={editMessageModalProps} onSucess={() => this.onSuccess("信息修改待办")}
+                  {editMessageVisible && (
+                    <BridgeModel
+                      modalProps={editMessageModalProps}
+                      onSucess={() => this.onSuccess('信息修改待办')}
                       onCancel={this.closeMessageEditModal}
-                      src={editMessageUrl} />}
+                      src={editMessageUrl}
+                    />
+                  )}
                   {/*人员新增提醒弹窗*/}
-                  {ryxztxVisible &&
-                    <BridgeModel modalProps={ryxztxModalProps} onSucess={() => this.onSuccess("人员新增待办")}
+                  {ryxztxVisible && (
+                    <BridgeModel
+                      modalProps={ryxztxModalProps}
+                      onSucess={() => this.onSuccess('人员新增待办')}
                       onCancel={() => this.setState({ ryxztxVisible: false })}
-                      src={ryxztxUrl} />}
+                      src={ryxztxUrl}
+                    />
+                  )}
 
                   {/*员工评价开启弹窗*/}
-                  {ygpjVisible &&
-                    <BridgeModel modalProps={ygpjModalProps} onSucess={() => this.onSuccess("操作")}
+                  {ygpjVisible && (
+                    <BridgeModel
+                      modalProps={ygpjModalProps}
+                      onSucess={() => this.onSuccess('操作')}
                       onCancel={() => this.setState({ ygpjVisible: false })}
-                      src={ygpjUrl} />}
+                      src={ygpjUrl}
+                    />
+                  )}
 
                   {/*阶段信息修改弹窗*/}
-                  {editModelVisible &&
-                    <BridgeModel modalProps={editModelModalProps} onSucess={() => this.onSuccess("信息修改")}
+                  {editModelVisible && (
+                    <BridgeModel
+                      modalProps={editModelModalProps}
+                      onSucess={() => this.onSuccess('信息修改')}
                       onCancel={() => this.setState({ editModelVisible: false })}
-                      src={editModelUrl} />}
+                      src={editModelUrl}
+                    />
+                  )}
 
                   {/* 付款流程发起弹窗 */}
-                  {paymentModalVisible && <PaymentProcess
-                    paymentModalVisible={paymentModalVisible}
-                    fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
-                    currentXmid={Number(currentXmid)}
-                    closePaymentProcessModal={() => this.setState({ paymentModalVisible: false })}
-                    onSuccess={() => this.onSuccess("流程发起")}
-                  />}
+                  {paymentModalVisible && (
+                    <PaymentProcess
+                      paymentModalVisible={paymentModalVisible}
+                      fetchQueryLifecycleStuff={this.fetchQueryLifecycleStuff}
+                      currentXmid={Number(currentXmid)}
+                      closePaymentProcessModal={() => this.setState({ paymentModalVisible: false })}
+                      onSuccess={() => this.onSuccess('流程发起')}
+                    />
+                  )}
 
                   {/*合同信息修改弹窗*/}
-                  {contractModalVisible && <ContractInfoUpdate
-                    currentXmid={Number(currentXmid)}
-                    currentXmmc={currentXmmc}
-                    editMessageVisible={contractModalVisible}
-                    closeMessageEditModal={() => this.setState({ contractModalVisible: false })}
-                    onSuccess={() => this.onSuccess("信息修改")}
-                  ></ContractInfoUpdate>}
+                  {contractModalVisible && (
+                    <ContractInfoUpdate
+                      currentXmid={Number(currentXmid)}
+                      currentXmmc={currentXmmc}
+                      editMessageVisible={contractModalVisible}
+                      closeMessageEditModal={() => this.setState({ contractModalVisible: false })}
+                      onSuccess={() => this.onSuccess('信息修改')}
+                    ></ContractInfoUpdate>
+                  )}
 
                   {/*中标信息修改弹窗*/}
-                  {bidInfoModalVisible && <BidInfoUpdate
-                    currentXmid={Number(currentXmid)}
-                    currentXmmc={currentXmmc}
-                    bidInfoModalVisible={bidInfoModalVisible}
-                    closeBidInfoModal={() => this.setState({ bidInfoModalVisible: false })}
-                    loginUserId={JSON.parse(sessionStorage.getItem("user")).id}
-                    onSuccess={() => this.onSuccess("信息修改")}
-                  ></BidInfoUpdate>}
+                  {bidInfoModalVisible && (
+                    <BidInfoUpdate
+                      currentXmid={Number(currentXmid)}
+                      currentXmmc={currentXmmc}
+                      bidInfoModalVisible={bidInfoModalVisible}
+                      closeBidInfoModal={() => this.setState({ bidInfoModalVisible: false })}
+                      loginUserId={JSON.parse(sessionStorage.getItem('user')).id}
+                      onSuccess={() => this.onSuccess('信息修改')}
+                    ></BidInfoUpdate>
+                  )}
 
-                  <Table bordered columns={this.renderColumns()} pagination={false} className="tableStyle"
-                         locale={{emptyText: <Empty description={"暂无待办事项"}/>}} dataSource={data}
-                         style={{}}/>
-
+                  <Table
+                    bordered
+                    columns={this.renderColumns()}
+                    pagination={false}
+                    className="tableStyle"
+                    locale={{ emptyText: <Empty description={'暂无待办事项'} /> }}
+                    dataSource={data}
+                    style={{}}
+                  />
                 </div>
                 <div style={{ height: '10%' }}>
                   <Pagination

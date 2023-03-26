@@ -8,20 +8,23 @@ export default function ProjectInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  const { params } = props;
   useEffect(() => {
     // console.log('LOGIN_USER_ID', LOGIN_USER_ID);
     getTableData();
     return () => {};
-  }, []);
-  const getTableData = v => {
+  }, [params]);
+
+  const getTableData = () => {
+    // console.log("🚀 ~ file: index.js ~ line 28 ~ getTableData ~ params?.prjManager", params)
     setTableLoading(true);
     QueryProjectListInfo({
-      projectManager: -1,
+      projectManager: params?.prjManager || -1,
       current: 1,
       pageSize: 10,
       paging: -1,
       sort: 'string',
-      total: -1
+      total: -1,
     })
       .then(res => {
         if (res?.success) {

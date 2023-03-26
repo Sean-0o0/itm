@@ -218,7 +218,7 @@ const ExpenseDetail = props => {
                 <div className="receipt-box">
                   <div className="receipt-title">
                     <div className="divider"></div>
-                    <span>OA流程附件：</span>
+                    <span>附件：</span>
                     {item.attachmentLength !== 0 ? (
                       <Popover
                         title="附件"
