@@ -15,14 +15,15 @@ import {
   Icon,
   Dropdown,
   TreeSelect,
+  message,
+  Popconfirm,
 } from 'antd';
 import moment from 'moment';
 import InputReceipt from './InputReceipt';
 import UploadReceipt from './UploadReceipt';
 import SelectReceipt from './SelectReceipt';
-import { QueryCreatePaymentInfo } from '../../../../../../services/pmsServices';
+import { CheckInvoice, QueryCreatePaymentInfo } from '../../../../../../services/pmsServices';
 import TreeUtils from '../../../../../../utils/treeUtils';
-import { set } from 'store';
 const { TextArea } = Input;
 
 const AddExpense = props => {
@@ -42,8 +43,7 @@ const AddExpense = props => {
     receiptFileName: '',
     receiptFileList: [],
     receiptIsTurnRed: false,
-    OAProcessFileUrl: '',
-    OAProcessFileName: '',
+    OAProcessFileData: [],
     OAProcessFileList: [],
     OAProcessTurnRed: false,
     contractFileUrl: '',
@@ -72,23 +72,52 @@ const AddExpense = props => {
   //是否有预算项目
   const [isBudget, setIsBudget] = useState(false);
   //费用类型数据
-  const [fylxInfo, setFylxInfo] = useState({});
+  const [fylxInfo, setFylxInfo] = useState({
+    ID: '-1',
+    NAME: '无',
+    FYLXDM: '',
+    MBDM: '',
+  });
   //发票类型数据
-  const [fplxInfo, setFplxInfo] = useState({});
+  const [fplxInfo, setFplxInfo] = useState({
+    ID: '-1',
+    NAME: '无',
+    BM: '',
+  });
   //预算项目数据
-  const [ysxmInfo, setYsxmInfo] = useState({});
+  const [ysxmInfo, setYsxmInfo] = useState({
+    ID: '-1',
+    NAME: '无',
+    YSFYDM: '',
+  });
   //发票数据
-  const [receiptData, setReceiptData] = useState([]); //发票数据-name,base64 - 电子上传
-  const [inputReceiptData, setInputReceiptData] = useState([]); //发票数据-name,base64 - 手动录入
+  const [receiptData, setReceiptData] = useState([]); //发票数据 - 电子上传,手录
+  const [receiptDisplay, setReceiptDisplay] = useState([]); //发票数据-展示用
   const { visible, setVisible, form, userykbid, handleAddExpenseSuccess } = props;
-  const { getFieldDecorator, getFieldValue, validateFields } = form;
+  const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
+  const [oaData, setOaData] = useState([]); //oa数据
+  //防抖定时器
+  let timer = null;
+
   useEffect(() => {
-    getSelectorAData();
-    return () => {};
+    getSelectorData();
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
+  //防抖
+  const debounce = (fn, waits) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
 
   //下拉框数据
-  const getSelectorAData = () => {
+  const getSelectorData = () => {
     QueryCreatePaymentInfo({
       czr: 0,
     })
@@ -117,7 +146,7 @@ const AddExpense = props => {
             ysxmData: ysTree,
           };
           setSelectorData(p => obj);
-          // console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorAData ~ obj', obj);
+          // console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorData ~ obj', obj);
         }
       })
       .catch(e => {
@@ -130,51 +159,81 @@ const AddExpense = props => {
     validateFields(err => {
       if (!err) {
         setVisible(false);
+        let oaArr = oaData?.map(x => {
+          return {
+            name: x.name,
+            base64: x.base64,
+          };
+        });
+        let receiptArr = [...receiptDisplay];
+        let attachmentArr = [...oaArr];
+        formData?.contractFileUrl !== '' &&
+          attachmentArr.push({
+            base64: formData?.contractFileUrl,
+            name: formData?.contractFileName,
+          });
+        formData?.checkFileUrl !== '' &&
+          attachmentArr.push({
+            base64: formData?.checkFileUrl,
+            name: formData?.checkFileName,
+          });
         let submitData = {
-          consumptionReasons: getFieldValue('xfsy'),
-          date: '',
-          taxAmount: getFieldValue('se'),
-          je: getFieldValue('je'),
+          consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
+          date: moment().format('YYYYMMDD'),
+          taxAmount: getFieldValue('se') === '' ? 0 : getFieldValue('se'),
+          je: getFieldValue('je') === '' ? 0 : getFieldValue('je'),
           fylxInfo,
           fplxInfo,
           ysxmInfo,
-          receiptFileInfo:
-            formData?.receiptFileUrl === ''
-              ? []
-              : [
-                  {
-                    base64: formData?.receiptFileUrl,
-                    name: formData?.receiptFileName,
-                  },
-                ],
-          OAProcessFileInfo:
-            formData?.OAProcessFileUrl === ''
-              ? []
-              : [
-                  {
-                    base64: formData?.OAProcessFileUrl,
-                    name: formData?.OAProcessFileName,
-                  },
-                ],
+          receiptFileInfo: [...receiptDisplay],
+          OAProcessFileInfo: [...oaArr],
           contractFileInfo:
             formData?.contractFileUrl === ''
-              ? ''
+              ? {
+                  base64: '无',
+                  name: '无',
+                }
               : {
                   base64: formData?.contractFileUrl,
                   name: formData?.contractFileName,
                 },
           checkFileInfo:
             formData?.checkFileUrl === ''
-              ? ''
+              ? {
+                  base64: '无',
+                  name: '无',
+                }
               : {
                   base64: formData?.checkFileUrl,
                   name: formData?.checkFileName,
                 },
-          attachmentLength: 3,
+          attachmentLength: attachmentArr.length,
+          attachmentArr,
+          isFinalPay,
         };
         handleAddExpenseSuccess(submitData);
         console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
         //
+        resetFields();
+        setReceiptData([]);
+        setReceiptDisplay([]);
+        setFormData(p => {
+          p.OAProcessFileData = [];
+          p.OAProcessFileList = [];
+          p.OAProcessTurnRed = false;
+          p.contractFileUrl = '';
+          p.contractFileName = '';
+          p.contractFileList = [];
+          p.contractIsTurnRed = false;
+          p.checkFileUrl = '';
+          p.checkFileName = '';
+          p.checkFileList = [];
+          p.checkIsTurnRed = false;
+          return {
+            ...p,
+          };
+        });
+        console.log('确定了');
       }
     });
   };
@@ -182,6 +241,26 @@ const AddExpense = props => {
   //关闭弹窗
   const handleClose = () => {
     setVisible(false);
+    resetFields();
+    setReceiptData([]);
+    setReceiptDisplay([]);
+    setFormData(p => {
+      p.OAProcessFileData = [];
+      p.OAProcessFileList = [];
+      p.OAProcessTurnRed = false;
+      p.contractFileUrl = '';
+      p.contractFileName = '';
+      p.contractFileList = [];
+      p.contractIsTurnRed = false;
+      p.checkFileUrl = '';
+      p.checkFileName = '';
+      p.checkFileList = [];
+      p.checkIsTurnRed = false;
+      return {
+        ...p,
+      };
+    });
+    console.log('取消了');
   };
 
   const handleReceiptMenuClick = e => {
@@ -200,41 +279,25 @@ const AddExpense = props => {
   const handleFylxChange = id => {
     let obj = fylxData?.filter(x => x.ID === id)[0];
     setFylxInfo(obj);
-    console.log('🚀 ~ file: index.js ~ line 156 ~ handleFylxChange ~ obj', obj);
+    // console.log('🚀 ~ file: index.js ~ line 156 ~ handleFylxChange ~ obj', obj);
     setIsBudget(obj.FID === '20'); //劳务费类型的id 20
   };
   const handleFplxChange = (id, node) => {
     setFplxInfo({ ID: id, NAME: node.props.children, BM: node.props.bm });
-    console.log('🚀 ~ file: index.js ~ line 161 ~ handleFplxChange', {
-      ID: id,
-      NAME: node.props.children,
-      BM: node.props.bm,
-    });
+    // console.log('🚀 ~ file: index.js ~ line 161 ~ handleFplxChange', {
+    //   ID: id,
+    //   NAME: node.props.children,
+    //   BM: node.props.bm,
+    // });
   };
   const handleYsxmChange = id => {
     setYsxmInfo(ysxmData?.filter(x => x.ID === id)[0]);
-    console.log(
-      '🚀 ~ file: index.js ~ line 163 ~ handleYsxmChange ~ ysxmData?.filter(x=>x.ID===id)[0]',
-      ysxmData?.filter(x => x.ID === id)[0],
-    );
+    // console.log(
+    //   '🚀 ~ file: index.js ~ line 163 ~ handleYsxmChange ~ ysxmData?.filter(x=>x.ID===id)[0]',
+    //   ysxmData?.filter(x => x.ID === id)[0],
+    // );
   };
 
-  // //日期
-  // const getDatePicker = () => {
-  //   return (
-  //     <Form.Item label="日期" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-  //       {getFieldDecorator('date', {
-  //         initialValue: moment(),
-  //         rules: [
-  //           {
-  //             required: true,
-  //             message: '日期不允许空值',
-  //           },
-  //         ],
-  //       })(<DatePicker style={{ width: '100%' }} onChange={handleDateChange} />)}
-  //     </Form.Item>
-  //   );
-  // };
   //输入框
   const getInput = ({
     label,
@@ -291,7 +354,7 @@ const AddExpense = props => {
     );
   };
 
-  //附件
+  //单附件
   const getUpload = ({ label, formData, dataIndex, setFormData, labelCol, wrapperCol }) => {
     return (
       <Col span={12}>
@@ -334,7 +397,7 @@ const AddExpense = props => {
                 //文件读取成功完成时触发
                 let urlArr = e.target.result.split(',');
                 setFormData(p => {
-                  p[dataIndex + 'FileUrl'] = urlArr[1];
+                  p[dataIndex + 'FileUrl'] = e.target.result;
                   return { ...p };
                 });
                 setFormData(p => {
@@ -342,6 +405,77 @@ const AddExpense = props => {
                   return { ...p };
                 });
               };
+            }}
+            accept={
+              '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+            }
+            fileList={[...formData[dataIndex + 'FileList']]}
+          >
+            <Button type="dashed">
+              <Icon type="upload" />
+              点击上传
+            </Button>
+          </Upload>
+        </Form.Item>
+      </Col>
+    );
+  };
+  //多附件
+  const getMultipleUpload = ({ label, formData, dataIndex, setFormData, labelCol, wrapperCol }) => {
+    return (
+      <Col span={12}>
+        <Form.Item
+          label={label}
+          labelCol={{ span: labelCol }}
+          wrapperCol={{ span: wrapperCol }}
+          help={formData[dataIndex + 'IsTurnRed'] ? `${label}不允许空值` : ''}
+          validateStatus={formData[dataIndex + 'IsTurnRed'] ? 'error' : 'success'}
+        >
+          <Upload
+            action={'/api/projectManage/queryfileOnlyByupload'}
+            showUploadList={{
+              showRemoveIcon: true,
+              showPreviewIcon: true,
+            }}
+            multiple={true}
+            onChange={info => {
+              let list = [...info.fileList];
+              setFormData(p => {
+                p[dataIndex + 'FileList'] = [...list];
+                return { ...p };
+              });
+              if (list.length === 0) {
+                setFormData(p => {
+                  p[dataIndex + 'IsTurnRed'] = true;
+                  return { ...p };
+                });
+              } else {
+                setFormData(p => {
+                  p[dataIndex + 'IsTurnRed'] = false;
+                  return { ...p };
+                });
+              }
+            }}
+            beforeUpload={(file, fileList) => {
+              let arr = [];
+              fileList.forEach(item => {
+                let reader = new FileReader(); //实例化文件读取对象
+                reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                reader.onload = e => {
+                  //文件读取成功完成时触发
+                  let urlArr = e.target.result.split(',');
+                  arr.push({
+                    name: item.name,
+                    base64: e.target.result,
+                  });
+                  if (arr.length === fileList.length) {
+                    debounce(() => {
+                      setOaData(p => [...arr]);
+                      console.log('🚀 ~ file: index.js ~ line 407 ~ debounce ~ [...arr]', [...arr]);
+                    }, 500);
+                  }
+                };
+              });
             }}
             accept={
               '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -365,10 +499,10 @@ const AddExpense = props => {
           <Icon type="file-pdf" />
           电子发票文件
         </Menu.Item>
-        <Menu.Item key="2">
+        {/* <Menu.Item key="2">
           <Icon type="form" />
           手录发票
-        </Menu.Item>
+        </Menu.Item> */}
       </Menu>
     );
     return (
@@ -389,71 +523,146 @@ const AddExpense = props => {
       </Form.Item>
     );
   };
+  const checkFp = data => {
+    let arr = [...receiptDisplay];
+    arr.forEach(x => {
+      if (x.key === data.key) {
+        x.loading = true;
+      }
+    });
+    setReceiptDisplay(p => [...arr]);
+    CheckInvoice({
+      fileName: [data?.fileName],
+      invoiceData: [(data?.base64.split(','))[1]],
+      staffId: userykbid,
+    }).then(res => {
+      if (res.result[0].isCheck === 'true') message.success('查验通过', 1);
+      else {
+        message.error('查验失败', 1);
+      }
+      let arr = [...receiptDisplay];
+      arr.forEach(x => {
+        if (x.key === data.key) {
+          x.loading = false;
+        }
+      });
+      setReceiptDisplay(p => [...arr]);
+    });
+  };
+  const handleDeleteReceipt = data => {
+    let arr = receiptDisplay?.filter(item => item.key !== data.key);
+    console.log("🚀 ~ file: index.js ~ line 554 ~ handleDeleteReceipt ~ arr", arr)
+    setReceiptDisplay(p => [...arr]);
+    setReceiptData(p => [...arr]);
+  };
   //发票展示
   const getRecepitList = () => {
-    const getItem = () => {
-      return (
-        <div
-          className="recepit-item"
-          onMouseEnter={() => {
-            // setIsHover(true);
-            // console.log('hover');
-          }}
-          onMouseLeave={() => {
-            setIsHover(false);
-            console.log('leave');
-          }}
-        >
-          {isHover && (
-            <div className="recepit-hover-icon">
-              <Icon type="delete" />
+    const getItem = data => (
+      <div
+        className="recepit-item"
+        key={data?.key}
+        onMouseEnter={() => {
+          let arr = [...receiptDisplay];
+          arr.forEach(x => {
+            if (x.key === data?.key) {
+              x.isHover = true;
+            }
+          });
+          console.log("🚀 ~ file: index.js ~ line 571 ~ getRecepitList ~ arr", arr)
+          setReceiptDisplay(p => [...arr]);
+        }}
+        onMouseLeave={() => {
+          let arr = [...receiptDisplay];
+          arr.forEach(x => {
+            if (x.key === data.key) {
+              x.isHover = false;
+            }
+          });
+          setReceiptDisplay(p => [...arr]);
+        }}
+      >
+        {data?.isHover && (
+          //<Popconfirm title="确定要移除吗？" onConfirm={() => handleDeleteReceipt(data)}>
+            <div className="icon-delete" onClick={() => handleDeleteReceipt(data)}>
+              <i className="iconfont delete" />
             </div>
-          )}
-          <div className="recepit-info">
-            <div className="item-top-left">
-              <div className="top-left-icon">
-                <Icon type="file-pdf" />
+          //</Popconfirm>
+        )}
+        <div className="recepit-info">
+          <div className="item-top-left">
+            <div className="top-left-icon">
+              <Icon type="file-pdf" />
+            </div>
+            <div className="top-left-txt">
+              <div className="recepit-name">{data?.xsfmc}</div>
+              <div className="recepit-time">
+                {moment(Number(data?.date)).format('YYYY年MM月DD日')}
               </div>
-              <div className="top-left-txt">
-                <div className="recepit-name">票据1</div>
-                <div className="recepit-time">2023年01月04日</div>
-              </div>
-            </div>
-            <div className="item-top-right">
-              <div className="tag-checked">已验真</div>
-              <div className="tag-eltronic">电子发票文件</div>
-              <div className="tag-VAT">增值税电子普通发票</div>
-              {/* <div className='tag-other'>其他票据</div> */}
             </div>
           </div>
-          <div className="recepit-tax-rate">
-            价税合计<span>￥ 17.28</span>
-          </div>
-          <div className="recepit-deductible-tax">
-            可抵扣税额<span>￥ 0.00</span>
-          </div>
-          <div className="recepit-bottom">
-            <a>查看PDF</a>
-            <Button type="primary" style={{ backgroundColor: '#3361ff' }}>
-              重新查验
-            </Button>
+          <div className="item-top-right">
+            {data?.isCheck && <div className="tag-checked">已验真</div>}
+            <div className="tag-eltronic">{data?.source}</div>
+            <div className="tag-VAT">{data?.invoiceType}</div>
+            {/* <div className='tag-other'>其他票据</div> */}
           </div>
         </div>
-      );
-    };
-    return (
-      <>
-        <Col span={3}></Col>
-        <Col span={21}>
-          <div className="addexpense-recepit-list">
-            {getItem()}
-            {getItem()}
-            {getItem()}
-            {getItem()}
-          </div>
-        </Col>
-      </>
+        <div className="recepit-tax-rate">
+          价税合计<span>￥ {data?.zje}</span>
+        </div>
+        <div className="recepit-deductible-tax">
+          可抵扣税额<span>￥ {data?.se}</span>
+        </div>
+        <div className="recepit-bottom">
+          <a
+            style={{ color: '#3361ff' }}
+            onClick={() => {
+              //文件预览
+              let ifram = "<iframe width='100%' height='100%' src='" + data?.base64 + "'></iframe>";
+              let page = window.open().document;
+              page.open();
+              page.write(ifram);
+              page.close();
+            }}
+          >
+            查看PDF
+          </a>
+          <Button
+            onClick={() => checkFp(data)}
+            type="primary"
+            className="btn"
+            loading={data?.loading}
+          >
+            重新查验
+          </Button>
+        </div>
+      </div>
     );
+
+    if (receiptDisplay?.length !== 0)
+      return (
+        <>
+          <Col span={3}></Col>
+          <Col span={21}>
+            <div className="addexpense-recepit-list">
+              {receiptDisplay?.map(item => getItem(item))}
+            </div>
+          </Col>
+        </>
+      );
+    return null;
+  };
+  const getAmountSum = () => {
+    let jesum = 0;
+    let sesum = 0;
+    receiptDisplay?.forEach(x => {
+      jesum += Number(x.zje);
+      sesum += Number(x.se);
+    });
+    return {
+      jesum,
+      sesum,
+    };
   };
   //输入框入参
   const amountInputProps = {
@@ -461,7 +670,7 @@ const AddExpense = props => {
     labelCol: 3,
     wrapperCol: 21,
     dataIndex: 'je',
-    initialValue: 1,
+    initialValue: getAmountSum().jesum,
     rules: [
       {
         required: true,
@@ -491,6 +700,7 @@ const AddExpense = props => {
       //     message: '税额不允许空值',
       // },
     ],
+    initialValue: getAmountSum().sesum,
     node: (
       <InputNumber
         style={{ width: '100%' }}
@@ -540,14 +750,17 @@ const AddExpense = props => {
         className="add-expense-drawer"
         maskClosable={false}
         zIndex={101}
+        destroyOnClose={true}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
       >
         <InputReceipt
           visible={inputReceiptVisible}
           setVisible={setInputReceiptVisible}
           setSelectReceiptVisible={setSelectReceiptVisible}
-          setInputReceiptData={setInputReceiptData}
-          inputReceiptData={inputReceiptData}
+          // setInputReceiptData={setInputReceiptData}
+          // inputReceiptData={inputReceiptData}
+          receiptData={receiptData}
+          setReceiptData={setReceiptData}
         />
         <UploadReceipt
           visible={uploadReceiptVisible}
@@ -562,11 +775,20 @@ const AddExpense = props => {
           setVisible={setSelectReceiptVisible}
           setUploadReceiptVisible={setUploadReceiptVisible}
           setInputReceiptVisible={setInputReceiptVisible}
-          inputReceiptData={inputReceiptData}
+          // inputReceiptData={inputReceiptData}
           receiptData={receiptData}
+          setReceiptData={setReceiptData}
+          setReceiptDisplay={setReceiptDisplay}
         />
         <Form.Item label="费用类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-          {getFieldDecorator('fylx')(
+          {getFieldDecorator('fylx', {
+            rules: [
+              {
+                required: true,
+                message: '费用类型不允许空值',
+              },
+            ],
+          })(
             <TreeSelect
               allowClear
               showSearch
@@ -624,7 +846,7 @@ const AddExpense = props => {
         )}
         <Row>
           {getUpload(contractProps)}
-          {getUpload(OAProcessProps)}
+          {getMultipleUpload(OAProcessProps)}
         </Row>
         <Row>
           {getRadio('是否尾款', isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}

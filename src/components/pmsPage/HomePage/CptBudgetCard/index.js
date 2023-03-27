@@ -46,10 +46,10 @@ export default function CptBudgetCard(props) {
         />
         <div className="item-bottom">
           <Tooltip title={getAmountFormat(target) + '万元'}>
-            <span>目标值：{getAmountFormat(target)}万元</span>
+            <span>目标值：{getAmountFormat(target)}</span>
           </Tooltip>
           <Tooltip title={getAmountFormat(remain) + '万元'}>
-            <span>剩余值：{getAmountFormat(remain)}万元</span>
+            <span>剩余值：{getAmountFormat(remain)}</span>
           </Tooltip>
         </div>
       </div>
@@ -59,10 +59,12 @@ export default function CptBudgetCard(props) {
     <div className="cptbudget-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 6 }}>
         <div>资本性预算执行情况</div>
-        <span>
-          全部
-          <i className="iconfont icon-right" />
-        </span>
+        {userRole !== '普通人员' && (
+          <span>
+            全部
+            <i className="iconfont icon-right" />
+          </span>
+        )}
       </div>
       <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px' }}>
         {time + ' 更新'}

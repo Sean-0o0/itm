@@ -21,7 +21,7 @@ export default function SupplierCard(props) {
         },
         tooltip: {
           // trigger: 'axis',
-          confine: true
+          confine: true,
         },
         zlevel: 100,
 
@@ -29,7 +29,7 @@ export default function SupplierCard(props) {
           // shape: 'circle',
           splitNumber: 4,
           center: ['50%', '50%'],
-          radius: '50%',
+          radius: '45%',
           indicator: supplierData?.gysmc,
           splitArea: {
             areaStyle: {
@@ -42,12 +42,23 @@ export default function SupplierCard(props) {
               width: 2,
             },
           },
-          axisName: {
-            color: '#606266FF',
-
+          name:{
+            color: '#606266',
             fontFamily: 'Roboto-Regular, Roboto',
-            fontSize: 14,
-          },
+            fontSize: 12,
+            formatter: function(value) {
+              let list = value.split('');
+              let result = '';
+              for (let i = 1; i <= list.length; i++) {
+                if (!(i % 6) && list[i] != undefined) {
+                  result += list[i - 1] + '\n';
+                } else {
+                  result += list[i - 1];
+                }
+              }
+              return result;
+            },
+          }
           // triggerEvent: true,
         },
         series: [
@@ -107,7 +118,7 @@ export default function SupplierCard(props) {
           <i className="iconfont icon-right" />
         </span>
       </div>
-      <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px' }}>
+      <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px', marginLeft: '24px' }}>
         {time + ' 更新'}
       </div>
       <div className="supplier-chart" ref={radarChartRef} />

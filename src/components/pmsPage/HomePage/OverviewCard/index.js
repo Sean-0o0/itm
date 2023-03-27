@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { getAmountFormat } from '..';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 export default function OverviewCard(props) {
   const { width = '70%', overviewInfo, userRole = '' } = props;
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   useEffect(() => {
     return () => {};
   }, []);
@@ -14,6 +16,7 @@ export default function OverviewCard(props) {
     percent = '--',
     addNum = '--',
     unit = '',
+    fn = () => {},
   }) => {
     return (
       <div className="overview-item" style={{ width }}>
@@ -24,7 +27,7 @@ export default function OverviewCard(props) {
           />
           <div className="top-txt">
             {title}
-            {more && <i className="iconfont icon-right" />}
+            {more && <i className="iconfont icon-right" onClick={fn} />}
           </div>
         </div>
         <div className="item-middle">
@@ -72,11 +75,25 @@ export default function OverviewCard(props) {
             title: '发起项目',
             img: 'fqxm',
             amount: getAmountFormat(overviewInfo?.fqxm),
+            fn: () => {
+              window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                JSON.stringify({
+                  prjManager: Number(LOGIN_USER_INFO.id),
+                }),
+              )}`;
+            },
           })}
           {getOverviewItem({
             title: '参与项目',
             img: 'cyxm',
             amount: getAmountFormat(overviewInfo?.cyxm),
+            fn: () => {
+              window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                JSON.stringify({
+                  prjManager: -1,
+                }),
+              )}`;
+            },
           })}
         </div>
       ) : userRole !== '' ? (

@@ -90,7 +90,12 @@ export default function FormOperate(props) {
     node = node || <Input maxLength={maxLength} placeholder={`请输入${label}`} />;
     return (
       <Col span={12}>
-        <Form.Item label={label} labelCol={{ span: labelCol }} wrapperCol={{ span: wrapperCol }}>
+        <Form.Item
+          className={amount && 'amount-help'}
+          label={label}
+          labelCol={{ span: labelCol }}
+          wrapperCol={{ span: wrapperCol }}
+        >
           {getFieldDecorator(dataIndex, {
             initialValue,
             rules,
@@ -150,7 +155,6 @@ export default function FormOperate(props) {
         <Col span={24} style={{ position: 'relative' }}>
           <Form.Item label="收款账户" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
             {getFieldDecorator('skzh', {
-              initialValue: '',
               rules: [
                 {
                   required: true,
@@ -170,8 +174,12 @@ export default function FormOperate(props) {
                 {skzh?.map((item = {}, ind) => {
                   return (
                     <Select.Option key={item.id} value={item.khmc}>
-                      {item.khmc}
-                      {isSkzhOpen && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>}
+                      <i
+                        className="iconfont icon-bank"
+                        style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
+                      />
+                      {item.khmc} - {item.yhkh} - {item.gysmc}
+                      {/* {isSkzhOpen && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>} */}
                     </Select.Option>
                   );
                 })}
