@@ -35,6 +35,7 @@ export default function ToDoCard(props) {
   useLayoutEffect(() => {
     getToDoData();
     getXmbhData();
+    setIsUnfold(false);
     return () => {};
   }, [props]);
 
@@ -84,7 +85,7 @@ export default function ToDoCard(props) {
 
   //弹窗操作成功
   const handleOperateSuccess = txt => {
-    message.success(txt, 1);
+    txt && message.success(txt, 1);
     //刷新数据
     getToDoData();
     getXmbhData();
@@ -105,11 +106,11 @@ export default function ToDoCard(props) {
     // console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
     setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
-    console.log(
-      '🚀 ~ handlePaymentProcess ~ xmbh, xmid',
-      (xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh,
-      item.xmid,
-    );
+    // console.log(
+    //   '🚀 ~ handlePaymentProcess ~ xmbh, xmid',
+    //   (xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh,
+    //   item.xmid,
+    // );
     setCurrentXmid(item.xmid);
   };
 
@@ -303,9 +304,13 @@ export default function ToDoCard(props) {
           </Tooltip>
           <div className="deadline">截止{deadline}</div>
         </div>
-        <div className="item-btn" onClick={() => handleToDo(item)}>
-          去{btnTxt}
-        </div>
+        {Number(item.xxlx) !== 2 ? (
+          <div className="item-btn" onClick={() => handleToDo(item)}>
+            去{btnTxt}
+          </div>
+        ) : (
+          <div style={{ height: '32px' }}></div>
+        )}
       </div>
     );
   };
@@ -320,7 +325,7 @@ export default function ToDoCard(props) {
           currentXmid={Number(currentXmid)}
           projectCode={projectCode}
           closePaymentProcessModal={() => setPaymentModalVisible(false)}
-          onSuccess={handleOperateSuccess('付款流程发起')}
+          onSuccess={() => handleOperateSuccess()}
         />
       )}
       {/*人员新增提醒弹窗*/}

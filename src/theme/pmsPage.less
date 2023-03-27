@@ -5847,16 +5847,18 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       font-family: PingFangSC-Regular, PingFang SC;
       .font-weight-400();
       color: #606266;
-
+      &:hover {
+        color: #3361ff;
+        i {
+          color: #3361ff;
+        }
+      }
       i {
         margin-left: 4px;
         font-size: 1em;
         margin-bottom: -2px;
         color: #909399;
         cursor: pointer;
-        &:hover {
-          color: #3361ff;
-        }
       }
     }
   }
@@ -6049,16 +6051,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               display: flex;
               flex-direction: row;
               align-items: center;
+              cursor: pointer;
 
+              &:hover {
+                color: #3361ff;
+                i {
+                  color: #3361ff;
+                }
+              }
               i {
                 margin-left: 4px;
                 font-size: 1em;
                 margin-bottom: -1px;
                 color: #909399;
-                cursor: pointer;
-                &:hover {
-                  color: #3361ff;
-                }
               }
             }
           }
@@ -6297,6 +6302,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 text-overflow: ellipsis;
                 overflow: hidden;
                 white-space: nowrap;
+                cursor: default;
               }
 
               .deadline {
@@ -6333,14 +6339,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           line-height: 1em;
           cursor: pointer;
           color: #606266;
+          &:hover {
+            color: #3361ff;
+            i {
+              color: #3361ff;
+            }
+          }
 
           i {
             margin-left: 4px;
             font-size: 1em;
             color: #909399;
-            &:hover {
-              color: #3361ff;
-            }
           }
 
           // &:hover {
@@ -6359,14 +6368,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           line-height: 1em;
           cursor: pointer;
           color: #606266;
+          &:hover {
+            color: #3361ff;
+            i {
+              color: #3361ff;
+            }
+          }
 
           i {
             margin-left: 4px;
             font-size: 1em;
             color: #909399;
-            &:hover {
-              color: #3361ff;
-            }
           }
 
           // &:hover {
@@ -6747,25 +6759,38 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 .participant-content-popover {
+  .ant-popover-inner-content {
+    padding: 12px 0;
+  }
   .list {
     max-width: 200px;
     max-height: 125px;
-    .item {
-      display: flex;
-      flex-direction: row;
-      align-items: center;
+    padding-right: 0;
+    a {
+      padding: 0 16px;
       margin-bottom: 12px;
-      font-size: 14px;
-      line-height: 1em;
-      color: #303133ff;
+      display: block;
+      cursor: pointer;
       &:last-child {
         margin-bottom: 0;
       }
-      .img-box {
-        width: 32px;
-        margin-right: 8px;
-        border-radius: 50%;
-        overflow: hidden;
+      &:hover {
+        background-color: #fafafb;
+      }
+      .item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-size: 14px;
+        line-height: 1em;
+        color: #303133ff;
+
+        .img-box {
+          width: 32px;
+          margin-right: 8px;
+          border-radius: 50%;
+          overflow: hidden;
+        }
       }
     }
   }

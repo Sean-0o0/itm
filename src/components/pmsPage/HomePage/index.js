@@ -1,4 +1,4 @@
-import { Breadcrumb } from 'antd';
+import { Breadcrumb, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   QueryBudgetOverviewInfo,
@@ -37,11 +37,13 @@ export default function HomePage(props) {
   const [teamData, setTeamData] = useState([]); //队伍建设
   const [supplierData, setSupplierData] = useState({}); //供应商情况
   const [updateTime, setUpdateTime] = useState(''); //预算执行情况接口调用时间
+  const [isSpinning, setIsSpinning] = useState(false); //加载状态
 
   //防抖定时器
   let timer = null;
 
   useEffect(() => {
+    setIsSpinning(true);
     getUserRole();
     setUpdateTime(moment().format('YYYY-MM-DD'));
     // 页面变化时获取浏览器窗口的大小
@@ -135,10 +137,11 @@ export default function HomePage(props) {
           const { role = '' } = res;
           setUserRole(role);
           getOverviewInfo(role);
+          if (!['二级部门领导', '普通人员'].includes(role)) {
+            getTeamData(role);
+            getSupplierData(role);
+          }
           getBudgetData(role);
-          getPrjInfo(role);
-          getTeamData(role);
-          getSupplierData(role);
         }
       })
       .catch(e => {
@@ -157,6 +160,7 @@ export default function HomePage(props) {
         if (res?.success) {
           // console.log('🚀 ~ QueryBudgetOverviewInfo ~ res', JSON.parse(res?.ysglxx));
           setBudgetData(JSON.parse(res?.ysglxx)[0]);
+          getPrjInfo(role);
         }
       })
       .catch(e => {
@@ -213,6 +217,7 @@ export default function HomePage(props) {
             item.participantData = [...participantArr];
           });
           setPrjInfo(p => [...arr]);
+          setIsSpinning(false);
           // console.log('🚀 ~ file: index.js ~ line 178 ~ getPrjInfo ~ obj', arr);
         }
       })
@@ -278,48 +283,55 @@ export default function HomePage(props) {
   };
 
   return (
-    <div className="home-page-box">
-      <div className="row-box">
-        <AvatarCard width={leftWidth} overviewInfo={overviewInfo} />
-        <GuideCard />
-      </div>
-      <div className="row-box">
-        <OverviewCard width={leftWidth} overviewInfo={overviewInfo} userRole={userRole} />
-        <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
-      </div>
-      <div className="row-box">
-        <div className="col-left" style={{ width: leftWidth }}>
-          {['二级部门领导', '普通人员'].includes(userRole) ? (
-            <ToDoCard itemWidth={itemWidth} getAfterItem={getAfterItem} />
-          ) : (
-            <CptBudgetCard userRole={userRole} budgetData={budgetData} time={updateTime} />
-          )}
-          <ProjectCard
-            itemWidth={itemWidth}
-            getAfterItem={getAfterItem}
-            userRole={userRole}
-            prjInfo={prjInfo}
-            getPrjInfo={getPrjInfo}
-          />
+    <Spin
+      spinning={isSpinning}
+      tip="加载中"
+      size="large"
+      wrapperClassName="diy-style-spin payment-process-box"
+    >
+      <div className="home-page-box">
+        <div className="row-box">
+          <AvatarCard width={leftWidth} overviewInfo={overviewInfo} />
+          <GuideCard />
         </div>
-        <div className="col-right">
-          {['二级部门领导', '普通人员'].includes(userRole) ? (
-            <CptBudgetCard
-              isVertical={true}
+        <div className="row-box">
+          <OverviewCard width={leftWidth} overviewInfo={overviewInfo} userRole={userRole} />
+          <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
+        </div>
+        <div className="row-box">
+          <div className="col-left" style={{ width: leftWidth }}>
+            {['二级部门领导', '普通人员'].includes(userRole) ? (
+              <ToDoCard itemWidth={itemWidth} getAfterItem={getAfterItem} />
+            ) : (
+              <CptBudgetCard userRole={userRole} budgetData={budgetData} time={updateTime} />
+            )}
+            <ProjectCard
+              itemWidth={itemWidth}
+              getAfterItem={getAfterItem}
               userRole={userRole}
-              budgetData={budgetData}
-              time={updateTime}
+              prjInfo={prjInfo}
+              getPrjInfo={getPrjInfo}
             />
-          ) : (
-            <TeamCard teamData={teamData} />
-          )}
-          {['二级部门领导', '普通人员'].includes(userRole) ? (
-            <ProcessCard />
-          ) : (
-            <SupplierCard supplierData={supplierData} time={updateTime} />
-          )}
+          </div>
+          <div className="col-right">
+            {['二级部门领导', '普通人员'].includes(userRole) ? (
+              <CptBudgetCard
+                isVertical={true}
+                userRole={userRole}
+                budgetData={budgetData}
+                time={updateTime}
+              />
+            ) : (
+              <TeamCard teamData={teamData} />
+            )}
+            {['二级部门领导', '普通人员'].includes(userRole) ? (
+              <ProcessCard />
+            ) : (
+              <SupplierCard supplierData={supplierData} time={updateTime} />
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </Spin>
   );
 }
