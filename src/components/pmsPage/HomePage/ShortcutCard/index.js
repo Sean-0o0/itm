@@ -6,6 +6,7 @@ export default function ShortcutCard(props) {
   const { userRole, getPrjInfo } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
     setSrc_fileAdd(
@@ -15,6 +16,14 @@ export default function ShortcutCard(props) {
       window.removeEventListener('message', handleIframePostMessage);
     };
   }, []);
+
+  //跳转livebos页面
+  const jumpToLBPage = tableName => {
+    // console.log('openLiveBosModal', tableName);
+    window.location.href = `/#/UIProcessor?Table=${tableName}&hideTitlebar=true`;
+  };
+
+  //获取快捷方式块
   const getShortcutItem = (imgTxt, txt, fn) => {
     return (
       <div className="shortcut-item" onClick={fn}>
@@ -27,29 +36,32 @@ export default function ShortcutCard(props) {
       </div>
     );
   };
-  const closeFileAddModal = () => {
-    setFileAddVisible(false);
-  };
+
+  //获取快捷方式盒子
   const getShortcutBox = () => {
     if (userRole === '') return '';
     if (userRole === '普通人员')
       return (
         <div className="shortcut-box">
           {getShortcutItem('xjxm', '新建项目', () => setFileAddVisible(true))}
-          {getShortcutItem('bgtx', '报告填写', () => {
-            window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`;
-          })}
+          {getShortcutItem('bgtx', '报告填写', () => jumpToLBPage('ZBYBTX'))}
         </div>
       );
     return (
       <div className="shortcut-box">
         {getShortcutItem('xjxm', '新建项目', () => setFileAddVisible(true))}
-        {getShortcutItem('yian', '议案审批', () => {})}
-        {getShortcutItem('ysck', '预算查看', () => {})}
-        {getShortcutItem('bgck', '报告查看', () => {})}
+        {getShortcutItem('yian', '议案审批', () => jumpToLBPage('V_XWHYALC_LDSP'))}
+        {getShortcutItem('ysck', '预算查看', () => jumpToLBPage('YSTJ'))}
+        {getShortcutItem(
+          'bgck',
+          '报告查看',
+          () => (window.location.href = '/#/pms/manage/WeeklyReportTable'),
+        )}
       </div>
     );
   };
+
+  //监听新建项目弹窗状态
   const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       closeFileAddModal();
@@ -61,6 +73,12 @@ export default function ShortcutCard(props) {
     }
   };
 
+  //关闭新建项目弹窗
+  const closeFileAddModal = () => {
+    setFileAddVisible(false);
+  };
+
+  //新建项目弹窗参数
   const fileAddModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
@@ -71,6 +89,7 @@ export default function ShortcutCard(props) {
     visible: fileAddVisible,
     footer: null,
   };
+
   return (
     <div className="shortcut-card-box">
       快捷入口

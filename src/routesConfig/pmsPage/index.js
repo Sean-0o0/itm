@@ -83,4 +83,9 @@ exports.routes = [
     path: `${prefix}/EditProjectInfo`,
     component: './pmsPage/EditProjectInfo',
   },
+  {
+    // 项目详情
+    path: `${prefix}/ProjectDetail/`,
+    component: './pmsPage/ProjectDetail',
+  },
 ];
