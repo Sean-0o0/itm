@@ -1,51 +1,75 @@
 .tagview {
   float: left;
-  padding: 0 1rem;
+  // padding: 0 1rem;
   color: #1e2536;
   border-right: 1px solid #ededed;
   //height: 6.5rem;
   //line-height: 45px;
-  font-size: 1.867rem;
+  font-size: 14px;
   white-space: nowrap;
   cursor: pointer;
   transition: background, color 0.3s;
 
-  > a {
+  a {
     color: #1e2536;
   }
   i {
+    font-size: 13px;
+    margin-left: 2px;
     color: #fff;
   }
 
-  &:hover {
-    background: #ececec;
+  // &:hover {
+  //   background: #ececec;
 
-    i {
-      color: #b8afaf !important;
-    }
-  }
+  //   i {
+  //     color: #b8afaf !important;
+  //   }
+  // }
 }
 
 .isActive {
-  background: #3361ff;
+  background: #f3f4f4;
   transition: all 0.3s;
 
   &:hover {
-    background: #3363ffa9; //#f7f8fa
+    background: #f3f4f4; //#f7f8fa
     transition: all 0.3s;
     a {
-      color: #ffffff !important;
+      // color: #ffffff !important;
+      font-weight: bold;
     }
 
     i {
-      color: #efefef !important;
+      color: #ececec !important;
     }
   }
 
   a {
-    color: #fff !important;
+    // color: #fff !important;
+    font-weight: bold;
   }
   i {
-    color: #3361ff;
+    color: #f3f4f4;
+  }
+}
+
+.curTabsBak{
+  margin: 5px;
+  padding: 0 20px;
+  line-height: 37px;
+  height: calc(100% - 10px);
+  border-radius: 6px;
+
+  a:hover {
+    color: #1e2536;
+  }
+
+  &:hover {
+    background: #f3f4f4;
+
+    i {
+      color: #b8afaf !important;
+    }
   }
 }

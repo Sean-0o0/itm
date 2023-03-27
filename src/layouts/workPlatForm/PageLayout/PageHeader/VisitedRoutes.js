@@ -108,7 +108,7 @@ function VisitedRoutes(props) {
   let tabCount = 0;
 
   return (
-    <div style={{width: `${visitedScroll * 0.1488}rem`, height: '100%'}} className='clearfix' id='visited-scroll'>
+    <div style={{ width: `${visitedScroll * 0.1488}rem`, height: '100%' }} className='clearfix' id='visited-scroll'>
       {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
@@ -117,7 +117,7 @@ function VisitedRoutes(props) {
       </div> */}
       {
         urls.length > 0 && urls.map((item) => {
-          let {url = '', title = ''} = menuArray.find(m => m.url === item) || {};
+          let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
           if (title === '' && routerList.length > 0) {
             const listIndex = routerList.findIndex((tempItem) => {
               return item.indexOf(tempItem.path) > -1;
@@ -130,12 +130,14 @@ function VisitedRoutes(props) {
           }
           tabCount++;
           return (
-            <div key={url} className={`cur-tabs ${styles.tagview} ${newPathname === url && styles.isActive}`}
-                 style={{padding: '0 24px', height: '100%'}}>
-              <Link to={url}>{title}</Link>
-              <i className="iconfont icon-fill-clear zy-ico-del" onClick={() => {
-                closePage(url);
-              }}/>
+            <div key={url} className={`cur-tabs ${styles.tagview} `}
+              style={{ height: '100%' }}>
+              <div className = {`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}>
+                <Link to={url}>{title}</Link>
+                <i className="iconfont icon-close" onClick={() => {
+                  closePage(url);
+                }} />
+              </div>
               {/* <Icon type="close-circle" theme="twoTone" twoToneColor="#ec6057"  /> */}
             </div>
           );
@@ -165,9 +167,10 @@ function VisitedRoutes(props) {
               zIndex: 2,
               background: '#ffffff',
               borderLeft: 'none',
-              height: '100%'
+              height: '100%',
+              padding: '0 4px'
             }}>
-              <Icon type="more" style={{fontSize: '1.416rem'}}/>
+              <Icon type="more" style={{ fontSize:12, margin: 0, color: '#1e2536' }} />
             </div>
           </Dropdown>
         )
