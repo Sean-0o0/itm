@@ -359,11 +359,11 @@ export default function ProjectCard(props) {
             title: item.XMMC,
             content: item.DQLCB,
             rate: item.XMJD,
-            isDraft: item.ZT == 2,
+            isDraft: item.ZT === '2',
             key: item.XMID,
             participantData: item.participantData,
             riskData: item.riskData,
-            isLate: item.LCBZT === '2',
+            isLate: item.LCBZT === '4',
             xmid: item.XMID,
           });
         })}

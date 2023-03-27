@@ -72,7 +72,7 @@ export default function HomePage(props) {
   const resizeUpdate = e => {
     const fn = () => {
       let w = e.target.innerWidth; //屏幕宽度
-      console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+      // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
       if (w < 1700) {
         setLeftWidth('70%');
       } else if (w < 1850) {
