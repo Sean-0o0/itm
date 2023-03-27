@@ -52,6 +52,7 @@ const PaymentProcess = props => {
     fetchQueryLifecycleStuff,
     currentXmmc,
     projectCode,
+    onSuccess,
   } = props;
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
@@ -208,9 +209,9 @@ const PaymentProcess = props => {
             .then(res => {
               if (res.code === 200) {
                 message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
-                // onSuccess();
+                onSuccess && onSuccess();
                 resetFields();
-                fetchQueryLifecycleStuff(currentXmid);
+                fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
               }
             })
             .catch(e => {

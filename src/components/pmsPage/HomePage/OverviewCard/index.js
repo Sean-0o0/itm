@@ -25,9 +25,9 @@ export default function OverviewCard(props) {
             className="top-img"
             src={require(`../../../../assets/homePage/icon_${img}@2x.png`)}
           />
-          <div className="top-txt">
+          <div className="top-txt" onClick={fn}>
             {title}
-            {more && <i className="iconfont icon-right" onClick={fn} />}
+            {more && <i className="iconfont icon-right"/>}
           </div>
         </div>
         <div className="item-middle">
