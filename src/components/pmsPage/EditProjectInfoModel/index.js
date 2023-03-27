@@ -2656,7 +2656,7 @@ class EditProjectInfoModel extends React.Component {
     };
     const tableColumns = [
       {
-        title: '期数',
+        title: <span style={{color: '#606266', fontWeight: 500}}>期数</span>,
         dataIndex: 'fkqs',
         width: '13%',
         key: 'fkqs',
@@ -2664,14 +2664,14 @@ class EditProjectInfoModel extends React.Component {
         editable: true,
       },
       {
-        title: '占比',
+        title: <span style={{color: '#606266', fontWeight: 500}}>占比</span>,
         dataIndex: 'bfb',
         key: 'bfb',
         ellipsis: true,
         editable: true,
       },
       {
-        title: '付款金额（元）',
+        title: <span style={{color: '#606266', fontWeight: 500}}>付款金额(万元)</span>,
         dataIndex: 'fkje',
         width: '22%',
         key: 'fkje',
@@ -2679,7 +2679,7 @@ class EditProjectInfoModel extends React.Component {
         editable: true,
       },
       {
-        title: '付款时间',
+        title: <span style={{color: '#606266', fontWeight: 500}}>付款时间</span>,
         dataIndex: 'fksj',
         width: '23%',
         key: 'fksj',
@@ -2701,7 +2701,7 @@ class EditProjectInfoModel extends React.Component {
       //   },
       // },
       {
-        title: '操作',
+        title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operator',
         key: 'operator',
         // width: 200,
@@ -2755,14 +2755,14 @@ class EditProjectInfoModel extends React.Component {
     };
     const tableColumnsQT = [
       {
-        title: '供应商',
+        title: <span style={{color: '#606266', fontWeight: 500}}>供应商</span>,
         dataIndex: 'gysmc',
         key: 'gysmc',
         ellipsis: true,
         editable: true,
       },
       {
-        title: '操作',
+        title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operator',
         key: 'operator',
         width: 102.81,
@@ -3512,12 +3512,13 @@ class EditProjectInfoModel extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{margin: '12px 6px'}}><Tag
-                                                    style={{background: '#fff', border: 'none'}}>
-                                                    <a className="iconfont circle-add"
-                                                       style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
-                                                       onClick={() => this.showInput(index, i)}>新增</a>
-                                                  </Tag></div>)
+                                                  <div className='editProject addHover' style={{margin: '12px 6px'}}>
+                                                    <Tag
+                                                      style={{background: '#fff', border: 'none'}}>
+                                                      <a className="iconfont circle-add"
+                                                         style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
+                                                         onClick={() => this.showInput(index, i)}>新增</a>
+                                                    </Tag></div>)
                                                 }
                                                 {
                                                   e.sxlb?.length === 1 && e.swlxmc !== "new" &&
@@ -4198,7 +4199,8 @@ class EditProjectInfoModel extends React.Component {
                                 <div style={{
                                   textAlign: 'center',
                                   border: '1px dashed #e0e0e0',
-                                  lineHeight: '1.5',
+                                  lineHeight: '32px',
+                                  height: '32px',
                                   cursor: 'pointer'
                                 }} onClick={() => {
                                   let arrData = tableData;
@@ -4218,8 +4220,10 @@ class EditProjectInfoModel extends React.Component {
                                     table2.scrollTop = table2.scrollHeight;
                                   });
                                 }}>
-                                  <Icon type="plus" style={{fontSize: '12px'}}/><span
-                                  style={{paddingLeft: '6px', fontSize: '14px'}}>新增付款详情</span>
+                                  <span className='addHover'>
+                                    <Icon type="plus" style={{fontSize: '12px'}}/>
+                                    <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增付款详情</span>
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -4268,13 +4272,13 @@ class EditProjectInfoModel extends React.Component {
                               }
                             </Select>)}
                           </Form.Item>
-                          <div style={{position: 'absolute', right: '9%', top: '36%'}}>
+                          <div style={{position: 'absolute', right: '9%', top: '39%'}}>
                             <img src={require('../../../image/pms/LifeCycleManagement/add.png')}
                                  onClick={() => {
                                    this.setState({addGysModalVisible: true});
                                  }}
                                  alt='' style={{
-                              height: '2.976rem',
+                              height: '18px',
                               cursor: 'pointer'
                             }}
                             />
@@ -4446,7 +4450,8 @@ class EditProjectInfoModel extends React.Component {
                                 <div style={{
                                   textAlign: 'center',
                                   border: '1px dashed #e0e0e0',
-                                  lineHeight: '1.5',
+                                  lineHeight: '32px',
+                                  height: '32px',
                                   cursor: 'pointer'
                                 }} onClick={() => {
                                   let arrData = tableDataQT;
@@ -4460,8 +4465,10 @@ class EditProjectInfoModel extends React.Component {
                                     table2.scrollTop = table2.scrollHeight;
                                   });
                                 }}>
-                                  <Icon type="plus" style={{fontSize: '12px'}}/><span
-                                  style={{paddingLeft: '6px', fontSize: '14px'}}>新增投标供应商</span>
+                                  <span className='addHover'>
+                                    <Icon type="plus" style={{fontSize: '12px'}}/>
+                                    <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增投标供应商</span>
+                                  </span>
                                 </div>
                               </div>
                             </div>
@@ -4476,7 +4483,8 @@ class EditProjectInfoModel extends React.Component {
               {
                 // 其他信息
                 current == 4 &&
-                <div className="steps-content" style={{height: '75%', overflowY: 'auto'}}><OthersInfos/></div>
+                <div className="steps-content" style={{height: '79%', overflowY: 'auto', overflowX: 'hidden'}}>
+                  <OthersInfos/></div>
               }
               <div className="footer">
                 <Divider/>

@@ -1,4 +1,4 @@
-import {Table, Input, Button, Popconfirm, Form, Icon} from 'antd';
+import {Table, Input, Button, Popconfirm, Form, Icon, Popover} from 'antd';
 import React, {Component} from "react";
 
 const EditableContext = React.createContext();
@@ -91,20 +91,20 @@ class RequirementInfo extends Component {
     super(props);
     this.columns = [
       {
-        title: '需求标题',
+        title: <span style={{color: '#606266', fontWeight: 500}}>需求标题</span>,
         dataIndex: 'name',
         width: '30%',
       },
       {
-        title: '需求内容',
+        title: <span style={{color: '#606266', fontWeight: 500}}>需求内容</span>,
         dataIndex: 'age',
       },
       {
-        title: '需求日期',
+        title: <span style={{color: '#606266', fontWeight: 500}}>需求日期</span>,
         dataIndex: 'address',
       },
       {
-        title: '操作',
+        title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operation',
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
@@ -119,7 +119,9 @@ class RequirementInfo extends Component {
       dataSource: [
         {
           key: '0',
-          name: '项目立项',
+          name: <Popover placement="left" title="title" content="12" trigger="click">
+            项目立项
+          </Popover>,
           age: '风险标题1',
           address: '2022-02-06',
         },
@@ -201,20 +203,25 @@ class RequirementInfo extends Component {
         </div>
         <Table
           components={components}
-          rowClassName={() => 'editable-row'}
+          // rowClassName={() => 'editable-row'}
           dataSource={dataSource}
           columns={columns}
           pagination={false}
           style={{paddingBottom: '12px',}}
+          rowClassName={this.setClassName}
+          onRow={this.onRowBlur}
         />
         <div style={{
           textAlign: 'center',
           border: '1px dashed #e0e0e0',
-          lineHeight: '1.5',
+          lineHeight: '32px',
+          height: '32px',
           cursor: 'pointer'
         }} onClick={this.handleAdd}>
-          <Icon type="plus" style={{fontSize: '12px'}}/><span
-          style={{paddingLeft: '6px', fontSize: '14px'}}>新增需求</span>
+          <span className='addHover'>
+            <Icon type="plus" style={{fontSize: '12px'}}/>
+            <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增需求</span>
+          </span>
         </div>
       </div>
     );

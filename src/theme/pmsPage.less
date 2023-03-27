@@ -2520,6 +2520,10 @@
     cursor: pointer;
   }
 
+  .addMilePost:hover {
+    color: #3461ff;
+  }
+
   .newMilePost {
     width: 100%;
     margin: 1rem 1rem 1.5rem 0;
@@ -2822,7 +2826,12 @@
 .editProject {
   height: 100%;
 
+  .addHover:hover {
+    color: #3361ff;
+  }
+
   .ant-tabs-ink-bar {
+    height: 4px;
     background-color: #3361ff !important;
   }
 
@@ -2855,6 +2864,14 @@
         }
       }
     }
+
+    .ant-form-item-control.has-error {
+      .ant-form-item-children {
+        .uploadStyle {
+          display: flex;
+        }
+      }
+    }
   }
 
   .glys {
@@ -2877,12 +2894,17 @@
     margin: 0;
   }
 
-  .ant-tabs-nav .ant-tabs-tab {
-    font-size: 16px;
-    font-weight: 400;
-    color: #303133;
-    line-height: 24px;
-    padding: 12px 24px;
+  .ant-tabs-nav {
+    margin-left: 24px;
+
+    .ant-tabs-tab {
+      font-size: 16px;
+      font-weight: 400;
+      color: #303133;
+      line-height: 24px;
+      margin: 0 56px 0 0;
+      padding: 12px 0 12px 0;
+    }
   }
 
   .ant-tabs-nav .ant-tabs-tab-active {
@@ -3145,6 +3167,10 @@
     //padding: 9px;
     line-height: 1.5;
     cursor: pointer;
+  }
+
+  .addMilePost:hover {
+    color: #3461ff;
   }
 
   .newMilePost {

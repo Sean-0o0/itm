@@ -91,24 +91,24 @@ class TopicInfo extends Component {
     super(props);
     this.columns = [
       {
-        title: '项目课题',
+        title: <span style={{color: '#606266', fontWeight: 500}}>项目课题</span>,
         dataIndex: 'name',
         width: '30%',
       },
       {
-        title: '进度（%）',
+        title: <span style={{color: '#606266', fontWeight: 500}}>进度(%)</span>,
         dataIndex: 'age',
       },
       {
-        title: '简介',
+        title: <span style={{color: '#606266', fontWeight: 500}}>简介</span>,
         dataIndex: 'address',
       },
       {
-        title: '当前进展',
+        title: <span style={{color: '#606266', fontWeight: 500}}>当前进展</span>,
         dataIndex: 'time',
       },
       {
-        title: '操作',
+        title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operation',
         render: (text, record) =>
           this.state.dataSource.length >= 1 ? (
@@ -222,11 +222,14 @@ class TopicInfo extends Component {
         <div style={{
           textAlign: 'center',
           border: '1px dashed #e0e0e0',
-          lineHeight: '1.5',
+          lineHeight: '32px',
+          height: '32px',
           cursor: 'pointer'
         }} onClick={this.handleAdd}>
-          <Icon type="plus" style={{fontSize: '12px'}}/><span
-          style={{paddingLeft: '6px', fontSize: '14px'}}>新增项目课题</span>
+          <span className='addHover'>
+            <Icon type="plus" style={{fontSize: '12px'}}/>
+            <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增项目课题</span>
+          </span>
         </div>
       </div>
     );
