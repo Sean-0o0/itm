@@ -3,6 +3,8 @@ import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { OperateCreatProject } from '../../../../services/projectManage';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default function ProjectCard(props) {
   const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo } = props;
@@ -11,10 +13,12 @@ export default function ProjectCard(props) {
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
-
+  const location = useLocation();
   useEffect(() => {
     if (prjInfo.length !== 0) {
       setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 2)]);
+      setIsUnfold(false);
+      // console.log('location', location);
       // console.log("🚀 ~ file: index.js ~ line 14 ~ useEffect ~ prjInfo?.slice(0, getColNum(itemWidth) * 2)", prjInfo?.slice(0, getColNum(itemWidth) * 2))
       // console.log('🚀 ~ file: index.js ~ line 14 ~ useEffect ~ prjInfo', prjInfo);
     }
@@ -138,28 +142,28 @@ export default function ProjectCard(props) {
         <div>
           <div className="list">
             {data?.map(x => (
-              <div
+              <Link
+                to={{
+                  pathname: '/pms/manage/staffDetail',
+                  state: {
+                    routes: [{ name: '首页', pathname: location.pathname }],
+                    ryid: x.USERID,
+                  },
+                }}
                 key={x.USERID}
-                className="item"
-                onClick={() =>
-                  (window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
-                    JSON.stringify({
-                      routes: [{ name: '首页', pathname: '#/pms/manage/HomePage' }],
-                      ryid: x.USERID,
-                    }),
-                  )}`)
-                }
               >
-                <div className="img-box">
-                  <img
-                    src={require(`../../../../assets/homePage/img_avatar_${
-                      x.XB === '男' ? 'male' : 'female'
-                    }.png`)}
-                    alt=""
-                  />
+                <div className="item">
+                  <div className="img-box">
+                    <img
+                      src={require(`../../../../assets/homePage/img_avatar_${
+                        x.XB === '男' ? 'male' : 'female'
+                      }.png`)}
+                      alt=""
+                    />
+                  </div>
+                  {x.RYMC}
                 </div>
-                {x.RYMC}
-              </div>
+              </Link>
             ))}
           </div>
         </div>
