@@ -39,7 +39,12 @@ import {DecryptBase64, EncryptBase64} from '../../Common/Encrypt';
 import config from '../../../utils/config';
 import LBDialog from 'livebos-frame/dist/LBDialog';
 import RiskOutline from './RiskOutline';
-import {FetchQueryGysInZbxx, QueryPaymentAccountList} from "../../../services/pmsServices";
+import {
+  FetchQueryGysInZbxx,
+  FetchQueryHTXXByXQTC,
+  FetchQueryZBXXByXQTC,
+  QueryPaymentAccountList, UpdateHTXX, UpdateZbxx
+} from "../../../services/pmsServices";
 import BridgeModel from "../../Common/BasicModal/BridgeModel";
 import TableFullScreen from "../LifeCycleManagement/ContractInfoUpdate/TableFullScreen";
 import OthersInfos from "./OthersInfos";
@@ -432,7 +437,7 @@ class EditProjectInfoModel extends React.Component {
       //合同金额
       contractValue: null,
       //签署日期
-      signData: '',
+      signData: "",
       //付款详情
       paymentInfos: [],
       //中标供应商
@@ -461,6 +466,10 @@ class EditProjectInfoModel extends React.Component {
     isCollapse: true, // 是否折叠里程碑更多信息
     isEditMile: true, // 是否在修改里程碑信息
     loading: true,  // 是否正在加载
+    tabsKey1Flag: true,//是否需要查询tabs1的数据
+    tabsKey2Flag: true,//是否需要查询tabs2的数据
+    tabsKey3Flag: true,//是否需要查询tabs3的数据
+    tabsKey4Flag: true,//是否需要查询tabs4的数据
     tabsKey: 0, //默认第几个tab
     tags: ['Unremovable', 'Tag 2', 'Tag 3'],
     inputVisible: '-1-1',
@@ -507,7 +516,7 @@ class EditProjectInfoModel extends React.Component {
     //其他供应商
     selectedRowIdsQT: [],
     isTableFullScreenQT: false,
-    tableDataQT: [],    //付款详情表格
+    tableDataQT: [],    //其他供应商详情表格
     skzhData: [], //收款账号
     glgys: [],
   }
@@ -546,6 +555,8 @@ class EditProjectInfoModel extends React.Component {
 
     // 查询组织机构信息-应用部门
     this.fetchQueryOrganizationYYBMInfo();
+
+    this.fetchQueryGysInZbxx();
 
     // 修改加载状态
     this.setState({loading: false});
@@ -1395,8 +1406,6 @@ class EditProjectInfoModel extends React.Component {
           _this.handleSave(values, type);
         }
       }
-
-
     });
   };
 
@@ -1603,13 +1612,116 @@ class EditProjectInfoModel extends React.Component {
     // //console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
     // //console.log("operateType", operateType)
-    params.type = operateType;
+    params.type = 'MOD';
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
 
     this.operateCreatProject(params, type);
   };
+
+  updateZBXX() {
+    const {
+      tableDataQT,
+      glgys,
+      purchaseInfo = {},
+      uploadFileParams = {},
+      staticSkzhData = [],
+      basicInfo = {}
+    } = this.state;
+    console.log("purchaseInfopurchaseInfo222", purchaseInfo)
+    let arr = [...tableDataQT];
+    let newArr = [];
+    arr.map((item) => {
+      let obj = {
+        GYSMC: String(glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
+        GYSFKZH: "-1"
+        // GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
+      };
+      newArr.push(obj);
+    });
+    newArr.push({});
+    const {documentData, fileLength, fileName} = uploadFileParams;
+    let submitdata = {
+      columnName: 'PBBG',
+      documentData,
+      fileLength,
+      glgys: 0,
+      gysfkzh: Number(staticSkzhData?.filter(x => x.khmc === purchaseInfo.number)[0]?.id || ''),
+      ijson: JSON.stringify(newArr),
+      lybzj: Number(purchaseInfo.cautionMoney),
+      objectName: 'TXMXX_ZBXX',
+      pbbg: fileName,
+      rowcount: tableDataQT.length,
+      tbbzj: Number(purchaseInfo.bidCautionMoney),
+      // xmmc: Number(basicInfo.projectId),
+      xmmc: '334',
+      zbgys: Number(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || ''),
+    };
+    console.log("🚀submitdata", submitdata);
+    UpdateZbxx({
+      ...submitdata
+    }).then(res => {
+      if (res?.code === 1) {
+        // message.success('中标信息修改成功', 1);
+        // onSuccess();
+      } else {
+        message.error('信息修改失败', 1);
+      }
+    });
+  }
+
+  updateHTXX() {
+    const {
+      tableData,
+      glgys,
+      purchaseInfo = {},
+      uploadFileParams = {},
+      staticSkzhData = [],
+      basicInfo = {}
+    } = this.state;
+    let arr = [...tableData];
+    console.log("arrarrarr", arr)
+    arr.forEach(item => {
+      for (let i in item) {
+        if (i === 'fksj' + item.id) {
+          item[i] = moment(item[i]).format('YYYYMMDD');
+        } else {
+          item[i] = String(item[i]);
+        }
+      }
+    })
+    let newArr = [];
+    arr.map((item) => {
+      let obj = {
+        ID: item.id,
+        FKQS: item['fkqs' + item.id],
+        BFB: item['bfb' + item.id],
+        FKJE: item['fkje' + item.id],
+        FKSJ: item['fksj' + item.id],
+        ZT: item.zt,
+        GYS: String(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || '')
+      };
+      newArr.push(obj);
+    });
+    newArr.push({});
+    UpdateHTXX({
+      // xmmc: Number(basicInfo.projectId),
+      xmmc: '334',
+      json: JSON.stringify(newArr),
+      rowcount: tableData.length,
+      htje: Number(purchaseInfo.contractValue),
+      qsrq: Number(moment(purchaseInfo.signData).format('YYYYMMDD'))
+    }).then(res => {
+      if (res?.code === 1) {
+        // message.success('合同信息修改成功', 1);
+        onSuccess();
+      } else {
+        message.error('信息修改失败', 1);
+      }
+    })
+    this.setState({tableData: [], tableDataQT: []});
+  }
 
   operateCreatProject(params, type) {
     OperateCreatProject(params).then((result) => {
@@ -1623,6 +1735,10 @@ class EditProjectInfoModel extends React.Component {
         } else {
           this.props.submitOperate();
         }
+        //更新招标信息
+        this.updateZBXX();
+        //更新合同信息
+        this.updateHTXX();
         const params = {
           projectId: projectId,
         }
@@ -1632,8 +1748,6 @@ class EditProjectInfoModel extends React.Component {
       } else {
         message.error(note);
       }
-
-      // //console.log("333333")
     }).catch((error) => {
       this.setState({loading: false});
       message.error(!error.success ? error.message : error.note);
@@ -2138,23 +2252,26 @@ class EditProjectInfoModel extends React.Component {
   }
 
   tabsCallback = async (key) => {
+    const {tabsKey1Flag, tabsKey2Flag, tabsKey3Flag, tabsKey4Flag} = this.state;
     this.setState({loading: true, tabsKey: key});
     //基本信息
     if (key == 0) {
       this.setState({loading: false});
     }
     //人员信息
-    if (key == 1) {
+    if (key == 1 && tabsKey1Flag) {
       // 查询组织机构信息
       await this.fetchQueryOrganizationInfo();
       // 查询人员信息
       await this.fetchQueryMemberInfo();
       // 查询岗位信息
       await this.fetchQueryStationInfo();
-      this.setState({loading: false});
+      this.setState({loading: false, tabsKey1Flag: false});
+    } else {
+      this.setState({loading: false,});
     }
     //里程碑信息
-    if (key == 2) {
+    if (key == 2 && tabsKey2Flag) {
       // 查询里程碑阶段信息
       await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
       // 查询里程碑事项信息
@@ -2168,24 +2285,33 @@ class EditProjectInfoModel extends React.Component {
         label: this.state.basicInfo.labelTxt,
         queryType: "ALL"
       });
-      this.setState({loading: false});
+      this.setState({loading: false, tabsKey2Flag: false});
+    } else {
+      this.setState({loading: false,});
     }
     //招采信息
-    if (key == 3) {
-      await this.fetchQueryGysInZbxx()
-      await this.fetchQueryPaymentAccountList()
-      this.setState({loading: false});
+    if (key == 3 && tabsKey3Flag) {
+      await this.fetchQueryPaymentAccountList();
+      //合同信息
+      await this.fetchQueryHTXXByXQTC();
+      //招标信息
+      await this.fetchQueryZBXXByXQTC();
+      this.setState({loading: false, tabsKey3Flag: false});
+    } else {
+      this.setState({loading: false,});
     }
-    if (key == 4) {
-      this.setState({loading: false});
+    if (key == 4 && tabsKey4Flag) {
+      this.setState({loading: false, tabsKey4Flag: false});
+    } else {
+      this.setState({loading: false,});
     }
     this.setState({current: key})
   }
 
   //招标信息-----------------
   // 查询供应商下拉列表
-  fetchQueryGysInZbxx = (current, pageSize) => {
-    FetchQueryGysInZbxx({
+  fetchQueryGysInZbxx(current, pageSize) {
+    return FetchQueryGysInZbxx({
       // paging: 1,
       paging: -1,
       sort: "",
@@ -2199,10 +2325,91 @@ class EditProjectInfoModel extends React.Component {
           gysData: [...rec],
           glgys: [...rec]
         });
-        this.fetchQueryZBXXByXQTC();
       }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
     });
   }
+
+  // 获取项目信息
+  fetchQueryHTXXByXQTC() {
+    const {purchaseInfo} = this.state;
+    return FetchQueryHTXXByXQTC({
+      xmmc: '334'
+    }).then(res => {
+      let rec = res.record;
+      let arr = [];
+      for (let i = 0; i < rec.length; i++) {
+        arr.push({
+          id: rec[i]?.fkxqid,
+          ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+          ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+          ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+          ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+          zt: rec[i]?.zt
+        });
+      }
+      this.setState({
+        purchaseInfo: {...purchaseInfo, contractValue: Number(rec[0]?.htje), signData: rec[0]?.qsrq, paymentInfos: arr},
+        tableData: [...this.state.tableData, ...arr],
+      });
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  };
+
+  // 获取中标信息
+  fetchQueryZBXXByXQTC() {
+    const {purchaseInfo, glgys = [], staticSkzhData = []} = this.state;
+    return FetchQueryZBXXByXQTC({
+      xmmc: '334'
+    }).then(res => {
+      let rec = res.record;
+      if (res.url && res.base64 && rec[0].pbbg) {
+        let arrTemp = [];
+        arrTemp.push({
+          uid: Date.now(),
+          name: rec[0].pbbg,
+          status: 'done',
+          url: res.url,
+        });
+        this.setState({
+          fileList: [...this.state.fileList, ...arrTemp]
+        });
+      }
+      let arr = [];
+      for (let i = 0; i < rec.length; i++) {
+        let id = getID();
+        arr.push({
+          id,
+          [`gysmc${id}`]: glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+        });
+      }
+      this.setState({
+        purchaseInfo: {
+          ...purchaseInfo,
+          othersSupplier: arr,
+          biddingSupplier: glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
+          bidCautionMoney: Number(rec[0].tbbzj),
+          cautionMoney: Number(rec[0].lybzj),
+          number: staticSkzhData.filter(x => x.id === rec[0].zbgysfkzh)[0]?.khmc || '',
+          // pbbg: rec[0].pbbg,
+        },
+        uploadFileParams: {
+          columnName: 'PBBG',
+          documentData: res.base64,
+          fileLength: '',
+          filePath: '',
+          fileName: rec[0].pbbg,
+          id: rec[0].zbxxid,
+          objectName: 'TXMXX_ZBXX'
+        },
+        tableDataQT: [...this.state.tableDataQT, ...arr],
+      });
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  };
 
   OnGysSuccess = () => {
     this.setState({addGysModalVisible: false});
@@ -2296,8 +2503,8 @@ class EditProjectInfoModel extends React.Component {
     });
   };
 
-  fetchQueryPaymentAccountList = () => {
-    QueryPaymentAccountList({
+  fetchQueryPaymentAccountList() {
+    return QueryPaymentAccountList({
       type: 'ALL',
     }).then(res => {
       if (res.success) {
@@ -2306,8 +2513,9 @@ class EditProjectInfoModel extends React.Component {
           skzhData: [...rec],
           staticSkzhData: [...rec]
         });
-        this.fetchQueryGysInZbxx(1, PASE_SIZE);
       }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
     });
   }
 
@@ -2478,20 +2686,20 @@ class EditProjectInfoModel extends React.Component {
         ellipsis: true,
         editable: true,
       },
-      {
-        title: '状态',
-        dataIndex: 'zt',
-        width: '10%',
-        key: 'zt',
-        ellipsis: true,
-        // editable: true,
-        render: (text) => {
-          if (text === '1') {
-            return this.state.tableData.length >= 1 ? <span>已付款</span> : null;
-          }
-          return this.state.tableData.length >= 1 ? <span>未付款</span> : null;
-        },
-      },
+      // {
+      //   title: '状态',
+      //   dataIndex: 'zt',
+      //   width: '10%',
+      //   key: 'zt',
+      //   ellipsis: true,
+      //   // editable: true,
+      //   render: (text) => {
+      //     if (text === '1') {
+      //       return this.state.tableData.length >= 1 ? <span>已付款</span> : null;
+      //     }
+      //     return this.state.tableData.length >= 1 ? <span>未付款</span> : null;
+      //   },
+      // },
       {
         title: '操作',
         dataIndex: 'operator',
@@ -3956,6 +4164,7 @@ class EditProjectInfoModel extends React.Component {
                               }} id="datePicker">
                                 <DatePicker format="YYYY-MM-DD"
                                             allowClear={false}
+                                            value={moment(purchaseInfo.signData, 'YYYY-MM-DD')}
                                             onChange={(date, dateString) => {
                                               console.log("eeeeee", dateString)
                                               this.setState({purchaseInfo: {...purchaseInfo, signData: dateString}});
@@ -4033,7 +4242,13 @@ class EditProjectInfoModel extends React.Component {
                             marginRight: '4px',
                             lineHeight: 1
                           }}>*</span>中标供应商</span>} className="formItem">
-                            {getFieldDecorator('biddingSupplier', {})(<Select
+                            {getFieldDecorator('biddingSupplier', {
+                              // rules: [{
+                              //   required: true,
+                              //   message: '请输入合同金额'
+                              // }],
+                              initialValue: purchaseInfo.biddingSupplier
+                            })(<Select
                               style={{borderRadius: '1.1904rem !important'}}
                               placeholder="请选择供应商"
                               showSearch
@@ -4075,7 +4290,7 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: purchaseInfo.cautionMoney
                             })(
                               <Input type='number' placeholder="请输入履约保证金金额" onChange={e => {
-                                this.setState({purchaseInfo: {...purchaseInfo, cautionMoney: e}});
+                                this.setState({purchaseInfo: {...purchaseInfo, cautionMoney: e.target.value}});
                               }}/>
                             )}
                           </Form.Item>
@@ -4092,7 +4307,7 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: purchaseInfo.bidCautionMoney
                             })(
                               <Input type='number' placeholder="请输入履约保证金金额" onChange={e => {
-                                this.setState({purchaseInfo: {...purchaseInfo, bidCautionMoney: e}});
+                                this.setState({purchaseInfo: {...purchaseInfo, bidCautionMoney: e.target.value}});
                               }}/>
                             )}
                           </Form.Item>
@@ -4186,7 +4401,7 @@ class EditProjectInfoModel extends React.Component {
                               //   required: true,
                               //   message: '请选择关联预算项目'
                               // }],
-                              initialValue: purchaseInfo.number ? purchaseInfo.number : null
+                              initialValue: purchaseInfo.number
                             })(
                               <Select
                                 style={{width: '100%', borderRadius: '1.1904rem !important'}}
