@@ -7,19 +7,19 @@ class StaffDetailPage extends Component {
     state = {  } 
     render() { 
         const { dictionary, location = {} } = this.props;
-        const {match: {params: {params: encryptParams = ''}}} = this.props;
-        let params = {}
+        // const {match: {params: {params: encryptParams = ''}}} = this.props;
+        // let params = {}
         // if(encryptParams){
         //     params = JSON.parse(DecryptBase64(encryptParams));
         // }
        
         const {
             pathname = {},
-            // state = { }
+            state = { }
         } = location;
-        // const {routes = []} = state
-        const { routes= [], ryid} = params;
-        console.log('routes',params)
+        const {routes = [], ryid } = state
+        // const { routes= [], ryid} = params;
+        console.log('routes',state)
         routes.push({name: '人员详情', pathname: pathname});
 
         return (<StaffDetail dictionary={dictionary} routes={routes} ryid={ryid}/>);

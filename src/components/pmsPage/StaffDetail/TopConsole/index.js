@@ -33,8 +33,8 @@ class ToConsole extends Component {
                     {routes.map((item, index) => {
                         const { name = item, pathname = '' } = item
                         const historyRoutes = routes.slice(0, index + 1)
-                        return <Breadcrumb.Item>
-                            {index === routes.length - 1 ? <Breadcrumb.Item>{name}</Breadcrumb.Item> :
+                        return <Breadcrumb.Item key={index}>
+                            {index === routes.length - 1 ? <>{name}</> :
                                 <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>
                                     {name}
                                 </Link>}
