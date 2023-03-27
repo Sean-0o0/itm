@@ -58,7 +58,8 @@ class ToConsole extends Component {
                             <div className='staff-line flex1 flex-r'>
                                 <span className='staff-label'>岗位：</span>
                                 <span className='staff-value'>{gw}&nbsp;&nbsp;&nbsp;</span>
-                                <span className='staff-label'>|&nbsp;&nbsp;&nbsp;电话：</span>
+                                <span style={{color: '#C0C4CC'}}>|</span>
+                                <span className='staff-label'>&nbsp;&nbsp;&nbsp;电话：</span>
                                 <span className='staff-value'>{dh}</span>
                             </div>
                         </div>
@@ -67,28 +68,28 @@ class ToConsole extends Component {
                         <div className='statistics-block'>
                             <div className='statistics-label'>
                                 <img src={fqImg} className='statistics-img' />
-                                &nbsp;&nbsp;发起项目
+                                <div className='statistics-text'>发起项目</div>
                             </div>
                             <div className='statistics-value'>{fqxm}</div>
                         </div>
                         <div className='statistics-block'>
                             <div className='statistics-label'>
                                 <img src={cyImg} className='statistics-img' />
-                                &nbsp;&nbsp;参与项目
+                                <div className='statistics-text'>参与项目</div>
                             </div>
                             <div className='statistics-value'>{cyxm}</div>
                         </div>
                         <div className='statistics-block'>
                             <div className='statistics-label'>
                                 <img src={zbImg} className='statistics-img' />
-                                &nbsp;&nbsp;专班项目
+                                <div className='statistics-text'>专班项目</div>
                             </div>
                             <div className='statistics-value'>{zbxm}</div>
                         </div>
                         <div className='statistics-block'>
                             <div className='statistics-label'>
                                 <img src={ktImg} className='statistics-img' />
-                                &nbsp;&nbsp;课题项目
+                                <div className='statistics-text'>课题项目</div>
                             </div>
                             <div className='statistics-value'>{ktxm}</div>
                         </div>

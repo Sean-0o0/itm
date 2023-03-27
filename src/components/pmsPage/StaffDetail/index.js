@@ -29,19 +29,39 @@ class StaffDetail extends Component {
     }
 
     componentDidMount() {
-        this.handleSearch()
+        this.handleSearch({},this.props)
     }
 
-    handleSearch = (params = {}) => {
+    componentWillReceiveProps(nextProps) {
+        const { ryid } = this.props;
+        const { ryid: newid } = nextProps;
+        if(ryid!==newid){
+            this.handleSearch({},nextProps)
+        }
+    }
+
+    handleSearch = (params = {}, props) => {
         const { pageParams = {} } = this.state
         this.setState({
             tableLoading: true,
+            xmxx: '-', //项目列表
+            bm: '-',//部门
+            cyxm: '-',//参与项目
+            dh: '-',//电话
+            fqxm: '-',//发起项目
+            gw: '-',//岗位
+            jrts: '-',//加入天数
+            ktxm: '-',//课题项目
+            rymc: '-',//人员名称
+            xb: '-',//性别
+            zbxm: '-',//专班项目
         })
-        const { ryid = 12488 } = this.props
+        const { ryid = '' } = props;
         QueryMemberDetailInfo({
             ...pageParams,
             ...params,
-            ryid
+            ryid,
+            total: -1
         })
             .then((res = {}) => {
                 const { code = 0,
