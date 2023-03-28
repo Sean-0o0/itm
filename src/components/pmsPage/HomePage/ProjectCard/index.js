@@ -199,6 +199,9 @@ export default function ProjectCard(props) {
         </div>
       );
     };
+    const jumpToDetail = id => {
+      console.log('jumpToDetail', id);
+    };
     return (
       <div
         className="project-item"
@@ -207,98 +210,66 @@ export default function ProjectCard(props) {
         }}
         key={key}
       >
-        <div className="item-top" style={{ backgroundImage: bgImg }}>
-          <span>{title}</span>
-          {isDraft && (
-            <div className="tag" style={{ backgroundColor: fontColor }}>
-              草稿
-            </div>
-          )}
-          {isLate && (
-            <div className="tag" style={{ backgroundColor: fontColor }}>
-              延期
-            </div>
-          )}
-        </div>
-        {isDraft !== true && (
-          <div className="item-middle">
-            <div className="middle-top">
-              <span>
-                <i className="iconfont icon-fill-flag" style={{ color: fontColor }} />「{content}
-                」阶段
-              </span>
-              <span className="rate" style={{ color: fontColor }}>
-                {rate}%
-              </span>
-            </div>
-            <Progress
-              showInfo={false}
-              percent={Number(rate)}
-              strokeColor={{
-                from: '#F0F2F5',
-                to: fontColor,
-              }}
-              strokeWidth={10}
-            />
-            <div className="middle-bottom">
-              <Popover
-                title={null}
-                placement="rightTop"
-                content={riskContent()}
-                overlayClassName="risk-content-popover"
-              >
-                {riskData?.length !== 0 && `存在${riskData?.length}个未处理风险！`}
-              </Popover>
-            </div>
-          </div>
-        )}
-        {isDraft !== true &&
-          (participantData?.length === 0 ? (
-            <div className="item-bottom-person">
-              <div className="avatar-box">
-                {participantData?.slice(0, 4).map(x => (
-                  <div className="avatar" key={x.USERID}>
-                    <img
-                      src={require(`../../../../assets/homePage/img_avatar_${
-                        x.XB === '男' ? 'male' : 'female'
-                      }.png`)}
-                      alt=""
-                    />
-                  </div>
-                ))}
+        <Link
+          to={{
+            pathname: '/pms/manage/ProjectDetail',
+            state: {
+              routes: [{ name: '首页', pathname: location.pathname }],
+              xmid,
+            },
+          }}
+        >
+          <div className="item-top" style={{ backgroundImage: bgImg }}>
+            <span>{title}</span>
+            {isDraft && (
+              <div className="tag" style={{ backgroundColor: fontColor }}>
+                草稿
               </div>
-              <div className="txt">{getParticipantName()}</div>
+            )}
+            {isLate && (
+              <div className="tag" style={{ backgroundColor: fontColor }}>
+                延期
+              </div>
+            )}
+          </div>
+          {isDraft ? (
+            <div className="item-middle">
+              <img src={require('../../../../assets/homePage/img_no data@2x.png')} alt="" />
             </div>
           ) : (
-            <Popover
-              title={null}
-              placement="rightTop"
-              content={participantContent(participantData)}
-              overlayClassName="participant-content-popover"
-            >
-              <div className="item-bottom-person">
-                <div className="avatar-box">
-                  {participantData?.slice(0, 4).map(x => (
-                    <div className="avatar" key={x.USERID}>
-                      <img
-                        src={require(`../../../../assets/homePage/img_avatar_${
-                          x.XB === '男' ? 'male' : 'female'
-                        }.png`)}
-                        alt=""
-                      />
-                    </div>
-                  ))}
-                </div>
-                <div className="txt">{getParticipantName()}</div>
+            <div className="item-middle">
+              <div className="middle-top">
+                <span>
+                  <i className="iconfont icon-fill-flag" style={{ color: fontColor }} />「{content}
+                  」阶段
+                </span>
+                <span className="rate" style={{ color: fontColor }}>
+                  {rate}%
+                </span>
               </div>
-            </Popover>
-          ))}
-        {isDraft && (
-          <div className="item-middle">
-            <img src={require('../../../../assets/homePage/img_no data@2x.png')} alt="" />
-          </div>
-        )}
-        {isDraft && (
+              <Progress
+                showInfo={false}
+                percent={Number(rate)}
+                strokeColor={{
+                  from: '#F0F2F5',
+                  to: fontColor,
+                }}
+                strokeWidth={10}
+              />
+              <div className="middle-bottom">
+                <Popover
+                  title={null}
+                  placement="rightTop"
+                  content={riskContent()}
+                  overlayClassName="risk-content-popover"
+                >
+                  {riskData?.length !== 0 && `存在${riskData?.length}个未处理风险！`}
+                </Popover>
+              </div>
+            </div>
+          )}
+        </Link>
+        {isDraft ? (
           <div className="item-bottom-operate">
             <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
               <div className="btn-edit-wrapper">
@@ -314,6 +285,45 @@ export default function ProjectCard(props) {
               </div>
             </Popconfirm>
           </div>
+        ) : participantData?.length === 0 ? (
+          <div className="item-bottom-person">
+            <div className="avatar-box">
+              {participantData?.slice(0, 4).map(x => (
+                <div className="avatar" key={x.USERID}>
+                  <img
+                    src={require(`../../../../assets/homePage/img_avatar_${
+                      x.XB === '男' ? 'male' : 'female'
+                    }.png`)}
+                    alt=""
+                  />
+                </div>
+              ))}
+            </div>
+            <div className="txt">{getParticipantName()}</div>
+          </div>
+        ) : (
+          <Popover
+            title={null}
+            placement="rightTop"
+            content={participantContent(participantData)}
+            overlayClassName="participant-content-popover"
+          >
+            <div className="item-bottom-person">
+              <div className="avatar-box">
+                {participantData?.slice(0, 4).map(x => (
+                  <div className="avatar" key={x.USERID}>
+                    <img
+                      src={require(`../../../../assets/homePage/img_avatar_${
+                        x.XB === '男' ? 'male' : 'female'
+                      }.png`)}
+                      alt=""
+                    />
+                  </div>
+                ))}
+              </div>
+              <div className="txt">{getParticipantName()}</div>
+            </div>
+          </Popover>
         )}
       </div>
     );

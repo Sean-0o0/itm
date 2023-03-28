@@ -177,6 +177,7 @@ const ExpenseDetail = props => {
           visible={addExpenseModalVisiable}
           setVisible={setAddExpenseModalVisiable}
           userykbid={userykbid}
+          currentXmid={currentXmid}
           handleAddExpenseSuccess={handleAddExpenseSuccess}
         />
         <Spin

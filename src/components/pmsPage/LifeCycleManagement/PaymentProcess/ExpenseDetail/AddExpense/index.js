@@ -93,7 +93,7 @@ const AddExpense = props => {
   //发票数据
   const [receiptData, setReceiptData] = useState([]); //发票数据 - 电子上传,手录
   const [receiptDisplay, setReceiptDisplay] = useState([]); //发票数据-展示用
-  const { visible, setVisible, form, userykbid, handleAddExpenseSuccess } = props;
+  const { visible, setVisible, form, userykbid, handleAddExpenseSuccess, currentXmid } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [oaData, setOaData] = useState([]); //oa数据
   //防抖定时器
@@ -120,6 +120,7 @@ const AddExpense = props => {
   const getSelectorData = () => {
     QueryCreatePaymentInfo({
       czr: 0,
+      xmid: currentXmid,
     })
       .then(res => {
         if (res?.success) {
@@ -814,6 +815,7 @@ const AddExpense = props => {
               showSearch
               placeholder="请选择"
               onChange={handleFplxChange}
+              allowClear
             >
               {selectorData?.fplxData?.map((item = {}, ind) => {
                 return (
