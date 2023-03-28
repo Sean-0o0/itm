@@ -21,24 +21,24 @@ class InfoTable extends Component {
     };
 
     handleChange = (current,pageSize) =>{
-        const { handleSearch } = this.props;
+        const { handleSearch, ryid } = this.props;
         if (handleSearch) {
             handleSearch({
                 current: current,
                 pageSize: pageSize,
                 total: -1,
-            })
+            }, ryid)
         }
     }
 
     handleTableChange = (pagination, filters, sorter) => {
-        const { handleSearch } = this.props;
+        const { handleSearch, ryid } = this.props;
         const { order = '', field = '' } = sorter;
         if (handleSearch) {
             handleSearch({
                 total: -1,
                 sort: order ? `${field} ${order.slice(0, -3)}` : ''
-            })
+            },ryid)
         }
     };
 

@@ -29,21 +29,13 @@ class StaffDetail extends Component {
     }
 
     componentDidMount() {
-        this.handleSearch({},this.props)
+        const { ryid } = this.props;
+        this.handleSearch({}, ryid)
     }
 
     componentWillReceiveProps(nextProps) {
-        const { ryid } = this.props;
-        const { ryid: newid } = nextProps;
-        if(ryid!==newid){
-            this.handleSearch({},nextProps)
-        }
-    }
-
-    handleSearch = (params = {}, props) => {
-        const { pageParams = {} } = this.state
+        const { ryid } = nextProps
         this.setState({
-            tableLoading: true,
             xmxx: '-', //项目列表
             bm: '-',//部门
             cyxm: '-',//参与项目
@@ -55,14 +47,36 @@ class StaffDetail extends Component {
             rymc: '-',//人员名称
             xb: '-',//性别
             zbxm: '-',//专班项目
+            pageParams: {
+                current: 1,
+                pageSize: 10,
+                paging: 1,
+                total: -1,
+                sort: '',
+                ryid
+            }
+        }, () => {
+            this.handleSearch({}, ryid)
         })
-        const { ryid = '' } = props;
-        QueryMemberDetailInfo({
+    }
+
+    handleSearch = (params = {}, ryid) => {
+        const { pageParams = {} } = this.state
+        this.setState({
+            tableLoading: true,
+        })
+        let param = {
             ...pageParams,
             ...params,
-            ryid,
             total: -1
-        })
+        }
+        if(ryid){
+            param = {
+                ...param,
+                ryid
+            }
+        }
+        QueryMemberDetailInfo(param)
             .then((res = {}) => {
                 const { code = 0,
                     xmxx, //项目列表
@@ -96,7 +110,7 @@ class StaffDetail extends Component {
                         pageParams: {
                             ...pageParams,
                             ...params,
-                            total:totalrows,
+                            total: totalrows,
                         }
                     })
                 } else {
@@ -127,8 +141,8 @@ class StaffDetail extends Component {
             tableLoading = false,
             attachList = [],
             pageParams = {}
-         } = this.state
-        const { routes } = this.props
+        } = this.state
+        const { routes, ryid } = this.props
 
         return (<div className="staff-detail-box">
             <TopConsole
@@ -147,7 +161,7 @@ class StaffDetail extends Component {
                     zbxm,//专班项目
                 }}
             />
-            <InfoTable tableData={attachList} pageParams={pageParams} tableLoading={tableLoading} routes={routes} handleSearch={this.handleSearch}/>
+            <InfoTable ryid={ryid} tableData={attachList} pageParams={pageParams} tableLoading={tableLoading} routes={routes} handleSearch={this.handleSearch} />
         </div>);
     }
 }
