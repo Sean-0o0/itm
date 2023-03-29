@@ -75,7 +75,7 @@ exports.routes = [
   },
   {
     // 人员详情
-    path: `${prefix}/staffDetail`,
+    path: `${prefix}/staffDetail/:params`,
     component: './pmsPage/StaffDetail',
   },
   {
