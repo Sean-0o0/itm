@@ -293,6 +293,18 @@ export default [
     code: '',
     key: 'queryMemberDetailInfo',
     url: '/projectManage/queryMemberDetailInfo',
-    dis: '查询人员详情信息'
-  }
+    dis: '查询人员详情信息',
+  },
+  {
+    code: '',
+    key: 'queryProjectMessages',
+    url: '/projectManage/queryProjectMessages',
+    dis: '查询项目留言',
+  },
+  {
+    code: '',
+    key: 'updateProjectMessages',
+    url: '/projectManage/updateProjectMessages',
+    dis: '新增、修改项目留言',
+  },
 ];

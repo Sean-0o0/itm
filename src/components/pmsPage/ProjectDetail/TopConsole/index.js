@@ -1,9 +1,11 @@
 import { Breadcrumb, Button, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'dva/router';
+import moment from 'moment';
 
 export default function TopConsole(props) {
-  const { routes } = props;
+  const { routes, prjData } = props;
+  const { prjBasic = {} } = prjData;
   useEffect(() => {
     return () => {};
   }, []);
@@ -13,8 +15,8 @@ export default function TopConsole(props) {
     const getTagData = tag => {
       let arr = [];
       if (tag !== '' && tag !== null && tag !== undefined) {
-        if (tag.includes(';')) {
-          arr = tag.split(';');
+        if (tag.includes(',')) {
+          arr = tag.split(',');
         } else {
           arr.push(tag);
         }
@@ -88,9 +90,9 @@ export default function TopConsole(props) {
         })}
       </Breadcrumb>
       <div className="prj-info-row">
-        <div className="prj-name">一二三四五六七八九十一二三四五六七八九十 一二三四五六七八九</div>
+        <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
-          {getTags('迭代项目一二;数字化专班;项目课题;抵税扣除;信创项目;软著专利;党建项目')}
+          {getTags(prjBasic.XMBQ)}
           <Button className="btn-edit">编辑</Button>
           <Popover
             placement="bottomRight"
@@ -105,8 +107,10 @@ export default function TopConsole(props) {
         </div>
       </div>
       <div className="mnger-time">
-        <span>项目经理：</span>郑潜
-        <span className="create-time">创建时间：</span>2023-03-03
+        <span>项目经理：</span>
+        {prjBasic.XMJL}
+        <span className="create-time">创建时间：</span>
+        {prjBasic.CJRQ ? moment(prjBasic.CJRQ).format('YYYY-MM-DD') : null}
       </div>
     </div>
   );

@@ -1,17 +1,31 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { useLocation } from 'react-router';
+import React, { Fragment } from 'react';
 import { connect } from 'dva';
-import ProjectInfoTab from '../../../components/pmsPage/ProjectDetail/index';
+import ProjectDetailTab from '../../../components/pmsPage/ProjectDetail/index';
 import { DecryptBase64 } from '../../../components/Common/Encrypt';
 const ProjecDetail = props => {
-  const [params, setParams] = useState({}); //路径参数
-  const location = useLocation();
-  const { pathname = {}, state = {} } = location;
-  const { routes = [], xmid = -1 } = state;
-  const newRoutes = routes.concat({ name: '项目详情', pathname: pathname });
+  const {
+    match: {
+      params: { params: encryptParams = '' },
+    },
+  } = props;
+  let xmid = -1;
+  let routes = [];
+  if (props.match.params.params !== undefined) {
+    let obj = JSON.parse(DecryptBase64(encryptParams));
+    xmid = obj.xmid;
+    routes = [...obj.routes].concat({
+      name: '项目详情',
+      pathname: props?.cacheKey?.replace('/:params'),
+    });
+  }
+
   return (
     <Fragment>
-      <ProjectInfoTab dictionary={props.dictionary} routes={newRoutes} xmid={xmid}></ProjectInfoTab>
+      <ProjectDetailTab
+        dictionary={props.dictionary}
+        routes={routes}
+        xmid={xmid}
+      ></ProjectDetailTab>
     </Fragment>
   );
 };

@@ -85,6 +85,11 @@ exports.routes = [
   },
   {
     // 项目详情
+    path: `${prefix}/ProjectDetail/:params`,
+    component: './pmsPage/ProjectDetail',
+  },
+  {
+    // 项目详情
     path: `${prefix}/ProjectDetail/`,
     component: './pmsPage/ProjectDetail',
   },

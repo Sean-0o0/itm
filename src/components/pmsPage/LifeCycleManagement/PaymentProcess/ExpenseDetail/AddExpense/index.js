@@ -145,9 +145,10 @@ const AddExpense = props => {
             fylxData: fyTree,
             fplxData: JSON.parse(res.fplxRecord),
             ysxmData: ysTree,
+            fklcData: JSON.parse(res.fklcRecord),
           };
           setSelectorData(p => obj);
-          // console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorData ~ obj', obj);
+          console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorData ~ obj', obj);
         }
       })
       .catch(e => {
@@ -157,6 +158,7 @@ const AddExpense = props => {
 
   //提交数据 - 确定
   const handleSubmit = () => {
+    console.log(selectorData?.fklcData);
     validateFields(err => {
       if (!err) {
         setVisible(false);
@@ -211,6 +213,7 @@ const AddExpense = props => {
           attachmentLength: attachmentArr.length,
           attachmentArr,
           isFinalPay,
+          lcid: selectorData?.fklcData[0]?.ID || -1,
         };
         handleAddExpenseSuccess(submitData);
         console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
@@ -552,7 +555,7 @@ const AddExpense = props => {
   };
   const handleDeleteReceipt = data => {
     let arr = receiptDisplay?.filter(item => item.key !== data.key);
-    console.log("🚀 ~ file: index.js ~ line 554 ~ handleDeleteReceipt ~ arr", arr)
+    console.log('🚀 ~ file: index.js ~ line 554 ~ handleDeleteReceipt ~ arr', arr);
     setReceiptDisplay(p => [...arr]);
     setReceiptData(p => [...arr]);
   };
@@ -569,7 +572,7 @@ const AddExpense = props => {
               x.isHover = true;
             }
           });
-          console.log("🚀 ~ file: index.js ~ line 571 ~ getRecepitList ~ arr", arr)
+          console.log('🚀 ~ file: index.js ~ line 571 ~ getRecepitList ~ arr', arr);
           setReceiptDisplay(p => [...arr]);
         }}
         onMouseLeave={() => {
@@ -584,9 +587,9 @@ const AddExpense = props => {
       >
         {data?.isHover && (
           //<Popconfirm title="确定要移除吗？" onConfirm={() => handleDeleteReceipt(data)}>
-            <div className="icon-delete" onClick={() => handleDeleteReceipt(data)}>
-              <i className="iconfont delete" />
-            </div>
+          <div className="icon-delete" onClick={() => handleDeleteReceipt(data)}>
+            <i className="iconfont delete" />
+          </div>
           //</Popconfirm>
         )}
         <div className="recepit-info">

@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import moment from 'moment';
-import { Drawer, Popover, Input, Button, message } from 'antd';
+import { Drawer, Popover, Input, Button, message, Empty } from 'antd';
 import { set } from 'store';
+import { QueryProjectMessages, UpdateProjectMessages } from '../../../../services/pmsServices';
 const { TextArea } = Input;
 
 export default function PrjMessage(props) {
@@ -11,60 +12,67 @@ export default function PrjMessage(props) {
   const [editContent, setEditContent] = useState(''); //编辑的留言内容
   const [newMsg, setNewMsg] = useState(false); //是否位新增留言
   const [updatePage, setUpdatePage] = useState(0); //无意义，刷新组件
-
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const { xmid } = props;
   //防抖定时器
   let timer = null;
 
-  const nodeArr = document.getElementsByClassName('content msg-node');
-
   useEffect(() => {
+    getMsgData();
     return () => {
       setEditingIndex(-1);
       clearTimeout(timer);
     };
-  }, []);
+  }, [xmid]);
+
   useLayoutEffect(() => {
-    let data = [
-      {
-        id: 1,
-        content: '123456',
-        name: '王建军1',
-        time: '1月23日 12:24',
-        unfold: false,
-        editing: false,
-        textHide: false,
-      },
-      {
-        id: 2,
-        content:
-          '项目于2022年12月启动，截止2023年2月，进度正常，状态正常。项目于2022年12月启动，截止2023年1月，进度正常，状态正常。项目于2022年12月启动，截止2023年1月，进度正常，状态正常。',
-        name: '王建军2',
-        time: '2月23日 12:24',
-        unfold: false,
-        editing: false,
-        textHide: false,
-      },
-      {
-        id: 3,
-        content:
-          '项目于2022年12月启动，截止2023年3月，进度正常，状态正常。项目于2022年12月启动，截止2023年1月，进度正常，状态正常。项目于2022年12月启动，截止2023年1月，进度正常，状态正常。',
-        name: '王建军3',
-        time: '3月23日 12:24',
-        unfold: false,
-        editing: false,
-        textHide: false,
-      },
-    ];
+    const nodeArr = document.getElementsByClassName('content msg-node');
     if (nodeArr.length !== 0) {
+      let data = [...msgData];
       for (let i = 0; i < nodeArr.length; i++) {
         let x = nodeArr[i];
         data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
       }
+      setMsgData(p => [...data]);
     }
-    setMsgData(p => [...data]);
-
     return () => {};
   }, [props]);
+
+  const getMsgData = txt => {
+    QueryProjectMessages({
+      current: 1,
+      czlx: 'ALL',
+      pageSize: 10,
+      paging: -1,
+      sort: 'string',
+      total: -1,
+      xmid: Number(xmid),
+      ryid: Number(LOGIN_USER_INFO.id),
+    })
+      .then(res => {
+        if (res?.success) {
+          const nodeArrNow = document.getElementsByClassName('content msg-node');
+          if (nodeArrNow.length !== 0) {
+            let data = [...msgData];
+            console.log('节点拿到了！');
+            for (let i = 0; i < nodeArrNow.length; i++) {
+              let x = nodeArrNow[i];
+              // setTimeout(() => {
+                data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
+                setUpdatePage(new Date().getTime());
+              // }, 0);
+            }
+            setMsgData(p => [...data]);
+            txt && message.success(txt, 1);
+          } else {
+            setMsgData(p => [...JSON.parse(res.result)]);
+          }
+        }
+      })
+      .catch(e => {
+        console.error('QueryProjectMessages', e);
+      });
+  };
   //防抖
   const debounce = (fn, waits) => {
     if (timer) {
@@ -97,7 +105,14 @@ export default function PrjMessage(props) {
         >
           编辑
         </div>
-        <div className="item">删除</div>
+        <div
+          className="item"
+          onClick={() => {
+            handleMsgDelete(id, content);
+          }}
+        >
+          删除
+        </div>
       </div>
     );
     return (
@@ -165,37 +180,79 @@ export default function PrjMessage(props) {
     );
   };
   //编辑留言
-  const handleMsgEdit = v => {
-    const nodeArrNow = document.getElementsByClassName('content msg-node');
-    let arr = [...msgData];
+  const handleMsgEdit = () => {
     if (newMsg) {
-      message.info('调接口新增');
+      UpdateProjectMessages({
+        lyid: -1,
+        xmid: Number(xmid),
+        lynr: editContent,
+        lyr: Number(LOGIN_USER_INFO.id),
+        czlx: 'ADD',
+      })
+        .then(res => {
+          if (res?.success) {
+            getMsgData('留言新增成功');
+          }
+        })
+        .catch(e => {
+          console.error('UpdateProjectMessages', e);
+        });
     } else {
-      arr.forEach(x => {
-        if (x.id === editingIndex) {
-          x.content = editContent;
-        }
-      });
-      if (nodeArrNow.length !== 0) {
-        for (let i = 0; i < nodeArrNow.length; i++) {
-          let x = nodeArrNow[i];
-          setTimeout(() => {
-            arr[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
-            setUpdatePage(new Date().getTime());
-          }, 0);
-        }
-      }
-      // console.log('🚀 ~ file: index.js ~ line 159 ~ handleMsgEdit ~ [...arr]', [...arr]);
+      UpdateProjectMessages({
+        lyid: Number(editingIndex),
+        xmid: Number(xmid),
+        lynr: editContent,
+        lyr: Number(LOGIN_USER_INFO.id),
+        czlx: 'UPDATE',
+      })
+        .then(res => {
+          if (res?.success) {
+            getMsgData('留言修改成功');
+          }
+        })
+        .catch(e => {
+          console.error('UpdateProjectMessages', e);
+        });
     }
-    setMsgData(p => [...arr]);
     setDrawerVisible(false);
     setNewMsg(false);
+  };
+  //删除留言
+  const handleMsgDelete = (id, content) => {
+    UpdateProjectMessages({
+      lyid: Number(id),
+      xmid: Number(xmid),
+      lynr: content,
+      lyr: Number(LOGIN_USER_INFO.id),
+      czlx: 'DELETE',
+    })
+      .then(res => {
+        if (res?.success) {
+          message.success('留言删除成功', 1);
+        }
+      })
+      .catch(e => {
+        console.error('UpdateProjectMessages', e);
+      });
   };
 
   return (
     <div className="prj-msg-box">
       <div className="top-title">项目留言</div>
-      <div className="bottom-box">{msgData?.map(item => getMsgItem(item))}</div>
+      <div className="bottom-box">
+        {msgData?.map(item =>
+          getMsgItem({
+            id: item.ID,
+            content: item.LYNR,
+            name: item.LYR,
+            time: item.LYSJ,
+            unfold: item.unfold,
+            editing: item.editing,
+            textHide: item.textHide,
+          }),
+        )}
+        {msgData?.length === 0 && <Empty style={{ width: '100%', marginBottom: '16px' }} />}
+      </div>
       <div className="edit-drawer-wrapper">
         {drawerVisible ? (
           <div className="edit-drawer" style={{ maxHeight: drawerVisible ? '80%' : 0 }}>

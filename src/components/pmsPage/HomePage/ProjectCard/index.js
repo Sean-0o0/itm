@@ -125,7 +125,7 @@ export default function ProjectCard(props) {
     riskData = [],
     isLate = false,
     isDraft = false,
-    xmid = '',
+    xmid = -1,
   }) => {
     let bgImg =
       'background: linear-gradient(270deg,rgba(51, 97, 255, 0) 0%,rgba(51, 97, 255, 0.1) 100%)';
@@ -151,6 +151,13 @@ export default function ProjectCard(props) {
                   },
                 }}
                 key={x.USERID}
+                onClick={() => {
+                  window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
+                    JSON.stringify({
+                      ryid: x.USERID,
+                    }),
+                  )}`;
+                }}
               >
                 <div className="item">
                   <div className="img-box">
@@ -200,7 +207,12 @@ export default function ProjectCard(props) {
       );
     };
     const jumpToDetail = id => {
-      console.log('jumpToDetail', id);
+      window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
+        JSON.stringify({
+          routes: [{ name: '首页', pathname: location.pathname }],
+          xmid: id,
+        }),
+      )}`;
     };
     return (
       <div
@@ -210,14 +222,16 @@ export default function ProjectCard(props) {
         }}
         key={key}
       >
-        <Link
-          to={{
-            pathname: '/pms/manage/ProjectDetail',
-            state: {
-              routes: [{ name: '首页', pathname: location.pathname }],
-              xmid,
-            },
-          }}
+        <span
+          // Link
+          // to={{
+          //   pathname: '/pms/manage/ProjectDetail',
+          //   state: {
+          //     routes: [{ name: '首页', pathname: location.pathname }],
+          //     xmid,
+          //   },
+          // }}
+          onClick={() => jumpToDetail(xmid)}
         >
           <div className="item-top" style={{ backgroundImage: bgImg }}>
             <span>{title}</span>
@@ -268,7 +282,7 @@ export default function ProjectCard(props) {
               </div>
             </div>
           )}
-        </Link>
+        </span>
         {isDraft ? (
           <div className="item-bottom-operate">
             <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>

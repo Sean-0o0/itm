@@ -203,6 +203,7 @@ const PaymentProcess = props => {
             projectId: String(currentXmid),
             projectCode,
             operateType,
+            lcid:String(item.lcid),
           };
           console.log('submitData', submitData);
           CreatPaymentFlow(submitData)

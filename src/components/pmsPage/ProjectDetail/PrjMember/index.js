@@ -1,9 +1,11 @@
+import { Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_male.png';
 
 export default function PrjMember(props) {
-  const {} = props;
+  const { prjData } = props;
+  const { member } = prjData;
   const [itemWidth, setItemWidth] = useState('48%'); //成员块宽度
 
   //防抖定时器
@@ -64,9 +66,9 @@ export default function PrjMember(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
   //成员块
-  const getMemberItem = ({ position = '--', gender = '男', name = '--' }) => {
+  const getMemberItem = ({ position = '--', gender = '男', name = '--', key }) => {
     return (
-      <div className="member-item" style={{ width: itemWidth }}>
+      <div className="member-item" style={{ width: itemWidth }} key={key}>
         <div className="top">{position}</div>
         <div className="bottom">
           <div className="bottom-left">
@@ -81,28 +83,15 @@ export default function PrjMember(props) {
     <div className="prj-member-box">
       <div className="top-title">项目人员</div>
       <div className="bottom-box">
-        {getMemberItem({
-          position: '产品经理',
-          gender: '女',
-          name: '陈南南南南',
-        })}
-        {getMemberItem({
-          position: '项目经理',
-          gender: '男',
-          name: '楚北北北北北北北北北',
-        })}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
-        {getMemberItem({})}
+        {member?.map(x =>
+          getMemberItem({
+            position: x.GW,
+            gender: x.XB,
+            name: x.RYMC,
+            key: x.RYID,
+          }),
+        )}
+        {member?.length === 0 && <Empty description="暂无人员" style={{ width: '100%', marginBottom: '16px' }} />}
         {getAfterItem(itemWidth)}
       </div>
     </div>

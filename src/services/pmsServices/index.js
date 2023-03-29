@@ -56,7 +56,9 @@ const {
     querySupplierOverviewInfo,
     queryProjectGeneralInfo,
     queryCreatePaymentInfo,
-    queryMemberDetailInfo
+    queryMemberDetailInfo,
+    queryProjectMessages,
+    updateProjectMessages,
   },
 } = api;
 
@@ -528,7 +530,6 @@ export async function QueryMemberOverviewInfo(payload) {
   return request(option);
 }
 
-
 // 查询供应商信息
 export async function QuerySupplierOverviewInfo(payload) {
   const option = {
@@ -583,6 +584,26 @@ export async function QueryCreatePaymentInfo(payload) {
 export async function QueryMemberDetailInfo(payload) {
   const option = {
     url: queryMemberDetailInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目留言
+export async function QueryProjectMessages(payload) {
+  const option = {
+    url: queryProjectMessages,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 新增、修改项目留言
+export async function UpdateProjectMessages(payload) {
+  const option = {
+    url: updateProjectMessages,
     method: 'post',
     data: payload,
   };
