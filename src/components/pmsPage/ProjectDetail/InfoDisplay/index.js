@@ -183,7 +183,7 @@ export default function InfoDisplay(props) {
                 {
                   title: '需求日期',
                   dataIndex: 'XQRQ',
-                  width: 100,
+                  // width: 100,
                   key: 'XQRQ',
                   ellipsis: true,
                 },
@@ -207,7 +207,7 @@ export default function InfoDisplay(props) {
             </div>
             <div className="item-bottom">
               <span>/执行率：</span>
-              {(Number(prjBasic.SYYS) / Number(prjBasic.KZXYS)) * 100}%
+              {(Number(prjBasic.SYYS)*100 / Number(prjBasic.KZXYS)).toFixed(2)}%
             </div>
           </div>
         </div>

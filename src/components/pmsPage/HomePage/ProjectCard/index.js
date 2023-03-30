@@ -14,6 +14,13 @@ export default function ProjectCard(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const location = useLocation();
+
+  useEffect(() => {
+    window.addEventListener('message', handleIframePostMessage);
+    return () => {
+      window.removeEventListener('message', handleIframePostMessage);
+    };
+  }, []);
   useEffect(() => {
     if (prjInfo.length !== 0) {
       setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 2)]);
@@ -24,6 +31,18 @@ export default function ProjectCard(props) {
     }
     return () => {};
   }, [props]);
+
+  //监听新建项目弹窗状态
+  const handleIframePostMessage = event => {
+    if (typeof event.data !== 'string' && event.data.operate === 'close') {
+      closeFileAddModal();
+    }
+    if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      closeFileAddModal();
+      getPrjInfo(userRole); //刷新数据
+      // message.success('保存成功');
+    }
+  };
 
   //获取目前每行几个
   const getColNum = w => {
@@ -142,29 +161,28 @@ export default function ProjectCard(props) {
         <div>
           <div className="list">
             {data?.map(x => (
-              <a
-                // Link
-                // to={{
-                //   pathname:
-                //     '/pms/manage/staffDetail/' +
-                //     EncryptBase64(
-                //       JSON.stringify({
-                //         ryid: x.USERID,
-                //       }),
-                //     ),
-                //   state: {
-                //     routes: [{ name: '首页', pathname: location.pathname }],
-                //   },
-                // }}
-                key={x.USERID}
-                onClick={() => {
-                  window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
-                    JSON.stringify({
-                      ryid: x.USERID,
-                      routes: [{ name: '首页', pathname: location.pathname }],
-                    }),
-                  )}`;
+              <Link
+                to={{
+                  pathname:
+                    '/pms/manage/staffDetail/' +
+                    EncryptBase64(
+                      JSON.stringify({
+                        ryid: x.USERID,
+                      }),
+                    ),
+                  state: {
+                    routes: [{ name: '首页', pathname: location.pathname }],
+                  },
                 }}
+                key={x.USERID}
+                // onClick={() => {
+                //   window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
+                //     JSON.stringify({
+                //       ryid: x.USERID,
+                //       routes: [{ name: '首页', pathname: location.pathname }],
+                //     }),
+                //   )}`;
+                // }}
               >
                 <div className="item">
                   <div className="img-box">
@@ -177,7 +195,7 @@ export default function ProjectCard(props) {
                   </div>
                   {x.RYMC}
                 </div>
-              </a>
+              </Link>
             ))}
           </div>
         </div>

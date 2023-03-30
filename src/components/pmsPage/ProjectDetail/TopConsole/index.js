@@ -2,13 +2,34 @@ import { Breadcrumb, Button, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'dva/router';
 import moment from 'moment';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+
+const { Item } = Breadcrumb;
 
 export default function TopConsole(props) {
-  const { routes, prjData } = props;
+  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData } = props;
+  const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const { prjBasic = {} } = prjData;
   useEffect(() => {
-    return () => {};
+    window.addEventListener('message', handleIframePostMessage);
+    return () => {
+      window.removeEventListener('message', handleIframePostMessage);
+    };
   }, []);
+  //监听新建项目弹窗状态
+  const handleIframePostMessage = event => {
+    if (typeof event.data !== 'string' && event.data.operate === 'close') {
+      setFileAddVisible(false);
+    }
+    if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      setFileAddVisible(false);
+      //刷新数据
+      getPrjDtlData();
+      // message.success('保存成功');
+    }
+  };
   //获取项目标签
   const getTags = (text = '') => {
     //获取项目标签数据
@@ -72,20 +93,43 @@ export default function TopConsole(props) {
       <div className="item">申请权限</div>
     </div>
   );
+  //编辑项目弹窗
+  const handleEditPrjInfo = () => {
+    setFileAddVisible(true);
+    setSrc_fileAdd(
+      `/#/single/pms/EditProject/${EncryptBase64(
+        JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
+      )}`,
+    );
+  };
+  const fileAddModalProps = {
+    isAllWindow: 1,
+    // defaultFullScreen: true,
+    title: '编辑项目',
+    width: '1000px',
+    height: '95vh',
+    style: { top: '2vh' },
+    visible: fileAddVisible,
+    footer: null,
+  };
   return (
     <div className="top-console-box">
+      {/* 编辑项目弹窗 */}
+      {fileAddVisible && (
+        <BridgeModel isSpining="customize" modalProps={fileAddModalProps} src={src_fileAdd} />
+      )}
       <Breadcrumb separator=">">
-        {routes.map((item, index) => {
+        {routes?.map((item, index) => {
           const { name = item, pathname = '' } = item;
           const historyRoutes = routes.slice(0, index + 1);
           return (
-            <Breadcrumb.Item key={index}>
+            <Item key={index}>
               {index === routes.length - 1 ? (
                 <>{name}</>
               ) : (
                 <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
               )}
-            </Breadcrumb.Item>
+            </Item>
           );
         })}
       </Breadcrumb>
@@ -93,7 +137,9 @@ export default function TopConsole(props) {
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
           {getTags(prjBasic.XMBQ)}
-          <Button className="btn-edit">编辑</Button>
+          <Button className="btn-edit" onClick={handleEditPrjInfo}>
+            编辑
+          </Button>
           <Popover
             placement="bottomRight"
             title={null}

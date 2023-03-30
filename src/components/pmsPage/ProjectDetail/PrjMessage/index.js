@@ -58,8 +58,8 @@ export default function PrjMessage(props) {
             for (let i = 0; i < nodeArrNow.length; i++) {
               let x = nodeArrNow[i];
               // setTimeout(() => {
-                data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
-                setUpdatePage(new Date().getTime());
+              data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
+              setUpdatePage(new Date().getTime());
               // }, 0);
             }
             setMsgData(p => [...data]);
@@ -251,16 +251,26 @@ export default function PrjMessage(props) {
             textHide: item.textHide,
           }),
         )}
-        {msgData?.length === 0 && <Empty style={{ width: '100%', marginBottom: '16px' }} />}
+        {msgData?.length === 0 && (
+          <Empty
+            description="暂无留言"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ width: '100%', marginBottom: '16px' }}
+          />
+        )}
       </div>
       <div className="edit-drawer-wrapper">
         {drawerVisible ? (
           <div className="edit-drawer" style={{ maxHeight: drawerVisible ? '80%' : 0 }}>
             <TextArea
               allowClear
+              autoFocus
               autoSize={{
                 minRows: 3,
                 maxRows: 7,
+              }}
+              onBlur={() => {
+                // console.log('BLUR_BLUR');
               }}
               onChange={e => {
                 e.persist();

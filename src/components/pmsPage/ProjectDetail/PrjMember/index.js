@@ -3,6 +3,7 @@ import React, { useEffect, useState } from 'react';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_male.png';
 import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
 
 export default function PrjMember(props) {
   const { prjData, routes } = props;
@@ -81,15 +82,28 @@ export default function PrjMember(props) {
         className="member-item"
         style={{ width: itemWidth }}
         key={key}
-        onClick={() => jumpToStfDetail(key)}
+        // onClick={() => jumpToStfDetail(key)}
       >
-        <div className="top">{position}</div>
-        <div className="bottom">
-          <div className="bottom-left">
-            <img src={gender === '男' ? avatarMale : avatarFemale} />
+        <Link
+          to={{
+            pathname:
+              '/pms/manage/staffDetail/' +
+              EncryptBase64(
+                JSON.stringify({
+                  ryid: key,
+                }),
+              ),
+            state: { routes },
+          }}
+        >
+          <div className="top">{position}</div>
+          <div className="bottom">
+            <div className="bottom-left">
+              <img src={gender === '男' ? avatarMale : avatarFemale} />
+            </div>
+            <span>{name}</span>
           </div>
-          <span>{name}</span>
-        </div>
+        </Link>
       </div>
     );
   };
@@ -106,7 +120,11 @@ export default function PrjMember(props) {
           }),
         )}
         {member?.length === 0 && (
-          <Empty description="暂无人员" style={{ width: '100%', marginBottom: '16px' }} />
+          <Empty
+            description="暂无人员"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ width: '100%', marginBottom: '16px' }}
+          />
         )}
         {getAfterItem(itemWidth)}
       </div>

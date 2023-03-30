@@ -76,13 +76,13 @@ export default function ProjectDetail(props) {
   // if (JSON.stringify(prjData) !== '{}') {
   return (
     <div className="prj-detail-box">
-      <TopConsole routes={routes} prjData={prjData} />
+      <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData}/>
       <MileStone />
       <div className="detail-row">
         <InfoDisplay prjData={prjData} dictionary={dictionary} />
         <div className="col-right">
           <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />
-          <PrjMessage xmid={xmid}/>
+          <PrjMessage xmid={xmid} />
         </div>
       </div>
     </div>
