@@ -1,4 +1,4 @@
-import { Button, message, Tooltip } from 'antd';
+import { Button, Empty, message, Tooltip } from 'antd';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
   FetchQueryOwnerMessage,
@@ -356,17 +356,25 @@ export default function ToDoCard(props) {
         )}
         {getAfterItem(itemWidth)}
       </div>
-      {isUnfold ? (
-        <div className="more-item" onClick={() => handleUnfold(false)}>
-          收起
-          <i className="iconfont icon-up" />
-        </div>
-      ) : (
-        <div className="more-item" onClick={() => handleUnfold(true)}>
-          更多
-          <i className="iconfont icon-down" />
-        </div>
+      {dataList?.length === 0 && (
+        <Empty
+          description="暂无待办事项"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{ width: '100%' }}
+        />
       )}
+      {dataList?.length > getColNum(itemWidth) &&
+        (isUnfold ? (
+          <div className="more-item" onClick={() => handleUnfold(false)}>
+            收起
+            <i className="iconfont icon-up" />
+          </div>
+        ) : (
+          <div className="more-item" onClick={() => handleUnfold(true)}>
+            更多
+            <i className="iconfont icon-down" />
+          </div>
+        ))}
     </div>
   );
 }

@@ -20,8 +20,8 @@ class StaffDetailPage extends Component {
             pathname = {},
             state = {}
         } = location;
-        const { routes = [] } = state
-        const { ryid} = params;
+        // const { routes = [] } = state
+        const { ryid, routes = []} = params;
         const result = routes.concat({ name: '人员详情', pathname: pathname });
 
         return (<StaffDetail dictionary={dictionary} routes={result} ryid={ryid} />);

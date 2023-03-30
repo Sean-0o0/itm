@@ -81,7 +81,7 @@ export default function ProjectDetail(props) {
       <div className="detail-row">
         <InfoDisplay prjData={prjData} dictionary={dictionary} />
         <div className="col-right">
-          <PrjMember prjData={prjData} dictionary={dictionary} />
+          <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />
           <PrjMessage xmid={xmid}/>
         </div>
       </div>

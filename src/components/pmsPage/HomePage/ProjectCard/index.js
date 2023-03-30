@@ -142,19 +142,26 @@ export default function ProjectCard(props) {
         <div>
           <div className="list">
             {data?.map(x => (
-              <Link
-                to={{
-                  pathname: '/pms/manage/staffDetail',
-                  state: {
-                    routes: [{ name: '首页', pathname: location.pathname }],
-                    ryid: x.USERID,
-                  },
-                }}
+              <a
+                // Link
+                // to={{
+                //   pathname:
+                //     '/pms/manage/staffDetail/' +
+                //     EncryptBase64(
+                //       JSON.stringify({
+                //         ryid: x.USERID,
+                //       }),
+                //     ),
+                //   state: {
+                //     routes: [{ name: '首页', pathname: location.pathname }],
+                //   },
+                // }}
                 key={x.USERID}
                 onClick={() => {
                   window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
                     JSON.stringify({
                       ryid: x.USERID,
+                      routes: [{ name: '首页', pathname: location.pathname }],
                     }),
                   )}`;
                 }}
@@ -170,7 +177,7 @@ export default function ProjectCard(props) {
                   </div>
                   {x.RYMC}
                 </div>
-              </Link>
+              </a>
             ))}
           </div>
         </div>

@@ -7,7 +7,9 @@ const ProjecDetail = props => {
     match: {
       params: { params: encryptParams = '' },
     },
+    dictionary
   } = props;
+  console.log("🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ props", props)
   let xmid = -1;
   let routes = [];
   if (props.match.params.params !== undefined) {
@@ -15,14 +17,14 @@ const ProjecDetail = props => {
     xmid = obj.xmid;
     routes = [...obj.routes].concat({
       name: '项目详情',
-      pathname: props?.cacheKey?.replace('/:params'),
+      pathname: props?.href,
     });
   }
 
   return (
     <Fragment>
       <ProjectDetailTab
-        dictionary={props.dictionary}
+        dictionary={dictionary}
         routes={routes}
         xmid={xmid}
       ></ProjectDetailTab>

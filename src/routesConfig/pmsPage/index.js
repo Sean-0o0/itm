@@ -79,6 +79,11 @@ exports.routes = [
     component: './pmsPage/StaffDetail',
   },
   {
+    // 人员详情
+    path: `${prefix}/staffDetail`,
+    component: './pmsPage/StaffDetail',
+  },
+  {
     //编辑项目信息
     path: `${prefix}/EditProjectInfo`,
     component: './pmsPage/EditProjectInfo',
@@ -90,7 +95,7 @@ exports.routes = [
   },
   {
     // 项目详情
-    path: `${prefix}/ProjectDetail/`,
+    path: `${prefix}/ProjectDetail`,
     component: './pmsPage/ProjectDetail',
   },
 ];

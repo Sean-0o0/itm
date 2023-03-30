@@ -2,9 +2,10 @@ import { Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_male.png';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function PrjMember(props) {
-  const { prjData } = props;
+  const { prjData, routes } = props;
   const { member } = prjData;
   const [itemWidth, setItemWidth] = useState('48%'); //成员块宽度
 
@@ -67,8 +68,21 @@ export default function PrjMember(props) {
   };
   //成员块
   const getMemberItem = ({ position = '--', gender = '男', name = '--', key }) => {
+    const jumpToStfDetail = id => {
+      window.location.href = `/#/pms/manage/StaffDetail/${EncryptBase64(
+        JSON.stringify({
+          routes,
+          ryid: id,
+        }),
+      )}`;
+    };
     return (
-      <div className="member-item" style={{ width: itemWidth }} key={key}>
+      <div
+        className="member-item"
+        style={{ width: itemWidth }}
+        key={key}
+        onClick={() => jumpToStfDetail(key)}
+      >
         <div className="top">{position}</div>
         <div className="bottom">
           <div className="bottom-left">
@@ -91,7 +105,9 @@ export default function PrjMember(props) {
             key: x.RYID,
           }),
         )}
-        {member?.length === 0 && <Empty description="暂无人员" style={{ width: '100%', marginBottom: '16px' }} />}
+        {member?.length === 0 && (
+          <Empty description="暂无人员" style={{ width: '100%', marginBottom: '16px' }} />
+        )}
         {getAfterItem(itemWidth)}
       </div>
     </div>

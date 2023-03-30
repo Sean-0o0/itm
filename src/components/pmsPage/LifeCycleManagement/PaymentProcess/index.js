@@ -125,7 +125,9 @@ const PaymentProcess = props => {
       if (!err) {
         if (!isXzTurnRed) {
           let details = [];
+          let lcid = '-1';
           expenseDetail?.forEach(item => {
+            lcid = String(item.lcid);
             let detailInfo = JSON.stringify({
               FYLX: item.fylxInfo.ID,
               JE: String(item.je),
@@ -182,8 +184,6 @@ const PaymentProcess = props => {
             };
             details.push(detailItem);
           });
-          console.log('🚀 ~ file: index.js ~ line 205 ~ handleSubmit ~ details', details);
-
           const submitData = {
             title: String(getFieldValue('bt')),
             submitterId: String(userykbid),
@@ -203,21 +203,21 @@ const PaymentProcess = props => {
             projectId: String(currentXmid),
             projectCode,
             operateType,
-            lcid:String(item.lcid),
+            lcid,
           };
           console.log('submitData', submitData);
-          CreatPaymentFlow(submitData)
-            .then(res => {
-              if (res.code === 200) {
-                message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
-                onSuccess && onSuccess();
-                resetFields();
-                fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
-              }
-            })
-            .catch(e => {
-              console.error(e);
-            });
+          // CreatPaymentFlow(submitData)
+          //   .then(res => {
+          //     if (res.code === 200) {
+          //       message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
+          //       onSuccess && onSuccess();
+          //       resetFields();
+          //       fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
+          //     }
+          //   })
+          //   .catch(e => {
+          //     console.error(e);
+          //   });
           closePaymentProcessModal();
         }
       }
