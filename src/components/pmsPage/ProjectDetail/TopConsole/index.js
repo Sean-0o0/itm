@@ -116,7 +116,7 @@ export default function TopConsole(props) {
     <div className="top-console-box">
       {/* 编辑项目弹窗 */}
       {fileAddVisible && (
-        <BridgeModel isSpining="customize" modalProps={fileAddModalProps} src={src_fileAdd} />
+        <BridgeModel isSpining="customize" modalProps={fileAddModalProps} src={src_fileAdd} onCancel={()=>setFileAddVisible(false)}/>
       )}
       <Breadcrumb separator=">">
         {routes?.map((item, index) => {

@@ -73,10 +73,9 @@ export default function ProjectDetail(props) {
         console.error('QueryProjectInfoAll', e);
       });
   };
-  // if (JSON.stringify(prjData) !== '{}') {
   return (
     <div className="prj-detail-box">
-      <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData}/>
+      <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData} />
       <MileStone />
       <div className="detail-row">
         <InfoDisplay prjData={prjData} dictionary={dictionary} />
@@ -87,6 +86,4 @@ export default function ProjectDetail(props) {
       </div>
     </div>
   );
-  // }
-  // return'';
 }

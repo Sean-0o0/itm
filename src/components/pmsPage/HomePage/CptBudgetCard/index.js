@@ -77,17 +77,17 @@ export default function CptBudgetCard(props) {
       >
         {getBudgetItem({
           title: '已执行软件预算(万元)',
-          amount: (Number(budgetData?.ZBRJWCZ) / 10000).toFixed(2),
+          amount: Number(budgetData?.ZBRJWCZ).toFixed(2),
           rate: budgetData?.ZBRJWCL,
-          target: (Number(budgetData?.ZBRJMBZ) / 10000).toFixed(2),
-          remain: (Number(budgetData?.ZBRJSYZ) / 10000).toFixed(2),
+          target: Number(budgetData?.ZBRJMBZ).toFixed(2),
+          remain: Number(budgetData?.ZBRJSYZ).toFixed(2),
         })}
         {getBudgetItem({
           title: '已执行硬件预算(万元)',
-          amount: (Number(budgetData?.ZBYJWCZ) / 10000).toFixed(2),
+          amount: Number(budgetData?.ZBYJWCZ).toFixed(2),
           rate: budgetData?.ZBYJWCL,
-          target: (Number(budgetData?.ZBYJMBZ) / 10000).toFixed(2),
-          remain: (Number(budgetData?.ZBYJSYZ) / 10000).toFixed(2),
+          target: Number(budgetData?.ZBYJMBZ).toFixed(2),
+          remain: Number(budgetData?.ZBYJSYZ).toFixed(2),
           img: 'hardware',
         })}
       </div>

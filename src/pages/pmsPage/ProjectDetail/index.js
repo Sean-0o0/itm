@@ -9,7 +9,7 @@ const ProjecDetail = props => {
     },
     dictionary
   } = props;
-  console.log("🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ props", props)
+  // console.log("🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ props", props)
   let xmid = -1;
   let routes = [];
   if (props.match.params.params !== undefined) {
