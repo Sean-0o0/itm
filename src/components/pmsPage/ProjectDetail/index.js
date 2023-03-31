@@ -76,7 +76,7 @@ export default function ProjectDetail(props) {
   return (
     <div className="prj-detail-box">
       <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData} />
-      <MileStone />
+      <MileStone xmid={xmid} />
       <div className="detail-row">
         <InfoDisplay prjData={prjData} dictionary={dictionary} />
         <div className="col-right">

@@ -7024,8 +7024,60 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
     }
     & > .middle-box {
+      position: relative;
       height: 78px;
       border-bottom: 1px solid #00000014;
+      .last-milestone,
+      .next-milestone {
+        height: 66px;
+        width: 18px;
+        position: absolute;
+        top: 4px;
+        cursor: pointer;
+        &:hover {
+          cursor: pointer;
+        }
+      }
+      .next-milestone {
+        right: 0;
+      }
+      .ant-steps-item-finish .ant-steps-item-icon {
+        border-color: #3361ff;
+        span {
+          color: #3361ff;
+        }
+      }
+      .ant-steps-navigation {
+        padding-top: 16px;
+        margin: 0 18px;
+        width: 100%;
+        overflow: hidden;
+      }
+
+      .ant-steps-item {
+        .ant-steps-item-container {
+          padding-bottom: 16px;
+        }
+        .ant-steps-item-description {
+          margin-top: 4px;
+          height: 18px;
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #909399;
+          line-height: 18px;
+          &:hover {
+            color: #3361ff !important;
+          }
+        }
+      }
+      .ant-steps-item-active {
+        .ant-steps-item-description {
+          color: #3361ff;
+          margin-top: 4px;
+        }
+      }
+
       .risk-tag {
         color: #d70e19;
         display: inline;
@@ -7102,6 +7154,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             padding: 1px 8px 2px 8px;
             margin-left: 10px;
             text-shadow: unset;
+            line-height: initial;
           }
         }
         .middle {
@@ -7124,14 +7177,40 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .bottom {
           display: flex;
           flex-direction: row;
-          align-items: center;
+          align-items: flex-start;
           font-size: 12px;
-          button {
-            .antd-btn-default();
-            color: #3361ff;
-            border-color: #3361ff;
-            span {
-              margin-right: 4px;
+          .bottom-label {
+            flex-shrink: 0;
+          }
+          .bottom-risk {
+            flex-grow: 1;
+            .risk-tag {
+              color: #d70e19;
+              font-size: 12px;
+              border: 1px solid rgba(51, 97, 255, 0.3);
+              border-radius: 4px;
+              background-color: #d70e190f;
+              padding: 1px 8px 2px 8px;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+              line-height: initial;
+              border: 1px solid rgba(215, 14, 25, 0.3);
+              cursor: pointer;
+              display: table;
+              margin-bottom: 10px;
+
+              &:hover {
+                font-weight: bold;
+              }
+            }
+            button {
+              .antd-btn-default();
+              color: #3361ff;
+              border-color: #3361ff;
+              span {
+                margin-right: 4px;
+              }
             }
           }
         }
@@ -7141,10 +7220,18 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         display: flex;
         flex-direction: row;
         align-items: center;
+        flex-wrap: wrap;
         justify-content: space-between;
+        margin-bottom: -16px;
         & > .item {
+          box-shadow: 0px 0px 4px 1px rgba(20, 38, 98, 0.04);
+          width: 30.53%;
+          margin-bottom: 16px;
+          flex-shrink: 0;
+
           & > .item-top {
-            width: 246px;
+            // width: 246px;
+            width: 100%;
             height: 40px;
             background: #f3f3f4;
             font-size: 14px;
@@ -7152,12 +7239,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-weight: bold;
             color: #303133;
             line-height: 40px;
+            padding: 0 16px;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
           }
           & > .item-bottom {
             padding: 15px 8px;
             .bottom-row {
               padding: 6px 6px 6px 9px;
-              width: 230px;
+              // width: 230px;
+              overflow: hidden;
+              width: 100%;
               display: flex;
               flex-direction: row;
               align-items: center;
@@ -7166,7 +7260,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               font-family: PingFangSC-Regular, PingFang SC;
               font-weight: 400;
               color: #1f1f1f;
+              line-height: 1.1em;
               margin: 5px 0;
+              transition: all 0.3s;
               &:last-child {
                 margin-bottom: 0;
               }
@@ -7177,14 +7273,22 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 background-color: #fafafa;
               }
               i {
+                flex-shrink: 0;
                 color: #dbdfe6ff;
-                font-size: 1em;
+                font-size: 16px;
+                margin-right: 5px;
+                margin-top: 3px;
               }
               span {
-                cursor: pointer;
+                flex-grow: 1;
+                cursor: default;
                 margin-right: auto;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
               }
               .opr-btn {
+                flex-shrink: 0;
                 color: #3361ff;
                 font-size: 12px;
                 padding: 0 6px;
@@ -7195,24 +7299,29 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 // background-color: #3363ff14;
                 line-height: 24px;
                 cursor: pointer;
+                transition: all 0.3s;
                 &:hover {
                   background-color: #3361ff;
                   color: #fff;
                 }
               }
               .opr-more {
+                flex-shrink: 0;
                 color: #3361ff;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                font-size: 12px;
                 .reopr-btn {
                   width: 60px;
                   height: 24px;
-                  background: #eaefff;
                   border-radius: 4px;
                   text-align: center;
                   line-height: 24px;
                   margin-right: 8px;
                   cursor: pointer;
                   &:hover {
-                    background-color: rgba(51, 97, 255, 0.1);
+                    background-color: #eaefffff;
                   }
                 }
                 .reopr-more {
@@ -7222,12 +7331,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   text-align: center;
                   line-height: 24px;
                   cursor: pointer;
+                  text-align: center;
+                  transition: all 0.3s;
                   &:hover {
                     background: #ebebeb;
                   }
                   i {
-                    background: #3361ff;
-                    font-size: 1em;
+                    color: #3361ff;
+                    font-size: 16px;
+                    margin: 0;
                   }
                 }
               }
@@ -7421,7 +7533,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .edit-drawer {
             transition: all 0.3s;
             height: 100%;
-            background-color: #1426620a;
+            // background-color: #1426620a;
             padding: 12px 10px 10px 10px;
             .footer-btn {
               margin-top: 12px;
@@ -7570,7 +7682,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 }
 .btn-more-content-popover {
   .item {
-    width: 100px;
+    width: unset;
   }
 }
 .msg-edit-content-popover {
