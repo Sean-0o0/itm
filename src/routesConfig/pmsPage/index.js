@@ -85,7 +85,7 @@ exports.routes = [
   },
   {
     // 标签详情
-    path: `${prefix}/labelDetail`,
+    path: `${prefix}/labelDetail/:params`,
     component: './pmsPage/LabelDetail',
   },
   {
