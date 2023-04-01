@@ -108,7 +108,6 @@ class EditableCell extends React.Component {
     this.save();
   };
   renderItem = (form, dataIndex, record) => {
-    console.log("recordrecordrecord", record)
     switch (dataIndex) {
       case 'fksj':
         return form.getFieldDecorator(dataIndex + record['id'], {
@@ -400,7 +399,7 @@ class EditProjectInfoModel extends React.Component {
     //招采信息
     purchaseInfo: {
       //合同金额
-      contractValue: null,
+      contractValue: 0,
       //签署日期
       signData: moment(new Date).format('YYYY-MM-DD'),
       //付款详情
@@ -417,6 +416,7 @@ class EditProjectInfoModel extends React.Component {
       number: '',
       //其他投标供应商
       othersSupplier: [],
+      ZT: '',
     },
     mileInfo: {
       milePostInfo: []  // 进行变更操作的里程碑信息
@@ -463,7 +463,7 @@ class EditProjectInfoModel extends React.Component {
     gysData: [],
     isSelectorOpen: false,
     addGysModalVisible: false,
-    pbbgTurnRed: true,
+    pbbgTurnRed: false,
     fileList: [],
     uploadFileParams: {
       columnName: '',
@@ -1622,9 +1622,11 @@ class EditProjectInfoModel extends React.Component {
   };
 
   updateZBXX() {
+    const czrid = JSON.parse(sessionStorage.getItem('user')).id;
+    console.log("czridczrid", czrid)
     const {
       tableDataQT,
-      glgys,
+      gysData,
       purchaseInfo = {},
       uploadFileParams = {},
       staticSkzhData = [],
@@ -1632,20 +1634,23 @@ class EditProjectInfoModel extends React.Component {
       basicInfo = {}
     } = this.state;
     console.log("purchaseInfopurchaseInfo222", purchaseInfo)
+    console.log("glgysglgys", gysData)
     let arr = [...tableDataQT];
     let newArr = [];
     arr.map((item) => {
       let obj = {
-        GYSMC: String(glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
+        GYSMC: String(gysData?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
         GYSFKZH: "-1"
         // GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
       };
       newArr.push(obj);
     });
     const {documentData, fileLength, fileName} = uploadFileParams;
+    console.log("documentData", documentData)
     let submitdata = {
       columnName: 'PBBG',
       documentData,
+      czr_id: czrid,
       fileLength,
       glgys: 0,
       gysfkzh: Number(staticSkzhData?.filter(x => x.khmc === purchaseInfo.number)[0]?.id || ''),
@@ -1657,7 +1662,7 @@ class EditProjectInfoModel extends React.Component {
       tbbzj: Number(purchaseInfo.bidCautionMoney),
       // xmmc: Number(basicInfo.projectId),
       xmmc: Number(basicInfo.projectId),
-      zbgys: Number(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || ''),
+      zbgys: Number(purchaseInfo.biddingSupplier),
       czlx: zbxxCzlx,
     };
     console.log("🚀submitdata", submitdata);
@@ -1676,7 +1681,7 @@ class EditProjectInfoModel extends React.Component {
   updateHTXX() {
     const {
       tableData,
-      glgys,
+      gysData,
       purchaseInfo = {},
       htxxCzlx = 'ADD',
       uploadFileParams = {},
@@ -1685,6 +1690,7 @@ class EditProjectInfoModel extends React.Component {
     } = this.state;
     let arr = [...tableData];
     console.log("purchaseInfo", purchaseInfo)
+    console.log("tableDatatableData", tableData)
     arr.forEach(item => {
       for (let i in item) {
         if (i === 'fksj' + item.id) {
@@ -1702,8 +1708,8 @@ class EditProjectInfoModel extends React.Component {
         BFB: item['bfb' + item.id],
         FKJE: item['fkje' + item.id],
         FKSJ: item['fksj' + item.id],
-        ZT: item.zt,
-        GYS: String(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || '')
+        ZT: purchaseInfo?.ZT === undefined ?'2':purchaseInfo?.ZT,
+        GYS: String(purchaseInfo.biddingSupplier)
       };
       newArr.push(obj);
     });
@@ -1714,12 +1720,12 @@ class EditProjectInfoModel extends React.Component {
       rowcount: tableData.length,
       htje: Number(purchaseInfo.contractValue),
       qsrq: Number(moment(purchaseInfo.signData).format('YYYYMMDD')),
-      gysid: Number(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || ''),
+      gysid: Number(purchaseInfo.biddingSupplier),
       czlx: htxxCzlx,
     }).then(res => {
       if (res?.code === 1) {
         // message.success('合同信息修改成功', 1);
-        onSuccess();
+        // onSuccess();
       } else {
         message.error('信息修改失败', 1);
       }
@@ -2347,17 +2353,16 @@ class EditProjectInfoModel extends React.Component {
             ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
             ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
             ['fksj' + rec[i]?.fkxqid]: rec[i]?.fksj === "" ? moment(new Date()).format('YYYY-MM-DD') : moment(rec[i]?.fksj).format('YYYY-MM-DD'),
-            zt: rec[i]?.zt
           });
         }
-
       }
       this.setState({
         purchaseInfo: {
           ...purchaseInfo,
           contractValue: Number(rec[0]?.htje),
           signData: rec[0]?.qsrq ? rec[0]?.qsrq : moment(new Date).format('YYYY-MM-DD'),
-          paymentInfos: arr
+          paymentInfos: arr,
+          ZT: rec[0]?.ZT
         },
         tableData: [...this.state.tableData, ...arr],
         htxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD'
@@ -2374,6 +2379,27 @@ class EditProjectInfoModel extends React.Component {
       xmmc: Number(basicInfo.projectId),
     }).then(res => {
       let rec = res.record;
+      this.setState({
+        zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
+        purchaseInfo: {
+          ...purchaseInfo,
+          othersSupplier: arr,
+          biddingSupplier: glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
+          bidCautionMoney: Number(rec[0]?.tbbzj),
+          cautionMoney: Number(rec[0]?.lybzj),
+          number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
+          pbbg: rec[0]?.pbbg,
+        },
+        uploadFileParams: {
+          columnName: 'PBBG',
+          documentData: res.base64?res.base64:"DQoNCg0KDQoxMTExMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxMTExMjExMTEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjExMTEyDQoyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy",
+          fileLength: 0,
+          filePath: '',
+          fileName: rec[0]?.pbbg?rec[0]?.pbbg:"测试.txt",
+          id: rec[0]?.zbxxid?rec[0]?.zbxxid:0,
+          objectName: 'TXMXX_ZBXX'
+        },
+      });
       if (res.url && res.base64 && rec[0].pbbg) {
         let arrTemp = [];
         arrTemp.push({
@@ -2384,6 +2410,8 @@ class EditProjectInfoModel extends React.Component {
         });
         this.setState({
           fileList: [...this.state.fileList, ...arrTemp]
+        }, () => {
+          // console.log('已存在的filList', this.state.fileList);
         });
       }
       let arr = [];
@@ -2397,25 +2425,6 @@ class EditProjectInfoModel extends React.Component {
         }
       }
       this.setState({
-        zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
-        purchaseInfo: {
-          ...purchaseInfo,
-          othersSupplier: arr,
-          biddingSupplier: glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
-          bidCautionMoney: Number(rec[0]?.tbbzj),
-          cautionMoney: Number(rec[0]?.lybzj),
-          number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
-          // pbbg: rec[0].pbbg,
-        },
-        uploadFileParams: {
-          columnName: 'PBBG',
-          documentData: res.base64,
-          fileLength: '',
-          filePath: '',
-          fileName: rec[0]?.pbbg,
-          id: rec[0]?.zbxxid,
-          objectName: 'TXMXX_ZBXX'
-        },
         tableDataQT: [...this.state.tableDataQT, ...arr],
       });
     }).catch((error) => {
@@ -2587,9 +2596,9 @@ class EditProjectInfoModel extends React.Component {
       gysData = [],
       isSelectorOpen = false,
       addGysModalVisible = false,
-      pbbgTurnRed = true,
+      pbbgTurnRed,
       fileList = [],
-      uploadFileParams = {},
+      uploadFileParams,
       //付款详情
       selectedRowIds = [],
       isTableFullScreen = false,
@@ -2807,7 +2816,7 @@ class EditProjectInfoModel extends React.Component {
         <div className="editProject" style={{overflow: 'hidden', height: "100%"}}>
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
             <div style={{overflow: 'hidden', height: "100%"}}>
-              <div style={{height: "6.87%"}}>
+              <div style={{height: "6%"}}>
                 <Tabs defaultActiveKey="0" onChange={this.tabsCallback}>
                   {
                     tabs.map(item => {
@@ -3221,7 +3230,7 @@ class EditProjectInfoModel extends React.Component {
               }
               {
                 // 里程碑信息
-                current == 2 && <div style={{display: 'flex', height: '87%'}}>
+                current == 2 && <div style={{display: 'flex', height: '86%'}}>
                   <Steps progressDot style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px'}}
                          direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
@@ -3462,7 +3471,7 @@ class EditProjectInfoModel extends React.Component {
                                               }
                                             </div>
                                             <div style={{width: '90%', display: 'flex', flexWrap: 'wrap'}}>
-                                              <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{display: 'flex', flexWrap: 'wrap',paddingLeft:'12px'}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     // //console.log("sxsxsx",sx)
@@ -3801,7 +3810,7 @@ class EditProjectInfoModel extends React.Component {
                                               }
                                             </div>
                                             <div style={{width: '90%', display: 'flex', flexWrap: 'wrap'}}>
-                                              <div style={{display: 'flex', flexWrap: 'wrap'}}>
+                                              <div style={{display: 'flex', flexWrap: 'wrap',paddingLeft:'12px'}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     // //console.log("sxsxsx",sx)
@@ -4121,7 +4130,7 @@ class EditProjectInfoModel extends React.Component {
               {
                 // 招采信息
                 current == 3 &&
-                <div className="steps-content" style={{height: '79%', overflowY: 'auto', overflowX: 'hidden'}}>
+                <div className="steps-content" style={{overflowY: 'auto', overflowX: 'hidden'}}>
                   <React.Fragment>
                     {isTableFullScreen && <TableFullScreen
                       isTableFullScreen={isTableFullScreen}
@@ -4137,7 +4146,7 @@ class EditProjectInfoModel extends React.Component {
                     ></TableFullScreen>}
                     <Form ref={e => this.purchaseForm = e}>
                       <Row gutter={24}>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight:'24px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4152,12 +4161,13 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: purchaseInfo.contractValue
                             })(
                               <Input type='number' placeholder="请输入合同金额" onChange={e => {
+                                console.log('请输入合同金额',e.target.value)
                                 this.setState({purchaseInfo: {...purchaseInfo, contractValue: e.target.value}});
                               }}/>
                             )}
                           </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft:'24px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4249,7 +4259,7 @@ class EditProjectInfoModel extends React.Component {
                                        onSucess={this.OnGysSuccess}
                                        src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'}/>
                         }
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight:'24px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4294,7 +4304,7 @@ class EditProjectInfoModel extends React.Component {
                             />
                           </div>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft:'24px'}}>
                           <Form.Item label={<span>履约保证金金额（元）</span>} className="formItem">
                             {getFieldDecorator('cautionMoney', {
                               // rules: [{
@@ -4311,7 +4321,7 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24}>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight:'24px'}}>
                           <Form.Item label={<span> 投标保证金（元）</span>} className="formItem">
                             {getFieldDecorator('projectName', {
                               // rules: [{
@@ -4326,7 +4336,7 @@ class EditProjectInfoModel extends React.Component {
                             )}
                           </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft:'24px'}}>
                           <Form.Item label="评标报告" required
                             // help={pbbgTurnRed ? '请上传合同附件' : ''}
                                      validateStatus={pbbgTurnRed ? 'error' : 'success'}
@@ -4339,7 +4349,7 @@ class EditProjectInfoModel extends React.Component {
                                   let reader = new FileReader();
                                   reader.readAsDataURL(file.originFileObj);
                                   reader.onload = (e) => {
-                                    let link = document.createElement('a');
+                                    var link = document.createElement('a');
                                     link.href = e.target.result;
                                     link.download = file.name;
                                     link.click();
@@ -4362,10 +4372,8 @@ class EditProjectInfoModel extends React.Component {
                               }}
                               onChange={(info) => {
                                 let fileList = [...info.fileList];
-                                console.log("fileList", fileList)
-                                console.log("uploadFileParams", uploadFileParams)
                                 fileList = fileList.slice(-1);
-                                this.setState({fileList}, () => {
+                                this.setState({ fileList }, () => {
                                   // console.log('目前fileList', this.state.fileList);
                                 });
                                 if (fileList.length === 0) {
@@ -4383,11 +4391,11 @@ class EditProjectInfoModel extends React.Component {
                                 let reader = new FileReader(); //实例化文件读取对象
                                 reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
                                 reader.onload = (e) => { //文件读取成功完成时触发
-                                  // console.log('文件读取成功完成时触发', e.target.result.split(','));
                                   let urlArr = e.target.result.split(',');
+                                  console.log('uploadFileParamsuploadFileParams', uploadFileParams);
                                   this.setState({
                                     uploadFileParams: {
-                                      ...uploadFileParams,
+                                      ...this.state.uploadFileParams,
                                       documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
                                       fileName: file.name,
                                     }
@@ -4397,7 +4405,7 @@ class EditProjectInfoModel extends React.Component {
                               accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
                               fileList={[...fileList]}>
                               <Button type="dashed">
-                                <Icon type="upload"/>点击上传
+                                <Icon type="upload" />点击上传
                               </Button>
                             </Upload>
                           </Form.Item></Col>
@@ -4493,8 +4501,8 @@ class EditProjectInfoModel extends React.Component {
               {
                 // 其他信息
                 current == 4 &&
-                <div className="steps-content" style={{height: '79%', overflowY: 'auto', overflowX: 'hidden'}}>
-                  <OthersInfos prizeInfoCallback={this.prizeInfoCallback} topicInfoCallback={this.topicInfoCallback}
+                <div className="steps-content" style={{ overflowY: 'auto', overflowX: 'hidden'}}>
+                  <OthersInfos xmid={basicInfo.projectId} prizeInfoCallback={this.prizeInfoCallback} topicInfoCallback={this.topicInfoCallback}
                                requirementInfoCallback={this.requirementInfoCallback}/></div>
               }
               <div className="footer">

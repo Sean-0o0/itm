@@ -10,8 +10,13 @@ class LabelDetailPage extends Component {
   }
 
   render() {
-    const {dictionary, location = {}} = this.props;
-    const {match: {params: {params: encryptParams = ''}}} = this.props;
+    const { dictionary, location = {} } = this.props;
+    const {
+      match: {
+        params: { params: encryptParams = '' },
+      },
+    } = this.props;
+    console.log('match', encryptParams);
     let params = {}
     if (encryptParams) {
       params = JSON.parse(DecryptBase64(encryptParams));
@@ -26,7 +31,8 @@ class LabelDetailPage extends Component {
       // routes= [],
       bqid
     } = params;
-    console.log('routes', params)
+    console.log('routes', routes)
+    console.log('bqid', bqid)
     routes.push({name: '标签详情', pathname: pathname});
 
     return (<LabelDetail dictionary={dictionary} routes={routes} bqid={bqid}/>);

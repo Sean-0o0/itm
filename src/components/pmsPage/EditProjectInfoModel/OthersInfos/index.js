@@ -32,11 +32,12 @@ class OthersInfos extends Component {
   }
 
   render() {
+    const {xmid} = this.props;
     return (
       <div>
-        <RequirementInfo xqxxRecordCallback={this.xqxxRecordCallback}/>
-        <PrizeInfo hjxxRecordCallback={this.hjxxRecordCallback}/>
-        <TopicInfo ktxxRecordCallback={this.ktxxRecordCallback}/>
+        <RequirementInfo xmid={xmid} xqxxRecordCallback={this.xqxxRecordCallback}/>
+        <PrizeInfo xmid={xmid} hjxxRecordCallback={this.hjxxRecordCallback}/>
+        <TopicInfo xmid={xmid} ktxxRecordCallback={this.ktxxRecordCallback}/>
       </div>
     );
   }

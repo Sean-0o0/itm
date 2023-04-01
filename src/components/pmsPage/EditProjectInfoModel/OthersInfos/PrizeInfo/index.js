@@ -4,6 +4,7 @@ import moment from "moment";
 import {QueryPaymentAccountList} from "../../../../../services/pmsServices";
 import {connect} from "dva";
 import {FetchQueryProjectInfoAll} from "../../../../../services/projectManage";
+const {Option} = Select
 
 //-----------付款详情--------------//
 const EditableContext = React.createContext(1);
@@ -212,13 +213,14 @@ class PrizeInfo extends Component {
 
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
+    const {xmid} = this.props;
     let flag = sessionStorage.getItem("hjxxTableDataFlag")
     if (flag === "true") {
       this.setState({
         tableData: JSON.parse(sessionStorage.getItem("hjxxTableData"))
       })
     } else {
-      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: 334}).then((result) => {
+      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
         const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
         if (code > 0) {
           let data = JSON.parse(hjxxRecord);
@@ -244,15 +246,52 @@ class PrizeInfo extends Component {
     }
   }
 
+  RYDJChange = (e,record, index) =>{
+    console.log("e record, index",e, record, index)
+    const {tableData} = this.state;
+    console.log("tableData",tableData)
+    tableData.map(item => {
+      if(item.ID === record.ID){
+        item['RYDJ' + item.ID] = e;
+      }
+    })
+    console.log("tableData222",tableData)
+    this.setState({
+      ...tableData
+    }, () => {
+      this.callbackData();
+    })
+  }
+
+  ZSCQLXChange = (e,record, index) =>{
+    console.log("e record, index",e, record, index)
+    const {tableData} = this.state;
+    console.log("tableData",tableData)
+    tableData.map(item => {
+      if(item.ID === record.ID){
+        item['ZSCQLX' + item.ID] = e;
+      }
+    })
+    console.log("tableData222",tableData)
+    this.setState({
+      ...tableData
+    }, () => {
+      this.callbackData();
+    })
+  }
+
   render() {
     const {
       tableData = [],    //付款详情表格
     } = this.state;
+    const _this = this;
+    const { dictionary: { HJRYDJ = [],ZSCQLX = [] } } = this.props;
+    console.log("HJRYDJHJRYDJ",HJRYDJ)
+    console.log("ZSCQLXZSCQLX",ZSCQLX)
     const tableColumns = [
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>获奖名称</span>,
         dataIndex: 'JXMC',
-        width: '13%',
         key: 'JXMC',
         ellipsis: true,
         editable: true,
@@ -261,16 +300,41 @@ class PrizeInfo extends Component {
         title: <span style={{color: '#606266', fontWeight: 500}}>荣誉等级</span>,
         dataIndex: 'RYDJ',
         key: 'RYDJ',
+        width: '18%',
         ellipsis: true,
-        editable: true,
+        // editable: true,
+        render(text, record, index) {
+          return (<Select style={{width: 120}} onChange={(e) => _this.RYDJChange(e,record, index)}>
+              {
+                HJRYDJ.length > 0 && HJRYDJ.map((item, index) => {
+                  return (
+                    <Option key={item?.ibm} value={item?.ibm}>{item?.note}</Option>
+                  )
+                })
+              }
+            </Select>
+          )
+        }
       },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>知识产权类型</span>,
         dataIndex: 'ZSCQLX',
-        width: '23%',
+        width: '18%',
         key: 'ZSCQLX',
         ellipsis: true,
-        editable: true,
+        // editable: true,
+        render(text, record, index) {
+          return (<Select style={{width: 120}} onChange={(e) => _this.ZSCQLXChange(e,record, index)}>
+              {
+                ZSCQLX.length > 0 && ZSCQLX.map((item, index) => {
+                  return (
+                    <Option key={item?.ibm} value={item?.ibm}>{item?.note}</Option>
+                  )
+                })
+              }
+            </Select>
+          )
+        }
       },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>获奖时间</span>,
@@ -326,7 +390,6 @@ class PrizeInfo extends Component {
       <div>
         <div style={{padding: '24px 0 18px 0'}}>
           <span style={{
-            paddingLeft: '6px',
             fontSize: '14px',
             lineHeight: '19px',
             fontWeight: 'bold',

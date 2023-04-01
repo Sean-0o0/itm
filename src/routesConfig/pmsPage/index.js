@@ -89,6 +89,11 @@ exports.routes = [
     component: './pmsPage/LabelDetail',
   },
   {
+    // 标签详情
+    path: `${prefix}/labelDetail`,
+    component: './pmsPage/LabelDetail',
+  },
+  {
     //编辑项目信息
     path: `${prefix}/EditProjectInfo`,
     component: './pmsPage/EditProjectInfo',

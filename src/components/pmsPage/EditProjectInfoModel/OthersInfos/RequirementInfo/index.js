@@ -206,13 +206,14 @@ class RequirementInfo extends Component {
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
     const {tableData = []} = this.state;
+    const {xmid} = this.props;
     let flag = sessionStorage.getItem("xqxxTableDataFlag")
     if (flag === "true") {
       this.setState({
         tableData: JSON.parse(sessionStorage.getItem("xqxxTableData"))
       })
     } else {
-      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: 334}).then((result) => {
+      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
         const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
         if (code > 0) {
           let data = JSON.parse(xqxxRecord);
@@ -311,7 +312,6 @@ class RequirementInfo extends Component {
       <div>
         <div style={{padding: '0 0 18px 0'}}>
           <span style={{
-            paddingLeft: '6px',
             fontSize: '14px',
             lineHeight: '19px',
             fontWeight: 'bold',

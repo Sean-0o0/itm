@@ -222,13 +222,14 @@ class TopicInfo extends Component {
 
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
+    const {xmid} = this.props;
     let flag = sessionStorage.getItem("ktxxTableDataFlag")
     if (flag === "true") {
       this.setState({
         tableData: JSON.parse(sessionStorage.getItem("ktxxTableData"))
       })
     } else {
-      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: 334}).then((result) => {
+      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
         const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
         if (code > 0) {
           let data = JSON.parse(ktxxRecord);
@@ -335,7 +336,6 @@ class TopicInfo extends Component {
       <div>
         <div style={{padding: '24px 0 18px 0'}}>
           <span style={{
-            paddingLeft: '6px',
             fontSize: '14px',
             lineHeight: '19px',
             fontWeight: 'bold',

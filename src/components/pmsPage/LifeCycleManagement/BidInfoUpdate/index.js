@@ -837,8 +837,8 @@ class BidInfoUpdate extends React.Component {
                                         let reader = new FileReader(); //实例化文件读取对象
                                         reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
                                         reader.onload = (e) => { //文件读取成功完成时触发
-                                            // console.log('文件读取成功完成时触发', e.target.result.split(','));
                                             let urlArr = e.target.result.split(',');
+                                            console.log('uploadFileParamsuploadFileParams', uploadFileParams);
                                             this.setState({
                                                 uploadFileParams: {
                                                     ...this.state.uploadFileParams,
