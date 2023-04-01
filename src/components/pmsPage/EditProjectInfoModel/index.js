@@ -43,7 +43,7 @@ import {
   FetchQueryGysInZbxx,
   FetchQueryHTXXByXQTC,
   FetchQueryZBXXByXQTC,
-  QueryPaymentAccountList, UpdateHTXX, UpdateZbxx
+  QueryPaymentAccountList, UpdateHTXX, UpdateProjectOtherInfo, UpdateZbxx
 } from "../../../services/pmsServices";
 import BridgeModel from "../../Common/BasicModal/BridgeModel";
 import TableFullScreen from "../LifeCycleManagement/ContractInfoUpdate/TableFullScreen";
@@ -103,20 +103,15 @@ class EditableCell extends React.Component {
   }
   handleBfbChange = (form, id) => {
     let obj = {};
-    obj['fkje' + id] = String(Number(form.getFieldValue('bfb' + id)) * Number(form.getFieldValue('htje')))
+    obj['fkje' + id] = String(Number(form.getFieldValue('bfb' + id)) * Number(form.getFieldValue('contractValue')))
     form.setFieldsValue({...obj});
     this.save();
   };
   renderItem = (form, dataIndex, record) => {
+    console.log("recordrecordrecord", record)
     switch (dataIndex) {
       case 'fksj':
         return form.getFieldDecorator(dataIndex + record['id'], {
-          // rules: [
-          //   {
-          //     required: true,
-          //     message: `${this.getTitle(dataIndex)}不允许空值`,
-          //   },
-          // ],
           initialValue: moment(record[dataIndex + record['id']]) || null,
         })(<DatePicker ref={node => (this.input = node)}
                        onChange={(data, dataString) => {
@@ -140,12 +135,6 @@ class EditableCell extends React.Component {
         />);
       case 'bfb':
         return form.getFieldDecorator(dataIndex + record['id'], {
-          // rules: [
-          //   {
-          //     pattern: /^[1-9]\d{0,8}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
-          //     message: '最多不超过10位数字且小数点后数字不超过2位'
-          //   },
-          // ],
           initialValue: String(record[dataIndex + record['id']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -153,16 +142,6 @@ class EditableCell extends React.Component {
                   onBlur={this.handleBfbChange.bind(this, form, record['id'])}/>);
       case 'fkje':
         return form.getFieldDecorator(dataIndex + record['id'], {
-          // rules: [
-          //   {
-          //     required: true,
-          //     message: `${this.getTitle(dataIndex)}不允许空值`,
-          //   },
-          //   {
-          //     pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
-          //     message: '最多不超过13位数字且小数点后数字不超过2位'
-          //   },
-          // ],
           initialValue: String(record[dataIndex + record['id']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -170,20 +149,6 @@ class EditableCell extends React.Component {
                   onBlur={this.save}/>);
       default:
         return form.getFieldDecorator(dataIndex + record['id'], {
-          // rules: [
-          //   {
-          //     required: true,
-          //     message: `${this.getTitle(dataIndex)}不允许空值`,
-          //   },
-          //   {
-          //     max: 10,
-          //     message: '数值不能超过10位',
-          //   },
-          //   {
-          //     pattern: /^[0-9]*$/,
-          //     message: '数值只能为整数'
-          //   }
-          // ],
           initialValue: String(record[dataIndex + record['id']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -437,7 +402,7 @@ class EditProjectInfoModel extends React.Component {
       //合同金额
       contractValue: null,
       //签署日期
-      signData: "",
+      signData: moment(new Date).format('YYYY-MM-DD'),
       //付款详情
       paymentInfos: [],
       //中标供应商
@@ -519,6 +484,17 @@ class EditProjectInfoModel extends React.Component {
     tableDataQT: [],    //其他供应商详情表格
     skzhData: [], //收款账号
     glgys: [],
+    //其他信息
+    //获奖信息
+    prizeInfoRecord: [],
+    //课题信息
+    topicInfoRecord: [],
+    //需求信息
+    requirementInfoRecord: [],
+    //合同信息操作类型
+    htxxCzlx: 'ADD',
+    //招标信息操作类型
+    zbxxCzlx: 'ADD',
   }
   componentDidMount = async () => {
     const _this = this;
@@ -557,14 +533,39 @@ class EditProjectInfoModel extends React.Component {
     this.fetchQueryOrganizationYYBMInfo();
 
     this.fetchQueryGysInZbxx();
-
-    // 修改加载状态
-    this.setState({loading: false});
-
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
       await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
     }
+    // 修改加载状态
+    this.setState({loading: false});
+    //人员信息接口
+    // 查询组织机构信息
+    await this.fetchQueryOrganizationInfo();
+    // 查询人员信息
+    await this.fetchQueryMemberInfo();
+    // 查询岗位信息
+    await this.fetchQueryStationInfo();
+    //里程碑信息
+    // 查询里程碑阶段信息
+    await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
+    // 查询里程碑事项信息
+    await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
+    // 查询里程碑信息
+    await this.fetchQueryMilepostInfo({
+      type: 1,
+      xmid: this.state.basicInfo.projectId,
+      biddingMethod: 1,
+      budget: 0,
+      label: this.state.basicInfo.labelTxt,
+      queryType: "ALL"
+    });
+    //招采信息
+    await this.fetchQueryPaymentAccountList();
+    //合同信息
+    await this.fetchQueryHTXXByXQTC();
+    //招标信息
+    await this.fetchQueryZBXXByXQTC();
   };
 
 
@@ -1627,6 +1628,7 @@ class EditProjectInfoModel extends React.Component {
       purchaseInfo = {},
       uploadFileParams = {},
       staticSkzhData = [],
+      zbxxCzlx = 'ADD',
       basicInfo = {}
     } = this.state;
     console.log("purchaseInfopurchaseInfo222", purchaseInfo)
@@ -1640,7 +1642,6 @@ class EditProjectInfoModel extends React.Component {
       };
       newArr.push(obj);
     });
-    newArr.push({});
     const {documentData, fileLength, fileName} = uploadFileParams;
     let submitdata = {
       columnName: 'PBBG',
@@ -1655,8 +1656,9 @@ class EditProjectInfoModel extends React.Component {
       rowcount: tableDataQT.length,
       tbbzj: Number(purchaseInfo.bidCautionMoney),
       // xmmc: Number(basicInfo.projectId),
-      xmmc: '334',
+      xmmc: Number(basicInfo.projectId),
       zbgys: Number(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || ''),
+      czlx: zbxxCzlx,
     };
     console.log("🚀submitdata", submitdata);
     UpdateZbxx({
@@ -1676,12 +1678,13 @@ class EditProjectInfoModel extends React.Component {
       tableData,
       glgys,
       purchaseInfo = {},
+      htxxCzlx = 'ADD',
       uploadFileParams = {},
       staticSkzhData = [],
       basicInfo = {}
     } = this.state;
     let arr = [...tableData];
-    console.log("arrarrarr", arr)
+    console.log("purchaseInfo", purchaseInfo)
     arr.forEach(item => {
       for (let i in item) {
         if (i === 'fksj' + item.id) {
@@ -1704,14 +1707,15 @@ class EditProjectInfoModel extends React.Component {
       };
       newArr.push(obj);
     });
-    newArr.push({});
     UpdateHTXX({
       // xmmc: Number(basicInfo.projectId),
-      xmmc: '334',
+      xmmc: Number(basicInfo.projectId),
       json: JSON.stringify(newArr),
       rowcount: tableData.length,
       htje: Number(purchaseInfo.contractValue),
-      qsrq: Number(moment(purchaseInfo.signData).format('YYYYMMDD'))
+      qsrq: Number(moment(purchaseInfo.signData).format('YYYYMMDD')),
+      gysid: Number(glgys?.filter(x => x.gysmc === purchaseInfo.biddingSupplier)[0]?.id || ''),
+      czlx: htxxCzlx,
     }).then(res => {
       if (res?.code === 1) {
         // message.success('合同信息修改成功', 1);
@@ -1723,7 +1727,60 @@ class EditProjectInfoModel extends React.Component {
     this.setState({tableData: [], tableDataQT: []});
   }
 
+  //其他信息的保存-获奖信息
+
+  prizeInfoCallback = (rec) => {
+    console.log("prizeInfoRecord", rec)
+    this.setState({
+      prizeInfoRecord: rec
+    })
+  }
+  //其他信息的保存-课题信息
+  topicInfoCallback = (rec) => {
+    console.log("topicInfoRecord", rec)
+    this.setState({
+      topicInfoRecord: rec
+    })
+  }
+  //其他信息的保存-需求信息
+  requirementInfoCallback = (rec) => {
+    console.log("requirementInfoRecord", rec)
+    this.setState({
+      requirementInfoRecord: rec
+    })
+  }
+
+  updateProjectOtherInfo() {
+    const {topicInfoRecord = [], requirementInfoRecord = [], prizeInfoRecord = [], basicInfo = []} = this.state;
+    UpdateProjectOtherInfo({
+      // xmmc: Number(basicInfo.projectId),
+      xmid: Number(basicInfo.projectId),
+      //需求信息
+      xqjson: JSON.stringify(requirementInfoRecord),
+      //获奖信息
+      hjjson: JSON.stringify(prizeInfoRecord),
+      //课题信息
+      ktjson: JSON.stringify(topicInfoRecord),
+      xqsl: requirementInfoRecord.length,
+      hjsl: prizeInfoRecord.length,
+      ktsl: topicInfoRecord.length,
+    }).then(res => {
+      if (res?.code === 1) {
+        // message.success('合同信息修改成功', 1);
+        onSuccess();
+      } else {
+        message.error('信息修改失败', 1);
+      }
+    })
+  }
+
   operateCreatProject(params, type) {
+    //更新招标信息
+    this.updateZBXX();
+    //更新合同信息
+    this.updateHTXX();
+    //更新其他信息
+    this.updateProjectOtherInfo();
     OperateCreatProject(params).then((result) => {
       const {code = -1, note = '', projectId} = result;
       this.setState({loading: false});
@@ -1735,10 +1792,6 @@ class EditProjectInfoModel extends React.Component {
         } else {
           this.props.submitOperate();
         }
-        //更新招标信息
-        this.updateZBXX();
-        //更新合同信息
-        this.updateHTXX();
         const params = {
           projectId: projectId,
         }
@@ -2252,59 +2305,6 @@ class EditProjectInfoModel extends React.Component {
   }
 
   tabsCallback = async (key) => {
-    const {tabsKey1Flag, tabsKey2Flag, tabsKey3Flag, tabsKey4Flag} = this.state;
-    this.setState({loading: true, tabsKey: key});
-    //基本信息
-    if (key == 0) {
-      this.setState({loading: false});
-    }
-    //人员信息
-    if (key == 1 && tabsKey1Flag) {
-      // 查询组织机构信息
-      await this.fetchQueryOrganizationInfo();
-      // 查询人员信息
-      await this.fetchQueryMemberInfo();
-      // 查询岗位信息
-      await this.fetchQueryStationInfo();
-      this.setState({loading: false, tabsKey1Flag: false});
-    } else {
-      this.setState({loading: false,});
-    }
-    //里程碑信息
-    if (key == 2 && tabsKey2Flag) {
-      // 查询里程碑阶段信息
-      await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
-      // 查询里程碑事项信息
-      await this.fetchQueryMatterUnderMilepost({type: 'ALL', lcbid: 0});
-      // 查询里程碑信息
-      await this.fetchQueryMilepostInfo({
-        type: 1,
-        xmid: this.state.basicInfo.projectId,
-        biddingMethod: 1,
-        budget: 0,
-        label: this.state.basicInfo.labelTxt,
-        queryType: "ALL"
-      });
-      this.setState({loading: false, tabsKey2Flag: false});
-    } else {
-      this.setState({loading: false,});
-    }
-    //招采信息
-    if (key == 3 && tabsKey3Flag) {
-      await this.fetchQueryPaymentAccountList();
-      //合同信息
-      await this.fetchQueryHTXXByXQTC();
-      //招标信息
-      await this.fetchQueryZBXXByXQTC();
-      this.setState({loading: false, tabsKey3Flag: false});
-    } else {
-      this.setState({loading: false,});
-    }
-    if (key == 4 && tabsKey4Flag) {
-      this.setState({loading: false, tabsKey4Flag: false});
-    } else {
-      this.setState({loading: false,});
-    }
     this.setState({current: key})
   }
 
@@ -2333,25 +2333,34 @@ class EditProjectInfoModel extends React.Component {
 
   // 获取项目信息
   fetchQueryHTXXByXQTC() {
-    const {purchaseInfo} = this.state;
+    const {purchaseInfo = [], basicInfo = []} = this.state;
     return FetchQueryHTXXByXQTC({
-      xmmc: '334'
+      xmmc: Number(basicInfo.projectId),
     }).then(res => {
       let rec = res.record;
       let arr = [];
       for (let i = 0; i < rec.length; i++) {
-        arr.push({
-          id: rec[i]?.fkxqid,
-          ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
-          ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
-          ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
-          ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
-          zt: rec[i]?.zt
-        });
+        if (rec[i]?.fkxqid !== "") {
+          arr.push({
+            id: rec[i]?.fkxqid,
+            ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+            ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+            ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+            ['fksj' + rec[i]?.fkxqid]: rec[i]?.fksj === "" ? moment(new Date()).format('YYYY-MM-DD') : moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+            zt: rec[i]?.zt
+          });
+        }
+
       }
       this.setState({
-        purchaseInfo: {...purchaseInfo, contractValue: Number(rec[0]?.htje), signData: rec[0]?.qsrq, paymentInfos: arr},
+        purchaseInfo: {
+          ...purchaseInfo,
+          contractValue: Number(rec[0]?.htje),
+          signData: rec[0]?.qsrq ? rec[0]?.qsrq : moment(new Date).format('YYYY-MM-DD'),
+          paymentInfos: arr
+        },
         tableData: [...this.state.tableData, ...arr],
+        htxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD'
       });
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -2360,9 +2369,9 @@ class EditProjectInfoModel extends React.Component {
 
   // 获取中标信息
   fetchQueryZBXXByXQTC() {
-    const {purchaseInfo, glgys = [], staticSkzhData = []} = this.state;
+    const {purchaseInfo, glgys = [], staticSkzhData = [], basicInfo = []} = this.state;
     return FetchQueryZBXXByXQTC({
-      xmmc: '334'
+      xmmc: Number(basicInfo.projectId),
     }).then(res => {
       let rec = res.record;
       if (res.url && res.base64 && rec[0].pbbg) {
@@ -2379,20 +2388,23 @@ class EditProjectInfoModel extends React.Component {
       }
       let arr = [];
       for (let i = 0; i < rec.length; i++) {
-        let id = getID();
-        arr.push({
-          id,
-          [`gysmc${id}`]: glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
-        });
+        if (rec[i].gysmc !== "") {
+          let id = getID();
+          arr.push({
+            id,
+            [`gysmc${id}`]: glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+          });
+        }
       }
       this.setState({
+        zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
         purchaseInfo: {
           ...purchaseInfo,
           othersSupplier: arr,
-          biddingSupplier: glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
-          bidCautionMoney: Number(rec[0].tbbzj),
-          cautionMoney: Number(rec[0].lybzj),
-          number: staticSkzhData.filter(x => x.id === rec[0].zbgysfkzh)[0]?.khmc || '',
+          biddingSupplier: glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
+          bidCautionMoney: Number(rec[0]?.tbbzj),
+          cautionMoney: Number(rec[0]?.lybzj),
+          number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
           // pbbg: rec[0].pbbg,
         },
         uploadFileParams: {
@@ -2400,8 +2412,8 @@ class EditProjectInfoModel extends React.Component {
           documentData: res.base64,
           fileLength: '',
           filePath: '',
-          fileName: rec[0].pbbg,
-          id: rec[0].zbxxid,
+          fileName: rec[0]?.pbbg,
+          id: rec[0]?.zbxxid,
           objectName: 'TXMXX_ZBXX'
         },
         tableDataQT: [...this.state.tableDataQT, ...arr],
@@ -2686,20 +2698,6 @@ class EditProjectInfoModel extends React.Component {
         ellipsis: true,
         editable: true,
       },
-      // {
-      //   title: '状态',
-      //   dataIndex: 'zt',
-      //   width: '10%',
-      //   key: 'zt',
-      //   ellipsis: true,
-      //   // editable: true,
-      //   render: (text) => {
-      //     if (text === '1') {
-      //       return this.state.tableData.length >= 1 ? <span>已付款</span> : null;
-      //     }
-      //     return this.state.tableData.length >= 1 ? <span>未付款</span> : null;
-      //   },
-      // },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operator',
@@ -2826,7 +2824,7 @@ class EditProjectInfoModel extends React.Component {
                   <React.Fragment>
                     <Form ref={e => this.basicForm = e}>
                       <Row gutter={24}>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight: '24px'}}>
                           <Form.Item label="项目名称" className="formItem">
                             {getFieldDecorator('projectName', {
                               rules: [{
@@ -2841,7 +2839,7 @@ class EditProjectInfoModel extends React.Component {
                             )}
                           </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft: '24px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -2874,7 +2872,7 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24}>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight: '24px'}}>
                           <Form.Item label="项目标签" className="formItem">
                             {getFieldDecorator('projectLabel', {
                               initialValue: basicInfo.projectLabel
@@ -2922,7 +2920,7 @@ class EditProjectInfoModel extends React.Component {
                             )}
                           </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft: '24px'}}>
                           <Form.Item label="关联软件" className="formItem">
                             {getFieldDecorator('software', {
                               initialValue: basicInfo.software
@@ -2955,7 +2953,7 @@ class EditProjectInfoModel extends React.Component {
                       <Row gutter={24}>
                         {
                           basicInfo.projectType === 1 ? (
-                            <Col span={12}>
+                            <Col span={12} style={{paddingRight: '24px'}}>
                               <Form.Item label={<span><span style={{
                                 fontFamily: 'SimSun, sans-serif',
                                 color: '#f5222d',
@@ -2989,7 +2987,7 @@ class EditProjectInfoModel extends React.Component {
                             </Col>
                           ) : null
                         }
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft: basicInfo.projectType === 1 ? '24px' : '12px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -3032,7 +3030,7 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24}>
-                        <Col span={3}>
+                        <Col span={3} style={{paddingRight: '4px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -3086,7 +3084,7 @@ class EditProjectInfoModel extends React.Component {
                             {/*)}*/}
                           </Form.Item>
                         </Col>
-                        <Col span={21}>
+                        <Col span={21} style={{paddingLeft: '4px'}}>
                           <Form.Item label=" " colon={false} className="formItem">
                             {getFieldDecorator('budgetProjectId', {
                               // rules: [{
@@ -3155,13 +3153,13 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight: '24px'}}>
                           <Form.Item label="总预算(元)" className="formItem">
                             <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.totalBudget}
                                          precision={0}/>
                           </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft: '24px'}}>
                           <Form.Item label="可执行预算(元)" className="formItem">
                             <InputNumber disabled={true} style={{width: '100%'}} value={ysKZX}
                                          precision={0}/>
@@ -3169,13 +3167,13 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingRight: '24px'}}>
                           <Form.Item label="剩余预算(元)" className="formItem">
                             <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
                                          precision={0}/>
                           </Form.Item>
                         </Col>
-                        <Col span={12}>
+                        <Col span={12} style={{paddingLeft: '24px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -3266,9 +3264,21 @@ class EditProjectInfoModel extends React.Component {
                                       width: '100%',
                                       display: 'flex',
                                       flexDirection: 'row',
-                                      padding: '2rem 3rem'
+                                      padding: '6px 12px 6px 0px'
                                     }}>
-                                      <div style={{width: '80%', borderLeft: '4px solid rgb(52, 97, 255)'}}>
+                                      <div style={{
+                                        width: '80%',
+                                        display: 'inline-flex',
+                                        paddingLeft: '6px',
+                                        alignItems: 'center'
+                                      }}>
+                                        <div style={{
+                                          width: '4px',
+                                          height: '12px',
+                                          background: '#3461FF',
+                                          lineHeight: '19px',
+                                          margin: '3.5px 3.5px 0 0'
+                                        }}/>
                                         <Select
                                           showSearch
                                           filterOption={(input, option) =>
@@ -3276,7 +3286,7 @@ class EditProjectInfoModel extends React.Component {
                                           }
                                           onChange={e => this.selectMileStageInfo(e, index)}
                                           placeholder="请选择"
-                                          style={{width: '25%', left: '1rem'}}
+                                          style={{width: '25%',}}
                                         >
                                           {
                                             mileStageList.length > 0 && mileStageList.map((item, index) => {
@@ -3285,24 +3295,24 @@ class EditProjectInfoModel extends React.Component {
                                           }
                                         </Select>
                                       </div>
-                                      <div className="right" style={{marginTop: '2rem'}}>
+                                      <div className="right" style={{marginTop: '12px'}}>
                                         {
                                           <Tooltip title="保存">
-                                            <a style={{color: '#666', marginTop: '2rem', marginLeft: '2rem'}}
+                                            <a style={{color: '#666', marginTop: '12px', marginLeft: '12px'}}
                                                className="iconfont file-filldone"
                                                onClick={() => this.saveMilePostInfo(index)}/>
                                           </Tooltip>
                                         }
                                         {/* {
                                           <Tooltip title="添加事项">
-                                            <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
+                                            <a style={{ color: '#666', marginTop: '12px', marginLeft: '1rem' }}
                                               className="iconfont circle-add"
                                               onClick={() => this.addSwlx(item?.lcblxid, index)} />
                                           </Tooltip>
                                         } */}
                                         {
                                           <Tooltip title="删除">
-                                            <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                            <a style={{color: '#666', marginTop: '12px', marginLeft: '6px'}}
                                                className="iconfont delete"
                                                onClick={() => this.removeMilePostInfo(index)}/>
                                           </Tooltip>
@@ -3430,7 +3440,7 @@ class EditProjectInfoModel extends React.Component {
                                                     }
                                                   </Select>
                                                   <Tooltip title="取消新增">
-                                                    <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                    <a style={{color: '#666', marginTop: '12px', marginLeft: '1rem'}}
                                                        className="iconfont delete"
                                                        onClick={e => this.removeSwlxMx(e, index, i)}/>
                                                   </Tooltip>
@@ -3444,7 +3454,7 @@ class EditProjectInfoModel extends React.Component {
                                                   if (sx.type && sx.type === 'title') {
                                                     return (
                                                       <div key={String(sx_index + 1)}
-                                                           style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                           style={{paddingTop: '12px', fontWeight: 'bold'}}>
                                                       </div>
                                                     )
                                                   }
@@ -3512,7 +3522,8 @@ class EditProjectInfoModel extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div className='editProject addHover' style={{margin: '12px 6px'}}>
+                                                  <div className='editProject addHover'
+                                                       style={{display: 'grid', alignItems: 'center'}}>
                                                     <Tag
                                                       style={{background: '#fff', border: 'none'}}>
                                                       <a className="iconfont circle-add"
@@ -3626,7 +3637,7 @@ class EditProjectInfoModel extends React.Component {
                                           }
                                           {/* {
                                             <Tooltip title="添加事项">
-                                              <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
+                                              <a style={{ color: '#666', marginTop: '12px', marginLeft: '1rem' }}
                                                 className="iconfont circle-add"
                                                 onClick={() => this.addSwlx(item?.lcblxid, index)} />
                                             </Tooltip>
@@ -3768,7 +3779,7 @@ class EditProjectInfoModel extends React.Component {
                                                       }
                                                     </Select>
                                                     <Tooltip title="取消新增">
-                                                      <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                                      <a style={{color: '#666', marginTop: '12px', marginLeft: '1rem'}}
                                                          className="iconfont delete"
                                                          onClick={e => this.removeSwlxMx(e, index, i)}/>
                                                     </Tooltip>
@@ -3782,7 +3793,7 @@ class EditProjectInfoModel extends React.Component {
                                                   if (sx.type && sx.type === 'title') {
                                                     return (
                                                       <div key={String(sx_index + 1)}
-                                                           style={{paddingTop: '2rem', fontWeight: 'bold'}}>
+                                                           style={{paddingTop: '12px', fontWeight: 'bold'}}>
                                                       </div>
                                                     )
                                                   }
@@ -3849,7 +3860,7 @@ class EditProjectInfoModel extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{margin: '12px 6px'}}><Tag
+                                                  <div style={{display: 'grid', alignItems: 'center'}}><Tag
                                                     style={{background: '#fff', border: 'none'}}>
                                                     <a className="iconfont circle-add"
                                                        style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
@@ -3908,7 +3919,7 @@ class EditProjectInfoModel extends React.Component {
                                     }
                                     {item.addSxFlag &&
                                     <div className="addMilePost"
-                                         style={{width: 'calc(46% + 3.5rem)', marginTop: '2rem'}}
+                                         style={{width: 'calc(46% + 3.5rem)', marginTop: '12px'}}
                                          onClick={() => this.addSwlx(item?.lcblxid, index)}>
                                       <Icon type="plus" style={{fontSize: '12px'}}/><span
                                       style={{paddingLeft: '6px', fontSize: '14px'}}>添加事项</span>
@@ -4088,7 +4099,7 @@ class EditProjectInfoModel extends React.Component {
                           // mode="multiple"
                                 placeholder="请选择岗位"
                                 onChange={e => this.onRygwSelectChange(e)}
-                                style={{padding: '1.5rem 0 0 2rem', width: '25rem'}}
+                                style={{padding: '9px 0 0 12px', width: '25rem'}}
                                 onBlur={this.onRygwSelectConfirm}
                                 filterOption={(input, option) =>
                                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -4206,11 +4217,10 @@ class EditProjectInfoModel extends React.Component {
                                   let arrData = tableData;
                                   arrData.push({
                                     id: Date.now(),
-                                    ['fkqs' + Date.now()]: '',
+                                    ['fkqs' + Date.now()]: tableData.length + 1,
                                     ['bfb' + Date.now()]: 0.5,
-                                    ['fkje' + Date.now()]: 0.5,
+                                    ['fkje' + Date.now()]: Number(0.5 * Number(purchaseInfo.contractValue)),
                                     ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'),
-                                    zt: '2'
                                   });
                                   this.setState({
                                     tableData: arrData,
@@ -4484,11 +4494,12 @@ class EditProjectInfoModel extends React.Component {
                 // 其他信息
                 current == 4 &&
                 <div className="steps-content" style={{height: '79%', overflowY: 'auto', overflowX: 'hidden'}}>
-                  <OthersInfos/></div>
+                  <OthersInfos prizeInfoCallback={this.prizeInfoCallback} topicInfoCallback={this.topicInfoCallback}
+                               requirementInfoCallback={this.requirementInfoCallback}/></div>
               }
               <div className="footer">
                 <Divider/>
-                <div style={{padding: '6px 18px'}}>
+                <div style={{padding: '16px 24px'}}>
                   <Button onClick={this.handleCancel}>取消</Button>
                   <div className="steps-action">
                     <Button style={{marginLeft: '12px', backgroundColor: '#3361FF'}} type="primary"

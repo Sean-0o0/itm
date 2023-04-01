@@ -2516,7 +2516,7 @@
     margin: 0 18px;
     border: 1px dashed #e0e0e0;
     //padding: 9px;
-    line-height: 1.5;
+    line-height: 32px;
     cursor: pointer;
   }
 
@@ -2546,15 +2546,15 @@
     .flow {
       display: flex;
       flex-direction: row;
-      padding: 1rem;
+      padding: 6px;
       position: relative;
       //margin-top: 2rem;
       //background-color: #F6F6F9;
 
       .item {
         border: 1px solid #e0e0e0;
-        padding: 1.6rem;
-        margin: 1rem 1rem 1rem 2rem;
+        padding: 9px;
+        margin: 0 6px 0 12px;
 
         .icon {
           .font-s14();
@@ -2717,7 +2717,7 @@
     .flow {
       display: flex;
       flex-direction: row;
-      padding: 6px 0 0 0;
+      padding: 16px 0 0 0;
       position: relative;
       //margin: 0 3rem;
       //background-color: #F6F6F9;
@@ -2739,7 +2739,7 @@
         display: flex;
         align-items: center;
         padding: 0 4px;
-        margin: 6px 6px 6px 12px;
+        margin: 0 6px 0 12px;
 
         .icon {
           .font-s14();
@@ -2774,7 +2774,7 @@
 
     .job {
       width: 43%;
-      margin: 12px 12px 30px 24px;
+      margin: 12px 12px 30px 16px;
       height: 70vh;
       padding: 18px 18px 0 21px;
       background-color: #fafafb;
@@ -2785,6 +2785,7 @@
         margin-bottom: 18px;
 
         .name {
+          text-align: end;
           width: 40%;
           font-size: 14px;
           padding: 9px 0 0 0;
@@ -2794,7 +2795,7 @@
 
     .button {
       height: 33vh;
-      width: 14%;
+      //width: 14%;
       text-align: center;
       padding-top: 30vh;
     }
@@ -2803,7 +2804,7 @@
       height: 70vh;
       width: 43%;
       overflow: auto;
-      margin: 12px 24px 12px 12px;
+      margin: 12px 16px 12px 12px;
       padding: 18px 18px 0 21px;
       background-color: #fafafb;
     }
@@ -2823,8 +2824,20 @@
   }
 }
 
+.tableDisplay {
+  display: none;
+}
+
 .editProject {
   height: 100%;
+
+  .ant-table-thead > tr > th, .ant-table-tbody > tr > td {
+    padding: 9px 16px;
+  }
+
+  .ant-upload-list-item-name {
+    color: #303133;
+  }
 
   .addHover:hover {
     color: #3361ff;
@@ -2886,7 +2899,7 @@
     color: #d70e19;
     font-weight: 400;
     font-size: 14px;
-    line-height: 30px;
+    line-height: 22px;
     text-align: left !important;
   }
 
@@ -3165,7 +3178,7 @@
     margin: 0 18px;
     border: 1px dashed #e0e0e0;
     //padding: 9px;
-    line-height: 1.5;
+    line-height: 32px;
     cursor: pointer;
   }
 
@@ -3175,7 +3188,7 @@
 
   .newMilePost {
     width: 100%;
-    margin: 1rem 1rem 1.5rem 0;
+    margin: 6px 6px 9px 0;
 
     .right {
       -ms-flex: 1 1;
@@ -3195,15 +3208,15 @@
     .flow {
       display: flex;
       flex-direction: row;
-      padding: 1rem;
+      padding: 6px;
       position: relative;
       //margin-top: 2rem;
       //background-color: #F6F6F9;
 
       .item {
         border: 1px solid #e0e0e0;
-        padding: 1.6rem;
-        margin: 1rem 1rem 1rem 2rem;
+        padding: 9px;
+        margin: 0 6px 0 12px;
 
         .icon {
           .font-s14();
@@ -3366,7 +3379,7 @@
     .flow {
       display: flex;
       flex-direction: row;
-      padding: 6px 0 0 0;
+      padding: 16px 0 0 0;
       position: relative;
       //margin: 0 3rem;
       //background-color: #F6F6F9;
@@ -3388,7 +3401,7 @@
         display: flex;
         align-items: center;
         padding: 0 4px;
-        margin: 6px 6px 6px 12px;
+        margin: 0 6px 0 12px;
 
         .icon {
           .font-s14();
@@ -3423,7 +3436,7 @@
 
     .job {
       width: 43%;
-      margin: 12px 12px 30px 24px;
+      margin: 12px 12px 30px 16px;
       height: 70vh;
       padding: 18px 18px 0 21px;
       background-color: #fafafb;
@@ -3434,6 +3447,7 @@
         margin-bottom: 18px;
 
         .name {
+          text-align: end;
           width: 40%;
           font-size: 14px;
           padding: 9px 0 0 0;
@@ -3443,7 +3457,7 @@
 
     .button {
       height: 33vh;
-      width: 14%;
+      //width: 14%;
       text-align: center;
       padding-top: 30vh;
     }
@@ -3452,7 +3466,7 @@
       height: 70vh;
       width: 43%;
       overflow: auto;
-      margin: 12px 24px 12px 12px;
+      margin: 12px 16px 12px 12px;
       padding: 18px 18px 0 21px;
       background-color: #fafafb;
     }

@@ -21,15 +21,28 @@ export default function TopConsole(props) {
   //监听新建项目弹窗状态
   const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      setFileAddVisible(false);
+      closeFileAddModal();
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
-      setFileAddVisible(false);
+      closeFileAddModal();
       //刷新数据
       getPrjDtlData();
       // message.success('保存成功');
     }
   };
+
+  const closeFileAddModal = () => {
+    //其他信息tab表格内数据清空
+    //获奖信息
+    sessionStorage.setItem("hjxxTableDataFlag", "false");
+    //需求信息
+    sessionStorage.setItem("xqxxTableDataFlag", "false");
+    //课题信息
+    sessionStorage.setItem("ktxxTableDataFlag", "false");
+    setFileAddVisible(false);
+
+  }
+
   //获取项目标签
   const getTags = (text = '') => {
     //获取项目标签数据

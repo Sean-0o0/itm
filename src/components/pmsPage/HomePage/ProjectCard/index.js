@@ -130,6 +130,13 @@ export default function ProjectCard(props) {
   };
 
   const closeFileAddModal = () => {
+    //其他信息tab表格内数据清空
+    //获奖信息
+    sessionStorage.setItem("hjxxTableDataFlag", "false");
+    //需求信息
+    sessionStorage.setItem("xqxxTableDataFlag", "false");
+    //课题信息
+    sessionStorage.setItem("ktxxTableDataFlag", "false");
     getPrjInfo(userRole);
     setFileAddVisible(false);
   };

@@ -1,6 +1,7 @@
 import React, { Component } from 'react'
 import { Table, message, Popover, Pagination } from 'antd'
 import moment from 'moment';
+import {EncryptBase64} from "../../../Common/Encrypt";
 
 
 class InfoTable extends Component {

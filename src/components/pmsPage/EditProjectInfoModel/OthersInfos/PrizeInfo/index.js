@@ -1,14 +1,20 @@
-import {Table, Input, Button, Popconfirm, Form, Icon} from 'antd';
+import {Table, Input, Button, Popconfirm, Form, Icon, DatePicker, Select, message} from 'antd';
 import React, {Component} from "react";
+import moment from "moment";
+import {QueryPaymentAccountList} from "../../../../../services/pmsServices";
+import {connect} from "dva";
+import {FetchQueryProjectInfoAll} from "../../../../../services/projectManage";
 
-const EditableContext = React.createContext();
+//-----------付款详情--------------//
+const EditableContext = React.createContext(1);
 
-const EditableRow = ({form, index, ...props}) => (
-  <EditableContext.Provider value={form}>
-    <tr {...props} />
-  </EditableContext.Provider>
-);
-
+const EditableRow = ({form, index, ...props}) => {
+  return (
+    <EditableContext.Provider value={form}>
+      <tr {...props} />
+    </EditableContext.Provider>
+  )
+};
 const EditableFormRow = Form.create()(EditableRow);
 
 class EditableCell extends React.Component {
@@ -16,51 +22,86 @@ class EditableCell extends React.Component {
     editing: false,
   };
 
-  toggleEdit = () => {
-    const editing = !this.state.editing;
-    this.setState({editing}, () => {
-      if (editing) {
-        this.input.focus();
-      }
-    });
-  };
-
   save = e => {
-    const {record, handleSave} = this.props;
-    this.form.validateFields((error, values) => {
-      if (error && error[e.currentTarget.id]) {
+    const {record, handleSave, formdecorate} = this.props;
+    formdecorate.validateFields(['JXMC' + record['ID'], 'RYDJ' + record['ID'], 'ZSCQLX' + record['ID'], 'HJSJ' + record['ID']], (error, values) => {
+      if (error && error[e.currentTarget.ID]) {
         return;
       }
-      this.toggleEdit();
       handleSave({...record, ...values});
     });
+
   };
 
+  renderItem = (form, dataIndex, record) => {
+    switch (dataIndex) {
+      case 'HJSJ':
+        return form.getFieldDecorator(dataIndex + record['ID'], {
+          initialValue: moment(record[dataIndex + record['ID']]) || null,
+        })(<DatePicker ref={node => (this.input = node)}
+                       onChange={(data, dataString) => {
+                         const {record, handleSave} = this.props;
+                         form.validateFields(['JXMC' + record['ID'], 'RYDJ' + record['ID'], 'ZSCQLX' + record['ID'], 'HJSJ' + record['ID']], (error, values) => {
+                           // console.log('values', values);
+                           if (error && error[e.currentTarget.id]) {
+                             return;
+                           }
+                           let newValues = {};
+                           newValues = {...values};
+                           for (let i in newValues) {
+                             if (i === 'HJSJ' + record['ID']) {
+                               newValues[i] = dataString;
+                             }
+                           }
+                           // this.toggleEdit();
+                           handleSave({...record, ...newValues});
+                         });
+                       }}
+        />);
+      case 'JXMC':
+        return form.getFieldDecorator(dataIndex + record['ID'], {
+          initialValue: String(record[dataIndex + record['ID']]),
+        })(<Input style={{textAlign: 'center'}}
+                  ref={node => (this.input = node)}
+                  onPressEnter={this.save}
+                  onBlur={this.save}/>);
+      case 'RYDJ':
+        return form.getFieldDecorator(dataIndex + record['ID'], {
+          initialValue: String(record[dataIndex + record['ID']]),
+        })(<Input style={{textAlign: 'center'}}
+                  ref={node => (this.input = node)}
+                  onPressEnter={this.save}
+                  onBlur={this.save}/>);
+      case 'ZSCQLX':
+        return form.getFieldDecorator(dataIndex + record['ID'], {
+          initialValue: String(record[dataIndex + record['ID']]),
+        })(<Input style={{textAlign: 'center'}}
+                  ref={node => (this.input = node)}
+                  onPressEnter={this.save}
+                  onBlur={this.save}/>);
+      default:
+        return form.getFieldDecorator(dataIndex + record['ID'], {
+          initialValue: String(record[dataIndex + record['ID']]),
+        })(<Input style={{textAlign: 'center'}}
+                  ref={node => (this.input = node)}
+                  onPressEnter={this.save}
+                  onBlur={this.save}/>);
+    }
+  }
   renderCell = form => {
-    this.form = form;
-    const {children, dataIndex, record, title} = this.props;
+    // this.form = form;
+    const {dataIndex, record, children, formdecorate, index} = this.props;
     const {editing} = this.state;
-    return editing ? (
-      <Form.Item style={{margin: 0}}>
-        {form.getFieldDecorator(dataIndex, {
-          rules: [
-            {
-              required: true,
-              message: `${title} is required.`,
-            },
-          ],
-          initialValue: record[dataIndex],
-        })(<Input ref={node => (this.input = node)} onPressEnter={this.save} onBlur={this.save}/>)}
-      </Form.Item>
-    ) : (
+    return (true ? (
+        <Form.Item style={{margin: 0}}>
+          {this.renderItem(formdecorate, dataIndex, record)}
+        </Form.Item>) :
       <div
         className="editable-cell-value-wrap"
-        style={{paddingRight: 24}}
-        onClick={this.toggleEdit}
+        // onClick={this.toggleEdit}
       >
         {children}
-      </div>
-    );
+      </div>);
   };
 
   render() {
@@ -86,118 +127,204 @@ class EditableCell extends React.Component {
   }
 }
 
+function getID() {
+  function S4() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  }
+
+  return (S4() + S4() + "-" + S4() + "-" + S4() + "-" + S4() + "-" + S4() + S4() + S4());
+}
+
+
 class PrizeInfo extends Component {
   constructor(props) {
     super(props);
-    this.columns = [
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}>获奖名称</span>,
-        dataIndex: 'name',
-        width: '30%',
-      },
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}>荣誉等级</span>,
-        dataIndex: 'age',
-      },
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}>知识产权类型</span>,
-        dataIndex: 'address',
-      },
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}>获奖时间</span>,
-        dataIndex: 'time',
-      },
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
-        dataIndex: 'operation',
-        render: (text, record) =>
-          this.state.dataSource.length >= 1 ? (
-            <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
-              <a>删除</a>
-            </Popconfirm>
-          ) : null,
-      },
-    ];
 
     this.state = {
-      dataSource: [
-        {
-          key: '0',
-          name: '某某科技创新奖项',
-          age: '国家级荣誉',
-          address: '技术专利',
-          time: '2022-02-06',
-        },
-        {
-          key: '1',
-          name: '某某科技创新奖项',
-          age: '行业级荣誉',
-          address: '行业指定标准',
-          time: '2022-02-06',
-        },
-      ],
-      count: 2,
+      tableData: [],
     };
   }
 
-  handleDelete = key => {
-    const dataSource = [...this.state.dataSource];
-    this.setState({dataSource: dataSource.filter(item => item.key !== key)});
+  componentDidMount = () => {
+    this.fetchQueryProjectInfoAll();
+  }
+
+//----------------其他供应商-----------------//
+
+  //合同信息修改付款详情表格多行删除
+  handleMultiDelete = (ids) => {
+    const dataSource = [...this.state.tableData];
+    for (let j = 0; j < dataSource.length; j++) {
+      for (let i = 0; i < ids.length; i++) {
+        if (dataSource[j].ID === ids[i]) {
+          dataSource.splice(j, 1);
+        }
+      }
+    }
+    this.setState({tableData: dataSource});
+    this.callbackData();
   };
 
-  handleAdd = () => {
-    const {count, dataSource} = this.state;
-    const newData = {
-      key: count,
-      name: `Edward King ${count}`,
-      age: 32,
-      address: `London, Park Lane no. ${count}`,
-    };
-    this.setState({
-      dataSource: [...dataSource, newData],
-      count: count + 1,
-    });
+  //合同信息修改付款详情表格单行删除
+  handleSingleDelete = (id) => {
+    const dataSource = [...this.state.tableData];
+    // console.log(dataSource);
+    this.setState({tableData: dataSource.filter(item => item.ID !== id)}, () => {
+      this.callbackData();
+    })
   };
 
-  handleSave = row => {
-    const newData = [...this.state.dataSource];
-    const index = newData.findIndex(item => row.key === item.key);
+  handleTableSave = row => {
+    const newData = [...this.state.tableData];
+    const index = newData.findIndex(item => row.ID === item.ID);
     const item = newData[index];
     newData.splice(index, 1, {
-      ...item,
-      ...row,
+      ...item,//old row
+      ...row,//rew row
     });
-    this.setState({dataSource: newData});
+    // console.log('tableData', newData);
+    this.setState({tableData: newData}, () => {
+      this.callbackData();
+    })
   };
 
+  //表格数据变化回调方法
+  callbackData = () => {
+    const {hjxxRecordCallback} = this.props;
+    const {tableData} = this.state;
+    //表格数据变化后存全局
+    sessionStorage.setItem("hjxxTableData", JSON.stringify(tableData));
+    sessionStorage.setItem("hjxxTableDataFlag", "true");
+    let newArr = [];
+    tableData.map((item) => {
+      let obj = {
+        ID: item.ID,
+        JXMC: item['JXMC' + item.ID],
+        RYDJ: item['RYDJ' + item.ID],
+        ZSCQLX: item['ZSCQLX' + item.ID],
+        HJSJ: moment(item['HJSJ' + item.ID]).format('YYYYMMDD'),
+      };
+      newArr.push(obj);
+    });
+    // console.log('newArrnewArr', newArr);
+    hjxxRecordCallback(newArr)
+  }
+
+  // 查询其他项目信息
+  fetchQueryProjectInfoAll = () => {
+    let flag = sessionStorage.getItem("hjxxTableDataFlag")
+    if (flag === "true") {
+      this.setState({
+        tableData: JSON.parse(sessionStorage.getItem("hjxxTableData"))
+      })
+    } else {
+      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: 334}).then((result) => {
+        const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
+        if (code > 0) {
+          let data = JSON.parse(hjxxRecord);
+          let arr = [];
+          for (let i = 0; i < data.length; i++) {
+            arr.push({
+              ID: data[i]?.ID,
+              ['JXMC' + data[i]?.ID]: data[i]?.JXMC,
+              ['RYDJ' + data[i]?.ID]: data[i]?.RYDJ,
+              ['ZSCQLX' + data[i]?.ID]: data[i]?.ZSCQLX,
+              ['HJSJ' + data[i]?.ID]: data[i]?.HJSJ,
+            });
+          }
+          this.setState({
+            tableData: arr,
+          }, () => {
+            this.callbackData();
+          })
+        }
+      }).catch((error) => {
+        message.error(!error.success ? error.message : error.note);
+      });
+    }
+  }
+
   render() {
-    const {dataSource} = this.state;
+    const {
+      tableData = [],    //付款详情表格
+    } = this.state;
+    const tableColumns = [
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}>获奖名称</span>,
+        dataIndex: 'JXMC',
+        width: '13%',
+        key: 'JXMC',
+        ellipsis: true,
+        editable: true,
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}>荣誉等级</span>,
+        dataIndex: 'RYDJ',
+        key: 'RYDJ',
+        ellipsis: true,
+        editable: true,
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}>知识产权类型</span>,
+        dataIndex: 'ZSCQLX',
+        width: '23%',
+        key: 'ZSCQLX',
+        ellipsis: true,
+        editable: true,
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}>获奖时间</span>,
+        dataIndex: 'HJSJ',
+        width: '17%',
+        key: 'HJSJ',
+        ellipsis: true,
+        editable: true,
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
+        dataIndex: 'operator',
+        key: 'operator',
+        width: '10%',
+        // fixed: 'right',
+        ellipsis: true,
+        render: (text, record) =>
+          this.state.tableData.length >= 1 ? (
+            <Popconfirm title="确定要删除吗?" onConfirm={() => {
+              return this.handleSingleDelete(record.ID)
+            }}>
+              <a style={{color: '#3361ff'}}>删除</a>
+            </Popconfirm>
+          ) : null,
+      }
+    ];
+    const columns = tableColumns.map(col => {
+      if (!col.editable) {
+        return col;
+      }
+      return {
+        ...col,
+        onCell: record => {
+          return ({
+            record,
+            editable: col.editable,
+            dataIndex: col.dataIndex,
+            handleSave: this.handleTableSave,
+            key: col.key,
+            formdecorate: this.props.form,
+          })
+        },
+      };
+    });
+    //覆盖默认table元素
     const components = {
       body: {
         row: EditableFormRow,
         cell: EditableCell,
       },
     };
-    const columns = this.columns.map(col => {
-      if (!col.editable) {
-        return col;
-      }
-      return {
-        ...col,
-        onCell: record => ({
-          record,
-          editable: col.editable,
-          dataIndex: col.dataIndex,
-          title: col.title,
-          handleSave: this.handleSave,
-        }),
-      };
-    });
     return (
       <div>
         <div style={{padding: '24px 0 18px 0'}}>
-          {/*<Icon type="caret-down" onClick={() => this.setState({basicInfoCollapse: !basicInfoCollapse})}*/}
-          {/*      style={{fontSize: '2rem', cursor: 'pointer'}}/>*/}
           <span style={{
             paddingLeft: '6px',
             fontSize: '14px',
@@ -205,35 +332,55 @@ class PrizeInfo extends Component {
             fontWeight: 'bold',
             color: '#333333',
             display: 'flex',
-            // borderLeft: '4px solid #3461FF'
           }}><div style={{
             width: '4px',
             height: '12px', background: '#3461FF', lineHeight: '19px', margin: '3.5px 3.5px 0 0'
           }}> </div>获奖信息</span>
         </div>
-        <Table
-          components={components}
-          rowClassName={() => 'editable-row'}
-          dataSource={dataSource}
-          columns={columns}
-          pagination={false}
-          style={{paddingBottom: '12px',}}
-        />
-        <div style={{
-          textAlign: 'center',
-          border: '1px dashed #e0e0e0',
-          lineHeight: '32px',
-          height: '32px',
-          cursor: 'pointer'
-        }} onClick={this.handleAdd}>
-          <span className='addHover'>
-            <Icon type="plus" style={{fontSize: '12px'}}/>
-            <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增获奖信息</span>
-          </span>
+        <div>
+          <div className='tableBox4'>
+            <Table
+              columns={columns}
+              components={components}
+              rowKey={record => record.ID}
+              rowClassName={() => 'editable-row'}
+              dataSource={tableData}
+              // rowSelection={rowSelection}
+              scroll={tableData.length > 3 ? {y: 195} : {}}
+              pagination={false}
+              style={{paddingBottom: '12px',}}
+              bordered
+            ></Table>
+            <div style={{
+              textAlign: 'center',
+              border: '1px dashed #e0e0e0',
+              lineHeight: '32px',
+              height: '32px',
+              cursor: 'pointer'
+            }} onClick={() => {
+              let arrData = tableData;
+              arrData.push({
+                ID: Date.now(),
+                ['JXMC' + Date.now()]: '',
+                ['RYDJ' + Date.now()]: '',
+                ['ZSCQLX' + Date.now()]: '',
+                ['HJSJ' + Date.now()]: moment().format('YYYY-MM-DD'),
+              });
+              this.setState({tableData: arrData})
+            }}>
+                <span className='addHover'>
+                  <Icon type="plus" style={{fontSize: '12px'}}/>
+                  <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增获奖信息</span>
+                </span>
+            </div>
+          </div>
         </div>
       </div>
     );
   }
 }
 
-export default PrizeInfo;
+
+export default connect(({global}) => ({
+  dictionary: global.dictionary,
+}))(Form.create()(PrizeInfo));

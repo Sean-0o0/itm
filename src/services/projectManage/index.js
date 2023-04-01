@@ -13,7 +13,8 @@ const { projectManage: {
   queryMilepostInfo,
   creatProject,
   queryProjectDetails,
-  queryStationInfo
+  queryStationInfo,
+  queryProjectInfoAll
 } } = api;
 
 // 查询软件清单
@@ -121,6 +122,16 @@ export async function FetchQueryProjectDetails(payload, configObj) {
 export async function FetchQueryStationInfo(payload, configObj) {
   const option = {
     url: queryStationInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+// 查询所有项目信息
+export async function FetchQueryProjectInfoAll(payload, configObj) {
+  const option = {
+    url: queryProjectInfoAll,
     method: 'post',
     data: payload,
   };

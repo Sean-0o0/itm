@@ -57,6 +57,8 @@ const {
     queryProjectGeneralInfo,
     queryCreatePaymentInfo,
     queryMemberDetailInfo,
+    queryLabelDetailInfo,
+    updateProjectOtherInfo,
     queryProjectMessages,
     updateProjectMessages,
   },
@@ -589,6 +591,27 @@ export async function QueryMemberDetailInfo(payload) {
   };
   return request(option);
 }
+
+// 查询标签详情信息
+export async function QueryLabelDetailInfo(payload) {
+  const option = {
+    url: queryLabelDetailInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 更新项目编辑中的其他信息
+export async function UpdateProjectOtherInfo(payload) {
+  const option = {
+    url: updateProjectOtherInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
 
 // 查询项目留言
 export async function QueryProjectMessages(payload) {
