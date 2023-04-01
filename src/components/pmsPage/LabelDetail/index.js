@@ -116,7 +116,7 @@ class LabelDetail extends Component {
           bqfz,//标签分组id
         }}
       />
-      <InfoTable bqid={bqid} tableData={attachList} pageParams={pageParams} tableLoading={tableLoading} routes={routes}
+      <InfoTable bqid={pageParams.bqid} tableData={attachList} pageParams={pageParams} tableLoading={tableLoading} routes={routes}
                  handleSearch={this.handleSearch}/>
     </div>);
   }
