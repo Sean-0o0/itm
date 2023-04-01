@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import { Table, message, Popover, Pagination } from 'antd'
 import moment from 'moment';
 import {EncryptBase64} from "../../../Common/Encrypt";
-
+import { Link } from 'react-router-dom';
 
 class InfoTable extends Component {
     state = {
@@ -21,7 +21,7 @@ class InfoTable extends Component {
         return arr;
     };
 
-    handleChange = (current,pageSize) =>{
+    handleChange = (current, pageSize) => {
         const { handleSearch, ryid } = this.props;
         if (handleSearch) {
             handleSearch({
@@ -39,12 +39,12 @@ class InfoTable extends Component {
             handleSearch({
                 total: -1,
                 sort: order ? `${field} ${order.slice(0, -3)}` : ''
-            },ryid)
+            }, ryid)
         }
     };
 
     render() {
-        const { tableLoading = false, tableData = [], pageParams = {}  } = this.props;
+        const { tableLoading = false, tableData = [], pageParams = {}, routes = [] } = this.props;
 
         const columns = [
             {
@@ -73,14 +73,32 @@ class InfoTable extends Component {
                 key: 'xmbq',
                 ellipsis: true,
                 render: (text, row, index) => {
-                    const data = this.getTagData(text)
+                    const { xmbqid = '' } = row;
+                    const ids = this.getTagData(xmbqid);
+                    const data = this.getTagData(text);
                     return <div className="prj-tags">
                         {data.length !== 0 && (
                             <>
                                 {data?.slice(0, 2)
                                     .map((x, i) => (
                                         <div key={i} className="tag-item">
-                                            {x}
+                                            <Link
+                                                to={{
+                                                    pathname:
+                                                        '/pms/manage/labelDetail/' +
+                                                        EncryptBase64(
+                                                            JSON.stringify({
+                                                                bqid: ids[i],
+                                                            }),
+                                                        ),
+                                                    state: {
+                                                        routes: routes,
+                                                    },
+                                                }}
+
+                                            >
+                                                {x}
+                                            </Link>
                                         </div>
                                     ))}
                                 {data?.length > 2 && (
@@ -90,8 +108,24 @@ class InfoTable extends Component {
                                             <div className="tag-more">
                                                 {data?.slice(2)
                                                     .map((x, i) => (
-                                                        <div key={i} className="tag-item">
-                                                            {x}
+                                                        <div className="tag-item" key={i}>
+                                                            <Link
+                                                                to={{
+                                                                    pathname:
+                                                                        '/pms/manage/labelDetail/' +
+                                                                        EncryptBase64(
+                                                                            JSON.stringify({
+                                                                                bqid: ids[i],
+                                                                            }),
+                                                                        ),
+                                                                    state: {
+                                                                        routes: routes,
+                                                                    },
+                                                                }}
+                                                            >
+
+                                                                {x}
+                                                            </Link>
                                                         </div>
                                                     ))}
                                             </div>
@@ -155,13 +189,13 @@ class InfoTable extends Component {
                         rowKey={'xmid'}
                         dataSource={tableData}
                         onChange={this.handleTableChange}
-                        pagination = {false}
-                        // pagination={{
-                        //     pageSizeOptions: ['10', '20', '30', '40'],
-                        //     showSizeChanger: true,
-                        //     showQuickJumper: true,
-                        //     showTotal: total => `共 ${tableData.length} 条数据`,
-                        // }}
+                        pagination={false}
+                    // pagination={{
+                    //     pageSizeOptions: ['10', '20', '30', '40'],
+                    //     showSizeChanger: true,
+                    //     showQuickJumper: true,
+                    //     showTotal: total => `共 ${tableData.length} 条数据`,
+                    // }}
                     />
                 </div>
                 <div className='page-individual'>
