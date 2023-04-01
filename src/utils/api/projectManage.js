@@ -9,5 +9,6 @@ export default [
   {code: '', key: 'queryMilepostInfo', url: '/projectManage/queryMilepostInfo', dis: '查询里程碑信息'},
   {code: '', key: 'creatProject', url: '/projectManage/creatProject', dis: '新建、修改项目'},
   {code: '', key: 'queryProjectDetails', url: '/projectManage/queryProjectDetails', dis: '修改项目时查询项目详细信息'},
-  {code: '', key: 'queryStationInfo', url: '/projectManage/queryStationInfo', dis: '查询岗位信息'}
+  {code: '', key: 'queryStationInfo', url: '/projectManage/queryStationInfo', dis: '查询岗位信息'},
+  {code: '', key: 'queryProjectInfoAll', url: '/projectManage/v1/queryProjectInfoAll', dis: '查询所有项目信息'},
 ];
