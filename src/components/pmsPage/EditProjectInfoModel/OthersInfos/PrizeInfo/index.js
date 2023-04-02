@@ -199,7 +199,7 @@ class PrizeInfo extends Component {
     let newArr = [];
     tableData.map((item) => {
       let obj = {
-        ID: item.ID,
+        ID: String(item.ID),
         JXMC: item['JXMC' + item.ID],
         RYDJ: item['RYDJ' + item.ID],
         ZSCQLX: item['ZSCQLX' + item.ID],

@@ -1775,7 +1775,7 @@ class EditProjectInfoModel extends React.Component {
     }).then(res => {
       if (res?.code === 1) {
         // message.success('合同信息修改成功', 1);
-        onSuccess();
+        //onSuccess();
       } else {
         message.error('信息修改失败', 1);
       }
@@ -1783,12 +1783,12 @@ class EditProjectInfoModel extends React.Component {
   }
 
   async operateCreatProject(params, type) {
+    //更新其他信息
+    await this.updateProjectOtherInfo();
     //更新招标信息
     await this.updateZBXX();
     //更新合同信息
     await this.updateHTXX();
-    //更新其他信息
-    await this.updateProjectOtherInfo();
     OperateCreatProject(params).then((result) => {
       const {code = -1, note = '', projectId} = result;
       this.setState({loading: false});
@@ -4262,7 +4262,7 @@ class EditProjectInfoModel extends React.Component {
                                        onSucess={this.OnGysSuccess}
                                        src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'}/>
                         }
-                        <Col span={12} style={{paddingRight:'24px'}}>
+                        <Col span={12} style={{paddingRight:'24px',position: 'relative'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4276,10 +4276,11 @@ class EditProjectInfoModel extends React.Component {
                               // }],
                               initialValue: purchaseInfo.biddingSupplierName
                             })(<Select
-                              style={{borderRadius: '1.1904rem !important'}}
+                              style={{borderRadius: '8px !important'}}
                               placeholder="请选择供应商"
+                              className="skzh-box"
                               showSearch
-                              allowClear
+                              // allowClear
                               open={isSelectorOpen}
                               onChange={e => {
                                 this.setState({purchaseInfo: {...purchaseInfo, biddingSupplier: e}});
@@ -4290,22 +4291,41 @@ class EditProjectInfoModel extends React.Component {
                               }>
                               {
                                 gysData?.map((item = {}, ind) => {
-                                  return <Option key={ind} value={item.id}>{item.gysmc}</Option>
+                                  return <Option key={ind} value={item.id}>
+                                    {item.gysmc}
+                                  </Option>
                                 })
                               }
                             </Select>)}
                           </Form.Item>
-                          <div style={{position: 'absolute', right: '9%', top: '39%'}}>
-                            <img src={require('../../../image/pms/LifeCycleManagement/add.png')}
-                                 onClick={() => {
-                                   this.setState({addGysModalVisible: true});
-                                 }}
-                                 alt='' style={{
-                              height: '18px',
-                              cursor: 'pointer'
+                          <div
+                            style={{
+                              height: '20px',
+                              width: '1px',
+                              backgroundColor: '#c7c7c7',
+                              // marginLeft: '8px',
+                              marginTop: '28px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '60px',
                             }}
-                            />
-                          </div>
+                          ></div>
+                          <i
+                            className="iconfont circle-add"
+                            onClick={() => {
+                              this.setState({addGysModalVisible: true});
+                            }}
+                            style={{
+                              marginTop: '23px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '32px',
+                              color: '#c7c7c7',
+                              fontSize: '20px',
+                            }}
+                          />
                         </Col>
                         <Col span={12} style={{paddingLeft:'24px'}}>
                           <Form.Item label={<span>履约保证金金额（元）</span>} className="formItem">

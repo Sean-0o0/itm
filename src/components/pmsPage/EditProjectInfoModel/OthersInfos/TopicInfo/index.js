@@ -208,7 +208,7 @@ class TopicInfo extends Component {
     sessionStorage.setItem("ktxxTableDataFlag", "true");
     tableData.map((item) => {
       let obj = {
-        KTID: item.KTID,
+        KTID: String(item.KTID),
         XMKT: item['XMKT' + item.KTID],
         JD: item['JD' + item.KTID],
         JJ: item['JJ' + item.KTID],
