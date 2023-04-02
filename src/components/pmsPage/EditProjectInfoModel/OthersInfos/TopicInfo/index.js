@@ -210,7 +210,7 @@ class TopicInfo extends Component {
       let obj = {
         KTID: String(item.KTID),
         XMKT: item['XMKT' + item.KTID],
-        JD: item['JD' + item.KTID],
+        JD: String(item['JD' + item.KTID]),
         JJ: item['JJ' + item.KTID],
         DQJZ: item['DQJZ' + item.KTID],
       };
