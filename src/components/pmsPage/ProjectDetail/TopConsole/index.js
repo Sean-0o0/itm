@@ -70,7 +70,7 @@ export default function TopConsole(props) {
           id: arr2[i],
         };
       });
-      console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
+      // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
       return arr3;
     };
     return (

@@ -10,13 +10,13 @@ import lastBtn from '../../../../assets/projectDetail/last-milestone.png';
 import nextBtn from '../../../../assets/projectDetail/next-milestone.png';
 import moment from 'moment';
 import ItemBtn from './ItemBtn';
-import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 
 const { Step } = Steps;
 
 export default function MileStone(props) {
-  const { xmid = -1, prjData = {}, getPrjDtlData } = props;
-  const { risk = [], member = [] } = prjData;
+  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning } = props;
+  const { risk = [], member = [], prjBasic = [] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('30.53%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
@@ -33,10 +33,6 @@ export default function MileStone(props) {
   let timer = null;
 
   useEffect(() => {
-    if (xmid !== -1) {
-      getMileStoneData();
-    }
-
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
@@ -47,6 +43,11 @@ export default function MileStone(props) {
       clearTimeout(timer);
     };
   }, []);
+  useEffect(() => {
+    getMileStoneData();
+
+    return () => {};
+  }, [xmid]);
   //获取里程碑数据
   const getMileStoneData = () => {
     //所有里程碑
@@ -109,6 +110,7 @@ export default function MileStone(props) {
                       });
                       // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
+                      setIsSpinning(false);
                       if (data.length >= 5) {
                         if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
                           setStartIndex(currentIndex - 2);
@@ -285,10 +287,11 @@ export default function MileStone(props) {
   };
   //获取里程碑状态
   const getStatus = zt => {
+    // console.log('🚀 ~ file: index.js ~ line 288 ~ getStatus ~ zt', zt);
     if (zt === '1') return 'wait';
     else if (zt === '2') return 'process';
     else if (zt === '3') return 'finish';
-    // else return 'error';
+    else return 'process';
   };
   //切换里程碑
   const stepSwitch = txt => {
@@ -379,6 +382,7 @@ export default function MileStone(props) {
   const onSuccess = name => {
     message.success(name + '成功');
     getPrjDtlData();
+    setRiskVisible(false);
   };
   const getBottomBox = () => {
     const arr = [];
@@ -459,7 +463,7 @@ export default function MileStone(props) {
         <div className="overall-rate">
           <img src={overallRateImg} alt="" />
           <span>项目整体进度：</span>
-          <span className="rate">31%</span>
+          <span className="rate">{prjBasic.XMJD}%</span>
         </div>
       </div>
       <div className="middle-box">
@@ -475,8 +479,16 @@ export default function MileStone(props) {
             <Step
               key={step.lcbid}
               title={step.lcbmc}
-              subTitle={getRiskTag(risk.filter(x => x.GLLCBID === step.lcbid))}
-              status={"process"}
+              subTitle={
+                step.zt === '4' ? (
+                  <div className="risk-tag" style={{ fontWeight: 'normal' }}>
+                    已逾期
+                  </div>
+                ) : (
+                  getRiskTag(risk.filter(x => x.GLLCBID === step.lcbid))
+                )
+              }
+              status={getStatus(step.zt) || 'process'}
               description={step.lcbmc === '项目付款' ? '' : dateFormat(step.kssj, step.jssj)}
             />
           ))}

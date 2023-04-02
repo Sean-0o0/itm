@@ -4490,6 +4490,9 @@
 .ant-spin-nested-loading.diy-style-spin > div > .ant-spin {
   max-height: none;
 }
+.ant-spin-nested-loading.diy-style-spin-prj-detail > div > .ant-spin {
+  max-height: calc(100vh - 62px);
+}
 
 .operationListSelectBox {
   margin: 0 3.571rem;
@@ -6451,7 +6454,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             // width: 32%;
             // margin-right: 2%;
             overflow: hidden;
-            margin-bottom: 16px;
+            margin-bottom: 20px;
             box-shadow: 0px 4px 24px -4px rgba(0, 0, 0, 0.06);
             border-radius: 4px;
             border: 1px solid #fafafb;
@@ -6678,7 +6681,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       & > .process-card-box {
-        padding-bottom: 14px;
+        padding-bottom: 12px;
         & > .process-box {
           overflow: hidden;
           & > .more-item {
@@ -6703,8 +6706,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
 
           & > .process-item {
-            padding: 16px;
-            margin-bottom: 16px;
+            padding: 14px 16px;
+            margin-bottom: 12px;
             .font-size-12();
             font-family: PingFangSC-Regular, PingFang SC;
             .font-weight-400();
@@ -7091,20 +7094,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       .next-milestone {
         right: 0;
       }
-      .ant-steps-item-icon {
-        border-color: #3361ff;
-        background-color: #3361ff;
-        span {
-          color: #fff;
-        }
-      }
+      // .ant-steps-item-icon {
+      //   border-color: #3361ff;
+      //   background-color: #3361ff;
+      //   span {
+      //     color: #fff;
+      //   }
+      // }
       .ant-steps-navigation {
         padding-top: 16px;
         margin: 0 18px;
         width: 100%;
         overflow: hidden;
       }
-      .ant-steps-item-container{
+      .ant-steps-item-container {
         &:hover {
           color: #3361ff !important;
           .ant-steps-item-title {
@@ -7144,6 +7147,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
         .ant-steps-item-icon {
           background-color: #3361ff;
+          border-color: #3361ff;
           span {
             color: #fff;
           }
@@ -7393,7 +7397,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 align-items: center;
                 font-size: 12px;
                 .reopr-btn {
-                  width: 60px;
+                  max-width: 60px;
+                  padding: 0 6px;
                   height: 24px;
                   border-radius: 4px;
                   text-align: center;

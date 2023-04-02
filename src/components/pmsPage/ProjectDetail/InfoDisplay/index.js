@@ -1,9 +1,17 @@
 import { Popover, Table } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
+import { Link } from 'react-router-dom';
+import config from '../../../../utils/config';
+import axios from 'axios';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+const { api } = config;
+const {
+  pmsServices: { queryFileStream },
+} = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, dictionary } = props;
+  const { prjData, xmid, routes } = props;
   const {
     prjBasic = {},
     award = [],
@@ -21,6 +29,34 @@ export default function InfoDisplay(props) {
   useEffect(() => {
     return () => {};
   }, []);
+
+  const handleFile = (id, fileName) => {
+    console.log(id, fileName);
+    axios({
+      method: 'POST',
+      url: queryFileStream,
+      responseType: 'blob',
+      data: {
+        objectName: 'TXMXX_ZBXX',
+        columnName: 'PBBG',
+        id: id,
+        title: fileName,
+        extr: '',
+        type: '',
+      },
+    })
+      .then(res => {
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = fileName;
+        a.href = href;
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+      })
+      .catch(err => {
+        console.error(err);
+      });
+  };
 
   //是否为项目成员
   const isMember = () => {
@@ -60,6 +96,7 @@ export default function InfoDisplay(props) {
               第{toChinesNum(i + 1)}期付款{x.FKJE}万，占总金额{Number(x.BFB) * 100}%，{x.FKZT}
             </div>
           ))}
+          {arr.length === 0 && '暂无数据'}
         </div>
       </div>
     );
@@ -80,17 +117,39 @@ export default function InfoDisplay(props) {
       </div>
     );
   };
+  //判空
+  const notNull = data => {
+    if (['', ' ', undefined, null].includes(data)) return '暂无数据';
+    return data;
+  };
   return (
     <div className="col-left info-display-box">
       <div className="info-box" key="xmxx">
         <div className="top-title">项目信息</div>
         <div className="info-row">
-          {getInfoItem('项目类型：', prjBasic.XMLX)}
-          {getInfoItem('关联软件：', prjBasic.GLXT)}
-          {getInfoItem('应用部门：', prjBasic.SSBM)}
+          {getInfoItem('项目类型：', notNull(prjBasic.XMLX))}
+          {getInfoItem('关联软件：', notNull(prjBasic.GLXT))}
+          {getInfoItem('应用部门：', notNull(prjBasic.SSBM))}
         </div>
         <div className="info-row">
-          {getInfoItem('文档库：', '查看详情', true)}
+          <div className="info-item" key={label}>
+            <span>文档库：</span>
+            <Link
+              to={{
+                pathname:
+                  '/pms/manage/staffDetail/' +
+                  EncryptBase64(
+                    JSON.stringify({
+                      xmid,
+                    }),
+                  ),
+                state: { routes },
+              }}
+              style={{ color: '#3361ff' }}
+            >
+              查看详情
+            </Link>
+          </div>
           <div className="info-item">
             <span>获奖信息：</span>
             <Popover
@@ -217,7 +276,7 @@ export default function InfoDisplay(props) {
               style={{ display: 'flex', height: 'unset' }}
             >
               <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
-              <div style={{ whiteSpace: 'break-spaces' }}>{prjBasic.YSXMMC}</div>
+              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
             </div>
 
             <div className="info-item" style={{ height: '44px' }}>
@@ -242,7 +301,7 @@ export default function InfoDisplay(props) {
               style={{ display: 'flex', height: 'unset', width: '100%' }}
             >
               <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
-              <div style={{ whiteSpace: 'break-spaces' }}>{prjBasic.YSXMMC}</div>
+              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
             </div>
           </div>
         </div>
@@ -250,8 +309,32 @@ export default function InfoDisplay(props) {
       <div className="info-box" key="gysxx">
         <div className="top-title">供应商信息</div>
         <div className="info-row">
-          {getInfoItem('供应商名称：', supplier[0]?.GYSMC, true)}
-          {getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
+          <div
+            className="info-item"
+            key="供应商名称："
+            style={{ display: 'flex', height: 'unset' }}
+          >
+            <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
+            {notNull(supplier[0]?.GYSMC) !== '暂无数据' ? (
+              <a
+                style={{
+                  whiteSpace: 'break-spaces',
+                  color: '#3361ff',
+                }}
+              >
+                {notNull(supplier[0]?.GYSMC)}
+              </a>
+            ) : (
+              <div
+                style={{
+                  whiteSpace: 'break-spaces',
+                }}
+              >
+                {notNull(supplier[0]?.GYSMC)}
+              </div>
+            )}
+          </div>
+          {getInfoItem('供应商类型：', notNull(supplier[0]?.GYSLX))}
           <div
             className="info-item"
             key="供应商联系人："
@@ -266,6 +349,7 @@ export default function InfoDisplay(props) {
                   {x.LXR || ''} {x.SJ || ''}
                 </div>
               ))}
+              {supplier.length === 0 && '暂无数据'}
             </div>
           </div>
         </div>
@@ -275,17 +359,27 @@ export default function InfoDisplay(props) {
           <div className="top-title">招采信息</div>
           <div className="info-row" key="zcxx-1">
             {getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
-            {getInfoItem('招采方式：', prjBasic.ZBFS)}
-            {getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+            {getInfoItem('招采方式：', notNull(prjBasic.ZBFS))}
+            {getInfoItem(
+              '签署日期：',
+              contrast.QSRQ ? moment(contrast.QSRQ).format('YYYY年MM月DD日') : '暂无数据',
+            )}
           </div>
           <div className="info-row" key="zcxx-2">
             {getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
             {getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
             <div className="info-item" key="评标报告：">
               <span>评标报告：</span>
-              <a style={{ color: '#3361ff' }} onClick={() => {}}>
-                {bidding.PBBG}
-              </a>
+              {bidding.PBBG ? (
+                <a
+                  style={{ color: '#3361ff' }}
+                  onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                >
+                  {bidding.PBBG}
+                </a>
+              ) : (
+                '暂无数据'
+              )}
             </div>
           </div>
           <div className="info-row" key="zcxx-3">
@@ -294,15 +388,19 @@ export default function InfoDisplay(props) {
           <div className="info-row" key="zcxx-4">
             <div className="info-item" key="zcxx-4-1">
               <span>其他投标供应商：</span>
-              <Popover
-                placement="rightTop"
-                title={null}
-                // autoAdjustOverflow={false}
-                content={otherSupplierPopover(otrSupplier)}
-                overlayClassName="other-supplier-content-popover"
-              >
-                <a style={{ color: '#3361ff' }}>查看详情</a>
-              </Popover>
+              {otrSupplier.length !== 0 ? (
+                <Popover
+                  placement="rightTop"
+                  title={null}
+                  // autoAdjustOverflow={false}
+                  content={otherSupplierPopover(otrSupplier)}
+                  overlayClassName="other-supplier-content-popover"
+                >
+                  <a style={{ color: '#3361ff' }}>查看详情</a>
+                </Popover>
+              ) : (
+                '暂无数据'
+              )}
             </div>
           </div>
         </div>
@@ -314,9 +412,12 @@ export default function InfoDisplay(props) {
             {getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
             <div className="info-item" key="评标报告：">
               <span>评标报告：</span>
-              <a style={{ color: '#3361ff' }} onClick={() => {}}>
+              <span
+                style={{ color: '#3361ff', cursor: 'pointer' }}
+                onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+              >
                 {bidding.PBBG}
-              </a>
+              </span>
             </div>
           </div>
           <div className="info-row" key="zcxx-4">

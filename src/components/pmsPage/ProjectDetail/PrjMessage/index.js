@@ -308,6 +308,7 @@ export default function PrjMessage(props) {
                   onClick={() => {
                     setDrawerVisible(false);
                     setNewMsg(false);
+                    setEditContent('');
                   }}
                 >
                   取消
