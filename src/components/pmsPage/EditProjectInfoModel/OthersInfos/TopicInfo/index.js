@@ -263,6 +263,8 @@ class TopicInfo extends Component {
           }
           this.setState({
             tableData: arr,
+          }, () => {
+            this.callbackData();
           })
         }
       }).catch((error) => {

@@ -230,8 +230,10 @@ class PrizeInfo extends Component {
             arr.push({
               ID: data[i]?.ID,
               ['JXMC' + data[i]?.ID]: data[i]?.JXMC,
-              ['RYDJ' + data[i]?.ID]: HJRYDJ?.filter(item => item.ibm == data[i]?.RYDJ)[0]?.note || '',
-              ['ZSCQLX' + data[i]?.ID]: ZSCQLX?.filter(item => item.ibm == data[i]?.ZSCQLX)[0]?.note || '',
+              ['RYDJ' + data[i]?.ID]: data[i]?.RYDJ,
+              ['RYDJNAME' + data[i]?.ID]: HJRYDJ?.filter(item => item.ibm == data[i]?.RYDJ)[0]?.note || '',
+              ['ZSCQLX' + data[i]?.ID]: data[i]?.ZSCQLX,
+              ['ZSCQLXNAME' + data[i]?.ID]: ZSCQLX?.filter(item => item.ibm == data[i]?.ZSCQLX)[0]?.note || '',
               ['HJSJ' + data[i]?.ID]: data[i]?.HJSJ,
             });
           }
@@ -302,7 +304,7 @@ class PrizeInfo extends Component {
         // editable: true,
         render(text, record, index) {
           console.log("recordrecord",record)
-          return (<Select style={{width: 120}} defaultValue={record['RYDJ' + record.ID]} onChange={(e) => _this.RYDJChange(e,record, index)}>
+          return (<Select style={{width: 120}} defaultValue={record['RYDJNAME' + record.ID]} onChange={(e) => _this.RYDJChange(e,record, index)}>
               {
                 HJRYDJ.length > 0 && HJRYDJ.map((item, index) => {
                   return (
@@ -322,7 +324,7 @@ class PrizeInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select style={{width: 120}} defaultValue={record['ZSCQLX' + record.ID]} onChange={(e) => _this.ZSCQLXChange(e,record, index)}>
+          return (<Select style={{width: 120}} defaultValue={record['ZSCQLXNAME' + record.ID]} onChange={(e) => _this.ZSCQLXChange(e,record, index)}>
               {
                 ZSCQLX.length > 0 && ZSCQLX.map((item, index) => {
                   return (
