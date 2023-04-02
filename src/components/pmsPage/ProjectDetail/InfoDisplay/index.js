@@ -132,7 +132,7 @@ export default function InfoDisplay(props) {
           {getInfoItem('应用部门：', notNull(prjBasic.SSBM))}
         </div>
         <div className="info-row">
-          <div className="info-item" key={label}>
+          <div className="info-item" key="文档库：">
             <span>文档库：</span>
             <Link
               to={{
