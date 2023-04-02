@@ -213,6 +213,7 @@ class PrizeInfo extends Component {
 
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
+    const { dictionary: { HJRYDJ = [],ZSCQLX = [] } } = this.props;
     const {xmid} = this.props;
     let flag = sessionStorage.getItem("hjxxTableDataFlag")
     if (flag === "true") {
@@ -229,8 +230,8 @@ class PrizeInfo extends Component {
             arr.push({
               ID: data[i]?.ID,
               ['JXMC' + data[i]?.ID]: data[i]?.JXMC,
-              ['RYDJ' + data[i]?.ID]: data[i]?.RYDJ,
-              ['ZSCQLX' + data[i]?.ID]: data[i]?.ZSCQLX,
+              ['RYDJ' + data[i]?.ID]: HJRYDJ?.filter(item => item.ibm == data[i]?.RYDJ)[0]?.note || '',
+              ['ZSCQLX' + data[i]?.ID]: ZSCQLX?.filter(item => item.ibm == data[i]?.ZSCQLX)[0]?.note || '',
               ['HJSJ' + data[i]?.ID]: data[i]?.HJSJ,
             });
           }
@@ -255,7 +256,6 @@ class PrizeInfo extends Component {
         item['RYDJ' + item.ID] = e;
       }
     })
-    console.log("tableData222",tableData)
     this.setState({
       ...tableData
     }, () => {
@@ -272,7 +272,6 @@ class PrizeInfo extends Component {
         item['ZSCQLX' + item.ID] = e;
       }
     })
-    console.log("tableData222",tableData)
     this.setState({
       ...tableData
     }, () => {
@@ -286,8 +285,6 @@ class PrizeInfo extends Component {
     } = this.state;
     const _this = this;
     const { dictionary: { HJRYDJ = [],ZSCQLX = [] } } = this.props;
-    console.log("HJRYDJHJRYDJ",HJRYDJ)
-    console.log("ZSCQLXZSCQLX",ZSCQLX)
     const tableColumns = [
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>获奖名称</span>,
@@ -304,7 +301,8 @@ class PrizeInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select style={{width: 120}} onChange={(e) => _this.RYDJChange(e,record, index)}>
+          console.log("recordrecord",record)
+          return (<Select style={{width: 120}} defaultValue={record['RYDJ' + record.ID]} onChange={(e) => _this.RYDJChange(e,record, index)}>
               {
                 HJRYDJ.length > 0 && HJRYDJ.map((item, index) => {
                   return (
@@ -324,7 +322,7 @@ class PrizeInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select style={{width: 120}} onChange={(e) => _this.ZSCQLXChange(e,record, index)}>
+          return (<Select style={{width: 120}} defaultValue={record['ZSCQLX' + record.ID]} onChange={(e) => _this.ZSCQLXChange(e,record, index)}>
               {
                 ZSCQLX.length > 0 && ZSCQLX.map((item, index) => {
                   return (

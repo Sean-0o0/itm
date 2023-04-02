@@ -2339,9 +2339,9 @@ class NewProjectModelV2 extends React.Component {
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={organizationTreeList}
                               placeholder="请选择应用部门"
-                              treeCheckable
+                              // treeCheckable
                               // treeDefaultExpandAll
-                              getPopupContainer={triggerNode => triggerNode.parentNode}
+                              // getPopupContainer={triggerNode => triggerNode.parentNode}
                               treeDefaultExpandedKeys={orgExpendKeys}
                               onChange={e => {
                                 this.setState({

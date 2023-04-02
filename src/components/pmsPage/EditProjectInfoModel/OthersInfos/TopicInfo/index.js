@@ -1,4 +1,4 @@
-import {Table, Input, Button, Popconfirm, Form, Icon, DatePicker, Select, message} from 'antd';
+import {Table, Input, Button, Popconfirm, Form, Icon, DatePicker, Select, message, InputNumber} from 'antd';
 import React, {Component} from "react";
 import moment from "moment";
 import {QueryPaymentAccountList} from "../../../../../services/pmsServices";
@@ -219,6 +219,23 @@ class TopicInfo extends Component {
     ktxxRecordCallback(newArr)
   }
 
+  JDChange = (e,record, index) =>{
+    console.log("e record, index",e, record, index)
+    const {tableData} = this.state;
+    console.log("tableData",tableData)
+    tableData.map(item => {
+      if(item.KTID === record.KTID){
+        item['JD' + item.KTID] = e;
+      }
+    })
+    console.log("tableData222",tableData)
+    this.setState({
+      ...tableData
+    }, () => {
+      this.callbackData();
+    })
+  }
+
 
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
@@ -258,6 +275,7 @@ class TopicInfo extends Component {
     const {
       tableData = [],    //付款详情表格
     } = this.state;
+    const _this = this;
     const tableColumns = [
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>项目标题</span>,
@@ -271,8 +289,15 @@ class TopicInfo extends Component {
         title: <span style={{color: '#606266', fontWeight: 500}}>进度(%)</span>,
         dataIndex: 'JD',
         key: 'JD',
+        width: '8%',
         ellipsis: true,
-        editable: true,
+        // editable: true,
+        render(text, record, index) {
+          console.log("record",record)
+          return (<InputNumber style={{width: '100%'}} value={record['JD' + record.KTID]}  onChange={(e) => _this.JDChange(e,record, index)}
+                               precision={0}/>
+          )
+        }
       },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>简介</span>,

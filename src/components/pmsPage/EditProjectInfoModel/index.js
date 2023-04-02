@@ -406,6 +406,8 @@ class EditProjectInfoModel extends React.Component {
       paymentInfos: [],
       //中标供应商
       biddingSupplier: '',
+      //中标供应商
+      biddingSupplierName: '',
       //保证金
       cautionMoney: null,
       //投标保证金
@@ -1780,13 +1782,13 @@ class EditProjectInfoModel extends React.Component {
     })
   }
 
-  operateCreatProject(params, type) {
+  async operateCreatProject(params, type) {
     //更新招标信息
-    this.updateZBXX();
+    await this.updateZBXX();
     //更新合同信息
-    this.updateHTXX();
+    await this.updateHTXX();
     //更新其他信息
-    this.updateProjectOtherInfo();
+    await this.updateProjectOtherInfo();
     OperateCreatProject(params).then((result) => {
       const {code = -1, note = '', projectId} = result;
       this.setState({loading: false});
@@ -2384,7 +2386,8 @@ class EditProjectInfoModel extends React.Component {
         purchaseInfo: {
           ...purchaseInfo,
           othersSupplier: arr,
-          biddingSupplier: glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
+          biddingSupplierName:  glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
+          biddingSupplier: rec[0]?.zbgys,
           bidCautionMoney: Number(rec[0]?.tbbzj),
           cautionMoney: Number(rec[0]?.lybzj),
           number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
@@ -3023,9 +3026,9 @@ class EditProjectInfoModel extends React.Component {
                                 dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                                 treeData={organizationTreeList}
                                 placeholder="请选择应用部门"
-                                treeCheckable
+                                // treeCheckable
                                 // treeDefaultExpandAll
-                                getPopupContainer={triggerNode => triggerNode.parentNode}
+                                // getPopupContainer={triggerNode => triggerNode.parentNode}
                                 treeDefaultExpandedKeys={orgExpendKeys}
                                 onChange={e => {
                                   this.setState({
@@ -4271,7 +4274,7 @@ class EditProjectInfoModel extends React.Component {
                               //   required: true,
                               //   message: '请输入合同金额'
                               // }],
-                              initialValue: purchaseInfo.biddingSupplier
+                              initialValue: purchaseInfo.biddingSupplierName
                             })(<Select
                               style={{borderRadius: '1.1904rem !important'}}
                               placeholder="请选择供应商"
