@@ -20,7 +20,7 @@ export default function MileStone(props) {
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('30.53%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
-  const [initIndex, setInitIndex] = useState(-1); //初始当前里程碑index
+  const [initIndex, setInitIndex] = useState(0); //初始当前里程碑index
   const [lastBtnVisible, setLastBtnVisible] = useState(false); //上一个按钮显示
   const [nextBtnVisible, setNextBtnVisible] = useState(false); //下一个按钮显示
   const [startIndex, setStartIndex] = useState(0); //切割开始index
@@ -41,6 +41,8 @@ export default function MileStone(props) {
       // 组件销毁时移除监听事件
       window.removeEventListener('resize', resizeUpdate);
       clearTimeout(timer);
+      setLastBtnVisible(false);
+      setNextBtnVisible(false);
     };
   }, []);
   useEffect(() => {
@@ -70,7 +72,6 @@ export default function MileStone(props) {
                   x.isCurrent = x.lcbid === r.record[0].lcbid;
                   if (x.lcbid === r.record[0].lcbid) {
                     currentIndex = i;
-                    setInitIndex(i);
                   }
                 });
                 //里程碑事项数据 - 事项分类到各个里程碑的 itemData中
@@ -114,7 +115,7 @@ export default function MileStone(props) {
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
                       if (data.length >= 5) {
-                        console.log('大于5', currentIndex);
+                        setInitIndex(data.length - 5);
                         if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
                           setStartIndex(currentIndex - 2);
                           setEndIndex(currentIndex + 2);
@@ -127,7 +128,6 @@ export default function MileStone(props) {
                           setStartIndex(data.length - 5);
                           setEndIndex(data.length);
                           if (currentIndex === data.length - 2) {
-                            console.log('3333');
                             setCurrentStep(3);
                           }
                           if (currentIndex === data.length - 1) {
@@ -135,6 +135,7 @@ export default function MileStone(props) {
                           }
                         }
                       } else {
+                        setInitIndex(0);
                         setStartIndex(0);
                         setEndIndex(data.length);
                         setCurrentStep(currentIndex);
@@ -148,6 +149,9 @@ export default function MileStone(props) {
                         } else {
                           setLastBtnVisible(true);
                         }
+                      }else if (data.length === 5){
+                        setLastBtnVisible(false);
+                        setNextBtnVisible(false);
                       }
                     }
                   })
@@ -302,27 +306,33 @@ export default function MileStone(props) {
     let data = [...mileStoneData];
     let st = 0;
     let ed = 5;
+    let init = initIndex;
     if (txt === 'last') {
       if (startIndex - 1 === 0) {
         st = 0;
         ed = 5;
         setLastBtnVisible(false);
+        setInitIndex(0);
       } else {
         st = startIndex - 1;
         ed = endIndex - 1;
+        setInitIndex(init - 1);
       }
     } else {
       if (endIndex + 1 === data.length) {
         if (data.length >= 5) {
           st = data.length - 5;
+          setInitIndex(data.length - 5);
         } else {
           st = 0;
+          setInitIndex(0);
         }
         ed = data.length;
         setNextBtnVisible(false);
       } else {
         st = startIndex + 1;
         ed = endIndex + 1;
+        setInitIndex(init + 1);
       }
     }
     setLastBtnVisible(st > 0);
@@ -478,7 +488,13 @@ export default function MileStone(props) {
           <img className="next-milestone" src={nextBtn} alt="" onClick={() => stepSwitch('next')} />
         )}
 
-        <Steps type="navigation" size="small" current={currentStep} onChange={handleStepChange}>
+        <Steps
+          type="navigation"
+          size="small"
+          initial={initIndex}
+          current={currentStep}
+          onChange={handleStepChange}
+        >
           {mileStoneData?.slice(startIndex, endIndex)?.map(step => (
             <Step
               key={step.lcbid}
