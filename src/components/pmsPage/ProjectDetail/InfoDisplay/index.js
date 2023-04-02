@@ -14,11 +14,22 @@ export default function InfoDisplay(props) {
     contrast = {},
     bidding = {},
     supplier = [],
+    member = [],
   } = prjData;
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     return () => {};
   }, []);
+
+  //是否为项目成员
+  const isMember = () => {
+    const arr = [];
+    member.forEach(x => {
+      arr.push(x.RYID);
+    });
+    return arr.includes(String(LOGIN_USER_INFO.id));
+  };
 
   //金额显示,
   const getAmountFormat = (value = 0) => {
@@ -195,27 +206,51 @@ export default function InfoDisplay(props) {
           </div>
         </div>
       </div>
-      <div className="info-box" key="ysxx">
-        <div className="top-title">预算信息</div>
-        <div className="info-row">
-          {getInfoItem('项目预算：', getAmountFormat(prjBasic.YSJE) + '元')}
-          {getInfoItem('关联预算项目：', prjBasic.YSXMMC)}
-          <div className="info-item" style={{ height: '44px' }}>
-            <div className="item-top">
-              <span>已执行预算</span>
-              {getAmountFormat(prjBasic.SYYS)}元
+      {isMember() ? (
+        <div className="info-box" key="ysxx">
+          <div className="top-title">预算信息</div>
+          <div className="info-row">
+            {getInfoItem('项目预算：', getAmountFormat(prjBasic.YSJE) + '元')}
+            <div
+              className="info-item"
+              key="关联预算项目："
+              style={{ display: 'flex', height: 'unset' }}
+            >
+              <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
+              <div style={{ whiteSpace: 'break-spaces' }}>{prjBasic.YSXMMC}</div>
             </div>
-            <div className="item-bottom">
-              <span>/执行率：</span>
-              {(Number(prjBasic.SYYS)*100 / Number(prjBasic.KZXYS)).toFixed(2)}%
+
+            <div className="info-item" style={{ height: '44px' }}>
+              <div className="item-top">
+                <span>已执行预算</span>
+                {getAmountFormat(prjBasic.SYYS)}元
+              </div>
+              <div className="item-bottom">
+                <span>/执行率：</span>
+                {((Number(prjBasic.SYYS) * 100) / Number(prjBasic.KZXYS)).toFixed(2)}%
+              </div>
             </div>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="info-box" key="ysxx">
+          <div className="top-title">预算信息</div>
+          <div className="info-row">
+            <div
+              className="info-item"
+              key="关联预算项目："
+              style={{ display: 'flex', height: 'unset', width: '100%' }}
+            >
+              <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
+              <div style={{ whiteSpace: 'break-spaces' }}>{prjBasic.YSXMMC}</div>
+            </div>
+          </div>
+        </div>
+      )}
       <div className="info-box" key="gysxx">
         <div className="top-title">供应商信息</div>
         <div className="info-row">
-          {getInfoItem('供应商名称：', supplier[0]?.GYSMC)}
+          {getInfoItem('供应商名称：', supplier[0]?.GYSMC, true)}
           {getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
           <div
             className="info-item"
@@ -228,49 +263,78 @@ export default function InfoDisplay(props) {
             <div className="payment-plan">
               {supplier.map(x => (
                 <div key={x.LXRXXID}>
-                  {x.LXR}
-                  {'  ' + x.SJ}
+                  {x.LXR || ''} {x.SJ || ''}
                 </div>
               ))}
             </div>
           </div>
         </div>
       </div>
-      <div className="info-box" key="zcxx">
-        <div className="top-title">招采信息</div>
-        <div className="info-row" key="zcxx-1">
-          {getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
-          {getInfoItem('招采方式：', prjBasic.ZBFS)}
-          {getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-        </div>
-        <div className="info-row" key="zcxx-2">
-          {getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
-          {getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
-          <div className="info-item" key="评标报告：">
-            <span>评标报告：</span>
-            <a style={{ color: '#3361ff' }} onClick={() => {}}>
-              {bidding.PBBG}
-            </a>
+      {isMember() ? (
+        <div className="info-box" key="zcxx">
+          <div className="top-title">招采信息</div>
+          <div className="info-row" key="zcxx-1">
+            {getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
+            {getInfoItem('招采方式：', prjBasic.ZBFS)}
+            {getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+          </div>
+          <div className="info-row" key="zcxx-2">
+            {getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
+            {getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
+            <div className="info-item" key="评标报告：">
+              <span>评标报告：</span>
+              <a style={{ color: '#3361ff' }} onClick={() => {}}>
+                {bidding.PBBG}
+              </a>
+            </div>
+          </div>
+          <div className="info-row" key="zcxx-3">
+            {getPmtPlan(payment)}
+          </div>
+          <div className="info-row" key="zcxx-4">
+            <div className="info-item" key="zcxx-4-1">
+              <span>其他投标供应商：</span>
+              <Popover
+                placement="rightTop"
+                title={null}
+                // autoAdjustOverflow={false}
+                content={otherSupplierPopover(otrSupplier)}
+                overlayClassName="other-supplier-content-popover"
+              >
+                <a style={{ color: '#3361ff' }}>查看详情</a>
+              </Popover>
+            </div>
           </div>
         </div>
-        <div className="info-row" key="zcxx-3">
-          {getPmtPlan(payment)}
-        </div>
-        <div className="info-row" key="zcxx-4">
-          <div className="info-item" key="zcxx-4-1">
-            <span>其他投标供应商：</span>
-            <Popover
-              placement="rightTop"
-              title={null}
-              // autoAdjustOverflow={false}
-              content={otherSupplierPopover(otrSupplier)}
-              overlayClassName="other-supplier-content-popover"
-            >
-              <a style={{ color: '#3361ff' }}>查看详情</a>
-            </Popover>
+      ) : (
+        <div className="info-box" key="zcxx">
+          <div className="top-title">招采信息</div>
+          <div className="info-row" key="zcxx-1">
+            {getInfoItem('招采方式：', prjBasic.ZBFS)}
+            {getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+            <div className="info-item" key="评标报告：">
+              <span>评标报告：</span>
+              <a style={{ color: '#3361ff' }} onClick={() => {}}>
+                {bidding.PBBG}
+              </a>
+            </div>
+          </div>
+          <div className="info-row" key="zcxx-4">
+            <div className="info-item" key="zcxx-4-1">
+              <span>其他投标供应商：</span>
+              <Popover
+                placement="rightTop"
+                title={null}
+                // autoAdjustOverflow={false}
+                content={otherSupplierPopover(otrSupplier)}
+                overlayClassName="other-supplier-content-popover"
+              >
+                <a style={{ color: '#3361ff' }}>查看详情</a>
+              </Popover>
+            </div>
           </div>
         </div>
-      </div>
+      )}
     </div>
   );
 }

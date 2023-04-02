@@ -8,6 +8,7 @@ import TopConsole from './TopConsole';
 import { QueryProjectInfoAll } from '../../../services/pmsServices/index';
 import { message } from 'antd';
 
+
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
   const [prjData, setPrjData] = useState({}); //项目信息-所有
@@ -65,7 +66,7 @@ export default function ProjectDetail(props) {
             payment: p(res.fkxxRecord),
             supplier: p(res.gysxxRecord),
           };
-          // console.log('🚀 ~ getPrjDtlData', obj);
+          console.log('🚀 ~ getPrjDtlData', obj);
           setPrjData(obj);
         }
       })
@@ -76,7 +77,7 @@ export default function ProjectDetail(props) {
   return (
     <div className="prj-detail-box">
       <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData} />
-      <MileStone xmid={xmid} />
+      <MileStone xmid={xmid} prjData={prjData} getPrjDtlData={getPrjDtlData} />
       <div className="detail-row">
         <InfoDisplay prjData={prjData} dictionary={dictionary} />
         <div className="col-right">

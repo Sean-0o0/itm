@@ -28,7 +28,7 @@ export { getAmountFormat };
 export default function HomePage(props) {
   const {} = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  const [leftWidth, setLeftWidth] = useState('70%'); //左侧功能块宽度
+  const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
   const [userRole, setUserRole] = useState(''); //用户角色
   const [overviewInfo, setOverviewInfo] = useState({}); //项目概览
@@ -74,7 +74,7 @@ export default function HomePage(props) {
       let w = e.target.innerWidth; //屏幕宽度
       // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
       if (w < 1700) {
-        setLeftWidth('70%');
+        setLeftWidth('65.48%');
       } else if (w < 1850) {
         setLeftWidth('72%');
       } else if (w < 2200) {

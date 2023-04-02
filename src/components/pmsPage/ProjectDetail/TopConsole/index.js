@@ -1,6 +1,6 @@
 import { Breadcrumb, Button, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
-import { Link } from 'dva/router';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
@@ -34,51 +34,93 @@ export default function TopConsole(props) {
   const closeFileAddModal = () => {
     //其他信息tab表格内数据清空
     //获奖信息
-    sessionStorage.setItem("hjxxTableDataFlag", "false");
+    sessionStorage.setItem('hjxxTableDataFlag', 'false');
     //需求信息
-    sessionStorage.setItem("xqxxTableDataFlag", "false");
+    sessionStorage.setItem('xqxxTableDataFlag', 'false');
     //课题信息
-    sessionStorage.setItem("ktxxTableDataFlag", "false");
+    sessionStorage.setItem('ktxxTableDataFlag', 'false');
     setFileAddVisible(false);
-
-  }
+  };
 
   //获取项目标签
-  const getTags = (text = '') => {
+  const getTags = (text = '', idtxt = '') => {
     //获取项目标签数据
-    const getTagData = tag => {
+    const getTagData = (tag, idtxt) => {
       let arr = [];
-      if (tag !== '' && tag !== null && tag !== undefined) {
+      let arr2 = [];
+      if (
+        tag !== '' &&
+        tag !== null &&
+        tag !== undefined &&
+        idtxt !== '' &&
+        idtxt !== null &&
+        idtxt !== undefined
+      ) {
         if (tag.includes(',')) {
           arr = tag.split(',');
+          arr2 = idtxt.split(',');
         } else {
           arr.push(tag);
+          arr2.push(idtxt);
         }
       }
-      return arr;
+      let arr3 = arr.map((x, i) => {
+        return {
+          name: x,
+          id: arr2[i],
+        };
+      });
+      console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
+      return arr3;
     };
     return (
       <div className="prj-tags">
-        {getTagData(text).length !== 0 && (
+        {getTagData(text, idtxt).length !== 0 && (
           <>
-            {getTagData(text)
+            {getTagData(text, idtxt)
               ?.slice(0, 4)
               .map((x, i) => (
-                <div key={i} className="tag-item">
-                  {x}
-                </div>
+                <Link
+                  to={{
+                    pathname:
+                      '/pms/manage/labelDetail/' +
+                      EncryptBase64(
+                        JSON.stringify({
+                          bqid: x.id,
+                        }),
+                      ),
+                    state: { routes },
+                  }}
+                  key={x.id}
+                  className="tag-item"
+                >
+                  {x.name}
+                </Link>
               ))}
-            {getTagData(text)?.length > 2 && (
+            {getTagData(text, idtxt)?.length > 2 && (
               <Popover
                 overlayClassName="tag-more-popover"
                 content={
                   <div className="tag-more">
-                    {getTagData(text)
+                    {getTagData(text, idtxt)
                       ?.slice(4)
                       .map((x, i) => (
-                        <div key={i} className="tag-item">
-                          {x}
-                        </div>
+                        <Link
+                          to={{
+                            pathname:
+                              '/pms/manage/labelDetail/' +
+                              EncryptBase64(
+                                JSON.stringify({
+                                  bqid: x.id,
+                                }),
+                              ),
+                            state: { routes },
+                          }}
+                          key={x.id}
+                          className="tag-item"
+                        >
+                          {x.name}
+                        </Link>
                       ))}
                   </div>
                 }
@@ -129,7 +171,14 @@ export default function TopConsole(props) {
     <div className="top-console-box">
       {/* 编辑项目弹窗 */}
       {fileAddVisible && (
-        <BridgeModel isSpining="customize" modalProps={fileAddModalProps} src={src_fileAdd} onCancel={closeFileAddModal}/>
+        <BridgeModel
+          isSpining="customize"
+          modalProps={fileAddModalProps}
+          src={src_fileAdd}
+          onCancel={() => {
+            setFileAddVisible(false);
+          }}
+        />
       )}
       <Breadcrumb separator=">">
         {routes?.map((item, index) => {
@@ -149,7 +198,7 @@ export default function TopConsole(props) {
       <div className="prj-info-row">
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
-          {getTags(prjBasic.XMBQ)}
+          {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           <Button className="btn-edit" onClick={handleEditPrjInfo}>
             编辑
           </Button>
@@ -157,7 +206,7 @@ export default function TopConsole(props) {
             placement="bottomRight"
             title={null}
             content={btnMoreContent}
-            overlayClassName="btn-more-content-popover"
+            overlayClassName="tc-btn-more-content-popover"
           >
             <Button className="btn-more">
               <i className="iconfont icon-more" />

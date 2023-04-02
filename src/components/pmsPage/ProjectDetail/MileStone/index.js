@@ -4,22 +4,30 @@ import overallRateImg from '../../../../assets/projectDetail/overall-rate.png';
 import {
   FetchQueryLiftcycleMilestone,
   FetchQueryLifecycleStuff,
+  CreateOperateHyperLink,
 } from '../../../../services/pmsServices/index';
 import lastBtn from '../../../../assets/projectDetail/last-milestone.png';
 import nextBtn from '../../../../assets/projectDetail/next-milestone.png';
 import moment from 'moment';
+import ItemBtn from './ItemBtn';
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 
 const { Step } = Steps;
 
 export default function MileStone(props) {
-  const { xmid = -1 } = props;
+  const { xmid = -1, prjData = {}, getPrjDtlData } = props;
+  const { risk = [], member = [] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('30.53%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
-  const [mileStoneDataList, setMileStoneDataList] = useState([]); //里程碑数据-切割后展示用
   const [initIndex, setInitIndex] = useState(-1); //初始当前里程碑index
   const [lastBtnVisible, setLastBtnVisible] = useState(false); //上一个按钮显示
   const [nextBtnVisible, setNextBtnVisible] = useState(false); //下一个按钮显示
+  const [startIndex, setStartIndex] = useState(0); //切割开始index
+  const [endIndex, setEndIndex] = useState(5); //切割结束index
+  const [riskUrl, setRiskUrl] = useState(''); //
+  const [riskVisible, setRiskVisible] = useState(false); //
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   //防抖定时器
   let timer = null;
@@ -39,6 +47,7 @@ export default function MileStone(props) {
       clearTimeout(timer);
     };
   }, []);
+  //获取里程碑数据
   const getMileStoneData = () => {
     //所有里程碑
     FetchQueryLiftcycleMilestone({
@@ -75,25 +84,43 @@ export default function MileStone(props) {
                             arr.push(x);
                           }
                         });
-                        item.itemData = arr;
+                        const groupBy = arr => {
+                          let dataArr = [];
+                          arr.map(mapItem => {
+                            if (dataArr.length === 0) {
+                              dataArr.push({ swlx: mapItem.swlx, swItem: [mapItem] });
+                            } else {
+                              let res = dataArr.some(item => {
+                                //判断相同swlx，有就添加到当前项
+                                if (item.swlx === mapItem.swlx) {
+                                  item.swItem.push(mapItem);
+                                  return true;
+                                }
+                              });
+                              if (!res) {
+                                //如果没找相同swlx添加一个新对象
+                                dataArr.push({ swlx: mapItem.swlx, swItem: [mapItem] });
+                              }
+                            }
+                          });
+                          return dataArr;
+                        };
+                        item.itemData = groupBy(arr);
                       });
                       // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
                       if (data.length >= 5) {
                         if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
-                          setMileStoneDataList(p => [
-                            ...data.slice(currentIndex - 2, currentIndex + 2),
-                          ]);
+                          setStartIndex(currentIndex - 2);
+                          setEndIndex(currentIndex + 2);
                           setCurrentStep(2);
-                          setLastBtnVisible(true);
-                          setNextBtnVisible(true);
                         } else if (currentIndex < 2) {
-                          setMileStoneDataList(p => [...data.slice(0, 5)]);
+                          setStartIndex(0);
+                          setEndIndex(5);
                           setCurrentStep(currentIndex);
-                          setNextBtnVisible(true);
                         } else {
-                          setLastBtnVisible(true);
-                          setMileStoneDataList(p => [...data.slice(data.length - 5, data.length)]);
+                          setStartIndex(data.length - 5);
+                          setEndIndex(data.length);
                           if (currentIndex === data.length - 2) {
                             setCurrentStep(3);
                           }
@@ -102,8 +129,19 @@ export default function MileStone(props) {
                           }
                         }
                       } else {
-                        setMileStoneDataList(p => [...data]);
+                        setStartIndex(0);
+                        setEndIndex(data.length);
                         setCurrentStep(currentIndex);
+                      }
+                      if (data.length > 5) {
+                        if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
+                          setLastBtnVisible(true);
+                          setNextBtnVisible(true);
+                        } else if (currentIndex < 2) {
+                          setNextBtnVisible(true);
+                        } else {
+                          setLastBtnVisible(true);
+                        }
                       }
                     }
                   })
@@ -168,59 +206,12 @@ export default function MileStone(props) {
   };
 
   const handleStepChange = v => {
-    console.log('handleStepChange', v);
+    // console.log('handleStepChange', v);
     setCurrentStep(v);
   };
 
   const getRiskTag = data => {
     const riskPopoverContent = data => {
-      data = [
-        {
-          fl: '标题1',
-          BT: '标题1-1',
-          NR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          CLNR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          status: 1,
-        },
-        {
-          fl: '标题1',
-          BT: '标题1-1',
-          NR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          CLNR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          status: 1,
-        },
-        {
-          fl: '标题1',
-          BT: '标题1-1',
-          NR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          CLNR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          status: 2,
-        },
-        {
-          fl: '标题1',
-          BT: '标题1-1',
-          NR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          CLNR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          status: 1,
-        },
-        {
-          fl: '标题1',
-          BT: '标题1-1',
-          NR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          CLNR:
-            '处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容处理内容描述文字处理内容描述文字处理内容',
-          status: 1,
-        },
-      ];
       const getItem = (label, content) => {
         return (
           <div className="content">
@@ -232,30 +223,32 @@ export default function MileStone(props) {
       return (
         <div className="list">
           {data.map((x, i) => (
-            <div className="item" key={i}>
+            <div className="item" key={x.ID}>
               <div className="top">
                 <div className="left-bar"></div>
-                {x.BT}
-                {x.status === 1 ? (
+                标题{i + 1}
+                {x.ZT === 2 && (
                   <div className="handled-tag">
                     <div className="dot"></div>
                     已处理
                   </div>
-                ) : (
+                )}
+                {x.ZT === 1 && (
                   <div className="unhandled-tag">
                     <div className="dot"></div>
                     未处理
                   </div>
                 )}
               </div>
-              {getItem('风险标题', x.NR || '')}
-              {getItem('风险内容', x.NR || '')}
+              {getItem('风险标题', x.FXBT || '')}
+              {getItem('风险内容', x.FXNR || '')}
               {getItem('处理内容', x.CLNR || '')}
             </div>
           ))}
         </div>
       );
     };
+    if (data.length === 0) return '';
     return (
       <Popover
         placement="rightBottom"
@@ -267,61 +260,25 @@ export default function MileStone(props) {
       </Popover>
     );
   };
-  const reoprMoreCotent = (
-    <div className="list">
-      <div
-        className="item"
-        onClick={() => {
-          // setEditingIndex(id);
-          // setDrawerVisible(true);
-        }}
-      >
-        选项123
-      </div>
-      <div
-        className="item"
-        onClick={() => {
-          // handleMsgDelete(id, content);
-        }}
-      >
-        选项234
-      </div>
-    </div>
-  );
-  const getItem = () => {
-    const getRow = () => {
-      return (
-        <div className="bottom-row">
-          <i className="iconfont circle-reduce" />
-          {/* <i className="iconfont circle-check" /> */}
-          <Tooltip title={'需求文档'}>
-            <span>需求文档</span>
-          </Tooltip>
-          <div className="opr-btn">上传</div>
-          {/* <div className="opr-more">
-            <div className="reopr-btn">重新上传</div>
-            <Popover
-              placement="bottom"
-              title={null}
-              content={reoprMoreCotent}
-              overlayClassName="btn-more-content-popover"
-            >
-              <div className="reopr-more">
-                <i className="iconfont icon-more2" />
-              </div>
-            </Popover>
-          </div> */}
-        </div>
-      );
-    };
+
+  const getItem = item => {
     return (
-      <div className="item" style={{ width: itemWidth }}>
-        <div className="item-top">需求设计需求设计需求设计需求设计需求设计需求设计</div>
+      <div className="item" style={{ width: itemWidth }} key={item.sxid}>
+        <div className="item-top">{item.swlx}</div>
         <div className="item-bottom">
-          {getRow()}
-          {getRow()}
-          {getRow()}
-          {getRow()}
+          {item.swItem?.map(x => (
+            <div className="bottom-row" style={x.zxqk === ' ' ? {} : { color: '#3361ff' }}>
+              {x.zxqk === ' ' ? (
+                <i className="iconfont circle-reduce" />
+              ) : (
+                <i className="iconfont circle-check" />
+              )}
+              <Tooltip title={x.sxmc}>
+                <span>{x.sxmc}</span>
+              </Tooltip>
+              <ItemBtn item={x} />
+            </div>
+          ))}
         </div>
       </div>
     );
@@ -333,39 +290,170 @@ export default function MileStone(props) {
     else if (zt === '3') return 'finish';
     // else return 'error';
   };
+  //切换里程碑
   const stepSwitch = txt => {
-    // let data = [...mileStoneData];
-    // if (txt === 'last') {
-    //   if (data.length >= 5) {
-    //     if (initIndex - 2 >= 0 && initIndex + 2 <= data.length) {
-    //       setMileStoneDataList(p => [...data.slice(initIndex - 2, initIndex + 2)]);
-    //       setCurrentStep(2);
-    //       setLastBtnVisible(true);
-    //       setNextBtnVisible(true);
-    //     } else if (initIndex < 2) {
-    //       setMileStoneDataList(p => [...data.slice(0, 5)]);
-    //       setCurrentStep(initIndex);
-    //       setNextBtnVisible(true);
-    //     } else {
-    //       setLastBtnVisible(true);
-    //       setMileStoneDataList(p => [...data.slice(data.length - 5, data.length)]);
-    //       if (initIndex === data.length - 2) {
-    //         setCurrentStep(3);
-    //       }
-    //       if (initIndex === data.length - 1) {
-    //         setCurrentStep(4);
-    //       }
-    //     }
-    //   } else {
-    //     setMileStoneDataList(p => [...data]);
-    //     setCurrentStep(initIndex);
-    //     setLastBtnVisible(false);
-    //     setNextBtnVisible(false);
-    //   }
-    // }
+    let data = [...mileStoneData];
+    let st = 0;
+    let ed = 5;
+    if (txt === 'last') {
+      if (startIndex - 1 === 0) {
+        st = 0;
+        ed = 5;
+        setLastBtnVisible(false);
+      } else {
+        st = startIndex - 1;
+        ed = endIndex - 1;
+      }
+    } else {
+      if (endIndex + 1 === data.length) {
+        if (data.length >= 5) {
+          st = data.length - 5;
+        } else {
+          st = 0;
+        }
+        ed = data.length;
+        setNextBtnVisible(false);
+      } else {
+        st = startIndex + 1;
+        ed = endIndex + 1;
+      }
+    }
+    setLastBtnVisible(st > 0);
+    setNextBtnVisible(ed < data.length);
+    setStartIndex(st);
+    // console.log('🚀 ~ file: index.js ~ line 369 ~ stepSwitch', st, ed);
+    setEndIndex(ed);
+  };
+  //高亮的里程碑数据
+  const hLMileStone = mileStoneData?.slice(startIndex, endIndex)[currentStep] || [];
+  //日期格式
+  const dateFormat = (kssj, jssj) =>
+    moment(kssj).format('YYYY-MM-DD') + '至' + moment(jssj).format('MM-DD');
+  const getDateDiff = item => {
+    return `（${
+      moment(item.ycjssj).diff(moment(item.jssj), 'day') > 0 ||
+      moment(item.yckssj).diff(moment(item.kssj), 'day') > 0
+        ? '提前' +
+          (moment(item.ycjssj).diff(moment(item.jssj), 'day') >
+          moment(item.yckssj).diff(moment(item.kssj), 'day')
+            ? moment(item.ycjssj).diff(moment(item.jssj), 'day')
+            : moment(item.yckssj).diff(moment(item.kssj), 'day'))
+        : '延迟' +
+          (moment(item.jssj).diff(moment(item.ycjssj), 'day') >
+          moment(item.kssj).diff(moment(item.yckssj), 'day')
+            ? moment(item.jssj).diff(moment(item.ycjssj), 'day')
+            : moment(item.kssj).diff(moment(item.yckssj), 'day'))
+    }天，修改${item.xgcs}次）`;
+  };
+  const addRisk = item => {
+    let params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'TFX_JBXX',
+      operateName: 'TFX_JBXX_ADD',
+      parameter: [
+        {
+          name: 'GLXM',
+          value: xmid,
+        },
+        {
+          name: 'GLLCB',
+          value: item.lcbid,
+        },
+      ],
+      userId: LOGIN_USER_INFO.loginName,
+    };
+    setRiskVisible(true);
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          setRiskUrl(url);
+        }
+      })
+      .catch(error => {
+        console.error(!error.success ? error.message : error.note);
+      });
+  };
+  //成功回调
+  const onSuccess = name => {
+    message.success(name + '成功');
+    getPrjDtlData();
+  };
+  const getBottomBox = () => {
+    const arr = [];
+    member.forEach(x => {
+      arr.push(x.RYID);
+    });
+    if (arr.includes(String(LOGIN_USER_INFO.id)))
+      return (
+        <div className="bottom-box">
+          <div className="left-box">
+            <div className="top">
+              <div className="circle">
+                <div className="dot"></div>
+              </div>
+              {hLMileStone.lcbmc}
+              <div className="rate-tag">进度{hLMileStone.jd}</div>
+            </div>
+            {hLMileStone.lcbmc === '项目付款' ? (
+              ''
+            ) : (
+              <div className="middle">
+                <div className="current-plan">
+                  现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
+                </div>
+                <div className="original-plan">
+                  原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
+                </div>
+                <div className="remarks">{getDateDiff(hLMileStone)}</div>
+              </div>
+            )}
+            <div className="bottom">
+              <span className="botto-label">项目风险：</span>
+              <div className="bottom-risk">
+                {risk
+                  .filter(x => x.GLLCBID === hLMileStone.lcbid)
+                  ?.map(x => (
+                    <div className="risk-tag" key={x.ID}>
+                      {x.FXBT}
+                    </div>
+                  ))}
+                <Button size="small" onClick={() => addRisk(hLMileStone)}>
+                  <span>+</span>添加
+                </Button>
+              </div>
+            </div>
+          </div>
+          <div className="right-box">
+            {hLMileStone?.itemData?.map(x => getItem(x))}
+            {getAfterItem(itemWidth)}
+          </div>
+        </div>
+      );
+    return '';
+  };
+  const riskModalProps = {
+    isAllWindow: 1,
+    // defaultFullScreen: true,
+    width: '670px',
+    height: '400px',
+    title: '添加风险',
+    style: { top: '67px' },
+    visible: riskVisible,
+    footer: null,
   };
   return (
     <div className="mile-stone-box">
+      {/*风险信息修改弹窗*/}
+      {riskVisible && (
+        <BridgeModel
+          modalProps={riskModalProps}
+          onSucess={() => onSuccess('添加')}
+          onCancel={() => setRiskVisible(false)}
+          src={riskUrl}
+        />
+      )}
       <div className="top-box">
         项目里程碑
         <div className="overall-rate">
@@ -376,83 +464,25 @@ export default function MileStone(props) {
       </div>
       <div className="middle-box">
         {lastBtnVisible && (
-          <a>
-            <img className="last-milestone" src={lastBtn} alt="" onClick={stepSwitch('last')} />
-          </a>
+          <img className="last-milestone" src={lastBtn} alt="" onClick={() => stepSwitch('last')} />
         )}
         {nextBtnVisible && (
-          <a>
-            <img className="next-milestone" src={nextBtn} alt="" onClick={stepSwitch('next')} />
-          </a>
+          <img className="next-milestone" src={nextBtn} alt="" onClick={() => stepSwitch('next')} />
         )}
 
         <Steps type="navigation" size="small" current={currentStep} onChange={handleStepChange}>
-          {mileStoneDataList?.map(step => (
+          {mileStoneData?.slice(startIndex, endIndex)?.map(step => (
             <Step
+              key={step.lcbid}
               title={step.lcbmc}
-              subTitle={getRiskTag()}
-              // status={getStatus(step.zt)}
-              description={
-                step.lcbmc === '项目付款'
-                  ? ''
-                  : moment(step.kssj).format('YYYY-MM-DD') +
-                    '至' +
-                    moment(step.jssj).format('MM-DD')
-              }
+              subTitle={getRiskTag(risk.filter(x => x.GLLCBID === step.lcbid))}
+              status={"process"}
+              description={step.lcbmc === '项目付款' ? '' : dateFormat(step.kssj, step.jssj)}
             />
           ))}
         </Steps>
       </div>
-      <div className="bottom-box">
-        <div className="left-box">
-          <div className="top">
-            <div className="circle">
-              <div className="dot"></div>
-            </div>
-            项目实施
-            <div className="rate-tag">进度50%</div>
-          </div>
-          <div className="middle">
-            <div className="current-plan">现计划：2023-04-04至04-08</div>
-            <div className="original-plan">原计划：2023-04-04至04-08</div>
-            <div className="remarks">(延迟16天，修改一次)</div>
-          </div>
-          <div className="bottom">
-            <span className="botto-label">项目风险：</span>
-            <div className="bottom-risk">
-              <div className="risk-tag">风险bt1</div>
-              <div className="risk-tag">风险bt2</div>
-              <div className="risk-tag">风险bt3</div>
-              <Button>
-                <span>+</span>添加
-              </Button>
-            </div>
-          </div>
-        </div>
-        <div className="right-box">
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getItem()}
-          {getAfterItem(itemWidth)}
-        </div>
-      </div>
+      {getBottomBox()}
     </div>
   );
 }

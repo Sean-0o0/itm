@@ -4,11 +4,13 @@ import {
   GetApplyListProvisionalAuth,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
-import { Tooltip } from 'antd';
+import { Empty, Tooltip } from 'antd';
 
 export default function ProcessCard(props) {
   const {} = props;
   const [processData, setProcessData] = useState([]); //流程情况
+  const [processDataList, setProcessDataList] = useState([]); //流程情况 - 展示
+  const [isUnfold, setIsUnfold] = useState(false); //是否展开
   useEffect(() => {
     getProcessData();
     return () => {};
@@ -26,6 +28,7 @@ export default function ProcessCard(props) {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
           setProcessData(p => [...res?.record]);
+          setProcessDataList(p => [...res?.record.slice(0, 3)]);
         }
       })
       .catch(e => {
@@ -89,11 +92,17 @@ export default function ProcessCard(props) {
       </div>
     );
   };
+  //展开、收起
+  const handleUnfold = bool => {
+    setIsUnfold(bool);
+    if (bool) setProcessDataList(p => [...processData]);
+    else setProcessDataList(p => [...processData?.slice(0, 3)]);
+  };
   return (
     <div className="process-card-box">
       <div className="home-card-title-box">流程情况</div>
       <div className="process-box">
-        {processData?.map((item, index) =>
+        {processDataList?.map((item, index) =>
           getProcessItem({
             type: item.type,
             content: item.subject,
@@ -103,6 +112,25 @@ export default function ProcessCard(props) {
             url: item.url,
           }),
         )}
+        {processDataList?.length === 0 && (
+          <Empty
+            description="暂无待办事项"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ width: '100%' }}
+          />
+        )}
+        {processData?.length > 3 &&
+          (isUnfold ? (
+            <div className="more-item" onClick={() => handleUnfold(false)}>
+              收起
+              <i className="iconfont icon-up" />
+            </div>
+          ) : (
+            <div className="more-item" onClick={() => handleUnfold(true)}>
+              更多
+              <i className="iconfont icon-down" />
+            </div>
+          ))}
       </div>
     </div>
   );

@@ -227,9 +227,10 @@ class ContractInfoUpdate extends React.Component {
                 gys: rec[0]?.gys,
             }, () => {
                 this.setState({
-                    currentGysId: this.state.gysData?.filter(x => x?.gysmc === rec[0]?.gys)[0]?.id
+                    currentGysId: rec[0]?.gys
                 });
             });
+                console.log("🚀 ~ file: index.js ~ line 233 ~ ContractInfoUpdate ~ rec[0]?.gys", rec[0]?.gys)
             let arr = [];
             for (let i = 0; i < rec.length; i++) {
                 arr.push({
