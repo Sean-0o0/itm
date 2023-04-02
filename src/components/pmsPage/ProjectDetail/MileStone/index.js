@@ -68,8 +68,10 @@ export default function MileStone(props) {
               if (r?.success) {
                 data.forEach((x, i) => {
                   x.isCurrent = x.lcbid === r.record[0].lcbid;
-                  currentIndex = i;
-                  setInitIndex(i);
+                  if (x.lcbid === r.record[0].lcbid) {
+                    currentIndex = i;
+                    setInitIndex(i);
+                  }
                 });
                 //里程碑事项数据 - 事项分类到各个里程碑的 itemData中
                 FetchQueryLifecycleStuff({
@@ -112,6 +114,7 @@ export default function MileStone(props) {
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
                       if (data.length >= 5) {
+                        console.log('大于5', currentIndex);
                         if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
                           setStartIndex(currentIndex - 2);
                           setEndIndex(currentIndex + 2);
@@ -124,6 +127,7 @@ export default function MileStone(props) {
                           setStartIndex(data.length - 5);
                           setEndIndex(data.length);
                           if (currentIndex === data.length - 2) {
+                            console.log('3333');
                             setCurrentStep(3);
                           }
                           if (currentIndex === data.length - 1) {
