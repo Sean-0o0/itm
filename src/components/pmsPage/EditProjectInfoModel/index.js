@@ -4323,7 +4323,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>>
+                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
                         {/*供应商弹窗*/}
                         {
                           addGysModalVisible &&
