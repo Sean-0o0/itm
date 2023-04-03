@@ -1799,10 +1799,14 @@ class EditProjectInfoModel extends React.Component {
   async operateCreatProject(params, type) {
     //更新其他信息
     await this.updateProjectOtherInfo();
-    //更新招标信息
-    await this.updateZBXX();
-    //更新合同信息
-    await this.updateHTXX();
+    if(this.state.zbxxVisiable){
+      //更新招标信息
+      await this.updateZBXX();
+    }
+    if(this.state.htxxVisiable){
+      //更新合同信息
+      await this.updateHTXX();
+    }
     OperateCreatProject(params).then((result) => {
       const {code = -1, note = '', projectId} = result;
       this.setState({loading: false});
