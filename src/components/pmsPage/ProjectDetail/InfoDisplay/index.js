@@ -134,7 +134,7 @@ export default function InfoDisplay(props) {
         <div className="info-row">
           <div className="info-item" key="文档库：">
             <span>文档库：</span>
-            <a
+            {/* <a
               onClick={() =>
                 (window.location.href =
                   '/#/pms/manage/attachLibrary/' +
@@ -147,7 +147,18 @@ export default function InfoDisplay(props) {
               style={{ color: '#3361ff' }}
             >
               查看详情
-            </a>
+            </a> */}
+            <Link
+              to={{
+                pathname: '/pms/manage/attachLibrary',
+                query: {
+                  xmid,
+                },
+              }}
+              style={{ color: '#3361ff' }}
+            >
+              查看详情
+            </Link>
           </div>
           <div className="info-item">
             <span>获奖信息：</span>
