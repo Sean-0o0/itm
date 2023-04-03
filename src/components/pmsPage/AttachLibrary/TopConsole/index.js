@@ -29,6 +29,19 @@ class ToConsole extends Component {
         this.getFilterData()
     }
 
+    UNSAFE_componentWillReceiveProps (nextprops){
+        const { xmid: newid } = nextprops
+        const { xmid } = this.state
+        if(xmid !== newid){
+            this.setState({
+                params: {
+                    xmid: newid
+                }
+            })
+        }
+        
+    }
+
     //顶部下拉框查询数据
     getFilterData = () => {
         const { cxlx = 'FQCY'} = this.props

@@ -36,6 +36,18 @@ class AttachLibrary extends Component {
         }
     }
 
+    UNSAFE_componentWillReceiveProps (){
+        this.setState({
+            pageParams: {
+                ...this.state.pageParams,
+                xmid: this.props.xmid
+            }
+        },()=>{
+            this.handleSearch()
+        })
+        
+    }
+
     handleSearch = async (params = {}) => {
         const { pageParams = {}, cxlx } = this.state
         this.setState({
@@ -75,9 +87,9 @@ class AttachLibrary extends Component {
 
     render() {
         const { tableLoading = false, attachList = [], pageParams, cxlx } = this.state
-        const { dictionary } = this.props;
+        const { dictionary, xmid } = this.props;
         return (<div className="attach-library-box">
-            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx}/>
+            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid}/>
             <InfoTable tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
         </div>);
     }
