@@ -2688,6 +2688,45 @@ class EditProjectInfoModel extends React.Component {
         title: "其他信息",
       }
     ];
+    //采购方式树状数据
+    const bindMethodData = [
+      {
+        title: '公开招标',
+        value: '1',
+        key: '1',
+      }, {
+        title: '邀请招标',
+        value: '2',
+        key: '2',
+      },
+      {
+        title: '非招标方式采购',
+        value: '0-2',
+        key: '0-2',
+        children: [
+          {
+            title: '直接采购',
+            value: '3',
+            key: '3',
+          },
+          {
+            title: '谈判',
+            value: '4',
+            key: '4',
+          },
+          {
+            title: '竞价',
+            value: '5',
+            key: '5',
+          },
+          {
+            title: '询比',
+            value: '6',
+            key: '6',
+          },
+        ],
+      },
+    ];
     const ministeps = [];
     // //console.log("milePostInfo", milePostInfo)
     milePostInfo.map(item => {
@@ -3031,25 +3070,31 @@ class EditProjectInfoModel extends React.Component {
                                   // }],
                                   initialValue: basicInfo.biddingMethod
                                 })(
-                                  <Select placeholder='请选择采购方式' onChange={e => {
-                                    this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
-                                    this.fetchQueryMilepostInfo({
-                                      type: basicInfo.projectType,
-                                      xmid: this.state.basicInfo.projectId,
-                                      biddingMethod: e,
-                                      budget: budgetInfo.projectBudget,
-                                      label: basicInfo.labelTxt,
-                                      queryType: "ALL"
-                                    });
-                                  }}>
-                                    <OptGroup label={<span
-                                      style={{fontSize: "14px", fontWeight: 500, color: '#333'}}>非招标方式采购</span>}>
-                                      <Option value={1}>直采</Option>
-                                      <Option value={2}>谈判</Option>
-                                      <Option value={3}>竞价</Option>
-                                      <Option value={4}>询比</Option>
-                                    </OptGroup>
-                                  </Select>
+                                  <TreeSelect
+                                    showSearch
+                                    dropdownClassName="newproject-treeselect"
+                                    treeNodeFilterProp="title"
+                                    style={{width: '100%'}}
+                                    dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                    treeData={bindMethodData}
+                                    placeholder="请选择采购方式"
+                                    // treeCheckable
+                                    // treeDefaultExpandAll
+                                    // getPopupContainer={triggerNode => triggerNode.parentNode}
+                                    // treeDefaultExpandedKeys={orgExpendKeys}
+                                    onChange={e => {
+                                      console.log("请选择采购方式", e)
+                                      this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
+                                      this.fetchQueryMilepostInfo({
+                                        type: basicInfo.projectType,
+                                        xmid: this.state.basicInfo.projectId,
+                                        biddingMethod: e,
+                                        budget: budgetInfo.projectBudget,
+                                        label: basicInfo.labelTxt,
+                                        queryType: "ALL"
+                                      });
+                                    }}
+                                  />
                                 )}
                               </Form.Item>
                             </Col>
