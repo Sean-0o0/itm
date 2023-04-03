@@ -15,12 +15,12 @@ export default function PrjMember(props) {
 
   useEffect(() => {
     // 页面变化时获取浏览器窗口的大小
-    window.addEventListener('resize', resizeUpdate);
-    window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
+    window.addEventListener('prjMemberResize', resizeUpdate);
+    window.dispatchEvent(new Event('prjMemberResize', { bubbles: true, composed: true })); //刷新时能触发resize
 
     return () => {
       // 组件销毁时移除监听事件
-      window.removeEventListener('resize', resizeUpdate);
+      window.removeEventListener('prjMemberResize', resizeUpdate);
       clearTimeout(timer);
     };
   }, []);

@@ -2635,7 +2635,7 @@
         background: #fff;
         height: 80rem;
         box-shadow: 0px 6px 16px -8px rgba(0, 0, 0, 0.08), 0px 9px 28px 0px rgba(0, 0, 0, 0.05),
-        0px 12px 48px 16px rgba(0, 0, 0, 0.03);
+          0px 12px 48px 16px rgba(0, 0, 0, 0.03);
 
         .risk-header {
           height: 9rem;
@@ -4629,6 +4629,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
 .ant-steps-navigation .ant-steps-item::before {
   background-color: rgb(51, 97, 255) !important;
+}
+.ant-steps-item-process .ant-steps-item-icon {
+  background: #3361ff !important;
+  border-color: #3361ff !important;
 }
 
 .ant-steps-item-finish .ant-steps-item-icon > .ant-steps-icon .ant-steps-icon-dot {
@@ -7118,6 +7122,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
       .ant-steps-item-container {
         &:hover {
+          .ant-steps-item-icon {
+            border-color: #3361ff !important;
+            .ant-steps-icon {
+              color: #3361ff !important;
+            }
+          }
           color: #3361ff !important;
           .ant-steps-item-title {
             color: #3361ff !important;
@@ -7145,7 +7155,32 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
         }
       }
+      .ant-steps-item-process {
+        .ant-steps-item-container {
+          &:hover {
+            .ant-steps-item-icon {
+              background-color: #3361ff;
+              border-color: #3361ff;
+              span {
+                color: #fff !important;
+              }
+            }
+          }
+        }
+      }
       .ant-steps-item-active {
+        .ant-steps-item-container {
+          &:hover {
+            .ant-steps-item-icon {
+              background-color: #3361ff;
+              border-color: #3361ff;
+              span {
+                color: #fff !important;
+              }
+            }
+          }
+        }
+
         .ant-steps-item-description {
           color: #3361ff;
           margin-top: 4px;
@@ -7258,6 +7293,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
           .remarks {
             margin-bottom: 14px;
+            padding-left: 40px;
           }
         }
         .bottom {
@@ -7279,14 +7315,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               border-radius: 4px;
               background-color: #d70e190f;
               padding: 1px 8px 2px 8px;
+              max-width: 240px;
               text-overflow: ellipsis;
               overflow: hidden;
               white-space: nowrap;
               line-height: initial;
               border: 1px solid rgba(215, 14, 25, 0.3);
               cursor: pointer;
-              display: table;
-              margin-bottom: 10px;
+              display: inline-block;
+              margin-bottom: 4px;
 
               &:hover {
                 font-weight: bold;

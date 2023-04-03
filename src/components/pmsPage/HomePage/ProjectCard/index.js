@@ -25,9 +25,6 @@ export default function ProjectCard(props) {
     if (prjInfo.length !== 0) {
       setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 2)]);
       setIsUnfold(false);
-      // console.log('location', location);
-      // console.log("🚀 ~ file: index.js ~ line 14 ~ useEffect ~ prjInfo?.slice(0, getColNum(itemWidth) * 2)", prjInfo?.slice(0, getColNum(itemWidth) * 2))
-      // console.log('🚀 ~ file: index.js ~ line 14 ~ useEffect ~ prjInfo', prjInfo);
     }
     return () => {};
   }, [props]);
@@ -75,7 +72,7 @@ export default function ProjectCard(props) {
   const handleDraftModify = xmid => {
     setFileAddVisible(true);
     setSrc_fileAdd(
-      `/#/single/pms/EditProject/${EncryptBase64(
+      `/#/single/pms/SaveProject/${EncryptBase64(
         JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
       )}`,
     );
@@ -378,7 +375,7 @@ export default function ProjectCard(props) {
   const fileAddModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
-    title: '新建项目',
+    title: '编辑草稿',
     width: '70%',
     height: '95vh',
     style: { top: '2rem' },

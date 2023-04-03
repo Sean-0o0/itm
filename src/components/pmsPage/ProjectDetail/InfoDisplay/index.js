@@ -23,6 +23,7 @@ export default function InfoDisplay(props) {
     bidding = {},
     supplier = [],
     member = [],
+    isLeader,
   } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -30,6 +31,7 @@ export default function InfoDisplay(props) {
     return () => {};
   }, []);
 
+  //评标报告预览下载
   const handleFile = (id, fileName) => {
     console.log(id, fileName);
     axios({
@@ -58,13 +60,13 @@ export default function InfoDisplay(props) {
       });
   };
 
-  //是否为项目成员
+  //是否为项目成员或领导
   const isMember = () => {
     const arr = [];
     member.forEach(x => {
       arr.push(x.RYID);
     });
-    return arr.includes(String(LOGIN_USER_INFO.id));
+    return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 
   //金额显示,
@@ -134,20 +136,6 @@ export default function InfoDisplay(props) {
         <div className="info-row">
           <div className="info-item" key="文档库：">
             <span>文档库：</span>
-            {/* <a
-              onClick={() =>
-                (window.location.href =
-                  '/#/pms/manage/attachLibrary/' +
-                  EncryptBase64(
-                    JSON.stringify({
-                      xmid,
-                    }),
-                  ))
-              }
-              style={{ color: '#3361ff' }}
-            >
-              查看详情
-            </a> */}
             <Link
               to={{
                 pathname: '/pms/manage/attachLibrary',
@@ -296,7 +284,7 @@ export default function InfoDisplay(props) {
               </div>
               <div className="item-bottom">
                 <span>/执行率：</span>
-                {((Number(prjBasic.SYYS) * 100) / Number(prjBasic.KZXYS)).toFixed(2)}%
+                {((Number(prjBasic.YSYYS) * 100) / Number(prjBasic.KZXYS)).toFixed(2)}%
               </div>
             </div>
           </div>
@@ -354,12 +342,13 @@ export default function InfoDisplay(props) {
               供应商联系人：
             </div>
             <div className="payment-plan">
-              {supplier.map(x => (
-                <div key={x.LXRXXID}>
-                  {x.LXR || ''} {x.SJ || ''}
-                </div>
-              ))}
-              {supplier.length === 0 && '暂无数据'}
+              {supplier[0]?.LXR
+                ? supplier.map(x => (
+                    <div key={x.LXRXXID}>
+                      {x.LXR || ''} {x.SJ || ''}
+                    </div>
+                  ))
+                : '暂无数据'}
             </div>
           </div>
         </div>

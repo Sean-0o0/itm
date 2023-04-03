@@ -55,6 +55,7 @@ export default function PrjMessage(props) {
     })
       .then(res => {
         if (res?.success) {
+          setIsSpinning(false);
           if (isDel) {
             //删除时刷新数据
             setMsgData(p => [...JSON.parse(res.result)]);
@@ -66,8 +67,10 @@ export default function PrjMessage(props) {
               let data = [...JSON.parse(res.result)];
               for (let i = 0; i < nodeArrNow.length; i++) {
                 let x = nodeArrNow[i];
-                data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
-                data[i].unfold = false;
+                if (data[i]) {
+                  data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
+                  data[i].unfold = false;
+                }
               }
               setUpdatePage(new Date().getTime());
               setMsgData(p => [...data]);
@@ -78,7 +81,6 @@ export default function PrjMessage(props) {
               setMsgData(p => [...JSON.parse(res.result)]);
             }
           }
-          setIsSpinning(false);
         }
       })
       .catch(e => {

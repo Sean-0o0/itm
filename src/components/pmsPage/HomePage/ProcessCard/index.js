@@ -1,40 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import {
-  FetchQueryOwnerWorkflow,
-  GetApplyListProvisionalAuth,
-} from '../../../../services/pmsServices';
+import { GetApplyListProvisionalAuth } from '../../../../services/pmsServices';
 import moment from 'moment';
 import { Empty, Tooltip } from 'antd';
 
 export default function ProcessCard(props) {
-  const {} = props;
-  const [processData, setProcessData] = useState([]); //流程情况
+  const { processData } = props;
   const [processDataList, setProcessDataList] = useState([]); //流程情况 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
+
   useEffect(() => {
-    getProcessData();
+    if (processData.length !== 0) {
+      setProcessDataList(p => [...processData?.slice(0, 3)]);
+      setIsUnfold(false);
+    }
     return () => {};
-  }, []);
-  //获取流程情况
-  const getProcessData = () => {
-    FetchQueryOwnerWorkflow({
-      paging: -1,
-      current: 1,
-      pageSize: 9999,
-      total: -1,
-      sort: '',
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
-          setProcessData(p => [...res?.record]);
-          setProcessDataList(p => [...res?.record.slice(0, 3)]);
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerWorkflow', e);
-      });
-  };
+  }, [props]);
+
   const getProcessItem = ({
     type = '1',
     content = '--',

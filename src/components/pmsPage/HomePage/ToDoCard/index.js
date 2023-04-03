@@ -1,19 +1,14 @@
 import { Button, Empty, message, Tooltip } from 'antd';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import {
-  FetchQueryOwnerMessage,
-  FetchQueryOwnerProjectList,
-  UpdateMessageState,
-} from '../../../../services/pmsServices';
+import { FetchQueryOwnerProjectList, UpdateMessageState } from '../../../../services/pmsServices';
 import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem } = props;
-  const [isUnfold, setIsUnfold] = useState(false); //是否展开
-  const [toDoData, setToDoData] = useState([]); //待办数据
+  const { itemWidth, getAfterItem, getToDoData, toDoData } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
+  const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
   const [ryxztxModalVisible, setRyxztxModalVisible] = useState(false); //人员新增提醒发起弹窗
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
@@ -33,9 +28,11 @@ export default function ToDoCard(props) {
   };
 
   useLayoutEffect(() => {
-    getToDoData();
-    getXmbhData();
-    setIsUnfold(false);
+    if (toDoData.length !== 0) {
+      setDataList(p => [...toDoData?.slice(0, getColNum(itemWidth))]);
+      getXmbhData();
+      setIsUnfold(false);
+    }
     return () => {};
   }, [props]);
 
@@ -57,29 +54,6 @@ export default function ToDoCard(props) {
       })
       .catch(e => {
         console.error('FetchQueryOwnerProjectList', e);
-      });
-  };
-
-  //获取待办数据
-  const getToDoData = () => {
-    FetchQueryOwnerMessage({
-      cxlx: 'ALL',
-      date: Number(new moment().format('YYYYMMDD')),
-      paging: -1,
-      current: 1,
-      pageSize: 9999,
-      total: 1,
-      sort: '',
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
-          setToDoData(p => [...res.record]);
-          setDataList(p => [...res.record].slice(0, getColNum(itemWidth)));
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerMessage', e);
       });
   };
 

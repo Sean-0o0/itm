@@ -1,4 +1,4 @@
-import { Breadcrumb, Spin } from 'antd';
+import { Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   QueryBudgetOverviewInfo,
@@ -7,6 +7,8 @@ import {
   QueryStagingOverviewInfo,
   QuerySupplierOverviewInfo,
   QueryUserRole,
+  FetchQueryOwnerMessage,
+  FetchQueryOwnerWorkflow,
 } from '../../../services/pmsServices';
 import AvatarCard from './AvatarCard';
 import CptBudgetCard from './CptBudgetCard';
@@ -27,6 +29,7 @@ const getAmountFormat = value => {
 export { getAmountFormat };
 export default function HomePage(props) {
   const {} = props;
+  // console.log("🚀 ~ file: index.js ~ line 32 ~ HomePage ~ props", props)
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
@@ -36,11 +39,23 @@ export default function HomePage(props) {
   const [budgetData, setBudgetData] = useState({}); //预算执行情况
   const [teamData, setTeamData] = useState([]); //队伍建设
   const [supplierData, setSupplierData] = useState({}); //供应商情况
+  const [toDoData, setToDoData] = useState([]); //待办数据
+  const [processData, setProcessData] = useState([]); //流程情况
   const [updateTime, setUpdateTime] = useState(''); //预算执行情况接口调用时间
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const htmlContent = document.getElementById('htmlContent'); //页面跳转后滚至顶部
+  htmlContent.scrollTop = 0; //页面跳转后滚至顶部
 
   //防抖定时器
   let timer = null;
+
+  //页面恢复，跳转回首页时触发
+  props.cacheLifecycles.didRecover(() => {
+    // console.log('跳转回首页时触发');
+    setIsSpinning(true);
+    getUserRole();
+    setUpdateTime(moment().format('YYYY-MM-DD'));
+  });
 
   useEffect(() => {
     setIsSpinning(true);
@@ -73,10 +88,12 @@ export default function HomePage(props) {
     const fn = () => {
       let w = e.target.innerWidth; //屏幕宽度
       // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
-      if (w < 1700) {
+      if (w < 1500) {
         setLeftWidth('65.48%');
+      } else if (w < 1650) {
+        setLeftWidth('67%');
       } else if (w < 1850) {
-        setLeftWidth('72%');
+        setLeftWidth('70%');
       } else if (w < 2200) {
         setLeftWidth('74%');
       } else if (w < 2350) {
@@ -137,7 +154,10 @@ export default function HomePage(props) {
           const { role = '' } = res;
           setUserRole(role);
           getOverviewInfo(role);
-          if (!['二级部门领导', '普通人员'].includes(role)) {
+          if (['二级部门领导', '普通人员'].includes(role)) {
+            getToDoData();
+            getProcessData();
+          } else {
             getTeamData(role);
             getSupplierData(role);
           }
@@ -218,7 +238,6 @@ export default function HomePage(props) {
           });
           setPrjInfo(p => [...arr]);
           setIsSpinning(false);
-          // console.log('🚀 ~ file: index.js ~ line 178 ~ getPrjInfo ~ obj', arr);
         }
       })
       .catch(e => {
@@ -282,6 +301,48 @@ export default function HomePage(props) {
       });
   };
 
+  //获取待办数据
+  const getToDoData = () => {
+    FetchQueryOwnerMessage({
+      cxlx: 'ALL',
+      date: Number(new moment().format('YYYYMMDD')),
+      paging: -1,
+      current: 1,
+      pageSize: 9999,
+      total: 1,
+      sort: '',
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
+          setToDoData(p => [...res.record]);
+        }
+      })
+      .catch(e => {
+        console.error('FetchQueryOwnerMessage', e);
+      });
+  };
+
+  //获取流程情况
+  const getProcessData = () => {
+    FetchQueryOwnerWorkflow({
+      paging: -1,
+      current: 1,
+      pageSize: 9999,
+      total: -1,
+      sort: '',
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
+          setProcessData(p => [...res?.record]);
+        }
+      })
+      .catch(e => {
+        console.error('FetchQueryOwnerWorkflow', e);
+      });
+  };
+
   return (
     <Spin
       spinning={isSpinning}
@@ -301,7 +362,7 @@ export default function HomePage(props) {
         <div className="row-box">
           <div className="col-left" style={{ width: leftWidth }}>
             {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <ToDoCard itemWidth={itemWidth} getAfterItem={getAfterItem} />
+              <ToDoCard itemWidth={itemWidth} getAfterItem={getAfterItem} toDoData={toDoData} />
             ) : (
               <CptBudgetCard userRole={userRole} budgetData={budgetData} time={updateTime} />
             )}
@@ -325,7 +386,7 @@ export default function HomePage(props) {
               <TeamCard teamData={teamData} />
             )}
             {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <ProcessCard />
+              <ProcessCard processData={processData} />
             ) : (
               <SupplierCard supplierData={supplierData} time={updateTime} />
             )}

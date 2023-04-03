@@ -5,23 +5,43 @@ import MileStone from './MileStone';
 import PrjMember from './PrjMember';
 import PrjMessage from './PrjMessage';
 import TopConsole from './TopConsole';
-import { QueryProjectInfoAll } from '../../../services/pmsServices/index';
+import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
 import { Spin } from 'antd';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjData, setPrjData] = useState({}); //项目信息-所有
-  const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
+  const { HJRYDJ, ZSCQLX, RYGW, CGFS, XMLX } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
+  const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   // console.log('🚀 ~ file: index.js ~ line 13 ~ ProjectDetail ~ dictionary', dictionary);
 
   useEffect(() => {
     if (xmid !== -1) {
       setIsSpinning(true);
       getPrjDtlData();
+      getIsLeader();
+      const htmlContent = document.getElementById('htmlContent');
+      // console.log('🚀 ~ file: index.js ~ line 26 ~ useEffect ~ htmlContent', htmlContent);
+      htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     }
     return () => {};
   }, [xmid]);
+
+  //判断用户是否为领导
+  const getIsLeader = () => {
+    QueryUserRole({
+      userId: Number(LOGIN_USER_INFO.id),
+    })
+      .then(res => {
+        // console.log('res.role', res.role);
+        setIsLeader(res.role !== '普通人员');
+      })
+      .catch(e => {
+        console.error('QueryIsLeader', e);
+      });
+  };
 
   //获取项目详情数据
   const getPrjDtlData = () => {
@@ -54,6 +74,7 @@ export default function ProjectDetail(props) {
           });
           let prjBasic = p(res.xmjbxxRecord, false);
           prjBasic.ZBFS = CGFS?.filter(x => x.ibm === prjBasic.ZBFS)[0]?.note;
+          prjBasic.XMLX = XMLX?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
           let obj = {
             prjBasic,
             member,
@@ -67,7 +88,7 @@ export default function ProjectDetail(props) {
             payment: p(res.fkxxRecord),
             supplier: p(res.gysxxRecord),
           };
-          console.log('🚀 ~ getPrjDtlData', obj, dictionary);
+          console.log('🚀 ~ getPrjDtlData', obj);
           setPrjData(obj);
         }
       })
@@ -89,9 +110,10 @@ export default function ProjectDetail(props) {
           prjData={prjData}
           getPrjDtlData={getPrjDtlData}
           setIsSpinning={setIsSpinning}
+          isLeader={isLeader}
         />
         <div className="detail-row">
-          <InfoDisplay prjData={prjData} routes={routes} xmid={xmid} />
+          <InfoDisplay prjData={prjData} routes={routes} xmid={xmid} isLeader={isLeader} />
           <div className="col-right">
             <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />
             <PrjMessage xmid={xmid} />

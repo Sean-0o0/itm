@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Popover, Steps, Tooltip } from 'antd';
+import { Button, message, Popover, Steps, Tooltip } from 'antd';
 import overallRateImg from '../../../../assets/projectDetail/overall-rate.png';
 import {
   FetchQueryLiftcycleMilestone,
@@ -15,7 +15,7 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 const { Step } = Steps;
 
 export default function MileStone(props) {
-  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning } = props;
+  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader } = props;
   const { risk = [], member = [], prjBasic = [] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('30.53%'); //块宽度
@@ -25,8 +25,9 @@ export default function MileStone(props) {
   const [nextBtnVisible, setNextBtnVisible] = useState(false); //下一个按钮显示
   const [startIndex, setStartIndex] = useState(0); //切割开始index
   const [endIndex, setEndIndex] = useState(5); //切割结束index
-  const [riskUrl, setRiskUrl] = useState(''); //
-  const [riskVisible, setRiskVisible] = useState(false); //
+  const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
+  const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
+  const [riskTxt, setRiskTxt] = useState(''); //风险弹窗
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   //防抖定时器
@@ -34,22 +35,25 @@ export default function MileStone(props) {
 
   useEffect(() => {
     // 页面变化时获取浏览器窗口的大小
-    window.addEventListener('resize', resizeUpdate);
-    window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
+    window.addEventListener('prjMileStoneResize', resizeUpdate);
+    window.dispatchEvent(new Event('prjMileStoneResize', { bubbles: true, composed: true })); //刷新时能触发resize
 
     return () => {
       // 组件销毁时移除监听事件
-      window.removeEventListener('resize', resizeUpdate);
+      window.removeEventListener('prjMileStoneResize', resizeUpdate);
       clearTimeout(timer);
       setLastBtnVisible(false);
       setNextBtnVisible(false);
     };
   }, []);
-  useEffect(() => {
-    getMileStoneData();
 
+  useEffect(() => {
+    if (xmid !== -1) {
+      getMileStoneData();
+    }
     return () => {};
   }, [xmid]);
+
   //获取里程碑数据
   const getMileStoneData = () => {
     //所有里程碑
@@ -72,6 +76,10 @@ export default function MileStone(props) {
                   x.isCurrent = x.lcbid === r.record[0].lcbid;
                   if (x.lcbid === r.record[0].lcbid) {
                     currentIndex = i;
+                    // console.log(
+                    //   '🚀 ~ file: index.js ~ line 75 ~ data.forEach ~ currentIndex',
+                    //   currentIndex,
+                    // );
                   }
                 });
                 //里程碑事项数据 - 事项分类到各个里程碑的 itemData中
@@ -114,42 +122,48 @@ export default function MileStone(props) {
                       // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
+                      setCurrentStep(currentIndex);
                       if (data.length >= 5) {
-                        setInitIndex(data.length - 5);
-                        if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
+                        if (currentIndex - 2 >= 0 && currentIndex + 2 < data.length) {
                           setStartIndex(currentIndex - 2);
+                          setInitIndex(currentIndex - 2);
                           setEndIndex(currentIndex + 2);
-                          setCurrentStep(2);
+                          // setCurrentStep(2);
                         } else if (currentIndex < 2) {
                           setStartIndex(0);
+                          setInitIndex(0);
                           setEndIndex(5);
-                          setCurrentStep(currentIndex);
+                          // setCurrentStep(currentIndex);
                         } else {
+                          setInitIndex(data.length - 5);
                           setStartIndex(data.length - 5);
                           setEndIndex(data.length);
-                          if (currentIndex === data.length - 2) {
-                            setCurrentStep(3);
-                          }
-                          if (currentIndex === data.length - 1) {
-                            setCurrentStep(4);
-                          }
+                          // if (currentIndex === data.length - 2) {
+                          //   setCurrentStep(3);
+                          // }
+                          // if (currentIndex === data.length - 1) {
+                          //   setCurrentStep(4);
+                          // }
                         }
                       } else {
                         setInitIndex(0);
                         setStartIndex(0);
                         setEndIndex(data.length);
-                        setCurrentStep(currentIndex);
                       }
                       if (data.length > 5) {
-                        if (currentIndex - 2 >= 0 && currentIndex + 2 <= data.length) {
+                        if (currentIndex - 2 >= 0 && currentIndex < data.length - 2) {
                           setLastBtnVisible(true);
                           setNextBtnVisible(true);
+                          console.log(1);
                         } else if (currentIndex < 2) {
+                          setLastBtnVisible(false);
                           setNextBtnVisible(true);
+                          console.log(2);
                         } else {
+                          setNextBtnVisible(false);
                           setLastBtnVisible(true);
                         }
-                      }else if (data.length === 5){
+                      } else {
                         setLastBtnVisible(false);
                         setNextBtnVisible(false);
                       }
@@ -342,7 +356,7 @@ export default function MileStone(props) {
     setEndIndex(ed);
   };
   //高亮的里程碑数据
-  const hLMileStone = mileStoneData?.slice(startIndex, endIndex)[currentStep] || [];
+  const hLMileStone = mileStoneData[currentStep] || [];
   //日期格式
   const dateFormat = (kssj, jssj) =>
     moment(kssj).format('YYYY-MM-DD') + '至' + moment(jssj).format('MM-DD');
@@ -362,7 +376,8 @@ export default function MileStone(props) {
             : moment(item.kssj).diff(moment(item.yckssj), 'day'))
     }天，修改${item.xgcs}次）`;
   };
-  const addRisk = item => {
+  const handleRisk = (item, type = 'ADD') => {
+    // console.log("🚀 ~ file: index.js ~ line 380 ~ handleRisk ~ item", item)
     let params = {
       attribute: 0,
       authFlag: 0,
@@ -371,15 +386,33 @@ export default function MileStone(props) {
       parameter: [
         {
           name: 'GLXM',
-          value: xmid,
+          value: item.XMID || xmid,
         },
         {
           name: 'GLLCB',
-          value: item.lcbid,
+          value: item.GLLCBID || item.lcbid,
         },
       ],
       userId: LOGIN_USER_INFO.loginName,
     };
+    let txt = '添加风险';
+    if (type === 'MOD') {
+      txt = '处理风险';
+      params = {
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'TFX_JBXX',
+        operateName: 'TFX_JBXX_MOD',
+        parameter: [
+          {
+            name: 'ID',
+            value: item.ID,
+          },
+        ],
+        userId: LOGIN_USER_INFO.loginName,
+      };
+    }
+    setRiskTxt(txt);
     setRiskVisible(true);
     CreateOperateHyperLink(params)
       .then((ret = {}) => {
@@ -396,6 +429,7 @@ export default function MileStone(props) {
   const onSuccess = name => {
     message.success(name + '成功');
     getPrjDtlData();
+    getMileStoneData();
     setRiskVisible(false);
   };
   const getBottomBox = () => {
@@ -403,7 +437,7 @@ export default function MileStone(props) {
     member.forEach(x => {
       arr.push(x.RYID);
     });
-    if (arr.includes(String(LOGIN_USER_INFO.id)))
+    if (arr.includes(String(LOGIN_USER_INFO.id)) || isLeader)
       return (
         <div className="bottom-box">
           <div className="left-box">
@@ -428,16 +462,18 @@ export default function MileStone(props) {
               </div>
             )}
             <div className="bottom">
-              <span className="botto-label">项目风险：</span>
+              <span className="bottom-label">项目风险：</span>
               <div className="bottom-risk">
                 {risk
                   .filter(x => x.GLLCBID === hLMileStone.lcbid)
                   ?.map(x => (
-                    <div className="risk-tag" key={x.ID}>
-                      {x.FXBT}
+                    <div>
+                      <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
+                        {x.FXBT}
+                      </div>
                     </div>
                   ))}
-                <Button size="small" onClick={() => addRisk(hLMileStone)}>
+                <Button size="small" onClick={() => handleRisk(hLMileStone)}>
                   <span>+</span>添加
                 </Button>
               </div>
@@ -456,7 +492,7 @@ export default function MileStone(props) {
     // defaultFullScreen: true,
     width: '670px',
     height: '400px',
-    title: '添加风险',
+    title: riskTxt,
     style: { top: '67px' },
     visible: riskVisible,
     footer: null,
@@ -467,7 +503,7 @@ export default function MileStone(props) {
       {riskVisible && (
         <BridgeModel
           modalProps={riskModalProps}
-          onSucess={() => onSuccess('添加')}
+          onSucess={() => onSuccess(riskTxt)}
           onCancel={() => setRiskVisible(false)}
           src={riskUrl}
         />
@@ -500,13 +536,14 @@ export default function MileStone(props) {
               key={step.lcbid}
               title={step.lcbmc}
               subTitle={
-                step.zt === '4' ? (
-                  <div className="risk-tag" style={{ fontWeight: 'normal' }}>
-                    已逾期
-                  </div>
-                ) : (
-                  getRiskTag(risk.filter(x => x.GLLCBID === step.lcbid))
-                )
+                <>
+                  {step.zt === '4' && (
+                    <div className="risk-tag" style={{ fontWeight: 'normal' }}>
+                      已逾期
+                    </div>
+                  )}{' '}
+                  {getRiskTag(risk.filter(x => x.GLLCBID === step.lcbid))}
+                </>
               }
               status={getStatus(step.zt) || 'process'}
               description={step.lcbmc === '项目付款' ? '' : dateFormat(step.kssj, step.jssj)}

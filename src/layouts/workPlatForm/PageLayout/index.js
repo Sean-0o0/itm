@@ -497,7 +497,10 @@ class MainPageLayout extends React.PureComponent {
           >
             <Sider
               className="siderContent cf-menu-wp"
-              style={{ boxShadow: '0px 0px 8px 0px rgba(0,0,0,0.08), 0px 0px 1px 0px rgba(20,38,98,0.16), 2px 0px 4px 0px rgba(20,38,98,0.08)'}}
+              style={{
+                boxShadow:
+                  '0px 0px 8px 0px rgba(0,0,0,0.08), 0px 0px 1px 0px rgba(20,38,98,0.16), 2px 0px 4px 0px rgba(20,38,98,0.08)',
+              }}
               trigger={null}
               collapsible
               width={240}
@@ -519,7 +522,7 @@ class MainPageLayout extends React.PureComponent {
                   {collapsed ? (
                     <Icon type="menu-unfold" className="menu-sider-icon" />
                   ) : (
-                    <Icon type="menu-fold" className="menu-sider-icon"/>
+                    <Icon type="menu-fold" className="menu-sider-icon" />
                   )}
                 </div>
               }

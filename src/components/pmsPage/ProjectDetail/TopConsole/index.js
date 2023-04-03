@@ -1,9 +1,10 @@
-import { Breadcrumb, Button, Popover } from 'antd';
+import { Breadcrumb, Button, message, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 
 const { Item } = Breadcrumb;
 
@@ -11,7 +12,11 @@ export default function TopConsole(props) {
   const { routes = [], prjData = {}, xmid = -1, getPrjDtlData } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
+  const [sqModalVisible, setSqModalVisible] = useState(false);
+  const [sqModaltxt, setSqModaltxt] = useState('');
   const { prjBasic = {} } = prjData;
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
     return () => {
@@ -97,7 +102,7 @@ export default function TopConsole(props) {
                   {x.name}
                 </Link>
               ))}
-            {getTagData(text, idtxt)?.length > 2 && (
+            {getTagData(text, idtxt)?.length > 4 && (
               <Popover
                 overlayClassName="tag-more-popover"
                 content={
@@ -105,22 +110,24 @@ export default function TopConsole(props) {
                     {getTagData(text, idtxt)
                       ?.slice(4)
                       .map((x, i) => (
-                        <Link
-                          to={{
-                            pathname:
-                              '/pms/manage/labelDetail/' +
-                              EncryptBase64(
-                                JSON.stringify({
-                                  bqid: x.id,
-                                }),
-                              ),
-                            state: { routes },
-                          }}
-                          key={x.id}
-                          className="tag-item"
-                        >
-                          {x.name}
-                        </Link>
+                        <div className="tag-item">
+                          <Link
+                            to={{
+                              pathname:
+                                '/pms/manage/labelDetail/' +
+                                EncryptBase64(
+                                  JSON.stringify({
+                                    bqid: x.id,
+                                  }),
+                                ),
+                              state: { routes },
+                            }}
+                            key={x.id}
+                            style={{ color: '#3361ff' }}
+                          >
+                            {x.name}
+                          </Link>
+                        </div>
                       ))}
                   </div>
                 }
@@ -134,20 +141,7 @@ export default function TopConsole(props) {
       </div>
     );
   };
-  const btnMoreContent = (
-    <div className="list">
-      <div
-        className="item"
-        onClick={() => {
-          // setEditingIndex(id);
-          // setDrawerVisible(true);
-        }}
-      >
-        申请餐券
-      </div>
-      <div className="item">申请权限</div>
-    </div>
-  );
+
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
     setFileAddVisible(true);
@@ -157,6 +151,50 @@ export default function TopConsole(props) {
       )}`,
     );
   };
+
+  //申请餐券/权限弹窗
+  const handleSqModal = (name = '申请餐券') => {
+    let params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'TLC_LCFQ',
+      operateName: name === '申请餐券' ? 'TLC_LCFQ_CQSQLC' : 'TLC_LCFQ_VPNSQ',
+      parameter: [
+        {
+          name: 'GLXM',
+          value: xmid,
+        },
+      ],
+      userId: LOGIN_USER_INFO.loginName,
+    };
+    setSqModaltxt(name);
+    setSqModalVisible(true);
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, message, url } = ret;
+        if (code === 1) {
+          setSqModalUrl(url);
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
+  const btnMoreContent = (
+    <div className="list">
+      <div className="item" onClick={() => handleSqModal()}>
+        申请餐券
+      </div>
+      <div className="item" onClick={() => handleSqModal('申请权限')}>
+        申请权限
+      </div>
+    </div>
+  );
+  const handlesqModalSuccess = txt => {
+    message.success(txt, 1);
+    setSqModalVisible(false);
+    getPrjDtlData();
+  };
   const fileAddModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
@@ -165,6 +203,17 @@ export default function TopConsole(props) {
     height: '95vh',
     style: { top: '2vh' },
     visible: fileAddVisible,
+    footer: null,
+  };
+  //申请餐券/权限弹窗
+  const sqModalProps = {
+    isAllWindow: 1,
+    // defaultFullScreen: true,
+    title: sqModaltxt,
+    width: '600px',
+    height: '400px',
+    style: { top: '20px' },
+    visible: sqModalVisible,
     footer: null,
   };
   return (
@@ -178,6 +227,15 @@ export default function TopConsole(props) {
           onCancel={() => {
             setFileAddVisible(false);
           }}
+        />
+      )}
+      {/*申请餐券/权限弹窗*/}
+      {sqModalVisible && (
+        <BridgeModel
+          modalProps={sqModalProps}
+          onSucess={() => handlesqModalSuccess(sqModaltxt)}
+          onCancel={() => setSqModalVisible(false)}
+          src={sqModalUrl}
         />
       )}
       <Breadcrumb separator=">">

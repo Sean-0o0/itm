@@ -7,5 +7,5 @@ export default function HomePage(props) {
   useEffect(() => {
     return () => {};
   }, []);
-  return <HomePageTab />;
+  return <HomePageTab {...props} />;
 }
