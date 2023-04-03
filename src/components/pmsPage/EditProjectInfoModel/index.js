@@ -1427,6 +1427,8 @@ class EditProjectInfoModel extends React.Component {
       mileInfo: {milePostInfo = []},
       purchaseInfo = {},
       fileList = [],
+      htxxVisiable = false,
+      zbxxVisiable = false,
     } = this.state;
     //校验基础信息
     let basicflag;
@@ -1458,7 +1460,11 @@ class EditProjectInfoModel extends React.Component {
       return;
     }
     console.log("purchaseInfo", purchaseInfo)
-    if (purchaseInfo.contractValue === null || purchaseInfo.signData === "" || purchaseInfo.paymentInfos.length === 0 || purchaseInfo.biddingSupplier === "" || fileList.length === 0 || purchaseInfo.number === "") {
+    if (htxxVisiable && purchaseInfo.contractValue === null || purchaseInfo.signData === "") {
+      message.warn("招采信息未填写完整！");
+      return;
+    }
+    if (zbxxVisiable && purchaseInfo.paymentInfos.length === 0 || purchaseInfo.biddingSupplier === "" || fileList.length === 0 || purchaseInfo.number === "") {
       message.warn("招采信息未填写完整！");
       return;
     }
