@@ -15,14 +15,14 @@ class ToConsole extends Component {
         bqsm = '-',//标签说明
       }
     } = this.props;
-
+    console.log("routesroutes-ccc-label", routes)
     return (<div className="top-console">
       <div className="back-img">
         <Breadcrumb separator=">">
           {routes.map((item, index) => {
             const {name = item, pathname = ''} = item
             const historyRoutes = routes.slice(0, index + 1)
-            return <Breadcrumb.Item>
+            return <Breadcrumb.Item key={index}>
               {index === routes.length - 1 ? <Breadcrumb.Item>{name}</Breadcrumb.Item> :
                 <Link to={{pathname: pathname, state: {routes: historyRoutes}}}>
                   {name}

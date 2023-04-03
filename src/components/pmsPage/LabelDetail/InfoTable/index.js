@@ -1,6 +1,8 @@
 import React, {Component} from 'react'
-import {Table, message, Popover, Pagination} from 'antd'
+import {Table, Popover, Pagination} from 'antd'
 import moment from 'moment';
+import {EncryptBase64} from "../../../Common/Encrypt";
+import {Link} from 'react-router-dom';
 
 
 class InfoTable extends Component {
@@ -41,8 +43,18 @@ class InfoTable extends Component {
     }
   };
 
+  jumpToDetail = id => {
+    console.log("cccc-jjjj")
+    window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
+      JSON.stringify({
+        routes: [{name: '首页', pathname: location.pathname}],
+        xmid: id,
+      }),
+    )}`;
+  };
+
   render() {
-    const {tableLoading = false, tableData = [], pageParams = {}} = this.props;
+    const {tableLoading = false, tableData = [], pageParams = {}, routes = []} = this.props;
     const columns = [
       {
         title: '年份',
@@ -60,7 +72,8 @@ class InfoTable extends Component {
         key: 'XMMC',
         ellipsis: true,
         render: (text, row, index) => {
-          return <div className='opr-btn'>{text}</div>
+          const {XMID = ''} = row;
+          return <div className='opr-btn' onClick={() => this.jumpToDetail(XMID)}>{text}</div>
         }
       },
       {
@@ -70,14 +83,32 @@ class InfoTable extends Component {
         key: 'XMBQ',
         ellipsis: true,
         render: (text, row, index) => {
-          const data = this.getTagData(text)
+          // console.log("rowrow",row)
+          const {XMBQID = ''} = row;
+          const ids = this.getTagData(XMBQID);
+          const data = this.getTagData(text);
           return <div className="prj-tags">
             {data.length !== 0 && (
               <>
                 {data?.slice(0, 2)
                   .map((x, i) => (
                     <div key={i} className="tag-item">
-                      {x}
+                      <Link
+                        to={{
+                          pathname:
+                            '/pms/manage/labelDetail/' +
+                            EncryptBase64(
+                              JSON.stringify({
+                                bqid: ids[i],
+                              }),
+                            ),
+                          state: {
+                            routes: routes,
+                          },
+                        }}
+                      >
+                        {x}
+                      </Link>
                     </div>
                   ))}
                 {data?.length > 2 && (
@@ -88,7 +119,22 @@ class InfoTable extends Component {
                         {data?.slice(2)
                           .map((x, i) => (
                             <div key={i} className="tag-item">
-                              {x}
+                              <Link
+                                to={{
+                                  pathname:
+                                    '/pms/manage/labelDetail/' +
+                                    EncryptBase64(
+                                      JSON.stringify({
+                                        bqid: ids[i],
+                                      }),
+                                    ),
+                                  state: {
+                                    routes: routes,
+                                  },
+                                }}
+                              >
+                                {x}
+                              </Link>
                             </div>
                           ))}
                       </div>
@@ -135,14 +181,14 @@ class InfoTable extends Component {
         sortDirections: ['descend', 'ascend']
       }
     ];
-
+    console.log("tableDatatableData", tableData)
     return (
       <div className="info-table">
         <div className="project-info-table-box">
           <Table
             loading={tableLoading}
             columns={columns}
-            rowKey={'xmid'}
+            rowKey={'XMID'}
             dataSource={tableData}
             onChange={this.handleTableChange}
             pagination={false}

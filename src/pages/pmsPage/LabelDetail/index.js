@@ -31,11 +31,11 @@ class LabelDetailPage extends Component {
       // routes= [],
       bqid
     } = params;
-    console.log('routes', routes)
-    console.log('bqid', bqid)
-    routes.push({name: '标签详情', pathname: pathname});
+    // console.log('routes', routes)
+    // console.log('bqid', bqid)
+    const result = routes.concat({name: '标签详情', pathname: pathname});
 
-    return (<LabelDetail dictionary={dictionary} routes={routes} bqid={bqid}/>);
+    return (<LabelDetail dictionary={dictionary} routes={result} bqid={bqid}/>);
   }
 }
 

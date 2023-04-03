@@ -49,7 +49,7 @@ import BridgeModel from "../../Common/BasicModal/BridgeModel";
 import TableFullScreen from "../LifeCycleManagement/ContractInfoUpdate/TableFullScreen";
 import OthersInfos from "./OthersInfos";
 
-const {Option} = Select;
+const {Option, OptGroup} = Select;
 const {api} = config;
 const {confirm} = Modal;
 const {TreeNode} = TreeSelect;
@@ -393,7 +393,7 @@ class EditProjectInfoModel extends React.Component {
       projectLabel: [],
       org: '',
       software: '',
-      biddingMethod: 3,
+      biddingMethod: 1,
       labelTxt: '',
     },
     //招采信息
@@ -495,8 +495,12 @@ class EditProjectInfoModel extends React.Component {
     requirementInfoRecord: [],
     //合同信息操作类型
     htxxCzlx: 'ADD',
+    //合同信息是否展示
+    htxxVisiable: false,
     //招标信息操作类型
     zbxxCzlx: 'ADD',
+    //中标信息是否展示
+    zbxxVisiable: false,
   }
   componentDidMount = async () => {
     const _this = this;
@@ -535,19 +539,19 @@ class EditProjectInfoModel extends React.Component {
     this.fetchQueryOrganizationYYBMInfo();
 
     this.fetchQueryGysInZbxx();
-    // 修改项目时查询项目详细信息
-    if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
-      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
-    }
     // 修改加载状态
     this.setState({loading: false});
     //人员信息接口
-    // 查询组织机构信息
-    await this.fetchQueryOrganizationInfo();
-    // 查询人员信息
-    await this.fetchQueryMemberInfo();
-    // 查询岗位信息
+    // 查询岗位信息 --- 位置不要变就放在这儿
     await this.fetchQueryStationInfo();
+    // 查询组织机构信息 --- 位置不要变就放在这儿
+    await this.fetchQueryOrganizationInfo();
+    // 查询人员信息 --- 位置不要变就放在这儿
+    await this.fetchQueryMemberInfo();
+    // 修改项目时查询项目详细信息 --- 位置不要变就放在这儿
+    if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
+      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
+    }
     //里程碑信息
     // 查询里程碑阶段信息
     await this.fetchQueryMilestoneStageInfo({type: 'ALL'});
@@ -572,7 +576,7 @@ class EditProjectInfoModel extends React.Component {
 
 
   // 处理岗位数据
-  fetchQueryStationInfo() {
+  fetchQueryStationInfo = () => {
     const params = {
       "current": 1,
       "pageSize": 999,
@@ -594,6 +598,7 @@ class EditProjectInfoModel extends React.Component {
         const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
         loginUser.id = String(loginUser.id);
         arr[9] = [loginUser.id];
+        console.log("arrarr", arr)
         this.setState({
           searchStaffList: [loginUser],
           // loginUser: loginUser,
@@ -1006,7 +1011,7 @@ class EditProjectInfoModel extends React.Component {
           if (result.orgId) {
             newOrg = result.orgId.split(";");
           }
-          //console.log("searchStaffListsearchStaffList222", searchStaffList)
+          console.log("jobArrjobArrjobArr", jobArr)
           this.setState({
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
@@ -1935,7 +1940,7 @@ class EditProjectInfoModel extends React.Component {
 
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
-    const matterInfo = mile[index].matterInfos;
+    let matterInfo = mile[index].matterInfos;
     let sxlb = [];
     matterInfo[i].sxlb.forEach((item, index) => {
       if (index !== sx_index) {
@@ -1957,12 +1962,14 @@ class EditProjectInfoModel extends React.Component {
       hash[next.swlx] ? '' : hash[next.swlx] = item.push(next);
       return item
     }, []);
-    if (matterInfo[i].sxlb.filter((i) => i.sxmc).length === spliceList.filter((i) => i.lcbid === mile[index].lcblxid).length) {
+    matterInfo = matterInfo.filter((item) =>
+      item.sxlb.filter((i) => i.sxmc).length !== 0
+    )
+    if (matterInfo.length === spliceList.filter((i) => i.lcbid === mile[index].lcblxid).length) {
       mile[index].addSxFlag = false;
     } else {
       mile[index].addSxFlag = true;
     }
-    //console.log("77777777", mile[index]);
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
     // //console.log("milePostInfo-ccc",removeTitleMile)
     this.setState({
@@ -2185,7 +2192,7 @@ class EditProjectInfoModel extends React.Component {
         }
       })
     });
-    // //console.log("arrarr",arr)
+    console.log("arrarr", arr)
     this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
     // //console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
   };
@@ -2264,7 +2271,7 @@ class EditProjectInfoModel extends React.Component {
       } else {
         mile[index].addSxFlag = true;
       }
-      //console.log("77777777", mile[index]);
+      console.log("77777777", mile[index]);
       this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
     }
   }
@@ -2347,28 +2354,36 @@ class EditProjectInfoModel extends React.Component {
     }).then(res => {
       let rec = res.record;
       let arr = [];
-      for (let i = 0; i < rec.length; i++) {
-        if (rec[i]?.fkxqid !== "") {
-          arr.push({
-            id: rec[i]?.fkxqid,
-            ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
-            ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
-            ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
-            ['fksj' + rec[i]?.fkxqid]: rec[i]?.fksj === "" ? moment(new Date()).format('YYYY-MM-DD') : moment(rec[i]?.fksj).format('YYYY-MM-DD'),
-          });
+      if (rec.length > 0) {
+        for (let i = 0; i < rec.length; i++) {
+          if (rec[i]?.fkxqid !== "") {
+            arr.push({
+              id: rec[i]?.fkxqid,
+              ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+              ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+              ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+              ['fksj' + rec[i]?.fkxqid]: rec[i]?.fksj === "" ? moment(new Date()).format('YYYY-MM-DD') : moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+            });
+          }
         }
+        this.setState({
+          purchaseInfo: {
+            ...purchaseInfo,
+            contractValue: Number(rec[0]?.htje),
+            signData: rec[0]?.qsrq ? rec[0]?.qsrq : moment(new Date).format('YYYY-MM-DD'),
+            paymentInfos: arr,
+            ZT: rec[0]?.ZT
+          },
+          tableData: [...this.state.tableData, ...arr],
+          htxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
+          htxxVisiable: true,
+        });
+      } else {
+        this.setState({
+          htxxVisiable: false,
+        })
       }
-      this.setState({
-        purchaseInfo: {
-          ...purchaseInfo,
-          contractValue: Number(rec[0]?.htje),
-          signData: rec[0]?.qsrq ? rec[0]?.qsrq : moment(new Date).format('YYYY-MM-DD'),
-          paymentInfos: arr,
-          ZT: rec[0]?.ZT
-        },
-        tableData: [...this.state.tableData, ...arr],
-        htxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD'
-      });
+
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -2381,55 +2396,62 @@ class EditProjectInfoModel extends React.Component {
       xmmc: Number(basicInfo.projectId),
     }).then(res => {
       let rec = res.record;
-      this.setState({
-        zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
-        purchaseInfo: {
-          ...purchaseInfo,
-          othersSupplier: arr,
-          biddingSupplierName:  glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
-          biddingSupplier: rec[0]?.zbgys,
-          bidCautionMoney: Number(rec[0]?.tbbzj),
-          cautionMoney: Number(rec[0]?.lybzj),
-          number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
-          pbbg: rec[0]?.pbbg,
-        },
-        uploadFileParams: {
-          columnName: 'PBBG',
-          documentData: res.base64?res.base64:"DQoNCg0KDQoxMTExMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxMTExMjExMTEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjExMTEyDQoyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy",
-          fileLength: 0,
-          filePath: '',
-          fileName: rec[0]?.pbbg?rec[0]?.pbbg:"测试.txt",
-          id: rec[0]?.zbxxid?rec[0]?.zbxxid:0,
-          objectName: 'TXMXX_ZBXX'
-        },
-      });
-      if (res.url && res.base64 && rec[0].pbbg) {
-        let arrTemp = [];
-        arrTemp.push({
-          uid: Date.now(),
-          name: rec[0].pbbg,
-          status: 'done',
-          url: res.url,
-        });
+      if (rec.length > 0) {
         this.setState({
-          fileList: [...this.state.fileList, ...arrTemp]
-        }, () => {
-          // console.log('已存在的filList', this.state.fileList);
+          zbxxVisiable: true,
+          zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
+          purchaseInfo: {
+            ...purchaseInfo,
+            othersSupplier: arr,
+            biddingSupplierName: glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
+            biddingSupplier: rec[0]?.zbgys,
+            bidCautionMoney: Number(rec[0]?.tbbzj),
+            cautionMoney: Number(rec[0]?.lybzj),
+            number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
+            pbbg: rec[0]?.pbbg,
+          },
+          uploadFileParams: {
+            columnName: 'PBBG',
+            documentData: res.base64 ? res.base64 : "DQoNCg0KDQoxMTExMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxMTExMjExMTEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjExMTEyDQoyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy",
+            fileLength: 0,
+            filePath: '',
+            fileName: rec[0]?.pbbg ? rec[0]?.pbbg : "测试.txt",
+            id: rec[0]?.zbxxid ? rec[0]?.zbxxid : 0,
+            objectName: 'TXMXX_ZBXX'
+          },
         });
-      }
-      let arr = [];
-      for (let i = 0; i < rec.length; i++) {
-        if (rec[i].gysmc !== "") {
-          let id = getID();
-          arr.push({
-            id,
-            [`gysmc${id}`]: glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+        if (res.url && res.base64 && rec[0].pbbg) {
+          let arrTemp = [];
+          arrTemp.push({
+            uid: Date.now(),
+            name: rec[0].pbbg,
+            status: 'done',
+            url: res.url,
+          });
+          this.setState({
+            fileList: [...this.state.fileList, ...arrTemp]
+          }, () => {
+            // console.log('已存在的filList', this.state.fileList);
           });
         }
+        let arr = [];
+        for (let i = 0; i < rec.length; i++) {
+          if (rec[i].gysmc !== "") {
+            let id = getID();
+            arr.push({
+              id,
+              [`gysmc${id}`]: glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+            });
+          }
+        }
+        this.setState({
+          tableDataQT: [...this.state.tableDataQT, ...arr],
+        });
+      } else {
+        this.setState({
+          zbxxVisiable: false,
+        })
       }
-      this.setState({
-        tableDataQT: [...this.state.tableDataQT, ...arr],
-      });
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
@@ -2615,6 +2637,9 @@ class EditProjectInfoModel extends React.Component {
       glgys = [],
       //招采信息tab数据
       purchaseInfo = {},
+      //合同信息是否展示
+      htxxVisiable = false,
+      zbxxVisiable = false,
     } = this.state;
     const {getFieldDecorator} = this.props.form;
     const tabs = [
@@ -2633,6 +2658,24 @@ class EditProjectInfoModel extends React.Component {
       {
         key: 3,
         title: "招采信息",
+      },
+      {
+        key: 4,
+        title: "其他信息",
+      }
+    ];
+    const tabsdel = [
+      {
+        key: 0,
+        title: "基本信息",
+      },
+      {
+        key: 1,
+        title: "人员信息",
+      },
+      {
+        key: 2,
+        title: "里程碑信息",
       },
       {
         key: 4,
@@ -2822,7 +2865,10 @@ class EditProjectInfoModel extends React.Component {
               <div style={{height: "6%"}}>
                 <Tabs defaultActiveKey="0" onChange={this.tabsCallback}>
                   {
-                    tabs.map(item => {
+                    htxxVisiable && zbxxVisiable ? tabs.map(item => {
+                      return <TabPane tab={item.title} key={item.key}>
+                      </TabPane>
+                    }) : tabsdel.map(item => {
                       return <TabPane tab={item.title} key={item.key}>
                       </TabPane>
                     })
@@ -2979,21 +3025,25 @@ class EditProjectInfoModel extends React.Component {
                                   // }],
                                   initialValue: basicInfo.biddingMethod
                                 })(
-                                  <Radio.Group onChange={e => {
-                                    this.setState({basicInfo: {...basicInfo, biddingMethod: e.target.value}});
+                                  <Select placeholder='请选择采购方式' onChange={e => {
+                                    this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
                                       xmid: this.state.basicInfo.projectId,
-                                      biddingMethod: e.target.value,
+                                      biddingMethod: e,
                                       budget: budgetInfo.projectBudget,
                                       label: basicInfo.labelTxt,
                                       queryType: "ALL"
                                     });
                                   }}>
-                                    <Radio value={3}>公开招标</Radio>
-                                    <Radio value={1}>邀请招标</Radio>
-                                    <Radio value={2}>直接采购</Radio>
-                                  </Radio.Group>
+                                    <OptGroup label={<span
+                                      style={{fontSize: "14px", fontWeight: 500, color: '#333'}}>非招标方式采购</span>}>
+                                      <Option value={1}>直采</Option>
+                                      <Option value={2}>谈判</Option>
+                                      <Option value={3}>竞价</Option>
+                                      <Option value={4}>询比</Option>
+                                    </OptGroup>
+                                  </Select>
                                 )}
                               </Form.Item>
                             </Col>
@@ -3126,7 +3176,7 @@ class EditProjectInfoModel extends React.Component {
                                             budgetProjectId: ite.ysID,
                                             totalBudget: 0,
                                             relativeBudget: 0,
-                                            projectBudget: 0,
+                                            // projectBudget: 0,
                                             budgetProjectName: '备用预算',
                                             budgetType: '资本性预算'
                                           },
@@ -3178,8 +3228,11 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
-                        <Col span={12} style={{paddingRight: '24px'}}>
+                      <Row gutter={24}>
+                        <Col span={12} style={{
+                          paddingRight: '24px',
+                          display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''
+                        }}>
                           <Form.Item label="剩余预算(元)" className="formItem">
                             <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
                                          precision={0}/>
@@ -3436,9 +3489,9 @@ class EditProjectInfoModel extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                           onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                           style={{
-                                                            width: '20rem',
-                                                            marginTop: '0.7rem',
-                                                            marginLeft: '3rem'
+                                                            width: '120px',
+                                                            marginTop: '6px',
+                                                            marginLeft: '6px'
                                                           }}>
                                                     {
                                                       swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
@@ -3473,8 +3526,13 @@ class EditProjectInfoModel extends React.Component {
                                                 })
                                               }
                                             </div>
-                                            <div style={{width: '90%', display: 'flex', flexWrap: 'wrap'}}>
-                                              <div style={{display: 'flex', flexWrap: 'wrap',paddingLeft:'12px'}}>
+                                            <div style={{
+                                              width: '90%',
+                                              display: 'flex',
+                                              flexWrap: 'wrap',
+                                              alignContent: 'center',
+                                            }}>
+                                              <div style={{display: 'flex', flexWrap: 'wrap', paddingLeft: '12px'}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     // //console.log("sxsxsx",sx)
@@ -3516,9 +3574,9 @@ class EditProjectInfoModel extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                           onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                           style={{
-                                                            width: '25rem',
-                                                            marginTop: '0.7rem',
-                                                            marginLeft: '1rem'
+                                                            width: '120px',
+                                                            marginTop: '6px',
+                                                            marginLeft: '6px'
                                                           }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -3535,7 +3593,11 @@ class EditProjectInfoModel extends React.Component {
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
                                                   <div className='editProject addHover'
-                                                       style={{display: 'grid', alignItems: 'center'}}>
+                                                       style={{
+                                                         display: 'grid',
+                                                         alignItems: 'center',
+                                                         marginTop: '6px'
+                                                       }}>
                                                     <Tag
                                                       style={{background: '#fff', border: 'none'}}>
                                                       <a className="iconfont circle-add"
@@ -3556,9 +3618,9 @@ class EditProjectInfoModel extends React.Component {
                                                       //milePostInfo[index].matterInfos[i].length
                                                             onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                             style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '1rem'
+                                                              width: '120px',
+                                                              marginTop: '6px',
+                                                              marginLeft: '6px'
                                                             }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -3775,9 +3837,9 @@ class EditProjectInfoModel extends React.Component {
                                                       //milePostInfo[index].matterInfos[i].length
                                                             onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                             style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '3rem'
+                                                              width: '120px',
+                                                              marginTop: '6px',
+                                                              marginLeft: '6px'
                                                             }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
@@ -3812,8 +3874,13 @@ class EditProjectInfoModel extends React.Component {
                                                 })
                                               }
                                             </div>
-                                            <div style={{width: '90%', display: 'flex', flexWrap: 'wrap'}}>
-                                              <div style={{display: 'flex', flexWrap: 'wrap',paddingLeft:'12px'}}>
+                                            <div style={{
+                                              width: '90%',
+                                              display: 'flex',
+                                              flexWrap: 'wrap',
+                                              alignContent: 'center',
+                                            }}>
+                                              <div style={{display: 'flex', flexWrap: 'wrap', paddingLeft: '12px',}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     // //console.log("sxsxsx",sx)
@@ -3855,9 +3922,9 @@ class EditProjectInfoModel extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                           onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                           style={{
-                                                            width: '25rem',
-                                                            marginTop: '0.7rem',
-                                                            marginLeft: '1rem'
+                                                            width: '120px',
+                                                            marginTop: '6px',
+                                                            marginLeft: '6px'
                                                           }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -3872,12 +3939,14 @@ class EditProjectInfoModel extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{display: 'grid', alignItems: 'center'}}><Tag
-                                                    style={{background: '#fff', border: 'none'}}>
-                                                    <a className="iconfont circle-add"
-                                                       style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
-                                                       onClick={() => this.showInput(index, i)}>新增</a>
-                                                  </Tag></div>)}
+                                                  <div
+                                                    style={{display: 'grid', alignItems: 'center', marginTop: '6px'}}>
+                                                    <Tag
+                                                      style={{background: '#fff', border: 'none'}}>
+                                                      <a className="iconfont circle-add"
+                                                         style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
+                                                         onClick={() => this.showInput(index, i)}>新增</a>
+                                                    </Tag></div>)}
                                                 {
                                                   e.sxlb?.length === 1 && e.swlxmc !== "new" &&
                                                   (
@@ -3891,9 +3960,9 @@ class EditProjectInfoModel extends React.Component {
                                                       //milePostInfo[index].matterInfos[i].length
                                                             onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                             style={{
-                                                              width: '20rem',
-                                                              marginTop: '0.7rem',
-                                                              marginLeft: '1rem'
+                                                              width: '120px',
+                                                              marginTop: '6px',
+                                                              marginLeft: '6px'
                                                             }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -3987,7 +4056,7 @@ class EditProjectInfoModel extends React.Component {
                     <div className="job">
                       {
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
-                          //console.log("staffJobList", staffJobList)
+                          console.log("staffJobList", staffJobList)
                           if (item.ibm === '10') {
                             return (
                               <div className="jobItem">
@@ -4042,6 +4111,7 @@ class EditProjectInfoModel extends React.Component {
                       }
                       {
                         staffJobList.map((item, index) => {
+                          console.log("jobStaffListjobStaffList", jobStaffList)
                           if (item.ibm !== '10') {
                             return (
                               <div className="jobItem">
@@ -4132,7 +4202,7 @@ class EditProjectInfoModel extends React.Component {
               }
               {
                 // 招采信息
-                current == 3 &&
+                current == 3 && htxxVisiable && htxxVisiable &&
                 <div className="steps-content" style={{overflowY: 'auto', overflowX: 'hidden'}}>
                   <React.Fragment>
                     {isTableFullScreen && <TableFullScreen
@@ -4148,8 +4218,8 @@ class EditProjectInfoModel extends React.Component {
                       selectedRowIds={selectedRowIds}
                     ></TableFullScreen>}
                     <Form ref={e => this.purchaseForm = e}>
-                      <Row gutter={24}>
-                        <Col span={12} style={{paddingRight:'24px'}}>
+                      <Row gutter={24} style={{display: htxxVisiable === false ? 'none' : ''}}>
+                        <Col span={12} style={{paddingRight: '24px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4203,7 +4273,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24}>
+                      <Row gutter={24} style={{display: htxxVisiable === false ? 'none' : ''}}>
                         <Col span={24}>
                           <Form.Item label={<span><span style={{color: 'red'}}>*</span>付款详情</span>}>
                             <div>
@@ -4253,7 +4323,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24}>
+                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>>
                         {/*供应商弹窗*/}
                         {
                           addGysModalVisible &&
@@ -4262,7 +4332,7 @@ class EditProjectInfoModel extends React.Component {
                                        onSucess={this.OnGysSuccess}
                                        src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'}/>
                         }
-                        <Col span={12} style={{paddingRight:'24px',position: 'relative'}}>
+                        <Col span={12} style={{paddingRight: '24px', position: 'relative'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4343,8 +4413,8 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24}>
-                        <Col span={12} style={{paddingRight:'24px'}}>
+                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
+                        <Col span={12} style={{paddingRight: '24px'}}>
                           <Form.Item label={<span> 投标保证金（元）</span>} className="formItem">
                             {getFieldDecorator('projectName', {
                               // rules: [{
@@ -4428,12 +4498,12 @@ class EditProjectInfoModel extends React.Component {
                               accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
                               fileList={[...fileList]}>
                               <Button type="dashed">
-                                <Icon type="upload" />点击上传
+                                <Icon type="upload"/>点击上传
                               </Button>
                             </Upload>
                           </Form.Item></Col>
                       </Row>
-                      <Row gutter={24}>
+                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
                         <Col span={24}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
@@ -4471,7 +4541,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24}>
+                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
                         <Col span={24}>
                           <Form.Item label={'其他投标供应商'}>
                             <div>

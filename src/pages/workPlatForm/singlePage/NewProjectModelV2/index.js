@@ -39,8 +39,8 @@ import config from '../../../../utils/config';
 import LBDialog from 'livebos-frame/dist/LBDialog';
 import RiskOutline from './RiskOutline';
 
-const { Option } = Select;
-const { api } = config;
+const {Option, OptGroup} = Select;
+const {api} = config;
 const { confirm } = Modal;
 const { TreeNode } = TreeSelect;
 const { Step } = Steps;
@@ -86,7 +86,7 @@ class NewProjectModelV2 extends React.Component {
       projectLabel: [],
       org: '',
       software: '',
-      biddingMethod: 3,
+      biddingMethod: 1,
       labelTxt: '',
     },
     mileInfo: {
@@ -952,7 +952,7 @@ class NewProjectModelV2 extends React.Component {
       const { code = -1, record = [] } = result;
       if (code > 0) {
         this.setState({ budgetProjectList: this.toItemTree(record) });
-        //console.log(this.toItemTree(record));
+        // console.log("备用预算",this.toItemTree(record));
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -1599,7 +1599,7 @@ class NewProjectModelV2 extends React.Component {
 
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
-    const matterInfo = mile[index].matterInfos;
+    let matterInfo = mile[index].matterInfos;
     let sxlb = [];
     matterInfo[i].sxlb.forEach((item, index) => {
       if (index !== sx_index) {
@@ -1621,7 +1621,10 @@ class NewProjectModelV2 extends React.Component {
       hash[next.swlx] ? '' : hash[next.swlx] = item.push(next);
       return item
     }, []);
-    if (matterInfo[i].sxlb.filter((i) => i.sxmc).length === spliceList.filter((i) => i.lcbid === mile[index].lcblxid).length) {
+    matterInfo = matterInfo.filter((item) =>
+      item.sxlb.filter((i) => i.sxmc).length !== 0
+    )
+    if (matterInfo.length === spliceList.filter((i) => i.lcbid === mile[index].lcblxid).length) {
       mile[index].addSxFlag = false;
     } else {
       mile[index].addSxFlag = true;
@@ -2400,21 +2403,25 @@ class NewProjectModelV2 extends React.Component {
                                 // }],
                                 initialValue: basicInfo.biddingMethod
                               })(
-                                <Radio.Group onChange={e => {
-                                  this.setState({basicInfo: {...basicInfo, biddingMethod: e.target.value}});
+                                <Select placeholder='请选择采购方式' onChange={e => {
+                                  this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
                                     xmid: this.state.basicInfo.projectId,
-                                    biddingMethod: e.target.value,
+                                    biddingMethod: e,
                                     budget: budgetInfo.projectBudget,
                                     label: basicInfo.labelTxt,
                                     queryType: "ALL"
                                   });
                                 }}>
-                                  <Radio value={3}>公开招标</Radio>
-                                  <Radio value={1}>邀请招标</Radio>
-                                  <Radio value={2}>直接采购</Radio>
-                                </Radio.Group>
+                                  <OptGroup label={<span
+                                    style={{fontSize: "14px", fontWeight: 500, color: '#333'}}>非招标方式采购</span>}>
+                                    <Option value={1}>直采</Option>
+                                    <Option value={2}>谈判</Option>
+                                    <Option value={3}>竞价</Option>
+                                    <Option value={4}>询比</Option>
+                                  </OptGroup>
+                                </Select>
                               )}
                             </Form.Item>
                           </Col>
@@ -2525,7 +2532,7 @@ class NewProjectModelV2 extends React.Component {
                                           budgetProjectId: ite.ysID,
                                           totalBudget: 0,
                                           relativeBudget: 0,
-                                          projectBudget: 0,
+                                          // projectBudget: 0,
                                           budgetProjectName: '备用预算',
                                           budgetType: '资本性预算'
                                         },
@@ -2567,21 +2574,21 @@ class NewProjectModelV2 extends React.Component {
                       <Col span={12}>
                         <Form.Item label="总预算(元)">
                           <InputNumber disabled={true} style={{ width: '100%' }} value={budgetInfo.totalBudget}
-                            precision={0} />
+                                       precision={0}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
                         <Form.Item label="可执行预算(元)">
-                          <InputNumber disabled={true} style={{ width: '100%' }} value={ysKZX}
-                            precision={0} />
+                          <InputNumber disabled={true} style={{width: '100%'}} value={ysKZX}
+                                       precision={0}/>
                         </Form.Item>
                       </Col>
                     </Row>
-                    <Row gutter={24} style={{ display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : '' }}>
-                      <Col span={12}>
+                    <Row gutter={24}>
+                      <Col span={12} style={{display: this.state.budgetInfo.budgetProjectId === '0' ? 'none' : ''}}>
                         <Form.Item label="剩余预算(元)">
-                          <InputNumber disabled={true} style={{ width: '100%' }} value={budgetInfo.relativeBudget}
-                            precision={0} />
+                          <InputNumber disabled={true} style={{width: '100%'}} value={budgetInfo.relativeBudget}
+                                       precision={0}/>
                         </Form.Item>
                       </Col>
                       <Col span={12}>
@@ -2672,9 +2679,21 @@ class NewProjectModelV2 extends React.Component {
                                       width: '100%',
                                       display: 'flex',
                                       flexDirection: 'row',
-                                      padding: '2rem 3rem'
+                                      padding: '6px 12px 6px 0px'
                                     }}>
-                                      <div style={{ width: '80%', borderLeft: '4px solid rgb(52, 97, 255)' }}>
+                                      <div style={{
+                                        width: '80%',
+                                        display: 'inline-flex',
+                                        paddingLeft: '6px',
+                                        alignItems: 'center'
+                                      }}>
+                                        <div style={{
+                                          width: '4px',
+                                          height: '12px',
+                                          background: '#3461FF',
+                                          lineHeight: '19px',
+                                          margin: '3.5px 3.5px 0 0'
+                                        }}/>
                                         <Select
                                           showSearch
                                           filterOption={(input, option) =>
@@ -2682,7 +2701,7 @@ class NewProjectModelV2 extends React.Component {
                                           }
                                           onChange={e => this.selectMileStageInfo(e, index)}
                                           placeholder="请选择"
-                                          style={{ width: '25%', left: '1rem' }}
+                                          style={{width: '25%',}}
                                         >
                                           {
                                             mileStageList.length > 0 && mileStageList.map((item, index) => {
@@ -2691,12 +2710,12 @@ class NewProjectModelV2 extends React.Component {
                                           }
                                         </Select>
                                       </div>
-                                      <div className="right" style={{ marginTop: '2rem' }}>
+                                      <div className="right" style={{marginTop: '12px'}}>
                                         {
                                           <Tooltip title="保存">
-                                            <a style={{ color: '#666', marginTop: '2rem', marginLeft: '2rem' }}
-                                              className="iconfont file-filldone"
-                                              onClick={() => this.saveMilePostInfo(index)} />
+                                            <a style={{color: '#666', marginTop: '12px', marginLeft: '12px'}}
+                                               className="iconfont file-filldone"
+                                               onClick={() => this.saveMilePostInfo(index)}/>
                                           </Tooltip>
                                         }
                                         {/* {
@@ -2708,7 +2727,7 @@ class NewProjectModelV2 extends React.Component {
                                         } */}
                                         {
                                           <Tooltip title="删除">
-                                            <a style={{color: '#666', marginTop: '2rem', marginLeft: '1rem'}}
+                                            <a style={{color: '#666', marginTop: '12px', marginLeft: '6px'}}
                                                className="iconfont delete"
                                                onClick={() => this.removeMilePostInfo(index)}/>
                                           </Tooltip>
@@ -2820,9 +2839,9 @@ class NewProjectModelV2 extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                     onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                     style={{
-                                                      width: '20rem',
-                                                      marginTop: '0.7rem',
-                                                      marginLeft: '3rem'
+                                                      width: '120px',
+                                                      marginTop: '6px',
+                                                      marginLeft: '6px'
                                                     }}>
                                                     {
                                                       swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
@@ -2836,9 +2855,9 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                   <Tooltip title="取消新增">
-                                                    <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
-                                                      className="iconfont delete"
-                                                      onClick={e => this.removeSwlxMx(e, index, i)} />
+                                                    <a style={{color: '#666', marginTop: '12px', marginLeft: '1rem'}}
+                                                       className="iconfont delete"
+                                                       onClick={e => this.removeSwlxMx(e, index, i)}/>
                                                   </Tooltip>
                                                 </div>
                                               )
@@ -2850,22 +2869,32 @@ class NewProjectModelV2 extends React.Component {
                                                   if (sx.type && sx.type === 'title') {
                                                     return (
                                                       <div key={String(sx_index + 1)}
-                                                        style={{ paddingTop: '2rem', fontWeight: 'bold' }}>
+                                                           style={{paddingTop: '12px', fontWeight: 'bold'}}>
                                                       </div>
                                                     )
                                                   }
                                                 })
                                               }
                                             </div>
-                                            <div style={{ width: '90%', display: 'flex', flexWrap: 'wrap' }}>
-                                              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                            <div style={{
+                                              width: '90%',
+                                              display: 'flex',
+                                              flexWrap: 'wrap',
+                                              alignContent: 'center'
+                                            }}>
+                                              <div style={{
+                                                display: 'flex',
+                                                flexWrap: 'wrap',
+                                                alignContent: 'center',
+                                                paddingLeft: '12px'
+                                              }}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     // //console.log("sxsxsx",sx)
                                                     if (!sx.type && sx_index !== 0) {
                                                       return (
                                                         <div key={String(sx_index + 1)}
-                                                          className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                             className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
                                                           {
                                                             <React.Fragment>
                                                               <span title={sx.sxmc}
@@ -2900,9 +2929,9 @@ class NewProjectModelV2 extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                     onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                     style={{
-                                                      width: '25rem',
-                                                      marginTop: '0.7rem',
-                                                      marginLeft: '1rem'
+                                                      width: '120px',
+                                                      marginTop: '6px',
+                                                      marginLeft: '6px'
                                                     }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -2918,12 +2947,19 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{margin: '12px 6px'}}><Tag
-                                                    style={{background: '#fff', border: 'none'}}>
-                                                    <a className="iconfont circle-add"
-                                                       style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
-                                                       onClick={() => this.showInput(index, i)}>新增</a>
-                                                  </Tag></div>)
+                                                  <div className='editProject addHover'
+                                                       style={{
+                                                         display: 'grid',
+                                                         alignItems: 'center',
+                                                         height: '32px',
+                                                         marginTop: '6px'
+                                                       }}>
+                                                    <Tag
+                                                      style={{background: '#fff', border: 'none'}}>
+                                                      <a className="iconfont circle-add"
+                                                         style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
+                                                         onClick={() => this.showInput(index, i)}>新增</a>
+                                                    </Tag></div>)
                                                 }
                                                 {
                                                   e.sxlb?.length === 1 && e.swlxmc !== "new" &&
@@ -2938,9 +2974,9 @@ class NewProjectModelV2 extends React.Component {
                                                       //milePostInfo[index].matterInfos[i].length
                                                       onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                       style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '1rem'
+                                                        width: '120px',
+                                                        marginTop: '6px',
+                                                        marginLeft: '6px'
                                                       }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -2988,7 +3024,7 @@ class NewProjectModelV2 extends React.Component {
                                   </div>
                                 ) : (
                                   <div key={index} className="milePost" id={`milePost${index}`}>
-                                    <div style={{padding: '12px 12px 12px 0'}} className='title'>
+                                    <div style={{padding: '6px 12px 6px 0px'}} className='title'>
                                       <div className="left">
                                         <div style={{marginTop: '12px'}}>
                                           <span style={{
@@ -3120,12 +3156,6 @@ class NewProjectModelV2 extends React.Component {
                                           <div className="flow" key={i} style={{
                                             display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
                                           }}>
-                                            {/*<GridLayout isDraggable={false} style={{marginBottom: '2rem'}}*/}
-                                            {/*            onDragStop={(e) => this.stopDrag(e, index, i)}*/}
-                                            {/*            compactType="horizontal" isBounded={true} isResizable={false}*/}
-                                            {/*            className="layout" layout={e.gridLayout} rowHeight={3}*/}
-                                            {/*            cols={5}*/}
-                                            {/*            width={900}>*/}
                                             <div style={{
                                               width: e.swlxmc === "new" && e.sxlb?.length === 0 ? '100%' : '10%',
                                               alignItems: 'center',
@@ -3163,9 +3193,9 @@ class NewProjectModelV2 extends React.Component {
                                                       //milePostInfo[index].matterInfos[i].length
                                                       onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                       style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '3rem'
+                                                        width: '120px',
+                                                        marginTop: '6px',
+                                                        marginLeft: '6px'
                                                       }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
@@ -3179,9 +3209,9 @@ class NewProjectModelV2 extends React.Component {
                                                       }
                                                     </Select>
                                                     <Tooltip title="取消新增">
-                                                      <a style={{ color: '#666', marginTop: '2rem', marginLeft: '1rem' }}
-                                                        className="iconfont delete"
-                                                        onClick={e => this.removeSwlxMx(e, index, i)} />
+                                                      <a style={{color: '#666', marginTop: '12px', marginLeft: '1rem'}}
+                                                         className="iconfont delete"
+                                                         onClick={e => this.removeSwlxMx(e, index, i)}/>
                                                     </Tooltip>
                                                   </div>
                                                 )
@@ -3193,22 +3223,32 @@ class NewProjectModelV2 extends React.Component {
                                                   if (sx.type && sx.type === 'title') {
                                                     return (
                                                       <div key={String(sx_index + 1)}
-                                                        style={{ paddingTop: '2rem', fontWeight: 'bold' }}>
+                                                           style={{paddingTop: '12px', fontWeight: 'bold'}}>
                                                       </div>
                                                     )
                                                   }
                                                 })
                                               }
                                             </div>
-                                            <div style={{ width: '90%', display: 'flex', flexWrap: 'wrap' }}>
-                                              <div style={{ display: 'flex', flexWrap: 'wrap' }}>
+                                            <div style={{
+                                              width: '90%',
+                                              display: 'flex',
+                                              flexWrap: 'wrap',
+                                              alignContent: 'center'
+                                            }}>
+                                              <div style={{
+                                                display: 'flex',
+                                                flexWrap: 'wrap',
+                                                alignContent: 'center',
+                                                paddingLeft: '12px'
+                                              }}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
                                                     // //console.log("sxsxsx",sx)
                                                     if (!sx.type && sx_index !== 0) {
                                                       return (
                                                         <div key={String(sx_index + 1)}
-                                                          className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
+                                                             className={sx.type && sx.type === 'new' ? 'new' : 'item'}>
                                                           {
                                                             <React.Fragment>
                                                               <span title={sx.sxmc}
@@ -3243,9 +3283,9 @@ class NewProjectModelV2 extends React.Component {
                                                     //milePostInfo[index].matterInfos[i].length
                                                     onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                     style={{
-                                                      width: '25rem',
-                                                      marginTop: '0.7rem',
-                                                      marginLeft: '1rem'
+                                                      width: '120px',
+                                                      marginTop: '6px',
+                                                      marginLeft: '6px'
                                                     }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -3260,7 +3300,12 @@ class NewProjectModelV2 extends React.Component {
                                                     }
                                                   </Select>
                                                 ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
-                                                  <div style={{margin: '12px 6px'}}><Tag
+                                                  <div style={{
+                                                    display: 'grid',
+                                                    alignItems: 'center',
+                                                    height: '32px',
+                                                    marginTop: '6px'
+                                                  }}><Tag
                                                     style={{background: '#fff', border: 'none'}}>
                                                     <a className="iconfont circle-add"
                                                        style={{fontSize: '14px', color: 'rgb(51, 97, 255)',}}
@@ -3279,9 +3324,9 @@ class NewProjectModelV2 extends React.Component {
                                                       //milePostInfo[index].matterInfos[i].length
                                                       onBlur={e => this.handleInputConfirm(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
                                                       style={{
-                                                        width: '20rem',
-                                                        marginTop: '0.7rem',
-                                                        marginLeft: '1rem'
+                                                        width: '120px',
+                                                        marginTop: '6px',
+                                                        marginLeft: '6px'
                                                       }}>
                                                       {
                                                         mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
@@ -3319,7 +3364,7 @@ class NewProjectModelV2 extends React.Component {
                                     }
                                     {item.addSxFlag &&
                                     <div className="addMilePost"
-                                         style={{width: 'calc(46% + 3.5rem)', marginTop: '2rem'}}
+                                         style={{width: 'calc(46% + 3.5rem)', marginTop: '12px'}}
                                          onClick={() => this.addSwlx(item?.lcblxid, index)}>
                                       <Icon type="plus" style={{fontSize: '12px'}}/><span
                                       style={{paddingLeft: '6px', fontSize: '14px'}}>添加事项</span>
@@ -3503,7 +3548,7 @@ class NewProjectModelV2 extends React.Component {
                           // mode="multiple"
                                 placeholder="请选择岗位"
                                 onChange={e => this.onRygwSelectChange(e)}
-                                style={{padding: '1.5rem 0 0 2rem', width: '25rem'}}
+                                style={{padding: '9px 0 0 12px', width: '25rem'}}
                                 onBlur={this.onRygwSelectConfirm}
                                 filterOption={(input, option) =>
                                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0

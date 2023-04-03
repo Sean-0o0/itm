@@ -26,7 +26,7 @@ class ToConsole extends Component {
                 xb = '-',//性别
                 zbxm = '-',//专班项目
             } } = this.props;
-
+        console.log("routesroutes-ccc-staf", routes)
         return (<div className="top-console">
             <div className="back-img">
                 <Breadcrumb separator=">">
