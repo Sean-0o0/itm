@@ -2909,17 +2909,17 @@ class NewProjectModelV2 extends React.Component {
                                               }
                                             </div>
                                             <div>
-                                              {
-                                                e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                  if (sx.type && sx.type === 'title') {
-                                                    return (
-                                                      <div key={String(sx_index + 1)}
-                                                           style={{paddingTop: '12px', fontWeight: 'bold'}}>
-                                                      </div>
-                                                    )
-                                                  }
-                                                })
-                                              }
+                                              {/*{*/}
+                                              {/*  e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {*/}
+                                              {/*    if (sx.type && sx.type === 'title') {*/}
+                                              {/*      return (*/}
+                                              {/*        <div key={String(sx_index + 1)}*/}
+                                              {/*             style={{paddingTop: '12px', fontWeight: 'bold'}}>*/}
+                                              {/*        </div>*/}
+                                              {/*      )*/}
+                                              {/*    }*/}
+                                              {/*  })*/}
+                                              {/*}*/}
                                             </div>
                                             <div style={{
                                               width: '90%',
@@ -3263,17 +3263,17 @@ class NewProjectModelV2 extends React.Component {
                                               }
                                             </div>
                                             <div>
-                                              {
-                                                e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                  if (sx.type && sx.type === 'title') {
-                                                    return (
-                                                      <div key={String(sx_index + 1)}
-                                                           style={{paddingTop: '12px', fontWeight: 'bold'}}>
-                                                      </div>
-                                                    )
-                                                  }
-                                                })
-                                              }
+                                              {/*{*/}
+                                              {/*  e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {*/}
+                                              {/*    if (sx.type && sx.type === 'title') {*/}
+                                              {/*      return (*/}
+                                              {/*        <div key={String(sx_index + 1)}*/}
+                                              {/*             style={{paddingTop: '12px', fontWeight: 'bold'}}>*/}
+                                              {/*        </div>*/}
+                                              {/*      )*/}
+                                              {/*    }*/}
+                                              {/*  })*/}
+                                              {/*}*/}
                                             </div>
                                             <div style={{
                                               width: '90%',
