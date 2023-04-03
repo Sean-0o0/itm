@@ -2184,7 +2184,7 @@ class NewProjectModelV2 extends React.Component {
         key: '0-2',
         children: [
           {
-            title: '直接采购',
+            title: '直采',
             value: '3',
             key: '3',
           },
@@ -2316,13 +2316,13 @@ class NewProjectModelV2 extends React.Component {
                               showSearch
                               treeNodeFilterProp="title"
                               style={{width: '100%'}}
-                              tagRender={item => {
-                                return "weqweqwe" + item;
-                              }}
-                              maxTagCount={2}
+                              // tagRender={item => {
+                              //   return "weqweqwe" + item;
+                              // }}
+                              maxTagCount={3}
                               maxTagTextLength={42}
                               maxTagPlaceholder={extraArr => {
-                                return `等${extraArr.length + 2}个`;
+                                return `等${extraArr.length + 3}个`;
                               }}
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={projectLabelList}
@@ -2373,10 +2373,10 @@ class NewProjectModelV2 extends React.Component {
                               showSearch
                               treeNodeFilterProp="title"
                               style={{width: '100%'}}
-                              maxTagCount={2}
+                              maxTagCount={3}
                               maxTagTextLength={42}
                               maxTagPlaceholder={extraArr => {
-                                return `等${extraArr.length + 2}个`;
+                                return `等${extraArr.length + 3}个`;
                               }}
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={organizationTreeList}

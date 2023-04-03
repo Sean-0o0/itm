@@ -1459,14 +1459,17 @@ class EditProjectInfoModel extends React.Component {
       message.warn("存在里程碑信息开始时间大于结束时间！");
       return;
     }
-    console.log("purchaseInfo", purchaseInfo)
-    if (htxxVisiable && purchaseInfo.contractValue === null || purchaseInfo.signData === "") {
-      message.warn("招采信息未填写完整！");
-      return;
+    if (htxxVisiable) {
+      if (purchaseInfo.contractValue === null || purchaseInfo.signData === "") {
+        message.warn("招采信息未填写完整！");
+        return;
+      }
     }
-    if (zbxxVisiable && purchaseInfo.paymentInfos.length === 0 || purchaseInfo.biddingSupplier === "" || fileList.length === 0 || purchaseInfo.number === "") {
-      message.warn("招采信息未填写完整！");
-      return;
+    if (zbxxVisiable) {
+      if (purchaseInfo.paymentInfos.length === 0 || purchaseInfo.biddingSupplier === "" || fileList.length === 0 || purchaseInfo.number === "") {
+        message.warn("招采信息未填写完整！");
+        return;
+      }
     }
     let staffJobParam = [];
     // console.log("staffJobList保存",staffJobList);
@@ -2705,7 +2708,7 @@ class EditProjectInfoModel extends React.Component {
         key: '0-2',
         children: [
           {
-            title: '直接采购',
+            title: '直采',
             value: '3',
             key: '3',
           },
@@ -2985,13 +2988,13 @@ class EditProjectInfoModel extends React.Component {
                                 showSearch
                                 treeNodeFilterProp="title"
                                 style={{width: '100%'}}
-                                tagRender={item => {
-                                  return "weqweqwe" + item;
-                                }}
-                                maxTagCount={2}
+                                // tagRender={item => {
+                                //   return "weqweqwe" + item;
+                                // }}
+                                maxTagCount={3}
                                 maxTagTextLength={42}
                                 maxTagPlaceholder={extraArr => {
-                                  return `等${extraArr.length + 2}个`;
+                                  return `等${extraArr.length + 3}个`;
                                 }}
                                 dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                                 treeData={projectLabelList}
@@ -3119,10 +3122,10 @@ class EditProjectInfoModel extends React.Component {
                                 showSearch
                                 treeNodeFilterProp="title"
                                 style={{width: '100%'}}
-                                maxTagCount={2}
+                                maxTagCount={3}
                                 maxTagTextLength={42}
                                 maxTagPlaceholder={extraArr => {
-                                  return `等${extraArr.length + 2}个`;
+                                  return `等${extraArr.length + 3}个`;
                                 }}
                                 dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                                 treeData={organizationTreeList}
