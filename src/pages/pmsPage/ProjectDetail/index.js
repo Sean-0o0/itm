@@ -7,15 +7,18 @@ const ProjecDetail = props => {
     match: {
       params: { params: encryptParams = '' },
     },
-    dictionary
+    dictionary,
+    location = {},
   } = props;
-  // console.log("🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ props", props)
+  const { state = {} } = location;
+  const { routes = [] } = state;
+  // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ props', props);
   let xmid = -1;
-  let routes = [];
+  let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
     xmid = obj.xmid;
-    routes = [...obj.routes].concat({
+    routes2 = [...routes].concat({
       name: '项目详情',
       pathname: props?.href,
     });
@@ -23,11 +26,7 @@ const ProjecDetail = props => {
 
   return (
     <Fragment>
-      <ProjectDetailTab
-        dictionary={dictionary}
-        routes={routes}
-        xmid={xmid}
-      ></ProjectDetailTab>
+      <ProjectDetailTab dictionary={dictionary} routes={routes2} xmid={xmid}></ProjectDetailTab>
     </Fragment>
   );
 };

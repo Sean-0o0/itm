@@ -251,16 +251,17 @@ export default function ProjectCard(props) {
         }}
         key={key}
       >
-        <span
-          // Link
-          // to={{
-          //   pathname: '/pms/manage/ProjectDetail',
-          //   state: {
-          //     routes: [{ name: '首页', pathname: location.pathname }],
-          //     xmid,
-          //   },
-          // }}
-          onClick={() => jumpToDetail(xmid)}
+        <Link
+          to={{
+            pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+              JSON.stringify({
+                xmid,
+              }),
+            )}`,
+            state: {
+              routes: [{ name: '首页', pathname: location.pathname }],
+            },
+          }}
         >
           <div className="item-top" style={{ backgroundImage: bgImg }}>
             <span>{title}</span>
@@ -311,7 +312,7 @@ export default function ProjectCard(props) {
               </div>
             </div>
           )}
-        </span>
+        </Link>
         {isDraft ? (
           <div className="item-bottom-operate">
             <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>

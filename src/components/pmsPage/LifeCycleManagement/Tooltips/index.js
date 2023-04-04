@@ -57,7 +57,6 @@ class Tooltips extends React.Component {
 
   getOAUrl = (item) => {
     if (item.sxmc.includes('付款流程')) {
-
       FetchQueryOwnerWorkflow({
         paging: 1,
         current: 1,
