@@ -2917,7 +2917,7 @@ class EditProjectInfoModel extends React.Component {
               <div style={{height: "6%"}}>
                 <Tabs defaultActiveKey="0" onChange={this.tabsCallback}>
                   {
-                    htxxVisiable && zbxxVisiable ? tabs.map(item => {
+                    htxxVisiable || zbxxVisiable ? tabs.map(item => {
                       return <TabPane tab={item.title} key={item.key}>
                       </TabPane>
                     }) : tabsdel.map(item => {
@@ -4260,8 +4260,12 @@ class EditProjectInfoModel extends React.Component {
               }
               {
                 // 招采信息
-                current == 3 && htxxVisiable && htxxVisiable &&
-                <div className="steps-content" style={{overflowY: 'auto', overflowX: 'hidden'}}>
+                current == 3 &&
+                <div className="steps-content" style={{
+                  display: htxxVisiable || zbxxVisiable ? '' : 'none',
+                  overflowY: 'auto',
+                  overflowX: 'hidden'
+                }}>
                   <React.Fragment>
                     {isTableFullScreen && <TableFullScreen
                       isTableFullScreen={isTableFullScreen}
@@ -4331,7 +4335,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: htxxVisiable === false ? 'none' : ''}}>
+                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
                         <Col span={24}>
                           <Form.Item label={<span><span style={{color: 'red'}}>*</span>付款详情</span>}>
                             <div>
