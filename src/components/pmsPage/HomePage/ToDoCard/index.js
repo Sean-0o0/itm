@@ -1,19 +1,18 @@
 import { Button, Empty, message, Tooltip } from 'antd';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { FetchQueryOwnerProjectList, UpdateMessageState } from '../../../../services/pmsServices';
+import { UpdateMessageState } from '../../../../services/pmsServices';
 import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData } = props;
+  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [] } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
   const [ryxztxModalVisible, setRyxztxModalVisible] = useState(false); //人员新增提醒发起弹窗
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
   const [currentXmid, setCurrentXmid] = useState(-1); //当前项目id
-  const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -30,32 +29,10 @@ export default function ToDoCard(props) {
   useLayoutEffect(() => {
     if (toDoData.length !== 0) {
       setDataList(p => [...toDoData?.slice(0, getColNum(itemWidth))]);
-      getXmbhData();
       setIsUnfold(false);
     }
     return () => {};
   }, [props]);
-
-  //获取项目编号
-  const getXmbhData = () => {
-    FetchQueryOwnerProjectList({
-      current: 1,
-      cxlx: 'USER',
-      pageSize: 9999,
-      paging: -1,
-      sort: '',
-      total: -1,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerProjectList ~ res', res.record);
-          setXmbhData(p => [...res.record]);
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerProjectList', e);
-      });
-  };
 
   //弹窗操作成功
   const handleOperateSuccess = txt => {

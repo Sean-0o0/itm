@@ -250,14 +250,14 @@ export default function MileStone(props) {
             <div className="item" key={x.ID}>
               <div className="top">
                 <div className="left-bar"></div>
-                标题{i + 1}
-                {x.ZT === 2 && (
+                风险{i + 1}
+                {x.ZT === '2' && (
                   <div className="handled-tag">
                     <div className="dot"></div>
                     已处理
                   </div>
                 )}
-                {x.ZT === 1 && (
+                {x.ZT === '1' && (
                   <div className="unhandled-tag">
                     <div className="dot"></div>
                     未处理
@@ -300,7 +300,12 @@ export default function MileStone(props) {
               <Tooltip title={x.sxmc}>
                 <span>{x.sxmc}</span>
               </Tooltip>
-              <ItemBtn item={x} xmmc={prjBasic?.XMMC || -1} xmbh={prjBasic?.XMBM || -1} />
+              <ItemBtn
+                item={x}
+                xmmc={prjBasic?.XMMC || -1}
+                xmbh={prjBasic?.XMBM || -1}
+                getMileStoneData={getMileStoneData}
+              />
             </div>
           ))}
         </div>

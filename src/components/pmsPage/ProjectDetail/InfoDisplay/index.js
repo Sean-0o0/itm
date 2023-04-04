@@ -280,7 +280,7 @@ export default function InfoDisplay(props) {
             <div className="info-item" style={{ height: '44px' }}>
               <div className="item-top">
                 <span>已执行预算</span>
-                {getAmountFormat(prjBasic.SYYS)}元
+                {getAmountFormat(prjBasic.KZXYS)}元
               </div>
               <div className="item-bottom">
                 <span>/执行率：</span>

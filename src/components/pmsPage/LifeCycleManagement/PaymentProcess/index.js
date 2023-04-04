@@ -49,7 +49,6 @@ const PaymentProcess = props => {
     closePaymentProcessModal,
     form,
     currentXmid,
-    fetchQueryLifecycleStuff,
     currentXmmc,
     projectCode,
     onSuccess,

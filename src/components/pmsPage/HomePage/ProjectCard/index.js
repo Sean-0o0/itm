@@ -129,11 +129,11 @@ export default function ProjectCard(props) {
   const closeFileAddModal = () => {
     //其他信息tab表格内数据清空
     //获奖信息
-    sessionStorage.setItem("hjxxTableDataFlag", "false");
+    sessionStorage.setItem('hjxxTableDataFlag', 'false');
     //需求信息
-    sessionStorage.setItem("xqxxTableDataFlag", "false");
+    sessionStorage.setItem('xqxxTableDataFlag', 'false');
     //课题信息
-    sessionStorage.setItem("ktxxTableDataFlag", "false");
+    sessionStorage.setItem('ktxxTableDataFlag', 'false');
     getPrjInfo(userRole);
     setFileAddVisible(false);
   };
@@ -394,18 +394,24 @@ export default function ProjectCard(props) {
           src={src_fileAdd}
         />
       )}
-      <div className="home-card-title-box">
-        <div className="txt">
-          团队项目
-          {/* <i className="iconfont circle-info" /> */}
+      {userRole === '普通人员' ? (
+        <div className="home-card-title-box">
+          <div className="txt">我的项目</div>
         </div>
-        {userRole !== '普通人员' && (
-          <span>
-            全部
-            <i className="iconfont icon-right" />
-          </span>
-        )}
-      </div>
+      ) : (
+        <div className="home-card-title-box">
+          <div className="txt">
+            团队项目
+            {/* <i className="iconfont circle-info" /> */}
+          </div>
+          {userRole !== '普通人员' && (
+            <span>
+              全部
+              <i className="iconfont icon-right" />
+            </span>
+          )}
+        </div>
+      )}
       <div className="project-box">
         {infoList?.map(item => {
           return getProjectItem({

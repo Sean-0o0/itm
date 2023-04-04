@@ -9,6 +9,7 @@ import {
   QueryUserRole,
   FetchQueryOwnerMessage,
   FetchQueryOwnerWorkflow,
+  FetchQueryOwnerProjectList,
 } from '../../../services/pmsServices';
 import AvatarCard from './AvatarCard';
 import CptBudgetCard from './CptBudgetCard';
@@ -40,6 +41,7 @@ export default function HomePage(props) {
   const [teamData, setTeamData] = useState([]); //队伍建设
   const [supplierData, setSupplierData] = useState({}); //供应商情况
   const [toDoData, setToDoData] = useState([]); //待办数据
+  const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [processData, setProcessData] = useState([]); //流程情况
   const [updateTime, setUpdateTime] = useState(''); //预算执行情况接口调用时间
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -316,10 +318,32 @@ export default function HomePage(props) {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
           setToDoData(p => [...res.record]);
+          getXmbhData();
         }
       })
       .catch(e => {
         console.error('FetchQueryOwnerMessage', e);
+      });
+  };
+
+  //获取项目编号
+  const getXmbhData = () => {
+    FetchQueryOwnerProjectList({
+      current: 1,
+      cxlx: 'USER',
+      pageSize: 9999,
+      paging: -1,
+      sort: '',
+      total: -1,
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryOwnerProjectList ~ res', res.record);
+          setXmbhData(p => [...res.record]);
+        }
+      })
+      .catch(e => {
+        console.error('FetchQueryOwnerProjectList', e);
       });
   };
 
@@ -362,7 +386,12 @@ export default function HomePage(props) {
         <div className="row-box">
           <div className="col-left" style={{ width: leftWidth }}>
             {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <ToDoCard itemWidth={itemWidth} getAfterItem={getAfterItem} toDoData={toDoData} />
+              <ToDoCard
+                itemWidth={itemWidth}
+                getAfterItem={getAfterItem}
+                toDoData={toDoData}
+                xmbhData={xmbhData}
+              />
             ) : (
               <CptBudgetCard userRole={userRole} budgetData={budgetData} time={updateTime} />
             )}

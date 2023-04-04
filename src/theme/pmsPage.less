@@ -7115,6 +7115,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       //     color: #fff;
       //   }
       // }
+      .ant-steps-item-title {
+        font-weight: bold;
+      }
       .ant-steps-navigation {
         padding-top: 16px;
         margin: 0 18px;
@@ -7157,13 +7160,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
       .ant-steps-item-process {
+        .ant-steps-item-icon {
+          background-color: #fff !important;
+          border-color: rgba(0, 0, 0, 0.85) !important;
+          span {
+            color: rgba(0, 0, 0, 0.85) !important;
+          }
+        }
         .ant-steps-item-container {
           &:hover {
             .ant-steps-item-icon {
               background-color: #3361ff;
               border-color: #3361ff;
               span {
-                color: #fff !important;
+                color: #3361ff !important;
               }
             }
           }
@@ -7173,8 +7183,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .ant-steps-item-container {
           &:hover {
             .ant-steps-item-icon {
-              background-color: #3361ff;
-              border-color: #3361ff;
+              background-color: #3361ff !important;
+              border-color: #3361ff !important;
               span {
                 color: #fff !important;
               }
@@ -7191,10 +7201,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           font-weight: bold;
         }
         .ant-steps-item-icon {
-          background-color: #3361ff;
-          border-color: #3361ff;
+          background-color: #3361ff !important;
+          border-color: #3361ff !important;
           span {
-            color: #fff;
+            color: #fff !important;
           }
         }
       }
@@ -7405,7 +7415,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 color: #dbdfe6ff;
                 font-size: 16px;
                 margin-right: 5px;
-                margin-top: 3px;
+                margin-top: 2px;
               }
               .circle-check {
                 color: #3361ff;
@@ -7450,7 +7460,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   border-radius: 4px;
                   text-align: center;
                   line-height: 24px;
-                  margin-right: 8px;
                   cursor: pointer;
                   &:hover {
                     background-color: #eaefffff;
@@ -7465,6 +7474,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   cursor: pointer;
                   text-align: center;
                   transition: all 0.3s;
+                  margin-left: 8px;
                   &:hover {
                     background: #ebebeb;
                   }
