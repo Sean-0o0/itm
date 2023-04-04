@@ -177,7 +177,7 @@ class RequirementInfo extends Component {
       ...item,//old row
       ...row,//rew row
     });
-    console.log('tableData', newData);
+    // console.log('tableData', newData);
     this.setState({tableData: newData}, () => {
       this.callbackData();
     })

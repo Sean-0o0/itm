@@ -250,9 +250,9 @@ class PrizeInfo extends Component {
   }
 
   RYDJChange = (e,record, index) =>{
-    console.log("e record, index",e, record, index)
+    // console.log("e record, index",e, record, index)
     const {tableData} = this.state;
-    console.log("tableData",tableData)
+    // console.log("tableData",tableData)
     tableData.map(item => {
       if(item.ID === record.ID){
         item['RYDJ' + item.ID] = e;
@@ -266,9 +266,9 @@ class PrizeInfo extends Component {
   }
 
   ZSCQLXChange = (e,record, index) =>{
-    console.log("e record, index",e, record, index)
+    // console.log("e record, index",e, record, index)
     const {tableData} = this.state;
-    console.log("tableData",tableData)
+    // console.log("tableData",tableData)
     tableData.map(item => {
       if(item.ID === record.ID){
         item['ZSCQLX' + item.ID] = e;
@@ -303,7 +303,7 @@ class PrizeInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          console.log("recordrecord",record)
+          // console.log("recordrecord",record)
           return (<Select style={{width: 120}} defaultValue={record['RYDJNAME' + record.ID]} onChange={(e) => _this.RYDJChange(e,record, index)}>
               {
                 HJRYDJ.length > 0 && HJRYDJ.map((item, index) => {

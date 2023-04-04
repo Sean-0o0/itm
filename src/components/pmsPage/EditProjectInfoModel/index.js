@@ -76,7 +76,7 @@ class EditableCell extends React.Component {
 
   save = e => {
     const {record, handleSave, formdecorate} = this.props;
-    formdecorate.validateFields(['fkqs' + record['id'], 'bfb' + record['id'], 'fksj' + record['id'], 'fkje' + record['id']], (error, values) => {
+    formdecorate.validateFields(['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id']], (error, values) => {
       if (error && error[e.currentTarget.id]) {
         return;
       }
@@ -111,12 +111,12 @@ class EditableCell extends React.Component {
     switch (dataIndex) {
       case 'fksj':
         return form.getFieldDecorator(dataIndex + record['id'], {
-          initialValue: moment(record[dataIndex + record['id']]) || null,
+          initialValue: record[dataIndex + record['id']] !== null ? moment(record[dataIndex + record['id']]) : null,
         })(<DatePicker ref={node => (this.input = node)}
                        onChange={(data, dataString) => {
                          const {record, handleSave} = this.props;
-                         form.validateFields(['fkqs' + record['id'], 'bfb' + record['id'], 'fksj' + record['id'], 'fkje' + record['id']], (error, values) => {
-                           // console.log('values', values);
+                         form.validateFields(['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id']], (error, values) => {
+                           // //console.log('values', values);
                            if (error && error[e.currentTarget.id]) {
                              return;
                            }
@@ -506,7 +506,7 @@ class EditProjectInfoModel extends React.Component {
     const _this = this;
     const params = this.getUrlParams();
     if (params.xmid && params.xmid !== -1) {
-      // //console.log("paramsparams", params)
+      // ////console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
         // operateType: 'MOD',
@@ -598,7 +598,7 @@ class EditProjectInfoModel extends React.Component {
         const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
         loginUser.id = String(loginUser.id);
         arr[9] = [loginUser.id];
-        console.log("arrarr", arr)
+        //console.log("arrarr", arr)
         this.setState({
           searchStaffList: [loginUser],
           // loginUser: loginUser,
@@ -622,7 +622,7 @@ class EditProjectInfoModel extends React.Component {
       if (code > 0) {
         let data = JSON.parse(result);
         const arr = this.filterGridLayOut(data);
-        // //console.log("arr-cccc", arr)
+        // ////console.log("arr-cccc", arr)
         if (params.queryType === "ALL") {
           //cccccccc
           let hash = {}
@@ -654,9 +654,9 @@ class EditProjectInfoModel extends React.Component {
               }
             })
           });
-          //console.log("arr-2222", this.state.mileItemInfo)
-          //console.log("arr-cccc", arr)
-          // //console.log("this.state.mileInfo", this.state.mileInfo)
+          ////console.log("arr-2222", this.state.mileItemInfo)
+          ////console.log("arr-cccc", arr)
+          // ////console.log("this.state.mileInfo", this.state.mileInfo)
           this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
         } else if (params.queryType === "ONLYLX") {
           //预算变更-更改项目立场里程碑里面的事项
@@ -718,7 +718,7 @@ class EditProjectInfoModel extends React.Component {
   toOrgTree(list, parId) {
     let obj = {};
     let result = [];
-    // //console.log("list",list)
+    // ////console.log("list",list)
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
     list.map(el => {
       el.title = el.orgName;
@@ -726,7 +726,7 @@ class EditProjectInfoModel extends React.Component {
       el.key = el.orgId;
       obj[el.orgId] = el;
     });
-    // //console.log("objobj",obj)
+    // ////console.log("objobj",obj)
     for (let i = 0, len = list.length; i < len; i++) {
       let id = list[i].orgFid;
       if (id == parId) {
@@ -742,7 +742,7 @@ class EditProjectInfoModel extends React.Component {
     //设置默认展开的节点
     let expend = [];
     let exp = {};
-    // //console.log("result",result)
+    // ////console.log("result",result)
     exp = JSON.parse(JSON.stringify(result[0]));
     exp.children.map(item => {
       delete item.children;
@@ -754,7 +754,7 @@ class EditProjectInfoModel extends React.Component {
     this.setState({
       orgExpendKeys: expend
     })
-    // //console.log("result-cccc",result)
+    // ////console.log("result-cccc",result)
     return result;
   }
 
@@ -762,7 +762,7 @@ class EditProjectInfoModel extends React.Component {
   toLabelTree(list, parId) {
     let obj = {};
     let result = [];
-    // //console.log("list",list)
+    // ////console.log("list",list)
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
     list.map(el => {
       el.title = el.bqmc;
@@ -770,7 +770,7 @@ class EditProjectInfoModel extends React.Component {
       el.key = el.id;
       obj[el.id] = el;
     });
-    console.log("listlist", list)
+    //console.log("listlist", list)
     for (let i = 0, len = list.length; i < len; i++) {
       let id = list[i].fid;
       if (id == parId) {
@@ -783,7 +783,7 @@ class EditProjectInfoModel extends React.Component {
         obj[id].children = [list[i]];
       }
     }
-    // //console.log("result-cccc",result)
+    // ////console.log("result-cccc",result)
     return result;
   }
 
@@ -814,7 +814,7 @@ class EditProjectInfoModel extends React.Component {
       const childrenDatamini = [];
       if (a.hasOwnProperty(key)) {
         if (a[key] !== null) {
-          // //console.log("item",a[key]);
+          // ////console.log("item",a[key]);
           let b = a[key].reduce((pre, current, index) => {
             pre[current.zdbm] = pre[current.zdbm] || [];
             pre[current.zdbm].push({
@@ -839,7 +839,7 @@ class EditProjectInfoModel extends React.Component {
               if (b[item.zdbm]) {
                 let treeDatamini = {children: []}
                 if (item.zdbm === "6") {
-                  // //console.log("b[item.zdbm]",b["6"])
+                  // ////console.log("b[item.zdbm]",b["6"])
                   b[item.zdbm].map(i => {
                     treeDatamini.key = i.ysID
                     treeDatamini.value = i.ysID + i.ysName
@@ -886,7 +886,7 @@ class EditProjectInfoModel extends React.Component {
         }
       }
     }
-    // //console.log("treeData",treeData)
+    // ////console.log("treeData",treeData)
     return treeData;
   }
 
@@ -908,9 +908,9 @@ class EditProjectInfoModel extends React.Component {
               });
             });
             this.setState({mileItemInfo: arr});
-            //console.log("arr", arr)
+            ////console.log("arr", arr)
           } else if (params.type === 'SINGLE') {
-            // //console.log("datadata", data)
+            // ////console.log("datadata", data)
             const idarr = [];
             const swlxarr = [];
             data.forEach(item => {
@@ -944,8 +944,8 @@ class EditProjectInfoModel extends React.Component {
           let memberInfo = JSON.parse(result.memberInfo);
           memberInfo.push({gw: '10', rymc: result.projectManager});
           let arr = [];
-          //console.log("memberInfomemberInfo", memberInfo)
-          //console.log("this.state.staffList", this.state.staffList)
+          ////console.log("memberInfomemberInfo", memberInfo)
+          ////console.log("this.state.staffList", this.state.staffList)
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
@@ -968,7 +968,7 @@ class EditProjectInfoModel extends React.Component {
               // staffJobList: RYGW,
               staffInfo: {...this.state.staffInfo, jobStaffList: arr}
             });
-            //console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
+            ////console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
               if (String(i.ibm) === String(item.gw)) {
                 newStaffJobList.push(i)
@@ -981,11 +981,11 @@ class EditProjectInfoModel extends React.Component {
           let newArray = rygwSelectDictionary.filter(function (item) {
             return newArr.indexOf(item) === -1
           });
-          // //console.log("rygwSelectDictionary",newArray)
+          // ////console.log("rygwSelectDictionary",newArray)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList})
-          // //console.log("arr",arr)
-          // //console.log("budgetProjectList",this.state.budgetProjectList)
+          // ////console.log("arr",arr)
+          // ////console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
@@ -1006,12 +1006,12 @@ class EditProjectInfoModel extends React.Component {
               })
             });
           }
-          //console.log("budgetProjectName", budgetProjectName)
+          ////console.log("budgetProjectName", budgetProjectName)
           let newOrg = []
           if (result.orgId) {
             newOrg = result.orgId.split(";");
           }
-          console.log("jobArrjobArrjobArr", jobArr)
+          //console.log("jobArrjobArrjobArr", jobArr)
           this.setState({
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
@@ -1052,7 +1052,7 @@ class EditProjectInfoModel extends React.Component {
         if (code > 0) {
           this.setState({mileStageList: record});
         }
-        //console.log("record", record)
+        ////console.log("record", record)
       }).catch((error) => {
         message.error(!error.success ? error.message : error.note);
       });
@@ -1145,7 +1145,7 @@ class EditProjectInfoModel extends React.Component {
       const {code = -1, record = []} = result;
       if (code > 0) {
         this.setState({budgetProjectList: this.toItemTree(record)});
-        //console.log(this.toItemTree(record));
+        ////console.log(this.toItemTree(record));
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
@@ -1169,9 +1169,9 @@ class EditProjectInfoModel extends React.Component {
     return FetchQueryProjectLabel({}).then((result) => {
       const {code = -1, record = []} = result;
       if (code > 0) {
-        // console.log("this.toLabelTree(record,0) ",this.toLabelTree(record,0))
+        // //console.log("this.toLabelTree(record,0) ",this.toLabelTree(record,0))
         this.setState({projectLabelList: this.toLabelTree(record, 0)});
-        // console.log("this.toLabelTree(record,0) ",this.state.projectLabelList)
+        // //console.log("this.toLabelTree(record,0) ",this.state.projectLabelList)
         // this.setState({ projectLabelList: record});
       }
     }).catch((error) => {
@@ -1183,7 +1183,7 @@ class EditProjectInfoModel extends React.Component {
   getUrlParams = () => {
     const {match: {params: {params: encryptParams = ''}}} = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
-    // //console.log("paramsparams", params)
+    // ////console.log("paramsparams", params)
     return params;
   }
 
@@ -1257,7 +1257,7 @@ class EditProjectInfoModel extends React.Component {
     } else if ((jobStaffList[9].length > 0 && focusJob === '10') || (focusJob === '10' && checkedStaffKey.length > 1)) {
       message.warning('项目经理最多一个！');
     } else {
-      // //console.log(jobStaffList);
+      // ////console.log(jobStaffList);
       let arr = jobStaffList[Number(focusJob) - 1] ? jobStaffList[Number(focusJob) - 1] : [];
       let searchStaffList = [];
       checkedStaffKey.forEach(item => {
@@ -1322,14 +1322,14 @@ class EditProjectInfoModel extends React.Component {
         const {staffJobList, rygwSelectDictionary, rygwDictionary} = _this.state;
         const newStaffJobList = staffJobList.filter(item => item.ibm !== e);
         let newArr = newStaffJobList.concat()
-        // //console.log("newArr", newArr)
-        // //console.log("rygwDictionary", rygwDictionary)
+        // ////console.log("newArr", newArr)
+        // ////console.log("rygwDictionary", rygwDictionary)
         let newArray = rygwDictionary.filter(function (item) {
           return newArr.indexOf(item) === -1
         });
         // const filter = rygwDictionary.filter(item => item.ibm === e)
         // rygwSelectDictionary.push(filter[0])
-        // //console.log("newArray", newArray)
+        // ////console.log("newArray", newArray)
         // _this.setState({staffJobList: _this.sortByKey(newStaffJobList, 'ibm', true), rygwSelectDictionary: newArray})
         _this.setState({staffJobList: newStaffJobList, rygwSelectDictionary: newArray})
       },
@@ -1472,7 +1472,7 @@ class EditProjectInfoModel extends React.Component {
       }
     }
     let staffJobParam = [];
-    // console.log("staffJobList保存",staffJobList);
+    // //console.log("staffJobList保存",staffJobList);
     staffJobList.forEach(item => {
       let index = Number(item.ibm);
       if (jobStaffList[index - 1] && jobStaffList[index - 1].length > 0) {
@@ -1549,7 +1549,7 @@ class EditProjectInfoModel extends React.Component {
 
   makeOperateParams = (params, milePostInfo, staffJobParams, projectManager, type) => {
     this.setState({loading: true,});
-    // //console.log("statestate", this.state)
+    // ////console.log("statestate", this.state)
     let milepostInfo = [];
     let matterInfo = [];
     milePostInfo.forEach(item => {
@@ -1558,7 +1558,7 @@ class EditProjectInfoModel extends React.Component {
         jssj: moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'),
         kssj: moment(item.kssj, 'YYYY-MM-DD').format('YYYYMMDD')
       });
-      // //console.log("item.matterInfos",item.matterInfos)
+      // ////console.log("item.matterInfos",item.matterInfos)
       item.matterInfos.forEach(i => {
         // X轴升序排序
         let gridLayoutByX = this.sortByKey(i.gridLayout, 'x', true);
@@ -1583,9 +1583,9 @@ class EditProjectInfoModel extends React.Component {
       operateType = 'SAVE';
     }
     //修改项目的时候隐藏暂存草稿,点完成type传MOD
-    // //console.log("handleType", type)
-    // //console.log("projectStatus", this.state.projectStatus === "")
-    // //console.log("projectStatus22", this.state.projectStatus === null)
+    // ////console.log("handleType", type)
+    // ////console.log("projectStatus", this.state.projectStatus === "")
+    // ////console.log("projectStatus22", this.state.projectStatus === null)
     if (type === 1 && this.state.projectStatus === 'MOD') {
       this.setState({
         operateType: 'MOD'
@@ -1626,9 +1626,9 @@ class EditProjectInfoModel extends React.Component {
       item.gw = String(item.gw);
     });
     params.members = memberInfo;
-    // //console.log("params.projectId", this.state.basicInfo.projectId)
+    // ////console.log("params.projectId", this.state.basicInfo.projectId)
     params.projectId = this.state.basicInfo.projectId === undefined || this.state.basicInfo.projectId === '' ? -1 : Number(this.state.basicInfo.projectId);
-    // //console.log("operateType", operateType)
+    // ////console.log("operateType", operateType)
     params.type = 'MOD';
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
@@ -1639,7 +1639,7 @@ class EditProjectInfoModel extends React.Component {
 
   updateZBXX() {
     const czrid = JSON.parse(sessionStorage.getItem('user')).id;
-    console.log("czridczrid", czrid)
+    //console.log("czridczrid", czrid)
     const {
       tableDataQT,
       gysData,
@@ -1649,8 +1649,8 @@ class EditProjectInfoModel extends React.Component {
       zbxxCzlx = 'ADD',
       basicInfo = {}
     } = this.state;
-    console.log("purchaseInfopurchaseInfo222", purchaseInfo)
-    console.log("glgysglgys", gysData)
+    //console.log("purchaseInfopurchaseInfo222", purchaseInfo)
+    //console.log("glgysglgys", gysData)
     let arr = [...tableDataQT];
     let newArr = [];
     arr.map((item) => {
@@ -1662,7 +1662,7 @@ class EditProjectInfoModel extends React.Component {
       newArr.push(obj);
     });
     const {documentData, fileLength, fileName} = uploadFileParams;
-    console.log("documentData", documentData)
+    //console.log("documentData", documentData)
     let submitdata = {
       columnName: 'PBBG',
       documentData,
@@ -1681,7 +1681,7 @@ class EditProjectInfoModel extends React.Component {
       zbgys: Number(purchaseInfo.biddingSupplier),
       czlx: zbxxCzlx,
     };
-    console.log("🚀submitdata", submitdata);
+    //console.log("🚀submitdata", submitdata);
     UpdateZbxx({
       ...submitdata
     }).then(res => {
@@ -1705,12 +1705,16 @@ class EditProjectInfoModel extends React.Component {
       basicInfo = {}
     } = this.state;
     let arr = [...tableData];
-    console.log("purchaseInfo", purchaseInfo)
-    console.log("tableDatatableData", tableData)
+    //console.log("purchaseInfo", purchaseInfo)
+    //console.log("tableDatatableData", tableData)
     arr.forEach(item => {
       for (let i in item) {
         if (i === 'fksj' + item.id) {
-          item[i] = moment(item[i]).format('YYYYMMDD');
+          if (item[i] !== null) {
+            item[i] = moment(item[i]).format('YYYYMMDD');
+          } else {
+            item[i] = '-1'
+          }
         } else {
           item[i] = String(item[i]);
         }
@@ -1752,21 +1756,21 @@ class EditProjectInfoModel extends React.Component {
   //其他信息的保存-获奖信息
 
   prizeInfoCallback = (rec) => {
-    console.log("prizeInfoRecord", rec)
+    //console.log("prizeInfoRecord", rec)
     this.setState({
       prizeInfoRecord: rec
     })
   }
   //其他信息的保存-课题信息
   topicInfoCallback = (rec) => {
-    console.log("topicInfoRecord", rec)
+    //console.log("topicInfoRecord", rec)
     this.setState({
       topicInfoRecord: rec
     })
   }
   //其他信息的保存-需求信息
   requirementInfoCallback = (rec) => {
-    console.log("requirementInfoRecord", rec)
+    //console.log("requirementInfoRecord", rec)
     this.setState({
       requirementInfoRecord: rec
     })
@@ -1961,7 +1965,7 @@ class EditProjectInfoModel extends React.Component {
       }
     });
     matterInfo[i].sxlb = sxlb;
-    //console.log("matterInfo[i]", matterInfo[i])
+    ////console.log("matterInfo[i]", matterInfo[i])
     //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
     if (matterInfo[i].sxlb.filter((i) => i.sxmc).length === this.state.mileItemInfo.filter((i) => i.swlx === matterInfo[i]?.swlxmc).length) {
       matterInfo[i].addFlag = false;
@@ -1984,26 +1988,26 @@ class EditProjectInfoModel extends React.Component {
       mile[index].addSxFlag = true;
     }
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-    // //console.log("milePostInfo-ccc",removeTitleMile)
+    // ////console.log("milePostInfo-ccc",removeTitleMile)
     this.setState({
       mileInfo: {
         ...this.state.mileInfo,
         milePostInfo: this.filterGridLayOut(JSON.parse(JSON.stringify(removeTitleMile)))
       }
     });
-    //console.log("88888888", this.state.mileInfo);
+    ////console.log("88888888", this.state.mileInfo);
   };
 
   // 添加里程碑事项信息-ccccc
   addMilePostInfoItem = (index, i) => {
     const {mileInfo: {milePostInfo = []}} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
-    // //console.log("milePostInfo", milePostInfo)
+    // ////console.log("milePostInfo", milePostInfo)
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const matterInfo = mile[index].matterInfos;
     matterInfo[i].sxlb.push({sxid: '', sxmc: '', type: 'new'});
     const removeTitleMile = this.removeAllTitle(JSON.parse(JSON.stringify(mile)));
-    // //console.log("milePostInfo222", removeTitleMile)
+    // ////console.log("milePostInfo222", removeTitleMile)
     const arr = this.filterGridLayOut(removeTitleMile);
     this.setState({mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
   };
@@ -2109,18 +2113,18 @@ class EditProjectInfoModel extends React.Component {
   };
 
   onChange = minicurrent => {
-    // //console.log('onChange:', minicurrent);
+    // ////console.log('onChange:', minicurrent);
     this.setState({minicurrent});
     let heightTotal = 0;
     //滚动到指定高度
     if (minicurrent) {
       for (let i = 0; i < minicurrent; i++) {
-        // //console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
+        // ////console.log("iiiii", document.getElementById("milePost" + i).offsetHeight)
         heightTotal = heightTotal + document.getElementById("milePost" + i).offsetHeight;
       }
     }
     heightTotal = heightTotal + (7.8 * (minicurrent - 1) + 11.8)
-    // //console.log('height222', heightTotal);
+    // ////console.log('height222', heightTotal);
     document.getElementById("lcbxxClass").scrollTo(0, heightTotal)
   };
 
@@ -2191,10 +2195,10 @@ class EditProjectInfoModel extends React.Component {
     } else if (flag !== sxlb.length) {
       message.warn("已存在,请勿重复添加！")
     }
-    // //console.log("milemile",mile)
+    // ////console.log("milemile",mile)
     mile[index].flag = false;
     const arr = this.filterGridLayOut(mile);
-    //console.log("arrarrarrarr", arr)
+    ////console.log("arrarrarrarr", arr)
     arr.forEach(item => {
       //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
       item.matterInfos.map(item => {
@@ -2205,19 +2209,19 @@ class EditProjectInfoModel extends React.Component {
         }
       })
     });
-    console.log("arrarr", arr)
+    //console.log("arrarr", arr)
     this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
-    // //console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
+    // ////console.log("新增后，新增后",this.state.mileInfo.milePostInfo.matterInfos)
   };
 
   //添加事项
   addSwlx = (e, index) => {
-    // //console.log("eeee",e)
-    // //console.log("index",index)
+    // ////console.log("eeee",e)
+    // ////console.log("index",index)
     this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
     //添加事项类型
-    // //console.log("eeeee", e)
-    // //console.log("index", index)
+    // ////console.log("eeeee", e)
+    // ////console.log("index", index)
     const {mileInfo: {milePostInfo = []},} = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
@@ -2251,7 +2255,7 @@ class EditProjectInfoModel extends React.Component {
           flag = true;
         }
       })
-      // //console.log("matterInfo", matterInfo);
+      // ////console.log("matterInfo", matterInfo);
       if (flag) {
         let num = -1;
         message.warn("已存在,请勿重复添加！")
@@ -2284,7 +2288,7 @@ class EditProjectInfoModel extends React.Component {
       } else {
         mile[index].addSxFlag = true;
       }
-      console.log("77777777", mile[index]);
+      //console.log("77777777", mile[index]);
       this.setState({inputVisible: '-1', mileInfo: {...this.state.mileInfo, milePostInfo: mile}});
     }
   }
@@ -2308,7 +2312,7 @@ class EditProjectInfoModel extends React.Component {
   }
 
   onRygwSelectChange = (e) => {
-    // //console.log("eeee",e)
+    // ////console.log("eeee",e)
     this.setState({
       onRygwSelectValue: e,
     })
@@ -2444,7 +2448,7 @@ class EditProjectInfoModel extends React.Component {
           this.setState({
             fileList: [...this.state.fileList, ...arrTemp]
           }, () => {
-            // console.log('已存在的filList', this.state.fileList);
+            // //console.log('已存在的filList', this.state.fileList);
           });
         }
         let arr = [];
@@ -2513,7 +2517,7 @@ class EditProjectInfoModel extends React.Component {
   //合同信息修改付款详情表格单行删除
   handleSingleDelete = (id) => {
     const dataSource = [...this.state.tableData];
-    // console.log(dataSource);
+    // //console.log(dataSource);
     this.setState({tableData: dataSource.filter(item => item.id !== id)});
   };
 
@@ -2526,7 +2530,7 @@ class EditProjectInfoModel extends React.Component {
       ...row,//rew row
     });
     this.setState({tableData: newData}, () => {
-      // console.log('tableData', this.state.tableData);
+      // //console.log('tableData', this.state.tableData);
     });
   };
 
@@ -2549,7 +2553,7 @@ class EditProjectInfoModel extends React.Component {
     this.setState({tableDataQT: dataSource});
   };
   handleTableSaveQT = row => {
-    console.log("🚀row", row)
+    //console.log("🚀row", row)
     const newData = [...this.state.tableDataQT];
     const index = newData.findIndex(item => row.id === item.id);
     const item = newData[index];
@@ -2558,7 +2562,7 @@ class EditProjectInfoModel extends React.Component {
       ...row,
     });
     this.setState({tableDataQT: newData}, () => {
-      console.log('tableDataQT', this.state.tableDataQT);
+      //console.log('tableDataQT', this.state.tableDataQT);
     });
   };
 
@@ -2735,7 +2739,7 @@ class EditProjectInfoModel extends React.Component {
       },
     ];
     const ministeps = [];
-    // //console.log("milePostInfo", milePostInfo)
+    // ////console.log("milePostInfo", milePostInfo)
     milePostInfo.map(item => {
       let params;
       params = {
@@ -2804,6 +2808,9 @@ class EditProjectInfoModel extends React.Component {
         key: 'fksj',
         ellipsis: true,
         editable: true,
+        render: (text, record) => {
+          return <DatePicker/>
+        }
       },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
@@ -3009,11 +3016,11 @@ class EditProjectInfoModel extends React.Component {
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
                                   //选根节点的话入参就是把这个根节点里面的标签都选上
-                                  console.log("extraextra", extra)
+                                  //console.log("extraextra", extra)
                                   let labelTxt = nodeArr.map(x => x);
                                   labelTxt = labelTxt.join(';');
-                                  console.log("labelTxt", labelTxt)
-                                  console.log("eeeeee", e)
+                                  //console.log("labelTxt", labelTxt)
+                                  //console.log("eeeeee", e)
                                   this.setState({
                                     basicInfo: {...basicInfo, projectLabel: e, labelTxt}
                                   });
@@ -3090,7 +3097,7 @@ class EditProjectInfoModel extends React.Component {
                                     // getPopupContainer={triggerNode => triggerNode.parentNode}
                                     // treeDefaultExpandedKeys={orgExpendKeys}
                                     onChange={e => {
-                                      console.log("请选择采购方式", e)
+                                      //console.log("请选择采购方式", e)
                                       this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
                                       this.fetchQueryMilepostInfo({
                                         type: basicInfo.projectType,
@@ -3226,7 +3233,7 @@ class EditProjectInfoModel extends React.Component {
                                   budgetProjectList.forEach(item => {
                                     item?.children?.forEach(ite => {
                                       if (e === '0备用预算') {
-                                        // //console.log("iteiteiteite",ite)
+                                        // ////console.log("iteiteiteite",ite)
                                         const _this = this;
                                         this.setState({
                                           budgetInfo: {
@@ -3246,7 +3253,7 @@ class EditProjectInfoModel extends React.Component {
                                       }
                                       ite?.children?.forEach(i => {
                                         if (i.value === e) {
-                                          // //console.log("iiiiii",i)
+                                          // ////console.log("iiiiii",i)
                                           const _this = this;
                                           this.setState({
                                             budgetInfo: {
@@ -3370,7 +3377,7 @@ class EditProjectInfoModel extends React.Component {
                     <React.Fragment>
                       {
                         milePostInfo.length > 0 && milePostInfo.map((item, index) => {
-                          // //console.log("itemitemitem", item)
+                          // ////console.log("itemitemitem", item)
                           const {matterInfos = {}} = item;
                           const swlxmcs = matterInfos.map(item => item.swlxmc)
                           swlxarr = swlxarr.filter(item => {
@@ -3499,7 +3506,7 @@ class EditProjectInfoModel extends React.Component {
                                     </div>
                                     {
                                       item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                        // //console.log("e.sxlb", e.sxlb)
+                                        // ////console.log("e.sxlb", e.sxlb)
                                         const {sxlb = {}} = e;
                                         const sxids = sxlb.map(item => item.sxid)
                                         mileItemInfo = mileItemInfo.filter(item => {
@@ -3541,7 +3548,7 @@ class EditProjectInfoModel extends React.Component {
                                                           }
                                                     // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
                                                           onChange={(e) => {
-                                                            // //console.log("eeee-cc",e)
+                                                            // ////console.log("eeee-cc",e)
                                                             this.setState({inputValue: e})
                                                           }}
                                                     //milePostInfo[index].matterInfos[i].length
@@ -3593,7 +3600,7 @@ class EditProjectInfoModel extends React.Component {
                                               <div style={{display: 'flex', flexWrap: 'wrap', paddingLeft: '12px'}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                    // //console.log("sxsxsx",sx)
+                                                    // ////console.log("sxsxsx",sx)
                                                     if (!sx.type && sx_index !== 0) {
                                                       return (
                                                         <div key={String(sx_index + 1)}
@@ -3638,9 +3645,9 @@ class EditProjectInfoModel extends React.Component {
                                                           }}>
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
-                                                        // //console.log("mileItemInfo.length",mileItemInfo.length)
+                                                        // ////console.log("mileItemInfo.length",mileItemInfo.length)
                                                         if (mi.swlx === e.swlxmc) {
-                                                          //console.log("flag")
+                                                          ////console.log("flag")
                                                           return (
                                                             <Option title={mi.sxmc} key={mi_index}
                                                                     value={mi.sxid}>{mi.sxmc}</Option>
@@ -3844,7 +3851,7 @@ class EditProjectInfoModel extends React.Component {
                                     </div>
                                     {
                                       item.matterInfos.length > 0 && item.matterInfos.map((e, i) => {
-                                        // //console.log("e.sxlb", e.sxlb)
+                                        // ////console.log("e.sxlb", e.sxlb)
                                         //过滤已有条目
                                         const {sxlb = {}} = e;
                                         const sxids = sxlb.map(item => item.sxid)
@@ -3852,8 +3859,8 @@ class EditProjectInfoModel extends React.Component {
                                           const {sxid} = item;
                                           return !sxids.includes(sxid)
                                         })
-                                        // //console.log("mileItemInfo", mileItemInfo)
-                                        // //console.log("e.swlxmc", e)
+                                        // ////console.log("mileItemInfo", mileItemInfo)
+                                        // ////console.log("e.swlxmc", e)
                                         return (
                                           <div className="flow" key={i} style={{
                                             display: e.swlxmc === "new" && e.sxlb?.length === 0 ? '' : (e.swlxmc !== "new" && e.sxlb?.length === 0 ? 'none' : ''),
@@ -3889,7 +3896,7 @@ class EditProjectInfoModel extends React.Component {
                                                             }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
                                                             onChange={(e) => {
-                                                              // //console.log("eeee-cc",e)
+                                                              // ////console.log("eeee-cc",e)
                                                               this.setState({inputValue: e})
                                                             }}
                                                       //milePostInfo[index].matterInfos[i].length
@@ -3941,7 +3948,7 @@ class EditProjectInfoModel extends React.Component {
                                               <div style={{display: 'flex', flexWrap: 'wrap', paddingLeft: '12px',}}>
                                                 {
                                                   e.sxlb?.length > 0 && e.sxlb?.map((sx, sx_index) => {
-                                                    // //console.log("sxsxsx",sx)
+                                                    // ////console.log("sxsxsx",sx)
                                                     if (!sx.type && sx_index !== 0) {
                                                       return (
                                                         <div key={String(sx_index + 1)}
@@ -3987,7 +3994,7 @@ class EditProjectInfoModel extends React.Component {
                                                     {
                                                       mileItemInfo.length > 0 && mileItemInfo.map((mi, mi_index) => {
                                                         if (mi.swlx === e.swlxmc) {
-                                                          //console.log("flag")
+                                                          ////console.log("flag")
                                                           return (
                                                             <Option title={mi.sxmc} key={mi_index}
                                                                     value={mi.sxid}>{mi.sxmc}</Option>
@@ -4114,7 +4121,7 @@ class EditProjectInfoModel extends React.Component {
                     <div className="job">
                       {
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
-                          console.log("staffJobList", staffJobList)
+                          //console.log("staffJobList", staffJobList)
                           if (item.ibm === '10') {
                             return (
                               <div className="jobItem">
@@ -4153,7 +4160,7 @@ class EditProjectInfoModel extends React.Component {
                                   >
                                     {
                                       searchStaffList.length > 0 && searchStaffList.map((item, index) => {
-                                        //console.log("searchStaffList", searchStaffList)
+                                        ////console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
                                                          value={item.id}>{item.name}({item.orgName ? item.orgName : loginUser.orgName})</Select.Option>
@@ -4169,7 +4176,7 @@ class EditProjectInfoModel extends React.Component {
                       }
                       {
                         staffJobList.map((item, index) => {
-                          console.log("jobStaffListjobStaffList", jobStaffList)
+                          //console.log("jobStaffListjobStaffList", jobStaffList)
                           if (item.ibm !== '10') {
                             return (
                               <div className="jobItem">
@@ -4205,7 +4212,7 @@ class EditProjectInfoModel extends React.Component {
                                   >
                                     {
                                       searchStaffList.map((item, index) => {
-                                        //console.log("searchStaffList", searchStaffList)
+                                        ////console.log("searchStaffList", searchStaffList)
                                         return (
                                           <Select.Option key={index}
                                                          value={item.id}>{item.name}({item.orgName})</Select.Option>
@@ -4296,7 +4303,7 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: purchaseInfo.contractValue
                             })(
                               <Input type='number' placeholder="请输入合同金额" onChange={e => {
-                                console.log('请输入合同金额',e.target.value)
+                                //console.log('请输入合同金额',e.target.value)
                                 this.setState({purchaseInfo: {...purchaseInfo, contractValue: e.target.value}});
                               }}/>
                             )}
@@ -4323,7 +4330,7 @@ class EditProjectInfoModel extends React.Component {
                                             allowClear={false}
                                             value={moment(purchaseInfo.signData, 'YYYY-MM-DD')}
                                             onChange={(date, dateString) => {
-                                              console.log("eeeeee", dateString)
+                                              //console.log("eeeeee", dateString)
                                               this.setState({purchaseInfo: {...purchaseInfo, signData: dateString}});
                                             }}
                                             onFocus={() => this.setState({
@@ -4360,13 +4367,15 @@ class EditProjectInfoModel extends React.Component {
                                   cursor: 'pointer'
                                 }} onClick={() => {
                                   let arrData = tableData;
+                                  //console.log("nullnullnull",moment(null))
                                   arrData.push({
                                     id: Date.now(),
                                     ['fkqs' + Date.now()]: tableData.length + 1,
                                     ['bfb' + Date.now()]: 0.5,
                                     ['fkje' + Date.now()]: Number(0.5 * Number(purchaseInfo.contractValue)),
-                                    ['fksj' + Date.now()]: moment().format('YYYY-MM-DD'),
+                                    ['fksj' + Date.now()]: null,
                                   });
+                                  //console.log("arrData",arrData)
                                   this.setState({
                                     tableData: arrData,
                                     purchaseInfo: {...purchaseInfo, paymentInfos: arrData}
@@ -4529,7 +4538,7 @@ class EditProjectInfoModel extends React.Component {
                                 let fileList = [...info.fileList];
                                 fileList = fileList.slice(-1);
                                 this.setState({ fileList }, () => {
-                                  // console.log('目前fileList', this.state.fileList);
+                                  // //console.log('目前fileList', this.state.fileList);
                                 });
                                 if (fileList.length === 0) {
                                   this.setState({
@@ -4542,12 +4551,12 @@ class EditProjectInfoModel extends React.Component {
                                 }
                               }}
                               beforeUpload={(file, fileList) => {
-                                // console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
+                                // //console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
                                 let reader = new FileReader(); //实例化文件读取对象
                                 reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
                                 reader.onload = (e) => { //文件读取成功完成时触发
                                   let urlArr = e.target.result.split(',');
-                                  console.log('uploadFileParamsuploadFileParams', uploadFileParams);
+                                  //console.log('uploadFileParamsuploadFileParams', uploadFileParams);
                                   this.setState({
                                     uploadFileParams: {
                                       ...this.state.uploadFileParams,

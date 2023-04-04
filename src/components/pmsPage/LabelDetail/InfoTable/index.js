@@ -44,7 +44,7 @@ class InfoTable extends Component {
   };
 
   jumpToDetail = id => {
-    console.log("cccc-jjjj")
+    // console.log("cccc-jjjj")
     window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
       JSON.stringify({
         routes: [{name: '首页', pathname: location.pathname}],
@@ -90,7 +90,7 @@ class InfoTable extends Component {
           return <div className="prj-tags">
             {data.length !== 0 && (
               <>
-                {data?.slice(0, 2)
+                {data?.slice(0, 3)
                   .map((x, i) => (
                     <div key={i} className="tag-item">
                       <Link
@@ -111,12 +111,12 @@ class InfoTable extends Component {
                       </Link>
                     </div>
                   ))}
-                {data?.length > 2 && (
+                {data?.length > 3 && (
                   <Popover
                     overlayClassName="tag-more-popover"
                     content={
                       <div className="tag-more">
-                        {data?.slice(2)
+                        {data?.slice(3)
                           .map((x, i) => (
                             <div key={i} className="tag-item">
                               <Link
@@ -181,7 +181,7 @@ class InfoTable extends Component {
         sortDirections: ['descend', 'ascend']
       }
     ];
-    console.log("tableDatatableData", tableData)
+    // console.log("tableDatatableData", tableData)
     return (
       <div className="info-table">
         <div className="project-info-table-box">

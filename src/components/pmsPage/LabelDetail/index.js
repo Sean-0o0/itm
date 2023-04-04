@@ -21,7 +21,8 @@ class LabelDetail extends Component {
   }
 
   componentDidMount() {
-    this.handleSearch()
+    const {bqid} = this.props;
+    this.handleSearch({}, bqid)
   }
 
   componentWillReceiveProps(nextProps) {

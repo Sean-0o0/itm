@@ -220,15 +220,15 @@ class TopicInfo extends Component {
   }
 
   JDChange = (e,record, index) =>{
-    console.log("e record, index",e, record, index)
+    // console.log("e record, index",e, record, index)
     const {tableData} = this.state;
-    console.log("tableData",tableData)
+    // console.log("tableData",tableData)
     tableData.map(item => {
       if(item.KTID === record.KTID){
         item['JD' + item.KTID] = e;
       }
     })
-    console.log("tableData222",tableData)
+    // console.log("tableData222",tableData)
     this.setState({
       ...tableData
     }, () => {
@@ -295,7 +295,7 @@ class TopicInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          console.log("record",record)
+          // console.log("record",record)
           return (<InputNumber style={{width: '100%'}} value={record['JD' + record.KTID]}  onChange={(e) => _this.JDChange(e,record, index)}
                                precision={0}/>
           )
