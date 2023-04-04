@@ -287,11 +287,11 @@ export default function MileStone(props) {
 
   const getItem = item => {
     return (
-      <div className="item" style={{ width: itemWidth }} key={item.sxid}>
+      <div className="item" style={{ width: itemWidth }} key={item.swlx}>
         <div className="item-top">{item.swlx}</div>
         <div className="item-bottom">
-          {item.swItem?.map(x => (
-            <div className="bottom-row" style={x.zxqk === ' ' ? {} : { color: '#3361ff' }}>
+          {item.swItem?.map((x, i) => (
+            <div className="bottom-row" style={x.zxqk === ' ' ? {} : { color: '#3361ff' }} key={i}>
               {x.zxqk === ' ' ? (
                 <i className="iconfont circle-reduce" />
               ) : (
@@ -300,7 +300,7 @@ export default function MileStone(props) {
               <Tooltip title={x.sxmc}>
                 <span>{x.sxmc}</span>
               </Tooltip>
-              <ItemBtn item={x} />
+              <ItemBtn item={x} xmmc={prjBasic?.XMMC || -1} xmbh={prjBasic?.XMBM || -1} />
             </div>
           ))}
         </div>
