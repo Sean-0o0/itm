@@ -5,8 +5,8 @@ import AttachLibrary from '../../../components/pmsPage/AttachLibrary'
 class AttachLibraryPage extends Component {
     state = {  } 
     render() { 
-        const { dictionary, location: { query: { xmid } } } = this.props;
-        return (<AttachLibrary dictionary={dictionary} xmid={xmid}/>);
+        const { dictionary, location: { query: { xmid }, pathname = '' } } = this.props;
+        return (<AttachLibrary dictionary={dictionary} xmid={xmid} pathname={pathname}/>);
     }
 }
 

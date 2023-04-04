@@ -4,6 +4,8 @@ import HistoryAttach from './HistoryAttach'
 import axios from 'axios';
 import config from '../../../../utils/config';
 import moment from 'moment';
+import { EncryptBase64 } from "../../../Common/Encrypt";
+import { Link } from 'react-router-dom';
 const { api } = config;
 const { pmsServices: { queryFileStream, zipLivebosFilesRowsPost } } = api;
 
@@ -148,8 +150,8 @@ class InfoTable extends Component {
     }
 
     render() {
-        const { tableLoading = false, tableData = [], pageParams = {} } = this.props;
-        const { modalVisible = false, record } = this.state;
+        const { tableLoading = false, tableData = [], pageParams = {}, pathname = '' } = this.props;
+        const { modalVisible = false, record, } = this.state;
 
         const rowSelection = {
             onChange: (selectedRowKeys, selectedRows) => {
@@ -169,7 +171,26 @@ class InfoTable extends Component {
                 dataIndex: 'xmmc',
                 width: '14%',
                 key: 'xmmc',
-                ellipsis: true
+                ellipsis: true,
+                render: (text, row, index) => {
+                    const { xmid = '' } = row;
+                    return <div className='opr-btn'>
+                        <Link
+                            to={{
+                                pathname:`/pms/manage/ProjectDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                        xmid: xmid,
+                                    }),
+                                )}`,
+                                state: {
+                                    routes: [{name: '文档列表', pathname: pathname}],
+                                },
+                            }}
+
+                        >
+                            {text}
+                        </Link></div>
+                }
             },
             {
                 title: '文档类型',

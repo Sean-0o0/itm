@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import { Table, message, Popover, Pagination } from 'antd'
 import moment from 'moment';
-import {EncryptBase64} from "../../../Common/Encrypt";
+import { EncryptBase64 } from "../../../Common/Encrypt";
 import { Link } from 'react-router-dom';
 
 class InfoTable extends Component {
@@ -45,6 +45,7 @@ class InfoTable extends Component {
 
     render() {
         const { tableLoading = false, tableData = [], pageParams = {}, routes = [] } = this.props;
+        console.log('routes',routes)
 
         const columns = [
             {
@@ -63,7 +64,23 @@ class InfoTable extends Component {
                 key: 'xmmc',
                 ellipsis: true,
                 render: (text, row, index) => {
-                    return <div className='opr-btn'>{text}</div>
+                    const { xmid = '' } = row;
+                    return <div className='opr-btn'>
+                        <Link
+                            to={{
+                                pathname:`/pms/manage/ProjectDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                        xmid: xmid,
+                                    }),
+                                )}`,
+                                state: {
+                                    routes: routes,
+                                },
+                            }}
+
+                        >
+                            {text}
+                        </Link></div>
                 }
             },
             {

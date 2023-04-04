@@ -87,10 +87,10 @@ class AttachLibrary extends Component {
 
     render() {
         const { tableLoading = false, attachList = [], pageParams, cxlx } = this.state
-        const { dictionary, xmid } = this.props;
+        const { dictionary, xmid, pathname } = this.props;
         return (<div className="attach-library-box">
-            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid}/>
-            <InfoTable tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
+            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid} />
+            <InfoTable pathname={pathname} tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
         </div>);
     }
 }
