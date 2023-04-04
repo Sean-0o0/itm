@@ -422,13 +422,13 @@ class BidInfoUpdate extends React.Component {
                 ellipsis: true,
                 editable: true,
             },
-            // {
-            //     title: <><span style={{ color: 'red' }}>*</span>供应商收款账号</>,
-            //     dataIndex: 'gysskzh',
-            //     key: 'gysskzh',
-            //     ellipsis: true,
-            //     editable: true,
-            // },
+            {
+                title: <><span style={{ color: 'red' }}>*</span>供应商收款账号</>,
+                dataIndex: 'gysskzh',
+                key: 'gysskzh',
+                ellipsis: true,
+                editable: true,
+            },
             {
                 title: '操作',
                 dataIndex: 'operator',
@@ -591,8 +591,8 @@ class BidInfoUpdate extends React.Component {
                                 arr.map((item) => {
                                     let obj = {
                                         GYSMC: String(glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
-                                        GYSFKZH: "-1"
-                                        // GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
+                                        // GYSFKZH: "-1"
+                                        GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
                                     };
                                     newArr.push(obj);
                                 });
@@ -605,7 +605,7 @@ class BidInfoUpdate extends React.Component {
                                   fileLength,
                                   glgys: 0,
                                   gysfkzh: -1,
-                                  // gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
+                                  gysfkzh: Number(skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || ''),
                                   ijson: JSON.stringify(newArr),
                                   lybzj: Number(getFieldValue('lybzj')),
                                   objectName: 'TXMXX_ZBXX',
@@ -700,7 +700,7 @@ class BidInfoUpdate extends React.Component {
                                 />
                             </Col>
                         </Row>
-                        {/* <Row>
+                        <Row>
                             <Col span={12}>
                                 <Form.Item label="账户范围" required labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
                                     <Radio.Group value={radioValue} onChange={this.OnRadioChange}>
@@ -748,7 +748,7 @@ class BidInfoUpdate extends React.Component {
                                     alt='' style={{ height: '2.976rem', marginLeft: '1.0416em', marginTop: '1.488rem', cursor: 'pointer' }}
                                 />
                             </Col>
-                        </Row> */}
+                        </Row>
                         <Row>
                             <Col span={12}><Form.Item label="履约保证金金额（元）" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
                                 {getFieldDecorator('lybzj', {
@@ -838,7 +838,7 @@ class BidInfoUpdate extends React.Component {
                                         reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
                                         reader.onload = (e) => { //文件读取成功完成时触发
                                             let urlArr = e.target.result.split(',');
-                                            console.log('uploadFileParamsuploadFileParams', uploadFileParams);
+                                            // console.log('uploadFileParamsuploadFileParams', uploadFileParams);
                                             this.setState({
                                                 uploadFileParams: {
                                                     ...this.state.uploadFileParams,

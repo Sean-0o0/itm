@@ -44,7 +44,6 @@ export default function HomePage(props) {
   const [updateTime, setUpdateTime] = useState(''); //预算执行情况接口调用时间
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const htmlContent = document.getElementById('htmlContent'); //页面跳转后滚至顶部
-  htmlContent.scrollTop = 0; //页面跳转后滚至顶部
 
   //防抖定时器
   let timer = null;
@@ -52,6 +51,7 @@ export default function HomePage(props) {
   //页面恢复，跳转回首页时触发
   props.cacheLifecycles.didRecover(() => {
     // console.log('跳转回首页时触发');
+    if (htmlContent) htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     setIsSpinning(true);
     getUserRole();
     setUpdateTime(moment().format('YYYY-MM-DD'));

@@ -9,13 +9,13 @@ import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 const { Item } = Breadcrumb;
 
 export default function TopConsole(props) {
-  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData } = props;
+  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
-  const { prjBasic = {} } = prjData;
+  const { prjBasic = {}, member = [] } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
@@ -23,6 +23,16 @@ export default function TopConsole(props) {
       window.removeEventListener('message', handleIframePostMessage);
     };
   }, []);
+
+  //是否为项目成员或领导
+  const isMember = () => {
+    const arr = [];
+    member.forEach(x => {
+      arr.push(x.RYID);
+    });
+    return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
+  };
+
   //监听新建项目弹窗状态
   const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
@@ -180,6 +190,7 @@ export default function TopConsole(props) {
         message.error(!error.success ? error.message : error.note);
       });
   };
+
   const btnMoreContent = (
     <div className="list">
       <div className="item" onClick={() => handleSqModal()}>
@@ -190,11 +201,13 @@ export default function TopConsole(props) {
       </div>
     </div>
   );
+
   const handlesqModalSuccess = txt => {
     message.success(txt, 1);
     setSqModalVisible(false);
     getPrjDtlData();
   };
+
   const fileAddModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
@@ -205,6 +218,7 @@ export default function TopConsole(props) {
     visible: fileAddVisible,
     footer: null,
   };
+
   //申请餐券/权限弹窗
   const sqModalProps = {
     isAllWindow: 1,
@@ -257,19 +271,23 @@ export default function TopConsole(props) {
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
-          <Button className="btn-edit" onClick={handleEditPrjInfo}>
-            编辑
-          </Button>
-          <Popover
-            placement="bottomRight"
-            title={null}
-            content={btnMoreContent}
-            overlayClassName="tc-btn-more-content-popover"
-          >
-            <Button className="btn-more">
-              <i className="iconfont icon-more" />
-            </Button>
-          </Popover>
+          {isMember() && (
+            <>
+              <Button className="btn-edit" onClick={handleEditPrjInfo}>
+                编辑
+              </Button>
+              <Popover
+                placement="bottomRight"
+                title={null}
+                content={btnMoreContent}
+                overlayClassName="tc-btn-more-content-popover"
+              >
+                <Button className="btn-more">
+                  <i className="iconfont icon-more" />
+                </Button>
+              </Popover>
+            </>
+          )}
         </div>
       </div>
       <div className="mnger-time">

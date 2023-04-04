@@ -104,7 +104,7 @@ export default function ProjectDetail(props) {
       wrapperClassName="diy-style-spin-prj-detail"
     >
       <div className="prj-detail-box">
-        <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData} />
+        <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData} isLeader={isLeader}/>
         <MileStone
           xmid={xmid}
           prjData={prjData}
