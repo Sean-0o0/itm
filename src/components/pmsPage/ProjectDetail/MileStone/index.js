@@ -302,8 +302,9 @@ export default function MileStone(props) {
               </Tooltip>
               <ItemBtn
                 item={x}
-                xmmc={prjBasic?.XMMC || -1}
-                xmbh={prjBasic?.XMBM || -1}
+                xmmc={prjBasic?.XMMC || ''}
+                xmbh={prjBasic?.XMBM || ''}
+                xwhid={prjBasic?.XWHID || -1}
                 getMileStoneData={getMileStoneData}
               />
             </div>

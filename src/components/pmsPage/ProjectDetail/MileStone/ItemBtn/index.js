@@ -1,14 +1,24 @@
-import { Popover } from 'antd';
 import React from 'react';
-import { CreateOperateHyperLink } from '../../../../../services/pmsServices';
+import {
+  CreateOperateHyperLink,
+  FetchQueryOAUrl,
+  FetchQueryOwnerWorkflow,
+} from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import { message } from 'antd';
+import { message, Popover } from 'antd';
+import config from '../../../../../utils/config';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
 import AssociatedFile from '../../../LifeCycleManagement/AssociatedFile';
 import ContractSigning from '../../../LifeCycleManagement/ContractSigning';
 import ContractInfoUpdate from '../../../LifeCycleManagement/ContractInfoUpdate';
 import PaymentProcess from '../../../LifeCycleManagement/PaymentProcess';
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
+
+const { api } = config;
+const {
+  pmsServices: { getStreamByLiveBos },
+} = api;
+
 class ItemBtn extends React.Component {
   state = {
     //Livebos弹窗
@@ -34,10 +44,13 @@ class ItemBtn extends React.Component {
     paymentModalVisible: false,
     //合同签署流程发起
     contractSigningVisible: false,
+    //信委会立案流程查看
+    xwhyaModalVisible: false,
   };
 
   componentDidMount() {}
 
+  //Livebos弹窗参数
   getParams = (objName, oprName, data) => {
     return {
       attribute: 0,
@@ -49,6 +62,7 @@ class ItemBtn extends React.Component {
     };
   };
 
+  //获取Livebos弹窗链接
   getLink = (params, urlState) => {
     CreateOperateHyperLink(params)
       .then((ret = {}) => {
@@ -131,20 +145,20 @@ class ItemBtn extends React.Component {
     const xxlrxg = (item, type = '') => {
       let params = {};
       if (type === 'MOD') {
-        if (item.sxmc.includes('合同信息录入')) {
+        if (item.sxmc === '合同信息录入') {
           this.setState({
             editMessageVisible: true,
           });
           return;
         }
-        if (item.sxmc.includes('中标信息录入')) {
+        if (item.sxmc === '中标信息录入') {
           this.setState({
             bidInfoModalVisible: true,
           });
           return;
         }
       } else {
-        if (item.sxmc.includes('合同信息录入')) {
+        if (item.sxmc === '合同信息录入') {
           params = this.getParams('V_HTXX', 'V_HTXX_ADD', [
             {
               name: 'XMMC',
@@ -152,7 +166,7 @@ class ItemBtn extends React.Component {
             },
           ]);
         }
-        if (item.sxmc.includes('中标信息录入')) {
+        if (item.sxmc === '中标信息录入') {
           params = this.getParams('View_TBXX', 'View_TBXX_ADD', [
             {
               name: 'XMMC',
@@ -216,32 +230,234 @@ class ItemBtn extends React.Component {
   };
 
   //流程发起查看
-  getLcfqck = (done, item, isFklc = false) => {
+  getLcfqck = (done, item) => {
+    console.log('🚀 ~ file: index.js ~ line 224 ~ ItemBtn ~ done, item', done, item);
+    //是否付款流程
+    const isFklc = item.sxmc === '付款流程';
+    //查看
+    const lcck = item => {
+      if (isFklc) {
+        FetchQueryOwnerWorkflow({
+          paging: -1,
+          current: 1,
+          pageSize: 9999,
+          total: -1,
+          sort: '',
+        })
+          .then(ret => {
+            const { code = 0, record = [] } = ret;
+            if (code === 1) {
+              record.forEach(x => {
+                if (x.xmid === item.xmid) {
+                  if (x.url.includes('YKB:')) {
+                    const arr = x.url.split(',');
+                    const id = arr[0].split(':')[1];
+                    const userykbid = arr[1];
+                    GetApplyListProvisionalAuth({
+                      id,
+                      userykbid,
+                    })
+                      .then(res => {
+                        window.open(res.url);
+                      })
+                      .catch(e => console.error(e));
+                  }
+                }
+              });
+            }
+          })
+          .catch(error => {
+            console.error(!error.success ? error.message : error.note);
+          });
+        return;
+      }
+      if (item.sxmc.includes('信委会议案流程')) {
+        const { xwhid } = this.props;
+        let params = this.getParams('LC_XWHYALC', 'TrackWork', [
+          {
+            name: 'ID',
+            value: Number(xwhid),
+          },
+        ]);
+        this.setState({
+          xwhyaModalVisible: true,
+        });
+        this.getLink(params, 'xwhyaModalUrl');
+        return;
+      }
+      FetchQueryOAUrl({
+        sxid: item.sxid,
+        xmmc: item.xmid,
+      })
+        .then((ret = {}) => {
+          const { code = 0, record = [] } = ret;
+          if (code === 1) {
+            window.open(record.url);
+          }
+        })
+        .catch(error => {
+          console.error(!error.success ? error.message : error.note);
+        });
+    };
+    //发起
+    const lcfq = item => {
+      if (isFklc) {
+        //付款流程
+        this.setState({
+          paymentModalVisible: true,
+        });
+        // message.info('功能开发中，暂时无法使用', 1);
+        return;
+      }
+      //合同签署流程弹窗
+      if (item.sxmc === '合同签署流程') {
+        this.setState({
+          contractSigningVisible: true,
+        });
+        return;
+      }
+      let params = this.getParams(
+        'TLC_LCFQ',
+        'TLC_LCFQ_LXSQLCFQ',
+        [
+          {
+            name: 'GLXM',
+            value: item.xmid,
+          },
+        ],
+        Loginname,
+      );
+      if (item.sxmc === '软件费用审批流程-有合同') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_SUBMIT_RJGMHT',
+          [
+            {
+              name: 'GLXM',
+              value: Number(item.xmid),
+            },
+          ],
+          Loginname,
+        );
+      }
+      if (item.sxmc === '软件费用审批流程-无合同') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_RJGMWHT',
+          [
+            {
+              name: 'GLXM',
+              value: Number(item.xmid),
+            },
+          ],
+          Loginname,
+        );
+      }
+      if (item.sxmc === '申请餐券') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_CQSQLC',
+          [
+            {
+              name: 'GLXM',
+              value: item.xmid,
+            },
+          ],
+          Loginname,
+        );
+      }
+      if (item.sxmc === '申请权限' || item.sxmc === '申请VPN') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_VPNSQ',
+          [
+            {
+              name: 'GLXM',
+              value: item.xmid,
+            },
+          ],
+          Loginname,
+        );
+      }
+      if (item.sxmc === '信委会议案流程') {
+        params = this.getParams(
+          'LC_XWHYALC',
+          'LC_XWHYALC_TAFQ',
+          [
+            {
+              name: 'XMMC',
+              value: item.xmid,
+            },
+          ],
+          Loginname,
+        );
+      }
+      if (item.sxmc === '会议议案提交') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_HYYA',
+          [
+            {
+              name: 'GLXM',
+              value: item.xmid,
+            },
+          ],
+          Loginname,
+        );
+      }
+      this.setState({
+        lbModalTitle: item.sxmc + '发起',
+        sendVisible: true,
+      });
+      this.getLink(params, 'sendUrl');
+    };
+    //打印
+    const lcdy = async item => {
+      await axios({
+        method: 'GET',
+        url: getStreamByLiveBos,
+        params: {
+          xmid: item.xmid,
+        },
+        responseType: 'blob', // 更改responseType类型为 blob
+      })
+        .then(res => {
+          let blob = new Blob([res.data], { type: 'application/pdf' });
+          const src = URL.createObjectURL(blob);
+          this.setState(
+            {
+              src,
+            },
+            () => {
+              const printIframe = document.getElementById('Iframe');
+              printIframe.onload = () => {
+                printIframe.contentWindow.print();
+              };
+            },
+          );
+        })
+        .catch(err => {
+          console.error(err);
+        });
+    };
     const reoprMoreCotent = (
       <div className="list">
-        <div
-          className="item"
-          onClick={() => {
-            // setEditingIndex(id);
-            // setDrawerVisible(true);
-          }}
-        >
-          选项123
+        <div className="item" onClick={() => lcck(item)} key="查看">
+          查看
         </div>
-        <div
-          className="item"
-          onClick={() => {
-            // handleMsgDelete(id, content);
-          }}
-        >
-          选项234
-        </div>
+        {isFklc && (
+          <div className="item" onClick={() => lcdy(item)} key="打印流程附件">
+            打印流程附件
+          </div>
+        )}
       </div>
     );
     if (done)
       return (
         <div className="opr-more">
-          <div className="reopr-btn">重新发起</div>
+          <div className="reopr-btn" onClick={() => lcfq(item)}>
+            重新发起
+          </div>
           <Popover
             placement="bottom"
             title={null}
@@ -254,7 +470,11 @@ class ItemBtn extends React.Component {
           </Popover>
         </div>
       );
-    return <div className="opr-btn">发起</div>;
+    return (
+      <div className="opr-btn" onClick={() => lcfq(item)}>
+        发起
+      </div>
+    );
   };
 
   //按钮事件配置
@@ -271,9 +491,8 @@ class ItemBtn extends React.Component {
       case '申请权限':
       case '申请餐券':
       case '会议议案提交':
-        return this.getLcfqck(done, item);
       case '付款流程':
-        return this.getLcfqck(done, item, true);
+        return this.getLcfqck(done, item);
 
       //信息录入
       case '中标信息录入':
@@ -315,7 +534,6 @@ class ItemBtn extends React.Component {
     }
   };
 
-
   //成功回调
   onSuccess = name => {
     message.success(name + '成功');
@@ -335,6 +553,7 @@ class ItemBtn extends React.Component {
       paymentModalVisible,
       contractSigningVisible,
       associatedFileVisible,
+      xwhyaModalVisible,
     } = this.state;
 
     //文档上传、修改弹窗
@@ -378,11 +597,23 @@ class ItemBtn extends React.Component {
       visible: ygpjVisible,
       footer: null,
     };
+    //信委会立案流程查看
+    const xwhyaModalProps = {
+      isAllWindow: 1,
+      title: '信委会立案流程查看',
+      width: '800px',
+      height: '600px',
+      style: { top: '60px' },
+      visible: xwhyaModalVisible,
+      footer: null,
+    };
 
     const { item, xmmc, xmbh } = this.props;
     // console.log("🚀 ~ file: index.js ~ line 511 ~ ItemBtn ~ render ~ item, xmmc, xmbh", item, xmmc, xmbh)
     return (
       <>
+        {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}
+
         {/*文档上传、修改弹窗*/}
         {uploadVisible && (
           <BridgeModel
@@ -396,6 +627,7 @@ class ItemBtn extends React.Component {
             src={lbModalUrl}
           />
         )}
+
         {/*流程发起弹窗*/}
         {sendVisible && (
           <BridgeModel
@@ -409,6 +641,7 @@ class ItemBtn extends React.Component {
             src={lbModalUrl}
           />
         )}
+
         {/*信息录入、修改弹窗*/}
         {xxlrxgVisible && (
           <BridgeModel
@@ -422,6 +655,7 @@ class ItemBtn extends React.Component {
             src={lbModalUrl}
           />
         )}
+
         {/*员工评价开启弹窗*/}
         {ygpjVisible && (
           <BridgeModel
@@ -431,6 +665,17 @@ class ItemBtn extends React.Component {
             src={lbModalUrl}
           />
         )}
+
+        {/* 信委会立案流程查看 */}
+        {xwhyaModalVisible && (
+          <BridgeModel
+            modalProps={xwhyaModalProps}
+            onCancel={() => this.setState({ xwhyaModalVisible: false })}
+            // onSucess={this.OnSuccess}
+            src={lbModalUrl}
+          />
+        )}
+
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && (
           <PaymentProcess
@@ -446,6 +691,7 @@ class ItemBtn extends React.Component {
             projectCode={xmbh}
           />
         )}
+
         {/*合同信息修改弹窗*/}
         {editMessageVisible && (
           <ContractInfoUpdate
@@ -460,6 +706,7 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('信息修改')}
           ></ContractInfoUpdate>
         )}
+
         {/*合同签署流程弹窗*/}
         {contractSigningVisible && (
           <ContractSigning
@@ -475,6 +722,7 @@ class ItemBtn extends React.Component {
             xmbh={xmbh}
           ></ContractSigning>
         )}
+
         {/*合同签署流程弹窗*/}
         {associatedFileVisible && (
           <AssociatedFile
@@ -487,6 +735,7 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('合同签署')}
           ></AssociatedFile>
         )}
+
         {/*中标信息修改弹窗*/}
         {bidInfoModalVisible && (
           <BidInfoUpdate
@@ -502,7 +751,6 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('信息修改')}
           ></BidInfoUpdate>
         )}
-        {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}
       </>
     );
   }
