@@ -39,6 +39,10 @@ class EditableCell extends React.Component {
     switch (dataIndex) {
       case 'XQRQ':
         return form.getFieldDecorator(dataIndex + record['XQID'], {
+          rules: [{
+            required: true,
+            message: '请选择需求日期'
+          }],
           initialValue: moment(record[dataIndex + record['XQID']]) || null,
         })(<DatePicker ref={node => (this.input = node)}
                        onChange={(data, dataString) => {
@@ -62,6 +66,10 @@ class EditableCell extends React.Component {
         />);
       case 'XQBT':
         return form.getFieldDecorator(dataIndex + record['XQID'], {
+          rules: [{
+            required: true,
+            message: '请输入需求标题'
+          }],
           initialValue: String(record[dataIndex + record['XQID']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -69,6 +77,10 @@ class EditableCell extends React.Component {
                   onBlur={this.save}/>);
       case 'XQNR':
         return form.getFieldDecorator(dataIndex + record['XQID'], {
+          rules: [{
+            required: true,
+            message: '请输入需求内容'
+          }],
           initialValue: String(record[dataIndex + record['XQID']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -244,7 +256,12 @@ class RequirementInfo extends Component {
     } = this.state;
     const tableColumns = [
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>需求标题</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>需求标题</span>,
         dataIndex: 'XQBT',
         width: '13%',
         key: 'XQBT',
@@ -252,14 +269,24 @@ class RequirementInfo extends Component {
         editable: true,
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>需求内容</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>需求内容</span>,
         dataIndex: 'XQNR',
         key: 'XQNR',
         ellipsis: true,
         editable: true,
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>需求日期</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>需求日期</span>,
         dataIndex: 'XQRQ',
         width: '17%',
         key: 'XQRQ',

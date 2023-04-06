@@ -280,7 +280,12 @@ class TopicInfo extends Component {
     const _this = this;
     const tableColumns = [
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>项目标题</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>项目标题</span>,
         dataIndex: 'XMKT',
         width: '13%',
         key: 'XMKT',
@@ -288,7 +293,12 @@ class TopicInfo extends Component {
         editable: true,
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>进度(%)</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>进度(%)</span>,
         dataIndex: 'JD',
         key: 'JD',
         width: '8%',
@@ -296,13 +306,19 @@ class TopicInfo extends Component {
         // editable: true,
         render(text, record, index) {
           // console.log("record",record)
-          return (<InputNumber style={{width: '100%'}} value={record['JD' + record.KTID]}  onChange={(e) => _this.JDChange(e,record, index)}
+          return (<InputNumber style={{width: '100%'}} value={record['JD' + record.KTID]}
+                               onChange={(e) => _this.JDChange(e, record, index)}
                                precision={0}/>
           )
         }
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>简介</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>简介</span>,
         dataIndex: 'JJ',
         width: '23%',
         key: 'JJ',
@@ -310,7 +326,12 @@ class TopicInfo extends Component {
         editable: true,
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>当前进展</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>当前进展</span>,
         dataIndex: 'DQJZ',
         width: '17%',
         key: 'DQJZ',

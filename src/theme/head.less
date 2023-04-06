@@ -454,7 +454,7 @@
 }
 .zy-header-wrap {
   &.ant-layout-header {
-    height: auto;
+    height: 45px;
     // overflow: hidden !important;
     line-height: 45px;
     padding: 0;
@@ -507,9 +507,75 @@
   }
 }
 
-.clearfix {
-    *zoom: 1;
+.scrollbars {
+  .div {
+    &:first-child {
+      overflow-y: hidden !important;
+      overflow-x: auto !important;
+    }
   }
+}
+
+.visitedRoutes__tagview___2_7la:nth-of-type(1) {
+  .visitedRoutes__curTabsBak___3Qekc:nth-of-type(1) {
+    margin: 0 !important;
+    border-radius: 0 10px;
+  }
+}
+
+;
+
+.clearfix {
+  *zoom: 1;
+
+  display: flex;
+  align-items: center;
+  background: #f3f4f4;
+
+  .visitedRoutes__tagview___2_7la {
+    .visitedRoutes__curTabsBak___3Qekc {
+      margin: 0 5px;
+      padding: 0 10px;
+      position: relative;
+      flex: 1;
+      height: 45px;
+      line-height: 45px;
+      text-align: center;
+      color: #fff;
+      background: #f3f4f4;
+    }
+
+    .visitedRoutes__isActive___38JGQ {
+      background: #fff;
+      color: #333;
+      z-index: 1;
+      border-radius: 10px 10px 0 0;
+      box-shadow: 10px 10px 0 0 white, -10px 10px 0 0 white;
+
+      &:before {
+        content: "";
+        position: absolute;
+        left: -21px;
+        bottom: 0;
+        width: 21px;
+        height: 45px;
+        background: #f3f4f4;
+        border-radius: 0 0 10px 0;
+      }
+
+      &:after {
+        content: "";
+        position: absolute;
+        right: -21px;
+        bottom: 0;
+        width: 21px;
+        height: 45px;
+        background: #f3f4f4;
+        border-radius: 0 0 0 10px;
+      }
+    }
+  }
+}
 
   .clearfix:after,
   .clearfix:before {

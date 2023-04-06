@@ -77,7 +77,8 @@ class NewProjectModelV2 extends React.Component {
     organizationStaffTreeList: [], // 组织机构人员列表树形结构
     staffInfo: {
       focusJob: '',  // 准备添加人员的岗位
-      jobStaffList: [] // 各个岗位下对应的员工id
+      jobStaffList: [], // 各个岗位下对应的员工id
+      jobStaffName: [] //各个岗位下对应的员工name
     },
     basicInfo: {
       projectId: -1,
@@ -368,7 +369,9 @@ class NewProjectModelV2 extends React.Component {
     });
 
     // 修改加载状态
-    this.setState({ loading: false });
+    this.setState({loading: false});
+    // 查询组织机构信息 --- 位置不要变就放在这儿
+    await this.fetchQueryOrganizationInfo();
     // 查询岗位信息
     await this.fetchQueryStationInfo();
     // 查询组织机构信息
@@ -378,7 +381,7 @@ class NewProjectModelV2 extends React.Component {
 
     // 修改项目时查询项目详细信息
     if (this.state.basicInfo.projectId && this.state.basicInfo.projectId !== -1) {
-      await this.fetchQueryProjectDetails({ projectId: this.state.basicInfo.projectId });
+      await this.fetchQueryProjectDetails({projectId: this.state.basicInfo.projectId});
     }
 
     //判断完成状态
@@ -407,15 +410,18 @@ class NewProjectModelV2 extends React.Component {
         });
         // 获取当前登录用户信息
         const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+        console.log("loginUser", loginUser)
         loginUser.id = String(loginUser.id);
         arr[9] = [loginUser.id];
+        let nameArr = [];
+        nameArr[9] = [loginUser.name + '(' + this.state.loginUser.orgName + ')'];
         this.setState({
           searchStaffList: [loginUser],
           // loginUser: loginUser,
           staffJobList: rec,
           rygwDictionary: rec,
           rygwSelectDictionary: rec,
-          staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
+          staffInfo: {...this.state.staffInfo, jobStaffList: arr, jobStaffName: nameArr}
         });
       }
     }).catch((error) => {
@@ -1704,14 +1710,17 @@ class NewProjectModelV2 extends React.Component {
 
   // 选中新建里程碑的阶段信息
   selectMileStageInfo = async (e, index) => {
-    const { mileInfo: { milePostInfo = [] }, mileStageList = [] } = this.state;
-    await this.fetchQueryMatterUnderMilepost({ type: 'SINGLE', lcbid: e });
+    const {mileInfo: {milePostInfo = []}, mileStageList = []} = this.state;
+    await this.fetchQueryMatterUnderMilepost({type: 'SINGLE', lcbid: e});
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
     const newMileItemInfo = JSON.parse(JSON.stringify(this.state.newMileItemInfo));
     let lcbmc = '';
+    console.log("mileStageListmileStageList", mileStageList)
+    console.log("eeeeeeeeee", e)
     mileStageList.forEach(item => {
       if (item.id == e) {
+        console.log('2222')
         lcbmc = item.lcbmc;
       }
     });
@@ -2111,8 +2120,8 @@ class NewProjectModelV2 extends React.Component {
       organizationStaffTreeList,
       staffJobList = [],
       checkedStaffKey,
-      staffInfo: { jobStaffList = [] },
-      basicInfo = { software: '' },
+      staffInfo: {jobStaffList = [], jobStaffName = []},
+      basicInfo = {software: ''},
       swlxarr = [],
       isFinish = -1,
       rygwDictionary = [],
@@ -2229,7 +2238,7 @@ class NewProjectModelV2 extends React.Component {
         <div className="newProject" style={{ overflow: 'hidden', height: "100%" }}>
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{ height: "100%" }}>
             <div style={{ overflow: 'hidden', height: "100%" }}>
-              <div style={{margin: '0 120px 0 120px', height: "11%"}}>
+              <div style={{margin: '0 120px 0 120px', height: "75px"}}>
                 <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
                     <Step key={index} title={item.title}
@@ -2319,10 +2328,10 @@ class NewProjectModelV2 extends React.Component {
                               // tagRender={item => {
                               //   return "weqweqwe" + item;
                               // }}
-                              maxTagCount={3}
+                              maxTagCount={2}
                               maxTagTextLength={42}
                               maxTagPlaceholder={extraArr => {
-                                return `等${extraArr.length + 3}个`;
+                                return `等${extraArr.length + 2}个`;
                               }}
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={projectLabelList}
@@ -2744,6 +2753,7 @@ class NewProjectModelV2 extends React.Component {
                                           filterOption={(input, option) =>
                                             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                           }
+                                          value={item.lcbmc}
                                           onChange={e => this.selectMileStageInfo(e, index)}
                                           placeholder="请选择"
                                           style={{width: '25%',}}
@@ -3480,7 +3490,7 @@ class NewProjectModelV2 extends React.Component {
                                 <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
-                                    value={jobStaffList.length > 0 ? jobStaffList[9] : []}
+                                    value={jobStaffName.length > 0 ? jobStaffName[9] : []}
                                     onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'manage')}
                                     onFocus={() => this.setState({
@@ -3496,9 +3506,24 @@ class NewProjectModelV2 extends React.Component {
                                       } else {
                                         let jobStaffList = this.state.staffInfo.jobStaffList;
                                         jobStaffList[9] = e;
+                                        let newJobStaffName = [];
+                                        // staffList
+                                        let jobStaffName = this.state.staffInfo.jobStaffName;
+                                        e.map(i => {
+                                          if (!isNaN(Number(i))) {
+                                            newJobStaffName.push(this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')');
+                                          } else {
+                                            newJobStaffName.push(i)
+                                          }
+                                        })
+                                        jobStaffName[9] = newJobStaffName
                                         this.setState({
                                           height: 0,
-                                          staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
+                                          staffInfo: {
+                                            ...this.state.staffInfo,
+                                            jobStaffList: jobStaffList,
+                                            jobStaffName: jobStaffName
+                                          }
                                         });
                                       }
                                     }}
@@ -3535,7 +3560,7 @@ class NewProjectModelV2 extends React.Component {
                                 <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
-                                    value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm) - 1] : []}
+                                    value={jobStaffName.length > 0 ? jobStaffName[Number(item.ibm) - 1] : []}
                                     onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() => this.setState({
@@ -3547,10 +3572,26 @@ class NewProjectModelV2 extends React.Component {
                                     filterOption={false}
                                     onChange={(e) => {
                                       let jobStaffList = this.state.staffInfo.jobStaffList;
-                                      jobStaffList[Number(item.ibm) - 1] = e;
+                                      // staffList
+                                      let jobStaffName = this.state.staffInfo.jobStaffName;
+                                      let newJobStaffName = [];
+                                      console.log("eeeee", e)
+                                      e.map(i => {
+                                        if (!isNaN(Number(i))) {
+                                          newJobStaffName.push(this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')');
+                                        } else {
+                                          newJobStaffName.push(i)
+                                        }
+                                      })
+                                      console.log("newJobStaffName", newJobStaffName)
+                                      jobStaffName[Number(item.ibm) - 1] = newJobStaffName;
                                       this.setState({
                                         height: 0,
-                                        staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
+                                        staffInfo: {
+                                          ...this.state.staffInfo,
+                                          jobStaffList: jobStaffList,
+                                          jobStaffName: jobStaffName
+                                        }
                                       });
                                     }}
                                     dropdownStyle={{ maxHeight: height, overflow: 'auto' }}

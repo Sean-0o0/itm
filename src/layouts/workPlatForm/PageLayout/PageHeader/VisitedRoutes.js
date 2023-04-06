@@ -108,7 +108,7 @@ function VisitedRoutes(props) {
   let tabCount = 0;
 
   return (
-    <div style={{ width: `${visitedScroll * 0.1488}rem`, height: '100%' }} className='clearfix' id='visited-scroll'>
+    <div style={{width: '136px', height: '100%'}} className='clearfix' id='visited-scroll'>
       {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
@@ -117,7 +117,7 @@ function VisitedRoutes(props) {
       </div> */}
       {
         urls.length > 0 && urls.map((item) => {
-          let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
+          let {url = '', title = ''} = menuArray.find(m => m.url === item) || {};
           if (title === '' && routerList.length > 0) {
             const listIndex = routerList.findIndex((tempItem) => {
               return item.indexOf(tempItem.path) > -1;
@@ -134,9 +134,9 @@ function VisitedRoutes(props) {
               style={{ height: '100%' }}>
               <div className = {`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}>
                 <Link to={url}>{title}</Link>
-                <i className="iconfont icon-close" onClick={() => {
+                <i className="iconfont icon-close" style={{marginLeft: '20px'}} onClick={() => {
                   closePage(url);
-                }} />
+                }}/>
               </div>
               {/* <Icon type="close-circle" theme="twoTone" twoToneColor="#ec6057"  /> */}
             </div>
@@ -144,17 +144,21 @@ function VisitedRoutes(props) {
         })
       }
       {
-        tabCount > 0 && (
+        false && (
           <Dropdown
             overlay={
               <Menu>
                 <Menu.Item>
-                  <a onClick={() => { closeAll(); }}>
+                  <a onClick={() => {
+                    closeAll();
+                  }}>
                     关闭全部
                   </a>
                 </Menu.Item>
                 <Menu.Item>
-                  <a onClick={() => { closeOthers(newPathname); }}>
+                  <a onClick={() => {
+                    closeOthers(newPathname);
+                  }}>
                     关闭其他
                   </a>
                 </Menu.Item>

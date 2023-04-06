@@ -27,12 +27,13 @@ export default class PageHeader extends React.PureComponent {
     const routerList = LocalPathUtils.getRoutesHaveName();
     const sysName = localStorage.getItem('sysName');
     return (
-      <div style={{width: '100%'}}>
+      <div style={{width: '100%', height: "100%"}}>
         {/* <GuideCover data={guidesRecords} /> */}
-        <div className="zj-header" style={{width: '100%'}}>
-          <div style={{width: '200px', borderRight: '1px solid #EBEEF5'}}>
-            <span><img className="logo" style={{width: '26px'}} src={require('../../../../assets/apex-logo-zszq-left.png')} alt=""/>
-            </span> 
+        <div className="zj-header" style={{width: '100%', height: "100%"}}>
+          <div style={{width: '200px', borderRight: '0px solid #EBEEF5'}}>
+            <span><img className="logo" style={{width: '26px'}}
+                       src={require('../../../../assets/apex-logo-zszq-left.png')} alt=""/>
+            </span>
             <span style={{
               fontSize: '15px',
               color: '#333',
@@ -42,10 +43,11 @@ export default class PageHeader extends React.PureComponent {
             }}>{"信息技术综合管理平台"}</span>
           </div>
           {/* <Divider style={{height:'3rem'}} type="vertical" /> */}
-          <div id="visited_routes_container" style={{flex: 1, overflow: 'hidden'}}
+          <div id="visited_routes_container" style={{flex: 1, overflow: 'hidden', backgroundColor: '#f3f4f4'}}
                className={`${styles.historyContainer}`}>
             <span><Scrollbars
               autoHide
+              className='scrollbars'
               style={{width: '100%'}}
             >
               <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList}
@@ -53,7 +55,7 @@ export default class PageHeader extends React.PureComponent {
             </Scrollbars>
             </span>
           </div>
-          <div id="fma_opertion_drops" className="dis-fx" style={{width: '5%'}}>
+          <div id="fma_opertion_drops" className="dis-fx" style={{width: '5%', padding: '0 10px'}}>
             {/*<div style={{ width: '4rem' }}></div>*/}
             {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
             {/*  <a onClick={() => {*/}

@@ -38,6 +38,10 @@ class EditableCell extends React.Component {
     switch (dataIndex) {
       case 'HJSJ':
         return form.getFieldDecorator(dataIndex + record['ID'], {
+          rules: [{
+            required: true,
+            message: '请选择获奖时间'
+          }],
           initialValue: moment(record[dataIndex + record['ID']]) || null,
         })(<DatePicker ref={node => (this.input = node)}
                        onChange={(data, dataString) => {
@@ -61,6 +65,10 @@ class EditableCell extends React.Component {
         />);
       case 'JXMC':
         return form.getFieldDecorator(dataIndex + record['ID'], {
+          rules: [{
+            required: true,
+            message: '请输入奖项名称'
+          }],
           initialValue: String(record[dataIndex + record['ID']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -68,6 +76,10 @@ class EditableCell extends React.Component {
                   onBlur={this.save}/>);
       case 'RYDJ':
         return form.getFieldDecorator(dataIndex + record['ID'], {
+          rules: [{
+            required: true,
+            message: '请选择荣誉等级'
+          }],
           initialValue: String(record[dataIndex + record['ID']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -75,6 +87,10 @@ class EditableCell extends React.Component {
                   onBlur={this.save}/>);
       case 'ZSCQLX':
         return form.getFieldDecorator(dataIndex + record['ID'], {
+          rules: [{
+            required: true,
+            message: '请选择知识产权类型'
+          }],
           initialValue: String(record[dataIndex + record['ID']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -289,14 +305,24 @@ class PrizeInfo extends Component {
     const { dictionary: { HJRYDJ = [],ZSCQLX = [] } } = this.props;
     const tableColumns = [
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>获奖名称</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>获奖名称</span>,
         dataIndex: 'JXMC',
         key: 'JXMC',
         ellipsis: true,
         editable: true,
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>荣誉等级</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>荣誉等级</span>,
         dataIndex: 'RYDJ',
         key: 'RYDJ',
         width: '18%',
@@ -304,7 +330,8 @@ class PrizeInfo extends Component {
         // editable: true,
         render(text, record, index) {
           // console.log("recordrecord",record)
-          return (<Select style={{width: 120}} defaultValue={record['RYDJNAME' + record.ID]} onChange={(e) => _this.RYDJChange(e,record, index)}>
+          return (<Select style={{width: 120}} defaultValue={record['RYDJNAME' + record.ID]}
+                          onChange={(e) => _this.RYDJChange(e, record, index)}>
               {
                 HJRYDJ.length > 0 && HJRYDJ.map((item, index) => {
                   return (
@@ -317,14 +344,20 @@ class PrizeInfo extends Component {
         }
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>知识产权类型</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>知识产权类型</span>,
         dataIndex: 'ZSCQLX',
         width: '18%',
         key: 'ZSCQLX',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select style={{width: 120}} defaultValue={record['ZSCQLXNAME' + record.ID]} onChange={(e) => _this.ZSCQLXChange(e,record, index)}>
+          return (<Select style={{width: 120}} defaultValue={record['ZSCQLXNAME' + record.ID]}
+                          onChange={(e) => _this.ZSCQLXChange(e, record, index)}>
               {
                 ZSCQLX.length > 0 && ZSCQLX.map((item, index) => {
                   return (
@@ -337,7 +370,12 @@ class PrizeInfo extends Component {
         }
       },
       {
-        title: <span style={{color: '#606266', fontWeight: 500}}>获奖时间</span>,
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>获奖时间</span>,
         dataIndex: 'HJSJ',
         width: '17%',
         key: 'HJSJ',

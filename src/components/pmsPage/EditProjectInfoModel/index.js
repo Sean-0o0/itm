@@ -285,12 +285,12 @@ class EditableCellQT extends React.Component {
         );
       case 'gysskzh':
         return form.getFieldDecorator(dataIndex + record['id'], {
-          rules: [
-            {
-              required: true,
-              message: `${this.getTitle(dataIndex)}不允许空值`,
-            },
-          ],
+          // rules: [
+          //   {
+          //     required: true,
+          //     message: `${this.getTitle(dataIndex)}不允许空值`,
+          //   },
+          // ],
           initialValue: String(record[dataIndex + record['id']]),
         })(
           <Select
@@ -383,7 +383,8 @@ class EditProjectInfoModel extends React.Component {
     organizationStaffTreeList: [], // 组织机构人员列表树形结构
     staffInfo: {
       focusJob: '',  // 准备添加人员的岗位
-      jobStaffList: [] // 各个岗位下对应的员工id
+      jobStaffList: [], // 各个岗位下对应的员工id
+      jobStaffName: [], // 各个岗位下对应的员工id
     },
     //基础信息
     basicInfo: {
@@ -542,6 +543,8 @@ class EditProjectInfoModel extends React.Component {
     // 修改加载状态
     this.setState({loading: false});
     //人员信息接口
+    // 查询组织机构信息 --- 位置不要变就放在这儿
+    await this.fetchQueryOrganizationInfo();
     // 查询岗位信息 --- 位置不要变就放在这儿
     await this.fetchQueryStationInfo();
     // 查询组织机构信息 --- 位置不要变就放在这儿
@@ -944,18 +947,25 @@ class EditProjectInfoModel extends React.Component {
           let memberInfo = JSON.parse(result.memberInfo);
           memberInfo.push({gw: '10', rymc: result.projectManager});
           let arr = [];
-          ////console.log("memberInfomemberInfo", memberInfo)
-          ////console.log("this.state.staffList", this.state.staffList)
+          console.log("memberInfomemberInfo", memberInfo)
+          console.log("this.state.staffList", this.state.staffList)
+          let nameArr = [];
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
+            let newJobStaffName = [];
             rymc.forEach(ry => {
               this.state.staffList.forEach(staff => {
                 if (ry === staff.id) {
                   searchStaffList.push(staff);
+                  newJobStaffName.push(staff.name + '(' + staff.orgName + ')')
                 }
               })
             })
+            console.log("Number(item.gw)", Number(item.gw))
+            nameArr[Number(item.gw) - 1] = newJobStaffName;
+            console.log("newJobStaffName", newJobStaffName)
+            console.log("nameArrnameArr", nameArr)
             // 初始化各个岗位下对应的员工id的数组
             arr[Number(item.gw)] = [item.rymc];
             // 获取当前登录用户信息
@@ -966,7 +976,7 @@ class EditProjectInfoModel extends React.Component {
               searchStaffList: [loginUser],
               loginUser: loginUser,
               // staffJobList: RYGW,
-              staffInfo: {...this.state.staffInfo, jobStaffList: arr}
+              staffInfo: {...this.state.staffInfo, jobStaffList: arr, jobStaffName: nameArr}
             });
             ////console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
@@ -1034,6 +1044,7 @@ class EditProjectInfoModel extends React.Component {
               budgetType: result.budgetType
             },
             staffInfo: {
+              ...this.state.staffInfo,
               focusJob: '',
               jobStaffList: jobArr
             }
@@ -1429,6 +1440,9 @@ class EditProjectInfoModel extends React.Component {
       fileList = [],
       htxxVisiable = false,
       zbxxVisiable = false,
+      topicInfoRecord = [],
+      requirementInfoRecord = [],
+      prizeInfoRecord = []
     } = this.state;
     //校验基础信息
     let basicflag;
@@ -1470,6 +1484,56 @@ class EditProjectInfoModel extends React.Component {
         message.warn("招采信息未填写完整！");
         return;
       }
+    }
+    //其他信息校验
+    console.log("开始校验其他信息tab")
+    console.log("-------需求信息-------", requirementInfoRecord)
+    console.log("-------获奖信息-------", prizeInfoRecord)
+    console.log("-------课题信息-------", topicInfoRecord)
+    let requirementInfoFlag = 0;
+    let prizeInfoFlag = 0;
+    let topicInfoFlag = 0;
+    if (requirementInfoRecord.length > 0) {
+      requirementInfoRecord.map(item => {
+        if (item.XQBT === "" || item.XQRQ === "" || item.XQNR === "") {
+          requirementInfoFlag++;
+        }
+      })
+      if (requirementInfoFlag > 0) {
+        message.warn("其他信息-需求信息未填写完整!")
+        return;
+      }
+    } else {
+      message.warn("其他信息-需求信息未填写完整!")
+      return;
+    }
+    if (prizeInfoRecord.length > 0) {
+      prizeInfoRecord.map(item => {
+        if (item.JXMC === "" || item.HJSJ === "" || item.RYDJ === "" || item.ZSCQLX === "") {
+          prizeInfoFlag++;
+        }
+      })
+      if (prizeInfoFlag > 0) {
+        message.warn("其他信息-获奖信息未填写完整!")
+        return;
+      }
+    } else {
+      message.warn("其他信息-获奖信息未填写完整!")
+      return;
+    }
+    if (topicInfoRecord.length > 0) {
+      topicInfoRecord.map(item => {
+        if (item.XMKT === "" || item.JJ === "" || item.JD === "" || item.DQJZ === "") {
+          topicInfoFlag++;
+        }
+      })
+      if (topicInfoFlag > 0) {
+        message.warn("其他信息-课题信息未填写完整!")
+        return;
+      }
+    } else {
+      message.warn("其他信息-课题信息未填写完整!")
+      return;
     }
     let staffJobParam = [];
     // //console.log("staffJobList保存",staffJobList);
@@ -1656,8 +1720,8 @@ class EditProjectInfoModel extends React.Component {
     arr.map((item) => {
       let obj = {
         GYSMC: String(gysData?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
-        GYSFKZH: "-1"
-        // GYSFKZH: String(skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
+        // GYSFKZH: "-1"
+        GYSFKZH: String(staticSkzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
       };
       newArr.push(obj);
     });
@@ -2408,23 +2472,35 @@ class EditProjectInfoModel extends React.Component {
 
   // 获取中标信息
   fetchQueryZBXXByXQTC() {
-    const {purchaseInfo, glgys = [], staticSkzhData = [], basicInfo = []} = this.state;
+    const {purchaseInfo, gysData = [], staticSkzhData = [], basicInfo = []} = this.state;
+    console.log("staticSkzhDatastaticSkzhData", staticSkzhData)
     return FetchQueryZBXXByXQTC({
       xmmc: Number(basicInfo.projectId),
     }).then(res => {
       let rec = res.record;
       if (rec.length > 0) {
+        let arr = [];
+        for (let i = 0; i < rec.length; i++) {
+          if (rec[i].gysmc !== "") {
+            let id = getID();
+            arr.push({
+              id,
+              [`gysmc${id}`]: gysData.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+              [`gysskzh${id}`]: rec[i].gysfkzhmc,
+            });
+          }
+        }
         this.setState({
           zbxxVisiable: true,
           zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
           purchaseInfo: {
             ...purchaseInfo,
             othersSupplier: arr,
-            biddingSupplierName: glgys.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
+            biddingSupplierName: gysData.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
             biddingSupplier: rec[0]?.zbgys,
             bidCautionMoney: Number(rec[0]?.tbbzj),
             cautionMoney: Number(rec[0]?.lybzj),
-            number: staticSkzhData.filter(x => x.id === rec[0]?.zbgysfkzh)[0]?.khmc || '',
+            number: rec[0].zbgysfkzhmc,
             pbbg: rec[0]?.pbbg,
           },
           uploadFileParams: {
@@ -2450,16 +2526,6 @@ class EditProjectInfoModel extends React.Component {
           }, () => {
             // //console.log('已存在的filList', this.state.fileList);
           });
-        }
-        let arr = [];
-        for (let i = 0; i < rec.length; i++) {
-          if (rec[i].gysmc !== "") {
-            let id = getID();
-            arr.push({
-              id,
-              [`gysmc${id}`]: glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
-            });
-          }
         }
         this.setState({
           tableDataQT: [...this.state.tableDataQT, ...arr],
@@ -2623,7 +2689,7 @@ class EditProjectInfoModel extends React.Component {
       organizationStaffTreeList,
       staffJobList = [],
       checkedStaffKey,
-      staffInfo: {jobStaffList = []},
+      staffInfo: {jobStaffList = [], jobStaffName = []},
       basicInfo = {software: ''},
       swlxarr = [],
       rygwDictionary = [],
@@ -2658,6 +2724,7 @@ class EditProjectInfoModel extends React.Component {
       htxxVisiable = false,
       zbxxVisiable = false,
     } = this.state;
+    console.log("nameArr", jobStaffName)
     const {getFieldDecorator} = this.props.form;
     const tabs = [
       {
@@ -2870,6 +2937,13 @@ class EditProjectInfoModel extends React.Component {
         title: <span style={{color: '#606266', fontWeight: 500}}>供应商</span>,
         dataIndex: 'gysmc',
         key: 'gysmc',
+        ellipsis: true,
+        editable: true,
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}>供应商收款账号</span>,
+        dataIndex: 'gysskzh',
+        key: 'gysskzh',
         ellipsis: true,
         editable: true,
       },
@@ -4132,7 +4206,7 @@ class EditProjectInfoModel extends React.Component {
                                 <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
-                                    value={jobStaffList.length > 0 ? jobStaffList[9] : []}
+                                    value={jobStaffName.length > 0 ? jobStaffName[9] : []}
                                     onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'manage')}
                                     onFocus={() => this.setState({
@@ -4148,9 +4222,24 @@ class EditProjectInfoModel extends React.Component {
                                       } else {
                                         let jobStaffList = this.state.staffInfo.jobStaffList;
                                         jobStaffList[9] = e;
+                                        let newJobStaffName = [];
+                                        // staffList
+                                        let jobStaffName = this.state.staffInfo.jobStaffName;
+                                        e.map(i => {
+                                          if (!isNaN(Number(i))) {
+                                            newJobStaffName.push(this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')');
+                                          } else {
+                                            newJobStaffName.push(i)
+                                          }
+                                        })
+                                        jobStaffName[9] = newJobStaffName
                                         this.setState({
                                           height: 0,
-                                          staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
+                                          staffInfo: {
+                                            ...this.state.staffInfo,
+                                            jobStaffList: jobStaffList,
+                                            jobStaffName: jobStaffName
+                                          }
                                         });
                                       }
                                     }}
@@ -4188,7 +4277,7 @@ class EditProjectInfoModel extends React.Component {
                                 <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
-                                    value={jobStaffList.length > 0 ? jobStaffList[Number(item.ibm) - 1] : []}
+                                    value={jobStaffName.length > 0 ? jobStaffName[Number(item.ibm) - 1] : []}
                                     onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() => this.setState({
@@ -4200,10 +4289,26 @@ class EditProjectInfoModel extends React.Component {
                                     filterOption={false}
                                     onChange={(e) => {
                                       let jobStaffList = this.state.staffInfo.jobStaffList;
-                                      jobStaffList[Number(item.ibm) - 1] = e;
+                                      // staffList
+                                      let jobStaffName = this.state.staffInfo.jobStaffName;
+                                      let newJobStaffName = [];
+                                      console.log("eeeee", e)
+                                      e.map(i => {
+                                        if (!isNaN(Number(i))) {
+                                          newJobStaffName.push(this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')');
+                                        } else {
+                                          newJobStaffName.push(i)
+                                        }
+                                      })
+                                      console.log("newJobStaffName", newJobStaffName)
+                                      jobStaffName[Number(item.ibm) - 1] = newJobStaffName;
                                       this.setState({
                                         height: 0,
-                                        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
+                                        staffInfo: {
+                                          ...this.state.staffInfo,
+                                          jobStaffList: jobStaffList,
+                                          jobStaffName: jobStaffName
+                                        }
                                       });
                                     }}
                                     dropdownStyle={{maxHeight: height, overflow: 'auto'}}
