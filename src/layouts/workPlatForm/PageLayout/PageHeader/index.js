@@ -43,7 +43,7 @@ export default class PageHeader extends React.PureComponent {
             }}>{"信息技术综合管理平台"}</span>
           </div>
           {/* <Divider style={{height:'3rem'}} type="vertical" /> */}
-          <div id="visited_routes_container" style={{flex: 1, overflow: 'hidden', backgroundColor: '#f3f4f4'}}
+          <div id="visited_routes_container" style={{flex: 1, overflow: 'hidden', backgroundColor: 'white'}}
                className={`${styles.historyContainer}`}>
             <span><Scrollbars
               autoHide

@@ -1080,7 +1080,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 点击添加按钮
   clickAddStaff = () => {
-    const { staffInfo: { focusJob, jobStaffList }, checkedStaffKey } = this.state;
+    const {staffInfo: {focusJob, jobStaffList, jobStaffName}, checkedStaffKey} = this.state;
     if (focusJob === '') {
       message.warning('请先选择你要添加到的岗位！');
     } else if (checkedStaffKey.length === 0) {
@@ -1091,8 +1091,13 @@ class NewProjectModelV2 extends React.Component {
       // //console.log(jobStaffList);
       let arr = jobStaffList[Number(focusJob) - 1] ? jobStaffList[Number(focusJob) - 1] : [];
       let searchStaffList = [];
+      let jobStaffNameArr = jobStaffName[Number(focusJob) - 1] ? jobStaffName[Number(focusJob) - 1] : [];
+      console.log("jobStaffNameArr", jobStaffNameArr);
       checkedStaffKey.forEach(item => {
         arr.push(item.substring(1, item.length));
+        const itemname = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name + '(' + this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName + ')'
+        console.log("itemname", itemname);
+        jobStaffNameArr.push(itemname)
         // 存到对应下拉数据中
         this.state.staffList.forEach(e => {
           if (e.id == item.substring(1, item.length)) {
@@ -1102,10 +1107,11 @@ class NewProjectModelV2 extends React.Component {
       });
       // 存到对应的数组下
       jobStaffList[Number(focusJob) - 1] = arr;
+      jobStaffName[Number(focusJob) - 1] = jobStaffNameArr;
       this.setState({
         checkedStaffKey: [],
         searchStaffList: searchStaffList,
-        staffInfo: { ...this.state.staffInfo, jobStaffList: jobStaffList }
+        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList, jobStaffName: jobStaffName}
       })
     }
   };

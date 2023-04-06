@@ -1260,7 +1260,7 @@ class EditProjectInfoModel extends React.Component {
 
   // 点击添加按钮
   clickAddStaff = () => {
-    const {staffInfo: {focusJob, jobStaffList}, checkedStaffKey} = this.state;
+    const {staffInfo: {focusJob, jobStaffList, jobStaffName}, checkedStaffKey} = this.state;
     if (focusJob === '') {
       message.warning('请先选择你要添加到的岗位！');
     } else if (checkedStaffKey.length === 0) {
@@ -1271,8 +1271,11 @@ class EditProjectInfoModel extends React.Component {
       // ////console.log(jobStaffList);
       let arr = jobStaffList[Number(focusJob) - 1] ? jobStaffList[Number(focusJob) - 1] : [];
       let searchStaffList = [];
+      let jobStaffNameArr = jobStaffName[Number(focusJob) - 1] ? jobStaffName[Number(focusJob) - 1] : [];
       checkedStaffKey.forEach(item => {
         arr.push(item.substring(1, item.length));
+        const itemname = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name + '(' + this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName + ')'
+        jobStaffNameArr.push(itemname)
         // 存到对应下拉数据中
         this.state.staffList.forEach(e => {
           if (e.id == item.substring(1, item.length)) {
@@ -1282,10 +1285,11 @@ class EditProjectInfoModel extends React.Component {
       });
       // 存到对应的数组下
       jobStaffList[Number(focusJob) - 1] = arr;
+      jobStaffName[Number(focusJob) - 1] = jobStaffNameArr;
       this.setState({
         checkedStaffKey: [],
         searchStaffList: searchStaffList,
-        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList}
+        staffInfo: {...this.state.staffInfo, jobStaffList: jobStaffList, jobStaffName: jobStaffName}
       })
     }
   };
@@ -1720,8 +1724,8 @@ class EditProjectInfoModel extends React.Component {
     arr.map((item) => {
       let obj = {
         GYSMC: String(gysData?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
-        // GYSFKZH: "-1"
-        GYSFKZH: String(staticSkzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
+        GYSFKZH: "-1"
+        // GYSFKZH: String(staticSkzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '')
       };
       newArr.push(obj);
     });
@@ -2940,13 +2944,13 @@ class EditProjectInfoModel extends React.Component {
         ellipsis: true,
         editable: true,
       },
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}>供应商收款账号</span>,
-        dataIndex: 'gysskzh',
-        key: 'gysskzh',
-        ellipsis: true,
-        editable: true,
-      },
+      // {
+      //   title: <span style={{color: '#606266', fontWeight: 500}}>供应商收款账号</span>,
+      //   dataIndex: 'gysskzh',
+      //   key: 'gysskzh',
+      //   ellipsis: true,
+      //   editable: true,
+      // },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operator',
@@ -4448,7 +4452,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
+                      <Row gutter={24} style={{display: htxxVisiable === false ? 'none' : ''}}>
                         <Col span={24}>
                           <Form.Item label={<span><span style={{color: 'red'}}>*</span>付款详情</span>}>
                             <div>
