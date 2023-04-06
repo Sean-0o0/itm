@@ -3488,6 +3488,7 @@ class EditProjectInfoModel extends React.Component {
                                           filterOption={(input, option) =>
                                             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                           }
+                                          value={item.lcbmc}
                                           onChange={e => this.selectMileStageInfo(e, index)}
                                           placeholder="请选择"
                                           style={{width: '25%',}}
