@@ -466,6 +466,7 @@ class EditProjectInfoModel extends React.Component {
     gysData: [],
     isSelectorOpen: false,
     addGysModalVisible: false,
+    addSkzhModalVisible: false,
     pbbgTurnRed: false,
     fileList: [],
     uploadFileParams: {
@@ -1478,13 +1479,13 @@ class EditProjectInfoModel extends React.Component {
       return;
     }
     if (htxxVisiable) {
-      if (purchaseInfo.contractValue === null || purchaseInfo.signData === "") {
+      if (purchaseInfo.paymentInfos.length === 0 || purchaseInfo.contractValue === null || purchaseInfo.signData === "") {
         message.warn("招采信息未填写完整！");
         return;
       }
     }
     if (zbxxVisiable) {
-      if (purchaseInfo.paymentInfos.length === 0 || purchaseInfo.biddingSupplier === "" || fileList.length === 0 || purchaseInfo.number === "") {
+      if (purchaseInfo.biddingSupplier === "" || fileList.length === 0 || purchaseInfo.number === "") {
         message.warn("招采信息未填写完整！");
         return;
       }
@@ -2477,7 +2478,7 @@ class EditProjectInfoModel extends React.Component {
   // 获取中标信息
   fetchQueryZBXXByXQTC() {
     const {purchaseInfo, gysData = [], staticSkzhData = [], basicInfo = []} = this.state;
-    console.log("staticSkzhDatastaticSkzhData", staticSkzhData)
+    // console.log("staticSkzhDatastaticSkzhData", staticSkzhData)
     return FetchQueryZBXXByXQTC({
       xmmc: Number(basicInfo.projectId),
     }).then(res => {
@@ -2660,7 +2661,8 @@ class EditProjectInfoModel extends React.Component {
       if (res.success) {
         let rec = res.record;
         this.setState({
-          skzhData: [...rec]
+          skzhData: [...rec],
+          staticSkzhData: [...rec],
         });
       }
     });
@@ -2708,6 +2710,7 @@ class EditProjectInfoModel extends React.Component {
       gysData = [],
       isSelectorOpen = false,
       addGysModalVisible = false,
+      addSkzhModalVisible = false,
       pbbgTurnRed,
       fileList = [],
       uploadFileParams,
@@ -2835,6 +2838,16 @@ class EditProjectInfoModel extends React.Component {
       height: '90rem',
       style: {top: '20rem'},
       visible: addGysModalVisible,
+      footer: null,
+    };
+    const addSkzhModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      title: '新增收款账号',
+      width: '120rem',
+      height: '90rem',
+      style: { top: '20rem' },
+      visible: addSkzhModalVisible,
       footer: null,
     };
 
@@ -4513,6 +4526,12 @@ class EditProjectInfoModel extends React.Component {
                                        onSucess={this.OnGysSuccess}
                                        src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'}/>
                         }
+                        {/*供应商收款账号弹窗*/}
+                        {addSkzhModalVisible &&
+                          <BridgeModel modalProps={addSkzhModalProps}
+                                       onCancel={() => this.setState({ addSkzhModalVisible: false })}
+                                       onSucess={this.OnSkzhSuccess}
+                                       src={localStorage.getItem('livebos') + '/OperateProcessor?operate=View_SKZH_ADD&Table=View_SKZH '} />}
                         <Col span={12} style={{paddingRight: '24px', position: 'relative'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
@@ -4702,6 +4721,7 @@ class EditProjectInfoModel extends React.Component {
                               <Select
                                 style={{width: '100%', borderRadius: '1.1904rem !important'}}
                                 placeholder="请选择供应商收款账号"
+                                className="skzh-box"
                                 onChange={e => {
                                   this.setState({purchaseInfo: {...purchaseInfo, number: e}});
                                 }}
@@ -4720,6 +4740,34 @@ class EditProjectInfoModel extends React.Component {
                               </Select>
                             )}
                           </Form.Item>
+                          <div
+                            style={{
+                              height: '20px',
+                              width: '1px',
+                              backgroundColor: '#c7c7c7',
+                              // marginLeft: '8px',
+                              marginTop: '28px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '50px',
+                            }}
+                          ></div>
+                          <i
+                            className="iconfont circle-add"
+                            onClick={() => {
+                              this.setState({ addSkzhModalVisible: true });
+                            }}
+                            style={{
+                              marginTop: '23px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '22px',
+                              color: '#c7c7c7',
+                              fontSize: '20px',
+                            }}
+                          />
                         </Col>
                       </Row>
                       <Row gutter={24} style={{display: zbxxVisiable === false ? 'none' : ''}}>
