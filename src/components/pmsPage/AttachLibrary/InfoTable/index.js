@@ -17,7 +17,7 @@ class InfoTable extends Component {
         selectedRows: []
     }
 
-    handleChange = (current,pageSize) =>{
+    handleChange = (current, pageSize) => {
         const { handleSearch } = this.props;
         if (handleSearch) {
             handleSearch({
@@ -174,16 +174,17 @@ class InfoTable extends Component {
                 ellipsis: true,
                 render: (text, row, index) => {
                     const { xmid = '' } = row;
-                    return <div className='opr-btn'>
+                    return <div >
                         <Link
+                            className='opr-btn'
                             to={{
-                                pathname:`/pms/manage/ProjectDetail/${EncryptBase64(
+                                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                                     JSON.stringify({
                                         xmid: xmid,
                                     }),
                                 )}`,
                                 state: {
-                                    routes: [{name: '文档列表', pathname: pathname}],
+                                    routes: [{ name: '文档列表', pathname: pathname }],
                                 },
                             }}
 
@@ -311,7 +312,7 @@ class InfoTable extends Component {
                             type: 'checkbox',
                             ...rowSelection,
                         }}
-                        pagination = {false}
+                        pagination={false}
                     />
                 </div>
                 <div className='page-individual'>

@@ -45,7 +45,7 @@ class InfoTable extends Component {
 
     render() {
         const { tableLoading = false, tableData = [], pageParams = {}, routes = [] } = this.props;
-        console.log('routes',routes)
+        console.log('routes', routes)
 
         const columns = [
             {
@@ -65,10 +65,11 @@ class InfoTable extends Component {
                 ellipsis: true,
                 render: (text, row, index) => {
                     const { xmid = '' } = row;
-                    return <div className='opr-btn'>
+                    return <div >
                         <Link
+                            className='opr-btn'
                             to={{
-                                pathname:`/pms/manage/ProjectDetail/${EncryptBase64(
+                                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                                     JSON.stringify({
                                         xmid: xmid,
                                     }),
