@@ -11,7 +11,7 @@ export default function TopConsole(props) {
   //下拉框数据
   const [budgetData, setBudgetData] = useState([]); //关联预算
   const [labelData, setLabelData] = useState([]); //项目标签
-  const [prjNameData, setprjNameData] = useState([]); //项目名称
+  const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [prjMngerData, setPrjMngerData] = useState([]); //项目经理
   const [orgData, setOrgData] = useState([]); //应用部门
   const { XMLX } = props.dictionary; //项目类型
@@ -29,12 +29,15 @@ export default function TopConsole(props) {
   const [minAmount, setMinAmount] = useState(undefined); //项目金额，最小
   const [maxAmount, setMaxAmount] = useState(undefined); //项目金额，最大
 
-  const { setTableLoading, setTableData } = props;
+  const { setTableLoading, setTableData, projectManager } = props;
 
   useEffect(() => {
-    getFilterData();
+    if (projectManager) {
+      getFilterData();
+    }
     return () => {};
-  }, []);
+  }, [projectManager]);
+
   function uniqueFunc(arr, uniId) {
     const res = new Map();
     return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
@@ -109,7 +112,7 @@ export default function TopConsole(props) {
                   // treeDatamini.selectable=false;
                   // treeDatamini.children = b[item.ZDBM]
                 } else {
-                  treeDatamini.key = item.ZDBM+ item.YSLXID;
+                  treeDatamini.key = item.ZDBM + item.YSLXID;
                   treeDatamini.value = item.ZDBM + item.YSLXID;
                   treeDatamini.title = item.YSLB;
                   treeDatamini.ID = item.ID;
@@ -150,12 +153,15 @@ export default function TopConsole(props) {
       paging: 1,
       sort: 'string',
       total: -1,
-      cxlx: 'XMLB'
+      cxlx: 'XMLB',
     })
       .then(res => {
         if (res?.success) {
           setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
-          console.log("🚀 ~ file: index.js ~ line 158 ~ getFilterData ~ toItemTree(JSON.parse(res.budgetProjectRecord))", toItemTree(JSON.parse(res.budgetProjectRecord)))
+          // console.log(
+          //   '🚀 ~ file: index.js ~ line 158 ~ getFilterData ~ toItemTree(JSON.parse(res.budgetProjectRecord))',
+          //   toItemTree(JSON.parse(res.budgetProjectRecord)),
+          // );
           let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
@@ -163,7 +169,7 @@ export default function TopConsole(props) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
-          console.log("🚀 ~ file: index.js ~ line 165 ~ labelTree ~ labelTree", labelTree)
+          // console.log('🚀 ~ file: index.js ~ line 165 ~ labelTree ~ labelTree', labelTree);
           setLabelData(p => [...[labelTree]]);
           let orgTree = TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
             keyName: 'ID',
@@ -174,7 +180,15 @@ export default function TopConsole(props) {
           })[0].children[0];
           setOrgData(p => [...[orgTree]]);
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
-          setprjNameData(p => [...JSON.parse(res.projectRecord)]);
+          // console.log(
+          //   '🚀 ~ file: index.js ~ line 187 ~ getFilterData ~ [...JSON.parse(res.projectManagerRecord)]',
+          //   [...JSON.parse(res.projectManagerRecord)],
+          // );
+          setPrjMnger(
+            [...JSON.parse(res.projectManagerRecord)].filter(x => Number(x.ID) === projectManager)[0]
+              ?.USERNAME,
+          );
+          setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
         }
       })
       .catch(e => {
@@ -453,6 +467,7 @@ export default function TopConsole(props) {
             allowClear
             onChange={handlePrjMngerChange}
             value={prjMnger}
+            // defaultValue={prjMngerData?.filter(x => Number(x.ID) === projectManager)[0]?.USERNAME}
             placeholder="请选择"
           >
             {prjMngerData.map((x, i) => (
@@ -555,7 +570,7 @@ export default function TopConsole(props) {
               </Option>
             ))}
           </Select> */}
-           <TreeSelect
+          <TreeSelect
             allowClear
             className="item-selector"
             showSearch

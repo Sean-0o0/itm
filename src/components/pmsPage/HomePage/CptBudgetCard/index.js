@@ -57,7 +57,7 @@ export default function CptBudgetCard(props) {
   };
   return (
     <div className="cptbudget-card-box">
-      <div className="home-card-title-box" style={{ marginBottom: 6 }}>
+      <div className="home-card-title-box" style={{ marginBottom: 9 }}>
         <div>资本性预算执行情况</div>
         {userRole !== '普通人员' && (
           <span>

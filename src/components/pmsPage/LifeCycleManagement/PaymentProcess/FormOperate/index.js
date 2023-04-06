@@ -1,6 +1,8 @@
-import React, { useState } from 'react';
-import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber, Spin } from 'antd';
 import moment from 'moment';
+import { QueryPaymentAccountList } from '../../../../../services/pmsServices';
+// import debounce from 'lodash/debounce';
 const { TextArea } = Input;
 
 export default function FormOperate(props) {
@@ -14,15 +16,47 @@ export default function FormOperate(props) {
     setSqrq,
     zhfw,
     setZhfw,
-    skzh,
-    setSkzh,
-    dgskzh,
+    // skzh,
+    // setSkzh,
+    // dgskzh,
+    // setDgskzh,
     // fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
     // fileName, setFileName,
     setskzhId,
     setYkbSkzhId,
   } = formData;
   const { getFieldDecorator, getFieldValue } = form;
+  const [skzhSearch, setSkzhSearch] = useState([]); //收款账户数据-输字搜索
+  //收款账户
+  const [skzh, setSkzh] = useState([]);
+  //对公收款账户
+  const [dgskzh, setDgskzh] = useState([]);
+  const [fetching, setFetching] = useState(false); //在加载数据
+  const [currentPage, setCurrentPage] = useState(1); //收款账户数据懒加载页号
+  const [currentKhmc, setCurrentKhmc] = useState(''); //款账户文本
+  const [isNoMoreData, setIsNoMoreData] = useState(false); //没有更多数据了
+
+  let timer = null;
+  useEffect(() => {
+    return () => {
+      clearTimeout(timer);
+    };
+  }, []);
+  useEffect(() => {
+    console.log(skzh);
+    return () => {};
+  }, [JSON.stringify(skzh)]);
+
+  //防抖
+  const debounce = (fn, waits) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
 
   //是否有合同变化
   const onSfyhtChange = e => {
@@ -30,20 +64,85 @@ export default function FormOperate(props) {
   };
   //账户范围变化
   const onZhfwChange = e => {
-    let rec = [...dgskzh];
-    let tempArr = rec.filter(x => {
-      let arr = x.ssr?.split(';');
-      return arr?.includes(String(LOGIN_USER_ID));
-    });
-    let finalArr = Number(e.target.value) === 1 ? [...rec] : [...tempArr];
+    // let rec = [...dgskzh];
+    // let tempArr = rec.filter(x => {
+    //   let arr = x.ssr?.split(';');
+    //   return arr?.includes(String(LOGIN_USER_ID));
+    // });
+    // let finalArr = Number(e.target.value) === 1 ? [...rec] : [...tempArr];
     setZhfw(e.target.value);
-    setSkzh(p => [...finalArr]);
+    // setSkzh(p => [...finalArr]);
   };
   //收款账户变化
   const handleSkzhChange = v => {
     const obj = skzh?.filter(x => x.khmc === v)[0];
     setskzhId(obj?.id);
     setYkbSkzhId(obj?.ykbid);
+    setCurrentPage(1);
+    setSkzh(p => []);
+    setIsNoMoreData(false);
+  };
+  const getSkzhData = (khmc = '', index = 1) => {
+    setFetching(true);
+    // console.log('handleSkzhSearch', khmc);
+    QueryPaymentAccountList({
+      type: Number(zhfw) === 1 ? 'ALL' : 'SINGLE',
+      current: index,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc,
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          // console.log('🚀 ~ file: index.js:92 ~ getSkzhData ~ rec:', rec);
+          setSkzh(p => [...skzh, ...rec]);
+          setFetching(false);
+          if (rec.length === 0) {
+            setIsNoMoreData(true);
+          }
+        }
+      })
+      .catch(e => console.error(e));
+  };
+  //
+  const handleSkzhSearch = khmc => {
+    if (khmc === '') {
+      setCurrentPage(1);
+      setSkzh(p => []);
+      setIsNoMoreData(false);
+    } else
+      debounce(() => {
+        getSkzhData(khmc, currentPage);
+        setCurrentKhmc(khmc);
+      }, 500);
+  };
+  //
+  const handleSkzhScroll = e => {
+    const { scrollHeight, scrollTop, clientHeight } = e.target;
+    // console.log(
+    //   '🚀 ~ file: index.js:103 ~ handleSkzhScroll ~ scrollHeight, scrollTop, clientHeight:',
+    //   scrollHeight,
+    //   scrollTop,
+    //   clientHeight,
+    // );
+    if (scrollHeight - scrollTop - clientHeight <= 10) {
+      let index = currentPage;
+      index = index + 1;
+      if (!isNoMoreData) {
+        setCurrentPage(index);
+        // console.log(
+        //   '🚀 ~ file: index.js:126 ~ handleSkzhScroll ~ currentKhmc, index:',
+        //   currentKhmc,
+        //   index,
+        // );
+        getSkzhData(currentKhmc, index);
+      } else {
+        setCurrentPage(1);
+      }
+    }
   };
   //申请日期变化
   const onSqrqChange = (d, ds) => {
@@ -168,8 +267,19 @@ export default function FormOperate(props) {
                 showSearch
                 placeholder="请选择收款账户"
                 onChange={handleSkzhChange}
-                open={isSkzhOpen}
-                onDropdownVisibleChange={visible => setIsSkzhOpen(visible)}
+                onSearch={handleSkzhSearch}
+                // open={isSkzhOpen}
+                dropdownMenuStyle={{ height: 100 }}
+                dropdownClassName="payment-account-select"
+                // onDropdownVisibleChange={visible => setIsSkzhOpen(visible)}
+                notFoundContent={fetching ? <Spin size="small" /> : null}
+                filterOption={false}
+                onPopupScroll={handleSkzhScroll}
+                onBlur={() => {
+                  setCurrentPage(1);
+                  setSkzh(p => []);
+                  setIsNoMoreData(false);
+                }}
               >
                 {skzh?.map((item = {}, ind) => {
                   return (
@@ -178,7 +288,7 @@ export default function FormOperate(props) {
                         className="iconfont icon-bank"
                         style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
                       />
-                      {item.khmc} - {item.yhkh} - {item.gysmc}
+                      {item.khmc} - {item.yhkh} - {item.wdmc}
                       {/* {isSkzhOpen && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>} */}
                     </Select.Option>
                   );

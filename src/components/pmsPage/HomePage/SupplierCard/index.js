@@ -111,7 +111,7 @@ export default function SupplierCard(props) {
 
   return (
     <div className="supplier-card-box">
-      <div className="home-card-title-box" style={{ marginBottom: 6 }}>
+      <div className="home-card-title-box" style={{ marginBottom: 9 }}>
         供应商情况
         <span>
           全部

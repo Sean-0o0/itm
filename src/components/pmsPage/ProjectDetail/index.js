@@ -7,6 +7,7 @@ import PrjMessage from './PrjMessage';
 import TopConsole from './TopConsole';
 import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
 import { Spin } from 'antd';
+import moment from 'moment';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
@@ -67,6 +68,7 @@ export default function ProjectDetail(props) {
           award.forEach(item => {
             item.RYDJ = HJRYDJ?.filter(x => x.ibm === item.RYDJ)[0]?.note;
             item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
+            item.HJSJ = item.HJSJ.slice(0, 10);
           });
           let member = p(res.ryxxRecord);
           member.forEach(item => {
@@ -88,7 +90,7 @@ export default function ProjectDetail(props) {
             payment: p(res.fkxxRecord),
             supplier: p(res.gysxxRecord),
           };
-          console.log('🚀 ~ getPrjDtlData', obj);
+          // console.log('🚀 ~ getPrjDtlData', obj);
           setPrjData(obj);
         }
       })
@@ -104,7 +106,13 @@ export default function ProjectDetail(props) {
       wrapperClassName="diy-style-spin-prj-detail"
     >
       <div className="prj-detail-box">
-        <TopConsole xmid={xmid} routes={routes} prjData={prjData} getPrjDtlData={getPrjDtlData} isLeader={isLeader}/>
+        <TopConsole
+          xmid={xmid}
+          routes={routes}
+          prjData={prjData}
+          getPrjDtlData={getPrjDtlData}
+          isLeader={isLeader}
+        />
         <MileStone
           xmid={xmid}
           prjData={prjData}

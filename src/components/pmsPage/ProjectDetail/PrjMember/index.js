@@ -1,7 +1,7 @@
 import { Empty } from 'antd';
 import React, { useEffect, useState } from 'react';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
-import avatarFemale from '../../../../assets/homePage/img_avatar_male.png';
+import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 

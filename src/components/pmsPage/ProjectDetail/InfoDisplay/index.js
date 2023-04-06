@@ -1,4 +1,4 @@
-import { Popover, Table } from 'antd';
+import { Popover, Table, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -157,29 +157,37 @@ export default function InfoDisplay(props) {
                 {
                   title: '奖项名称',
                   dataIndex: 'JXMC',
-                  width: 160,
+                  width: 180,
                   key: 'JXMC',
                   ellipsis: true,
+                  render: txt => (
+                    <Tooltip title={txt} placement="topLeft">
+                      <span style={{ cursor: 'default' }}>{txt}</span>
+                    </Tooltip>
+                  ),
                 },
                 {
                   title: '荣誉等级',
                   dataIndex: 'RYDJ',
-                  width: 110,
+                  width: 150,
                   key: 'RYDJ',
                   ellipsis: true,
+                  render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
                 },
                 {
                   title: '知识产权类型',
                   dataIndex: 'ZSCQLX',
-                  width: 120,
+                  width: 150,
                   key: 'ZSCQLX',
                   ellipsis: true,
+                  render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
                 },
                 {
-                  title: '获奖时间',
+                  title: '获奖日期',
                   dataIndex: 'HJSJ',
                   key: 'HJSJ',
                   ellipsis: true,
+                  render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
                 },
               ])}
               overlayClassName="project-topic-content-popover"
@@ -199,6 +207,11 @@ export default function InfoDisplay(props) {
                   width: 160,
                   key: 'XMKT',
                   ellipsis: true,
+                  render: txt => (
+                    <Tooltip title={txt} placement="topLeft">
+                      <span style={{ cursor: 'default' }}>{txt}</span>
+                    </Tooltip>
+                  ),
                 },
                 {
                   title: '进度',
@@ -206,12 +219,18 @@ export default function InfoDisplay(props) {
                   width: 100,
                   key: 'JD',
                   ellipsis: true,
+                  render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
                 },
                 {
                   title: '简介',
                   dataIndex: 'JJ',
                   key: 'JJ',
                   ellipsis: true,
+                  render: txt => (
+                    <Tooltip title={txt} placement="topLeft">
+                      <span style={{ cursor: 'default' }}>{txt}</span>
+                    </Tooltip>
+                  ),
                 },
                 {
                   title: '当前进展',
@@ -219,6 +238,7 @@ export default function InfoDisplay(props) {
                   width: 100,
                   key: 'DQJZ',
                   ellipsis: true,
+                  render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
                 },
               ])}
               overlayClassName="project-topic-content-popover"
@@ -240,6 +260,11 @@ export default function InfoDisplay(props) {
                   width: 144,
                   key: 'XQBT',
                   ellipsis: true,
+                  render: txt => (
+                    <Tooltip title={txt} placement="topLeft">
+                      <span style={{ cursor: 'default' }}>{txt}</span>
+                    </Tooltip>
+                  ),
                 },
                 {
                   title: '需求内容',
@@ -247,6 +272,11 @@ export default function InfoDisplay(props) {
                   width: 188,
                   key: 'XQNR',
                   ellipsis: true,
+                  render: txt => (
+                    <Tooltip title={txt} placement="topLeft">
+                      <span style={{ cursor: 'default' }}>{txt}</span>
+                    </Tooltip>
+                  ),
                 },
                 {
                   title: '需求日期',
@@ -254,6 +284,9 @@ export default function InfoDisplay(props) {
                   // width: 100,
                   key: 'XQRQ',
                   ellipsis: true,
+                  render: txt => (
+                    <span style={{ cursor: 'default' }}>{moment(txt).format('YYYY-MM-DD')}</span>
+                  ),
                 },
               ])}
               overlayClassName="unplanned-demand-content-popover"
@@ -280,7 +313,7 @@ export default function InfoDisplay(props) {
             <div className="info-item" style={{ height: '44px' }}>
               <div className="item-top">
                 <span>已执行预算</span>
-                {getAmountFormat(prjBasic.KZXYS)}元
+                {getAmountFormat(prjBasic.YSYYS)}元
               </div>
               <div className="item-bottom">
                 <span>/执行率：</span>

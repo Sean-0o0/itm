@@ -1,6 +1,6 @@
 import { Button, Empty, message, Tooltip } from 'antd';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { UpdateMessageState } from '../../../../services/pmsServices';
+import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services/pmsServices';
 import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
@@ -18,10 +18,10 @@ export default function ToDoCard(props) {
 
   const ryxztxModalProps = {
     isAllWindow: 1,
-    width: '500px',
-    height: '315px',
+    width: '720px',
+    height: '300px',
     title: '人员新增提醒',
-    style: { top: '68px' },
+    style: { top: '60px' },
     visible: ryxztxModalVisible,
     footer: null,
   };
@@ -276,15 +276,21 @@ export default function ToDoCard(props) {
           currentXmid={Number(currentXmid)}
           projectCode={projectCode}
           closePaymentProcessModal={() => setPaymentModalVisible(false)}
-          onSuccess={() => handleOperateSuccess()}
+          onSuccess={() => {
+            handleOperateSuccess('付款流程发起');
+            setPaymentModalVisible(false);
+          }}
         />
       )}
       {/*人员新增提醒弹窗*/}
       {ryxztxModalVisible && (
         <BridgeModel
           modalProps={ryxztxModalProps}
-          onSucess={() => handleOperateSuccess('人员新增操作')}
-          onCancel={() => setPaymentModalVisible(false)}
+          onSucess={() => {
+            handleOperateSuccess('人员新增操作');
+            setRyxztxModalVisible(false);
+          }}
+          onCancel={() => setRyxztxModalVisible(false)}
           src={ryxztxUrl}
         />
       )}

@@ -49,13 +49,13 @@ export default function MileStone(props) {
 
   useEffect(() => {
     if (xmid !== -1) {
-      getMileStoneData();
+      getMileStoneData(false);
     }
     return () => {};
   }, [xmid]);
 
   //获取里程碑数据
-  const getMileStoneData = () => {
+  const getMileStoneData = (noNewCurStep = true) => {
     //所有里程碑
     FetchQueryLiftcycleMilestone({
       xmmc: Number(xmid),
@@ -119,53 +119,56 @@ export default function MileStone(props) {
                         };
                         item.itemData = groupBy(arr);
                       });
-                      // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
+                      console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
-                      setCurrentStep(currentIndex);
-                      if (data.length >= 5) {
-                        if (currentIndex - 2 >= 0 && currentIndex + 2 < data.length) {
-                          setStartIndex(currentIndex - 2);
-                          setInitIndex(currentIndex - 2);
-                          setEndIndex(currentIndex + 2);
-                          // setCurrentStep(2);
-                        } else if (currentIndex < 2) {
-                          setStartIndex(0);
+
+                      if (!noNewCurStep) {
+                        setCurrentStep(currentIndex);
+                        if (data.length >= 5) {
+                          if (currentIndex - 2 >= 0 && currentIndex + 2 < data.length) {
+                            setStartIndex(currentIndex - 2);
+                            setInitIndex(currentIndex - 2);
+                            setEndIndex(currentIndex + 2);
+                            // setCurrentStep(2);
+                          } else if (currentIndex < 2) {
+                            setStartIndex(0);
+                            setInitIndex(0);
+                            setEndIndex(5);
+                            // setCurrentStep(currentIndex);
+                          } else {
+                            setInitIndex(data.length - 5);
+                            setStartIndex(data.length - 5);
+                            setEndIndex(data.length);
+                            // if (currentIndex === data.length - 2) {
+                            //   setCurrentStep(3);
+                            // }
+                            // if (currentIndex === data.length - 1) {
+                            //   setCurrentStep(4);
+                            // }
+                          }
+                        } else {
                           setInitIndex(0);
-                          setEndIndex(5);
-                          // setCurrentStep(currentIndex);
-                        } else {
-                          setInitIndex(data.length - 5);
-                          setStartIndex(data.length - 5);
+                          setStartIndex(0);
                           setEndIndex(data.length);
-                          // if (currentIndex === data.length - 2) {
-                          //   setCurrentStep(3);
-                          // }
-                          // if (currentIndex === data.length - 1) {
-                          //   setCurrentStep(4);
-                          // }
                         }
-                      } else {
-                        setInitIndex(0);
-                        setStartIndex(0);
-                        setEndIndex(data.length);
-                      }
-                      if (data.length > 5) {
-                        if (currentIndex - 2 >= 0 && currentIndex < data.length - 2) {
-                          setLastBtnVisible(true);
-                          setNextBtnVisible(true);
-                          console.log(1);
-                        } else if (currentIndex < 2) {
-                          setLastBtnVisible(false);
-                          setNextBtnVisible(true);
-                          console.log(2);
+                        if (data.length > 5) {
+                          if (currentIndex - 2 >= 0 && currentIndex < data.length - 2) {
+                            setLastBtnVisible(true);
+                            setNextBtnVisible(true);
+                            console.log(1);
+                          } else if (currentIndex < 2) {
+                            setLastBtnVisible(false);
+                            setNextBtnVisible(true);
+                            console.log(2);
+                          } else {
+                            setNextBtnVisible(false);
+                            setLastBtnVisible(true);
+                          }
                         } else {
+                          setLastBtnVisible(false);
                           setNextBtnVisible(false);
-                          setLastBtnVisible(true);
                         }
-                      } else {
-                        setLastBtnVisible(false);
-                        setNextBtnVisible(false);
                       }
                     }
                   })
@@ -284,6 +287,10 @@ export default function MileStone(props) {
       </Popover>
     );
   };
+  const refresh = () => {
+    getMileStoneData();
+    getPrjDtlData();
+  };
 
   const getItem = item => {
     return (
@@ -305,7 +312,8 @@ export default function MileStone(props) {
                 xmmc={prjBasic?.XMMC || ''}
                 xmbh={prjBasic?.XMBM || ''}
                 xwhid={prjBasic?.XWHID || -1}
-                getMileStoneData={getMileStoneData}
+                // getMileStoneData={getMileStoneData}
+                refresh={refresh}
               />
             </div>
           ))}
@@ -461,10 +469,14 @@ export default function MileStone(props) {
                 <div className="current-plan">
                   现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
                 </div>
-                <div className="original-plan">
-                  原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
-                </div>
-                <div className="remarks">{getDateDiff(hLMileStone)}</div>
+                {getDateDiff(hLMileStone) > 0 && (
+                  <>
+                    <div className="original-plan">
+                      原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
+                    </div>
+                    <div className="remarks">{getDateDiff(hLMileStone)}</div>
+                  </>
+                )}
               </div>
             )}
             <div className="bottom">
@@ -553,6 +565,7 @@ export default function MileStone(props) {
               }
               status={getStatus(step.zt) || 'process'}
               description={step.lcbmc === '项目付款' ? '' : dateFormat(step.kssj, step.jssj)}
+              // className={step.isCurrent ? 'ant-steps-item-active' : ''}
             />
           ))}
         </Steps>

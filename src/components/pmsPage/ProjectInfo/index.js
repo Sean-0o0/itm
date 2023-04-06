@@ -8,23 +8,24 @@ export default function ProjectInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-  const { params } = props;
+  const [curPage, setCurPage] = useState(1); //当前页号
+  const [pageSize, setPageSize] = useState(10); //每页条数
+  const { params = {} } = props;
   useEffect(() => {
-    // console.log('LOGIN_USER_ID', LOGIN_USER_ID);
-    getTableData();
+    getTableData({ projectManager: params.prjManager });
     return () => {};
-  }, [params]);
+  }, [params.prjManager]);
 
-  const getTableData = () => {
-    // console.log("🚀 ~ file: index.js ~ line 28 ~ getTableData ~ params?.prjManager", params)
+  const getTableData = ({ current = 1, pageSize = 10, projectManager = -1 }) => {
     setTableLoading(true);
     QueryProjectListInfo({
-      projectManager: params?.prjManager || -1,
-      current: 1,
-      pageSize: 10,
-      paging: -1,
+      projectManager,
+      current,
+      pageSize,
+      paging: 1,
       sort: 'string',
       total: -1,
+      // cxlx: 'ALL'
     })
       .then(res => {
         if (res?.success) {
@@ -44,8 +45,9 @@ export default function ProjectInfo(props) {
         dictionary={props.dictionary}
         setTableData={setTableData}
         setTableLoading={setTableLoading}
+        projectManager={params?.prjManager}
       />
-      <InfoTable tableData={tableData} tableLoading={tableLoading} />
+      <InfoTable tableData={tableData} tableLoading={tableLoading} getTableData={getTableData} projectManager={params?.prjManager}/>
     </div>
   );
 }

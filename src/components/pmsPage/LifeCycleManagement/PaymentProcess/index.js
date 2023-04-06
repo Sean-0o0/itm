@@ -67,32 +67,33 @@ const PaymentProcess = props => {
     dgskzh,
     setskzhId,
     setYkbSkzhId,
+    setDgskzh,
   };
 
   useEffect(() => {
     setSqrq(moment().format('YYYYMMDD'));
     setIsSpinning(true);
-    fetchQueryPaymentAccountList();
+    // fetchQueryPaymentAccountList();
+    fetchQueryPaymentFlowInfo();
     return () => {};
   }, []);
 
-  useEffect(() => {
-    // console.log('expenseDetail %%%=>', expenseDetail);
-    return () => {};
-  }, [expenseDetail]);
-
   // 获取收款账户
-  const fetchQueryPaymentAccountList = () => {
+  const fetchQueryPaymentAccountList = (khmc = '') => {
     QueryPaymentAccountList({
       type: 'ALL',
+      current: 1,
+      pageSize: 10,
+      paging: -1,
+      sort: '1',
+      total: -1,
+      khmc,
     })
       .then(res => {
         if (res.success) {
           let rec = res.record;
           setSkzh(p => [...rec]);
           setDgskzh(p => [...rec]);
-          fetchQueryPaymentFlowInfo();
-          setIsSpinning(false);
         }
       })
       .catch(e => console.error(e));
@@ -205,18 +206,20 @@ const PaymentProcess = props => {
             lcid,
           };
           console.log('submitData', submitData);
-          // CreatPaymentFlow(submitData)
-          //   .then(res => {
-          //     if (res.code === 200) {
-          //       message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
-          //       onSuccess && onSuccess();
-          //       resetFields();
-          //       fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
-          //     }
-          //   })
-          //   .catch(e => {
-          //     console.error(e);
-          //   });
+          CreatPaymentFlow(submitData)
+            .then(res => {
+              if (res.code === 200) {
+                if (onSuccess === undefined) onSuccess();
+                else
+                  message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
+
+                resetFields();
+                fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
+              }
+            })
+            .catch(e => {
+              console.error(e);
+            });
           closePaymentProcessModal();
         }
       }

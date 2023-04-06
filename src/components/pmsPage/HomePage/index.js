@@ -54,9 +54,9 @@ export default function HomePage(props) {
   props.cacheLifecycles.didRecover(() => {
     // console.log('跳转回首页时触发');
     if (htmlContent) htmlContent.scrollTop = 0; //页面跳转后滚至顶部
-    setIsSpinning(true);
-    getUserRole();
-    setUpdateTime(moment().format('YYYY-MM-DD'));
+    // setIsSpinning(true);
+    // getUserRole();
+    // setUpdateTime(moment().format('YYYY-MM-DD'));
   });
 
   useEffect(() => {
@@ -380,7 +380,7 @@ export default function HomePage(props) {
           <GuideCard />
         </div>
         <div className="row-box">
-          <OverviewCard width={leftWidth} overviewInfo={overviewInfo} userRole={userRole} />
+          <OverviewCard width={leftWidth} overviewInfo={overviewInfo} userRole={userRole} toDoDataNum = {toDoData.length}/>
           <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
         </div>
         <div className="row-box">

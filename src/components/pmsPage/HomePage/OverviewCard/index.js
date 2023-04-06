@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { getAmountFormat } from '..';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 export default function OverviewCard(props) {
-  const { width = '70%', overviewInfo, userRole = '' } = props;
+  const { width = '70%', overviewInfo = [], userRole = '', toDoDataNum = 0 } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   useEffect(() => {
     return () => {};
@@ -27,7 +27,7 @@ export default function OverviewCard(props) {
           />
           <div className="top-txt" onClick={fn}>
             {title}
-            {more && <i className="iconfont icon-right"/>}
+            {more && <i className="iconfont icon-right" />}
           </div>
         </div>
         <div className="item-middle">
@@ -58,7 +58,7 @@ export default function OverviewCard(props) {
           {getOverviewItem({
             title: '我的待办',
             img: 'wddb',
-            amount: getAmountFormat(overviewInfo?.db),
+            amount: getAmountFormat(toDoDataNum),
             addNum: overviewInfo?.dbjrxz,
             unit: '项',
             more: false,

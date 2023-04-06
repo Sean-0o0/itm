@@ -8,11 +8,26 @@ export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const { tableData, tableLoading } = props; //表格数据
+  const { tableData, tableLoading, getTableData, projectManager = -1 } = props; //表格数据
 
   useEffect(() => {
-    return () => {};
+    window.addEventListener('message', handleIframePostMessage);
+    return () => {
+      window.removeEventListener('message', handleIframePostMessage);
+    };
   }, []);
+
+   //监听新建项目弹窗状态
+   const handleIframePostMessage = event => {
+    if (typeof event.data !== 'string' && event.data.operate === 'close') {
+      closeFileAddModal();
+    }
+    if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      closeFileAddModal();
+      getPrjInfo(userRole); //刷新数据
+      // message.success('保存成功');
+    }
+  };
 
   //获取标签数据
   const getTagData = tag => {
@@ -26,16 +41,18 @@ export default function InfoTable(props) {
     }
     return arr;
   };
+
   const handleModalOpen = v => {
     setModalVisible(true);
   };
-  const handleTableChange = (v, c) => {
-    console.log('handleTableChange', v, c);
+  const handleTableChange = obj => {
+    console.log('handleTableChange', obj);
+    const { current = 1, pageSize = 10 } = obj;
+    getTableData({ current, pageSize, projectManager });
     return;
   };
   const fileAddModalProps = {
     isAllWindow: 1,
-    // defaultFullScreen: true,
     title: '新建项目',
     width: '70%',
     height: '120rem',
@@ -68,7 +85,7 @@ export default function InfoTable(props) {
         //       style={{ color: '#3361ff' }}
         //       onClick={() => {
         //         // handleModalOpen();
-                // message.info('功能开发中，暂时无法使用', 1);
+        // message.info('功能开发中，暂时无法使用', 1);
         //       }}
         //     >
         //       {text}
@@ -203,9 +220,9 @@ export default function InfoTable(props) {
           pagination={{
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,
-            hideOnSinglePage: true,
+            hideOnSinglePage: false,
             showQuickJumper: true,
-            showTotal: total => `共 ${total} 条数据`,
+            showTotal: total => `共 ${tableData.length} 条数据`,
           }}
           // bordered
         />

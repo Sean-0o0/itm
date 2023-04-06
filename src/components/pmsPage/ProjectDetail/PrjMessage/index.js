@@ -27,18 +27,18 @@ export default function PrjMessage(props) {
     };
   }, [xmid]);
 
-  useLayoutEffect(() => {
+  useEffect(() => {
     if (nodeArr.length !== 0) {
       let data = [...msgData];
       for (let i = 0; i < nodeArr.length; i++) {
         let x = nodeArr[i];
-        data[i].unfold = false;
+        // data[i].unfold = false;
         data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
       }
       setMsgData(p => [...data]);
     }
     return () => {};
-  }, [msgData.length, ...msgData]);
+  }, [msgData.length, JSON.stringify(msgData)]);
 
   //获取留言数据
   const getMsgData = (txt, isDel = false) => {
@@ -196,6 +196,7 @@ export default function PrjMessage(props) {
       </div>
     );
   };
+
   //编辑留言
   const handleMsgEdit = () => {
     if (newMsg) {
@@ -233,6 +234,7 @@ export default function PrjMessage(props) {
     }
     setDrawerVisible(false);
     setNewMsg(false);
+    setEditContent('');
   };
   //删除留言
   const handleMsgDelete = (id, content) => {

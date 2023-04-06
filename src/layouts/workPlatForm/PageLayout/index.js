@@ -332,14 +332,14 @@ class MainPageLayout extends React.PureComponent {
       let icon = '';
       const { code, openType = 'self' } = this.parseUrl(url);
       //使用浙商管理平台的图标
-      if (text === '首页') {
+      if (text === '首页' || text === '个人工作台') {
         icon = 'icon-home';
       }
       if (text === '项目管理') {
         icon = 'icon-detail';
       }
       if (text === '项目预算') {
-        icon = 'icon-cash';
+        icon = 'icon-finance';
       }
       if (text === '系统管理') {
         icon = 'icon-set';
@@ -350,11 +350,17 @@ class MainPageLayout extends React.PureComponent {
       if (text === '生命周期管理') {
         icon = 'icon-work';
       }
-      if (text === '人力外包项目') {
+      if (text === '外包项目') {
         icon = 'icon-system';
       }
       if (text === '流程管理') {
         icon = 'icon-procedure';
+      }
+      if (text === '人员管理') {
+        icon = 'icon-user';
+      }
+      if (text === '报告管理') {
+        icon = 'icon-read';
       }
       menuTree1.push({
         url: code,

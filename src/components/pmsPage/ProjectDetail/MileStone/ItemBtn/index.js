@@ -7,6 +7,7 @@ import {
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
 import { message, Popover } from 'antd';
 import config from '../../../../../utils/config';
+import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
 import AssociatedFile from '../../../LifeCycleManagement/AssociatedFile';
 import ContractSigning from '../../../LifeCycleManagement/ContractSigning';
@@ -282,7 +283,7 @@ class ItemBtn extends React.Component {
         this.setState({
           xwhyaModalVisible: true,
         });
-        this.getLink(params, 'xwhyaModalUrl');
+        this.getLink(params, 'lbModalUrl');
         return;
       }
       FetchQueryOAUrl({
@@ -322,7 +323,7 @@ class ItemBtn extends React.Component {
         [
           {
             name: 'GLXM',
-            value: item.xmid,
+            value: Number(item.xmid),
           },
         ],
         Loginname,
@@ -380,13 +381,14 @@ class ItemBtn extends React.Component {
         );
       }
       if (item.sxmc === '信委会议案流程') {
+        console.log();
         params = this.getParams(
           'LC_XWHYALC',
           'LC_XWHYALC_TAFQ',
           [
             {
               name: 'XMMC',
-              value: item.xmid,
+              value: Number(item.xmid),
             },
           ],
           Loginname,
@@ -399,7 +401,7 @@ class ItemBtn extends React.Component {
           [
             {
               name: 'GLXM',
-              value: item.xmid,
+              value: Number(item.xmid),
             },
           ],
           Loginname,
@@ -409,7 +411,7 @@ class ItemBtn extends React.Component {
         lbModalTitle: item.sxmc + '发起',
         sendVisible: true,
       });
-      this.getLink(params, 'sendUrl');
+      this.getLink(params, 'lbModalUrl');
     };
     //打印
     const lcdy = async item => {
@@ -442,8 +444,8 @@ class ItemBtn extends React.Component {
     };
     const reoprMoreCotent = (
       <div className="list">
-        <div className="item" onClick={() => lcck(item)} key="查看">
-          查看
+        <div className="item" onClick={() => lcfq(item)} key="重新发起">
+          重新发起
         </div>
         {isFklc && (
           <div className="item" onClick={() => lcdy(item)} key="打印流程附件">
@@ -455,8 +457,8 @@ class ItemBtn extends React.Component {
     if (done)
       return (
         <div className="opr-more">
-          <div className="reopr-btn" onClick={() => lcfq(item)}>
-            重新发起
+          <div className="reopr-btn" onClick={() => lcck(item)}>
+            查看
           </div>
           <Popover
             placement="bottom"
@@ -537,7 +539,7 @@ class ItemBtn extends React.Component {
   //成功回调
   onSuccess = name => {
     message.success(name + '成功');
-    this.props.getMileStoneData(); //刷新里程碑数据
+    this.props.refresh(); //刷新数据
   };
 
   render() {
@@ -559,9 +561,9 @@ class ItemBtn extends React.Component {
     //文档上传、修改弹窗
     const uploadModalProps = {
       isAllWindow: 1,
-      width: '720px',
+      width: '760px',
       height:
-        lbModalTitle === '中标公告上传' || lbModalTitle === '中标公告修改' ? '250px' : '600px',
+        lbModalTitle === '中标公告上传' || lbModalTitle === '中标公告修改' ? '310px' : '530px',
       title: lbModalTitle,
       style: { top: '60px' },
       visible: uploadVisible,
@@ -618,7 +620,12 @@ class ItemBtn extends React.Component {
         {uploadVisible && (
           <BridgeModel
             modalProps={uploadModalProps}
-            onSucess={() => this.onSuccess(lbModalTitle)}
+            onSucess={() => {
+              this.onSuccess(lbModalTitle);
+              this.setState({
+                uploadVisible: false,
+              });
+            }}
             onCancel={() =>
               this.setState({
                 uploadVisible: false,
@@ -632,7 +639,12 @@ class ItemBtn extends React.Component {
         {sendVisible && (
           <BridgeModel
             modalProps={sendModalProps}
-            onSucess={() => this.onSuccess('流程发起')}
+            onSucess={() => {
+              this.onSuccess('流程发起');
+              this.setState({
+                sendVisible: false,
+              });
+            }}
             onCancel={() =>
               this.setState({
                 sendVisible: false,
@@ -646,7 +658,12 @@ class ItemBtn extends React.Component {
         {xxlrxgVisible && (
           <BridgeModel
             modalProps={xxlrxgModalProps}
-            onSucess={() => this.onSuccess('信息录入')}
+            onSucess={() => {
+              this.onSuccess('信息录入');
+              this.setState({
+                xxlrxgVisible: false,
+              });
+            }}
             onCancel={() =>
               this.setState({
                 xxlrxgVisible: false,
@@ -660,7 +677,10 @@ class ItemBtn extends React.Component {
         {ygpjVisible && (
           <BridgeModel
             modalProps={ygpjModalProps}
-            onSucess={() => this.onSuccess('操作')}
+            onSucess={() => {
+              this.onSuccess('操作');
+              this.setState({ ygpjVisible: false });
+            }}
             onCancel={() => this.setState({ ygpjVisible: false })}
             src={lbModalUrl}
           />
