@@ -540,8 +540,6 @@ class EditProjectInfoModel extends React.Component {
     this.fetchQueryOrganizationYYBMInfo();
 
     this.fetchQueryGysInZbxx();
-    // 修改加载状态
-    this.setState({loading: false});
     //人员信息接口
     // 查询组织机构信息 --- 位置不要变就放在这儿
     await this.fetchQueryOrganizationInfo();
@@ -575,6 +573,8 @@ class EditProjectInfoModel extends React.Component {
     await this.fetchQueryHTXXByXQTC();
     //招标信息
     await this.fetchQueryZBXXByXQTC();
+    // 修改加载状态
+    this.setState({loading: false});
   };
 
 
