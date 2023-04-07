@@ -159,6 +159,8 @@ class PrizeInfo extends Component {
 
     this.state = {
       tableData: [],
+      //接口查出来是否存在获奖信息的数据
+      hjxxRecordFlag: false,
     };
   }
 
@@ -208,7 +210,7 @@ class PrizeInfo extends Component {
   //表格数据变化回调方法
   callbackData = () => {
     const {hjxxRecordCallback} = this.props;
-    const {tableData} = this.state;
+    const {tableData, hjxxRecordFlag} = this.state;
     //表格数据变化后存全局
     sessionStorage.setItem("hjxxTableData", JSON.stringify(tableData));
     sessionStorage.setItem("hjxxTableDataFlag", "true");
@@ -224,7 +226,7 @@ class PrizeInfo extends Component {
       newArr.push(obj);
     });
     // console.log('newArrnewArr', newArr);
-    hjxxRecordCallback(newArr)
+    hjxxRecordCallback(newArr, hjxxRecordFlag)
   }
 
   // 查询其他项目信息
@@ -253,8 +255,13 @@ class PrizeInfo extends Component {
               ['HJSJ' + data[i]?.ID]: data[i]?.HJSJ,
             });
           }
+          let hjxxRecordFlag = false;
+          if (data.length > 0) {
+            hjxxRecordFlag = true;
+          }
           this.setState({
             tableData: arr,
+            hjxxRecordFlag,
           }, () => {
             this.callbackData();
           })

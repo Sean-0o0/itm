@@ -1446,8 +1446,11 @@ class EditProjectInfoModel extends React.Component {
       htxxVisiable = false,
       zbxxVisiable = false,
       topicInfoRecord = [],
+      topicInfoRecordFlag = [],
       requirementInfoRecord = [],
-      prizeInfoRecord = []
+      requirementInfoRecordFlag = [],
+      prizeInfoRecord = [],
+      prizeInfoRecordFlag = [],
     } = this.state;
     //校验基础信息
     let basicflag;
@@ -1508,9 +1511,6 @@ class EditProjectInfoModel extends React.Component {
         message.warn("其他信息-需求信息未填写完整!")
         return;
       }
-    } else {
-      message.warn("其他信息-需求信息未填写完整!")
-      return;
     }
     if (prizeInfoRecord.length > 0) {
       prizeInfoRecord.map(item => {
@@ -1522,9 +1522,6 @@ class EditProjectInfoModel extends React.Component {
         message.warn("其他信息-获奖信息未填写完整!")
         return;
       }
-    } else {
-      message.warn("其他信息-获奖信息未填写完整!")
-      return;
     }
     if (topicInfoRecord.length > 0) {
       topicInfoRecord.map(item => {
@@ -1536,9 +1533,6 @@ class EditProjectInfoModel extends React.Component {
         message.warn("其他信息-课题信息未填写完整!")
         return;
       }
-    } else {
-      message.warn("其他信息-课题信息未填写完整!")
-      return;
     }
     let staffJobParam = [];
     // //console.log("staffJobList保存",staffJobList);
@@ -1824,24 +1818,28 @@ class EditProjectInfoModel extends React.Component {
 
   //其他信息的保存-获奖信息
 
-  prizeInfoCallback = (rec) => {
-    //console.log("prizeInfoRecord", rec)
+  prizeInfoCallback = (rec, falg) => {
+    // console.log("prizeInfoRecord", rec)
+    console.log("prizeInfoRecordFlag", falg)
     this.setState({
-      prizeInfoRecord: rec
+      prizeInfoRecord: rec,
+      prizeInfoRecordFlag: falg
     })
   }
   //其他信息的保存-课题信息
-  topicInfoCallback = (rec) => {
-    //console.log("topicInfoRecord", rec)
+  topicInfoCallback = (rec, flag) => {
+    console.log("topicInfoRecordFlag", flag)
     this.setState({
-      topicInfoRecord: rec
+      topicInfoRecord: rec,
+      topicInfoRecordFlag: flag
     })
   }
   //其他信息的保存-需求信息
-  requirementInfoCallback = (rec) => {
-    //console.log("requirementInfoRecord", rec)
+  requirementInfoCallback = (rec, flag) => {
+    console.log("requirementInfoRecordFlag", flag)
     this.setState({
-      requirementInfoRecord: rec
+      requirementInfoRecord: rec,
+      requirementInfoRecordFlag: flag
     })
   }
 
@@ -1871,12 +1869,15 @@ class EditProjectInfoModel extends React.Component {
 
   async operateCreatProject(params, type) {
     //更新其他信息
-    await this.updateProjectOtherInfo();
-    if(this.state.zbxxVisiable){
+    const {requirementInfoRecord = [], prizeInfoRecord = [], topicInfoRecord = []} = this.state;
+    if (requirementInfoRecord.length > 0 || prizeInfoRecord.length > 0 || topicInfoRecord.length > 0) {
+      await this.updateProjectOtherInfo();
+    }
+    if (this.state.zbxxVisiable) {
       //更新招标信息
       await this.updateZBXX();
     }
-    if(this.state.htxxVisiable){
+    if (this.state.htxxVisiable) {
       //更新合同信息
       await this.updateHTXX();
     }
@@ -3028,7 +3029,10 @@ class EditProjectInfoModel extends React.Component {
               </div>
               {
                 // 基本信息
-                current == 0 && <div className="steps-content">
+                current == 0 && <div className="steps-content" style={{
+                  overflowY: 'auto',
+                  overflowX: 'hidden'
+                }}>
                   <React.Fragment>
                     <Form ref={e => this.basicForm = e}>
                       <Row gutter={24}>

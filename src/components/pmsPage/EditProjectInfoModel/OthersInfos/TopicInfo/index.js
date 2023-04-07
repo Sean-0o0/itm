@@ -151,6 +151,8 @@ class TopicInfo extends Component {
 
     this.state = {
       tableData: [],
+      //接口查出来是否存在课题信息的数据
+      ktxxRecordFlag: false,
     };
   }
 
@@ -201,7 +203,7 @@ class TopicInfo extends Component {
   //表格数据变化回调方法
   callbackData = () => {
     const {ktxxRecordCallback} = this.props;
-    const {tableData} = this.state;
+    const {tableData, ktxxRecordFlag} = this.state;
     let newArr = [];
     //表格数据变化后存全局
     sessionStorage.setItem("ktxxTableData", JSON.stringify(tableData));
@@ -216,7 +218,7 @@ class TopicInfo extends Component {
       };
       newArr.push(obj);
     });
-    ktxxRecordCallback(newArr)
+    ktxxRecordCallback(newArr, ktxxRecordFlag)
   }
 
   JDChange = (e,record, index) =>{
@@ -261,8 +263,13 @@ class TopicInfo extends Component {
               ['DQJZ' + data[i]?.KTID]: data[i]?.DQJZ,
             });
           }
+          let ktxxRecordFlag = false;
+          if (data.length > 0) {
+            ktxxRecordFlag = true;
+          }
           this.setState({
             tableData: arr,
+            ktxxRecordFlag,
           }, () => {
             this.callbackData();
           })

@@ -149,6 +149,8 @@ class RequirementInfo extends Component {
 
     this.state = {
       tableData: [],
+      //接口查出来是否存在需求信息的数据
+      xqxxRecordFlag: false,
     };
   }
 
@@ -198,7 +200,7 @@ class RequirementInfo extends Component {
   //表格数据变化回调方法
   callbackData = () => {
     const {xqxxRecordCallback} = this.props;
-    const {tableData} = this.state;
+    const {tableData, xqxxRecordFlag} = this.state;
     //表格数据变化后存全局
     sessionStorage.setItem("xqxxTableData", JSON.stringify(tableData));
     sessionStorage.setItem("xqxxTableDataFlag", "true");
@@ -212,7 +214,7 @@ class RequirementInfo extends Component {
       };
       newArr.push(obj);
     });
-    xqxxRecordCallback(newArr)
+    xqxxRecordCallback(newArr, xqxxRecordFlag)
   }
 
   // 查询其他项目信息
@@ -238,8 +240,13 @@ class RequirementInfo extends Component {
               ['XQRQ' + data[i]?.XQID]: String(data[i]?.XQRQ),
             });
           }
+          let xqxxRecordFlag = false;
+          if (data.length > 0) {
+            xqxxRecordFlag = true
+          }
           this.setState({
             tableData: arr,
+            xqxxRecordFlag,
           }, () => {
             this.callbackData();
           })

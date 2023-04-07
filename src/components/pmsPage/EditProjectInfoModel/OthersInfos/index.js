@@ -14,21 +14,21 @@ class OthersInfos extends Component {
   }
 
   //获奖信息回调
-  hjxxRecordCallback = (record) => {
+  hjxxRecordCallback = (record, flag) => {
     const {prizeInfoCallback} = this.props;
-    prizeInfoCallback(record);
+    prizeInfoCallback(record, flag);
   }
 
   //课题信息回调
-  ktxxRecordCallback = (record) => {
+  ktxxRecordCallback = (record, flag) => {
     const {topicInfoCallback} = this.props;
-    topicInfoCallback(record);
+    topicInfoCallback(record, flag);
   }
 
   //需求信息回调
-  xqxxRecordCallback = (record) => {
+  xqxxRecordCallback = (record, flag) => {
     const {requirementInfoCallback} = this.props;
-    requirementInfoCallback(record);
+    requirementInfoCallback(record, flag);
   }
 
   render() {

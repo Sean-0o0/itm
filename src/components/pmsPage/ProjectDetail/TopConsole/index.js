@@ -213,8 +213,8 @@ export default function TopConsole(props) {
     // defaultFullScreen: true,
     title: '编辑项目',
     width: '1000px',
-    height: '95vh',
-    style: { top: '2vh' },
+    height: '780px',
+    style: {top: '10px'},
     visible: fileAddVisible,
     footer: null,
   };

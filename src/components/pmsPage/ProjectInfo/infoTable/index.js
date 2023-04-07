@@ -21,9 +21,9 @@ export default function InfoTable(props) {
   const fileAddModalProps = {
     isAllWindow: 1,
     title: '新建项目',
-    width: '70%',
-    height: '120rem',
-    style: { top: '2rem' },
+    width: '1000px',
+    height: '780px',
+    style: {top: '10px'},
     visible: true,
     footer: null,
   };
@@ -287,7 +287,7 @@ export default function InfoTable(props) {
       ellipsis: true,
     },
   ];
-  
+
   return (
     <div className="info-table">
       {fileAddVisible && (
