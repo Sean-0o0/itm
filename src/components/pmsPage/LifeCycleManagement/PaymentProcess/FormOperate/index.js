@@ -26,11 +26,8 @@ export default function FormOperate(props) {
     setYkbSkzhId,
   } = formData;
   const { getFieldDecorator, getFieldValue } = form;
-  const [skzhSearch, setSkzhSearch] = useState([]); //收款账户数据-输字搜索
   //收款账户
   const [skzh, setSkzh] = useState([]);
-  //对公收款账户
-  const [dgskzh, setDgskzh] = useState([]);
   const [fetching, setFetching] = useState(false); //在加载数据
   const [currentPage, setCurrentPage] = useState(1); //收款账户数据懒加载页号
   const [currentKhmc, setCurrentKhmc] = useState(''); //款账户文本
@@ -43,7 +40,7 @@ export default function FormOperate(props) {
     };
   }, []);
   useEffect(() => {
-    console.log(skzh);
+    // console.log(skzh);
     return () => {};
   }, [JSON.stringify(skzh)]);
 
@@ -267,13 +264,13 @@ export default function FormOperate(props) {
                 showSearch
                 placeholder="请选择收款账户"
                 onChange={handleSkzhChange}
-                onSearch={handleSkzhSearch}
                 // open={isSkzhOpen}
                 dropdownMenuStyle={{ height: 100 }}
                 dropdownClassName="payment-account-select"
                 // onDropdownVisibleChange={visible => setIsSkzhOpen(visible)}
                 notFoundContent={fetching ? <Spin size="small" /> : null}
                 filterOption={false}
+                onSearch={handleSkzhSearch}
                 onPopupScroll={handleSkzhScroll}
                 onBlur={() => {
                   setCurrentPage(1);

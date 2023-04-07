@@ -66,13 +66,13 @@ export default function InfoDisplay(props) {
     member.forEach(x => {
       arr.push(x.RYID);
     });
-    console.log(
-      '🚀 ~ isLeader:',
-      arr.includes(String(LOGIN_USER_INFO.id)) || isLeader,
-      member,
-      arr,
-      isLeader,
-    );
+    // console.log(
+    //   '🚀 ~ isLeader:',
+    //   arr.includes(String(LOGIN_USER_INFO.id)) || isLeader,
+    //   member,
+    //   arr,
+    //   isLeader,
+    // );
     return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 

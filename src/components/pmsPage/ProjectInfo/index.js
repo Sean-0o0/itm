@@ -42,7 +42,7 @@ export default function ProjectInfo(props) {
           setTableData(p => [...JSON.parse(res.record)]);
           setTableLoading(false);
         }
-        // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
+        console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
       })
       .catch(e => {
         // console.error('getTableData', e);

@@ -49,6 +49,7 @@ export default function InfoTable(props) {
 
   //获取项目标签数据
   const getTagData = (tag, idtxt) => {
+    // console.log("🚀 ~ file: index.js:52 ~ getTagData ~ tag, idtxt:", tag, idtxt)
     let arr = [];
     let arr2 = [];
     if (
@@ -219,14 +220,14 @@ export default function InfoTable(props) {
               <>
                 {getTagData(text, row.projectLabelId)
                   ?.slice(0, 2)
-                  .map((x, i) => (
-                    <div key={i} className="tag-item">
+                  .map(x => (
+                    <div key={x.id} className="tag-item">
                       <Link
                         style={{ color: '#3361ff' }}
                         to={{
                           pathname: `/pms/manage/labelDetail/${EncryptBase64(
                             JSON.stringify({
-                              bqid: row.projectLabelId,
+                              bqid: x.id,
                             }),
                           )}`,
                           state: {
@@ -235,7 +236,7 @@ export default function InfoTable(props) {
                         }}
                         className="prj-info-table-link-strong"
                       >
-                        {x}
+                        {x.name}
                       </Link>
                     </div>
                   ))}
@@ -246,14 +247,14 @@ export default function InfoTable(props) {
                       <div className="tag-more">
                         {getTagData(text, row.projectLabelId)
                           ?.slice(2)
-                          .map((x, i) => (
-                            <div key={i} className="tag-item">
+                          .map(x => (
+                            <div key={x.id} className="tag-item">
                               <Link
                                 style={{ color: '#3361ff' }}
                                 to={{
-                                  pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
                                     JSON.stringify({
-                                      bqid: row.projectLabelId,
+                                      bqid: x.id,
                                     }),
                                   )}`,
                                   state: {
@@ -262,7 +263,7 @@ export default function InfoTable(props) {
                                 }}
                                 className="prj-info-table-link-strong"
                               >
-                                {x}
+                                {x.name}
                               </Link>
                             </div>
                           ))}
