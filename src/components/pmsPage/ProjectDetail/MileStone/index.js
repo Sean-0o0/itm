@@ -11,6 +11,7 @@ import nextBtn from '../../../../assets/projectDetail/next-milestone.png';
 import moment from 'moment';
 import ItemBtn from './ItemBtn';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import Tool from '../../../../utils/api/tool';
 
 const { Step } = Steps;
 
@@ -76,10 +77,10 @@ export default function MileStone(props) {
                   x.isCurrent = x.lcbid === r.record[0].lcbid;
                   if (x.lcbid === r.record[0].lcbid) {
                     currentIndex = i;
-                    // console.log(
-                    //   '🚀 ~ file: index.js ~ line 75 ~ data.forEach ~ currentIndex',
-                    //   currentIndex,
-                    // );
+                    // // console.log(
+                    // //   '🚀 ~ file: index.js ~ line 75 ~ data.forEach ~ currentIndex',
+                    // //   currentIndex,
+                    // // );
                   }
                 });
                 //里程碑事项数据 - 事项分类到各个里程碑的 itemData中
@@ -119,7 +120,7 @@ export default function MileStone(props) {
                         };
                         item.itemData = groupBy(arr);
                       });
-                      console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
+                      // // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
 
@@ -156,11 +157,9 @@ export default function MileStone(props) {
                           if (currentIndex - 2 >= 0 && currentIndex < data.length - 2) {
                             setLastBtnVisible(true);
                             setNextBtnVisible(true);
-                            console.log(1);
                           } else if (currentIndex < 2) {
                             setLastBtnVisible(false);
                             setNextBtnVisible(true);
-                            console.log(2);
                           } else {
                             setNextBtnVisible(false);
                             setLastBtnVisible(true);
@@ -200,7 +199,7 @@ export default function MileStone(props) {
   const resizeUpdate = e => {
     const fn = () => {
       let w = e.target.innerWidth; //屏幕宽度
-      // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+      // // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
       if (w < 1750) {
         setItemWidth('30.53%');
       } else if (w < 2040) {
@@ -269,7 +268,7 @@ export default function MileStone(props) {
               </div>
               {getItem('风险标题', x.FXBT || '')}
               {getItem('风险内容', x.FXNR || '')}
-              {getItem('处理内容', x.CLNR || '')}
+              {x.ZT !== '1' && getItem('处理内容', x.CLNR || '')}
             </div>
           ))}
         </div>
@@ -304,7 +303,7 @@ export default function MileStone(props) {
               ) : (
                 <i className="iconfont circle-check" />
               )}
-              <Tooltip title={x.sxmc}>
+              <Tooltip title={x.sxmc} placement="topLeft">
                 <span>{x.sxmc}</span>
               </Tooltip>
               <ItemBtn
@@ -323,7 +322,7 @@ export default function MileStone(props) {
   };
   //获取里程碑状态
   const getStatus = zt => {
-    // console.log('🚀 ~ file: index.js ~ line 288 ~ getStatus ~ zt', zt);
+    // // console.log('🚀 ~ file: index.js ~ line 288 ~ getStatus ~ zt', zt);
     if (zt === '1') return 'wait';
     else if (zt === '2') return 'process';
     else if (zt === '3') return 'finish';
@@ -366,7 +365,7 @@ export default function MileStone(props) {
     setLastBtnVisible(st > 0);
     setNextBtnVisible(ed < data.length);
     setStartIndex(st);
-    // console.log('🚀 ~ file: index.js ~ line 369 ~ stepSwitch', st, ed);
+    // // console.log('🚀 ~ file: index.js ~ line 369 ~ stepSwitch', st, ed);
     setEndIndex(ed);
   };
   //高亮的里程碑数据
@@ -391,7 +390,7 @@ export default function MileStone(props) {
     }天，修改${item.xgcs}次）`;
   };
   const handleRisk = (item, type = 'ADD') => {
-    // console.log("🚀 ~ file: index.js ~ line 380 ~ handleRisk ~ item", item)
+    // // console.log("🚀 ~ file: index.js ~ line 380 ~ handleRisk ~ item", item)
     let params = {
       attribute: 0,
       authFlag: 0,
@@ -486,9 +485,11 @@ export default function MileStone(props) {
                   .filter(x => x.GLLCBID === hLMileStone.lcbid)
                   ?.map(x => (
                     <div>
-                      <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
-                        {x.FXBT}
-                      </div>
+                      <Tooltip title={x.FXBT} placement="topLeft">
+                        <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
+                          {x.FXBT}
+                        </div>
+                      </Tooltip>
                     </div>
                   ))}
                 <Button size="small" onClick={() => handleRisk(hLMileStone)}>

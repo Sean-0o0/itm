@@ -28,7 +28,7 @@ export default function ProjectDetail(props) {
       htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     }
     return () => {};
-  }, [xmid]);
+  }, [HJRYDJ, ZSCQLX, RYGW, CGFS, XMLX, xmid]);
 
   //判断用户是否为领导
   const getIsLeader = () => {
@@ -36,7 +36,7 @@ export default function ProjectDetail(props) {
       userId: Number(LOGIN_USER_INFO.id),
     })
       .then(res => {
-        // console.log('res.role', res.role);
+        console.log('res.role', res.role);
         setIsLeader(res.role !== '普通人员');
       })
       .catch(e => {
@@ -70,6 +70,7 @@ export default function ProjectDetail(props) {
             item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
             item.HJSJ = item.HJSJ.slice(0, 10);
           });
+
           let member = p(res.ryxxRecord);
           member.forEach(item => {
             item.GW = RYGW?.filter(x => x.ibm === item.GW)[0]?.note;

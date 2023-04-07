@@ -22,7 +22,9 @@ class ToConsole extends Component {
             yssxlx: 'SCOPE',
             ysje1: undefined,
             ysje2: undefined,
-        }
+            yslx: undefined,
+        },
+        yslxArr: [],
     }
 
     componentDidMount() {
@@ -76,6 +78,7 @@ class ToConsole extends Component {
                         },
                         true
                     )
+                    console.log([...this.toItemTree(JSON.parse(res.budgetProjectRecord))]);
                     this.setState({
                         glysList: [...this.toItemTree(JSON.parse(res.budgetProjectRecord))],
                         xmlist: [...JSON.parse(res.projectRecord)],
@@ -193,8 +196,18 @@ class ToConsole extends Component {
     };
 
     handleSearch = () => {
-        this.props.handleSearch(this.state.params)
-    }
+      console.log(yslxArr);
+      this.setState({
+          params: {
+            ...params,
+            yslx: this.state.params?.glys!==undefined && yslxArr.length!==0 ? yslxArr[0] : undefined
+          }
+      },
+        () => {
+          this.props.handleSearch(this.state.params);
+        },
+      );
+    };
 
     //重置按钮
     handleReset = () => {
@@ -210,7 +223,9 @@ class ToConsole extends Component {
                 yssxlx: 'SCOPE',
                 ysje1: undefined,
                 ysje2: undefined,
-            }
+                yslx: undefined,
+            },
+            yslxArr: [],
         })
     };
 
@@ -267,12 +282,15 @@ class ToConsole extends Component {
     handleGlys = (v, txt, node) => {
         const { params = {} } = this.state;
         const { glys = '' } = params;
+        let arr = [ ...this.state.yslxArr ];
+        arr.push(node?.triggerNode?.props?.YSLX || '资本性预算项目');
         this.setState({
             glysid: v,
             params: {
                 ...params,
-                glys: v.length?(glys?glys+','+node?.triggerNode?.props?.ID:node?.triggerNode?.props?.ID):undefined
-            }
+                glys: v.length?(glys?glys+','+node?.triggerNode?.props?.ID:node?.triggerNode?.props?.ID):undefined,
+              },
+            yslxArr: v.length!==0 ? [ ...arr ] : [],
         })
     }
 

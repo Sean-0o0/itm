@@ -79,6 +79,7 @@ export default function OverviewCard(props) {
               window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
                 JSON.stringify({
                   prjManager: Number(LOGIN_USER_INFO.id),
+                  cxlx: 'PERSON',
                 }),
               )}`;
             },
@@ -91,6 +92,7 @@ export default function OverviewCard(props) {
               window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
                 JSON.stringify({
                   prjManager: -1,
+                  cxlx: 'PARTICIPATE',
                 }),
               )}`;
             },

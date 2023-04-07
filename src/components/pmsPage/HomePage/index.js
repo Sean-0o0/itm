@@ -43,7 +43,6 @@ export default function HomePage(props) {
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [processData, setProcessData] = useState([]); //流程情况
-  const [updateTime, setUpdateTime] = useState(''); //预算执行情况接口调用时间
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const htmlContent = document.getElementById('htmlContent'); //页面跳转后滚至顶部
 
@@ -56,13 +55,11 @@ export default function HomePage(props) {
     if (htmlContent) htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     // setIsSpinning(true);
     // getUserRole();
-    // setUpdateTime(moment().format('YYYY-MM-DD'));
   });
 
   useEffect(() => {
     setIsSpinning(true);
     getUserRole();
-    setUpdateTime(moment().format('YYYY-MM-DD'));
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
@@ -380,7 +377,12 @@ export default function HomePage(props) {
           <GuideCard />
         </div>
         <div className="row-box">
-          <OverviewCard width={leftWidth} overviewInfo={overviewInfo} userRole={userRole} toDoDataNum = {toDoData.length}/>
+          <OverviewCard
+            width={leftWidth}
+            overviewInfo={overviewInfo}
+            userRole={userRole}
+            toDoDataNum={toDoData.length}
+          />
           <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
         </div>
         <div className="row-box">
@@ -391,9 +393,14 @@ export default function HomePage(props) {
                 getAfterItem={getAfterItem}
                 toDoData={toDoData}
                 xmbhData={xmbhData}
+                getToDoData={getToDoData}
               />
             ) : (
-              <CptBudgetCard userRole={userRole} budgetData={budgetData} time={updateTime} />
+              <CptBudgetCard
+                userRole={userRole}
+                budgetData={budgetData}
+                time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+              />
             )}
             <ProjectCard
               itemWidth={itemWidth}
@@ -409,7 +416,7 @@ export default function HomePage(props) {
                 isVertical={true}
                 userRole={userRole}
                 budgetData={budgetData}
-                time={updateTime}
+                time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
               />
             ) : (
               <TeamCard teamData={teamData} />
@@ -417,7 +424,10 @@ export default function HomePage(props) {
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <ProcessCard processData={processData} />
             ) : (
-              <SupplierCard supplierData={supplierData} time={updateTime} />
+              <SupplierCard
+                supplierData={supplierData}
+                time={moment(overviewInfo?.gysgxsj).format('YYYY-MM-DD')}
+              />
             )}
           </div>
         </div>

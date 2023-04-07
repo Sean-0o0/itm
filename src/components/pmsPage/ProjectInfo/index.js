@@ -11,12 +11,22 @@ export default function ProjectInfo(props) {
   const [curPage, setCurPage] = useState(1); //当前页号
   const [pageSize, setPageSize] = useState(10); //每页条数
   const { params = {} } = props;
-  useEffect(() => {
-    getTableData({ projectManager: params.prjManager });
-    return () => {};
-  }, [params.prjManager]);
+  const { prjManager = -2, cxlx = 'ALL' } = params;
 
-  const getTableData = ({ current = 1, pageSize = 10, projectManager = -1 }) => {
+  useEffect(() => {
+    if (prjManager === -2) {
+      //无参数
+      getTableData({});
+    } else {
+      //有参数
+      // console.log('prjManager, cxlx', prjManager, cxlx);
+      getTableData({ projectManager: prjManager, cxlx });
+    }
+    return () => {};
+  }, [prjManager, cxlx]);
+
+  //获取表格数据
+  const getTableData = ({ current = 1, pageSize = 10, projectManager = -1, cxlx = 'ALL' }) => {
     setTableLoading(true);
     QueryProjectListInfo({
       projectManager,
@@ -25,20 +35,21 @@ export default function ProjectInfo(props) {
       paging: 1,
       sort: 'string',
       total: -1,
-      // cxlx: 'ALL'
+      cxlx,
     })
       .then(res => {
         if (res?.success) {
           setTableData(p => [...JSON.parse(res.record)]);
           setTableLoading(false);
         }
-        // console.log("🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res", JSON.parse(res.record))
+        // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
       })
       .catch(e => {
         // console.error('getTableData', e);
         setTableLoading(false);
       });
   };
+
   return (
     <div className="project-info-box">
       <TopConsole
@@ -47,7 +58,12 @@ export default function ProjectInfo(props) {
         setTableLoading={setTableLoading}
         projectManager={params?.prjManager}
       />
-      <InfoTable tableData={tableData} tableLoading={tableLoading} getTableData={getTableData} projectManager={params?.prjManager}/>
+      <InfoTable
+        tableData={tableData}
+        tableLoading={tableLoading}
+        getTableData={getTableData}
+        projectManager={params?.prjManager}
+      />
     </div>
   );
 }

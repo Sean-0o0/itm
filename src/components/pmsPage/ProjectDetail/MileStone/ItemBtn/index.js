@@ -69,14 +69,9 @@ class ItemBtn extends React.Component {
       .then((ret = {}) => {
         const { code, message, url } = ret;
         if (code === 1) {
-          this.setState(
-            {
-              [urlState]: url,
-            },
-            () => {
-              console.log(this.state[urlState]);
-            },
-          );
+          this.setState({
+            [urlState]: url,
+          });
         }
       })
       .catch(error => {
@@ -232,7 +227,7 @@ class ItemBtn extends React.Component {
 
   //流程发起查看
   getLcfqck = (done, item) => {
-    console.log('🚀 ~ file: index.js ~ line 224 ~ ItemBtn ~ done, item', done, item);
+    // console.log('🚀 ~ file: index.js ~ line 224 ~ ItemBtn ~ done, item', done, item);
     //是否付款流程
     const isFklc = item.sxmc === '付款流程';
     //查看

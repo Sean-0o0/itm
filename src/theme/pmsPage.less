@@ -4907,6 +4907,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         border-radius: 4px;
       }
 
+      .prj-info-table-link-strong {
+        &:hover {
+          font-weight: bold;
+        }
+      }
+
       .ant-table {
         td {
           padding: 9px;
@@ -4971,6 +4977,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             overflow: hidden;
             white-space: nowrap;
             line-height: initial;
+            cursor: pointer;
 
             &:last-child {
               margin-right: 0;
@@ -5915,6 +5922,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       font-family: PingFangSC-Regular, PingFang SC;
       .font-weight-400();
       color: #606266;
+      cursor: pointer;
       &:hover {
         color: #3361ff;
         i {
@@ -5926,7 +5934,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-size: 1em;
         margin-bottom: -2px;
         color: #909399;
-        cursor: pointer;
       }
     }
   }
@@ -6147,6 +6154,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             overflow: hidden;
             white-space: nowrap;
             margin: 10px 0;
+            margin-top: 5px;
             padding-left: 39px;
 
             span {
@@ -6850,6 +6858,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           height: 12px;
           background: #3461ff;
           margin-right: 8px;
+          flex-shrink: 0;
         }
         .handled-tag,
         .unhandled-tag {
@@ -6860,6 +6869,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             background: #3361ff;
             margin-right: 5px;
           }
+          flex-shrink: 0;
           font-weight: normal;
           display: flex;
           flex-direction: row;
@@ -6887,7 +6897,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-weight: bold;
         color: #303133;
         line-height: 24px;
-        margin-bottom: 16px;
+        word-wrap: break-word;
+        // margin-bottom: 16px;
       }
       &:last-child {
         margin-bottom: 0;
@@ -6899,6 +6910,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-size: 14px;
         line-height: 1.2em;
         margin-bottom: 12px;
+        word-wrap: break-word;
         .label {
           color: #909399ff;
         }
@@ -7617,6 +7629,73 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
         }
+        & > .info-row-box {
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: flex-start;
+          & > .info-item {
+            height: 22px;
+            line-height: 22px;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #303133;
+            width: 32%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            margin-right: 2%;
+            margin-bottom: 16px;
+            &:nth-child(3n) {
+              margin-right: 0;
+            }
+            .item-top,
+            .item-bottom {
+              width: 100%;
+              span {
+                display: inline-block;
+                width: 70px;
+                text-align: right;
+                color: #909399;
+                margin-right: 8px;
+              }
+            }
+            .payment-label {
+              width: 70px;
+            }
+            .payment-plan {
+              width: calc(100% - 70px);
+              display: inline-block;
+              div {
+                margin-bottom: 4px;
+                max-width: 100%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+
+                &:last-child {
+                  margin-bottom: 0;
+                }
+              }
+            }
+
+            &:last-child {
+              margin-right: 0;
+            }
+
+            .payment-label,
+            span {
+              color: #909399;
+              margin-right: 8px;
+            }
+            a {
+              &:hover {
+                color: #3361ffb8 !important;
+              }
+            }
+          }
+        }
       }
     }
     & > .col-right {
@@ -7777,7 +7856,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               //盒子中内容竖直排列
               .content {
                 width: 100%;
-                word-break: break-word;
+                word-wrap: break-word;
                 overflow: hidden; //溢出内容隐藏
                 text-overflow: ellipsis; //文本溢出部分用省略号表示
                 display: -webkit-box; //特别显示模式
@@ -8144,7 +8223,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 font-weight: bold;
                 color: #303133;
                 line-height: 34px;
-                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+                // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
               }
 
               .staff-experience {
@@ -8152,7 +8231,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 font-weight: 400;
                 color: #999999;
                 line-height: 34px;
-                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+                // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
               }
             }
 
@@ -8172,7 +8251,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
               .staff-value {
                 color: #303133;
-                text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+                // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
               }
             }
           }

@@ -32,9 +32,7 @@ export default function TopConsole(props) {
   const { setTableLoading, setTableData, projectManager } = props;
 
   useEffect(() => {
-    if (projectManager) {
-      getFilterData();
-    }
+    getFilterData();
     return () => {};
   }, [projectManager]);
 
@@ -184,10 +182,13 @@ export default function TopConsole(props) {
           //   '🚀 ~ file: index.js ~ line 187 ~ getFilterData ~ [...JSON.parse(res.projectManagerRecord)]',
           //   [...JSON.parse(res.projectManagerRecord)],
           // );
-          setPrjMnger(
-            [...JSON.parse(res.projectManagerRecord)].filter(x => Number(x.ID) === projectManager)[0]
-              ?.USERNAME,
-          );
+          if (projectManager) {
+            setPrjMnger(
+              [...JSON.parse(res.projectManagerRecord)].filter(
+                x => Number(x.ID) === projectManager,
+              )[0]?.USERNAME,
+            );
+          }
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
         }
       })

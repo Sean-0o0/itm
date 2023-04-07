@@ -1,14 +1,32 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message } from 'antd';
+import { Button, Table, Popover, message, Tooltip } from 'antd';
 import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
   const { tableData, tableLoading, getTableData, projectManager = -1 } = props; //表格数据
+  const location = useLocation();
+  // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
+
+  //lb弹窗配置
+  const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(
+    JSON.stringify({ xmid: -1, type: true }),
+  )}`;
+  const fileAddModalProps = {
+    isAllWindow: 1,
+    title: '新建项目',
+    width: '70%',
+    height: '120rem',
+    style: { top: '2rem' },
+    visible: true,
+    footer: null,
+  };
 
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
@@ -17,8 +35,8 @@ export default function InfoTable(props) {
     };
   }, []);
 
-   //监听新建项目弹窗状态
-   const handleIframePostMessage = event => {
+  //监听新建项目弹窗状态-按钮
+  const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       closeFileAddModal();
     }
@@ -29,47 +47,52 @@ export default function InfoTable(props) {
     }
   };
 
-  //获取标签数据
-  const getTagData = tag => {
+  //获取项目标签数据
+  const getTagData = (tag, idtxt) => {
     let arr = [];
-    if (tag !== '' && tag !== null && tag !== undefined) {
+    let arr2 = [];
+    if (
+      tag !== '' &&
+      tag !== null &&
+      tag !== undefined &&
+      idtxt !== '' &&
+      idtxt !== null &&
+      idtxt !== undefined
+    ) {
       if (tag.includes(',')) {
         arr = tag.split(',');
+        arr2 = idtxt.split(',');
       } else {
         arr.push(tag);
+        arr2.push(idtxt);
       }
     }
-    return arr;
+    let arr3 = arr.map((x, i) => {
+      return {
+        name: x,
+        id: arr2[i],
+      };
+    });
+    // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
+    return arr3;
   };
 
-  const handleModalOpen = v => {
-    setModalVisible(true);
-  };
+  //表格操作后更新数据
   const handleTableChange = obj => {
-    console.log('handleTableChange', obj);
+    // console.log('handleTableChange', obj);
     const { current = 1, pageSize = 10 } = obj;
     getTableData({ current, pageSize, projectManager });
     return;
   };
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    title: '新建项目',
-    width: '70%',
-    height: '120rem',
-    style: { top: '2rem' },
-    visible: true,
-    footer: null,
-  };
+
   const openVisible = () => {
     setFileAddVisible(true);
   };
   const closeFileAddModal = () => {
     setFileAddVisible(false);
   };
-  const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(
-    JSON.stringify({ xmid: -1, type: true }),
-  )}`;
 
+  //列配置
   const columns = [
     {
       title: '项目名称',
@@ -79,19 +102,32 @@ export default function InfoTable(props) {
       key: 'projectName',
       ellipsis: true,
       render: (text, row, index) => {
-        // if (row.projectStatus !== '草稿')
-        //   return (
-        //     <a
-        //       style={{ color: '#3361ff' }}
-        //       onClick={() => {
-        //         // handleModalOpen();
-        // message.info('功能开发中，暂时无法使用', 1);
-        //       }}
-        //     >
-        //       {text}
-        //     </a>
-        //   );
-        return <span>{text}</span>;
+        if (row.projectStatus !== '草稿')
+          return (
+            <Tooltip title={text} placement="topLeft">
+              <Link
+                style={{ color: '#3361ff' }}
+                to={{
+                  pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                    JSON.stringify({
+                      xmid: row.projectId,
+                    }),
+                  )}`,
+                  state: {
+                    routes: [{ name: '项目列表', pathname: location.pathname }],
+                  },
+                }}
+                className="prj-info-table-link-strong"
+              >
+                {text}
+              </Link>
+            </Tooltip>
+          );
+        return (
+          <Tooltip title={text} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{text}</span>
+          </Tooltip>
+        );
       },
     },
     {
@@ -101,6 +137,28 @@ export default function InfoTable(props) {
       width: '7%',
       key: 'projectManager',
       ellipsis: true,
+      render: (text, row, index) => {
+        if (row.projectStatus !== '草稿')
+          return (
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                  JSON.stringify({
+                    ryid: row.projectManagerId,
+                  }),
+                )}`,
+                state: {
+                  routes: [{ name: '项目列表', pathname: location.pathname }],
+                },
+              }}
+              className="prj-info-table-link-strong"
+            >
+              {text}
+            </Link>
+          );
+        return <span>{text}</span>;
+      },
     },
     {
       title: '项目类型',
@@ -117,6 +175,11 @@ export default function InfoTable(props) {
       width: '18%',
       key: 'budgetProject',
       ellipsis: true,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '项目金额(元)',
@@ -136,6 +199,11 @@ export default function InfoTable(props) {
       width: '15%',
       key: 'orgs',
       ellipsis: true,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '项目标签',
@@ -147,25 +215,55 @@ export default function InfoTable(props) {
       render: (text, row, index) => {
         return (
           <div className="prj-tags">
-            {getTagData(text).length !== 0 && (
+            {getTagData(text, row.projectLabelId).length !== 0 && (
               <>
-                {getTagData(text)
+                {getTagData(text, row.projectLabelId)
                   ?.slice(0, 2)
                   .map((x, i) => (
                     <div key={i} className="tag-item">
-                      {x}
+                      <Link
+                        style={{ color: '#3361ff' }}
+                        to={{
+                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                            JSON.stringify({
+                              bqid: row.projectLabelId,
+                            }),
+                          )}`,
+                          state: {
+                            routes: [{ name: '项目列表', pathname: location.pathname }],
+                          },
+                        }}
+                        className="prj-info-table-link-strong"
+                      >
+                        {x}
+                      </Link>
                     </div>
                   ))}
-                {getTagData(text)?.length > 2 && (
+                {getTagData(text, row.projectLabelId)?.length > 2 && (
                   <Popover
                     overlayClassName="tag-more-popover"
                     content={
                       <div className="tag-more">
-                        {getTagData(text)
+                        {getTagData(text, row.projectLabelId)
                           ?.slice(2)
                           .map((x, i) => (
                             <div key={i} className="tag-item">
-                              {x}
+                              <Link
+                                style={{ color: '#3361ff' }}
+                                to={{
+                                  pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                      bqid: row.projectLabelId,
+                                    }),
+                                  )}`,
+                                  state: {
+                                    routes: [{ name: '项目列表', pathname: location.pathname }],
+                                  },
+                                }}
+                                className="prj-info-table-link-strong"
+                              >
+                                {x}
+                              </Link>
                             </div>
                           ))}
                       </div>
@@ -189,6 +287,7 @@ export default function InfoTable(props) {
       ellipsis: true,
     },
   ];
+  
   return (
     <div className="info-table">
       {fileAddVisible && (

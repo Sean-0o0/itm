@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import { message } from 'antd';
 
 export default function ShortcutCard(props) {
   const { userRole, getPrjInfo } = props;

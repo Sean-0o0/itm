@@ -227,9 +227,24 @@ export default function ProjectCard(props) {
         <div className="list">
           {riskData?.map(x => (
             <div className="item" key={x.FXID}>
-              <div className="title">{x.BT}</div>
+              <div className="top">
+                <div className="title">{x.BT}</div>
+                {x.ZT === '2' && (
+                  <div className="handled-tag">
+                    <div className="dot"></div>
+                    已处理
+                  </div>
+                )}
+                {x.ZT === '1' && (
+                  <div className="unhandled-tag">
+                    <div className="dot"></div>
+                    未处理
+                  </div>
+                )}
+              </div>
+
               {getItem('风险', x.NR || '')}
-              {getItem('处理', x.CLNR || '')}
+              {x.ZT !== '1' && getItem('处理', x.CLNR || '')}
             </div>
           ))}
         </div>

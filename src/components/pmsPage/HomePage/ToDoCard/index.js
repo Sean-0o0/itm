@@ -39,7 +39,6 @@ export default function ToDoCard(props) {
     txt && message.success(txt, 1);
     //刷新数据
     getToDoData();
-    getXmbhData();
   };
 
   //跳转livebos页面
@@ -109,7 +108,6 @@ export default function ToDoCard(props) {
         if (code === 1) {
           //刷新数据
           getToDoData();
-          getXmbhData();
           message.success('执行成功', 1);
         }
       })
