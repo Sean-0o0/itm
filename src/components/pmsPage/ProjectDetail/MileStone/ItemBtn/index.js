@@ -47,6 +47,7 @@ class ItemBtn extends React.Component {
     contractSigningVisible: false,
     //信委会立案流程查看
     xwhyaModalVisible: false,
+    src: ''
   };
 
   componentDidMount() {}
@@ -551,6 +552,7 @@ class ItemBtn extends React.Component {
       contractSigningVisible,
       associatedFileVisible,
       xwhyaModalVisible,
+      src
     } = this.state;
 
     //文档上传、修改弹窗
@@ -766,6 +768,7 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('信息修改')}
           ></BidInfoUpdate>
         )}
+        <iframe src={src} id='Iframe' style={{ display: 'none' }} />
       </>
     );
   }

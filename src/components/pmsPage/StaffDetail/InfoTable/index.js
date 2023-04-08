@@ -99,7 +99,7 @@ class InfoTable extends Component {
                             <>
                                 {data?.slice(0, 2)
                                     .map((x, i) => (
-                                        <div key={i} className="tag-item">
+                                        <div key={i} className="tag-item" title={x}>
                                             <Link
                                                 to={{
                                                     pathname:
@@ -126,7 +126,7 @@ class InfoTable extends Component {
                                             <div className="tag-more">
                                                 {data?.slice(2)
                                                     .map((x, i) => (
-                                                        <div className="tag-item" key={i}>
+                                                        <div className="tag-item" key={i} title={x}>
                                                             <Link
                                                                 to={{
                                                                     pathname:
