@@ -319,4 +319,10 @@ export default [
     url: '/projectManage/updateProjectMessages',
     dis: '新增、修改项目留言',
   },
+  {
+    code: '',
+    key: 'querySupplierList',
+    url: '/projectManage/querySupplierList',
+    dis: '查询供应商信息列表',
+  },
 ];

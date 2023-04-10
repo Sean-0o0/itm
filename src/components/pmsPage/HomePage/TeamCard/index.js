@@ -17,17 +17,17 @@ export default function TeamCard(props) {
           icon: 'circle',
           orient: 'vertical',
           // padding: [42, 0],
-          left: '55%', //图例距离左的距离
+          right: '0%', //图例距离左的距离
           y: 'center', //图例上下居中
           itemGap: 15,
           formatter: name => {
-            const nameStr = name.length > 5 ? name.substr(0, 5) + '...' : name;
+            const nameStr = name.length > 8 ? name.substr(0, 8) + '...' : name;
             return `{a|${nameStr}}{b|${getValue(name)}}`;
           },
           textStyle: {
             rich: {
               a: {
-                width: 76,
+                width: 120,
                 fontSize: 12,
                 padding: [0, 0, 0, 4],
                 fontFamily: 'PingFangSC-Regular, PingFang SC',
@@ -38,7 +38,7 @@ export default function TeamCard(props) {
                 fontFamily: 'Roboto-Medium, Roboto',
                 fontWeight: 'bold',
                 color: '#222222',
-                width: 60,
+                // width: 30,
               },
             },
           },
@@ -107,6 +107,7 @@ export default function TeamCard(props) {
       window.onresize = function() {
         pieChart.resize();
       };
+      window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
     }
     return () => {
       if (teamData?.length !== 0) pieChart.dispose();

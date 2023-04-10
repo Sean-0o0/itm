@@ -105,6 +105,12 @@ function VisitedRoutes(props) {
   if (menuTree.length === 0) {
     return null;
   }
+  // const handleUrls = (urls=[])=>{
+  //   let arr=[]
+  //     urls.forEach(x => {
+  //       if(!arr.includes(x)){}
+  //     });
+  // };
 
   let tabCount = 0;
 
@@ -119,26 +125,26 @@ function VisitedRoutes(props) {
       {urls.length > 0 &&
         urls.map(item => {
           let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
-          if (item.includes('/pms/manage/ProjectDetail/')) {
-            url = item;
-            title = '项目详情';
-          }
-          if (item.includes('/pms/manage/ProjectInfo/')) {
-            url = item;
-            title = '项目列表';
-          }
-          if (item.includes('/pms/manage/staffDetail/')) {
-            url = item;
-            title = '人员详情';
-          }
-          if (item.includes('/pms/manage/labelDetail/')) {
-            url = item;
-            title = '标签详情';
-          }
-          if (item.includes('/pms/manage/attachLibrary/')) {
-            url = item;
-            title = '文档列表';
-          }
+          // if (item.includes('/pms/manage/ProjectDetail/')) {
+          //   url = item;
+          //   title = '项目详情';
+          // }
+          // if (item.includes('/pms/manage/ProjectInfo/')) {
+          //   url = item;
+          //   title = '项目列表';
+          // }
+          // if (item.includes('/pms/manage/staffDetail/')) {
+          //   url = item;
+          //   title = '人员详情';
+          // }
+          // if (item.includes('/pms/manage/labelDetail/')) {
+          //   url = item;
+          //   title = '标签详情';
+          // }
+          // if (item.includes('/pms/manage/attachLibrary/')) {
+          //   url = item;
+          //   title = '文档列表';
+          // }
           if (title === '' && routerList.length > 0) {
             const listIndex = routerList.findIndex(tempItem => {
               return item.indexOf(tempItem.path) > -1;
