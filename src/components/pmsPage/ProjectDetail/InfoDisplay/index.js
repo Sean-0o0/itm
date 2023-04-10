@@ -1,4 +1,4 @@
-import { Popover, Table, Tooltip } from 'antd';
+import { Empty, Popover, Table, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -24,7 +24,6 @@ export default function InfoDisplay(props) {
     supplier = [],
     member = [],
   } = prjData;
-  console.log('🚀 ~ file: index.js:28 ~ InfoDisplay ~ prjData:', prjData);
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
@@ -129,6 +128,15 @@ export default function InfoDisplay(props) {
   const notNull = data => {
     if (['', ' ', undefined, null].includes(data)) return '暂无数据';
     return data;
+  };
+  const isNullArr = arr => {
+    let data = [];
+    arr.forEach(x => {
+      if (!['', ' ', undefined, null].includes(x)) {
+        data.push(x);
+      }
+    });
+    return data.length === 0;
   };
   return (
     <div className="col-left info-display-box">
@@ -360,116 +368,148 @@ export default function InfoDisplay(props) {
       {/* 供应商信息 */}
       <div className="info-box" key="gysxx">
         <div className="top-title">供应商信息</div>
-        <div className="info-row">
-          {notNull(supplier[0]?.GYSMC) !== '暂无数据' && (
-            <div
-              className="info-item"
-              key="供应商名称："
-              style={{ display: 'flex', height: 'unset' }}
-            >
-              <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
-              <a
-                style={{
-                  whiteSpace: 'break-spaces',
-                  color: '#3361ff',
-                }}
+        {isNullArr([supplier[0]?.GYSMC, supplier[0]?.GYSLX, supplier[0]?.LXR]) ? (
+          <Empty
+            description="暂无信息"
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            style={{ width: '100%', marginBottom: '16px' }}
+          />
+        ) : (
+          <div className="info-row">
+            {notNull(supplier[0]?.GYSMC) !== '暂无数据' && (
+              <div
+                className="info-item"
+                key="供应商名称："
+                style={{ display: 'flex', height: 'unset' }}
               >
-                {supplier[0]?.GYSMC}
-              </a>
-            </div>
-          )}
-          {notNull(supplier[0]?.GYSLX) !== '暂无数据' &&
-            getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
-          {supplier[0]?.LXR && (
-            <div
-              className="info-item"
-              key="供应商联系人："
-              style={{ display: 'flex', height: 'unset' }}
-            >
-              <div className="payment-label" style={{ width: 98 }}>
-                供应商联系人：
+                <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
+                <a
+                  style={{
+                    whiteSpace: 'break-spaces',
+                    color: '#3361ff',
+                  }}
+                >
+                  {supplier[0]?.GYSMC}
+                </a>
               </div>
-              <div className="payment-plan">
-                {supplier.map(x => (
-                  <div key={x.LXRXXID}>
-                    {x.LXR || ''} {x.SJ || ''}
-                  </div>
-                ))}
+            )}
+            {notNull(supplier[0]?.GYSLX) !== '暂无数据' &&
+              getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
+            {supplier[0]?.LXR && (
+              <div
+                className="info-item"
+                key="供应商联系人："
+                style={{ display: 'flex', height: 'unset' }}
+              >
+                <div className="payment-label" style={{ width: 98 }}>
+                  供应商联系人：
+                </div>
+                <div className="payment-plan">
+                  {supplier.map(x => (
+                    <div key={x.LXRXXID}>
+                      {x.LXR || ''} {x.SJ || ''}
+                    </div>
+                  ))}
+                </div>
               </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
+        )}
       </div>
       {/* 招采信息 */}
       {isMember() ? (
         <div className="info-box" key="zcxx">
           <div className="top-title">招采信息</div>
-          <div className="info-row-box">
-            {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
-            {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-            {contrast.QSRQ &&
-              getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-            {bidding.TBBZJ && getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
-            {bidding.LYBZJ && getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
-            {bidding.PBBG && (
-              <div className="info-item" key="评标报告：">
-                <span>评标报告：</span>
-                <a
-                  style={{ color: '#3361ff' }}
-                  onClick={() => handleFile(bidding.ID, bidding.PBBG)}
-                >
-                  {bidding.PBBG}
-                </a>
-              </div>
-            )}
-            {payment.length !== 0 && getPmtPlan(payment)}
-            {otrSupplier.length !== 0 && (
-              <div className="info-item" key="zcxx-4-1">
-                <span>其他投标供应商：</span>
-                <Popover
-                  placement="rightTop"
-                  title={null}
-                  content={otherSupplierPopover(otrSupplier)}
-                  overlayClassName="other-supplier-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
-              </div>
-            )}
-          </div>
+          {isNullArr([
+            contrast.HTJE,
+            prjBasic.ZBFS,
+            contrast.QSRQ,
+            bidding.TBBZJ,
+            bidding.LYBZJ,
+            bidding.PBBG,
+            otrSupplier[0]?.GYSMC,
+          ]) ? (
+            <Empty
+              description="暂无信息"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ width: '100%', marginBottom: '16px' }}
+            />
+          ) : (
+            <div className="info-row-box">
+              {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
+              {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
+              {contrast.QSRQ &&
+                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+              {bidding.TBBZJ && getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
+              {bidding.LYBZJ && getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
+              {bidding.PBBG && (
+                <div className="info-item" key="评标报告：">
+                  <span>评标报告：</span>
+                  <a
+                    style={{ color: '#3361ff' }}
+                    onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                  >
+                    {bidding.PBBG}
+                  </a>
+                </div>
+              )}
+              {payment.length !== 0 && getPmtPlan(payment)}
+              {otrSupplier.length !== 0 && (
+                <div className="info-item" key="zcxx-4-1">
+                  <span>其他投标供应商：</span>
+                  <Popover
+                    placement="rightTop"
+                    title={null}
+                    content={otherSupplierPopover(otrSupplier)}
+                    overlayClassName="other-supplier-content-popover"
+                  >
+                    <a style={{ color: '#3361ff' }}>查看详情</a>
+                  </Popover>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       ) : (
         <div className="info-box" key="zcxx">
           <div className="top-title">招采信息</div>
-          <div className="info-row-box">
-            {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-            {contrast.QSRQ &&
-              getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-            {bidding.PBBG && (
-              <div className="info-item" key="评标报告：">
-                <span>评标报告：</span>
-                <a
-                  style={{ color: '#3361ff' }}
-                  onClick={() => handleFile(bidding.ID, bidding.PBBG)}
-                >
-                  {bidding.PBBG}
-                </a>
-              </div>
-            )}
-            {otrSupplier.length !== 0 && (
-              <div className="info-item" key="zcxx-4-1">
-                <span>其他投标供应商：</span>
-                <Popover
-                  placement="rightTop"
-                  title={null}
-                  content={otherSupplierPopover(otrSupplier)}
-                  overlayClassName="other-supplier-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
-              </div>
-            )}
-          </div>
+          {isNullArr([prjBasic.ZBFS, contrast.QSRQ, bidding.PBBG, otrSupplier[0]?.GYSMC]) ? (
+            <Empty
+              description="暂无信息"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ width: '100%', marginBottom: '16px' }}
+            />
+          ) : (
+            <div className="info-row-box">
+              {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
+              {contrast.QSRQ &&
+                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+              {bidding.PBBG && (
+                <div className="info-item" key="评标报告：">
+                  <span>评标报告：</span>
+                  <a
+                    style={{ color: '#3361ff' }}
+                    onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                  >
+                    {bidding.PBBG}
+                  </a>
+                </div>
+              )}
+              {otrSupplier.length !== 0 && (
+                <div className="info-item" key="zcxx-4-1">
+                  <span>其他投标供应商：</span>
+                  <Popover
+                    placement="rightTop"
+                    title={null}
+                    content={otherSupplierPopover(otrSupplier)}
+                    overlayClassName="other-supplier-content-popover"
+                  >
+                    <a style={{ color: '#3361ff' }}>查看详情</a>
+                  </Popover>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       )}
     </div>

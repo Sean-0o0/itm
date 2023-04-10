@@ -34,6 +34,18 @@ export default function MileStone(props) {
   //防抖定时器
   let timer = null;
 
+  //风险弹窗
+  const riskModalProps = {
+    isAllWindow: 1,
+    // defaultFullScreen: true,
+    width: '670px',
+    height: '400px',
+    title: riskTxt,
+    style: { top: '67px' },
+    visible: riskVisible,
+    footer: null,
+  };
+
   useEffect(() => {
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('prjMileStoneResize', resizeUpdate);
@@ -77,10 +89,6 @@ export default function MileStone(props) {
                   x.isCurrent = x.lcbid === r.record[0].lcbid;
                   if (x.lcbid === r.record[0].lcbid) {
                     currentIndex = i;
-                    // // console.log(
-                    // //   '🚀 ~ file: index.js ~ line 75 ~ data.forEach ~ currentIndex',
-                    // //   currentIndex,
-                    // // );
                   }
                 });
                 //里程碑事项数据 - 事项分类到各个里程碑的 itemData中
@@ -125,12 +133,13 @@ export default function MileStone(props) {
                       setIsSpinning(false);
 
                       if (!noNewCurStep) {
+                        //初次刷新，自动选择当前里程碑
                         setCurrentStep(currentIndex);
                         if (data.length >= 5) {
                           if (currentIndex - 2 >= 0 && currentIndex + 2 < data.length) {
                             setStartIndex(currentIndex - 2);
                             setInitIndex(currentIndex - 2);
-                            setEndIndex(currentIndex + 2);
+                            setEndIndex(currentIndex + 3); //不包含
                             // setCurrentStep(2);
                           } else if (currentIndex < 2) {
                             setStartIndex(0);
@@ -141,12 +150,6 @@ export default function MileStone(props) {
                             setInitIndex(data.length - 5);
                             setStartIndex(data.length - 5);
                             setEndIndex(data.length);
-                            // if (currentIndex === data.length - 2) {
-                            //   setCurrentStep(3);
-                            // }
-                            // if (currentIndex === data.length - 1) {
-                            //   setCurrentStep(4);
-                            // }
                           }
                         } else {
                           setInitIndex(0);
@@ -168,6 +171,12 @@ export default function MileStone(props) {
                           setLastBtnVisible(false);
                           setNextBtnVisible(false);
                         }
+                        if (currentIndex - 2 === 0) {
+                          setLastBtnVisible(false);
+                        }
+                        if (currentIndex === data.length - 2) {
+                          setNextBtnVisible(false);
+                        }
                       }
                     }
                   })
@@ -185,6 +194,7 @@ export default function MileStone(props) {
         console.error('FetchQueryLiftcycleMilestone', e);
       });
   };
+
   //防抖
   const debounce = (fn, waits) => {
     if (timer) {
@@ -195,6 +205,7 @@ export default function MileStone(props) {
       fn(...arguments);
     }, waits);
   };
+
   //屏幕宽度变化触发
   const resizeUpdate = e => {
     const fn = () => {
@@ -231,11 +242,7 @@ export default function MileStone(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
-  const handleStepChange = v => {
-    // console.log('handleStepChange', v);
-    setCurrentStep(v);
-  };
-
+  //风险标签
   const getRiskTag = data => {
     const riskPopoverContent = data => {
       const getItem = (label, content) => {
@@ -286,11 +293,14 @@ export default function MileStone(props) {
       </Popover>
     );
   };
+
+  //刷新数据
   const refresh = () => {
     getMileStoneData();
     getPrjDtlData();
   };
 
+  //里程碑块
   const getItem = item => {
     return (
       <div className="item" style={{ width: itemWidth }} key={item.swlx}>
@@ -320,6 +330,7 @@ export default function MileStone(props) {
       </div>
     );
   };
+
   //获取里程碑状态
   const getStatus = zt => {
     // // console.log('🚀 ~ file: index.js ~ line 288 ~ getStatus ~ zt', zt);
@@ -328,7 +339,8 @@ export default function MileStone(props) {
     else if (zt === '3') return 'finish';
     else return 'process';
   };
-  //切换里程碑
+
+  //切换里程碑 - 按钮触发
   const stepSwitch = txt => {
     let data = [...mileStoneData];
     let st = 0;
@@ -368,9 +380,16 @@ export default function MileStone(props) {
     // // console.log('🚀 ~ file: index.js ~ line 369 ~ stepSwitch', st, ed);
     setEndIndex(ed);
   };
+
+  //步骤条切换 - 自动触发
+  const handleStepChange = v => {
+    // console.log('handleStepChange', v);
+    setCurrentStep(v);
+  };
+
   //高亮的里程碑数据
   const hLMileStone = mileStoneData[currentStep] || [];
-  //日期格式
+  //日期格式化
   const dateFormat = (kssj, jssj) =>
     moment(kssj).format('YYYY-MM-DD') + '至' + moment(jssj).format('MM-DD');
   const getDateDiff = item => {
@@ -389,6 +408,8 @@ export default function MileStone(props) {
             : moment(item.kssj).diff(moment(item.yckssj), 'day'))
     }天，修改${item.xgcs}次）`;
   };
+
+  //处理风险
   const handleRisk = (item, type = 'ADD') => {
     // // console.log("🚀 ~ file: index.js ~ line 380 ~ handleRisk ~ item", item)
     let params = {
@@ -438,13 +459,15 @@ export default function MileStone(props) {
         console.error(!error.success ? error.message : error.note);
       });
   };
+
   //成功回调
   const onSuccess = name => {
-    message.success(name + '成功');
-    getPrjDtlData();
-    getMileStoneData();
+    refresh();
     setRiskVisible(false);
+    message.success(name + '成功');
   };
+
+  //底部盒子jsx
   const getBottomBox = () => {
     const arr = [];
     member.forEach(x => {
@@ -506,16 +529,7 @@ export default function MileStone(props) {
       );
     return '';
   };
-  const riskModalProps = {
-    isAllWindow: 1,
-    // defaultFullScreen: true,
-    width: '670px',
-    height: '400px',
-    title: riskTxt,
-    style: { top: '67px' },
-    visible: riskVisible,
-    footer: null,
-  };
+
   return (
     <div className="mile-stone-box">
       {/*风险信息修改弹窗*/}
@@ -536,11 +550,21 @@ export default function MileStone(props) {
         </div>
       </div>
       <div className="middle-box">
-        {lastBtnVisible && (
+        {/* {lastBtnVisible && (
           <img className="last-milestone" src={lastBtn} alt="" onClick={() => stepSwitch('last')} />
         )}
         {nextBtnVisible && (
           <img className="next-milestone" src={nextBtn} alt="" onClick={() => stepSwitch('next')} />
+        )} */}
+        {lastBtnVisible && (
+          <div className="last-milestone" onClick={() => stepSwitch('last')}>
+            <i className="iconfont icon-left" />
+          </div>
+        )}
+        {nextBtnVisible && (
+          <div className="next-milestone" onClick={() => stepSwitch('next')}>
+            <i className="iconfont icon-right" />
+          </div>
         )}
 
         <Steps

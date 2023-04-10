@@ -36,7 +36,7 @@ export default function ProjectDetail(props) {
       userId: Number(LOGIN_USER_INFO.id),
     })
       .then(res => {
-        console.log('res.role', res.role);
+        // console.log('res.role', res.role);
         setIsLeader(res.role !== '普通人员');
       })
       .catch(e => {
