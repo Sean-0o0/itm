@@ -349,7 +349,7 @@ class EditableCellQT extends React.Component {
   }
 }
 
-
+let timer = null;
 class EditProjectInfoModel extends React.Component {
   constructor(props) {
     super(props)
@@ -417,6 +417,8 @@ class EditProjectInfoModel extends React.Component {
       file: [],
       //收款账号
       number: '',
+      //收款账号完整信息
+      numberComplete: '',
       //其他投标供应商
       othersSupplier: [],
       ZT: '',
@@ -487,6 +489,10 @@ class EditProjectInfoModel extends React.Component {
     isTableFullScreenQT: false,
     tableDataQT: [],    //其他供应商详情表格
     skzhData: [], //收款账号
+    fetching: false, //在加载数据
+    currentPage: 1, //收款账户数据懒加载页号
+    currentKhmc: '', //款账户文本
+    isNoMoreData: false, //没有更多数据了
     glgys: [],
     //其他信息
     //获奖信息
@@ -527,6 +533,10 @@ class EditProjectInfoModel extends React.Component {
       _this.fetchInterface()
     }, 300);
   };
+
+  componentWillUnmount() {
+    clearTimeout(timer);
+  }
 
   fetchInterface = async () => {
 
@@ -569,7 +579,7 @@ class EditProjectInfoModel extends React.Component {
       queryType: "ALL"
     });
     //招采信息
-    await this.fetchQueryPaymentAccountList();
+    await this.firstTimeQueryPaymentAccountList();
     //合同信息
     await this.fetchQueryHTXXByXQTC();
     //招标信息
@@ -580,7 +590,7 @@ class EditProjectInfoModel extends React.Component {
 
 
   // 处理岗位数据
-  fetchQueryStationInfo = () => {
+  fetchQueryStationInfo() {
     const params = {
       "current": 1,
       "pageSize": 999,
@@ -589,7 +599,7 @@ class EditProjectInfoModel extends React.Component {
       "total": -1,
       "type": "ALL"
     }
-    FetchQueryStationInfo(params).then((result) => {
+    return FetchQueryStationInfo(params).then((result) => {
       const {code = -1, record = ''} = result;
       if (code > 0) {
         let rec = JSON.parse(record)
@@ -948,8 +958,8 @@ class EditProjectInfoModel extends React.Component {
           let memberInfo = JSON.parse(result.memberInfo);
           memberInfo.push({gw: '10', rymc: result.projectManager});
           let arr = [];
-          console.log("memberInfomemberInfo", memberInfo)
-          console.log("this.state.staffList", this.state.staffList)
+          // console.log("memberInfomemberInfo", memberInfo)
+          // console.log("this.state.staffList", this.state.staffList)
           let nameArr = [];
           memberInfo.forEach(item => {
             let rymc = item.rymc.split(',').map(String);
@@ -963,10 +973,10 @@ class EditProjectInfoModel extends React.Component {
                 }
               })
             })
-            console.log("Number(item.gw)", Number(item.gw))
+            // console.log("Number(item.gw)", Number(item.gw))
             nameArr[Number(item.gw) - 1] = newJobStaffName;
-            console.log("newJobStaffName", newJobStaffName)
-            console.log("nameArrnameArr", nameArr)
+            // console.log("newJobStaffName", newJobStaffName)
+            // console.log("nameArrnameArr", nameArr)
             // 初始化各个岗位下对应的员工id的数组
             arr[Number(item.gw)] = [item.rymc];
             // 获取当前登录用户信息
@@ -2479,7 +2489,7 @@ class EditProjectInfoModel extends React.Component {
   // 获取中标信息
   fetchQueryZBXXByXQTC() {
     const {purchaseInfo, gysData = [], staticSkzhData = [], basicInfo = []} = this.state;
-    // console.log("staticSkzhDatastaticSkzhData", staticSkzhData)
+    console.log("staticSkzhDatastaticSkzhData", staticSkzhData)
     return FetchQueryZBXXByXQTC({
       xmmc: Number(basicInfo.projectId),
     }).then(res => {
@@ -2496,6 +2506,7 @@ class EditProjectInfoModel extends React.Component {
             });
           }
         }
+        const numberData = staticSkzhData.filter(x => x.id === rec[0].zbgysfkzh)[0] || '';
         this.setState({
           zbxxVisiable: true,
           zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
@@ -2506,7 +2517,8 @@ class EditProjectInfoModel extends React.Component {
             biddingSupplier: rec[0]?.zbgys,
             bidCautionMoney: Number(rec[0]?.tbbzj),
             cautionMoney: Number(rec[0]?.lybzj),
-            number: rec[0].zbgysfkzhmc,
+            numberComplete: numberData ? numberData.wdmc + ' - ' + numberData.yhkh + ' - ' + numberData.khmc : "",
+            number: rec[0].zbgysfkzh,
             pbbg: rec[0]?.pbbg,
           },
           uploadFileParams: {
@@ -2638,21 +2650,51 @@ class EditProjectInfoModel extends React.Component {
     });
   };
 
-  fetchQueryPaymentAccountList() {
+  fetchQueryPaymentAccountList = (khmc = '', current = 1) => {
+    this.setState({
+      fetching: true,
+    });
     return QueryPaymentAccountList({
       type: 'ALL',
+      current,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc,
     }).then(res => {
       if (res.success) {
         let rec = res.record;
-        this.setState({
-          skzhData: [...rec],
-          staticSkzhData: [...rec]
-        });
+        let arr = [...this.state.skzhData];
+        if (rec.length === 0) {
+          this.setState({
+            skzhData: [...arr],
+            staticSkzhData: [...arr],
+            fetching: false,
+            isNoMoreData: true,
+          });
+        } else {
+          this.setState({
+            skzhData: [...arr, ...rec],
+            staticSkzhData: [...arr, ...rec]
+          });
+        }
+
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
   }
+
+  debounce = (fn, waits = 500) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn();
+    }, waits);
+  };
 
   OnSkzhSuccess = () => {
     this.setState({addSkzhModalVisible: false});
@@ -2668,6 +2710,59 @@ class EditProjectInfoModel extends React.Component {
       }
     });
   }
+
+  //收款账户变化
+  handleSkzhChange = v => {
+    console.log(v);
+    const {purchaseInfo} = this.state;
+    const obj = this.state.skzhData?.filter(x => x.khmc === v)[0];
+    this.setState({
+      currentPage: 1,
+      isNoMoreData: false,
+      purchaseInfo: {...purchaseInfo, number: obj?.id,},
+    });
+  };
+
+  handleSkzhSearch = khmc => {
+    this.debounce(() => this.firstTimeQueryPaymentAccountList(khmc));
+  };
+
+  handleSkzhScroll = e => {
+    const {scrollHeight, scrollTop, clientHeight} = e.target;
+    if (scrollHeight - scrollTop - clientHeight <= 10) {
+      let index = this.state.currentPage;
+      index = index + 1;
+      if (!this.state.isNoMoreData) {
+        this.setState({
+          currentPage: index,
+        });
+        this.fetchQueryPaymentAccountList(this.state.currentKhmc, index);
+      }
+    }
+  };
+
+  firstTimeQueryPaymentAccountList = (khmc = '') => {
+    QueryPaymentAccountList({
+      type: 'ALL',
+      current: 1,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc,
+    }).then(res => {
+      if (res.success) {
+        let rec = res.record;
+        this.setState({
+          currentPage: 1,
+          staticSkzhData: [...rec],
+          skzhData: [...rec],
+          currentKhmc: khmc,
+          isNoMoreData: false,
+        });
+      }
+    });
+  };
 
   render() {
     let {
@@ -2725,6 +2820,10 @@ class EditProjectInfoModel extends React.Component {
       tableDataQT = [],    //其他供应商表格
       skzhData = [],
       staticSkzhData = [],
+      fetching = false, //在加载数据
+      currentPage = 1, //收款账户数据懒加载页号
+      currentKhmc = '', //款账户文本
+      isNoMoreData = false, //没有更多数据了
       glgys = [],
       //招采信息tab数据
       purchaseInfo = {},
@@ -3013,7 +3112,7 @@ class EditProjectInfoModel extends React.Component {
         <div className="editProject" style={{overflow: 'hidden', height: "100%"}}>
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
             <div style={{overflow: 'hidden', height: "100%"}}>
-              <div style={{height: "6%"}}>
+              <div style={{height: "7%"}}>
                 <Tabs defaultActiveKey="0" onChange={this.tabsCallback}>
                   {
                     htxxVisiable || zbxxVisiable ? tabs.map(item => {
@@ -4192,7 +4291,7 @@ class EditProjectInfoModel extends React.Component {
                 // 人员信息
                 current == 1 && <div className="steps-content"><React.Fragment>
                   <div className="staffInfo">
-                    <div className="tree">
+                    <div className="tree" style={{margin: '0 16px 0 0'}}>
                       {
                         organizationStaffTreeList.length > 0 &&
                         <Tree
@@ -4214,7 +4313,7 @@ class EditProjectInfoModel extends React.Component {
                                                                         color: 'inherit'
                                                                       }}/></Button>
                     </div>
-                    <div className="job">
+                    <div className="job" style={{margin: '0 0 0 16px'}}>
                       {
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
                           //console.log("staffJobList", staffJobList)
@@ -4720,27 +4819,42 @@ class EditProjectInfoModel extends React.Component {
                               //   required: true,
                               //   message: '请选择关联预算项目'
                               // }],
-                              initialValue: purchaseInfo.number
+                              initialValue: purchaseInfo.numberComplete
                             })(
                               <Select
-                                style={{width: '100%', borderRadius: '1.1904rem !important'}}
-                                placeholder="请选择供应商收款账号"
-                                className="skzh-box"
-                                onChange={e => {
-                                  this.setState({purchaseInfo: {...purchaseInfo, number: e}});
-                                }}
+                                style={{width: '100%', borderRadius: '8px !important'}}
                                 showSearch
-                                open={this.state.isSkzhOpen}
-                                onDropdownVisibleChange={(visible) => this.setState({isSkzhOpen: visible})}
+                                placeholder="请输入开户名称或账号"
+                                onChange={this.handleSkzhChange}
+                                notFoundContent={fetching ? <Spin size="small"/> : null}
+                                filterOption={false}
+                                onSearch={this.handleSkzhSearch}
+                                onPopupScroll={this.handleSkzhScroll}
+                                optionLabelProp="children"
+                                className="skzh-box"
+                                onBlur={() => this.firstTimeQueryPaymentAccountList()}
                               >
                                 {
                                   staticSkzhData?.map((item = {}, ind) => {
-                                    return <Option key={ind} value={item.khmc}>
-                                      {item.khmc}
-                                      {this.state.isSkzhOpen && <div style={{fontSize: '0.6em'}}>{item.yhkh}</div>}
+                                    return <Option key={item.id} value={item.id}>
+                                      <i
+                                        className="iconfont icon-bank"
+                                        style={{fontSize: '1em', marginRight: '4px', color: '#3361ff'}}
+                                      />
+                                      {item.khmc} - {item.yhkh} - {item.wdmc}
                                     </Option>
                                   })
                                 }
+                                {this.state.isNoMoreData && (
+                                  <Select.Option
+                                    key={'无更多数据'}
+                                    value={'无更多数据'}
+                                    style={{textAlign: 'center', color: 'rgba(0, 0, 0, 0.65)'}}
+                                    disabled={true}
+                                  >
+                                    无更多数据
+                                  </Select.Option>
+                                )}
                               </Select>
                             )}
                           </Form.Item>

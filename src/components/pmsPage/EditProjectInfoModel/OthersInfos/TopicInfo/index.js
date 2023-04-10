@@ -430,7 +430,9 @@ class TopicInfo extends Component {
                 ['JJ' + Date.now()]: '',
                 ['DQJZ' + Date.now()]: '',
               });
-              this.setState({tableData: arrData})
+              this.setState({tableData: arrData}, () => {
+                this.callbackData();
+              })
             }}>
                 <span className='addHover'>
                   <Icon type="plus" style={{fontSize: '12px'}}/>

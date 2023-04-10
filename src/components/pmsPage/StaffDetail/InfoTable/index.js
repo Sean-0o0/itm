@@ -49,13 +49,13 @@ class InfoTable extends Component {
 
         const columns = [
             {
-                title: '年份',
-                dataIndex: 'xmnf',
-                width: '9%',
-                key: 'xmnf',
-                ellipsis: true,
-                sorter: (a, b) => Number(a.xmnf) - Number(b.xmnf),
-                sortDirections: ['descend', 'ascend'],
+              title: '年份',
+              dataIndex: 'xmnf',
+              width: '5%',
+              key: 'xmnf',
+              ellipsis: true,
+              sorter: (a, b) => Number(a.xmnf) - Number(b.xmnf),
+              sortDirections: ['descend', 'ascend'],
             },
             {
                 title: '项目名称',
@@ -87,7 +87,7 @@ class InfoTable extends Component {
             {
                 title: '项目标签',
                 dataIndex: 'xmbq',
-                width: 195,
+              // width: 195,
                 key: 'xmbq',
                 ellipsis: true,
                 render: (text, row, index) => {
@@ -97,44 +97,44 @@ class InfoTable extends Component {
                     return <div className="prj-tags">
                         {data.length !== 0 && (
                             <>
-                                {data?.slice(0, 2)
-                                    .map((x, i) => (
-                                        <div key={i} className="tag-item" title={x}>
-                                            <Link
-                                                to={{
-                                                    pathname:
-                                                        '/pms/manage/labelDetail/' +
-                                                        EncryptBase64(
-                                                            JSON.stringify({
-                                                                bqid: ids[i],
-                                                            }),
+                              {data?.slice(0, 4)
+                                .map((x, i) => (
+                                  <div key={i} className="tag-item" title={x}>
+                                    <Link
+                                      to={{
+                                        pathname:
+                                          '/pms/manage/labelDetail/' +
+                                          EncryptBase64(
+                                            JSON.stringify({
+                                              bqid: ids[i],
+                                            }),
                                                         ),
-                                                    state: {
-                                                        routes: routes,
-                                                    },
-                                                }}
+                                        state: {
+                                          routes: routes,
+                                        },
+                                      }}
 
-                                            >
-                                                {x}
-                                            </Link>
-                                        </div>
-                                    ))}
-                                {data?.length > 2 && (
-                                    <Popover
-                                        overlayClassName="tag-more-popover"
-                                        content={
-                                            <div className="tag-more">
-                                                {data?.slice(2)
-                                                    .map((x, i) => (
-                                                        <div className="tag-item" key={i} title={x}>
-                                                            <Link
-                                                                to={{
-                                                                    pathname:
-                                                                        '/pms/manage/labelDetail/' +
-                                                                        EncryptBase64(
-                                                                            JSON.stringify({
-                                                                                bqid: ids[i],
-                                                                            }),
+                                    >
+                                      {x}
+                                    </Link>
+                                  </div>
+                                ))}
+                              {data?.length > 4 && (
+                                <Popover
+                                  overlayClassName="tag-more-popover"
+                                  content={
+                                    <div className="tag-more">
+                                      {data?.slice(4)
+                                        .map((x, i) => (
+                                          <div className="tag-item" key={i} title={x}>
+                                            <Link
+                                              to={{
+                                                pathname:
+                                                  '/pms/manage/labelDetail/' +
+                                                  EncryptBase64(
+                                                    JSON.stringify({
+                                                      bqid: ids[i],
+                                                    }),
                                                                         ),
                                                                     state: {
                                                                         routes: routes,
@@ -158,44 +158,44 @@ class InfoTable extends Component {
                     </div>
                 }
             },
-            {
-                title: '项目进度',
-                dataIndex: 'xmjd',
-                width: '10%',
-                key: 'xmjd',
-                ellipsis: true,
-                sorter: (a, b) => Number(a.xmjd) - Number(b.xmjd),
-                align: 'right',
-                sortDirections: ['descend', 'ascend'],
-                render: (text, row, index) => {
-                    return <div style={{ paddingRight: '20px' }}>
-                        {text}%
-                    </div>
-                }
-            },
-            {
-                title: '项目阶段',
-                dataIndex: 'dqlcb',
-                width: '15%',
-                key: 'xmpd',
-                ellipsis: true,
-            },
-            {
-                title: '承担岗位',
-                dataIndex: 'cdgw',
-                width: '15%%',
-                key: 'cdgw',
-                ellipsis: true
-            },
-            {
-                title: '项目状态',
-                dataIndex: 'xmzt',
-                width: '12%',
-                key: 'xmzt',
-                ellipsis: true,
-                sorter: (a, b) => Number(a.xmzt) - Number(b.xmzt),
-                sortDirections: ['descend', 'ascend']
+          {
+            title: '项目进度',
+            dataIndex: 'xmjd',
+            width: '8%',
+            key: 'xmjd',
+            ellipsis: true,
+            sorter: (a, b) => Number(a.xmjd) - Number(b.xmjd),
+            align: 'right',
+            sortDirections: ['descend', 'ascend'],
+            render: (text, row, index) => {
+              return <div style={{paddingRight: '20px'}}>
+                {text}%
+              </div>
             }
+            },
+          {
+            title: '项目阶段',
+            dataIndex: 'dqlcb',
+            width: '8%',
+            key: 'xmpd',
+            ellipsis: true,
+          },
+          {
+            title: '承担岗位',
+            dataIndex: 'cdgw',
+            width: '15%',
+            key: 'cdgw',
+            ellipsis: true
+          },
+          {
+            title: '项目状态',
+            dataIndex: 'xmzt',
+            width: '8%',
+            key: 'xmzt',
+            ellipsis: true,
+            sorter: (a, b) => Number(a.xmzt) - Number(b.xmzt),
+            sortDirections: ['descend', 'ascend']
+          }
         ];
 
         return (

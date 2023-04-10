@@ -390,7 +390,7 @@ class NewProjectModelV2 extends React.Component {
 
 
   // 处理岗位数据
-  fetchQueryStationInfo = () => {
+  fetchQueryStationInfo() {
     const params = {
       "current": 1,
       "pageSize": 999,
@@ -399,8 +399,8 @@ class NewProjectModelV2 extends React.Component {
       "total": -1,
       "type": "ALL"
     }
-    FetchQueryStationInfo(params).then((result) => {
-      const { code = -1, record = '' } = result;
+    return FetchQueryStationInfo(params).then((result) => {
+      const {code = -1, record = ''} = result;
       if (code > 0) {
         let rec = JSON.parse(record)
         // 初始化各个岗位下对应的员工id的数组
