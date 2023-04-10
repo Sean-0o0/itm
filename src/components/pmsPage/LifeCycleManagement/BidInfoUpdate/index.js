@@ -26,6 +26,7 @@ import {
   QueryPaymentAccountList,
 } from '../../../../services/pmsServices';
 import { PluginsUrl } from '../../../../utils/config';
+import LODASH from 'lodash';
 const { Option } = Select;
 
 const PASE_SIZE = 10; //关联供应商选择器分页长度
@@ -53,15 +54,6 @@ class EditableCell extends React.Component {
     isSkzhOpen: false,
   };
 
-  // toggleEdit = () => {
-  //     const editing = !this.state.editing;
-  //     this.setState({ editing }, () => {
-  //         if (editing) {
-  //             this.input.focus();
-  //         }
-  //     });
-  // };
-
   save = e => {
     const { record, handleSave, formdecorate } = this.props;
     formdecorate.validateFields(
@@ -70,8 +62,6 @@ class EditableCell extends React.Component {
         if (error && error[e.currentTarget.id]) {
           return;
         }
-        // this.toggleEdit();
-        // handleSave({ ...record, ...values });
         handleSave({ id: record['id'], ...values });
       },
     );
@@ -117,7 +107,7 @@ class EditableCell extends React.Component {
           initialValue: record[dataIndex + record['id']],
         })(
           <Select
-            style={{ width: '100%', borderRadius: '1.1904rem !important' }}
+            style={{ width: '100%', borderRadius: '8px !important' }}
             placeholder="请选择供应商"
             onChange={this.onGysChange}
             showSearch
@@ -144,7 +134,7 @@ class EditableCell extends React.Component {
           initialValue: String(record[dataIndex + record['id']]),
         })(
           <Select
-            style={{ width: '100%', borderRadius: '1.1904rem !important' }}
+            style={{ width: '100%', borderRadius: '8px !important' }}
             placeholder="请选择供应商收款账号"
             onChange={this.onSkzhChange}
             showSearch
@@ -203,6 +193,8 @@ class EditableCell extends React.Component {
     );
   }
 }
+
+let timer = null;
 class BidInfoUpdate extends React.Component {
   state = {
     isModalFullScreen: false,
@@ -245,16 +237,16 @@ class BidInfoUpdate extends React.Component {
     isNoMoreData: false, //没有更多数据了
     isSpinning: true, //弹窗加载状态
     radioValue: 1, //单选，默认1->公共账户
-    timer: null,
     skzhId: '',
   };
 
   componentDidMount() {
-    // this.fetchQueryPaymentAccountList();
     this.fetchQueryGysInZbxx(1, PASE_SIZE);
+    this.firstTimeQueryPaymentAccountList();
   }
+
   componentWillUnmount() {
-    clearTimeout(this.state.timer);
+    clearTimeout(timer);
   }
 
   // 获取中标信息
@@ -291,14 +283,9 @@ class BidInfoUpdate extends React.Component {
           status: 'done',
           url: res.url,
         });
-        this.setState(
-          {
-            fileList: [...this.state.fileList, ...arrTemp],
-          },
-          () => {
-            // console.log('已存在的filList', this.state.fileList);
-          },
-        );
+        this.setState({
+          fileList: [...this.state.fileList, ...arrTemp],
+        });
       }
       let arr = [];
       for (let i = 0; i < rec.length; i++) {
@@ -336,13 +323,35 @@ class BidInfoUpdate extends React.Component {
     });
   };
 
-  fetchQueryPaymentAccountList = (khmc = '', index = 1) => {
+  firstTimeQueryPaymentAccountList = (khmc = '') => {
+    QueryPaymentAccountList({
+      type: 'ALL',
+      current: 1,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc,
+    }).then(res => {
+      if (res.success) {
+        let rec = res.record;
+        this.setState({
+          currentPage: 1,
+          skzhData: [...rec],
+          currentKhmc: khmc,
+          isNoMoreData: false,
+        });
+      }
+    });
+  };
+
+  fetchQueryPaymentAccountList = (khmc = '', current = 1) => {
     this.setState({
       fetching: true,
     });
     QueryPaymentAccountList({
-      type: Number(this.state.radioValue) === 1 ? 'ALL' : 'SINGLE',
-      current: index,
+      type: 'ALL',
+      current,
       pageSize: 10,
       paging: 1,
       sort: '1',
@@ -354,51 +363,36 @@ class BidInfoUpdate extends React.Component {
         let arr = [...this.state.skzhData];
         if (rec.length === 0) {
           this.setState({
-            skzhData: [...rec],
+            skzhData: [...arr],
             fetching: false,
             isNoMoreData: true,
           });
         } else {
           this.setState({
-            skzhData: [ ...rec],
+            skzhData: [...arr, ...rec],
             fetching: false,
           });
+          // console.log('🚀 ~ file: index.js:375 ~ BidInfoUpdate ~ [...arr, ...rec]:', [
+          //   ...arr,
+          //   ...rec,
+          // ]);
         }
       }
     });
   };
 
-  debounce = (fn, waits) => {
-    if (this.state.timer) {
-      clearTimeout(this.state.timer);
-      this.setState({
-        timer: null,
-      });
+  debounce = (fn, waits = 500) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
     }
-    let t = setTimeout(() => {
+    timer = setTimeout(() => {
       fn();
     }, waits);
-    this.setState({
-      timer: t,
-    });
   };
 
   handleSkzhSearch = khmc => {
-    if (khmc === '') {
-      this.setState({
-        currentPage: 1,
-        skzhData: [],
-        isNoMoreData: false,
-      });
-    }
-    // this.debounce(() => {
-    else {
-      this.fetchQueryPaymentAccountList(khmc, this.state.currentPage);
-      this.setState({
-        currentKhmc: khmc,
-      });
-    }
-    // }, 500);
+    this.debounce(() => this.firstTimeQueryPaymentAccountList(khmc));
   };
 
   handleSkzhScroll = e => {
@@ -411,10 +405,6 @@ class BidInfoUpdate extends React.Component {
           currentPage: index,
         });
         this.fetchQueryPaymentAccountList(this.state.currentKhmc, index);
-      } else {
-        this.setState({
-          currentPage: 1,
-        });
       }
     }
   };
@@ -424,7 +414,6 @@ class BidInfoUpdate extends React.Component {
     const obj = this.state.skzhData?.filter(x => x.khmc === v)[0];
     this.setState({
       currentPage: 1,
-      skzhData: [],
       isNoMoreData: false,
       skzhId: obj?.id,
     });
@@ -492,18 +481,18 @@ class BidInfoUpdate extends React.Component {
       }
     });
   };
-  OnRadioChange = e => {
-    let rec = [...this.state.staticSkzhData];
-    let tempArr = rec.filter(x => {
-      let arr = x.ssr?.split(';');
-      return arr?.includes(String(this.props.loginUserId));
-    });
-    let finalArr = Number(e.target.value) === 1 ? [...rec] : [...tempArr];
-    this.setState({
-      radioValue: e.target.value,
-      skzhData: [...finalArr],
-    });
-  };
+  // OnRadioChange = e => {
+  //   let rec = [...this.state.staticSkzhData];
+  //   let tempArr = rec.filter(x => {
+  //     let arr = x.ssr?.split(';');
+  //     return arr?.includes(String(this.props.loginUserId));
+  //   });
+  //   let finalArr = Number(e.target.value) === 1 ? [...rec] : [...tempArr];
+  //   this.setState({
+  //     radioValue: e.target.value,
+  //     skzhData: [...finalArr],
+  //   });
+  // };
   render() {
     const {
       isTableFullScreen,
@@ -523,7 +512,7 @@ class BidInfoUpdate extends React.Component {
       addSkzhModalUrl,
       skzhData,
       isSpinning,
-      radioValue,
+      // radioValue,
     } = this.state;
     const {
       currentXmid,
@@ -615,9 +604,9 @@ class BidInfoUpdate extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新增供应商',
-      width: '120rem',
-      height: '90rem',
-      style: { top: '20rem' },
+      width: '720px',
+      height: '460px',
+      style: { top: '120px' },
       visible: addGysModalVisible,
       footer: null,
     };
@@ -625,9 +614,9 @@ class BidInfoUpdate extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新增收款账号',
-      width: '120rem',
-      height: '90rem',
-      style: { top: '20rem' },
+      width: '720px',
+      height: '460px',
+      style: { top: '120px' },
       visible: addSkzhModalVisible,
       footer: null,
     };
@@ -655,70 +644,9 @@ class BidInfoUpdate extends React.Component {
             }
           />
         )}
-        {/* {isTableFullScreen &&
-                <Modal title={null} footer={null} width={'100vw'}
-                    visible={isTableFullScreen}
-                    wrapClassName='table-fullscreen'
-                    maskClosable={false}
-                    onCancel={() => { this.setState({ isTableFullScreen: false }) }}
-                    style={{
-                        maxWidth: "100vw",
-                        top: 0,
-                        paddingBottom: 0,
-                        marginBottom: 0,
-                    }}
-                    bodyStyle={{
-                        height: "100vh",
-                        padding: '0 0 3.5712rem 0',
-                    }}>
-                    <div style={{ height: '8.184rem', width: '100%', display: 'flex', alignItems: 'center', padding: '0 8.4816rem 0 3.2736rem' }}>
-                        <div style={{ lineHeight: '2.6784rem', marginRight: '1.488rem', cursor: 'pointer' }} onClick={() => {
-                            let arrData = tableData;
-                            let id = getID();
-                            arrData.push({ id, [`glgys${id}`]: '', [`gysmc${id}`]: '', [`gysskzh${id}`]: '' });
-                            this.setState({ tableData: arrData }, () => {
-                                let table1 = document.querySelectorAll(`.tableBox1 .ant-table-body`)[0];
-                                table1.scrollTop = table1.scrollHeight;
-                            });
-                        }}><img src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                            alt='' style={{ height: '2.976rem', marginRight: '0.8928rem' }}
-                            />新增</div>
-                        <Popconfirm title="确定要删除吗?" onConfirm={() => {
-                            if (selectedRowIds.length > 0) {
-                                this.handleMultiDelete(selectedRowIds);
-                                this.setState({
-                                    selectedRowIds: []
-                                });
-                            } else {
-                                message.info('请选择需要删除的数据', 1);
-                            }
-                        }}>
-                            <div style={{ lineHeight: '2.6784rem', cursor: 'pointer' }}><img
-                                src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                                alt='' style={{ height: '2.976rem', marginRight: '0.8928rem' }}
-                            />删除</div></Popconfirm>
-                        <img src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
-                            : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                            alt='' style={{ height: '2.976rem', marginLeft: 'auto', cursor: 'pointer' }}
-                            onClick={() => { this.setState({ isTableFullScreen: !isTableFullScreen }) }} />
-                    </div>
-                    <div className='tableBox1'>
-                        <Table columns={columns}
-                            rowKey={record => record.id}
-                            components={components}
-                            rowClassName={() => 'editable-row'}
-                            dataSource={tableData}
-                            scroll={{ y: 730 }}
-                            rowSelection={rowSelection}
-                            pagination={false}
-                            size={'middle'}
-                            bordered
-                        ></Table>
-                    </div>
-                </Modal>} */}
         <Modal
           wrapClassName="editMessage-modify"
-          width={'1000px'}
+          width={'1030px'}
           maskClosable={false}
           zIndex={100}
           cancelText={'关闭'}
@@ -760,6 +688,7 @@ class BidInfoUpdate extends React.Component {
                   } = uploadFileParams;
                   let submitdata = {
                     columnName: 'PBBG',
+                    czlx: 'UPDATE',
                     documentData,
                     fileLength,
                     glgys: 0,
@@ -807,62 +736,44 @@ class BidInfoUpdate extends React.Component {
         >
           <div
             style={{
-              height: '6.2496rem',
+              height: '42px',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
               backgroundColor: '#3361FF',
               color: 'white',
-              marginBottom: '2.3808rem',
-              padding: '0 3.5712rem',
-              borderRadius: '1.1904rem 1.1904rem 0 0',
-              fontSize: '2.333rem',
+              marginBottom: '16px',
+              padding: '0 24px',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '15px',
             }}
           >
-            <strong>修改</strong>
-            <img
-              src={
-                isModalFullScreen
-                  ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel.png')
-                  : require('../../../../image/pms/LifeCycleManagement/full-screen.png')
-              }
-              alt=""
-              style={{
-                height: '2.0832rem',
-                marginLeft: 'auto',
-                marginRight: '3.72rem',
-                cursor: 'pointer',
-              }}
-              onClick={() => {
-                this.setState({ isModalFullScreen: !isModalFullScreen });
-              }}
-            />
+            <strong>中标信息修改</strong>
           </div>
           <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="diy-style-spin">
-            <Form name="nest-messages" style={{ padding: '0 3.5712rem' }}>
+            <Form name="nest-messages" style={{ padding: '0 24px' }}>
               <Row>
                 <Col span={12}>
-                  <Form.Item label="项目名称" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                  <Form.Item label="项目名称" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
                     <div
                       style={{
                         width: '100%',
-                        height: '4.7616rem',
+                        height: '32px',
                         backgroundColor: '#F5F5F5',
-                        border: '0.1488em solid #d9d9d9',
-                        borderRadius: '0.5952rem',
-                        marginTop: '0.744rem',
-                        lineHeight: '4.7616rem',
-                        paddingLeft: '1.488rem',
-                        fontSize: '1.867rem',
+                        border: '1px solid #d9d9d9',
+                        borderRadius: '4px',
+                        marginTop: '5px',
+                        lineHeight: '32px',
+                        paddingLeft: '10px',
+                        fontSize: '14px',
                       }}
                     >
                       {currentXmmc}
                     </div>
-                  </Form.Item>{' '}
+                  </Form.Item>
                 </Col>
-                <Col span={11}>
-                  {' '}
-                  <Form.Item label="中标供应商" labelCol={{ span: 9 }} wrapperCol={{ span: 15 }}>
+                <Col span={12}>
+                  <Form.Item label="中标供应商" labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
                     {getFieldDecorator('zbgys', {
                       initialValue: String(bidInfo?.zbgys),
                       rules: [
@@ -873,9 +784,10 @@ class BidInfoUpdate extends React.Component {
                       ],
                     })(
                       <Select
-                        style={{ width: '100%', borderRadius: '1.1904rem !important' }}
+                        style={{ width: '100%', borderRadius: '8px !important' }}
                         showSearch
                         placeholder="请选择中标供应商"
+                        className="skzh-box"
                         optionFilterProp="children"
                         onChange={this.handleGysChange}
                         filterOption={(input, option) =>
@@ -897,112 +809,39 @@ class BidInfoUpdate extends React.Component {
                     )}
                   </Form.Item>
                 </Col>
-                <Col span={1} style={{}}>
-                  <img
-                    src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                    onClick={() => {
-                      this.setState({ addGysModalVisible: true });
-                    }}
-                    alt=""
-                    style={{
-                      height: '2.976rem',
-                      marginLeft: '1.0416em',
-                      marginTop: '1.488rem',
-                      cursor: 'pointer',
-                    }}
-                  />
-                </Col>
-              </Row>
-              <Row>
-                <Col span={12}>
-                  <Form.Item
-                    label="账户范围"
-                    required
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
-                  >
-                    <Radio.Group value={radioValue} onChange={this.OnRadioChange}>
-                      <Radio value={1}>公共账户</Radio>
-                      <Radio value={2}>个人账户</Radio>
-                    </Radio.Group>
-                  </Form.Item>
-                </Col>
-                <Col span={11}>
-                  <Form.Item
-                    label="供应商收款账号"
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
-                  >
-                    {getFieldDecorator('zbgysskzh', {
-                      initialValue: String(bidInfo?.zbgysskzh),
-                      rules: [
-                        {
-                          required: true,
-                          message: '供应商收款账号不允许空值',
-                        },
-                      ],
-                    })(
-                      <Select
-                        style={{ width: '100%', borderRadius: '1.1904rem !important' }}
-                        showSearch
-                        placeholder="请选择供应商收款账号"
-                        optionFilterProp="children"
-                        onChange={this.handleSkzhChange}
-                        // filterOption={(input, option) =>
-                        //   option.props.children?.toLowerCase().includes(input.toLowerCase())
-                        // }
-                        // open={isSelectorOpen2}
-                        // onDropdownVisibleChange={visible => {
-                        //   this.setState({ isSelectorOpen2: visible });
-                        // }}
-                        notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
-                        filterOption={false}
-                        onSearch={this.handleSkzhSearch}
-                        onPopupScroll={this.handleSkzhScroll}
-                        onBlur={() => {
-                          this.setState({
-                            currentPage: 1,
-                            skzhData: [],
-                            isNoMoreData: false,
-                          });
-                        }}
-                      >
-                        {skzhData?.map((item = {}, ind) => {
-                          return (
-                            <Select.Option key={item.id} value={item.khmc}>
-                              {item.khmc}
-                              {isSelectorOpen2 && (
-                                <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>
-                              )}
-                            </Select.Option>
-                          );
-                        })}
-                      </Select>,
-                    )}
-                  </Form.Item>{' '}
-                </Col>
-                <Col span={1}>
-                  <img
-                    src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                    onClick={() => {
-                      this.setState({ addSkzhModalVisible: true });
-                    }}
-                    alt=""
-                    style={{
-                      height: '2.976rem',
-                      marginLeft: '1.0416em',
-                      marginTop: '1.488rem',
-                      cursor: 'pointer',
-                    }}
-                  />
-                </Col>
+                <div
+                  style={{
+                    height: '20px',
+                    width: '1px',
+                    backgroundColor: '#c7c7c7',
+                    marginLeft: '8px',
+                    marginTop: '10px',
+                    cursor: 'pointer',
+                    position: 'absolute',
+                    top: '0',
+                    right: '38px',
+                  }}
+                ></div>
+                <i
+                  className="iconfont circle-add"
+                  onClick={() => this.setState({ addGysModalVisible: true })}
+                  style={{
+                    marginTop: '6px',
+                    cursor: 'pointer',
+                    position: 'absolute',
+                    top: '0',
+                    right: '8px',
+                    color: '#c7c7c7',
+                    fontSize: '20px',
+                  }}
+                />
               </Row>
               <Row>
                 <Col span={12}>
                   <Form.Item
                     label="履约保证金金额（元）"
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
                   >
                     {getFieldDecorator('lybzj', {
                       initialValue: String(bidInfo?.lybzj),
@@ -1017,13 +856,13 @@ class BidInfoUpdate extends React.Component {
                         },
                       ],
                     })(<Input placeholder="请输入履约保证金金额（元）" />)}
-                  </Form.Item>{' '}
+                  </Form.Item>
                 </Col>
-                <Col span={11}>
+                <Col span={12}>
                   <Form.Item
                     label="投标保证金（元）"
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
                   >
                     {getFieldDecorator('tbbzj', {
                       initialValue: String(bidInfo?.tbbzj),
@@ -1042,12 +881,90 @@ class BidInfoUpdate extends React.Component {
                 </Col>
               </Row>
               <Row>
+                <Col span={24}>
+                  <Form.Item
+                    label="供应商收款账号"
+                    labelCol={{ span: 4 }}
+                    wrapperCol={{ span: 20 }}
+                  >
+                    {getFieldDecorator('zbgysskzh', {
+                      initialValue: String(bidInfo?.zbgysskzh),
+                      rules: [
+                        {
+                          required: true,
+                          message: '供应商收款账号不允许空值',
+                        },
+                      ],
+                    })(
+                      <Select
+                        style={{ width: '100%', borderRadius: '8px !important' }}
+                        showSearch
+                        placeholder="请输入开户名称或账号"
+                        onChange={this.handleSkzhChange}
+                        notFoundContent={this.state.fetching ? <Spin size="small" /> : null}
+                        filterOption={false}
+                        onSearch={this.handleSkzhSearch}
+                        onPopupScroll={this.handleSkzhScroll}
+                        optionLabelProp="children"
+                        className="skzh-box"
+                        onBlur={() => this.firstTimeQueryPaymentAccountList()}
+                      >
+                        {skzhData?.map((item = {}, ind) => {
+                          return (
+                            <Select.Option key={item.id} value={item.khmc}>
+                              <i
+                                className="iconfont icon-bank"
+                                style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
+                              />
+                              {item.khmc} - {item.yhkh} - {item.wdmc}
+                            </Select.Option>
+                          );
+                        })}
+                        {this.state.isNoMoreData && (
+                          <Select.Option
+                            key={'无更多数据'}
+                            value={'无更多数据'}
+                            style={{ textAlign: 'center', color: 'rgba(0, 0, 0, 0.65)' }}
+                            disabled={true}
+                          >
+                            无更多数据
+                          </Select.Option>
+                        )}
+                      </Select>,
+                    )}
+                  </Form.Item>
+                  <div
+                    style={{
+                      height: '20px',
+                      width: '1px',
+                      backgroundColor: '#c7c7c7',
+                      marginLeft: '8px',
+                      marginTop: '10px',
+                      cursor: 'pointer',
+                      position: 'absolute',
+                      top: '0',
+                      right: '38px',
+                    }}
+                  ></div>
+                  <i
+                    className="iconfont circle-add"
+                    onClick={() => this.setState({ addSkzhModalVisible: true })}
+                    style={{
+                      marginTop: '6px',
+                      cursor: 'pointer',
+                      position: 'absolute',
+                      top: '0',
+                      right: '8px',
+                      color: '#c7c7c7',
+                      fontSize: '20px',
+                    }}
+                  />
+                </Col>
                 <Col span={12}>
-                  {' '}
                   <Form.Item
                     label="评标报告"
-                    labelCol={{ span: 9 }}
-                    wrapperCol={{ span: 15 }}
+                    labelCol={{ span: 8 }}
+                    wrapperCol={{ span: 16 }}
                     required
                     help={pbbgTurnRed ? '评标报告不允许空值' : ''}
                     validateStatus={pbbgTurnRed ? 'error' : 'success'}
@@ -1129,97 +1046,44 @@ class BidInfoUpdate extends React.Component {
                 <Col span={24}>
                   <Form.Item
                     label={'其他投标供应商'}
-                    labelCol={{ span: 3 }}
-                    wrapperCol={{ span: 21 }}
+                    labelCol={{ span: 4 }}
+                    wrapperCol={{ span: 20 }}
                   >
-                    <div
-                      style={{
-                        border: '0.1488em solid #e8e8e8',
-                        borderRadius: '0.5952em',
-                        paddingTop: '1.488rem',
-                      }}
-                    >
+                    <div className="tableBox2">
+                      <Table
+                        columns={columns}
+                        components={components}
+                        rowKey={record => record.id}
+                        rowClassName={() => 'editable-row'}
+                        dataSource={tableData}
+                        scroll={tableData.length > 3 ? { y: 195 } : {}}
+                        pagination={false}
+                        bordered
+                        size="middle"
+                      />
                       <div
-                        style={{
-                          display: 'flex',
-                          height: '5.3568rem',
-                          padding: '0.4464em 2.232rem',
+                        className="table-add-row"
+                        onClick={() => {
+                          let arrData = tableData;
+                          let id = getID();
+                          arrData.push({
+                            id,
+                            [`glgys${id}`]: '',
+                            [`gysmc${id}`]: '',
+                            [`gysskzh${id}`]: '',
+                          });
+                          this.setState({ tableData: arrData }, () => {
+                            let table2 = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
+                            table2.scrollTop = table2.scrollHeight;
+                          });
                         }}
                       >
-                        <div
-                          style={{
-                            lineHeight: '2.6784rem',
-                            marginRight: '1.488rem',
-                            cursor: 'pointer',
-                          }}
-                          onClick={() => {
-                            let arrData = tableData;
-                            let id = getID();
-                            arrData.push({
-                              id,
-                              [`glgys${id}`]: '',
-                              [`gysmc${id}`]: '',
-                              [`gysskzh${id}`]: '',
-                            });
-                            this.setState({ tableData: arrData }, () => {
-                              let table2 = document.querySelectorAll(
-                                `.tableBox2 .ant-table-body`,
-                              )[0];
-                              table2.scrollTop = table2.scrollHeight;
-                            });
-                          }}
-                        >
-                          <img
-                            src={require('../../../../image/pms/LifeCycleManagement/addTable.png')}
-                            alt=""
-                            style={{ height: '2.976rem', marginRight: '0.8928rem' }}
-                          />
-                          新增
-                        </div>
-                        <Popconfirm
-                          title="确定要删除吗?"
-                          onConfirm={() => {
-                            if (selectedRowIds.length > 0) {
-                              this.handleMultiDelete(selectedRowIds);
-                              this.setState({
-                                selectedRowIds: [],
-                              });
-                            } else {
-                              message.info('请选择需要删除的数据', 1);
-                            }
-                          }}
-                        >
-                          <div style={{ lineHeight: '2.6784rem', cursor: 'pointer' }}>
-                            <img
-                              src={require('../../../../image/pms/LifeCycleManagement/deleteTable.png')}
-                              alt=""
-                              style={{ height: '2.976rem', marginRight: '0.8928rem' }}
-                            />
-                            删除
-                          </div>
-                        </Popconfirm>
-                        {/* 表格放大 */}
-                        {/* <img
-                                            src={isTableFullScreen ? require('../../../../image/pms/LifeCycleManagement/full-screen-cancel-gray.png')
-                                                : require('../../../../image/pms/LifeCycleManagement/full-screen-gray.png')}
-                                            alt='' style={{ height: '2.976rem', marginLeft: 'auto', cursor: 'pointer' }}
-                                            onClick={() => {
-                                                this.setState({ isTableFullScreen: !isTableFullScreen })
-                                            }} /> */}
-                      </div>
-                      <div className="tableBox2">
-                        <Table
-                          columns={columns}
-                          components={components}
-                          rowKey={record => record.id}
-                          rowClassName={() => 'editable-row'}
-                          dataSource={tableData}
-                          rowSelection={rowSelection}
-                          scroll={tableData.length > 3 ? { y: 195 } : {}}
-                          pagination={false}
-                          bordered
-                          size="middle"
-                        ></Table>
+                        <span>
+                          <Icon type="plus" style={{ fontSize: '12px' }} />
+                          <span style={{ paddingLeft: '6px', fontSize: '14px' }}>
+                            新增投标供应商
+                          </span>
+                        </span>
                       </div>
                     </div>
                   </Form.Item>

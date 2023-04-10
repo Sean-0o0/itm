@@ -35,17 +35,14 @@ export default function FormOperate(props) {
 
   let timer = null;
   useEffect(() => {
+    firstTimeQueryPaymentAccountList();
     return () => {
       clearTimeout(timer);
     };
   }, []);
-  useEffect(() => {
-    // console.log(skzh);
-    return () => {};
-  }, [JSON.stringify(skzh)]);
 
   //防抖
-  const debounce = (fn, waits) => {
+  const debounce = (fn, waits = 500) => {
     if (timer) {
       clearTimeout(timer);
       timer = null;
@@ -53,6 +50,22 @@ export default function FormOperate(props) {
     timer = setTimeout(() => {
       fn(...arguments);
     }, waits);
+  };
+  //节流
+  const throttle = (fn, wait = 500) => {
+    // 上一次执行 fn 的时间
+    let previous = 0;
+    // 将 throttle 处理结果当作函数返回
+    return function(...args) {
+      // 获取当前时间，转换成时间戳，单位毫秒
+      let now = +new Date();
+      // 将当前时间和上一次执行函数的时间进行对比
+      // 大于等待时间就把 previous 设置为当前时间并执行函数 fn
+      if (now - previous > wait) {
+        previous = now;
+        fn.apply(this, args);
+      }
+    };
   };
 
   //是否有合同变化
@@ -76,15 +89,33 @@ export default function FormOperate(props) {
     setskzhId(obj?.id);
     setYkbSkzhId(obj?.ykbid);
     setCurrentPage(1);
-    setSkzh(p => []);
     setIsNoMoreData(false);
   };
-  const getSkzhData = (khmc = '', index = 1) => {
-    setFetching(true);
-    // console.log('handleSkzhSearch', khmc);
+  const firstTimeQueryPaymentAccountList = (khmc = '') => {
     QueryPaymentAccountList({
-      type: Number(zhfw) === 1 ? 'ALL' : 'SINGLE',
-      current: index,
+      type: 'ALL',
+      current: 1,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc,
+    }).then(res => {
+      if (res.success) {
+        let rec = res.record;
+        setCurrentPage(1);
+        setSkzh(p => [...rec]);
+        setIsNoMoreData(false);
+        setCurrentKhmc(khmc);
+      }
+    });
+  };
+  const getSkzhData = (khmc = '', current = 1) => {
+    setFetching(true);
+    console.log('handleSkzhSearch', khmc);
+    QueryPaymentAccountList({
+      type: 'ALL',
+      current,
       pageSize: 10,
       paging: 1,
       sort: '1',
@@ -94,52 +125,37 @@ export default function FormOperate(props) {
       .then(res => {
         if (res.success) {
           let rec = res.record;
-          // console.log('🚀 ~ file: index.js:92 ~ getSkzhData ~ rec:', rec);
-          setSkzh(p => [...skzh, ...rec]);
-          setFetching(false);
+          let arr = [...skzh];
           if (rec.length === 0) {
+            setSkzh(p => [...arr]);
             setIsNoMoreData(true);
+            setFetching(false);
+          } else {
+            setSkzh(p => [...arr, ...rec]);
+            setFetching(false);
           }
+          // console.log('🚀 ~ file: index.js:124 ~ getSkzhData ~ ', [...arr, ...rec]);
         }
       })
       .catch(e => console.error(e));
   };
   //
   const handleSkzhSearch = khmc => {
-    if (khmc === '') {
-      setCurrentPage(1);
-      setSkzh(p => []);
-      setIsNoMoreData(false);
-    } else
-      debounce(() => {
-        getSkzhData(khmc, currentPage);
-        setCurrentKhmc(khmc);
-      }, 500);
+    debounce(() => firstTimeQueryPaymentAccountList(khmc));
   };
   //
   const handleSkzhScroll = e => {
     const { scrollHeight, scrollTop, clientHeight } = e.target;
-    // console.log(
-    //   '🚀 ~ file: index.js:103 ~ handleSkzhScroll ~ scrollHeight, scrollTop, clientHeight:',
-    //   scrollHeight,
-    //   scrollTop,
-    //   clientHeight,
-    // );
-    if (scrollHeight - scrollTop - clientHeight <= 10) {
-      let index = currentPage;
-      index = index + 1;
-      if (!isNoMoreData) {
-        setCurrentPage(index);
-        // console.log(
-        //   '🚀 ~ file: index.js:126 ~ handleSkzhScroll ~ currentKhmc, index:',
-        //   currentKhmc,
-        //   index,
-        // );
-        getSkzhData(currentKhmc, index);
-      } else {
-        setCurrentPage(1);
+    // throttle(() => {
+      if (scrollHeight - scrollTop - clientHeight <= 10) {
+        let index = currentPage;
+        index = index + 1;
+        if (!isNoMoreData) {
+          setCurrentPage(index);
+          getSkzhData(currentKhmc, index);
+        }
       }
-    }
+    // }, 1000)();
   };
   //申请日期变化
   const onSqrqChange = (d, ds) => {
@@ -264,19 +280,13 @@ export default function FormOperate(props) {
                 showSearch
                 placeholder="请选择收款账户"
                 onChange={handleSkzhChange}
-                // open={isSkzhOpen}
-                dropdownMenuStyle={{ height: 100 }}
                 dropdownClassName="payment-account-select"
-                // onDropdownVisibleChange={visible => setIsSkzhOpen(visible)}
                 notFoundContent={fetching ? <Spin size="small" /> : null}
                 filterOption={false}
+                optionLabelProp="children"
                 onSearch={handleSkzhSearch}
                 onPopupScroll={handleSkzhScroll}
-                onBlur={() => {
-                  setCurrentPage(1);
-                  setSkzh(p => []);
-                  setIsNoMoreData(false);
-                }}
+                onBlur={() => firstTimeQueryPaymentAccountList()}
               >
                 {skzh?.map((item = {}, ind) => {
                   return (
@@ -286,10 +296,19 @@ export default function FormOperate(props) {
                         style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
                       />
                       {item.khmc} - {item.yhkh} - {item.wdmc}
-                      {/* {isSkzhOpen && <div style={{ fontSize: '0.6em' }}>{item.yhkh}</div>} */}
                     </Select.Option>
                   );
                 })}
+                {isNoMoreData && (
+                  <Select.Option
+                    key={'无更多数据'}
+                    value={'无更多数据'}
+                    style={{ textAlign: 'center', color: 'rgba(0, 0, 0, 0.65)' }}
+                    disabled={true}
+                  >
+                    无更多数据
+                  </Select.Option>
+                )}
               </Select>,
             )}
           </Form.Item>
@@ -319,20 +338,6 @@ export default function FormOperate(props) {
               fontSize: '20px',
             }}
           />
-          {/* <img
-            src={require('../../../../../image/pms/LifeCycleManagement/add.png')}
-            onClick={() => setAddSkzhModalVisible(true)}
-            alt=""
-            style={{
-              height: '20px',
-              marginLeft: '8px',
-              marginTop: '10px',
-              cursor: 'pointer',
-              position: 'absolute',
-              top: '0',
-              right: '12px',
-            }}
-          /> */}
         </Col>
       </>
     );
@@ -468,7 +473,7 @@ export default function FormOperate(props) {
       </Row>
       <Row>
         {getInput(yfkjeInputProps)}
-        {getRadio('账户范围', zhfw, onZhfwChange, '公共账户', '个人账户')}
+        {/* {getRadio('账户范围', zhfw, onZhfwChange, '公共账户', '个人账户')} */}
       </Row>
       <Row>{getSelector()}</Row>
       <Row>{getTextArea()}</Row>
