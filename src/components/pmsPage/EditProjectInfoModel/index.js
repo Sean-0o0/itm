@@ -1744,7 +1744,7 @@ class EditProjectInfoModel extends React.Component {
       czr_id: czrid,
       fileLength,
       glgys: 0,
-      gysfkzh: Number(staticSkzhData?.filter(x => x.khmc === purchaseInfo.number)[0]?.id || ''),
+      gysfkzh: Number(purchaseInfo.number),
       ijson: JSON.stringify(newArr),
       lybzj: Number(purchaseInfo.cautionMoney),
       objectName: 'TXMXX_ZBXX',
@@ -2655,6 +2655,7 @@ class EditProjectInfoModel extends React.Component {
       sort: '1',
       total: -1,
       khmc,
+      zhid: '27',
     }).then(res => {
       if (res.success) {
         let rec = res.record;
