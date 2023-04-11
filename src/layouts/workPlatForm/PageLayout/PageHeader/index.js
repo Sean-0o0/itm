@@ -55,7 +55,7 @@ export default class PageHeader extends React.PureComponent {
             </Scrollbars>
             </span>
           </div>
-          <div id="fma_opertion_drops" className="dis-fx" style={{width: '5%', padding: '0 10px'}}>
+          <div id="fma_opertion_drops" className="dis-fx" style={{width: 'auto', padding: '0 10px'}}>
             {/*<div style={{ width: '4rem' }}></div>*/}
             {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
             {/*  <a onClick={() => {*/}
