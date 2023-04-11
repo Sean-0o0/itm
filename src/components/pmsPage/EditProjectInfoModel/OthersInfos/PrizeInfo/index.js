@@ -474,7 +474,9 @@ class PrizeInfo extends Component {
                 ['ZSCQLX' + Date.now()]: '',
                 ['HJSJ' + Date.now()]: moment().format('YYYY-MM-DD'),
               });
-              this.setState({tableData: arrData})
+              this.setState({tableData: arrData}, () => {
+                this.callbackData();
+              })
             }}>
                 <span className='addHover'>
                   <Icon type="plus" style={{fontSize: '12px'}}/>

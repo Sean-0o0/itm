@@ -59,7 +59,7 @@ class InfoTable extends Component {
       {
         title: '年份',
         dataIndex: 'XMNF',
-        width: '9%',
+        width: '5%',
         key: 'XMNF',
         ellipsis: true,
         sorter: (a, b) => Number(a.xmnf) - Number(b.xmnf),
@@ -68,7 +68,7 @@ class InfoTable extends Component {
       {
         title: '项目名称',
         dataIndex: 'XMMC',
-        width: '20%',
+        width: '35%',
         key: 'XMMC',
         ellipsis: true,
         render: (text, row, index) => {
@@ -79,7 +79,7 @@ class InfoTable extends Component {
       {
         title: '项目标签',
         dataIndex: 'XMBQ',
-        width: 195,
+        // width: 195,
         key: 'XMBQ',
         ellipsis: true,
         render: (text, row, index) => {
@@ -90,7 +90,7 @@ class InfoTable extends Component {
           return <div className="prj-tags">
             {data.length !== 0 && (
               <>
-                {data?.slice(0, 3)
+                {data?.slice(0, 4)
                   .map((x, i) => (
                     <div key={i} className="tag-item">
                       <Link
@@ -111,12 +111,12 @@ class InfoTable extends Component {
                       </Link>
                     </div>
                   ))}
-                {data?.length > 3 && (
+                {data?.length > 4 && (
                   <Popover
                     overlayClassName="tag-more-popover"
                     content={
                       <div className="tag-more">
-                        {data?.slice(3)
+                        {data?.slice(4)
                           .map((x, i) => (
                             <div key={i} className="tag-item">
                               <Link
@@ -152,7 +152,7 @@ class InfoTable extends Component {
       {
         title: '项目进度',
         dataIndex: 'XMJD',
-        width: '10%',
+        width: '8%',
         key: 'XMJD',
         ellipsis: true,
         sorter: (a, b) => Number(a.xmjd) - Number(b.xmjd),
@@ -167,14 +167,14 @@ class InfoTable extends Component {
       {
         title: '项目阶段',
         dataIndex: 'DQLCB',
-        width: '15%',
+        width: '8%',
         key: 'DQLCB',
         ellipsis: true,
       },
       {
         title: '项目状态',
         dataIndex: 'XMZT',
-        width: '12%',
+        width: '8%',
         key: 'XMZT',
         ellipsis: true,
         sorter: (a, b) => a.XMZT.localeCompare(b.XMZT),
