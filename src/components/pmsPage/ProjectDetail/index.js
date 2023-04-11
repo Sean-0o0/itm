@@ -114,15 +114,17 @@ export default function ProjectDetail(props) {
           getPrjDtlData={getPrjDtlData}
           isLeader={isLeader}
         />
-        <MileStone
-          xmid={xmid}
-          prjData={prjData}
-          getPrjDtlData={getPrjDtlData}
-          setIsSpinning={setIsSpinning}
-          isLeader={isLeader}
-        />
         <div className="detail-row">
-          <InfoDisplay prjData={prjData} routes={routes} xmid={xmid} isLeader={isLeader} />
+          <div className="col-left">
+            <MileStone
+              xmid={xmid}
+              prjData={prjData}
+              getPrjDtlData={getPrjDtlData}
+              setIsSpinning={setIsSpinning}
+              isLeader={isLeader}
+            />
+            <InfoDisplay prjData={prjData} routes={routes} xmid={xmid} isLeader={isLeader} />
+          </div>
           <div className="col-right">
             <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />
             <PrjMessage xmid={xmid} />

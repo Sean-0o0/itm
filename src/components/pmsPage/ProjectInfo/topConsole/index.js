@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Select, Button, Input, TreeSelect, Row, Col } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
+import { set } from 'store';
 const InputGroup = Input.Group;
 const { Option } = Select;
 
@@ -29,7 +30,7 @@ export default function TopConsole(props) {
   const [minAmount, setMinAmount] = useState(undefined); //项目金额，最小
   const [maxAmount, setMaxAmount] = useState(undefined); //项目金额，最大
 
-  const { setTableLoading, setTableData, projectManager } = props;
+  const { setTableLoading, setTableData, projectManager, setTotal } = props;
 
   useEffect(() => {
     getFilterData();
@@ -218,6 +219,7 @@ export default function TopConsole(props) {
       paging: -1,
       sort: 'string',
       total: -1,
+      queryType: 'ALL'
     };
     if (budget !== undefined && budget !== '') {
       params.budgetProject = Number(budget);
@@ -271,6 +273,7 @@ export default function TopConsole(props) {
         if (res?.success) {
           setTableData(p => [...JSON.parse(res.record)]);
           setTableLoading(false);
+          setTotal(res.totalrows);
         }
       })
       .catch(e => {
@@ -514,7 +517,7 @@ export default function TopConsole(props) {
             placeholder="请选择"
           >
             {XMLX?.map((x, i) => (
-              <Option key={i} value={x.cbm}>
+              <Option key={i} value={x.ibm}>
                 {x.note}
               </Option>
             ))}

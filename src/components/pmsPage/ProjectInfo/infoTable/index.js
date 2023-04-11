@@ -10,7 +10,7 @@ export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const { tableData, tableLoading, getTableData, projectManager = -1 } = props; //表格数据
+  const { tableData, tableLoading, getTableData, projectManager = -1, total } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
 
@@ -322,7 +322,8 @@ export default function InfoTable(props) {
             showSizeChanger: true,
             hideOnSinglePage: false,
             showQuickJumper: true,
-            showTotal: total => `共 ${tableData.length} 条数据`,
+            showTotal: t => `共 ${total} 条数据`,
+            total: total,
           }}
           // bordered
         />

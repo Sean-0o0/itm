@@ -13,60 +13,61 @@ export default function PrjMember(props) {
   //防抖定时器
   let timer = null;
 
-  useEffect(() => {
-    // 页面变化时获取浏览器窗口的大小
-    window.addEventListener('prjMemberResize', resizeUpdate);
-    window.dispatchEvent(new Event('prjMemberResize', { bubbles: true, composed: true })); //刷新时能触发resize
+  // useEffect(() => {
+  //   // 页面变化时获取浏览器窗口的大小
+  //   window.addEventListener('prjMemberResize', resizeUpdate);
+  //   window.dispatchEvent(new Event('prjMemberResize', { bubbles: true, composed: true })); //刷新时能触发resize
 
-    return () => {
-      // 组件销毁时移除监听事件
-      window.removeEventListener('prjMemberResize', resizeUpdate);
-      clearTimeout(timer);
-    };
-  }, []);
+  //   return () => {
+  //     // 组件销毁时移除监听事件
+  //     window.removeEventListener('prjMemberResize', resizeUpdate);
+  //     clearTimeout(timer);
+  //   };
+  // }, []);
 
   //防抖
-  const debounce = (fn, waits) => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    timer = setTimeout(() => {
-      fn(...arguments);
-    }, waits);
-  };
+  // const debounce = (fn, waits) => {
+  //   if (timer) {
+  //     clearTimeout(timer);
+  //     timer = null;
+  //   }
+  //   timer = setTimeout(() => {
+  //     fn(...arguments);
+  //   }, waits);
+  // };
 
   //屏幕宽度变化触发
-  const resizeUpdate = e => {
-    const fn = () => {
-      let w = e.target.innerWidth; //屏幕宽度
-      // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
-      if (w < 1860) {
-        setItemWidth('48%');
-      } else if (w < 2360) {
-        setItemWidth('32%');
-      } else if (w < 2860) {
-        setItemWidth('24%');
-      } else if (w < 3360) {
-        setItemWidth('19%');
-      } else if (w < 3860) {
-        setItemWidth('16%');
-      } else {
-        setItemWidth('13.5%'); //每行 7个
-      }
-    };
-    debounce(fn, 300);
-  };
+  // const resizeUpdate = e => {
+  //   const fn = () => {
+  //     let w = e.target.innerWidth; //屏幕宽度
+  //     // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+  //     if (w < 1860) {
+  //       setItemWidth('48%');
+  //     } else if (w < 2360) {
+  //       setItemWidth('32%');
+  //     } else if (w < 2860) {
+  //       setItemWidth('24%');
+  //     } else if (w < 3360) {
+  //       setItemWidth('19%');
+  //     } else if (w < 3860) {
+  //       setItemWidth('16%');
+  //     } else {
+  //       setItemWidth('13.5%'); //每行 7个
+  //     }
+  //   };
+  //   debounce(fn, 300);
+  // };
 
   //flex列表尾部占位置的空标签，处理justify-content对齐问题
-  const getAfterItem = width => {
-    let arr = [];
-    for (let i = 0; i < 7; i++) {
-      //每行最多n=8个
-      arr.push('');
-    }
-    return arr.map((x, k) => <i key={k} style={{ width }} />);
-  };
+  // const getAfterItem = width => {
+  //   let arr = [];
+  //   for (let i = 0; i < 7; i++) {
+  //     //每行最多n=8个
+  //     arr.push('');
+  //   }
+  //   return arr.map((x, k) => <i key={k} style={{ width }} />);
+  // };
+
   //成员块
   const getMemberItem = ({ position = '--', gender = '男', name = '--', key }) => {
     const jumpToStfDetail = id => {
@@ -80,7 +81,7 @@ export default function PrjMember(props) {
     return (
       <div
         className="member-item"
-        style={{ width: itemWidth }}
+        // style={{ width: itemWidth }}
         key={key}
         // onClick={() => jumpToStfDetail(key)}
       >
@@ -126,7 +127,7 @@ export default function PrjMember(props) {
             style={{ width: '100%', marginBottom: '16px' }}
           />
         )}
-        {getAfterItem(itemWidth)}
+        {/* {getAfterItem(itemWidth)} */}
       </div>
     </div>
   );

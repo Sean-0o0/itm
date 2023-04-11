@@ -19,7 +19,7 @@ export default function MileStone(props) {
   const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader } = props;
   const { risk = [], member = [], prjBasic = [] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
-  const [itemWidth, setItemWidth] = useState('30.53%'); //块宽度
+  const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
   const [initIndex, setInitIndex] = useState(0); //初始当前里程碑index
   const [lastBtnVisible, setLastBtnVisible] = useState(false); //上一个按钮显示
@@ -48,12 +48,12 @@ export default function MileStone(props) {
 
   useEffect(() => {
     // 页面变化时获取浏览器窗口的大小
-    window.addEventListener('prjMileStoneResize', resizeUpdate);
-    window.dispatchEvent(new Event('prjMileStoneResize', { bubbles: true, composed: true })); //刷新时能触发resize
+    // window.addEventListener('prjMileStoneResize', resizeUpdate);
+    // window.dispatchEvent(new Event('prjMileStoneResize', { bubbles: true, composed: true })); //刷新时能触发resize
 
     return () => {
       // 组件销毁时移除监听事件
-      window.removeEventListener('prjMileStoneResize', resizeUpdate);
+      // window.removeEventListener('prjMileStoneResize', resizeUpdate);
       clearTimeout(timer);
       setLastBtnVisible(false);
       setNextBtnVisible(false);
@@ -126,29 +126,661 @@ export default function MileStone(props) {
                           });
                           return dataArr;
                         };
-                        item.itemData = groupBy(arr);
+                        // item.itemData = groupBy(arr);
+                        item.itemData = [
+                          {
+                            swlx: '上线文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '原型设计说明书',
+                                sxid: '24',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '软件系统验收测试报告',
+                                sxid: '52',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '开发测试报告',
+                                sxid: '51',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '评估报告',
+                                sxid: '54',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '系统部署图、逻辑图',
+                                sxid: '61',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '运维文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产安装部署手册',
+                                sxid: '57',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '用户手册',
+                                sxid: '63',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产操作及运维手册',
+                                sxid: '64',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '员工评价',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '员工评价',
+                                sxmc: '员工评价开启',
+                                sxid: '92',
+                                zxqk: '2023-04-06 开启',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '上线文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '原型设计说明书',
+                                sxid: '24',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '软件系统验收测试报告',
+                                sxid: '52',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '开发测试报告',
+                                sxid: '51',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '评估报告',
+                                sxid: '54',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '系统部署图、逻辑图',
+                                sxid: '61',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '运维文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产安装部署手册',
+                                sxid: '57',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '用户手册',
+                                sxid: '63',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产操作及运维手册',
+                                sxid: '64',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '员工评价',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '员工评价',
+                                sxmc: '员工评价开启',
+                                sxid: '92',
+                                zxqk: '2023-04-06 开启',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '上线文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '原型设计说明书',
+                                sxid: '24',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '软件系统验收测试报告',
+                                sxid: '52',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '开发测试报告',
+                                sxid: '51',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '评估报告',
+                                sxid: '54',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '系统部署图、逻辑图',
+                                sxid: '61',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '运维文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产安装部署手册',
+                                sxid: '57',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '用户手册',
+                                sxid: '63',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产操作及运维手册',
+                                sxid: '64',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '员工评价',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '员工评价',
+                                sxmc: '员工评价开启',
+                                sxid: '92',
+                                zxqk: '2023-04-06 开启',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '上线文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '原型设计说明书',
+                                sxid: '24',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '软件系统验收测试报告',
+                                sxid: '52',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '开发测试报告',
+                                sxid: '51',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '评估报告',
+                                sxid: '54',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '系统部署图、逻辑图',
+                                sxid: '61',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '运维文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产安装部署手册',
+                                sxid: '57',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '用户手册',
+                                sxid: '63',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产操作及运维手册',
+                                sxid: '64',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '员工评价',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '员工评价',
+                                sxmc: '员工评价开启',
+                                sxid: '92',
+                                zxqk: '2023-04-06 开启',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '上线文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '原型设计说明书',
+                                sxid: '24',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '软件系统验收测试报告',
+                                sxid: '52',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '开发测试报告',
+                                sxid: '51',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '评估报告',
+                                sxid: '54',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '系统部署图、逻辑图',
+                                sxid: '61',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '运维文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产安装部署手册',
+                                sxid: '57',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '用户手册',
+                                sxid: '63',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产操作及运维手册',
+                                sxid: '64',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '员工评价',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '员工评价',
+                                sxmc: '员工评价开启',
+                                sxid: '92',
+                                zxqk: '2023-04-06 开启',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '上线文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '原型设计说明书',
+                                sxid: '24',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '软件系统验收测试报告',
+                                sxid: '52',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '开发测试报告',
+                                sxid: '51',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '评估报告',
+                                sxid: '54',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '上线文档',
+                                sxmc: '系统部署图、逻辑图',
+                                sxid: '61',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '运维文档',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产安装部署手册',
+                                sxid: '57',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '用户手册',
+                                sxid: '63',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '运维文档',
+                                sxmc: '生产操作及运维手册',
+                                sxid: '64',
+                                zxqk: ' ',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                          {
+                            swlx: '员工评价',
+                            swItem: [
+                              {
+                                lcb: '项目上线',
+                                lcbid: '1992',
+                                swlx: '员工评价',
+                                sxmc: '员工评价开启',
+                                sxid: '92',
+                                zxqk: '2023-04-06 开启',
+                                zxxh: '5',
+                                xmid: '370',
+                              },
+                            ],
+                          },
+                        ];
                       });
-                      // // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
+                      // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
 
                       if (!noNewCurStep) {
                         //初次刷新，自动选择当前里程碑
                         setCurrentStep(currentIndex);
-                        if (data.length >= 5) {
-                          if (currentIndex - 2 >= 0 && currentIndex + 2 < data.length) {
-                            setStartIndex(currentIndex - 2);
-                            setInitIndex(currentIndex - 2);
-                            setEndIndex(currentIndex + 3); //不包含
+                        if (data.length >= 3) {
+                          if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {
+                            setStartIndex(currentIndex - 1);
+                            setInitIndex(currentIndex - 1);
+                            setEndIndex(currentIndex + 2); //不包含
                             // setCurrentStep(2);
-                          } else if (currentIndex < 2) {
+                          } else if (currentIndex < 1) {
                             setStartIndex(0);
                             setInitIndex(0);
-                            setEndIndex(5);
+                            setEndIndex(3);
                             // setCurrentStep(currentIndex);
                           } else {
-                            setInitIndex(data.length - 5);
-                            setStartIndex(data.length - 5);
+                            setInitIndex(data.length - 3);
+                            setStartIndex(data.length - 3);
                             setEndIndex(data.length);
                           }
                         } else {
@@ -156,11 +788,11 @@ export default function MileStone(props) {
                           setStartIndex(0);
                           setEndIndex(data.length);
                         }
-                        if (data.length > 5) {
-                          if (currentIndex - 2 >= 0 && currentIndex < data.length - 2) {
+                        if (data.length > 3) {
+                          if (currentIndex - 1 >= 0 && currentIndex < data.length - 1) {
                             setLastBtnVisible(true);
                             setNextBtnVisible(true);
-                          } else if (currentIndex < 2) {
+                          } else if (currentIndex < 1) {
                             setLastBtnVisible(false);
                             setNextBtnVisible(true);
                           } else {
@@ -171,10 +803,10 @@ export default function MileStone(props) {
                           setLastBtnVisible(false);
                           setNextBtnVisible(false);
                         }
-                        if (currentIndex - 2 === 0) {
+                        if (currentIndex - 1 === 0) {
                           setLastBtnVisible(false);
                         }
-                        if (currentIndex === data.length - 2) {
+                        if (currentIndex === data.length - 1) {
                           setNextBtnVisible(false);
                         }
                       }
@@ -196,41 +828,41 @@ export default function MileStone(props) {
   };
 
   //防抖
-  const debounce = (fn, waits) => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    timer = setTimeout(() => {
-      fn(...arguments);
-    }, waits);
-  };
+  // const debounce = (fn, waits) => {
+  //   if (timer) {
+  //     clearTimeout(timer);
+  //     timer = null;
+  //   }
+  //   timer = setTimeout(() => {
+  //     fn(...arguments);
+  //   }, waits);
+  // };
 
   //屏幕宽度变化触发
-  const resizeUpdate = e => {
-    const fn = () => {
-      let w = e.target.innerWidth; //屏幕宽度
-      // // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
-      if (w < 1750) {
-        setItemWidth('30.53%');
-      } else if (w < 2040) {
-        setItemWidth('22.05%');
-      } else if (w < 2350) {
-        setItemWidth('17.5%');
-      } else if (w < 2660) {
-        setItemWidth('14.34%');
-      } else if (w < 2970) {
-        setItemWidth('12.143%');
-      } else if (w < 3280) {
-        setItemWidth('10.531%');
-      } else if (w < 3590) {
-        setItemWidth('9.3%');
-      } else {
-        setItemWidth('8.4%'); //11个
-      }
-    };
-    debounce(fn, 200);
-  };
+  // const resizeUpdate = e => {
+  //   const fn = () => {
+  //     let w = e.target.innerWidth; //屏幕宽度
+  //     // // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+  //     if (w < 1750) {
+  //       setItemWidth('47.76%');
+  //     } else if (w < 2040) {
+  //       setItemWidth('39.81%');
+  //     } else if (w < 2350) {
+  //       setItemWidth('17.5%');
+  //     } else if (w < 2660) {
+  //       setItemWidth('14.34%');
+  //     } else if (w < 2970) {
+  //       setItemWidth('12.143%');
+  //     } else if (w < 3280) {
+  //       setItemWidth('10.531%');
+  //     } else if (w < 3590) {
+  //       setItemWidth('9.3%');
+  //     } else {
+  //       setItemWidth('8.4%'); //11个
+  //     }
+  //   };
+  //   debounce(fn, 200);
+  // };
 
   //flex列表尾部占位置的空标签，处理justify-content对齐问题
   const getAfterItem = width => {
@@ -303,7 +935,11 @@ export default function MileStone(props) {
   //里程碑块
   const getItem = item => {
     return (
-      <div className="item" style={{ width: itemWidth }} key={item.swlx}>
+      <div
+        className="item"
+        // style={{ width: itemWidth }}
+        key={item.swlx}
+      >
         <div className="item-top">{item.swlx}</div>
         <div className="item-bottom">
           {item.swItem?.map((x, i) => (
@@ -344,12 +980,12 @@ export default function MileStone(props) {
   const stepSwitch = txt => {
     let data = [...mileStoneData];
     let st = 0;
-    let ed = 5;
+    let ed = 3;
     let init = initIndex;
     if (txt === 'last') {
       if (startIndex - 1 === 0) {
         st = 0;
-        ed = 5;
+        ed = 3;
         setLastBtnVisible(false);
         setInitIndex(0);
       } else {
@@ -359,9 +995,9 @@ export default function MileStone(props) {
       }
     } else {
       if (endIndex + 1 === data.length) {
-        if (data.length >= 5) {
-          st = data.length - 5;
-          setInitIndex(data.length - 5);
+        if (data.length >= 3) {
+          st = data.length - 3;
+          setInitIndex(data.length - 3);
         } else {
           st = 0;
           setInitIndex(0);

@@ -91,7 +91,7 @@ export default function OverviewCard(props) {
             fn: () => {
               window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
                 JSON.stringify({
-                  prjManager: -1,
+                  prjManager: Number(LOGIN_USER_INFO.id),
                   cxlx: 'PARTICIPATE',
                 }),
               )}`;

@@ -139,7 +139,7 @@ export default function InfoDisplay(props) {
     return data.length === 0;
   };
   return (
-    <div className="col-left info-display-box">
+    <div className="info-display-box">
       {/* 项目信息 */}
       <div className="info-box" key="xmxx">
         <div className="top-title">项目信息</div>
