@@ -48,12 +48,12 @@ export default function MileStone(props) {
 
   useEffect(() => {
     // 页面变化时获取浏览器窗口的大小
-    window.addEventListener('prjMileStoneResize', resizeUpdate);
-    window.dispatchEvent(new Event('prjMileStoneResize', { bubbles: true, composed: true })); //刷新时能触发resize
+    window.addEventListener('resize', resizeUpdate);
+    window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
 
     return () => {
       // 组件销毁时移除监听事件
-      window.removeEventListener('prjMileStoneResize', resizeUpdate);
+      window.removeEventListener('resize', resizeUpdate);
       clearTimeout(timer);
       setLastBtnVisible(false);
       setNextBtnVisible(false);
@@ -128,7 +128,7 @@ export default function MileStone(props) {
                         };
                         item.itemData = groupBy(arr);
                       });
-                      console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
+                      // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
                       setIsSpinning(false);
 
@@ -208,28 +208,28 @@ export default function MileStone(props) {
 
   //屏幕宽度变化触发
   const resizeUpdate = e => {
-    // const fn = () => {
-    let w = e.target.innerWidth; //屏幕宽度
-    console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
-    if (w < 1440) {
-      setItemWidth('47.76%');
-    } else if (w < 1730) {
-      setItemWidth('47.76%');
-    } else if (w < 2021) {
-      setItemWidth('30.388%');
-    } else if (w < 2312) {
-      setItemWidth('23.4%');
-    } else if (w < 2603) {
-      setItemWidth('18.633%');
-    } else if (w < 2894) {
-      setItemWidth('15.4852%');
-    } else if (w < 3185) {
-      setItemWidth('13.2434%');
-    } else {
-      setItemWidth('11.572%'); //8个
-    }
-    // };
-    // debounce(fn, 200);
+    const fn = () => {
+      let w = e.target.innerWidth; //屏幕宽度
+      // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+      if (w < 1440) {
+        setItemWidth('47.76%');
+      } else if (w < 1730) {
+        setItemWidth('47.76%');
+      } else if (w < 2021) {
+        setItemWidth('30.388%');
+      } else if (w < 2312) {
+        setItemWidth('23.4%');
+      } else if (w < 2603) {
+        setItemWidth('18.633%');
+      } else if (w < 2894) {
+        setItemWidth('15.4852%');
+      } else if (w < 3185) {
+        setItemWidth('13.2434%');
+      } else {
+        setItemWidth('11.572%'); //8个
+      }
+    };
+    debounce(fn, 300);
   };
 
   //flex列表尾部占位置的空标签，处理justify-content对齐问题
