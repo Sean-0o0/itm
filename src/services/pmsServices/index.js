@@ -62,6 +62,7 @@ const {
     queryProjectMessages,
     updateProjectMessages,
     querySupplierList,
+    queryZCXX,
   },
 } = api;
 
@@ -638,6 +639,16 @@ export async function UpdateProjectMessages(payload) {
 export async function QuerySupplierList(payload) {
   const option = {
     url: querySupplierList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询中标信息和合同信息
+export async function FetchQueryZCXX(payload) {
+  const option = {
+    url: queryZCXX,
     method: 'post',
     data: payload,
   };

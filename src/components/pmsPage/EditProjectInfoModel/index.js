@@ -42,7 +42,7 @@ import RiskOutline from './RiskOutline';
 import {
   FetchQueryGysInZbxx,
   FetchQueryHTXXByXQTC,
-  FetchQueryZBXXByXQTC,
+  FetchQueryZBXXByXQTC, FetchQueryZCXX,
   QueryPaymentAccountList, UpdateHTXX, UpdateProjectOtherInfo, UpdateZbxx
 } from "../../../services/pmsServices";
 import BridgeModel from "../../Common/BasicModal/BridgeModel";
@@ -417,8 +417,8 @@ class EditProjectInfoModel extends React.Component {
       file: [],
       //收款账号
       number: '',
-      //收款账号完整信息
-      numberComplete: '',
+      initialSkzhId: -1,
+      initialSkzhMc: '',
       //其他投标供应商
       othersSupplier: [],
       ZT: '',
@@ -579,11 +579,13 @@ class EditProjectInfoModel extends React.Component {
       queryType: "ALL"
     });
     //招采信息
-    await this.firstTimeQueryPaymentAccountList();
+    // await this.firstTimeQueryPaymentAccountList();
     //合同信息
-    await this.fetchQueryHTXXByXQTC();
+    // await this.fetchQueryHTXXByXQTC();
     //招标信息
-    await this.fetchQueryZBXXByXQTC();
+    // await this.fetchQueryZBXXByXQTC();
+    //合同招标合并成一个接口
+    await this.fetchQueryZCXX();
     // 修改加载状态
     this.setState({loading: false});
   };
@@ -2443,99 +2445,58 @@ class EditProjectInfoModel extends React.Component {
     });
   }
 
-  // 获取项目信息
-  fetchQueryHTXXByXQTC() {
-    const {purchaseInfo = [], basicInfo = []} = this.state;
-    return FetchQueryHTXXByXQTC({
-      xmmc: Number(basicInfo.projectId),
-    }).then(res => {
-      let rec = res.record;
-      let arr = [];
-      if (rec.length > 0) {
-        for (let i = 0; i < rec.length; i++) {
-          if (rec[i]?.fkxqid !== "") {
-            arr.push({
-              id: rec[i]?.fkxqid,
-              ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
-              ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
-              ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
-              ['fksj' + rec[i]?.fkxqid]: rec[i]?.fksj === "" ? moment(new Date()).format('YYYY-MM-DD') : moment(rec[i]?.fksj).format('YYYY-MM-DD'),
-            });
-          }
-        }
-        this.setState({
-          purchaseInfo: {
-            ...purchaseInfo,
-            contractValue: Number(rec[0]?.htje),
-            signData: rec[0]?.qsrq ? rec[0]?.qsrq : moment(new Date).format('YYYY-MM-DD'),
-            paymentInfos: arr,
-            ZT: rec[0]?.ZT
-          },
-          tableData: [...this.state.tableData, ...arr],
-          htxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
-          htxxVisiable: true,
-        });
-      } else {
-        this.setState({
-          htxxVisiable: false,
-        })
-      }
-
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  };
-
   // 获取中标信息
-  fetchQueryZBXXByXQTC() {
+  fetchQueryZCXX() {
     const {purchaseInfo, gysData = [], staticSkzhData = [], basicInfo = []} = this.state;
     console.log("staticSkzhDatastaticSkzhData", staticSkzhData)
-    return FetchQueryZBXXByXQTC({
+    return FetchQueryZCXX({
       xmmc: Number(basicInfo.projectId),
     }).then(res => {
-      let rec = res.record;
-      if (rec.length > 0) {
+      //中标信息
+      let zbxxRec = res.zbxxRecord;
+      if (zbxxRec.length > 0) {
+        this.firstTimeQueryPaymentAccountList(zbxxRec[0].zbgysfkzhmc);
         let arr = [];
-        for (let i = 0; i < rec.length; i++) {
-          if (rec[i].gysmc !== "") {
+        for (let i = 0; i < zbxxRec.length; i++) {
+          if (zbxxRec[i].gysmc !== "") {
             let id = getID();
             arr.push({
               id,
-              [`gysmc${id}`]: gysData.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
-              [`gysskzh${id}`]: rec[i].gysfkzhmc,
+              [`gysmc${id}`]: gysData.filter(x => x.id === zbxxRec[i].gysmc)[0]?.gysmc || '',
+              // [`gysskzh${id}`]: zbxxRec[i].gysfkzhmc,
             });
           }
         }
-        const numberData = staticSkzhData.filter(x => x.id === rec[0].zbgysfkzh)[0] || '';
         this.setState({
+          initialSkzhMc: zbxxRec[0].zbgysfkzhmc || '',
+          initialSkzhId: Number(zbxxRec[0].zbgysfkzh),
           zbxxVisiable: true,
-          zbxxCzlx: rec.length > 0 ? 'UPDATE' : 'ADD',
+          zbxxCzlx: zbxxRec.length > 0 ? 'UPDATE' : 'ADD',
           purchaseInfo: {
-            ...purchaseInfo,
+            ...this.state.purchaseInfo,
             othersSupplier: arr,
-            biddingSupplierName: gysData.filter(x => x.id === rec[0]?.zbgys)[0]?.gysmc || '',
-            biddingSupplier: rec[0]?.zbgys,
-            bidCautionMoney: Number(rec[0]?.tbbzj),
-            cautionMoney: Number(rec[0]?.lybzj),
-            numberComplete: numberData ? numberData.wdmc + ' - ' + numberData.yhkh + ' - ' + numberData.khmc : "",
-            number: rec[0].zbgysfkzh,
-            pbbg: rec[0]?.pbbg,
+            biddingSupplierName: gysData.filter(x => x.id === zbxxRec[0]?.zbgys)[0]?.gysmc || '',
+            biddingSupplier: zbxxRec[0]?.zbgys,
+            bidCautionMoney: Number(zbxxRec[0]?.tbbzj),
+            cautionMoney: Number(zbxxRec[0]?.lybzj),
+            number: zbxxRec[0].zbgysfkzhmc || '',
+            pbbg: zbxxRec[0]?.pbbg,
           },
           uploadFileParams: {
             columnName: 'PBBG',
             documentData: res.base64 ? res.base64 : "DQoNCg0KDQoxMTExMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxMTExMjExMTEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjExMTEyDQoyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy",
             fileLength: 0,
             filePath: '',
-            fileName: rec[0]?.pbbg ? rec[0]?.pbbg : "测试.txt",
-            id: rec[0]?.zbxxid ? rec[0]?.zbxxid : 0,
+            fileName: zbxxRec[0]?.pbbg ? zbxxRec[0]?.pbbg : "测试.txt",
+            id: zbxxRec[0]?.zbxxid ? zbxxRec[0]?.zbxxid : 0,
             objectName: 'TXMXX_ZBXX'
           },
         });
-        if (res.url && res.base64 && rec[0].pbbg) {
+        if (res.url && res.base64 && zbxxRec[0].pbbg) {
           let arrTemp = [];
           arrTemp.push({
             uid: Date.now(),
-            name: rec[0].pbbg,
+            name: zbxxRec[0].pbbg,
             status: 'done',
             url: res.url,
           });
@@ -2551,6 +2512,38 @@ class EditProjectInfoModel extends React.Component {
       } else {
         this.setState({
           zbxxVisiable: false,
+        })
+      }
+      //合同信息
+      let htxxRec = res.htxxRecord;
+      let arr = [];
+      if (htxxRec.length > 0) {
+        for (let i = 0; i < htxxRec.length; i++) {
+          if (htxxRec[i]?.fkxqid !== "") {
+            arr.push({
+              id: htxxRec[i]?.fkxqid,
+              ['fkqs' + htxxRec[i]?.fkxqid]: Number(htxxRec[i]?.fkqs),
+              ['bfb' + htxxRec[i]?.fkxqid]: Number(htxxRec[i]?.bfb),
+              ['fkje' + htxxRec[i]?.fkxqid]: Number(htxxRec[i]?.fkje),
+              ['fksj' + htxxRec[i]?.fkxqid]: htxxRec[i]?.fksj === "" ? moment(new Date()).format('YYYY-MM-DD') : moment(htxxRec[i]?.fksj).format('YYYY-MM-DD'),
+            });
+          }
+        }
+        this.setState({
+          purchaseInfo: {
+            ...this.state.purchaseInfo,
+            contractValue: Number(htxxRec[0]?.htje),
+            signData: htxxRec[0]?.qsrq ? htxxRec[0]?.qsrq : moment(new Date).format('YYYY-MM-DD'),
+            paymentInfos: arr,
+            ZT: htxxRec[0]?.ZT
+          },
+          tableData: [...this.state.tableData, ...arr],
+          htxxCzlx: htxxRec.length > 0 ? 'UPDATE' : 'ADD',
+          htxxVisiable: true,
+        });
+      } else {
+        this.setState({
+          htxxVisiable: false,
         })
       }
     }).catch((error) => {
@@ -2715,7 +2708,7 @@ class EditProjectInfoModel extends React.Component {
   handleSkzhChange = v => {
     console.log(v);
     const {purchaseInfo} = this.state;
-    const obj = this.state.skzhData?.filter(x => x.khmc === v)[0];
+    const obj = this.state.staticSkzhData?.filter(x => x.khmc === v)[0];
     this.setState({
       currentPage: 1,
       isNoMoreData: false,
@@ -2724,32 +2717,93 @@ class EditProjectInfoModel extends React.Component {
   };
 
   handleSkzhSearch = khmc => {
-    this.debounce(() => this.firstTimeQueryPaymentAccountList(khmc));
+    this.debounce(() => {
+      QueryPaymentAccountList({
+        type: 'ALL',
+        current: 1,
+        pageSize: 10,
+        paging: 1,
+        sort: '1',
+        total: -1,
+        khmc,
+        zhid: -1,
+      }).then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            currentPage: 1,
+            skzhData: [...rec],
+            staticSkzhData: [...rec],
+            currentKhmc: khmc,
+            isNoMoreData: false,
+          });
+          if (rec.length === 0) {
+            this.setState({
+              isNoMoreData: true,
+            });
+          }
+        }
+      });
+    });
   };
 
   handleSkzhScroll = e => {
     const {scrollHeight, scrollTop, clientHeight} = e.target;
     if (scrollHeight - scrollTop - clientHeight <= 10) {
-      let index = this.state.currentPage;
+      const {currentPage, isNoMoreData, currentKhmc, initialSkzhId} = this.state;
+      let index = currentPage;
       index = index + 1;
-      if (!this.state.isNoMoreData) {
+      if (!isNoMoreData) {
         this.setState({
           currentPage: index,
         });
-        this.fetchQueryPaymentAccountList(this.state.currentKhmc, index);
+        this.fetchQueryPaymentAccountList(
+          currentKhmc,
+          index,
+          currentKhmc === '' ? initialSkzhId : -1,);
       }
     }
   };
 
+  initialQueryPaymentAccountList = () => {
+    QueryPaymentAccountList({
+      type: 'UPDATEQUERY',
+      current: 1,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc: this.state.initialSkzhMc,
+      zhid: -1,
+    }).then(res => {
+      if (res.success) {
+        let rec = res.record;
+        this.setState({
+          currentPage: 1,
+          skzhData: [...rec],
+          staticSkzhData: [...rec],
+          currentKhmc: '',
+          isNoMoreData: false,
+        });
+        if (rec.length === 0) {
+          this.setState({
+            isNoMoreData: true,
+          });
+        }
+      }
+    });
+  };
+
   firstTimeQueryPaymentAccountList = (khmc = '') => {
     QueryPaymentAccountList({
-      type: 'ALL',
+      type: 'UPDATEQUERY',
       current: 1,
       pageSize: 10,
       paging: 1,
       sort: '1',
       total: -1,
       khmc,
+      zhid: -1,
     }).then(res => {
       if (res.success) {
         let rec = res.record;
@@ -2757,9 +2811,13 @@ class EditProjectInfoModel extends React.Component {
           currentPage: 1,
           staticSkzhData: [...rec],
           skzhData: [...rec],
-          currentKhmc: khmc,
           isNoMoreData: false,
         });
+        if (rec.length === 0) {
+          this.setState({
+            isNoMoreData: true,
+          });
+        }
       }
     });
   };
@@ -2831,7 +2889,7 @@ class EditProjectInfoModel extends React.Component {
       htxxVisiable = false,
       zbxxVisiable = false,
     } = this.state;
-    console.log("nameArr", jobStaffName)
+    console.log("purchaseInfopurchaseInfo", purchaseInfo)
     const {getFieldDecorator} = this.props.form;
     const tabs = [
       {
@@ -4819,7 +4877,7 @@ class EditProjectInfoModel extends React.Component {
                               //   required: true,
                               //   message: '请选择关联预算项目'
                               // }],
-                              initialValue: purchaseInfo.numberComplete
+                              initialValue: String(purchaseInfo?.number)
                             })(
                               <Select
                                 style={{width: '100%', borderRadius: '8px !important'}}
@@ -4832,11 +4890,11 @@ class EditProjectInfoModel extends React.Component {
                                 onPopupScroll={this.handleSkzhScroll}
                                 optionLabelProp="children"
                                 className="skzh-box"
-                                onBlur={() => this.firstTimeQueryPaymentAccountList()}
+                                onBlur={() => this.initialQueryPaymentAccountList()}
                               >
                                 {
                                   staticSkzhData?.map((item = {}, ind) => {
-                                    return <Option key={item.id} value={item.id}>
+                                    return <Option key={item.id} value={item.khmc}>
                                       <i
                                         className="iconfont icon-bank"
                                         style={{fontSize: '1em', marginRight: '4px', color: '#3361ff'}}

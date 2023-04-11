@@ -325,4 +325,10 @@ export default [
     url: '/projectManage/querySupplierList',
     dis: '查询供应商信息列表',
   },
+  {
+    code: '',
+    key: 'queryZCXX',
+    url: '/projectManage/queryZCXX',
+    dis: '查询招采购信息',
+  },
 ];
