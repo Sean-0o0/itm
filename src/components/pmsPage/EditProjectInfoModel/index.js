@@ -1744,7 +1744,7 @@ class EditProjectInfoModel extends React.Component {
       czr_id: czrid,
       fileLength,
       glgys: 0,
-      gysfkzh: Number(purchaseInfo.number),
+      gysfkzh: Number(staticSkzhData?.filter(x => x.khmc === purchaseInfo.number)[0]?.id || ''),
       ijson: JSON.stringify(newArr),
       lybzj: Number(purchaseInfo.cautionMoney),
       objectName: 'TXMXX_ZBXX',
@@ -2709,11 +2709,10 @@ class EditProjectInfoModel extends React.Component {
   handleSkzhChange = v => {
     console.log(v);
     const {purchaseInfo} = this.state;
-    const obj = this.state.staticSkzhData?.filter(x => x.khmc === v)[0];
     this.setState({
       currentPage: 1,
       isNoMoreData: false,
-      purchaseInfo: {...purchaseInfo, number: obj?.id,},
+      purchaseInfo: {...purchaseInfo, number: v,},
     });
   };
 
