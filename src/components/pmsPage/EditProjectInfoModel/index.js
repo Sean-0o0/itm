@@ -1780,7 +1780,7 @@ class EditProjectInfoModel extends React.Component {
       basicInfo = {}
     } = this.state;
     let arr = [...tableData];
-    //console.log("purchaseInfo", purchaseInfo)
+    console.log("staticSkzhData", staticSkzhData)
     //console.log("tableDatatableData", tableData)
     arr.forEach(item => {
       for (let i in item) {
@@ -4890,7 +4890,7 @@ class EditProjectInfoModel extends React.Component {
                                 onPopupScroll={this.handleSkzhScroll}
                                 optionLabelProp="children"
                                 className="skzh-box"
-                                onBlur={() => this.initialQueryPaymentAccountList()}
+                                // onBlur={() => this.initialQueryPaymentAccountList()}
                               >
                                 {
                                   staticSkzhData?.map((item = {}, ind) => {
