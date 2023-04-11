@@ -237,11 +237,12 @@ class BidInfoUpdate extends React.Component {
     isNoMoreData: false, //没有更多数据了
     isSpinning: true, //弹窗加载状态
     radioValue: 1, //单选，默认1->公共账户
-    skzhId: '',
+    skzhId: -1,
+    initialSkzhId: -1,
+    initialSkzhMc: '',
   };
 
   componentDidMount() {
-    // this.initialQueryPaymentAccountList();
     this.fetchQueryGysInZbxx(1, PASE_SIZE);
   }
 
@@ -259,6 +260,8 @@ class BidInfoUpdate extends React.Component {
       // console.log('🚀 ~ file: index.js:228 ~ BidInfoUpdate ~ res.record:', res.record);
       this.firstTimeQueryPaymentAccountList(rec[0].zbgysfkzhmc);
       this.setState({
+        initialSkzhMc: rec[0].zbgysfkzhmc || '',
+        initialSkzhId: Number(rec[0].zbgysfkzh),
         skzhId: rec[0].zbgysfkzh,
         bidInfo: {
           zbgys: this.state.glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
@@ -295,7 +298,7 @@ class BidInfoUpdate extends React.Component {
         arr.push({
           id,
           [`gysmc${id}`]: this.state.glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
-          [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
+          // [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
         });
       }
       this.setState({
@@ -324,6 +327,7 @@ class BidInfoUpdate extends React.Component {
       }
     });
   };
+
   firstTimeQueryPaymentAccountList = (khmc = '') => {
     QueryPaymentAccountList({
       type: 'UPDATEQUERY',
@@ -333,6 +337,7 @@ class BidInfoUpdate extends React.Component {
       sort: '1',
       total: -1,
       khmc,
+      zhid: -1,
     }).then(res => {
       if (res.success) {
         let rec = res.record;
@@ -345,29 +350,30 @@ class BidInfoUpdate extends React.Component {
     });
   };
 
-  initialQueryPaymentAccountList = (khmc = '') => {
+  initialQueryPaymentAccountList = () => {
     QueryPaymentAccountList({
-      type: 'ALL',
+      type: 'UPDATEQUERY',
       current: 1,
       pageSize: 10,
       paging: 1,
       sort: '1',
       total: -1,
-      khmc,
+      khmc: this.state.initialSkzhMc,
+      zhid: -1,
     }).then(res => {
       if (res.success) {
         let rec = res.record;
         this.setState({
           currentPage: 1,
           skzhData: [...rec],
-          currentKhmc: khmc,
+          currentKhmc: '',
           isNoMoreData: false,
         });
       }
     });
   };
 
-  fetchQueryPaymentAccountList = (khmc = '', current = 1) => {
+  fetchQueryPaymentAccountList = (khmc = '', current = 1, zhid = -1) => {
     this.setState({
       fetching: true,
     });
@@ -379,6 +385,7 @@ class BidInfoUpdate extends React.Component {
       sort: '1',
       total: -1,
       khmc,
+      zhid,
     }).then(res => {
       if (res.success) {
         let rec = res.record;
@@ -414,19 +421,45 @@ class BidInfoUpdate extends React.Component {
   };
 
   handleSkzhSearch = khmc => {
-    this.debounce(() => this.initialQueryPaymentAccountList(khmc));
+    this.debounce(() => {
+      QueryPaymentAccountList({
+        type: 'ALL',
+        current: 1,
+        pageSize: 10,
+        paging: 1,
+        sort: '1',
+        total: -1,
+        khmc,
+        zhid: -1,
+      }).then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            currentPage: 1,
+            skzhData: [...rec],
+            currentKhmc: khmc,
+            isNoMoreData: false,
+          });
+        }
+      });
+    });
   };
 
   handleSkzhScroll = e => {
     const { scrollHeight, scrollTop, clientHeight } = e.target;
     if (scrollHeight - scrollTop - clientHeight <= 10) {
-      let index = this.state.currentPage;
+      const { currentPage, isNoMoreData, currentKhmc, initialSkzhId } = this.state;
+      let index = currentPage;
       index = index + 1;
-      if (!this.state.isNoMoreData) {
+      if (!isNoMoreData) {
         this.setState({
           currentPage: index,
         });
-        this.fetchQueryPaymentAccountList(this.state.currentKhmc, index);
+        this.fetchQueryPaymentAccountList(
+          currentKhmc,
+          index,
+          currentKhmc === '' ? initialSkzhId : -1,
+        );
       }
     }
   };
