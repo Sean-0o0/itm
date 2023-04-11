@@ -417,6 +417,8 @@ class EditProjectInfoModel extends React.Component {
       file: [],
       //收款账号
       number: '',
+      //收款账号名称
+      numberComplete: '',
       initialSkzhId: -1,
       initialSkzhMc: '',
       //其他投标供应商
@@ -1744,7 +1746,7 @@ class EditProjectInfoModel extends React.Component {
       czr_id: czrid,
       fileLength,
       glgys: 0,
-      gysfkzh: Number(staticSkzhData?.filter(x => x.khmc === purchaseInfo.number)[0]?.id || ''),
+      gysfkzh: Number(purchaseInfo.number),
       ijson: JSON.stringify(newArr),
       lybzj: Number(purchaseInfo.cautionMoney),
       objectName: 'TXMXX_ZBXX',
@@ -2479,7 +2481,8 @@ class EditProjectInfoModel extends React.Component {
             biddingSupplier: zbxxRec[0]?.zbgys,
             bidCautionMoney: Number(zbxxRec[0]?.tbbzj),
             cautionMoney: Number(zbxxRec[0]?.lybzj),
-            number: zbxxRec[0].zbgysfkzhmc || '',
+            number: zbxxRec[0].zbgysfkzh || '',
+            numberComplete: zbxxRec[0].zbgysfkzhmc || '',
             pbbg: zbxxRec[0]?.pbbg,
           },
           uploadFileParams: {
@@ -2709,10 +2712,11 @@ class EditProjectInfoModel extends React.Component {
   handleSkzhChange = v => {
     console.log(v);
     const {purchaseInfo} = this.state;
+    const obj = this.state.skzhData?.filter(x => x.khmc === v)[0];
     this.setState({
       currentPage: 1,
       isNoMoreData: false,
-      purchaseInfo: {...purchaseInfo, number: v,},
+      purchaseInfo: {...purchaseInfo, number: obj?.id,numberComplete: v},
     });
   };
 
@@ -4877,7 +4881,7 @@ class EditProjectInfoModel extends React.Component {
                               //   required: true,
                               //   message: '请选择关联预算项目'
                               // }],
-                              initialValue: String(purchaseInfo?.number)
+                              initialValue: String(purchaseInfo?.numberComplete)
                             })(
                               <Select
                                 style={{width: '100%', borderRadius: '8px !important'}}
@@ -4890,7 +4894,7 @@ class EditProjectInfoModel extends React.Component {
                                 onPopupScroll={this.handleSkzhScroll}
                                 optionLabelProp="children"
                                 className="skzh-box"
-                                // onBlur={() => this.initialQueryPaymentAccountList()}
+                                onBlur={() => this.initialQueryPaymentAccountList()}
                               >
                                 {
                                   staticSkzhData?.map((item = {}, ind) => {
