@@ -241,8 +241,8 @@ class BidInfoUpdate extends React.Component {
   };
 
   componentDidMount() {
+    // this.initialQueryPaymentAccountList();
     this.fetchQueryGysInZbxx(1, PASE_SIZE);
-    this.firstTimeQueryPaymentAccountList();
   }
 
   componentWillUnmount() {
@@ -257,12 +257,14 @@ class BidInfoUpdate extends React.Component {
     }).then(res => {
       let rec = res.record;
       // console.log('🚀 ~ file: index.js:228 ~ BidInfoUpdate ~ res.record:', res.record);
+      this.firstTimeQueryPaymentAccountList(rec[0].zbgysfkzhmc);
       this.setState({
+        skzhId: rec[0].zbgysfkzh,
         bidInfo: {
           zbgys: this.state.glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
           tbbzj: Number(rec[0].tbbzj),
           lybzj: Number(rec[0].lybzj),
-          zbgysskzh: this.state.skzhData.filter(x => x.id === rec[0].zbgysfkzh)[0]?.khmc || '',
+          zbgysskzh: rec[0].zbgysfkzhmc || '',
           pbbg: rec[0].pbbg,
         },
         uploadFileParams: {
@@ -322,8 +324,28 @@ class BidInfoUpdate extends React.Component {
       }
     });
   };
-
   firstTimeQueryPaymentAccountList = (khmc = '') => {
+    QueryPaymentAccountList({
+      type: 'UPDATEQUERY',
+      current: 1,
+      pageSize: 10,
+      paging: 1,
+      sort: '1',
+      total: -1,
+      khmc,
+    }).then(res => {
+      if (res.success) {
+        let rec = res.record;
+        this.setState({
+          currentPage: 1,
+          skzhData: [...rec],
+          isNoMoreData: false,
+        });
+      }
+    });
+  };
+
+  initialQueryPaymentAccountList = (khmc = '') => {
     QueryPaymentAccountList({
       type: 'ALL',
       current: 1,
@@ -392,7 +414,7 @@ class BidInfoUpdate extends React.Component {
   };
 
   handleSkzhSearch = khmc => {
-    this.debounce(() => this.firstTimeQueryPaymentAccountList(khmc));
+    this.debounce(() => this.initialQueryPaymentAccountList(khmc));
   };
 
   handleSkzhScroll = e => {
@@ -907,7 +929,7 @@ class BidInfoUpdate extends React.Component {
                         onPopupScroll={this.handleSkzhScroll}
                         optionLabelProp="children"
                         className="skzh-box"
-                        onBlur={() => this.firstTimeQueryPaymentAccountList()}
+                        onBlur={() => this.initialQueryPaymentAccountList()}
                       >
                         {skzhData?.map((item = {}, ind) => {
                           return (
