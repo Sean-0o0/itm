@@ -50,12 +50,12 @@ exports.routes = [
     component: './pmsPage/StatisticAnalysis',
   },
   {
-    // 项目信息
+    // 项目列表
     path: `${prefix}/ProjectInfo/:params`,
     component: './pmsPage/ProjectInfo',
   },
   {
-    // 项目信息
+    // 项目列表
     path: `${prefix}/ProjectInfo`,
     component: './pmsPage/ProjectInfo',
   },
@@ -78,21 +78,21 @@ exports.routes = [
     path: `${prefix}/staffDetail/:params`,
     component: './pmsPage/StaffDetail',
   },
-  {
-    // 人员详情
-    path: `${prefix}/staffDetail`,
-    component: './pmsPage/StaffDetail',
-  },
+  // {
+  //   // 人员详情
+  //   path: `${prefix}/staffDetail`,
+  //   component: './pmsPage/StaffDetail',
+  // },
   {
     // 标签详情
     path: `${prefix}/labelDetail/:params`,
     component: './pmsPage/LabelDetail',
   },
-  {
-    // 标签详情
-    path: `${prefix}/labelDetail`,
-    component: './pmsPage/LabelDetail',
-  },
+  // {
+  //   // 标签详情
+  //   path: `${prefix}/labelDetail`,
+  //   component: './pmsPage/LabelDetail',
+  // },
   {
     //编辑项目信息
     path: `${prefix}/EditProjectInfo`,
@@ -104,8 +104,13 @@ exports.routes = [
     component: './pmsPage/ProjectDetail',
   },
   {
-    // 项目详情
-    path: `${prefix}/ProjectDetail`,
-    component: './pmsPage/ProjectDetail',
+    //供应商列表
+    path: `${prefix}/SupplierInfo`,
+    component: './pmsPage/SupplierInfo',
+  },
+  {
+    //供应商详情
+    path: `${prefix}/SupplierDetail`,
+    component: './pmsPage/SupplierDetail',
   },
 ];

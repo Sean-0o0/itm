@@ -10,7 +10,16 @@ export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const { tableData, tableLoading, getTableData, projectManager = -1, total } = props; //表格数据
+  const {
+    tableData,
+    tableLoading,
+    getTableData,
+    projectManager = -1,
+    total,
+    handleSearch,
+    curPage,
+    curPageSize,
+  } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
 
@@ -23,7 +32,7 @@ export default function InfoTable(props) {
     title: '新建项目',
     width: '1000px',
     height: '780px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: true,
     footer: null,
   };
@@ -82,7 +91,7 @@ export default function InfoTable(props) {
   const handleTableChange = obj => {
     // console.log('handleTableChange', obj);
     const { current = 1, pageSize = 10 } = obj;
-    getTableData({ current, pageSize, projectManager });
+    handleSearch(current, pageSize);
     return;
   };
 
@@ -318,6 +327,9 @@ export default function InfoTable(props) {
           onChange={handleTableChange}
           // scroll={{ y: 500 }}
           pagination={{
+            current: curPage,
+            pageSize: curPageSize,
+            defaultCurrent: 1,
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,
             hideOnSinglePage: false,

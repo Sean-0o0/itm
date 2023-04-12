@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import { QueryProjectListInfo } from '../../../services/pmsServices';
@@ -9,8 +9,11 @@ export default function ProjectInfo(props) {
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
+  const [curPage, setCurPage] = useState(1); //当前页码
+  const [curPageSize, setCurPageSize] = useState(10); //每页数量
   const { params = {} } = props;
   const { prjManager = -2, cxlx = 'ALL' } = params;
+  const topConsoleRef = useRef(null);
 
   useEffect(() => {
     if (prjManager === -2) {
@@ -58,6 +61,9 @@ export default function ProjectInfo(props) {
         setTotal={setTotal}
         setTableLoading={setTableLoading}
         projectManager={params?.prjManager}
+        ref={topConsoleRef}
+        setCurPage={setCurPage}
+        setCurPageSize={setCurPageSize}
       />
       <InfoTable
         tableData={tableData}
@@ -65,6 +71,9 @@ export default function ProjectInfo(props) {
         getTableData={getTableData}
         projectManager={params?.prjManager}
         total={total}
+        handleSearch={topConsoleRef?.current?.handleSearch}
+        curPage={curPage}
+        curPageSize={curPageSize}
       />
     </div>
   );

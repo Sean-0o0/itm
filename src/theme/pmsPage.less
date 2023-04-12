@@ -6549,7 +6549,94 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
     }
   }
+  .project-info-table-box {
+    .lxr-info {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      .lxr-txt {
+        flex-grow: 1;
+        cursor: default;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+      }
+
+      span {
+        flex-shrink: 0;
+        color: #3361ff;
+        margin-left: 4px;
+        cursor: pointer;
+      }
+    }
+  }
 }
+//联系人展示
+.lxr-info-popover {
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+  .list {
+    padding: 16px;
+    overflow: hidden;
+    overflow-y: auto;
+    // max-width: 400px;
+    max-height: 225px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    color: #303133;
+
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #f0f2f5;
+      border-radius: 3px;
+    }
+    &::-webkit-scrollbar-thumb {
+      background-color: #dbdfe6;
+      border-radius: 3px;
+    }
+    .item {
+      margin-bottom: 16px;
+      &:last-child {
+        margin-bottom: 0;
+      }
+      .top {
+        font-weight: bold;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        margin-bottom: 11px;
+        span {
+          flex-shrink: 0;
+        }
+        .position-tag {
+          font-weight: normal;
+          color: #3361ff;
+          font-size: 12px;
+          border: 1px solid rgba(51, 97, 255, 0.3);
+          border-radius: 4px;
+          background-color: #3363ff14;
+          padding: 1px 8px 2px 8px;
+          margin-left: 10px;
+          text-shadow: unset;
+          line-height: initial;
+        }
+      }
+      .bottom {
+        height: 22px;
+        line-height: 22px;
+
+        span {
+          color: #909399;
+        }
+        .email {
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+}
+
 //供应商详情
 .supplier-detail-box {
 }

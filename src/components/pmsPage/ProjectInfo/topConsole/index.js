@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import { Select, Button, Input, TreeSelect, Row, Col } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
@@ -6,7 +6,7 @@ import { set } from 'store';
 const InputGroup = Input.Group;
 const { Option } = Select;
 
-export default function TopConsole(props) {
+export default forwardRef(function TopConsole(props, ref) {
   const [amountSelector, setAmountSelector] = useState('1'); //项目金额下拉框，区间 '1'，大于 '2'
   const [filterFold, setFilterFold] = useState(true); //收起 true、展开 false
   //下拉框数据
@@ -23,24 +23,50 @@ export default function TopConsole(props) {
   const [label, setLabel] = useState([]); //项目标签
   const [prjName, setPrjName] = useState(undefined); //项目名称
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
-  const [org, setOrg] = useState(undefined); //应用部门
+  const [org, setOrg] = useState([]); //应用部门
   const [prjType, setPrjType] = useState(undefined); //项目类型
   const [gtAmount, setGtAmount] = useState(undefined); //项目金额，大于
   const [ltAmount, setLtAmount] = useState(undefined); //项目金额，小于
   const [minAmount, setMinAmount] = useState(undefined); //项目金额，最小
   const [maxAmount, setMaxAmount] = useState(undefined); //项目金额，最大
 
-  const { setTableLoading, setTableData, projectManager, setTotal } = props;
+  const {
+    setTableLoading,
+    setTableData,
+    projectManager,
+    setTotal,
+    setCurPage,
+    setCurPageSize,
+  } = props;
 
   useEffect(() => {
     getFilterData();
     return () => {};
   }, [projectManager]);
 
-  function uniqueFunc(arr, uniId) {
-    const res = new Map();
-    return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
-  }
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        handleSearch,
+      };
+    },
+    [
+      budget,
+      budgetValue,
+      budgetType,
+      label,
+      prjName,
+      prjMnger,
+      org,
+      prjType,
+      gtAmount,
+      ltAmount,
+      minAmount,
+      maxAmount,
+    ],
+  );
+
   //转为树结构-关联项目
   const toItemTree = (list, parId) => {
     let a = list.reduce((pre, current, index) => {
@@ -157,10 +183,6 @@ export default function TopConsole(props) {
       .then(res => {
         if (res?.success) {
           setBudgetData(p => [...toItemTree(JSON.parse(res.budgetProjectRecord))]);
-          // console.log(
-          //   '🚀 ~ file: index.js ~ line 158 ~ getFilterData ~ toItemTree(JSON.parse(res.budgetProjectRecord))',
-          //   toItemTree(JSON.parse(res.budgetProjectRecord)),
-          // );
           let labelTree = TreeUtils.toTreeData(JSON.parse(res.labelRecord), {
             keyName: 'ID',
             pKeyName: 'FID',
@@ -168,7 +190,6 @@ export default function TopConsole(props) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
-          // console.log('🚀 ~ file: index.js ~ line 165 ~ labelTree ~ labelTree', labelTree);
           setLabelData(p => [...[labelTree]]);
           let orgTree = TreeUtils.toTreeData(JSON.parse(res.orgRecord), {
             keyName: 'ID',
@@ -179,10 +200,6 @@ export default function TopConsole(props) {
           })[0].children[0];
           setOrgData(p => [...[orgTree]]);
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
-          // console.log(
-          //   '🚀 ~ file: index.js ~ line 187 ~ getFilterData ~ [...JSON.parse(res.projectManagerRecord)]',
-          //   [...JSON.parse(res.projectManagerRecord)],
-          // );
           if (projectManager) {
             setPrjMnger(
               [...JSON.parse(res.projectManagerRecord)].filter(
@@ -199,27 +216,17 @@ export default function TopConsole(props) {
   };
 
   //查询按钮
-  const handleSearch = ({
-    budget = '',
-    budgetType = '',
-    prjName = '',
-    prjMnger = '',
-    minAmount = '',
-    maxAmount = '',
-    gtAmount = '',
-    ltAmount = '',
-    org = '',
-    label = '',
-    prjType = '',
-  }) => {
+  const handleSearch = (current = 1, pageSize = 10) => {
     setTableLoading(true);
+    setCurPage(current);
+    setCurPageSize(pageSize);
     let params = {
-      current: 1,
-      pageSize: 10,
-      paging: -1,
+      current,
+      pageSize,
+      paging: 1,
       sort: 'string',
       total: -1,
-      queryType: 'ALL'
+      queryType: 'ALL',
     };
     if (budget !== undefined && budget !== '') {
       params.budgetProject = Number(budget);
@@ -302,99 +309,38 @@ export default function TopConsole(props) {
   //大于、区间
   const handleAmtSltChange = v => {
     setAmountSelector(v);
+    setGtAmount(undefined); //项目金额，大于
+    setMinAmount(undefined); //项目金额，最小
+    setMaxAmount(undefined); //项目金额，最大
+    setLtAmount(undefined); //项目金额，小于
   };
   //项目经理
   const handlePrjMngerChange = v => {
     // console.log('handlePrjMngerChange', v);
     // if (v === undefined) v = '';
     setPrjMnger(v);
-    // handleSearch({
-    //   budget,
-    //   budgetType,
-    //   prjName,
-    //   prjMnger: v,
-    //   minAmount,
-    //   maxAmount,
-    //   gtAmount,
-    //   ltAmount,
-    //   org,
-    //   label,
-    //   prjType,
-    // });
   };
   //项目名称
   const handlePrjNameChange = v => {
     // console.log('handlePrjMngerChange', v);
     // if (v === undefined) v = '';
     setPrjName(v);
-    // handleSearch({
-    //   budget,
-    //   budgetType,
-    //   prjName: v,
-    //   prjMnger,
-    //   minAmount,
-    //   maxAmount,
-    //   gtAmount,
-    //   ltAmount,
-    //   org,
-    //   label,
-    //   prjType,
-    // });
   };
   //项目类型
   const handlePrjTypeChange = v => {
     // console.log('handlePrjMngerChange', v);
     // if (v === undefined) v = '';
     setPrjType(v);
-    // handleSearch({
-    //   budget,
-    //   budgetType,
-    //   prjName,
-    //   prjMnger,
-    //   minAmount,
-    //   maxAmount,
-    //   gtAmount,
-    //   ltAmount,
-    //   org,
-    //   label,
-    //   prjType: v,
-    // });
   };
   //项目标签
   const handleLabelChange = v => {
     // console.log('handleLabelChange', v);
     setLabel(p => [...v]);
-    // handleSearch({
-    //   budget,
-    //   budgetType,
-    //   prjName,
-    //   prjMnger,
-    //   minAmount,
-    //   maxAmount,
-    //   gtAmount,
-    //   ltAmount,
-    //   org,
-    //   label: [...v],
-    //   prjType,
-    // });
   };
   //应用部门
   const handleOrgChange = v => {
     // console.log('handleOrgChange', v);
     setOrg(v);
-    // handleSearch({
-    //   budget,
-    //   budgetType,
-    //   prjName,
-    //   prjMnger,
-    //   minAmount,
-    //   maxAmount,
-    //   gtAmount,
-    //   ltAmount,
-    //   org: [...v],
-    //   label,
-    //   prjType,
-    // });
   };
   //关联预算
   const handleBudgetChange = (v, txt, node) => {
@@ -404,34 +350,8 @@ export default function TopConsole(props) {
     setBudgetValue(v);
     if (node?.triggerNode?.props?.ZDBM === '6') {
       setBudgetType('4');
-      // handleSearch({
-      //   budget: node.triggerNode.props.ID,
-      //   budgetType: '4',
-      //   prjName,
-      //   prjMnger,
-      //   minAmount,
-      //   maxAmount,
-      //   gtAmount,
-      //   ltAmount,
-      //   org,
-      //   label,
-      //   prjType,
-      // });
     } else {
       setBudgetType(node?.triggerNode?.props?.YSLXID);
-      // handleSearch({
-      //   budget: node.triggerNode.props.ID,
-      //   budgetType: node.triggerNode.props.YSLXID,
-      //   prjName,
-      //   prjMnger,
-      //   minAmount,
-      //   maxAmount,
-      //   gtAmount,
-      //   ltAmount,
-      //   org,
-      //   label,
-      //   prjType,
-      // });
     }
   };
   //项目金额，大于
@@ -523,25 +443,7 @@ export default function TopConsole(props) {
             ))}
           </Select>
         </div>
-        <Button
-          className="btn-search"
-          type="primary"
-          onClick={() =>
-            handleSearch({
-              budget,
-              budgetType,
-              prjName,
-              prjMnger,
-              minAmount,
-              maxAmount,
-              gtAmount,
-              ltAmount,
-              org,
-              label,
-              prjType,
-            })
-          }
-        >
+        <Button className="btn-search" type="primary" onClick={() => handleSearch()}>
           查询
         </Button>
         <Button className="btn-reset" onClick={handleReset}>
@@ -551,29 +453,6 @@ export default function TopConsole(props) {
       <div className="item-box">
         <div className="console-item">
           <div className="item-label">项目标签</div>
-          {/* <Select
-            className="item-selector"
-            maxTagCount={2}
-            maxTagTextLength={42}
-            maxTagPlaceholder={extraArr => {
-              return `等${extraArr.length + 2}个`;
-            }}
-            dropdownClassName={'item-selector-dropdown'}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            placeholder="请选择"
-            allowClear
-            mode="multiple"
-            onChange={handleLabelChange}
-            value={label}
-          >
-            {labelData.map((x, i) => (
-              <Option key={i} value={x.ID}>
-                {x.BQMC}
-              </Option>
-            ))}
-          </Select> */}
           <TreeSelect
             allowClear
             className="item-selector"
@@ -696,4 +575,4 @@ export default function TopConsole(props) {
       )}
     </div>
   );
-}
+});
