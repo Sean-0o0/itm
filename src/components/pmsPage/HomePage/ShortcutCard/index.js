@@ -28,11 +28,12 @@ export default function ShortcutCard(props) {
   const getShortcutItem = (imgTxt, txt, fn) => {
     return (
       <div className="shortcut-item" onClick={fn}>
-        <img
-          className="item-img"
-          src={require(`../../../../assets/homePage/icon_${imgTxt}@2x.png`)}
-          alt=""
-        />
+        <div className="item-img">
+          <img
+            src={require(`../../../../assets/homePage/icon_${imgTxt}@2x.png`)}
+            alt=""
+          />
+        </div>
         <div className="item-txt">{txt}</div>
       </div>
     );
@@ -86,7 +87,7 @@ export default function ShortcutCard(props) {
     title: '新建项目',
     width: '1000px',
     height: '780px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: fileAddVisible,
     footer: null,
   };

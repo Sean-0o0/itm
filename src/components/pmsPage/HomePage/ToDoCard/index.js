@@ -245,10 +245,14 @@ export default function ToDoCard(props) {
         {/* {isDueSoon && <div className="status-tag-2">即将到期</div>}
         {isLate && <div className="status-tag-3">逾期{lateDay}天</div>} */}
         <div className="item-title">
-          <i style={{ color: fontColor }}>#</i>
-          {title}
-          {isLate && <div className="status-tag-late">逾期{Number(lateDay) * -1}天</div>}
-          {isDueSoon && <div className="status-tag-due">即将到期</div>}
+          <div className="title-top">
+            <span className='top-left'>
+              <i style={{ color: fontColor }}>#</i>
+              {title}
+            </span>
+            {isLate && <div className="status-tag-late">逾期{Number(lateDay) * -1}天</div>}
+            {isDueSoon && <div className="status-tag-due">即将到期</div>}
+          </div>
           <Tooltip title={content} placement="topLeft">
             <div className="content" style={isLate || isDueSoon ? { color: fontColor } : {}}>
               {content}
