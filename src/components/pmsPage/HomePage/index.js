@@ -11,7 +11,6 @@ import {
   FetchQueryOwnerWorkflow,
   FetchQueryOwnerProjectList,
 } from '../../../services/pmsServices';
-import AvatarCard from './AvatarCard';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
 import OverviewCard from './OverviewCard';
@@ -373,20 +372,13 @@ export default function HomePage(props) {
     >
       <div className="home-page-box">
         <div className="row-box">
-          <AvatarCard width={leftWidth} overviewInfo={overviewInfo} />
-          <GuideCard />
-        </div>
-        <div className="row-box">
-          <OverviewCard
-            width={leftWidth}
-            overviewInfo={overviewInfo}
-            userRole={userRole}
-            toDoDataNum={toDoData.length}
-          />
-          <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
-        </div>
-        <div className="row-box">
           <div className="col-left" style={{ width: leftWidth }}>
+            <OverviewCard
+              width={leftWidth}
+              overviewInfo={overviewInfo}
+              userRole={userRole}
+              toDoDataNum={toDoData.length}
+            />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <ToDoCard
                 itemWidth={itemWidth}
@@ -411,6 +403,8 @@ export default function HomePage(props) {
             />
           </div>
           <div className="col-right">
+            <GuideCard />
+            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <CptBudgetCard
                 isVertical={true}

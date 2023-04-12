@@ -28,7 +28,7 @@ export default function ToDoCard(props) {
 
   useLayoutEffect(() => {
     if (toDoData.length !== 0) {
-      setDataList(p => [...toDoData?.slice(0, getColNum(itemWidth))]);
+      setDataList(p => [...toDoData?.slice(0, 2)]);
       setIsUnfold(false);
     }
     return () => {};
@@ -186,38 +186,37 @@ export default function ToDoCard(props) {
     else return '处理';
   };
 
-  //获取目前每行几个
-  const getColNum = w => {
-    switch (w) {
-      case '32%':
-        return 3;
-      case '24%':
-        return 4;
-      case '19%':
-        return 5;
-      case '15.6%':
-        return 6;
-      case '13.2%':
-        return 7;
-      case '11.5%':
-        return 8;
-      default:
-        return 3;
-    }
-  };
+  // //获取目前每行几个
+  // const getColNum = w => {
+  //   switch (w) {
+  //     case '32%':
+  //       return 3;
+  //     case '24%':
+  //       return 4;
+  //     case '19%':
+  //       return 5;
+  //     case '15.6%':
+  //       return 6;
+  //     case '13.2%':
+  //       return 7;
+  //     case '11.5%':
+  //       return 8;
+  //     default:
+  //       return 3;
+  //   }
+  // };
 
   //展开、收起
   const handleUnfold = bool => {
     setIsUnfold(bool);
     if (bool) setDataList(p => [...toDoData]);
-    else setDataList(p => [...toDoData?.slice(0, getColNum(itemWidth))]);
+    else setDataList(p => [...toDoData?.slice(0, 2)]);
   };
 
   //待办块
   const getToDoItem = ({
     title = '--',
     content = '--',
-    deadline = '--',
     btnTxt = '--',
     isLate = false,
     isDueSoon = false,
@@ -225,36 +224,52 @@ export default function ToDoCard(props) {
     key,
     item = {},
   }) => {
-    let borderColor = '#EBEEF5FF';
+    let borderColor = '#3361ff';
     let fontColor = '#3361FF';
     if (isDueSoon) {
       fontColor = '#F9A812FF';
       borderColor = '#F9A8124D';
     } else if (isLate) {
-      fontColor = '#E23C39FF';
-      borderColor = '#D70E194D';
+      fontColor = '#FF1313';
+      borderColor = '#FF1313';
     }
     return (
       <div
         className="todo-item"
         style={{
           borderColor: borderColor,
-          width: itemWidth,
+          // width: itemWidth,
         }}
         key={key}
       >
-        {isDueSoon && <div className="status-tag-2">即将到期</div>}
-        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>}
+        {/* {isDueSoon && <div className="status-tag-2">即将到期</div>}
+        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>} */}
         <div className="item-title">
           <i style={{ color: fontColor }}>#</i>
           {title}
-          <Tooltip title={content}>
-            <div className="content">{content}</div>
+          {isLate && <div className="status-tag-late">逾期{Number(lateDay) * -1}天</div>}
+          {isDueSoon && <div className="status-tag-due">即将到期</div>}
+          <Tooltip title={content} placement="topLeft">
+            <div className="content" style={isLate || isDueSoon ? { color: fontColor } : {}}>
+              {content}
+            </div>
           </Tooltip>
-          <div className="deadline">截止{deadline}</div>
         </div>
         {Number(item.xxlx) !== 2 ? (
-          <div className="item-btn" onClick={() => handleToDo(item)}>
+          <div
+            className="item-btn"
+            onClick={() => handleToDo(item)}
+            style={
+              isLate
+                ? {
+                    backgroundColor: 'rgba(255, 19, 19, 0.2)',
+                    color: 'rgba(255, 19, 19, 1)',
+                  }
+                : isDueSoon
+                ? { backgroundColor: '#F9A8121A', color: '#F9A8124D' }
+                : {}
+            }
+          >
             去{btnTxt}
           </div>
         ) : (
@@ -309,7 +324,7 @@ export default function ToDoCard(props) {
             item,
           }),
         )}
-        {getAfterItem(itemWidth)}
+        {getAfterItem('32%')}
       </div>
       {dataList?.length === 0 && (
         <Empty
@@ -318,7 +333,7 @@ export default function ToDoCard(props) {
           style={{ width: '100%' }}
         />
       )}
-      {toDoData?.length > getColNum(itemWidth) &&
+      {toDoData?.length > 2 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>
             收起

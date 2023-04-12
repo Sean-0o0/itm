@@ -23,7 +23,7 @@ export default function ProjectCard(props) {
   }, []);
   useEffect(() => {
     if (prjInfo.length !== 0) {
-      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 2)]);
+      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
       setIsUnfold(false);
     }
     return () => {};
@@ -65,7 +65,7 @@ export default function ProjectCard(props) {
   const handleUnfold = bool => {
     setIsUnfold(bool);
     if (bool) setInfoList(p => [...prjInfo]);
-    else setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 2)]);
+    else setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
   };
 
   //草稿编辑
@@ -157,7 +157,7 @@ export default function ProjectCard(props) {
       fontColor = '#C0C4CCFF';
       bgImg = 'linear-gradient(270deg, rgba(144,147,153,0) 0%, rgba(144,147,153,0.1) 100%)';
     } else if (isLate) {
-      fontColor = '#D70E19FF';
+      fontColor = '#ff3030';
       bgImg = 'linear-gradient(270deg, rgba(215,14,25,0) 0%, rgba(215,14,25,0.1) 100%)';
     }
     const participantContent = data => {
@@ -263,6 +263,11 @@ export default function ProjectCard(props) {
         className="project-item"
         style={{
           width: itemWidth,
+          background: isDraft
+            ? '#fbfbfb'
+            : isLate
+            ? 'conic-gradient(from 214.88deg at 75.98% 18.6%, rgba(255, 48, 48, 0.08) 0deg, rgba(255, 48, 48, 0.05) 360deg)'
+            : 'conic-gradient(from 214.88deg at 75.98% 18.6%, #EFF3FF 0deg, #F4F7FF 360deg)',
         }}
         key={key}
       >
@@ -278,7 +283,7 @@ export default function ProjectCard(props) {
             },
           }}
         >
-          <div className="item-top" style={{ backgroundImage: bgImg }}>
+          <div className="item-top">
             <span>{title}</span>
             {isDraft && (
               <div className="tag" style={{ backgroundColor: fontColor }}>
@@ -310,10 +315,11 @@ export default function ProjectCard(props) {
                 showInfo={false}
                 percent={Number(rate)}
                 strokeColor={{
-                  from: '#F0F2F5',
-                  to: fontColor,
+                  from: isLate ? 'rgba(255, 85, 95, 0)' : '#9EC4FE',
+                  to: isLate ? '#FF3030' : '#7191FF',
                 }}
                 strokeWidth={10}
+                className={isLate ? 'late-process' : 'normal-process'}
               />
               <div className="middle-bottom">
                 <Popover
@@ -394,7 +400,7 @@ export default function ProjectCard(props) {
     title: '编辑草稿',
     width: '1000px',
     height: '780px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: fileAddVisible,
     footer: null,
   };
@@ -449,7 +455,7 @@ export default function ProjectCard(props) {
         )}
         {getAfterItem(itemWidth)}
       </div>
-      {prjInfo?.length > getColNum(itemWidth) * 2 &&
+      {prjInfo?.length > getColNum(itemWidth) * 3 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>
             收起

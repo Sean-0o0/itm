@@ -39,10 +39,11 @@ export default function CptBudgetCard(props) {
           showInfo={false}
           percent={Number(rate)}
           strokeColor={{
-            from: '#F0F2F5',
+            from: '9EC4FE',
             to: '#3361FF',
           }}
           strokeWidth={10}
+          className="normal-process"
         />
         <div className="item-bottom">
           <Tooltip title={getAmountFormat(target) + '万元'}>
