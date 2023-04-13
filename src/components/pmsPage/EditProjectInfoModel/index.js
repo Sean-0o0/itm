@@ -363,6 +363,7 @@ class EditProjectInfoModel extends React.Component {
     height: 0, // 人员信息下拉框高度设置
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
+    projectTypeList: [],//项目类型列表
     organizationList: [], // 组织机构列表
     organizationTreeList: [], // 树形组织机构列表
     nowTime: moment(new Date()).format("YYYY-MM-DD"), // 当前时间
@@ -773,6 +774,36 @@ class EditProjectInfoModel extends React.Component {
       orgExpendKeys: expend
     })
     // ////console.log("result-cccc",result)
+    return result;
+  }
+
+  toTypeTree(list, parId) {
+    let obj = {};
+    let result = [];
+    console.log("list", list)
+    //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
+    list.map(el => {
+      el.title = el.NAME;
+      el.value = el.ID;
+      el.key = el.ID;
+      obj[el.ID] = el;
+    });
+    console.log("listlist", list)
+    for (let i = 0, len = list.length; i < len; i++) {
+      let id = list[i].FID;
+      if (id == parId) {
+        list[i].selectable = false,
+          result.push(list[i]);
+        continue;
+      }
+      if (obj[id].children) {
+        obj[id].children.push(list[i]);
+      } else {
+        list[i].selectable = true,
+          obj[id].children = [list[i]];
+      }
+    }
+    console.log("result-cccc", result)
     return result;
   }
 
@@ -1193,10 +1224,13 @@ class EditProjectInfoModel extends React.Component {
   // 查询项目标签
   fetchQueryProjectLabel() {
     return FetchQueryProjectLabel({}).then((result) => {
-      const {code = -1, record = []} = result;
+      const {code = -1, record = [], xmlxRecord = []} = result;
       if (code > 0) {
         // //console.log("this.toLabelTree(record,0) ",this.toLabelTree(record,0))
-        this.setState({projectLabelList: this.toLabelTree(record, 0)});
+        this.setState({
+          projectLabelList: this.toLabelTree(JSON.parse(record), 0),
+          projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
+        });
         // //console.log("this.toLabelTree(record,0) ",this.state.projectLabelList)
         // this.setState({ projectLabelList: record});
       }
@@ -2840,6 +2874,7 @@ class EditProjectInfoModel extends React.Component {
       milePostInfoCollapse,
       mileItemInfo = [],
       projectLabelList = [],
+      projectTypeList = [],
       budgetProjectList = [],
       budgetInfoCollapse,
       mileInfo: {milePostInfo = []},
@@ -3226,20 +3261,31 @@ class EditProjectInfoModel extends React.Component {
                               // }],
                               initialValue: basicInfo.projectType
                             })(
-                              <Radio.Group onChange={e => {
-                                this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
-                                this.fetchQueryMilepostInfo({
-                                  type: e.target.value,
-                                  xmid: basicInfo.projectId,
-                                  biddingMethod: basicInfo.biddingMethod,
-                                  budget: budgetInfo.projectBudget,
-                                  label: basicInfo.labelTxt,
-                                  queryType: "ALL"
-                                });
-                              }}>
-                                <Radio value={1}>外采项目</Radio>
-                                <Radio value={2}>自研项目</Radio>
-                              </Radio.Group>
+                              <TreeSelect
+                                // multiple
+                                showSearch
+                                treeNodeFilterProp="title"
+                                style={{width: '100%'}}
+                                dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                treeData={projectTypeList}
+                                // treeCheckable
+                                placeholder="请选择项目类型"
+                                // treeDefaultExpandAll
+                                // treeDefaultExpandedKeys={orgExpendKeys}
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
+                                onChange={(e, nodeArr, extra) => {
+                                  console.log("eeeeee", e)
+                                  this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
+                                  this.fetchQueryMilepostInfo({
+                                    type: e.target.value,
+                                    xmid: basicInfo.projectId,
+                                    biddingMethod: basicInfo.biddingMethod,
+                                    budget: budgetInfo.projectBudget,
+                                    label: basicInfo.labelTxt,
+                                    queryType: "ALL"
+                                  });
+                                }}
+                              />
                             )}
                           </Form.Item>
                         </Col>
