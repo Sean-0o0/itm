@@ -776,7 +776,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 修改项目时查询项目详细信息
   fetchQueryProjectDetails(params) {
-    const { staffJobList = [], rygwSelectDictionary = [] } = this.state;
+    const { staffJobList = [], rygwSelectDictionary = [],jobStaffName=[] } = this.state;
     let newStaffJobList = [];
     return FetchQueryProjectDetails(params)
       .then((result) => {
@@ -791,8 +791,16 @@ class NewProjectModelV2 extends React.Component {
           //console.log("memberInfomemberInfo", memberInfo)
           //console.log("this.state.staffList", this.state.staffList)
           memberInfo.forEach(item => {
+            let jobStaffNameArr = [];
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
+            //console.log("item", item);
+            rymc.map(item =>{
+              const itemname = this.state.staffList.filter(i => i.id === item)[0]?.name + '(' + this.state.staffList.filter(i => i.id === item)[0]?.orgName + ')'
+              //console.log("itemname", itemname);
+              jobStaffNameArr.push(itemname)
+            })
+            jobStaffName[Number(item.gw) - 1] = jobStaffNameArr;
             rymc.forEach(ry => {
               this.state.staffList.forEach(staff => {
                 if (ry === staff.id) {
@@ -806,11 +814,13 @@ class NewProjectModelV2 extends React.Component {
             const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
             loginUser.id = String(loginUser.id);
             arr[9] = [loginUser.id];
+            let nameArr = [];
+            nameArr[9] = [loginUser.name + '(' + this.state.loginUser.orgName + ')'];
             this.setState({
               searchStaffList: [loginUser],
               loginUser: loginUser,
               // staffJobList: RYGW,
-              staffInfo: { ...this.state.staffInfo, jobStaffList: arr }
+              staffInfo: { ...this.state.staffInfo, jobStaffList: arr,jobStaffName: nameArr }
             });
             //console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
@@ -819,13 +829,14 @@ class NewProjectModelV2 extends React.Component {
               }
             })
           });
+          console.log("jobStaffNameArrjobStaffNameArr", jobStaffName);
           //删除newStaffJobList中有的岗位
           // rygwSelectDictionary
           let newArr = newStaffJobList.concat()
           let newArray = rygwSelectDictionary.filter(function (item) {
             return newArr.indexOf(item) === -1
           });
-          // //console.log("rygwSelectDictionary",newArray)
+          console.log("newStaffJobListnewStaffJobListnewStaffJobList",newStaffJobList)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList})
           // //console.log("arr",arr)
@@ -879,7 +890,8 @@ class NewProjectModelV2 extends React.Component {
             },
             staffInfo: {
               focusJob: '',
-              jobStaffList: jobArr
+              jobStaffList: jobArr,
+              jobStaffName: jobStaffName
             }
           });
         }
@@ -1126,12 +1138,23 @@ class NewProjectModelV2 extends React.Component {
       let arr = jobStaffList[Number(focusJob) - 1] ? jobStaffList[Number(focusJob) - 1] : [];
       let searchStaffList = [];
       let jobStaffNameArr = jobStaffName[Number(focusJob) - 1] ? jobStaffName[Number(focusJob) - 1] : [];
-      console.log("jobStaffNameArr", jobStaffNameArr);
+      //console.log("jobStaffNameArr", jobStaffNameArr);
       checkedStaffKey.forEach(item => {
-        arr.push(item.substring(1, item.length));
+        const id = item.substring(1, item.length)
+        if(!arr.includes(id)){
+          arr.push(id);
+        }else{
+          message.warn("已存在该成员,请勿重复添加！")
+          return;
+        }
         const itemname = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name + '(' + this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName + ')'
         console.log("itemname", itemname);
-        jobStaffNameArr.push(itemname)
+        if(!jobStaffNameArr.includes(itemname)){
+          jobStaffNameArr.push(itemname)
+        }else{
+          message.warn("已存在该成员,请勿重复添加！")
+          return;
+        }
         // 存到对应下拉数据中
         this.state.staffList.forEach(e => {
           if (e.id == item.substring(1, item.length)) {
@@ -3627,15 +3650,30 @@ class NewProjectModelV2 extends React.Component {
                                       // staffList
                                       let jobStaffName = this.state.staffInfo.jobStaffName;
                                       let newJobStaffName = [];
-                                      console.log("eeeee", e)
+                                      let newJobStaff = []
+                                      //console.log("eeeee", e)
                                       e.map(i => {
                                         if (!isNaN(Number(i))) {
-                                          newJobStaffName.push(this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')');
+                                          const name = this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')'
+                                          if(!newJobStaffName.includes(name)){
+                                            newJobStaffName.push(name);
+                                          }else{
+                                            message.warn("已存在该成员,请勿重复添加！")
+                                            return;
+                                          }
+                                          newJobStaff.push(i)
                                         } else {
                                           newJobStaffName.push(i)
+                                          const id = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.id
+                                          if(!newJobStaff.includes(id)){
+                                            newJobStaff.push(id);
+                                          }else{
+                                            message.warn("已存在该成员,请勿重复添加！")
+                                            return;
+                                          }
                                         }
                                       })
-                                      console.log("newJobStaffName", newJobStaffName)
+                                      jobStaffList[Number(item.ibm) - 1] = newJobStaff;
                                       jobStaffName[Number(item.ibm) - 1] = newJobStaffName;
                                       this.setState({
                                         height: 0,
