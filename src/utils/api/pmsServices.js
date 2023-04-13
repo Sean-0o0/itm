@@ -331,4 +331,16 @@ export default [
     url: '/projectManage/queryZCXX',
     dis: '查询招采购信息',
   },
+  {
+    code: '',
+    key: 'querySupplierDetailInfo',
+    url: '/projectManage/querySupplierDetailInfo',
+    dis: '查询供应商详情',
+  },
+  {
+    code: '',
+    key: 'operateSupplierInfo',
+    url: '/projectManage/operateSupplierInfo',
+    dis: '编辑供应商详情',
+  },
 ];

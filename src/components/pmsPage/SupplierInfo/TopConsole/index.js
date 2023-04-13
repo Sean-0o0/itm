@@ -17,7 +17,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [gyslx, setGyslx] = useState([]); //供应商类型 - id
   const [gyslxmc, setGyslxmc] = useState([]); //供应商类型 - 文本
   const [lxrmc, setLxrmc] = useState(undefined); //联系人名称
-  const [sjsj, setSjsj] = useState(null); //数据时间
+  const [gyszt, setGyszt] = useState(undefined); //供应商状态
   const [gtAmount, setGtAmount] = useState(undefined); //项目金额，大于
   const [ltAmount, setLtAmount] = useState(undefined); //项目金额，小于
   const [minAmount, setMinAmount] = useState(undefined); //项目金额，最小
@@ -47,7 +47,7 @@ export default forwardRef(function TopConsole(props, ref) {
         handleSearch,
       };
     },
-    [gysmc, gyslx, lxrmc, sjsj, gtAmount, ltAmount, minAmount, maxAmount, xmNum],
+    [gysmc, gyslx, lxrmc, gyszt, gtAmount, ltAmount, minAmount, maxAmount, xmNum],
   );
 
   //查询按钮
@@ -72,8 +72,8 @@ export default forwardRef(function TopConsole(props, ref) {
     if (lxrmc !== undefined && lxrmc !== '') {
       params.liaisonName = lxrmc;
     }
-    if (sjsj !== null) {
-      params.dataTime = Number(sjsj.format('YYYYMMDD'));
+    if (gyszt !== undefined && gyszt !== '') {
+      params.dataTime = Number(gyszt); //供应商状态
     }
     if (amountSelector === '1') {
       //区间 ,目前暂定只有均不为空时才查
@@ -92,12 +92,14 @@ export default forwardRef(function TopConsole(props, ref) {
       if (gtAmount !== undefined && gtAmount !== '') {
         params.budgetType = 'BIGGER';
         params.budgetBelow = Number(gtAmount);
+        params.budgetUpper = 0;
       }
     } else {
       //小于
       if (ltAmount !== undefined && ltAmount !== '') {
         params.budgetType = 'SMALLER';
-        params.budgetUpper = Number(ltAmount);
+        params.budgetUpper = 0;
+        params.budgetBelow = Number(ltAmount);
       }
     }
     if (xmNumSelector === '1') {
@@ -117,12 +119,14 @@ export default forwardRef(function TopConsole(props, ref) {
       if (xmNum.gt !== undefined && xmNum.gt !== '') {
         params.projectCountType = 'BIGGER';
         params.projectBelow = Number(xmNum.gt);
+        params.projectUpper = 0;
       }
     } else {
       //小于
       if (xmNum.lt !== undefined && xmNum.lt !== '') {
         params.projectCountType = 'SMALLER';
-        params.projectUpper = Number(xmNum.lt);
+        params.projectUpper = 0;
+        params.projectBelow = Number(xmNum.lt);
       }
     }
     console.log('🚀 ~ file: index.js:119 ~ handleSearch ~ params:', params);
@@ -154,7 +158,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setGyslx([]);
     setGyslxmc([]);
     setLxrmc(undefined);
-    setSjsj(null);
+    setGyszt(undefined);
     setGtAmount(undefined); //项目金额，大于
     setMinAmount(undefined); //项目金额，最小
     setMaxAmount(undefined); //项目金额，最大
@@ -183,9 +187,8 @@ export default forwardRef(function TopConsole(props, ref) {
     // console.log('handleLxrmcChange', v, node);
     setLxrmc(node?.props?.children);
   };
-  const handleDateChange = d => {
-    // console.log('🚀 ~ file: index.js:163 ~ handleDateChange ~ d:', d);
-    setSjsj(d);
+  const handleGysztChange = v => {
+    setGyszt(v);
   };
   //大于、区间
   const handleXmNumSltChange = v => {
@@ -324,13 +327,20 @@ export default forwardRef(function TopConsole(props, ref) {
       </div>
       <div className="item-box">
         <div className="console-item">
-          <div className="item-label">数据时间</div>
-          <DatePicker
+          <div className="item-label">供应商状态</div>
+          <Select
             className="item-selector"
+            dropdownClassName="item-selector-dropdown"
+            value={gyszt}
             allowClear
-            value={sjsj}
-            onChange={handleDateChange}
-          />
+            onChange={handleGysztChange}
+            placeholder="请选择"
+          >
+            <Option value="1">黑名单</Option>
+            <Option value="2">淘汰</Option>
+            <Option value="3">淘汰、黑名单</Option>
+            <Option value="4">正常</Option>
+          </Select>
         </div>
         <div className="console-last-item">
           <div className="item-txt">项目金额</div>
@@ -352,6 +362,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={minAmount}
                   onChange={handleMinAmountChange}
                   placeholder="下限"
+                  // allowClear
                 />
                 <Input className="input-to" placeholder="-" disabled />
                 <Input
@@ -359,6 +370,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={maxAmount}
                   onChange={handleMaxAmountChange}
                   placeholder="上限"
+                  // allowClear
                 />
               </div>
             )}
@@ -368,6 +380,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={gtAmount}
                 onChange={handleGtAmountChange}
                 placeholder="请输入"
+                allowClear
               />
             )}
             {amountSelector === '3' && (
@@ -376,6 +389,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={ltAmount}
                 onChange={handleLtAmountChange}
                 placeholder="请输入"
+                allowClear
               />
             )}
           </div>
@@ -400,6 +414,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={xmNum.min}
                   onChange={handleMinXmNumChange}
                   placeholder="下限"
+                  // allowClear
                 />
                 <Input className="input-to" placeholder="-" disabled />
                 <Input
@@ -407,6 +422,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={xmNum.max}
                   onChange={handleMaxXmNumChange}
                   placeholder="上限"
+                  // allowClear
                 />
               </div>
             )}
@@ -416,6 +432,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={xmNum.gt}
                 onChange={handleGtXmNumChange}
                 placeholder="请输入"
+                allowClear
               />
             )}
             {xmNumSelector === '3' && (
@@ -424,6 +441,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={xmNum.lt}
                 onChange={handleLtXmNumChange}
                 placeholder="请输入"
+                allowClear
               />
             )}
           </div>

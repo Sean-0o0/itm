@@ -228,7 +228,7 @@ export default function ToDoCard(props) {
     let fontColor = '#3361FF';
     if (isDueSoon) {
       fontColor = '#F9A812FF';
-      borderColor = '#F9A8124D';
+      borderColor = '#F9A812';
     } else if (isLate) {
       fontColor = '#FF1313';
       borderColor = '#FF1313';
@@ -242,11 +242,11 @@ export default function ToDoCard(props) {
         }}
         key={key}
       >
-        {/* {isDueSoon && <div className="status-tag-2">即将到期</div>}
-        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>} */}
+        {isDueSoon && <div className="status-tag-2">即将到期</div>}
+        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>}
         <div className="item-title">
           <div className="title-top">
-            <span className='top-left'>
+            <span className="top-left">
               <i style={{ color: fontColor }}>#</i>
               {title}
             </span>
@@ -270,7 +270,7 @@ export default function ToDoCard(props) {
                     color: 'rgba(255, 19, 19, 1)',
                   }
                 : isDueSoon
-                ? { backgroundColor: '#F9A8121A', color: '#F9A8124D' }
+                ? { backgroundColor: '#F9A81233', color: '#F9A812' }
                 : {}
             }
           >

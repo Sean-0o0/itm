@@ -48,8 +48,6 @@ export default function SupplierInfo(props) {
           // setTableData(p => [...JSON.parse(res.record)]);
           let liaisonArr = [...JSON.parse(res.liaisonRecord)];
           let supplierArr = [...JSON.parse(res.supplierRecord)];
-          setGysData(p => supplierArr);
-          setLxrData(p => liaisonArr);
           let tableArr = [...supplierArr];
           tableArr.forEach(x => {
             let arr = liaisonArr.filter(y => y.GYSID === x.ID);
@@ -62,7 +60,28 @@ export default function SupplierInfo(props) {
         }
       })
       .catch(e => {
-        // console.error('getTableData', e);
+        console.error('getTableData', e);
+        setTableLoading(false);
+      });
+    QuerySupplierList({
+      current,
+      pageSize,
+      paging: -1,
+      sort: 'string',
+      total: -1,
+      queryType,
+    })
+      .then(res => {
+        if (res?.success) {
+          // setTableData(p => [...JSON.parse(res.record)]);
+          let liaisonArr = [...JSON.parse(res.liaisonRecord)];
+          let supplierArr = [...JSON.parse(res.supplierRecord)];
+          setGysData(p => supplierArr);
+          setLxrData(p => liaisonArr);
+        }
+      })
+      .catch(e => {
+        console.error('getTableData', e);
         setTableLoading(false);
       });
   };

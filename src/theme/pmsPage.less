@@ -2179,6 +2179,14 @@
     .ant-btn-primary {
       background-color: rgb(51, 97, 255);
     }
+    .ant-modal-footer {
+      .ant-btn {
+        .antd-btn-default();
+      }
+      .ant-btn-primary {
+        .antd-btn-primary();
+      }
+    }
   }
 
   //表格滚动条
@@ -5783,6 +5791,31 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
         }
+        & > .more-item,
+        & > .more-item-unfold {
+          .font-size-14();
+          font-weight: normal;
+          margin: 12px 0;
+          text-align: center;
+          line-height: 1em;
+          cursor: pointer;
+          color: #606266;
+          &:hover {
+            color: #3361ff;
+            i {
+              color: #3361ff;
+            }
+          }
+
+          i {
+            margin-left: 4px;
+            font-size: 1em;
+            color: #909399;
+          }
+        }
+        & > .more-item-unfold {
+          margin-top: 2px;
+        }
         & > .bottom-box {
           border-radius: 0px 0px 8px 8px;
           border: 10px solid #ffffff;
@@ -6637,8 +6670,158 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
+//供应商编辑弹窗
+.supplier-edit-box-modal {
+  .ant-modal-body {
+    padding: 0;
+    overflow: hidden;
+  }
+  .content-box {
+    padding: 0 24px;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 550px;
+    &::-webkit-scrollbar {
+      width: 10px;
+      background-color: #fafafa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 5px;
+      width: 10px;
+    }
+  }
+  .ant-table {
+    th,
+    td {
+      text-align: left;
+    }
+    td {
+      padding: 8px !important;
+      font-size: 14px;
+      font-family: Roboto-Regular, Roboto;
+      font-weight: 400;
+      color: #303133;
+      height: 47.67px;
+    }
+
+    th {
+      padding: 8px !important;
+      font-size: 14px;
+      background-color: #f5f7fa;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #606266;
+    }
+
+    .ant-table-body {
+      // min-height: 560px;
+      table {
+        border: 1px solid #e8e8e8;
+      }
+    }
+
+    .ant-table-scroll .ant-table-header {
+      margin-bottom: -16.5px !important; //表格表头底部边框
+      background-color: #f5f7fa;
+    }
+
+    .ant-table-placeholder {
+      border-bottom: 0;
+
+      .ant-empty-description {
+        font-size: 14px;
+      }
+    }
+
+    .ant-table-thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  }
+}
 //供应商详情
 .supplier-detail-box {
+  & > .top-console-box {
+    // min-height: 178px;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08), 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border: 2px solid #ffffff;
+    background-image: url(../assets/projectDetail/top-console-bg.png);
+    background-position: right center;
+    background-repeat: no-repeat;
+    background-size: 50% 100%;
+    padding: 16px 24px 19px 24px;
+    .prj-info-row {
+      margin: 20px 0 12px 0;
+      display: flex;
+      flex-direction: row;
+      align-items: start;
+      .prj-name {
+        margin-right: 16px;
+        max-width: 488px;
+        // height: 68px;
+        font-size: 24px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #303133;
+        line-height: 34px;
+        //text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+        flex-shrink: 0;
+      }
+      .tag-row {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        flex-shrink: 0;
+        flex-grow: 1;
+        height: 32px;
+        //项目标签
+        .prj-tags {
+          width: 100%;
+          color: #606266;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .tag-item {
+            color: #3361ff;
+            font-size: 12px;
+            border: 1px solid rgba(51, 97, 255, 0.3);
+            border-radius: 4px;
+            background-color: #3363ff14;
+            padding: 1px 8px 2px 8px;
+            margin-right: 8px;
+            // max-width: 88px;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: initial;
+            cursor: pointer;
+
+            &:hover {
+              font-weight: bold;
+            }
+
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
+        .btn-edit {
+          .antd-btn-default();
+          margin-left: auto;
+          margin-right: 8px;
+        }
+        .btn-more {
+          .antd-btn-default();
+        }
+      }
+    }
+  }
 }
 
 //文档库

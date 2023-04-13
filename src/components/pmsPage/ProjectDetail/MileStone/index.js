@@ -30,6 +30,7 @@ export default function MileStone(props) {
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
   const [riskTxt, setRiskTxt] = useState(''); //风险弹窗
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const [isUnfold, setIsUnfold] = useState(false); //是否展开
 
   //防抖定时器
   let timer = null;
@@ -50,7 +51,6 @@ export default function MileStone(props) {
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
-
     return () => {
       // 组件销毁时移除监听事件
       window.removeEventListener('resize', resizeUpdate);
@@ -63,9 +63,15 @@ export default function MileStone(props) {
   useEffect(() => {
     if (xmid !== -1) {
       getMileStoneData(false);
+      setIsUnfold(false);
     }
     return () => {};
   }, [xmid]);
+
+  //展开、收起
+  const handleUnfold = bool => {
+    setIsUnfold(bool);
+  };
 
   //获取里程碑数据
   const getMileStoneData = (noNewCurStep = true) => {
@@ -471,67 +477,70 @@ export default function MileStone(props) {
     message.success(name + '成功');
   };
 
-  //底部盒子jsx
-  const getBottomBox = () => {
+  //是否成员或领导
+  const isMember = () => {
     const arr = [];
     member.forEach(x => {
       arr.push(x.RYID);
     });
-    if (arr.includes(String(LOGIN_USER_INFO.id)) || isLeader)
-      return (
-        <div className="bottom-box">
-          <div className="left-box">
-            <div className="top">
-              <div className="circle">
-                <div className="dot"></div>
-              </div>
-              {hLMileStone.lcbmc}
-              <div className="rate-tag">进度{hLMileStone.jd}</div>
+    return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
+  };
+
+  //底部盒子jsx
+  const getBottomBox = () => {
+    return (
+      <div className="bottom-box">
+        <div className="left-box">
+          <div className="top">
+            <div className="circle">
+              <div className="dot"></div>
             </div>
-            {hLMileStone.lcbmc === '项目付款' ? (
-              ''
-            ) : (
-              <div className="middle">
-                <div className="current-plan">
-                  现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
-                </div>
-                {getDateDiff(hLMileStone) > 0 && (
-                  <>
-                    <div className="original-plan">
-                      原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
-                    </div>
-                    <div className="remarks">{getDateDiff(hLMileStone)}</div>
-                  </>
-                )}
-              </div>
-            )}
-            <div className="bottom">
-              <span className="bottom-label">项目风险：</span>
-              <div className="bottom-risk">
-                {risk
-                  .filter(x => x.GLLCBID === hLMileStone.lcbid)
-                  ?.map(x => (
-                    <div>
-                      <Tooltip title={x.FXBT} placement="topLeft">
-                        <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
-                          {x.FXBT}
-                        </div>
-                      </Tooltip>
-                    </div>
-                  ))}
-                <Button size="small" onClick={() => handleRisk(hLMileStone)}>
-                  <span>+</span>添加
-                </Button>
-              </div>
-            </div>
+            {hLMileStone.lcbmc}
+            <div className="rate-tag">进度{hLMileStone.jd}</div>
           </div>
-          <div className="right-box">
-            {hLMileStone?.itemData?.map(x => getItem(x))}
-            {getAfterItem(itemWidth)}
+          {hLMileStone.lcbmc === '项目付款' ? (
+            ''
+          ) : (
+            <div className="middle">
+              <div className="current-plan">
+                现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
+              </div>
+              {getDateDiff(hLMileStone) > 0 && (
+                <>
+                  <div className="original-plan">
+                    原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}
+                  </div>
+                  <div className="remarks">{getDateDiff(hLMileStone)}</div>
+                </>
+              )}
+            </div>
+          )}
+          <div className="bottom">
+            <span className="bottom-label">项目风险：</span>
+            <div className="bottom-risk">
+              {risk
+                .filter(x => x.GLLCBID === hLMileStone.lcbid)
+                ?.map(x => (
+                  <div>
+                    <Tooltip title={x.FXBT} placement="topLeft">
+                      <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
+                        {x.FXBT}
+                      </div>
+                    </Tooltip>
+                  </div>
+                ))}
+              <Button size="small" onClick={() => handleRisk(hLMileStone)}>
+                <span>+</span>添加
+              </Button>
+            </div>
           </div>
         </div>
-      );
-    return '';
+        <div className="right-box">
+          {hLMileStone?.itemData?.map(x => getItem(x))}
+          {getAfterItem(itemWidth)}
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -599,7 +608,21 @@ export default function MileStone(props) {
           ))}
         </Steps>
       </div>
-      {getBottomBox()}
+      {isMember() &&
+        (isUnfold ? (
+          <>
+            {getBottomBox()}
+            <div className="more-item-unfold" onClick={() => handleUnfold(false)}>
+              收起
+              <i className="iconfont icon-up" />
+            </div>
+          </>
+        ) : (
+          <div className="more-item" onClick={() => handleUnfold(true)}>
+            更多
+            <i className="iconfont icon-down" />
+          </div>
+        ))}
     </div>
   );
 }

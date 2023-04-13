@@ -110,7 +110,7 @@ exports.routes = [
   },
   {
     //供应商详情
-    path: `${prefix}/SupplierDetail`,
+    path: `${prefix}/SupplierDetail/:params`,
     component: './pmsPage/SupplierDetail',
   },
 ];

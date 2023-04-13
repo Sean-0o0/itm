@@ -15,7 +15,7 @@ export default function InfoTable(props) {
     total = 0,
     handleSearch,
     curPage,
-    curPageSize
+    curPageSize,
   } = props; //表格数据
   const location = useLocation();
 
@@ -44,7 +44,7 @@ export default function InfoTable(props) {
               <div className="position-tag">{x.ZW}</div>
             </div>
             <div className="bottom">
-              <span>电话：</span> {x.SJ || '无'}
+              <span>电话：</span> {x.DH || '无'}
               <span className="email">｜ 邮箱：</span> {x.QTLXFS || '无'}
             </div>
           </div>
@@ -66,16 +66,14 @@ export default function InfoTable(props) {
           <Tooltip title={text} placement="topLeft">
             <Link
               style={{ color: '#3361ff' }}
-              // to={{
-              //   pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-              //     JSON.stringify({
-              //       xmid: row.projectId,
-              //     }),
-              //   )}`,
-              //   state: {
-              //     routes: [{ name: '项目列表', pathname: location.pathname }],
-              //   },
-              // }}
+              to={{
+                pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
+                  JSON.stringify({ splId: row.ID }),
+                )}`,
+                state: {
+                  routes: [{ name: '供应商列表', pathname: location.pathname }],
+                },
+              }}
               className="prj-info-table-link-strong"
             >
               {text}
@@ -87,7 +85,7 @@ export default function InfoTable(props) {
     {
       title: '供应商类型',
       dataIndex: 'GYSLX',
-      width: '17%',
+      width: '12%',
       key: 'GYSLX',
       ellipsis: true,
       render: text => (
@@ -110,7 +108,7 @@ export default function InfoTable(props) {
     {
       title: '项目数量',
       dataIndex: 'XMSL',
-      width: '13%',
+      width: '10%',
       key: 'XMSL',
       ellipsis: true,
       align: 'right',
@@ -121,7 +119,7 @@ export default function InfoTable(props) {
     {
       title: '联系人信息',
       dataIndex: 'LXRINFO',
-      width: '20%',
+      width: '26%',
       key: 'LXRINFO',
       ellipsis: true,
       render: arr =>
@@ -130,7 +128,7 @@ export default function InfoTable(props) {
         ) : (
           <div className="lxr-info">
             <div className="lxr-txt">
-              {arr[0]?.LXR}({arr[0]?.ZW}){arr[0]?.SJ}
+              {arr[0]?.LXR}({arr[0]?.ZW}){arr[0]?.DH}
             </div>
             <Popover
               title={null}
@@ -164,6 +162,11 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
+      <div className="btn-add-prj-box">
+        <Button type="primary" className="btn-add-prj" onClick={() => {}}>
+          新增
+        </Button>
+      </div>
       <div className="project-info-table-box">
         <Table
           loading={tableLoading}

@@ -407,7 +407,7 @@ export default function InfoDisplay(props) {
                 <div className="payment-plan">
                   {supplier.map(x => (
                     <div key={x.LXRXXID}>
-                      {x.LXR || ''} {x.SJ || ''}
+                      {x.LXR || ''} {x.DH || ''}
                     </div>
                   ))}
                 </div>

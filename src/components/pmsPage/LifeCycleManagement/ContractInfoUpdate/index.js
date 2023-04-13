@@ -600,7 +600,7 @@ class ContractInfoUpdate extends React.Component {
                     htje: Number(getFieldValue('htje')),
                     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD')),
                     gysid: Number(currentGysId),
-                    czlx: 'UPDATE'
+                    czlx: 'UPDATE',
                   }).then(res => {
                     if (res?.code === 1) {
                       // message.success('合同信息修改成功', 1);
