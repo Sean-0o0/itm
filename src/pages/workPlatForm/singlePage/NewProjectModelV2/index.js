@@ -61,7 +61,7 @@ class NewProjectModelV2 extends React.Component {
     projectTypeList: [],//项目类型列表
     projectTypeZY: [],//自研项目下的项目类型
     projectTypeZYFlag: false,//是否选中自研项目下的类型
-    projectTypePTRJFlag: false,//是否选中自研项目下的普通硬件项目类型
+    projectTypePTRJFlag: false,//是否选中外采项目下的普通硬件项目类型
     organizationList: [], // 组织机构列表
     organizationTreeList: [], // 树形组织机构列表
     nowTime: moment(new Date()).format("YYYY-MM-DD"), // 当前时间
@@ -870,7 +870,7 @@ class NewProjectModelV2 extends React.Component {
             projectTypeZYFlag: flag,
             projectTypePTRJFlag: PTRJFlag,
             basicInfo: {
-              SFYJRW: result.isShortListed,
+              SFYJRW: Number(result.isShortListed),
               projectId: result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
@@ -1327,12 +1327,14 @@ class NewProjectModelV2 extends React.Component {
       basicInfo = {},
       budgetInfo = {},
       staffJobList = [],
-      staffInfo: { jobStaffList = [] },
-      mileInfo: { milePostInfo = [] }
+      projectTypeZYFlag = false,
+      projectTypePTRJFlag = false,
+      staffInfo: {jobStaffList = []},
+      mileInfo: {milePostInfo = []}
     } = this.state;
     //校验基础信息
     let basicflag = false;
-    if (basicInfo.projectName !== '' && basicInfo.projectType !== '' && basicInfo.org !== '' && basicInfo.org?.length !== 0 && basicInfo.biddingMethod !== '') {
+    if (basicInfo.projectName !== '' && basicInfo.projectType !== '' && basicInfo.org !== '' && basicInfo.org?.length !== 0) {
       if (budgetInfo.budgetProjectId !== '' && budgetInfo.budgetProjectId !== "0" && budgetInfo.projectBudget !== "" && budgetInfo.projectBudget !== null) {
         basicflag = true;
       } else if (budgetInfo.budgetProjectId === "0") {
@@ -1342,6 +1344,18 @@ class NewProjectModelV2 extends React.Component {
       }
     } else {
       basicflag = false;
+    }
+    //非自研项目还需要校验采购方式
+    if (!projectTypeZYFlag) {
+      if (!(basicInfo.biddingMethod !== '' && basicInfo.biddingMethod != 0 && basicInfo.biddingMethod !== null)) {
+        basicflag = false;
+      }
+    }
+    //外采项目中的普通硬件项目还需要校验是否在硬件入围内
+    if (projectTypePTRJFlag) {
+      if (!(basicInfo.SFYJRW != '-1' && basicInfo.SFYJRW != null && basicInfo.SFYJRW !== '')) {
+        basicflag = false;
+      }
     }
     if (!basicflag && type === 1) {
       message.warn("项目基本信息及预算信息未填写完整！");
@@ -2386,7 +2400,7 @@ class NewProjectModelV2 extends React.Component {
                                 const flag = projectTypeZY.filter(item => item.ID == e).length > 0
                                 const PTRJFlag = e == '5';
                                 this.setState({
-                                  basicInfo: {...basicInfo, projectType: e, SFYJRW: '2'},
+                                  basicInfo: {...basicInfo, projectType: e, SFYJRW: 2},
                                   projectTypeZYFlag: flag,
                                   projectTypePTRJFlag: PTRJFlag
                                 });
@@ -2541,7 +2555,7 @@ class NewProjectModelV2 extends React.Component {
                                 //   required: true,
                                 //   message: '请输入采购方式'
                                 // }],
-                                initialValue: basicInfo.biddingMethod
+                                initialValue: basicInfo.biddingMethod === 0 ? null : basicInfo.biddingMethod
                               })(
                                 <TreeSelect
                                   showSearch
