@@ -5,6 +5,7 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
+import InfoOprtModal from '../../SupplierDetail/TopConsole/InfoOprtModal/index.js';
 
 export default function InfoTable(props) {
   const {
@@ -16,7 +17,9 @@ export default function InfoTable(props) {
     handleSearch,
     curPage,
     curPageSize,
+    GYSLX,
   } = props; //表格数据
+  const [visible, setVisible] = useState(false); //新增供应商弹窗显隐
   const location = useLocation();
 
   //表格操作后更新数据
@@ -40,7 +43,7 @@ export default function InfoTable(props) {
         {arr.map(x => (
           <div className="item" key={x.ID}>
             <div className="top">
-              <span>{x.LXR}</span>
+              <div>{x.LXR}</div>
               <div className="position-tag">{x.ZW}</div>
             </div>
             <div className="bottom">
@@ -90,7 +93,7 @@ export default function InfoTable(props) {
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
+          <span style={{ cursor: 'default' }}>{(text && text.split(',').join('、')) || ''}</span>
         </Tooltip>
       ),
     },
@@ -162,8 +165,17 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
+      {visible && (
+        <InfoOprtModal
+          visible={visible}
+          setVisible={setVisible}
+          oprtType={'ADD'}
+          GYSLX={GYSLX}
+          getTableData={getTableData}
+        />
+      )}
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={() => {}}>
+        <Button type="primary" className="btn-add-prj" onClick={() => setVisible(true)}>
           新增
         </Button>
       </div>

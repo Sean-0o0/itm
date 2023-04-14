@@ -1,12 +1,16 @@
-import { Breadcrumb, Button, message, Popover } from 'antd';
+import { Breadcrumb, Button, message, Popover, Tooltip } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import InfoOprtModal from './InfoOprtModal';
+import RYZS from '../../../../assets/supplierDetail/overview-ryzs.png';
+import JNYZF from '../../../../assets/supplierDetail/overview-jnyzf.png';
+import LNYZF from '../../../../assets/supplierDetail/overview-lnyzf.png';
+import DataCenter from '../../../../utils/api/dataCenter';
 const { Item } = Breadcrumb;
 export default function TopConsole(props) {
-  const { routes, detailData, GYSLX, getDetailData,splId } = props;
+  const { routes, detailData, GYSLX, getDetailData, splId } = props;
   const {
     splInfo = [],
     overviewInfo = [],
@@ -19,100 +23,44 @@ export default function TopConsole(props) {
   useEffect(() => {
     return () => {};
   }, []);
-  //获取项目标签
-  // const getTags = (text = '', idtxt = '') => {
-  //   //获取项目标签数据
-  //   const getTagData = (tag, idtxt) => {
-  //     let arr = [];
-  //     let arr2 = [];
-  //     if (
-  //       tag !== '' &&
-  //       tag !== null &&
-  //       tag !== undefined &&
-  //       idtxt !== '' &&
-  //       idtxt !== null &&
-  //       idtxt !== undefined
-  //     ) {
-  //       if (tag.includes(',')) {
-  //         arr = tag.split(',');
-  //         arr2 = idtxt.split(',');
-  //       } else {
-  //         arr.push(tag);
-  //         arr2.push(idtxt);
-  //       }
-  //     }
-  //     let arr3 = arr.map((x, i) => {
-  //       return {
-  //         name: x,
-  //         id: arr2[i],
-  //       };
-  //     });
-  //     // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
-  //     return arr3;
-  //   };
-  //   return (
-  //     <div className="prj-tags">
-  //       {getTagData(text, idtxt).length !== 0 && (
-  //         <>
-  //           {getTagData(text, idtxt)
-  //             ?.slice(0, 4)
-  //             .map((x, i) => (
-  //               <Link
-  //                 to={{
-  //                   pathname:
-  //                     '/pms/manage/labelDetail/' +
-  //                     EncryptBase64(
-  //                       JSON.stringify({
-  //                         bqid: x.id,
-  //                       }),
-  //                     ),
-  //                   state: { routes },
-  //                 }}
-  //                 key={x.id}
-  //                 className="tag-item"
-  //               >
-  //                 {x.name}
-  //               </Link>
-  //             ))}
-  //           {getTagData(text, idtxt)?.length > 4 && (
-  //             <Popover
-  //               overlayClassName="tag-more-popover"
-  //               content={
-  //                 <div className="tag-more">
-  //                   {getTagData(text, idtxt)
-  //                     ?.slice(4)
-  //                     .map((x, i) => (
-  //                       <div className="tag-item">
-  //                         <Link
-  //                           to={{
-  //                             pathname:
-  //                               '/pms/manage/labelDetail/' +
-  //                               EncryptBase64(
-  //                                 JSON.stringify({
-  //                                   bqid: x.id,
-  //                                 }),
-  //                               ),
-  //                             state: { routes },
-  //                           }}
-  //                           key={x.id}
-  //                           style={{ color: '#3361ff' }}
-  //                         >
-  //                           {x.name}
-  //                         </Link>
-  //                       </div>
-  //                     ))}
-  //                 </div>
-  //               }
-  //               title={null}
-  //             >
-  //               <div className="tag-item">...</div>
-  //             </Popover>
-  //           )}
-  //         </>
-  //       )}
-  //     </div>
-  //   );
-  // };
+  //获取供应商标签
+  const getTags = () => {
+    //获取供应商标签数据
+    let arr = splInfo?.GYSLX?.split(',') || [];
+    if (splInfo?.SFHMD) arr.push('黑名单供应商');
+    if (splInfo?.SFTT) arr.push('淘汰供应商');
+    // console.log('🚀 ~ file: index.js:26 ~ getTags ~ arr:', arr);
+    return (
+      <div className="prj-tags">
+        {arr.map(x => (
+          <div className="tag-item" key={x}>
+            {x}
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  //总览块
+  const getOverviewItem = (imgSrc = RYZS, label = '--', value = '--', isImg = true) => {
+    return (
+      <div className="item" key={label}>
+        {isImg ? (
+          <img src={imgSrc} alt="" className="left-img" />
+        ) : (
+          <div className="img-wrapper">
+            <i className={'iconfont ' + imgSrc} />
+          </div>
+        )}
+        <div className="right-txt">
+          <div className="label">{label}</div>
+          <Tooltip title={value} placement="topLeft">
+            {value}
+          </Tooltip>
+        </div>
+      </div>
+    );
+  };
 
   return (
     <div className="top-console-box">
@@ -120,7 +68,7 @@ export default function TopConsole(props) {
         <InfoOprtModal
           visible={visible}
           setVisible={setVisible}
-          oprtType={'EDIT'}
+          oprtType={'UPDATE'}
           detailData={detailData}
           GYSLX={GYSLX}
           getDetailData={getDetailData}
@@ -143,14 +91,49 @@ export default function TopConsole(props) {
         })}
       </Breadcrumb>
       <div className="prj-info-row">
-        {/* <div className="prj-name">{prjBasic?.XMMC}</div> */}
+        <div className="prj-name">{splInfo.GYSMC}</div>
         <div className="tag-row">
-          {/* {getTags(prjBasic.XMBQ, prjBasic.XMBQID)} */}
+          {getTags()}
           {
             <Button className="btn-edit" onClick={() => setVisible(true)}>
               编辑
             </Button>
           }
+        </div>
+      </div>
+      <div className="overview-row">
+        <div className="left-box">
+          <div className="title">
+            金额总览<span>{moment(overviewInfo.JEZLGXSJ).format('YYYY-MM-DD')}更新</span>
+          </div>
+          <div className="item-row">
+            {getOverviewItem(
+              'icon-money-collect',
+              '今年项目总额(万元)',
+              Number(overviewInfo.JNXMJE || 0).toFixed(2),
+              false,
+            )}
+            {getOverviewItem(JNYZF, '今年已支付(万元)', Number(overviewInfo.JNYZF || 0).toFixed(2))}
+            {getOverviewItem(
+              LNYZF,
+              '历年项目总额(万元)',
+              Number(overviewInfo.LNXMZE || 0).toFixed(2),
+            )}
+          </div>
+        </div>
+        <div className="right-box">
+          <div className="title">
+            人力外包总览<span>{moment(overviewInfo.RLFWGXSJ).format('YYYY-MM-DD')}更新</span>
+          </div>
+          <div className="item-row">
+            {getOverviewItem(RYZS, '人员总数', overviewInfo.RYZS || 0)}
+            {getOverviewItem(
+              'icon-cash',
+              '已支付总金额(万元)',
+              Number(overviewInfo.YZFZJE || 0).toFixed(2),
+              false,
+            )}
+          </div>
         </div>
       </div>
     </div>

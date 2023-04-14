@@ -30,7 +30,7 @@ export default function SupplierInfo(props) {
       // getTableData({ projectManager: supplierId});
     }
     return () => {};
-  }, [supplierId]);
+  }, [props]);
 
   //获取表格数据
   const getTableData = ({ current = 1, pageSize = 10, queryType = 'ALL' }) => {
@@ -110,6 +110,7 @@ export default function SupplierInfo(props) {
         handleSearch={topConsoleRef?.current?.handleSearch}
         curPage={curPage}
         curPageSize={curPageSize}
+        GYSLX={GYSLX}
       />
     </div>
   );

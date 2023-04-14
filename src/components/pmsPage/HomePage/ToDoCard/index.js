@@ -242,8 +242,8 @@ export default function ToDoCard(props) {
         }}
         key={key}
       >
-        {isDueSoon && <div className="status-tag-2">即将到期</div>}
-        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>}
+        {/* {isDueSoon && <div className="status-tag-2">即将到期</div>}
+        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>} */}
         <div className="item-title">
           <div className="title-top">
             <span className="top-left">

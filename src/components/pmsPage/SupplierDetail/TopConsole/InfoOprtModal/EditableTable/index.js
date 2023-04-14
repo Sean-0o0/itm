@@ -33,21 +33,23 @@ const EditableCell = props => {
   const save = e => {
     formdecorate.validateFields(
       [
-        'LXR' + record['ID'],
-        'ZW' + record['ID'],
-        'DH' + record['ID'],
-        'BZ' + record['ID'],
-        'QTLXFS' + record['ID'],
-        'YWSX' + record['ID'],
+        // 'LXR' + record['ID'], 'ZW' + record['ID'],
+        // 'DH' + record['ID'], 'BZ' + record['ID'],
+        // 'QTLXFS' + record['ID'], 'YWSX' + record['ID'],
+        e.currentTarget.id, //只校验当前编辑项
       ],
       (error, values) => {
-        if (error && error[e.currentTarget.id]) {
-          return;
-        }
-        setEditing(!editing);
-        setTimeout(() => {
-          if (!editing) inputRef.current?.focus();
-        });
+        // if (error && error[e.currentTarget.id]) {
+        //   //出错时不保存
+        //   return;
+        // }
+        // 暂时注释 -- 非编辑态时不触发表单校验
+        // setEditing(!editing);
+        // setTimeout(() => {
+        //   if (!editing) inputRef.current?.focus();
+        // });
+
+        console.log('🚀 ~ file: index.js:55 ~ save ~ values:', values);
         handleSave({ ...record, ...values });
       },
     );
@@ -55,57 +57,78 @@ const EditableCell = props => {
 
   const getDecotator = () => {
     const recIndex = dataIndex + record['ID'];
+    let maxLength = 100;
+    if (dataIndex === 'DH' || dataIndex === 'SJ') maxLength = 33;
+    if (dataIndex === 'BZ') maxLength = 166;
     switch (dataIndex) {
       case 'LXR':
       case 'ZW':
       case 'DH':
-        return formdecorate.getFieldDecorator(recIndex, {
-          rules: [
-            {
-              required: true,
-              message: `${title}不允许空值`,
-            },
-          ],
-          initialValue: String(record[recIndex]),
-        })(<Input ref={inputRef} onPressEnter={save} onBlur={save} />);
+        return (
+          <Form.Item style={{ margin: 0 }}>
+            {formdecorate.getFieldDecorator(recIndex, {
+              rules: [
+                {
+                  required: true,
+                  message: `${title}不能为空`,
+                },
+              ],
+              initialValue: String(record[recIndex] || ''),
+            })(<Input ref={inputRef} maxLength={maxLength} onPressEnter={save} onBlur={save} />)}
+          </Form.Item>
+        );
       default:
-        return formdecorate.getFieldDecorator(recIndex, {
-          initialValue: String(record[recIndex]),
-        })(<Input ref={inputRef} onPressEnter={save} onBlur={save} />);
+        return (
+          <Form.Item style={{ margin: 0 }}>
+            {formdecorate.getFieldDecorator(recIndex, {
+              initialValue: String(record[recIndex] || ''),
+            })(
+              <Input
+                ref={inputRef}
+                maxLength={maxLength}
+                onPressEnter={save}
+                onBlur={save}
+                style={dataIndex === 'YWSX' ? { color: '#3361ff' } : {}}
+              />,
+            )}
+          </Form.Item>
+        );
     }
   };
+
   const renderCell = () => {
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>{getDecotator()}</Form.Item>
-    ) : ['BZ', 'QTLXFS'].includes(dataIndex) ? (
-      <Tooltip title={record[dataIndex + record['ID']]} placement="topLeft">
-        <div
-          className="editable-cell-value-wrap"
-          style={{ textAlign: 'left' }}
-          onClick={() => {
-            setEditing(!editing);
-            setTimeout(() => {
-              if (!editing) inputRef.current?.focus();
-            });
-          }}
-        >
-          {record[dataIndex + record['ID']]}
-        </div>
-      </Tooltip>
-    ) : (
-      <div
-        className="editable-cell-value-wrap"
-        style={{ textAlign: 'left' }}
-        onClick={() => {
-          setEditing(!editing);
-          setTimeout(() => {
-            if (!editing) inputRef.current?.focus();
-          });
-        }}
-      >
-        {record[dataIndex + record['ID']]}
-      </div>
-    );
+    return getDecotator();
+    // return editing ? ( // 暂时注释 -- 非编辑态时不触发表单校验
+    //   getDecotator()
+    // ) : ['BZ', 'QTLXFS'].includes(dataIndex) ? (
+    //   <Tooltip title={record[dataIndex + record['ID']]} placement="topLeft">
+    //     <div
+    //       className="editable-cell-value-wrap"
+    //       style={{ textAlign: 'left' }}
+    //       onClick={() => {
+    //         setEditing(!editing);
+    //         setTimeout(() => {
+    //           if (!editing) inputRef.current?.focus();
+    //         });
+    //       }}
+    //     >
+    //       {record[dataIndex + record['ID']]}
+    //     </div>
+    //   </Tooltip>
+    // ) : (
+    //   <div
+    //     className="editable-cell-value-wrap"
+    //     style={{ textAlign: 'left' }}
+    //     onClick={() => {
+    //       setEditing(!editing);
+    //       setTimeout(() => {
+    //         if (!editing) inputRef.current?.focus();
+    //       });
+    //     }}
+    //   >
+    //     {record[dataIndex + record['ID']]}
+    //   </div>
+    // );
   };
   return (
     <td {...restProps}>

@@ -69,7 +69,7 @@ export default function SupplierDetail(props) {
   return (
     <div className="supplier-detail-box">
       <TopConsole detailData={detailData} routes={routes} GYSLX={GYSLX} getDetailData={getDetailData} splId={splId}/>
-      <BasicInfo />
+      <BasicInfo detailData={detailData}/>
       <TableTabs />
     </div>
   );
