@@ -364,6 +364,9 @@ class EditProjectInfoModel extends React.Component {
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
     projectTypeList: [],//项目类型列表
+    projectTypeZY: [],//自研项目下的项目类型
+    projectTypeZYFlag: false,//是否选中自研项目下的类型
+    projectTypePTRJFlag: false,//是否选中自研项目下的普通硬件项目类型
     organizationList: [], // 组织机构列表
     organizationTreeList: [], // 树形组织机构列表
     nowTime: moment(new Date()).format("YYYY-MM-DD"), // 当前时间
@@ -389,6 +392,7 @@ class EditProjectInfoModel extends React.Component {
     },
     //基础信息
     basicInfo: {
+      SFYJRW: -1,//是否硬件入围
       projectId: -1,
       projectName: '',
       projectType: 1,
@@ -575,6 +579,7 @@ class EditProjectInfoModel extends React.Component {
     // 查询里程碑信息
     await this.fetchQueryMilepostInfo({
       type: 1,
+      isShortListed: this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1',
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
@@ -792,15 +797,13 @@ class EditProjectInfoModel extends React.Component {
     for (let i = 0, len = list.length; i < len; i++) {
       let id = list[i].FID;
       if (id == parId) {
-        list[i].selectable = false,
-          result.push(list[i]);
+        result.push(list[i]);
         continue;
       }
       if (obj[id].children) {
         obj[id].children.push(list[i]);
       } else {
-        list[i].selectable = true,
-          obj[id].children = [list[i]];
+        obj[id].children = [list[i]];
       }
     }
     console.log("result-cccc", result)
@@ -811,17 +814,17 @@ class EditProjectInfoModel extends React.Component {
   toLabelTree(list, parId) {
     let obj = {};
     let result = [];
-    // ////console.log("list",list)
+    // console.log("list",list)
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
     list.map(el => {
-      el.title = el.bqmc;
-      el.value = el.id;
-      el.key = el.id;
-      obj[el.id] = el;
+      el.title = el.BQMC;
+      el.value = el.ID;
+      el.key = el.ID;
+      obj[el.ID] = el;
     });
-    //console.log("listlist", list)
+    // console.log("listlist", list)
     for (let i = 0, len = list.length; i < len; i++) {
-      let id = list[i].fid;
+      let id = list[i].FID;
       if (id == parId) {
         result.push(list[i]);
         continue;
@@ -832,7 +835,7 @@ class EditProjectInfoModel extends React.Component {
         obj[id].children = [list[i]];
       }
     }
-    // ////console.log("result-cccc",result)
+    // console.log("result-cccc",result)
     return result;
   }
 
@@ -981,7 +984,7 @@ class EditProjectInfoModel extends React.Component {
 
   // 修改项目时查询项目详细信息
   fetchQueryProjectDetails(params) {
-    const {staffJobList = [], rygwSelectDictionary = []} = this.state;
+    const {staffJobList = [], rygwSelectDictionary = [], projectTypeZY = []} = this.state;
     let newStaffJobList = [];
     return FetchQueryProjectDetails(params)
       .then((result) => {
@@ -1068,10 +1071,15 @@ class EditProjectInfoModel extends React.Component {
             newOrg = result.orgId.split(";");
           }
           //console.log("jobArrjobArrjobArr", jobArr)
+          const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0
+          const PTRJFlag = result?.projectType == '5';
           this.setState({
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
+            projectTypeZYFlag: flag,
+            projectTypePTRJFlag: PTRJFlag,
             basicInfo: {
+              SFYJRW: result.isShortListed,
               projectId: result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
@@ -1231,6 +1239,11 @@ class EditProjectInfoModel extends React.Component {
           projectLabelList: this.toLabelTree(JSON.parse(record), 0),
           projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
         });
+        const projectTypeZY = this.state.projectTypeList[0]?.children.filter(item => item.NAME == "自研项目")[0]?.children
+        console.log("projectTypeZY", projectTypeZY);
+        this.setState({
+          projectTypeZY,
+        })
         // //console.log("this.toLabelTree(record,0) ",this.state.projectLabelList)
         // this.setState({ projectLabelList: record});
       }
@@ -1756,7 +1769,7 @@ class EditProjectInfoModel extends React.Component {
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
-
+    params.isShortListed = this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1';
     this.operateCreatProject(params, type);
   };
 
@@ -2887,6 +2900,9 @@ class EditProjectInfoModel extends React.Component {
       mileItemInfo = [],
       projectLabelList = [],
       projectTypeList = [],
+      projectTypeZY = [],
+      projectTypeZYFlag = false,
+      projectTypePTRJFlag = false,
       budgetProjectList = [],
       budgetInfoCollapse,
       mileInfo: {milePostInfo = []},
@@ -3278,6 +3294,7 @@ class EditProjectInfoModel extends React.Component {
                                 showSearch
                                 treeNodeFilterProp="title"
                                 style={{width: '100%'}}
+                                dropdownClassName="newproject-treeselect"
                                 dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                                 treeData={projectTypeList}
                                 // treeCheckable
@@ -3287,9 +3304,16 @@ class EditProjectInfoModel extends React.Component {
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
                                   console.log("eeeeee", e)
-                                  this.setState({basicInfo: {...basicInfo, projectType: e.target.value}});
+                                  const flag = projectTypeZY.filter(item => item.ID == e).length > 0
+                                  const PTRJFlag = e == '5';
+                                  this.setState({
+                                    basicInfo: {...basicInfo, projectType: e, SFYJRW: 2},
+                                    projectTypeZYFlag: flag,
+                                    projectTypePTRJFlag: PTRJFlag
+                                  });
                                   this.fetchQueryMilepostInfo({
-                                    type: e.target.value,
+                                    type: e,
+                                    isShortListed: PTRJFlag ? '2' : '-1',
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: budgetInfo.projectBudget,
@@ -3340,6 +3364,7 @@ class EditProjectInfoModel extends React.Component {
                                   });
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
+                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: budgetInfo.projectBudget,
@@ -3383,7 +3408,7 @@ class EditProjectInfoModel extends React.Component {
                       </Row>
                       <Row gutter={24}>
                         {
-                          basicInfo.projectType === 1 ? (
+                          !projectTypeZYFlag ? (
                             <Col span={12} style={{paddingRight: '24px'}}>
                               <Form.Item label={<span><span style={{
                                 fontFamily: 'SimSun, sans-serif',
@@ -3415,7 +3440,8 @@ class EditProjectInfoModel extends React.Component {
                                       this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
                                       this.fetchQueryMilepostInfo({
                                         type: basicInfo.projectType,
-                                        xmid: this.state.basicInfo.projectId,
+                                        isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                        xmid: basicInfo.projectId,
                                         biddingMethod: e,
                                         budget: budgetInfo.projectBudget,
                                         label: basicInfo.labelTxt,
@@ -3428,7 +3454,7 @@ class EditProjectInfoModel extends React.Component {
                             </Col>
                           ) : null
                         }
-                        <Col span={12} style={{paddingLeft: basicInfo.projectType === 1 ? '24px' : '12px'}}>
+                        <Col span={12} style={{paddingLeft: !projectTypeZYFlag ? '24px' : '12px'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -3470,6 +3496,40 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
+                      {
+                        projectTypePTRJFlag ? <Row gutter={24}>
+                          <Col span={12}>
+                            <Form.Item label={<span><span style={{
+                              fontFamily: 'SimSun, sans-serif',
+                              color: '#f5222d',
+                              marginRight: '4px',
+                              lineHeight: 1
+                            }}>*</span>是否在硬件入围内</span>}>
+                              {getFieldDecorator('SFYJRW', {
+                                initialValue: basicInfo.SFYJRW
+                              })(
+                                <Radio.Group onChange={e => {
+                                  console.log("eeeee", e);
+                                  this.setState({basicInfo: {...basicInfo, SFYJRW: String(e.target.value)}});
+                                  this.fetchQueryMilepostInfo({
+                                    type: basicInfo.projectType,
+                                    isShortListed: String(e.target.value),
+                                    xmid: basicInfo.projectId,
+                                    biddingMethod: basicInfo.biddingMethod,
+                                    budget: budgetInfo.projectBudget,
+                                    label: basicInfo.labelTxt,
+                                    queryType: "ALL"
+                                  });
+                                }}>
+                                  <Radio value={1}>是</Radio>
+                                  <Radio value={2}>否</Radio>
+                                </Radio.Group>
+                              )}
+                            </Form.Item>
+                          </Col>
+                        </Row> : null
+                      }
+
                       <Row gutter={24}>
                         <Col span={3} style={{paddingRight: '4px'}}>
                           <Form.Item label={<span><span style={{
@@ -3637,7 +3697,8 @@ class EditProjectInfoModel extends React.Component {
                                 if (projectBudgetChangeFlag) {
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
-                                    xmid: this.state.basicInfo.projectId,
+                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                    xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: budgetInfo.projectBudget,
                                     label: basicInfo.labelTxt,

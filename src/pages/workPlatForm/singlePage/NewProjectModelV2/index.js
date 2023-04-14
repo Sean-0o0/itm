@@ -59,6 +59,9 @@ class NewProjectModelV2 extends React.Component {
     softwareList: [], // 软件清单列表
     projectLabelList: [], // 项目标签列表
     projectTypeList: [],//项目类型列表
+    projectTypeZY: [],//自研项目下的项目类型
+    projectTypeZYFlag: false,//是否选中自研项目下的类型
+    projectTypePTRJFlag: false,//是否选中自研项目下的普通硬件项目类型
     organizationList: [], // 组织机构列表
     organizationTreeList: [], // 树形组织机构列表
     nowTime: moment(new Date()).format("YYYY-MM-DD"), // 当前时间
@@ -82,6 +85,7 @@ class NewProjectModelV2 extends React.Component {
       jobStaffName: [] //各个岗位下对应的员工name
     },
     basicInfo: {
+      SFYJRW: -1,//是否硬件入围
       projectId: -1,
       projectName: '',
       projectType: 1,
@@ -362,6 +366,7 @@ class NewProjectModelV2 extends React.Component {
     // 查询里程碑信息
     this.fetchQueryMilepostInfo({
       type: 1,
+      isShortListed: this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1',
       xmid: this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
@@ -605,7 +610,7 @@ class NewProjectModelV2 extends React.Component {
   toTypeTree(list, parId) {
     let obj = {};
     let result = [];
-    console.log("list", list)
+    // console.log("list", list)
     //将数组中数据转为键值对结构 (这里的数组和obj会相互引用)
     list.map(el => {
       el.title = el.NAME;
@@ -613,19 +618,17 @@ class NewProjectModelV2 extends React.Component {
       el.key = el.ID;
       obj[el.ID] = el;
     });
-    console.log("listlist", list)
+    // console.log("listlist", list)
     for (let i = 0, len = list.length; i < len; i++) {
       let id = list[i].FID;
       if (id == parId) {
-        list[i].selectable = false,
-          result.push(list[i]);
+        result.push(list[i]);
         continue;
       }
       if (obj[id].children) {
         obj[id].children.push(list[i]);
       } else {
-        list[i].selectable = true,
-          obj[id].children = [list[i]];
+        obj[id].children = [list[i]];
       }
     }
     console.log("result-cccc", result)
@@ -776,7 +779,7 @@ class NewProjectModelV2 extends React.Component {
 
   // 修改项目时查询项目详细信息
   fetchQueryProjectDetails(params) {
-    const { staffJobList = [], rygwSelectDictionary = [],jobStaffName=[] } = this.state;
+    const {staffJobList = [], rygwSelectDictionary = [], projectTypeZY = []} = this.state;
     let newStaffJobList = [];
     return FetchQueryProjectDetails(params)
       .then((result) => {
@@ -790,57 +793,50 @@ class NewProjectModelV2 extends React.Component {
           let arr = [];
           //console.log("memberInfomemberInfo", memberInfo)
           //console.log("this.state.staffList", this.state.staffList)
+          let nameArr = [];
           memberInfo.forEach(item => {
-            let jobStaffNameArr = [];
             let rymc = item.rymc.split(',').map(String);
             jobArr[Number(item.gw) - 1] = rymc;
-            //console.log("item", item);
-            rymc.map(item =>{
-              const itemname = this.state.staffList.filter(i => i.id === item)[0]?.name + '(' + this.state.staffList.filter(i => i.id === item)[0]?.orgName + ')'
-              //console.log("itemname", itemname);
-              jobStaffNameArr.push(itemname)
-            })
-            jobStaffName[Number(item.gw) - 1] = jobStaffNameArr;
+            let newJobStaffName = [];
             rymc.forEach(ry => {
               this.state.staffList.forEach(staff => {
                 if (ry === staff.id) {
                   searchStaffList.push(staff);
+                  newJobStaffName.push(staff.name + '(' + staff.orgName + ')')
                 }
               })
             })
+            nameArr[Number(item.gw) - 1] = newJobStaffName;
             // 初始化各个岗位下对应的员工id的数组
             arr[Number(item.gw)] = [item.rymc];
             // 获取当前登录用户信息
             const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
             loginUser.id = String(loginUser.id);
             arr[9] = [loginUser.id];
-            let nameArr = [];
-            nameArr[9] = [loginUser.name + '(' + this.state.loginUser.orgName + ')'];
             this.setState({
               searchStaffList: [loginUser],
               loginUser: loginUser,
               // staffJobList: RYGW,
               staffInfo: { ...this.state.staffInfo, jobStaffList: arr,jobStaffName: nameArr }
             });
-            //console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
+            ////console.log("searchStaffListsearchStaffList", this.state.searchStaffList)
             staffJobList.map(i => {
               if (String(i.ibm) === String(item.gw)) {
                 newStaffJobList.push(i)
               }
             })
           });
-          console.log("jobStaffNameArrjobStaffNameArr", jobStaffName);
           //删除newStaffJobList中有的岗位
           // rygwSelectDictionary
           let newArr = newStaffJobList.concat()
           let newArray = rygwSelectDictionary.filter(function (item) {
             return newArr.indexOf(item) === -1
           });
-          console.log("newStaffJobListnewStaffJobListnewStaffJobList",newStaffJobList)
+          // ////console.log("rygwSelectDictionary",newArray)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
           this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList})
-          // //console.log("arr",arr)
-          // //console.log("budgetProjectList",this.state.budgetProjectList)
+          // ////console.log("arr",arr)
+          // ////console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
@@ -861,16 +857,20 @@ class NewProjectModelV2 extends React.Component {
               })
             });
           }
-          //console.log("budgetProjectName", budgetProjectName)
+          ////console.log("budgetProjectName", budgetProjectName)
           let newOrg = []
           if (result.orgId) {
             newOrg = result.orgId.split(";");
           }
-          //console.log("searchStaffListsearchStaffList222", searchStaffList)
+          const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0
+          const PTRJFlag = result?.projectType == '5';
           this.setState({
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
+            projectTypeZYFlag: flag,
+            projectTypePTRJFlag: PTRJFlag,
             basicInfo: {
+              SFYJRW: result.isShortListed,
               projectId: result.projectId,
               projectName: result.projectName,
               projectType: Number(result.projectType),
@@ -889,9 +889,9 @@ class NewProjectModelV2 extends React.Component {
               budgetType: result.budgetType
             },
             staffInfo: {
+              ...this.state.staffInfo,
               focusJob: '',
-              jobStaffList: jobArr,
-              jobStaffName: jobStaffName
+              jobStaffList: jobArr
             }
           });
         }
@@ -1031,6 +1031,11 @@ class NewProjectModelV2 extends React.Component {
           projectLabelList: this.toLabelTree(JSON.parse(record), 0),
           projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
         });
+        const projectTypeZY = this.state.projectTypeList[0]?.children.filter(item => item.NAME == "自研项目")[0]?.children
+        console.log("projectTypeZY", projectTypeZY);
+        this.setState({
+          projectTypeZY,
+        })
         // console.log("this.toLabelTree(record,0) ",this.state.projectLabelList)
         // this.setState({ projectLabelList: record});
       }
@@ -1515,7 +1520,7 @@ class NewProjectModelV2 extends React.Component {
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
-
+    params.isShortListed = this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1';
     this.operateCreatProject(params, type);
   };
 
@@ -2171,6 +2176,9 @@ class NewProjectModelV2 extends React.Component {
       mileItemInfo = [],
       projectLabelList = [],
       projectTypeList = [],
+      projectTypeZY = [],
+      projectTypeZYFlag = false,
+      projectTypePTRJFlag = false,
       budgetProjectList = [],
       budgetInfoCollapse,
       mileInfo: {milePostInfo = []},
@@ -2365,6 +2373,7 @@ class NewProjectModelV2 extends React.Component {
                               showSearch
                               treeNodeFilterProp="title"
                               style={{width: '100%'}}
+                              dropdownClassName="newproject-treeselect"
                               dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                               treeData={projectTypeList}
                               // treeCheckable
@@ -2374,9 +2383,16 @@ class NewProjectModelV2 extends React.Component {
                               getPopupContainer={triggerNode => triggerNode.parentNode}
                               onChange={(e, nodeArr, extra) => {
                                 console.log("eeeeee", e)
-                                this.setState({basicInfo: {...basicInfo, projectType: e}});
+                                const flag = projectTypeZY.filter(item => item.ID == e).length > 0
+                                const PTRJFlag = e == '5';
+                                this.setState({
+                                  basicInfo: {...basicInfo, projectType: e, SFYJRW: '2'},
+                                  projectTypeZYFlag: flag,
+                                  projectTypePTRJFlag: PTRJFlag
+                                });
                                 this.fetchQueryMilepostInfo({
                                   type: e,
+                                  isShortListed: PTRJFlag ? '2' : '-1',
                                   xmid: basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
@@ -2427,6 +2443,7 @@ class NewProjectModelV2 extends React.Component {
                                 });
                                 this.fetchQueryMilepostInfo({
                                   type: basicInfo.projectType,
+                                  isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                   xmid: basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
@@ -2511,7 +2528,7 @@ class NewProjectModelV2 extends React.Component {
                         </Form.Item>
                       </Col>
                       {
-                        basicInfo.projectType === 1 ? (
+                        !projectTypeZYFlag ? (
                           <Col span={12}>
                             <Form.Item label={<span><span style={{
                               fontFamily: 'SimSun, sans-serif',
@@ -2543,6 +2560,7 @@ class NewProjectModelV2 extends React.Component {
                                     this.setState({basicInfo: {...basicInfo, biddingMethod: e}});
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
+                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                       xmid: this.state.basicInfo.projectId,
                                       biddingMethod: e,
                                       budget: budgetInfo.projectBudget,
@@ -2556,8 +2574,40 @@ class NewProjectModelV2 extends React.Component {
                           </Col>
                         ) : null
                       }
-
                     </Row>
+                    {
+                      projectTypePTRJFlag ? <Row gutter={24}>
+                        <Col span={12}>
+                          <Form.Item label={<span><span style={{
+                            fontFamily: 'SimSun, sans-serif',
+                            color: '#f5222d',
+                            marginRight: '4px',
+                            lineHeight: 1
+                          }}>*</span>是否在硬件入围内</span>}>
+                            {getFieldDecorator('SFYJRW', {
+                              initialValue: basicInfo.SFYJRW
+                            })(
+                              <Radio.Group onChange={e => {
+                                console.log("eeeee", e);
+                                this.setState({basicInfo: {...basicInfo, SFYJRW: String(e.target.value)}});
+                                this.fetchQueryMilepostInfo({
+                                  type: basicInfo.projectType,
+                                  isShortListed: String(e.target.value),
+                                  xmid: basicInfo.projectId,
+                                  biddingMethod: basicInfo.biddingMethod,
+                                  budget: budgetInfo.projectBudget,
+                                  label: basicInfo.labelTxt,
+                                  queryType: "ALL"
+                                });
+                              }}>
+                                <Radio value={1}>是</Radio>
+                                <Radio value={2}>否</Radio>
+                              </Radio.Group>
+                            )}
+                          </Form.Item>
+                        </Col>
+                      </Row> : null
+                    }
 
 
                     {/*</React.Fragment>*/}
@@ -2740,6 +2790,7 @@ class NewProjectModelV2 extends React.Component {
                               if (projectBudgetChangeFlag) {
                                 this.fetchQueryMilepostInfo({
                                   type: basicInfo.projectType,
+                                  isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                   xmid: this.state.basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
