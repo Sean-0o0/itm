@@ -216,7 +216,8 @@ class EnterBidInfoModel extends React.Component {
     },
     fileList: [],
     pbbgTurnRed: false,
-    tableData: [], //其他供应商表格表格
+    tableDataSearch: [], //修改时-接口查询出来表格数据
+    tableData: [], //实时的表格数据
     tableDataDel: [],//删除的表格数据
     addGysModalVisible: false,
     isSpinning: true, //弹窗加载状态
@@ -244,9 +245,6 @@ class EnterBidInfoModel extends React.Component {
         _this.fetchQueryHardwareTendersAndContract();
       }
     }, 300);
-    this.setState({
-      isSpinning: false,
-    })
   };
 
   // 获取url参数
@@ -284,11 +282,13 @@ class EnterBidInfoModel extends React.Component {
           });
         }
         this.setState({
+          isSpinning: false,
           bidInfo: {
             bidBond: zbxxJson[0]?.tbbzj,
             performanceBond: zbxxJson[0]?.lybzj,
           },
           tableData: arr,
+          tableDataSearch: arr,
           uploadFileParams: {
             columnName: 'PBBG',
             documentData: wjxxJson[0].data ? wjxxJson[0].data : "DQoNCg0KDQoxMTExMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjIxMTExMjExMTEyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMjExMTEyDQoyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIyMTExMTIyMjIyMjIyMjIyMjIyMjIyMjIyMjIy",
@@ -328,6 +328,7 @@ class EnterBidInfoModel extends React.Component {
       if (res.success) {
         let rec = res.record;
         this.setState({
+          isSpinning: false,
           glgys: [...rec],
         });
       }
@@ -337,7 +338,7 @@ class EnterBidInfoModel extends React.Component {
   //中标信息表格单行删除
   handleSingleDelete = id => {
     const dataSource = [...this.state.tableData];
-    const del = dataSource.filter(item => item.ID === id)
+    const del = this.state.tableDataSearch.filter(item => item.ID === id)
     this.setState({
       tableData: dataSource.filter(item => item.ID !== id),
       tableDataDel: del,
@@ -411,6 +412,25 @@ class EnterBidInfoModel extends React.Component {
     this.setState({
       ...tableData
     })
+  }
+
+  handleCancel = () =>{
+    const _this = this;
+    confirm({
+      okText: '确认',
+      cancelText: '取消',
+      title: '提示',
+      content: '确定要取消操作？',
+      onOk() {
+        if (_this.state.operateType) {
+          window.parent && window.parent.postMessage({operate: 'close'}, '*');
+        } else {
+          _this.props.closeDialog();
+        }
+      },
+      onCancel() {
+      },
+    });
   }
 
   handleSaveZbxx = () => {
@@ -498,7 +518,11 @@ class EnterBidInfoModel extends React.Component {
         ...submitdata,
       }).then(res => {
         if (res?.code === 1) {
-          // onSuccess();
+          if (operateType) {
+            window.parent && window.parent.postMessage({operate: 'close'}, '*');
+          } else {
+            this.props.closeDialog();
+          }
         } else {
           message.error('信息修改失败', 1);
         }
@@ -540,7 +564,7 @@ class EnterBidInfoModel extends React.Component {
         }}>*</span>包件类型</span>,
         dataIndex: 'BJLX',
         key: 'BJLX',
-        width: '18%',
+        width: '13%',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
@@ -626,7 +650,7 @@ class EnterBidInfoModel extends React.Component {
         title: '操作',
         dataIndex: 'operator',
         key: 'operator',
-        width: 102.81,
+        width: '6%',
         ellipsis: true,
         render: (text, record) =>
           this.state.tableData.length >= 1 ? (
@@ -686,7 +710,7 @@ class EnterBidInfoModel extends React.Component {
             onSucess={this.OnGysSuccess}
             src={
               localStorage.getItem('livebos') +
-              '/OperateProcessor?operate=View_GYSXX_ADD&Table=View_GYSXX'
+              '/OperateProcessor?operate=View_GYSXX_ZBADD&Table=View_GYSXX'
             }
           />
         )}
@@ -798,7 +822,7 @@ class EnterBidInfoModel extends React.Component {
                         rowClassName={() => 'editable-row'}
                         dataSource={tableData}
                         // rowSelection={rowSelection}
-                        scroll={tableData.length > 3 ? {y: 195} : {}}
+                        scroll={tableData.length > 4 ? {y: 260} : {}}
                         pagination={false}
                         bordered
                         size="middle"
