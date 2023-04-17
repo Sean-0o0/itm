@@ -59,7 +59,7 @@ class ItemBtn extends React.Component {
     window.removeEventListener('message', this.handleIframePostMessage);
   }
 
-  //监听新建项目弹窗状态-按钮
+  //监听弹窗状态-按钮
   handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       this.setState({
@@ -71,8 +71,8 @@ class ItemBtn extends React.Component {
         hardWareBidModalVisible: false,
       });
       //刷新数据
-
-      // message.success('保存成功');
+      this.props.refresh();
+      message.success('操作成功', 1);
     }
   };
 
@@ -460,6 +460,32 @@ class ItemBtn extends React.Component {
           Loginname,
         );
       }
+      if (item.sxmc === '设备采购有合同') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_SBCGYHT',
+          [
+            {
+              name: 'XMMC',
+              value: Number(item.xmid),
+            },
+          ],
+          Loginname,
+        );
+      }
+      if (item.sxmc === '设备采购无合同') {
+        params = this.getParams(
+          'TLC_LCFQ',
+          'TLC_LCFQ_SBCGWHT',
+          [
+            {
+              name: 'XMMC',
+              value: Number(item.xmid),
+            },
+          ],
+          Loginname,
+        );
+      }
       this.setState({
         lbModalTitle: item.sxmc + '发起',
         sendVisible: true,
@@ -547,6 +573,8 @@ class ItemBtn extends React.Component {
       case '申请餐券':
       case '会议议案提交':
       case '付款流程':
+      case '设备采购有合同':
+      case '设备采购无合同':
         return this.getLcfqck(done, item);
 
       //信息录入

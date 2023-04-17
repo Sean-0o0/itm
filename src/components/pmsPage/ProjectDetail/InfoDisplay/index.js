@@ -383,14 +383,24 @@ export default function InfoDisplay(props) {
                 style={{ display: 'flex', height: 'unset' }}
               >
                 <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
-                <a
+                <Link
+                  to={{
+                    pathname:
+                      '/pms/manage/SupplierDetail/' +
+                      EncryptBase64(
+                        JSON.stringify({
+                          splId: supplier[0]?.GYSID,
+                        }),
+                      ),
+                    state: { routes },
+                  }}
                   style={{
                     whiteSpace: 'break-spaces',
                     color: '#3361ff',
                   }}
                 >
                   {supplier[0]?.GYSMC}
-                </a>
+                </Link>
               </div>
             )}
             {notNull(supplier[0]?.GYSLX) !== '暂无数据' &&

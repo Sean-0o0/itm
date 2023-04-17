@@ -14,10 +14,6 @@ export default function TopConsole(props) {
   const {
     splInfo = [],
     overviewInfo = [],
-    contactInfo = [],
-    prjPurchase = [],
-    HROutsource = [],
-    splEvaluation = [],
   } = detailData;
   const [visible, setVisible] = useState(false); //弹窗显示
   useEffect(() => {
@@ -27,8 +23,8 @@ export default function TopConsole(props) {
   const getTags = () => {
     //获取供应商标签数据
     let arr = splInfo?.GYSLX?.split(',') || [];
-    if (splInfo?.SFHMD) arr.push('黑名单供应商');
-    if (splInfo?.SFTT) arr.push('淘汰供应商');
+    if (splInfo?.SFHMD === '1') arr.push('黑名单供应商');
+    if (splInfo?.SFTT === '1') arr.push('淘汰供应商');
     // console.log('🚀 ~ file: index.js:26 ~ getTags ~ arr:', arr);
     return (
       <div className="prj-tags">
@@ -54,8 +50,8 @@ export default function TopConsole(props) {
         )}
         <div className="right-txt">
           <div className="label">{label}</div>
-          <Tooltip title={value} placement="topLeft">
-            {value}
+          <Tooltip title={value} placement="topLeft" >
+           <span style={{ cursor: 'default' }}> {value}</span>
           </Tooltip>
         </div>
       </div>
@@ -110,14 +106,18 @@ export default function TopConsole(props) {
             {getOverviewItem(
               'icon-money-collect',
               '今年项目总额(万元)',
-              Number(overviewInfo.JNXMJE || 0).toFixed(2),
+              (Number(overviewInfo.JNXMJE || 0) / 10000).toFixed(2),
               false,
             )}
-            {getOverviewItem(JNYZF, '今年已支付(万元)', Number(overviewInfo.JNYZF || 0).toFixed(2))}
+            {getOverviewItem(
+              JNYZF,
+              '今年已支付(万元)',
+              (Number(overviewInfo.JNYZF || 0) / 10000).toFixed(2),
+            )}
             {getOverviewItem(
               LNYZF,
               '历年项目总额(万元)',
-              Number(overviewInfo.LNXMZE || 0).toFixed(2),
+              (Number(overviewInfo.LNXMZE || 0) / 10000).toFixed(2),
             )}
           </div>
         </div>
@@ -130,7 +130,7 @@ export default function TopConsole(props) {
             {getOverviewItem(
               'icon-cash',
               '已支付总金额(万元)',
-              Number(overviewInfo.YZFZJE || 0).toFixed(2),
+              (Number(overviewInfo.YZFZJE || 0) / 10000).toFixed(2),
               false,
             )}
           </div>

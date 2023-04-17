@@ -1,35 +1,40 @@
-import { Popover } from 'antd';
+import { Popover, Tooltip } from 'antd';
 import { node } from 'prop-types';
-import React, { useEffect, useState,useLayoutEffect } from 'react';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 
 export default function BasicInfo(props) {
   const { detailData } = props;
   const { splInfo = {}, contactInfo = [] } = detailData;
-  const [dtlFold, setDtlFold] = useState({
-    jydz: false,
-    zzsm: false,
-    jyfw: false,
-  }); //详情显隐
+  // const [jydzFold, setJydzFold] = useState(false); //详情显隐
+  // const [zzsmFold, setZzsmFold] = useState(false); //详情显隐
+  const [jyfwFold, setJyfwFold] = useState(false); //详情显隐
 
+  // useLayoutEffect(() => {
+  //   const node = document.getElementsByClassName('jydz')[0];
+  //   if (node) {
+  //     setJydzFold(!(node.clientHeight <= 44 && node.scrollHeight <= 44));
+  //   }
+  //   return () => {};
+  // }, [splInfo.JYDZ]);
+  // useLayoutEffect(() => {
+  //   const node = document.getElementsByClassName('zzsm')[0];
+  //   if (node) {
+  //     setZzsmFold(!(node.clientHeight <= 44 && node.scrollHeight <= 44));
+  //   }
+  //   return () => {};
+  // }, [splInfo.ZZSM]);
   useLayoutEffect(() => {
-    const node1 = document.getElementsByClassName('jydz')[0];
-    const node2 = document.getElementsByClassName('zzsm')[0];
-    const node3 = document.getElementsByClassName('jyfw')[0];
-    let p = {};
-    if (node1) p.jydz = !(node1.clientHeight <= 44 && node1.scrollHeight <= 44);
-    if (node2) p.zzsm = !(node2.clientHeight <= 44 && node2.scrollHeight <= 44);
-    if (node3) p.jyfw = !(node3.clientHeight <= 44 && node3.scrollHeight <= 44);
-    setDtlFold({
-      ...p,
-    });
-    console.log('scrollHeight', node1.scrollHeight, node2.scrollHeight, node3.scrollHeight);
-    console.log('clientHeight', node1.clientHeight, node2.clientHeight, node3.clientHeight);
+    const node = document.getElementsByClassName('jyfw')[0];
+    if (node) {
+      setJyfwFold(!(node.clientHeight <= 44 && node.scrollHeight <= 44));
+    }
     return () => {};
-  }, [splInfo]);
+  }, [splInfo.JYFW]);
 
-  const getInfoItem = (label = '--', content = '--', id, bool) => {
+  //信息块
+  const getInfoItemJYFW = (label = '--', content = '暂无信息', bool) => {
     return (
-      <div className={'info-item ' + id} key={id}>
+      <div className={'info-item jyfw'} key={'jyfw'}>
         <div className="label">{label}：</div>
         <div
           className="detail"
@@ -45,8 +50,9 @@ export default function BasicInfo(props) {
           {bool && (
             <Popover
               title={null}
-              content={<div style={{ maxWidth: 400 }}>{content}</div>}
+              content={<div className="content">{content}</div>}
               placement="bottomRight"
+              overlayClassName="supplier-detail-basic-info-popover"
             >
               <div className="float">详情</div>
             </Popover>
@@ -56,6 +62,24 @@ export default function BasicInfo(props) {
       </div>
     );
   };
+  const getInfoItem = (label = '--', content = '暂无信息', id) => {
+    const showToolTip = e => {
+      //暂时注释，屏幕宽度变化时不会触发
+      // if (e.target.clientWidth >= e.target.scrollWidth) {
+      //   e.target.style.pointerEvents = 'none'; // 阻止鼠标事件
+      // }
+    };
+    return (
+      <div className={'info-item ' + id} key={id}>
+        <div className="label">{label}：</div>
+        <Tooltip title={content} placement="topLeft" onMouseEnter={showToolTip}>
+          <span className="info">{content}</span>
+        </Tooltip>
+      </div>
+    );
+  };
+
+  //联系人展示
   const getLxrinfContent = (arr = []) => {
     return (
       <div className="list">
@@ -74,28 +98,34 @@ export default function BasicInfo(props) {
       </div>
     );
   };
+
   return (
     <div className="basic-info-box">
       <div className="title">基本信息</div>
       <div className="content-row">
         <div className="left">
           <div className="label">联系人信息</div>
-          <div className="lxr-item">
-            <div className="top">
-              <div className="lxr-name">{contactInfo[0]?.LXR}</div>
-              <div className="position-tag">{contactInfo[0]?.ZW}</div>
+          {contactInfo.length === 0 ? (
+            <div className="lxr-item">暂无信息</div>
+          ) : (
+            <div className="lxr-item">
+              <div className="top">
+                <div className="lxr-name">{contactInfo[0]?.LXR}</div>
+                <div className="position-tag">{contactInfo[0]?.ZW}</div>
+              </div>
+              <div className="bottom">
+                <span>电话：</span> {contactInfo[0]?.DH || '无'}
+                <span className="email">｜ 邮箱：</span> {contactInfo[0]?.QTLXFS || '无'}
+              </div>
             </div>
-            <div className="bottom">
-              <span>电话：</span> {contactInfo[0]?.DH || '无'}
-              <span className="email">｜ 邮箱：</span> {contactInfo[0]?.QTLXFS || '无'}
-            </div>
-          </div>
+          )}
           {contactInfo.length > 1 && (
             <Popover
               title={null}
-              content={getLxrinfContent(contactInfo)}
+              content={getLxrinfContent(contactInfo?.slice(1))}
               placement="bottomRight"
               overlayClassName="lxr-info-popover"
+              trigger="click"
             >
               <div className="more-lxr">
                 更多
@@ -105,9 +135,9 @@ export default function BasicInfo(props) {
           )}
         </div>
         <div className="right">
-          {getInfoItem('经营地址', splInfo.JYDZ, 'jydz', dtlFold.jydz)}
-          {getInfoItem('资质说明', splInfo.ZZSM, 'zzsm', dtlFold.zzsm)}
-          {getInfoItem('经营说明', splInfo.JYFW, 'jyfw', dtlFold.jyfw)}
+          {getInfoItem('经营地址', splInfo.JYDZ, 'jydz')}
+          {getInfoItem('资质说明', splInfo.ZZSM, 'zzsm')}
+          {getInfoItemJYFW('经营说明', splInfo.JYFW, jyfwFold)}
         </div>
       </div>
     </div>

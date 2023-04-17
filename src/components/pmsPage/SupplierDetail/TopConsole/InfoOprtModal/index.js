@@ -293,7 +293,7 @@ function InfoOprtModal(props) {
         <strong>供应商信息{oprtType === 'EDIT' ? '编辑' : '新增'}</strong>
       </div>
       <Form className="content-box">
-        <Form.Item label="供应商名称">
+        <Form.Item label="供应商名称" style={{marginBottom: '16px'}}>
           {getFieldDecorator('gysmc', {
             initialValue: splInfo.GYSMC || '',
             rules: [
@@ -306,7 +306,7 @@ function InfoOprtModal(props) {
         </Form.Item>
         <Row>
           <Col span={12}>
-            <Form.Item label="供应商类型">
+            <Form.Item label="供应商类型" style={{marginBottom: '8px'}}>
               {getFieldDecorator('gyslx', {
                 initialValue: gyslx(splInfo.GYSLX),
                 rules: [
@@ -319,7 +319,7 @@ function InfoOprtModal(props) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="是否为淘汰或黑名单供应商:">
+            <Form.Item label="是否为淘汰或黑名单供应商:" style={{marginBottom: '8px'}}>
               {getFieldDecorator('gyszt', {
                 initialValue: gyszt(),
               })(
@@ -333,7 +333,7 @@ function InfoOprtModal(props) {
             </Form.Item>
           </Col>
         </Row>
-        <Form.Item label="经营范围">
+        <Form.Item label="经营范围" style={{marginBottom: '6px'}}>
           {getFieldDecorator('jyfw' || '', {
             initialValue: splInfo.JYFW,
             rules: [
@@ -354,12 +354,12 @@ function InfoOprtModal(props) {
             />,
           )}
         </Form.Item>
-        <Form.Item label="经营地址">
+        <Form.Item label="经营地址" style={{marginBottom: '16px'}}>
           {getFieldDecorator('jydz', {
             initialValue: splInfo.JYDZ || '',
           })(<Input maxLength={166} allowClear placeholder={`请输入经营地址`} />)}
         </Form.Item>
-        <Form.Item label="资质说明">
+        <Form.Item label="资质说明" style={{marginBottom: '6px'}}>
           {getFieldDecorator('zzsm', {
             initialValue: splInfo.ZZSM || '',
           })(
@@ -374,7 +374,7 @@ function InfoOprtModal(props) {
             />,
           )}
         </Form.Item>
-        <Form.Item label="联系人信息">
+        <Form.Item label="联系人信息" style={{marginBottom: '16px'}}>
           <div className="lxr-table-box">
             <Table
               columns={columns}
