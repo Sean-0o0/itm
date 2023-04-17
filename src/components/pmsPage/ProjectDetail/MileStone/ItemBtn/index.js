@@ -13,6 +13,7 @@ import AssociatedFile from '../../../LifeCycleManagement/AssociatedFile';
 import ContractSigning from '../../../LifeCycleManagement/ContractSigning';
 import ContractInfoUpdate from '../../../LifeCycleManagement/ContractInfoUpdate';
 import PaymentProcess from '../../../LifeCycleManagement/PaymentProcess';
+import { EncryptBase64 } from '../../../../Common/Encrypt';
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
 const { api } = config;
@@ -47,10 +48,33 @@ class ItemBtn extends React.Component {
     contractSigningVisible: false,
     //信委会立案流程查看
     xwhyaModalVisible: false,
-    src: ''
+    src: '',
+    hardWareBidModalVisible: false,
   };
 
-  componentDidMount() {}
+  componentDidMount() {
+    window.addEventListener('message', this.handleIframePostMessage);
+  }
+  componentWillUnmount() {
+    window.removeEventListener('message', this.handleIframePostMessage);
+  }
+
+  //监听新建项目弹窗状态-按钮
+  handleIframePostMessage = event => {
+    if (typeof event.data !== 'string' && event.data.operate === 'close') {
+      this.setState({
+        hardWareBidModalVisible: false,
+      });
+    }
+    if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      this.setState({
+        hardWareBidModalVisible: false,
+      });
+      //刷新数据
+
+      // message.success('保存成功');
+    }
+  };
 
   //Livebos弹窗参数
   getParams = (objName, oprName, data) => {
@@ -192,6 +216,39 @@ class ItemBtn extends React.Component {
       );
     return (
       <div className="opr-btn" onClick={() => xxlrxg(item)}>
+        录入
+      </div>
+    );
+  };
+
+  //硬件中标信息录入
+  getYjzbxxlr = (done, item) => {
+    const xxlr = item => {
+      this.setState({
+        hardWareBidModalVisible: true,
+        lbModalUrl: `/#/pms/manage/HardwareItems/EnterBidInfo/${EncryptBase64(
+          JSON.stringify({ xmid: item.xmid, type: 'ADD' }),
+        )}`,
+      });
+    };
+    const xxxg = item => {
+      this.setState({
+        hardWareBidModalVisible: true,
+        lbModalUrl: `/#/pms/manage/HardwareItems/EnterBidInfo/${EncryptBase64(
+          JSON.stringify({ xmid: item.xmid, type: 'UPDATE' }),
+        )}`,
+      });
+    };
+    if (done)
+      return (
+        <div className="opr-more">
+          <div className="reopr-btn" onClick={() => xxxg(item)}>
+            修改
+          </div>
+        </div>
+      );
+    return (
+      <div className="opr-btn" onClick={() => xxlr(item)}>
         录入
       </div>
     );
@@ -496,6 +553,8 @@ class ItemBtn extends React.Component {
       case '中标信息录入':
       case '合同信息录入':
         return this.getXxlrxg(done, item);
+      case '硬件中标信息录入':
+        return this.getYjzbxxlr(done, item);
 
       //文档上传
       case '总办会会议纪要':
@@ -552,8 +611,21 @@ class ItemBtn extends React.Component {
       contractSigningVisible,
       associatedFileVisible,
       xwhyaModalVisible,
-      src
+      src,
+      hardWareBidModalVisible,
     } = this.state;
+    const { item, xmmc, xmbh } = this.props;
+
+    //硬件中标信息录入
+    const hardWareBidModalProps = {
+      isAllWindow: 1,
+      title: '硬件中标信息录入',
+      width: '1000px',
+      height: '780px',
+      style: { top: '10px' },
+      visible: true,
+      footer: null,
+    };
 
     //文档上传、修改弹窗
     const uploadModalProps = {
@@ -607,11 +679,23 @@ class ItemBtn extends React.Component {
       footer: null,
     };
 
-    const { item, xmmc, xmbh } = this.props;
     // console.log("🚀 ~ file: index.js ~ line 511 ~ ItemBtn ~ render ~ item, xmmc, xmbh", item, xmmc, xmbh)
     return (
       <>
         {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}
+
+        {hardWareBidModalVisible && (
+          <BridgeModel
+            isSpining="customize"
+            modalProps={hardWareBidModalProps}
+            onCancel={() => {
+              this.setState({
+                hardWareBidModalVisible: false,
+              });
+            }}
+            src={lbModalUrl}
+          />
+        )}
 
         {/*文档上传、修改弹窗*/}
         {uploadVisible && (
@@ -768,7 +852,7 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('信息修改')}
           ></BidInfoUpdate>
         )}
-        <iframe src={src} id='Iframe' style={{ display: 'none' }} />
+        <iframe src={src} id="Iframe" style={{ display: 'none' }} />
       </>
     );
   }

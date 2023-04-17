@@ -196,11 +196,10 @@ class ToConsole extends Component {
     };
 
     handleSearch = () => {
-      console.log(yslxArr);
       this.setState({
           params: {
-            ...params,
-            yslx: this.state.params?.glys!==undefined && yslxArr.length!==0 ? yslxArr[0] : undefined
+            ...this.state.params,
+            yslx: this.state.params?.glys!==undefined && this.state.yslxArr.length!==0 ? this.state.yslxArr[0] : undefined
           }
       },
         () => {
