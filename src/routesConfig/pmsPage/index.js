@@ -120,7 +120,7 @@ exports.routes = [
   },
   {
     // 硬件项目相关-中标信息录入
-    path: `${prefix}/EnterBidInfoModel`,
-    component: './pmsPage/EnterBidInfoModel',
+    path: `${prefix}/EnterBidInfo`,
+    component: './pmsPage/EnterBidInfo',
   },
 ];
