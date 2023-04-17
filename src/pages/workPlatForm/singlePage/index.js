@@ -74,7 +74,7 @@ class SinglePage extends Component {
           />
           <Route
             exact
-            path={`${parentUrl}/EnterBidInfoModel/:params`}
+            path={`${parentUrl}/EnterBidInfo/:params`}
             render={props => (
               <EnterBidInfoModel
                 {...props}

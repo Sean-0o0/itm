@@ -219,7 +219,7 @@ class EnterBidInfoModel extends React.Component {
     tableData: [], //其他供应商表格表格
     tableDataDel: [],//删除的表格数据
     addGysModalVisible: false,
-    isSpinning: false, //弹窗加载状态
+    isSpinning: true, //弹窗加载状态
   };
 
   // componentDidMount() {
@@ -244,13 +244,16 @@ class EnterBidInfoModel extends React.Component {
         _this.fetchQueryHardwareTendersAndContract();
       }
     }, 300);
+    this.setState({
+      isSpinning: false,
+    })
   };
 
   // 获取url参数
   getUrlParams = () => {
+    console.log("paramsparams", this.props.match.params)
     const {match: {params: {params: encryptParams = ''}}} = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
-    // ////console.log("paramsparams", params)
     return params;
   }
 
@@ -408,6 +411,100 @@ class EnterBidInfoModel extends React.Component {
     this.setState({
       ...tableData
     })
+  }
+
+  handleSaveZbxx = () => {
+      const {
+        tableData,
+        tableDataDel,
+        bidInfo,
+        selectedRowIds,
+        uploadFileParams,
+        fileList,
+        pbbgTurnRed,
+        glgys,
+        addGysModalVisible,
+        xmid,
+        operateType,
+      } = this.state;
+      const {bidBond, tenders, totalRows, performanceBond,} = bidInfo;
+      const {
+        columnName,
+        documentData,
+        fileLength,
+        fileName,
+        filePath,
+        id,
+        objectName,
+      } = uploadFileParams;
+      console.log("fileList", fileList)
+      if (fileList.length === 0 || tableData.length === 0) {
+        message.warn("中标信息未填写完整！")
+        return;
+      }
+      let num = 0
+      if (tableData.length > 0) {
+        tableData.map(item => {
+          if (item['BJLX' + item.ID] === '' || item['BJMC' + item.ID] === '' || item['ZBGYS' + item.ID] === '') {
+            num++;
+          }
+        })
+        if (num !== 0) {
+          message.warn("中标信息未填写完整！")
+          return;
+        }
+      }
+      //新增id要变成-1 字段名也需要变
+      let tableDataNew = [];
+      tableData.map(item => {
+        let itm = {}
+        if (typeof (item.ID) === 'number') {
+          itm.ID = '-1';
+          itm.BJLX = item['BJLX' + item.ID];
+          itm.BJMC = item['BJMC' + item.ID];
+          itm.ZBGYS = item['ZBGYS' + item.ID];
+          itm.CZLX = 'ADD';
+        } else {
+          itm.ID = item.ID;
+          itm.BJLX = item['BJLX' + item.ID];
+          itm.BJMC = item['BJMC' + item.ID];
+          itm.ZBGYS = item['ZBGYS' + item.ID];
+          itm.CZLX = 'UPDATE';
+        }
+        tableDataNew.push(itm)
+      })
+      //添加删除的数据
+      tableDataDel.map(item => {
+        let itm = {}
+        itm.ID = item.ID;
+        itm.BJLX = item['BJLX' + item.ID];
+        itm.BJMC = item['BJMC' + item.ID];
+        itm.ZBGYS = item['ZBGYS' + item.ID];
+        itm.CZLX = 'DELETE';
+        tableDataNew.push(itm)
+      })
+      let submitdata = {
+        projectId: xmid,
+        bidBond: Number(bidBond),
+        performanceBond: Number(performanceBond),
+        fileData: [{fileName, data: documentData}],
+        tenders: JSON.stringify(tableDataNew),
+        rowcount: tableDataNew.length,
+        //ADD:新增，UPDATE:更新
+        type: operateType,
+      };
+      console.log('🚀submitdata', submitdata);
+      UpdateHardwareTenderInfo({
+        ...submitdata,
+      }).then(res => {
+        if (res?.code === 1) {
+          // onSuccess();
+        } else {
+          message.error('信息修改失败', 1);
+        }
+      });
+      // this.setState({tableData: [], tableDataDel: [],});
+      // closeModal();
   }
 
   render() {
@@ -581,7 +678,7 @@ class EnterBidInfoModel extends React.Component {
       footer: null,
     };
     return (
-      <>
+      <div className="enterBidInfoModel" style={{overflow: 'hidden', height: "100%"}}>
         {addGysModalVisible && (
           <BridgeModel
             modalProps={addGysModalProps}
@@ -593,119 +690,7 @@ class EnterBidInfoModel extends React.Component {
             }
           />
         )}
-        <Modal
-          wrapClassName="editMessage-modify"
-          width={'1000px'}
-          maskClosable={false}
-          zIndex={100}
-          cancelText={'取消'}
-          okText={"保存"}
-          bodyStyle={{
-            padding: '0',
-          }}
-          title={null}
-          visible={visible}
-          onOk={() => {
-            const {bidBond, tenders, totalRows, performanceBond,} = bidInfo;
-            const {
-              columnName,
-              documentData,
-              fileLength,
-              fileName,
-              filePath,
-              id,
-              objectName,
-            } = uploadFileParams;
-            console.log("fileList", fileList)
-            if (fileList.length === 0 || tableData.length === 0) {
-              message.warn("中标信息未填写完整！")
-              return;
-            }
-            let num = 0
-            if (tableData.length > 0) {
-              tableData.map(item => {
-                if (item['BJLX' + item.ID] === '' || item['BJMC' + item.ID] === '' || item['ZBGYS' + item.ID] === '') {
-                  num++;
-                }
-              })
-              if (num !== 0) {
-                message.warn("中标信息未填写完整！")
-                return;
-              }
-            }
-            //新增id要变成-1 字段名也需要变
-            let tableDataNew = [];
-            tableData.map(item => {
-              let itm = {}
-              if (typeof (item.ID) === 'number') {
-                itm.ID = '-1';
-                itm.BJLX = item['BJLX' + item.ID];
-                itm.BJMC = item['BJMC' + item.ID];
-                itm.ZBGYS = item['ZBGYS' + item.ID];
-                itm.CZLX = 'ADD';
-              } else {
-                itm.ID = item.ID;
-                itm.BJLX = item['BJLX' + item.ID];
-                itm.BJMC = item['BJMC' + item.ID];
-                itm.ZBGYS = item['ZBGYS' + item.ID];
-                itm.CZLX = 'UPDATE';
-              }
-              tableDataNew.push(itm)
-            })
-            //添加删除的数据
-            tableDataDel.map(item => {
-              let itm = {}
-              itm.ID = item.ID;
-              itm.BJLX = item['BJLX' + item.ID];
-              itm.BJMC = item['BJMC' + item.ID];
-              itm.ZBGYS = item['ZBGYS' + item.ID];
-              itm.CZLX = 'DELETE';
-              tableDataNew.push(itm)
-            })
-            let submitdata = {
-              projectId: xmid,
-              bidBond: Number(bidBond),
-              performanceBond: Number(performanceBond),
-              fileData: [{fileName, data: documentData}],
-              tenders: JSON.stringify(tableDataNew),
-              rowcount: tableDataNew.length,
-              //ADD:新增，UPDATE:更新
-              type: operateType,
-            };
-            console.log('🚀submitdata', submitdata);
-            UpdateHardwareTenderInfo({
-              ...submitdata,
-            }).then(res => {
-              if (res?.code === 1) {
-                onSuccess();
-              } else {
-                message.error('信息修改失败', 1);
-              }
-            });
-            this.setState({tableData: [], tableDataDel: [],});
-            closeModal();
-          }}
-          onCancel={() => {
-            this.setState({tableData: [], tableDataDel: [],});
-            closeModal();
-          }}
-        >
-          <div
-            style={{
-              height: '42px',
-              width: '100%',
-              display: 'flex',
-              alignItems: 'center',
-              backgroundColor: '#3361FF',
-              color: 'white',
-              padding: '0 24px',
-              borderRadius: '8px 8px 0 0',
-              fontSize: '2.333rem',
-            }}
-          >
-            <strong>中标信息录入</strong>
-          </div>
-          <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="enterBidInfoModel">
+          <Spin spinning={isSpinning} tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
             <Form name="nest-messages" style={{padding: '24px'}}>
               <Row>
                 <Col span={12}>
@@ -845,9 +830,20 @@ class EnterBidInfoModel extends React.Component {
                 </Col>
               </Row>
             </Form>
+            <div className="footer">
+              <Divider/>
+              <div style={{padding: '16px 24px'}}>
+                <Button onClick={this.handleCancel}>取消</Button>
+                <div className="steps-action">
+                  <Button style={{marginLeft: '12px', backgroundColor: '#3361FF'}} type="primary"
+                          onClick={e => this.handleSaveZbxx()}>
+                    保存
+                  </Button>
+                </div>
+              </div>
+            </div>
           </Spin>
-        </Modal>
-      </>
+      </div>
     );
   }
 }

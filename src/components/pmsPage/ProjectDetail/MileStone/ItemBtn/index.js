@@ -226,7 +226,7 @@ class ItemBtn extends React.Component {
     const xxlr = item => {
       this.setState({
         hardWareBidModalVisible: true,
-        lbModalUrl: `/#/pms/manage/HardwareItems/EnterBidInfo/${EncryptBase64(
+        lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
           JSON.stringify({ xmid: item.xmid, type: 'ADD' }),
         )}`,
       });
@@ -234,7 +234,7 @@ class ItemBtn extends React.Component {
     const xxxg = item => {
       this.setState({
         hardWareBidModalVisible: true,
-        lbModalUrl: `/#/pms/manage/HardwareItems/EnterBidInfo/${EncryptBase64(
+        lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
           JSON.stringify({ xmid: item.xmid, type: 'UPDATE' }),
         )}`,
       });
