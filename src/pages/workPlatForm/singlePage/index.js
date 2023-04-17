@@ -13,6 +13,7 @@ import NewProjectModel from './NewProjectModel';
 import NewProjectModelV2 from './NewProjectModelV2';
 import AnnexExport from './AnnexExport';
 import EditProjectInfoModel from "../../../components/pmsPage/EditProjectInfoModel";
+import EnterBidInfoModel from "../../../components/pmsPage/HardwareItems/EnterBidInfoModel";
 const { events } = Bridge.constants;
 class SinglePage extends Component {
   closeDialog = () => {
@@ -65,6 +66,17 @@ class SinglePage extends Component {
             render={props => (
               // <NewProjectModelV2
               <EditProjectInfoModel
+                {...props}
+                submitOperate={this.submitOperate}
+                closeDialog={this.closeDialog}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={`${parentUrl}/EnterBidInfoModel/:params`}
+            render={props => (
+              <EnterBidInfoModel
                 {...props}
                 submitOperate={this.submitOperate}
                 closeDialog={this.closeDialog}

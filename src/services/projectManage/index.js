@@ -14,7 +14,10 @@ const { projectManage: {
   creatProject,
   queryProjectDetails,
   queryStationInfo,
-  queryProjectInfoAll
+  queryProjectInfoAll,
+  updateHardwareTenderInfo,
+  queryHardwareTendersAndContract,
+  updateHardwareContractInfo,
 } } = api;
 
 // 查询软件清单
@@ -132,6 +135,38 @@ export async function FetchQueryStationInfo(payload, configObj) {
 export async function FetchQueryProjectInfoAll(payload, configObj) {
   const option = {
     url: queryProjectInfoAll,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+
+//------------硬件项目相关接口-------------------
+//新增、修改硬件项目招标信息
+export async function UpdateHardwareTenderInfo(payload, configObj) {
+  const option = {
+    url: updateHardwareTenderInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//查询硬件项目招标信息
+export async function FetchQueryHardwareTendersAndContract(payload, configObj) {
+  const option = {
+    url: queryHardwareTendersAndContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//修改硬件项目合同信息
+export async function UpdateHardwareContractInfo(payload, configObj) {
+  const option = {
+    url: updateHardwareContractInfo,
     method: 'post',
     data: payload,
   };

@@ -11,4 +11,12 @@ export default [
   {code: '', key: 'queryProjectDetails', url: '/projectManage/queryProjectDetails', dis: '修改项目时查询项目详细信息'},
   {code: '', key: 'queryStationInfo', url: '/projectManage/queryStationInfo', dis: '查询岗位信息'},
   {code: '', key: 'queryProjectInfoAll', url: '/projectManage/v1/queryProjectInfoAll', dis: '查询所有项目信息'},
+  {code: '', key: 'updateHardwareTenderInfo', url: '/projectManage/updateHardwareTenderInfo', dis: '新增、修改硬件项目招标信息'},
+  {
+    code: '',
+    key: 'queryHardwareTendersAndContract',
+    url: '/projectManage/queryHardwareTendersAndContract',
+    dis: '查询硬件项目招标信息'
+  },
+  {code: '', key: 'updateHardwareContractInfo', url: '/projectManage/updateHardwareContractInfo', dis: '新增、修改硬件项目招标信息'},
 ];
