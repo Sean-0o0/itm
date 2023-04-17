@@ -113,4 +113,14 @@ exports.routes = [
     path: `${prefix}/SupplierDetail/:params`,
     component: './pmsPage/SupplierDetail',
   },
+  {
+    // 硬件项目相关
+    path: `${prefix}/HardwareItems`,
+    component: './pmsPage/HardwareItems',
+  },
+  {
+    // 硬件项目相关-中标信息录入
+    path: `${prefix}/EnterBidInfoModel`,
+    component: './pmsPage/EnterBidInfoModel',
+  },
 ];
