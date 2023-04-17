@@ -3309,7 +3309,7 @@ class EditProjectInfoModel extends React.Component {
                                 treeNodeFilterProp="title"
                                 style={{width: '100%'}}
                                 dropdownClassName="newproject-treeselect"
-                                dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                dropdownStyle={{maxHeight: 300, overflowX: 'hidden'}}
                                 treeData={projectTypeList}
                                 // treeCheckable
                                 placeholder="请选择项目类型"
