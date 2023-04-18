@@ -129,7 +129,7 @@ export default function ProjectDetail(props) {
           setIsHwPrj(prjBasic.XMLX === '6');
           //字典处理
           let award = p(res.hjxxRecord);
-          prjBasic.XMLX === '6' &&
+          prjBasic.XMLX !== '6' &&
             award.forEach(item => {
               item.RYDJ = HJRYDJ?.filter(x => x.ibm === item.RYDJ)[0]?.note;
               item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
