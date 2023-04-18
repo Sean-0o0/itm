@@ -352,7 +352,13 @@ export default function FormOperate(props) {
       <>
         <Col span={12}>
           <Form.Item
-            label="关联设备采购有合同流程"
+            label={
+              <div style={{ display: 'inline-block', lineHeight: '17px' }}>
+                关联设备采购
+                <br />
+                有合同流程
+              </div>
+            }
             labelCol={{ span: 8 }}
             wrapperCol={{ span: 16 }}
           >

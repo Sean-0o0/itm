@@ -56,6 +56,11 @@ export default function InfoTable(props) {
     }
   };
 
+    //金额格式化
+    const getAmountFormat = (value = 0) => {
+      return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+    };
+
   //获取项目标签数据
   const getTagData = (tag, idtxt) => {
     // console.log("🚀 ~ file: index.js:52 ~ getTagData ~ tag, idtxt:", tag, idtxt)
@@ -173,7 +178,6 @@ export default function InfoTable(props) {
     {
       title: '项目类型',
       dataIndex: 'projectType',
-      // width: 90,
       width: '9%',
       key: 'projectType',
       ellipsis: true,
@@ -186,8 +190,7 @@ export default function InfoTable(props) {
     {
       title: '关联预算',
       dataIndex: 'budgetProject',
-      // width: 160,
-      width: '18%',
+      // width: '15%',
       key: 'budgetProject',
       ellipsis: true,
       render: text => (
@@ -199,18 +202,17 @@ export default function InfoTable(props) {
     {
       title: '项目金额(元)',
       dataIndex: 'projectBudget',
-      // width: 120,
       width: '12%',
       align: 'right',
       key: 'projectBudget',
       ellipsis: true,
       sorter: (a, b) => Number(a.projectBudget) - Number(b.projectBudget),
       sortDirections: ['descend', 'ascend'],
+      render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
     },
     {
       title: '应用部门',
       dataIndex: 'orgs',
-      // width: 150,
       width: '15%',
       key: 'orgs',
       ellipsis: true,
@@ -223,7 +225,6 @@ export default function InfoTable(props) {
     {
       title: '项目标签',
       dataIndex: 'projectLabel',
-      // width: 205,
       width: '18%',
       key: 'projectLabel',
       ellipsis: true,
@@ -298,7 +299,7 @@ export default function InfoTable(props) {
       title: '项目状态',
       dataIndex: 'projectStatus',
       key: 'projectStatus',
-      // width: 100,
+      width: '7%',
       ellipsis: true,
     },
   ];

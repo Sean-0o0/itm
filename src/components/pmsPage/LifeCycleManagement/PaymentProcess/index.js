@@ -288,7 +288,7 @@ const PaymentProcess = props => {
       )}
       <Modal
         wrapClassName="editMessage-modify payment-process-box-modal"
-        width={'1200px'}
+        width={'900px'}
         maskClosable={false}
         zIndex={100}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}

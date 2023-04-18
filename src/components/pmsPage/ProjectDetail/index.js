@@ -33,47 +33,47 @@ export default function ProjectDetail(props) {
     },
     {
       ibm: '1',
-      note: '普通软件项目',
+      note: '普通软件',
     },
     {
       ibm: '2',
-      note: '普通项目',
+      note: '普通',
     },
     {
       ibm: '4',
-      note: '软件入围项目',
+      note: '软件入围',
     },
     {
       ibm: '5',
-      note: '普通硬件项目',
+      note: '普通硬件',
     },
     {
       ibm: '6',
-      note: '硬件入围项目',
+      note: '硬件入围',
     },
     {
       ibm: '7',
-      note: '集合类项目',
+      note: '集合类',
     },
     {
       ibm: '8',
-      note: '工程类项目',
+      note: '工程类',
     },
     {
       ibm: '9',
-      note: '咨询服务项目',
+      note: '咨询服务',
     },
     {
       ibm: '10',
-      note: '普通人力服务项目',
+      note: '普通人力服务',
     },
     {
       ibm: '11',
-      note: '人力服务入围项目',
+      note: '人力服务入围',
     },
     {
       ibm: '13',
-      note: '集合项目',
+      note: '集合',
     },
   ];
 
