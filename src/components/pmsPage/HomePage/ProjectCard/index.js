@@ -179,14 +179,6 @@ export default function ProjectCard(props) {
                   },
                 }}
                 key={x.USERID}
-                // onClick={() => {
-                //   window.location.href = `/#/pms/manage/staffDetail/${EncryptBase64(
-                //     JSON.stringify({
-                //       ryid: x.USERID,
-                //       routes: [{ name: '首页', pathname: location.pathname }],
-                //     }),
-                //   )}`;
-                // }}
               >
                 <div className="item">
                   <div className="img-box">
@@ -211,7 +203,7 @@ export default function ProjectCard(props) {
         arr.push(x.RYMC);
       });
       if (participantData?.length > 2)
-        return arr.slice(0, 2).join('、') + participantData?.length + '等人参与';
+        return arr.slice(0, 2).join('、') + '等' + participantData?.length + '人参与';
       return arr.join('、') + participantData?.length + '人参与';
     };
     const riskContent = () => {

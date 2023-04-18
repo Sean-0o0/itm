@@ -624,8 +624,9 @@ class ItemBtn extends React.Component {
       case '合同信息录入':
         return this.getXxlrxg(done, item);
       case '硬件中标信息录入':
-      case '硬件合同信息录入':
         return this.getYjxxlr(done, item);
+      case '硬件合同信息录入':
+        return this.getYjxxlr(done, item, false);
       case '询比结果录入':
         return this.getXbjglr(done, item);
 
@@ -692,11 +693,11 @@ class ItemBtn extends React.Component {
     } = this.state;
     const { item, xmmc, xmbh, isHwPrj } = this.props;
 
-    //硬件合同信息录入
+    //询比结果录入
     const xbjglrModalProps = {
       isAllWindow: 1,
       title: lbModalTitle,
-      width: '800px',
+      width: '1000px',
       height: '600px',
       style: { top: '60px' },
       visible: true,
@@ -707,7 +708,7 @@ class ItemBtn extends React.Component {
     const hardWareContrastModalProps = {
       isAllWindow: 1,
       title: lbModalTitle,
-      width: '800px',
+      width: '1000px',
       height: '600px',
       style: { top: '60px' },
       visible: true,
@@ -718,7 +719,7 @@ class ItemBtn extends React.Component {
     const hardWareBidModalProps = {
       isAllWindow: 1,
       title: lbModalTitle,
-      width: '800px',
+      width: '1000px',
       height: '600px',
       style: { top: '60px' },
       visible: true,
