@@ -123,4 +123,14 @@ exports.routes = [
     path: `${prefix}/EnterBidInfo`,
     component: './pmsPage/EnterBidInfo',
   },
+  {
+    // 硬件项目相关-合同信息录入
+    path: `${prefix}/AgreementEnter`,
+    component: './pmsPage/AgreementEnter',
+  },
+  {
+    // 硬件项目相关-合同信息录入
+    path: `${prefix}/PollResultInfo`,
+    component: './pmsPage/PollResultInfo',
+  },
 ];

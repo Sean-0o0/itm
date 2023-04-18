@@ -4,9 +4,9 @@
  * @Description: 供livebos调用页面
  */
 import React, { Component, Fragment } from 'react';
-import { connect } from 'dva';
+import {connect} from 'dva';
 import Bridge from 'livebos-bridge';
-import { Switch, Route } from 'dva/router';
+import {Switch, Route} from 'dva/router';
 import ZipFileModel from './ZipFileModel/index';
 import CapitalBudgetExport from './CapitalBudgetExport';
 import NewProjectModel from './NewProjectModel';
@@ -14,10 +14,14 @@ import NewProjectModelV2 from './NewProjectModelV2';
 import AnnexExport from './AnnexExport';
 import EditProjectInfoModel from "../../../components/pmsPage/EditProjectInfoModel";
 import EnterBidInfoModel from "../../../components/pmsPage/HardwareItems/EnterBidInfoModel";
-const { events } = Bridge.constants;
+import AgreementEnterModel from "../../../components/pmsPage/HardwareItems/AgreementEnterModel";
+import PollResultEnterModel from "../../../components/pmsPage/HardwareItems/PollResultEnterModel";
+
+const {events} = Bridge.constants;
+
 class SinglePage extends Component {
   closeDialog = () => {
-    const { closeDialog } = this.props;
+    const {closeDialog} = this.props;
     if (closeDialog) {
       closeDialog();
     }
@@ -77,6 +81,28 @@ class SinglePage extends Component {
             path={`${parentUrl}/EnterBidInfo/:params`}
             render={props => (
               <EnterBidInfoModel
+                {...props}
+                submitOperate={this.submitOperate}
+                closeDialog={this.closeDialog}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={`${parentUrl}/AgreementEnter/:params`}
+            render={props => (
+              <AgreementEnterModel
+                {...props}
+                submitOperate={this.submitOperate}
+                closeDialog={this.closeDialog}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={`${parentUrl}/PollResultInfo/:params`}
+            render={props => (
+              <PollResultEnterModel
                 {...props}
                 submitOperate={this.submitOperate}
                 closeDialog={this.closeDialog}

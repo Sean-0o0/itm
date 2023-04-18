@@ -3,7 +3,7 @@ import EnterBidInfoModel from '../../../components/pmsPage/HardwareItems/EnterBi
 import PollResultModel from "./PollResultModel";
 import PollResultEnterModel from "./PollResultEnterModel";
 import RequireModel from "./RequireModel";
-import AgreementEnterModal from "./AgreementEnterModal";
+import AgreementEnterModal from "./AgreementEnterModel";
 
 //首页
 export default function HardwareItems(props) {

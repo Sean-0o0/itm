@@ -6,11 +6,10 @@ const {Option} = Select;
 
 export default function TopConsole(props) {
 
-  //const { XMLX } = props.dictionary; //项目类型
+  const [demand, setDemand] = useState(""); //询比项目名称
+  const [drafter, setDrafter] = useState(""); //发起人
   //查询的值
-  const [itemName, setItemName] = useState(undefined); //项目名称
-
-  const {} = props;
+  const {handleSearch, callBackParams, params} = props;
 
   useEffect(() => {
     return () => {
@@ -18,19 +17,25 @@ export default function TopConsole(props) {
   }, []);
 
 
-  //查询按钮
-  const handleSearch = {};
-
   //重置按钮
   const handleReset = v => {
-    setItemName(''); //关联预算-生效的入参
+    setDemand('')
+    setDrafter('')
   };
 
   // onChange-start
-  //项目名称
-  const handleItemNameChange = v => {
-    // console.log('handleBtAmountChange', v.target.value);
-    setItemName(v)
+  //询比项目名称
+  const handleNameChange = v => {
+    console.log('询比项目名称询比项目名称询比项目名称', v.target.value);
+    setDemand(v.target.value)
+    callBackParams({...params, demand: String(v.target.value), current: 1})
+  };
+
+  //发起人
+  const handleFQRNameChange = v => {
+    console.log('发起人发起人发起人', v.target.value);
+    setDrafter(v.target.value)
+    callBackParams({...params, drafter: Number(v.target.value), current: 1})
   };
   // onChange-end
 
@@ -39,17 +44,17 @@ export default function TopConsole(props) {
       <div className="item-box">
         <div className="console-item" style={{width: '35%'}}>
           <div className="item-label">询比项目名称</div>
-          <Input placeholder="请输入" value={itemName} onChange={handleItemNameChange}/>
+          <Input placeholder="请输入" value={demand} onChange={handleNameChange}/>
         </div>
         <div className="console-item" style={{width: '30%'}}>
           <div className="item-label">发起人</div>
-          <Input placeholder="请输入" value={itemName} onChange={handleItemNameChange}/>
+          <Input placeholder="请输入" value={drafter} onChange={handleFQRNameChange}/>
         </div>
         <div className="btn-item" style={{width: '35%'}}>
           <Button
             className="btn-search"
             type="primary"
-            onClick={handleSearch}
+            onClick={() => handleSearch({...params})}
           >
             查询
           </Button>

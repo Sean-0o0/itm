@@ -6,9 +6,9 @@ const {Option} = Select;
 
 export default function TopConsole(props) {
 
-  //const { XMLX } = props.dictionary; //项目类型
+  const [demand, setDemand] = useState(""); //询比项目名称
   //查询的值
-  const [itemName, setItemName] = useState(undefined); //项目名称
+  const {handleSearch, callBackParams, params} = props;
 
   const {} = props;
 
@@ -17,20 +17,17 @@ export default function TopConsole(props) {
     };
   }, []);
 
-
-  //查询按钮
-  const handleSearch = {};
-
   //重置按钮
   const handleReset = v => {
-    setItemName(''); //关联预算-生效的入参
+    setDemand('')
   };
 
   // onChange-start
-  //项目名称
-  const handleItemNameChange = v => {
-    // console.log('handleBtAmountChange', v.target.value);
-    setItemName(v)
+  //询比项目名称
+  const handleNameChange = v => {
+    console.log('询比项目名称询比项目名称询比项目名称', v.target.value);
+    setDemand(v.target.value)
+    callBackParams({...params, demand: String(v.target.value), current: 1})
   };
   // onChange-end
 
@@ -39,13 +36,13 @@ export default function TopConsole(props) {
       <div className="item-box">
         <div className="console-item" style={{width: '50%'}}>
           <div className="item-label">询比项目名称</div>
-          <Input placeholder="请输入" value={itemName} onChange={handleItemNameChange}/>
+          <Input placeholder="请输入" value={demand} onChange={handleNameChange}/>
         </div>
         <div className="btn-item" style={{width: '50%'}}>
           <Button
             className="btn-search"
             type="primary"
-            onClick={handleSearch}
+            onClick={() => handleSearch({...params})}
           >
             查询
           </Button>

@@ -1,30 +1,22 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip} from 'antd';
+import {Button, Table, Popover, message, Tooltip, Empty, Popconfirm} from 'antd';
 import {EncryptBase64} from '../../../../Common/Encrypt';
 import {Link} from 'react-router-dom';
 import {useLocation} from 'react-router';
+import axios from "axios";
+import moment from "moment";
+import config from "../../../../../utils/config";
+
+const {api} = config;
+const {pmsServices: {queryFileStream}} = api;
+
 
 export default function InfoTable(props) {
-  const [sortedInfo, setSortedInfo] = useState({}); //金额排序
-  const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const {tableData, tableLoading, getTableData, projectManager = -1, total} = props; //表格数据
+  const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
-  // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
+  console.log("🚀 ~ tableData:", tableData)
 
-  //lb弹窗配置
-  const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(
-    JSON.stringify({xmid: -1, type: true}),
-  )}`;
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    title: '新建项目',
-    width: '1000px',
-    height: '780px',
-    style: {top: '10px'},
-    visible: true,
-    footer: null,
-  };
 
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
@@ -40,8 +32,6 @@ export default function InfoTable(props) {
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       closeFileAddModal();
-      getPrjInfo(userRole); //刷新数据
-      // message.success('保存成功');
     }
   };
 
@@ -80,8 +70,7 @@ export default function InfoTable(props) {
   const handleTableChange = obj => {
     // console.log('handleTableChange', obj);
     const {current = 1, pageSize = 10} = obj;
-    getTableData({current, pageSize, projectManager});
-    return;
+    callBackParams({...params, current, pageSize})
   };
 
   const openVisible = () => {
@@ -91,98 +80,151 @@ export default function InfoTable(props) {
     setFileAddVisible(false);
   };
 
+  const downlown = (id, title, wdid) => {
+    axios({
+      method: 'POST',
+      url: queryFileStream,
+      responseType: 'blob',
+      data: {
+        objectName: 'TXMXX_YJXBJG',
+        columnName: 'XBBG',
+        id: wdid,
+        title: title,
+        extr: id
+      }
+    }).then(res => {
+      const href = URL.createObjectURL(res.data)
+      const a = document.createElement('a')
+      a.download = title
+      a.href = href
+      a.click()
+    }).catch(err => {
+      message.error(err)
+    })
+  }
+
+  const downlownRow = (items = [], wdid) => {
+    items.forEach(element => {
+      const [id, title] = element;
+      axios({
+        method: 'post',
+        url: queryFileStream,
+        responseType: 'blob',
+        data: {
+          objectName: 'TXMXX_YJXBJG',
+          columnName: 'XBBG',
+          id: wdid,
+          title: title,
+          extr: id
+        }
+      }).then(res => {
+        const href = URL.createObjectURL(res.data)
+        const a = document.createElement('a')
+        a.download = title
+        a.href = href
+        a.click()
+      }).catch(err => {
+        message.error(err)
+      })
+    });
+  }
+
+
   //列配置
   const columns = [
     {
       title: '询比项目名称',
-      dataIndex: 'projectName',
+      dataIndex: 'XBXM',
       // width: 200,
       width: '40%',
-      key: 'projectName',
+      key: 'XBXM',
       // ellipsis: true,
     },
     {
       title: '关联需求',
-      dataIndex: 'projectLabel',
+      dataIndex: 'GLXQ',
       // width: 205,
       width: '40%',
-      key: 'projectLabel',
+      key: 'GLXQ',
       // ellipsis: true,
       render: (text, row, index) => {
         return (
-          <div className="prj-tags">
-            {getTagData(text, row.projectLabelId).length !== 0 && (
-              <>
-                {getTagData(text, row.projectLabelId)
-                  ?.slice(0, 2)
-                  .map(x => (
-                    <div key={x.id} className="tag-item">
-                      <Link
-                        style={{color: '#3361ff'}}
-                        to={{
-                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                            JSON.stringify({
-                              bqid: x.id,
-                            }),
-                          )}`,
-                          state: {
-                            routes: [{name: '项目列表', pathname: location.pathname}],
-                          },
-                        }}
-                        className="prj-info-table-link-strong"
-                      >
-                        {x.name}
-                      </Link>
-                    </div>
-                  ))}
-                {getTagData(text, row.projectLabelId)?.length > 2 && (
-                  <Popover
-                    overlayClassName="tag-more-popover"
-                    content={
-                      <div className="tag-more">
-                        {getTagData(text, row.projectLabelId)
-                          ?.slice(2)
-                          .map(x => (
-                            <div key={x.id} className="tag-item">
-                              <Link
-                                style={{color: '#3361ff'}}
-                                to={{
-                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                    JSON.stringify({
-                                      bqid: x.id,
-                                    }),
-                                  )}`,
-                                  state: {
-                                    routes: [{name: '项目列表', pathname: location.pathname}],
-                                  },
-                                }}
-                                className="prj-info-table-link-strong"
-                              >
-                                {x.name}
-                              </Link>
-                            </div>
-                          ))}
-                      </div>
-                    }
-                    title={null}
-                  >
-                    <div className="tag-item">...</div>
-                  </Popover>
-                )}
-              </>
-            )}
-          </div>
+          <span>{lcxxData.filter(item => item.ID == text)[0]?.BT}</span>
         );
-      },
+      }
     },
     {
       title: '询比报告',
-      dataIndex: 'projectStatus',
-      key: 'projectStatus',
+      dataIndex: 'XBBG',
+      key: 'XBBG',
       width: '20%',
       // width: 100,
       // ellipsis: true,
+      render: (text, record) => {
+        if (text) {
+          const {wdid = ''} = record;
+          const wdmc = JSON.parse(text)
+          const {items = []} = wdmc;
+          let content = <div className='fj-box'>
+            <div className='fj-header'>
+              <div className='fj-title flex1'>附件</div>
+              <div className='fj-header-btn' onClick={() => downlownRow(items, wdid)}>全部下载</div>
+            </div>
+            {items.length ?
+              <div
+                style={{height: 'auto', width: 320}}
+              >
+                {items.map((item, index) => {
+                  const [id, title] = item;
+                  return <div className='fj-item flex-r'>
+                    <div className='fj-title flex1'><i className='iconfont icon-file-word'/>&nbsp;{title}</div>
+                    <div className='fj-btn' onClick={() => downlown(id, title, wdid)}><i
+                      className='iconfont icon-download'/></div>
+                  </div>
+                })
+                }
+              </div> :
+              <div className='empty-box'><Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无风险信息"/></div>
+
+            }
+          </div>
+          return <Popover placement="bottomLeft" overlayClassName="main-tooltip" content={content}>
+            <div className='opr-btn-box'>
+              {
+                items.map((item, index) => {
+                  const [id, title] = item;
+                  return <a key={id} className='opr-btn' onClick={() => {
+                    this.downlown(id, title, wdid)
+                  }}>{title};&nbsp;</a>
+                })
+              }
+            </div>
+          </Popover>
+        } else {
+          return ''
+        }
+      }
     },
+    {
+      title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
+      dataIndex: 'operator',
+      key: 'operator',
+      width: '10%',
+      // fixed: 'right',
+      ellipsis: true,
+      render: (text, record) =>
+        tableData.length >= 1 ? (
+          <>
+            <Popconfirm title="确定要删除吗?" onConfirm={() => {
+              return this.handleSingleDelete(record.XQID)
+            }}>
+              <a style={{color: '#3361ff'}}>删除</a>
+            </Popconfirm>
+            <a style={{color: '#3361ff'}}>&nbsp;&nbsp;编辑</a>
+          </>
+
+        ) : null,
+    }
   ];
 
   return (

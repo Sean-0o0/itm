@@ -3,52 +3,54 @@ import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {QueryProjectListInfo} from '../../../../services/pmsServices';
 import {message, Modal} from 'antd';
+import {FetchQueryHardwareDemandInfo} from "../../../../services/projectManage";
 
 export default function RequireModel(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
-  const {params = {}, visible = false, closeModal} = props;
-  const {prjManager = -2, cxlx = 'ALL'} = params;
+  const [params, setParams] = useState({demand: '', drafter: '', current: 1, pageSize: 10});
+  const {visible = false, closeModal} = props;
+
 
   useEffect(() => {
-    if (prjManager === -2) {
-      //无参数
-      getTableData({});
-    } else {
-      //有参数
-      // console.log('prjManager, cxlx', prjManager, cxlx);
-      getTableData({projectManager: prjManager, cxlx});
-    }
+    getTableData();
     return () => {
     };
-  }, [prjManager, cxlx]);
+  }, []);
 
   //获取表格数据
-  const getTableData = ({current = 1, pageSize = 10, projectManager = -1, cxlx = 'ALL'}) => {
+  const getTableData = (params) => {
     setTableLoading(true);
-    QueryProjectListInfo({
-      projectManager,
-      current,
-      pageSize,
+    FetchQueryHardwareDemandInfo({
+      ...params,
       paging: 1,
-      sort: 'string',
-      total: -1,
-      queryType: cxlx,
+      sort: "",
+      total: -1
     })
       .then(res => {
         if (res?.success) {
-          setTableData(p => [...JSON.parse(res.record)]);
+          setTableData([...JSON.parse(res.result)]);
           setTotal(res.totalrows);
           setTableLoading(false);
         }
-        // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
+        console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.result));
       })
       .catch(e => {
         // console.error('getTableData', e);
         setTableLoading(false);
       });
+  };
+
+  const callBackParams = (params) => {
+    setParams({...params})
+  }
+
+  //点击查询
+  const handleSearch = (params) => {
+    setParams({...params})
+    getTableData(params);
   };
 
   return (
@@ -86,12 +88,13 @@ export default function RequireModel(props) {
         >
           <strong>需求列表</strong>
         </div>
-        <TopConsole/>
+        <TopConsole params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable
+          params={params}
+          callBackParams={callBackParams}
           tableData={tableData}
           tableLoading={tableLoading}
           getTableData={getTableData}
-          projectManager={params?.prjManager}
           total={total}
         />
       </Modal>

@@ -19,4 +19,12 @@ export default [
     dis: '查询硬件项目招标信息'
   },
   {code: '', key: 'updateHardwareContractInfo', url: '/projectManage/updateHardwareContractInfo', dis: '新增、修改硬件项目招标信息'},
+  {code: '', key: 'queryInquiryComparisonInfo', url: '/projectManage/queryInquiryComparisonInfo', dis: '查询硬件项目的询比结果'},
+  {
+    code: '',
+    key: 'updateInquiryComparisonInfo',
+    url: '/projectManage/updateInquiryComparisonInfo',
+    dis: '新增、修改硬件项目询比结果信息'
+  },
+  {code: '', key: 'queryHardwareDemandInfo', url: '/projectManage/queryHardwareDemandInfo', dis: '查询硬件项目-需求列表'},
 ];

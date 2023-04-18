@@ -3,43 +3,41 @@ import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {QueryProjectListInfo} from '../../../../services/pmsServices';
 import {message, Modal} from 'antd';
+import {FetchQueryInquiryComparisonInfo} from "../../../../services/projectManage";
 
 export default function PollResultModel(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
+  const [lcxxData, setLcxxData] = useState([]); //关联需求
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
-  const {params = {}, visible = false, closeModal} = props;
-  const {prjManager = -2, cxlx = 'ALL'} = params;
+  const {visible = false, closeModal} = props;
+  const [params, setParams] = useState({demand: '', current: 1, pageSize: 10});
 
   useEffect(() => {
-    if (prjManager === -2) {
-      //无参数
-      getTableData({});
-    } else {
-      //有参数
-      // console.log('prjManager, cxlx', prjManager, cxlx);
-      getTableData({projectManager: prjManager, cxlx});
-    }
+    getTableData();
     return () => {
     };
-  }, [prjManager, cxlx]);
+  }, []);
 
   //获取表格数据
-  const getTableData = ({current = 1, pageSize = 10, projectManager = -1, cxlx = 'ALL'}) => {
+  const getTableData = () => {
     setTableLoading(true);
-    QueryProjectListInfo({
-      projectManager,
-      current,
-      pageSize,
-      paging: 1,
-      sort: 'string',
-      total: -1,
-      queryType: cxlx,
-    })
+    FetchQueryInquiryComparisonInfo(
+      {
+        ...params,
+        projectId: "397",
+        flowId: "-1",
+        paging: 1,
+        queryType: "ALL",
+        sort: "",
+        total: -1
+      })
       .then(res => {
         if (res?.success) {
-          setTableData(p => [...JSON.parse(res.record)]);
+          const {xbxx, lcxx} = res
+          setTableData(p => [...JSON.parse(xbxx)]);
+          setLcxxData(p => [...JSON.parse(lcxx)]);
           setTotal(res.totalrows);
           setTableLoading(false);
         }
@@ -49,6 +47,16 @@ export default function PollResultModel(props) {
         // console.error('getTableData', e);
         setTableLoading(false);
       });
+  };
+
+  const callBackParams = (params) => {
+    setParams({...params})
+  }
+
+  //点击查询
+  const handleSearch = (params) => {
+    setParams({...params})
+    getTableData(params);
   };
 
   return (
@@ -86,12 +94,14 @@ export default function PollResultModel(props) {
         >
           <strong>询比结果列表</strong>
         </div>
-        <TopConsole/>
+        <TopConsole params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable
+          lcxxData={lcxxData}
+          params={params}
+          callBackParams={callBackParams}
           tableData={tableData}
           tableLoading={tableLoading}
           getTableData={getTableData}
-          projectManager={params?.prjManager}
           total={total}
         />
       </Modal>

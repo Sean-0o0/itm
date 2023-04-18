@@ -18,6 +18,9 @@ const { projectManage: {
   updateHardwareTenderInfo,
   queryHardwareTendersAndContract,
   updateHardwareContractInfo,
+  queryInquiryComparisonInfo,
+  updateInquiryComparisonInfo,
+  queryHardwareDemandInfo,
 } } = api;
 
 // 查询软件清单
@@ -172,3 +175,34 @@ export async function UpdateHardwareContractInfo(payload, configObj) {
   };
   return request(option, configObj);
 }
+
+//修改硬件项目-询比结果
+export async function FetchQueryInquiryComparisonInfo(payload, configObj) {
+  const option = {
+    url: queryInquiryComparisonInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//修改硬件项目-询比结果
+export async function UpdateInquiryComparisonInfo(payload, configObj) {
+  const option = {
+    url: updateInquiryComparisonInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//硬件项目-需求列表
+export async function FetchQueryHardwareDemandInfo(payload, configObj) {
+  const option = {
+    url: queryHardwareDemandInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+

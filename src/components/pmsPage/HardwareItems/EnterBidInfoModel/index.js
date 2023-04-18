@@ -525,8 +525,6 @@ class EnterBidInfoModel extends React.Component {
           message.error('信息修改失败', 1);
         }
       });
-      // this.setState({tableData: [], tableDataDel: [],});
-      // closeModal();
   }
 
   render() {
@@ -700,7 +698,7 @@ class EnterBidInfoModel extends React.Component {
       footer: null,
     };
     return (
-      <div className="enterBidInfoModel" style={{overflow: 'hidden', height: "100%"}}>
+      <div className="poll-result-box" style={{overflow: 'hidden', height: "100%"}}>
         {addGysModalVisible && (
           <BridgeModel
             modalProps={addGysModalProps}
