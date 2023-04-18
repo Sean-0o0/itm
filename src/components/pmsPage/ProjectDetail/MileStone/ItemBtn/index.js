@@ -652,6 +652,7 @@ class ItemBtn extends React.Component {
       case '生产安装部署手册':
       case '生产操作及运维手册':
       case '用户手册':
+      case '硬件合同上传':
         return this.getWdscxg(done, item);
 
       //其他
