@@ -209,7 +209,14 @@ export default forwardRef(function TopConsole(props, ref) {
             );
           }
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
-          setPrjTypeData([])//'projectTypeRecord
+          let xmlx = TreeUtils.toTreeData(JSON.parse(res.projectTypeRecord), {
+            keyName: 'ID',
+            pKeyName: 'FID',
+            titleName: 'NAME',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          })[0].children[0];
+          setPrjTypeData(p=>[...[xmlx]]);
         }
       })
       .catch(e => {
@@ -330,7 +337,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
   //项目类型
   const handlePrjTypeChange = v => {
-    // console.log('handlePrjMngerChange', v);
+    // console.log('handlePrjTypeChange', v);
     // if (v === undefined) v = '';
     setPrjType(v);
   };
@@ -426,7 +433,7 @@ export default forwardRef(function TopConsole(props, ref) {
         </div>
         <div className="console-item">
           <div className="item-label">项目类型</div>
-          <Select
+          {/* <Select
             className="item-selector"
             dropdownClassName={'item-selector-dropdown'}
             filterOption={(input, option) =>
@@ -443,7 +450,20 @@ export default forwardRef(function TopConsole(props, ref) {
                 {x.note}
               </Option>
             ))}
-          </Select>
+          </Select> */}
+          <TreeSelect
+            allowClear
+            className="item-selector"
+            showSearch
+            treeNodeFilterProp="title"
+            dropdownClassName="newproject-treeselect"
+            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+            treeData={prjTypeData}
+            placeholder="请选择"
+            onChange={handlePrjTypeChange}
+            value={prjType}
+            treeDefaultExpandAll
+          />
         </div>
         <Button className="btn-search" type="primary" onClick={() => handleSearch()}>
           查询

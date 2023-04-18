@@ -52,6 +52,7 @@ const PaymentProcess = props => {
     currentXmmc,
     projectCode,
     onSuccess,
+    isHwPrj = false, //是否硬件入围项目类型
   } = props;
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
@@ -79,7 +80,7 @@ const PaymentProcess = props => {
   }, []);
 
   // 获取收款账户
-  const fetchQueryPaymentAccountList = (khmc = '') => {
+  const fetchQueryPaymentAccountList = (khmc = '', zhid = -1) => {
     QueryPaymentAccountList({
       type: 'ALL',
       current: 1,
@@ -88,6 +89,7 @@ const PaymentProcess = props => {
       sort: '1',
       total: -1,
       khmc,
+      zhid,
     })
       .then(res => {
         if (res.success) {
@@ -98,6 +100,7 @@ const PaymentProcess = props => {
       })
       .catch(e => console.error(e));
   };
+
   //创建单据时获取基本信息
   const fetchQueryPaymentFlowInfo = () => {
     QueryPaymentFlowInfo({
@@ -205,6 +208,7 @@ const PaymentProcess = props => {
             operateType,
             lcid,
           };
+          isHwPrj && (submitData.yjyhtid = String(getFieldValue('glsb')));
           console.log('submitData', submitData);
           CreatPaymentFlow(submitData)
             .then(res => {
@@ -229,15 +233,16 @@ const PaymentProcess = props => {
   //收款账户添加成功
   const OnSkzhAddSuccess = () => {
     setAddSkzhModalVisible(false);
-    QueryPaymentAccountList({
-      type: 'ALL',
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        setSkzh(p => [...rec]);
-        message.success('账户添加成功', 1);
-      }
-    });
+    message.success('账户添加成功', 1);
+    // QueryPaymentAccountList({
+    //   type: 'ALL',
+    // }).then(res => {
+    //   if (res.success) {
+    //     let rec = res.record;
+    //     setSkzh(p => [...rec]);
+
+    //   }
+    // });
   };
 
   //底部按钮
@@ -257,7 +262,6 @@ const PaymentProcess = props => {
 
   const addSkzhModalProps = {
     isAllWindow: 1,
-    // defaultFullScreen: true,
     title: '新增收款账户',
     width: '800px',
     height: '600px',
@@ -284,7 +288,7 @@ const PaymentProcess = props => {
       )}
       <Modal
         wrapClassName="editMessage-modify payment-process-box-modal"
-        width={'860px'}
+        width={'1200px'}
         maskClosable={false}
         zIndex={100}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
@@ -315,6 +319,8 @@ const PaymentProcess = props => {
             form={form}
             formData={formData}
             setAddSkzhModalVisible={setAddSkzhModalVisible}
+            isHwPrj={isHwPrj}
+            currentXmid={currentXmid}
           />
           <ExpenseDetail
             currentXmid={currentXmid}

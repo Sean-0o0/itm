@@ -51,6 +51,7 @@ class ItemBtn extends React.Component {
     src: '',
     hardWareBidModalVisible: false,
     hardWareContrastModalVisible: false,
+    xbjglrModalVisible: false,
   };
   // timer = null;
 
@@ -78,6 +79,7 @@ class ItemBtn extends React.Component {
         this.setState({
           hardWareBidModalVisible: false,
           hardWareContrastModalVisible: false,
+          xbjglrModalVisible: false,
         });
       });
     }
@@ -86,6 +88,7 @@ class ItemBtn extends React.Component {
         this.setState({
           hardWareBidModalVisible: false,
           hardWareContrastModalVisible: false,
+          xbjglrModalVisible: false,
         });
         //刷新数据
         this.props.refresh();
@@ -239,7 +242,7 @@ class ItemBtn extends React.Component {
     );
   };
 
-  //硬件中标信息录入
+  //硬件中标信息录入、合同信息录入
   getYjxxlr = (done, item, isBid = true) => {
     const lrxg = (item, isBid = true, type) => {
       if (isBid)
@@ -270,6 +273,24 @@ class ItemBtn extends React.Component {
       );
     return (
       <div className="opr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
+        录入
+      </div>
+    );
+  };
+
+  //询比结果录入
+  getXbjglr = (done, item) => {
+    const lrxg = (item, type) => {
+      this.setState({
+        xbjglrModalVisible: true,
+        lbModalUrl: `/#/single/pms/PollResultInfo/${EncryptBase64(
+          JSON.stringify({ xmid: item.xmid, type }),
+        )}`,
+        lbModalTitle: '询比结果录入',
+      });
+    };
+    return (
+      <div className="opr-btn" onClick={() => lrxg(item, done ? 'UPDATE' : 'ADD')}>
         录入
       </div>
     );
@@ -603,9 +624,10 @@ class ItemBtn extends React.Component {
       case '合同信息录入':
         return this.getXxlrxg(done, item);
       case '硬件中标信息录入':
-        return this.getYjxxlr(done, item);
       case '硬件合同信息录入':
         return this.getYjxxlr(done, item);
+      case '询比结果录入':
+        return this.getXbjglr(done, item);
 
       //文档上传
       case '总办会会议纪要':
@@ -665,16 +687,28 @@ class ItemBtn extends React.Component {
       src,
       hardWareBidModalVisible,
       hardWareContrastModalVisible,
+      xbjglrModalVisible,
     } = this.state;
-    const { item, xmmc, xmbh } = this.props;
+    const { item, xmmc, xmbh, isHwPrj } = this.props;
+
+    //硬件合同信息录入
+    const xbjglrModalProps = {
+      isAllWindow: 1,
+      title: lbModalTitle,
+      width: '800px',
+      height: '600px',
+      style: { top: '60px' },
+      visible: true,
+      footer: null,
+    };
 
     //硬件合同信息录入
     const hardWareContrastModalProps = {
       isAllWindow: 1,
       title: lbModalTitle,
-      width: '1000px',
-      height: '780px',
-      style: { top: '10px' },
+      width: '800px',
+      height: '600px',
+      style: { top: '60px' },
       visible: true,
       footer: null,
     };
@@ -683,9 +717,9 @@ class ItemBtn extends React.Component {
     const hardWareBidModalProps = {
       isAllWindow: 1,
       title: lbModalTitle,
-      width: '1000px',
-      height: '780px',
-      style: { top: '10px' },
+      width: '800px',
+      height: '600px',
+      style: { top: '60px' },
       visible: true,
       footer: null,
     };
@@ -701,16 +735,21 @@ class ItemBtn extends React.Component {
       visible: uploadVisible,
       footer: null,
     };
+
     //流程发起弹窗
     const sendModalProps = {
       isAllWindow: 1,
       title: lbModalTitle,
-      width: '864px',
+      width:
+        lbModalTitle === '设备采购无合同发起' || lbModalTitle === '设备采购有合同发起'
+          ? '1100px'
+          : '864px',
       height: '700px',
       style: { top: '60px' },
       visible: sendVisible,
       footer: null,
     };
+
     //信息录入、修改弹窗
     const xxlrxgModalProps = {
       isAllWindow: 1,
@@ -721,6 +760,7 @@ class ItemBtn extends React.Component {
       visible: xxlrxgVisible,
       footer: null,
     };
+
     //员工评价开启弹窗
     const ygpjModalProps = {
       isAllWindow: 1,
@@ -731,6 +771,7 @@ class ItemBtn extends React.Component {
       visible: ygpjVisible,
       footer: null,
     };
+
     //信委会立案流程查看
     const xwhyaModalProps = {
       isAllWindow: 1,
@@ -761,7 +802,21 @@ class ItemBtn extends React.Component {
           />
         )}
 
-        {/* 硬件中标信息录入 */}
+        {/* 硬件合同信息录入 */}
+        {xbjglrModalVisible && (
+          <BridgeModel
+            isSpining="customize"
+            modalProps={xbjglrModalProps}
+            onCancel={() => {
+              this.setState({
+                xbjglrModalVisible: false,
+              });
+            }}
+            src={lbModalUrl}
+          />
+        )}
+
+        {/* 询比结果录入 */}
         {hardWareContrastModalVisible && (
           <BridgeModel
             isSpining="customize"
@@ -868,6 +923,7 @@ class ItemBtn extends React.Component {
             }
             onSuccess={() => this.onSuccess('流程发起')}
             projectCode={xmbh}
+            isHwPrj={isHwPrj}
           />
         )}
 

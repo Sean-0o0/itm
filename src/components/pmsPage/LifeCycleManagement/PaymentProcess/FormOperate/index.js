@@ -1,13 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber, Spin } from 'antd';
 import moment from 'moment';
-import { QueryPaymentAccountList } from '../../../../../services/pmsServices';
+import {
+  QueryCreatePaymentInfo,
+  QueryPaymentAccountList,
+} from '../../../../../services/pmsServices';
 // import debounce from 'lodash/debounce';
 const { TextArea } = Input;
 
 export default function FormOperate(props) {
   const [isSkzhOpen, setIsSkzhOpen] = useState(false);
-  const { form, formData, setAddSkzhModalVisible } = props;
+  const { form, formData, setAddSkzhModalVisible, isHwPrj = false, currentXmid = -2 } = props;
   const {
     sfyht,
     setSfyht,
@@ -16,12 +19,6 @@ export default function FormOperate(props) {
     setSqrq,
     zhfw,
     setZhfw,
-    // skzh,
-    // setSkzh,
-    // dgskzh,
-    // setDgskzh,
-    // fileList, setFileList, fileUrl, setFileUrl, isFjTurnRed, setIsFjTurnRed,
-    // fileName, setFileName,
     setskzhId,
     setYkbSkzhId,
   } = formData;
@@ -32,14 +29,35 @@ export default function FormOperate(props) {
   const [currentPage, setCurrentPage] = useState(1); //收款账户数据懒加载页号
   const [currentKhmc, setCurrentKhmc] = useState(''); //款账户文本
   const [isNoMoreData, setIsNoMoreData] = useState(false); //没有更多数据了
+  const [glsbData, setGlsbData] = useState([]); //关联设备采购有合同流程数据
 
   let timer = null;
   useEffect(() => {
-    firstTimeQueryPaymentAccountList();
+    if (currentXmid !== -2) {
+      firstTimeQueryPaymentAccountList();
+      isHwPrj && getSelectorData();
+    }
     return () => {
       clearTimeout(timer);
     };
-  }, []);
+  }, [currentXmid]);
+
+  //下拉框数据
+  const getSelectorData = () => {
+    QueryCreatePaymentInfo({
+      czr: 0,
+      xmid: currentXmid,
+    })
+      .then(res => {
+        if (res?.success) {
+          setGlsbData(p => [...JSON.parse(res.lcxxRecord)]);
+          console.log('🚀 ~ getSelectorData ~ lcxxRecord:', [...JSON.parse(res.lcxxRecord)]);
+        }
+      })
+      .catch(e => {
+        console.error('QueryCreatePaymentInfo', e);
+      });
+  };
 
   //防抖
   const debounce = (fn, waits = 500) => {
@@ -50,22 +68,6 @@ export default function FormOperate(props) {
     timer = setTimeout(() => {
       fn(...arguments);
     }, waits);
-  };
-  //节流
-  const throttle = (fn, wait = 500) => {
-    // 上一次执行 fn 的时间
-    let previous = 0;
-    // 将 throttle 处理结果当作函数返回
-    return function(...args) {
-      // 获取当前时间，转换成时间戳，单位毫秒
-      let now = +new Date();
-      // 将当前时间和上一次执行函数的时间进行对比
-      // 大于等待时间就把 previous 设置为当前时间并执行函数 fn
-      if (now - previous > wait) {
-        previous = now;
-        fn.apply(this, args);
-      }
-    };
   };
 
   //是否有合同变化
@@ -100,6 +102,7 @@ export default function FormOperate(props) {
       sort: '1',
       total: -1,
       khmc,
+      zhid: -1,
     }).then(res => {
       if (res.success) {
         let rec = res.record;
@@ -121,6 +124,7 @@ export default function FormOperate(props) {
       sort: '1',
       total: -1,
       khmc,
+      zhid: -1,
     })
       .then(res => {
         if (res.success) {
@@ -147,14 +151,14 @@ export default function FormOperate(props) {
   const handleSkzhScroll = e => {
     const { scrollHeight, scrollTop, clientHeight } = e.target;
     // throttle(() => {
-      if (scrollHeight - scrollTop - clientHeight <= 10) {
-        let index = currentPage;
-        index = index + 1;
-        if (!isNoMoreData) {
-          setCurrentPage(index);
-          getSkzhData(currentKhmc, index);
-        }
+    if (scrollHeight - scrollTop - clientHeight <= 10) {
+      let index = currentPage;
+      index = index + 1;
+      if (!isNoMoreData) {
+        setCurrentPage(index);
+        getSkzhData(currentKhmc, index);
       }
+    }
     // }, 1000)();
   };
   //申请日期变化
@@ -342,6 +346,43 @@ export default function FormOperate(props) {
       </>
     );
   };
+  //关联设备采购有合同
+  const getGlsbcgyhtSelector = () => {
+    return (
+      <>
+        <Col span={12}>
+          <Form.Item
+            label="关联设备采购有合同流程"
+            labelCol={{ span: 8 }}
+            wrapperCol={{ span: 16 }}
+          >
+            {getFieldDecorator('glsb', {
+              rules: [
+                {
+                  required: true,
+                  message: '关联设备采购有合同流程不允许空值',
+                },
+              ],
+            })(
+              <Select
+                style={{ width: '100%', borderRadius: '8px !important' }}
+                showSearch
+                placeholder="请选择关联设备采购有合同流程"
+              >
+                {glsbData?.map((item = {}, ind) => {
+                  return (
+                    <Select.Option key={item.ID} value={item.ID}>
+                      {item.BT}
+                    </Select.Option>
+                  );
+                })}
+              </Select>,
+            )}
+          </Form.Item>
+        </Col>
+      </>
+    );
+  };
   //描述
   const getTextArea = () => {
     return (
@@ -473,7 +514,7 @@ export default function FormOperate(props) {
       </Row>
       <Row>
         {getInput(yfkjeInputProps)}
-        {/* {getRadio('账户范围', zhfw, onZhfwChange, '公共账户', '个人账户')} */}
+        {isHwPrj && getGlsbcgyhtSelector()}
       </Row>
       <Row>{getSelector()}</Row>
       <Row>{getTextArea()}</Row>

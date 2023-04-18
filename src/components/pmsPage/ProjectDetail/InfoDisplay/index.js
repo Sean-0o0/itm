@@ -11,7 +11,7 @@ const {
 } = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, xmid, routes, isLeader, isHwPrj } = props;
+  const { prjData, xmid, routes, isLeader, isHwSltPrj } = props;
   const {
     prjBasic = {},
     award = [],
@@ -163,7 +163,7 @@ export default function InfoDisplay(props) {
               查看详情
             </Link>
           </div>
-          {!isHwPrj && (
+          {!isHwSltPrj && (
             <div className="info-item">
               <span>获奖信息：</span>
               {award.length === 0 ? (
@@ -216,7 +216,7 @@ export default function InfoDisplay(props) {
               )}
             </div>
           )}
-          {!isHwPrj && (
+          {!isHwSltPrj && (
             <div className="info-item">
               <span>项目课题：</span>
               {topic.length === 0 ? (
@@ -274,7 +274,7 @@ export default function InfoDisplay(props) {
             </div>
           )}
         </div>
-        {!isHwPrj && (
+        {!isHwSltPrj && (
           <div className="info-row">
             <div className="info-item">
               <span>变更类/计划外需求：</span>
@@ -374,7 +374,7 @@ export default function InfoDisplay(props) {
         </div>
       )}
       {/* 供应商信息 */}
-      {!isHwPrj && (
+      {!isHwSltPrj && (
         <div className="info-box" key="gysxx">
           <div className="top-title">供应商信息</div>
           {isNullArr([supplier[0]?.GYSMC, supplier[0]?.GYSLX, supplier[0]?.LXR]) ? (
@@ -437,7 +437,7 @@ export default function InfoDisplay(props) {
         </div>
       )}
       {/* 招采信息 */}
-      {!isHwPrj &&
+      {!isHwSltPrj &&
         (isMember() ? (
           <div className="info-box" key="zcxx">
             <div className="top-title">招采信息</div>
@@ -536,7 +536,7 @@ export default function InfoDisplay(props) {
           </div>
         ))}
       {/* 实施信息 */}
-      {isHwPrj && (
+      {isHwSltPrj && (
         <div className="info-box" key="zcxx">
           <div className="top-title">实施信息</div>
           <div className="info-row">

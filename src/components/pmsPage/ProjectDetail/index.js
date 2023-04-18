@@ -16,7 +16,8 @@ export default function ProjectDetail(props) {
   const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  const [isHwPrj, setIsHwPrj] = useState(false); //是否硬件项目
+  const [isHwPrj, setIsHwPrj] = useState(false); //是否为普通硬件、硬件入围类型
+  const [isHwSltPrj, setIsHwSltPrj] = useState(false); //是否为硬件入围类型
   const XMLX = [
     {
       ibm: '-3',
@@ -126,7 +127,8 @@ export default function ProjectDetail(props) {
             item.GW = RYGW?.filter(x => x.ibm === item.GW)[0]?.note;
           });
           let prjBasic = p(res.xmjbxxRecord, false);
-          setIsHwPrj(prjBasic.XMLX === '6');
+          setIsHwSltPrj(prjBasic.XMLX === '6');
+          setIsHwPrj(['5', '6'].includes(prjBasic.XMLX));
           //字典处理
           let award = p(res.hjxxRecord);
           prjBasic.XMLX !== '6' &&
@@ -182,9 +184,10 @@ export default function ProjectDetail(props) {
               getPrjDtlData={getPrjDtlData}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}
+              isHwPrj={isHwPrj}
             />
             <InfoDisplay
-              isHwPrj={isHwPrj}
+              isHwSltPrj={isHwSltPrj}
               prjData={prjData}
               routes={routes}
               xmid={xmid}

@@ -174,9 +174,14 @@ export default function InfoTable(props) {
       title: '项目类型',
       dataIndex: 'projectType',
       // width: 90,
-      width: '7%',
+      width: '9%',
       key: 'projectType',
       ellipsis: true,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '关联预算',

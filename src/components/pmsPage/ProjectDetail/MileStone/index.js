@@ -16,7 +16,7 @@ import Tool from '../../../../utils/api/tool';
 const { Step } = Steps;
 
 export default function MileStone(props) {
-  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader } = props;
+  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwPrj } = props;
   const { risk = [], member = [], prjBasic = [] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
@@ -333,6 +333,7 @@ export default function MileStone(props) {
                 xwhid={prjBasic?.XWHID || -1}
                 // getMileStoneData={getMileStoneData}
                 refresh={refresh}
+                isHwPrj={isHwPrj}
               />
             </div>
           ))}

@@ -148,7 +148,7 @@ const AddExpense = props => {
             fklcData: JSON.parse(res.fklcRecord),
           };
           setSelectorData(p => obj);
-          console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorData ~ obj', obj);
+          // console.log('🚀 ~ file: index.js ~ line 110 ~ getSelectorData ~ obj', obj);
         }
       })
       .catch(e => {

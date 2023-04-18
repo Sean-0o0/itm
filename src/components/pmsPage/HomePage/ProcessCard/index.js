@@ -66,43 +66,44 @@ export default function ProcessCard(props) {
       backgroundColor = '#3361FFCC';
     }
     return (
-      <div className="process-item" key={key} onClick={() => {
-        if (type === '本系统') {
-          let params = getParams('LC_XWHYALC', 'TrackWork', [
-            {
-              name: 'ID',
-              value: Number(url),
-            },
-          ]);
-          setXwhyaModalVisible(true);
-          getLink(params, setLbModalUrl);
-          return;
-        } else if (url.includes('YKB:')) {
-          const arr = url.split(',');
-          const id = arr[0].split(':')[1];
-          const userykbid = arr[1];
-          GetApplyListProvisionalAuth({
-            id,
-            userykbid,
-          })
-            .then(res => {
-              window.open(res.url);
+      <div
+        className="process-item"
+        key={key}
+        onClick={() => {
+          if (type === '本系统') {
+            let params = getParams('LC_XWHYALC', 'TrackWork', [
+              {
+                name: 'ID',
+                value: Number(url),
+              },
+            ]);
+            setXwhyaModalVisible(true);
+            getLink(params, setLbModalUrl);
+            return;
+          } else if (url.includes('YKB:')) {
+            const arr = url.split(',');
+            const id = arr[0].split(':')[1];
+            const userykbid = arr[1];
+            GetApplyListProvisionalAuth({
+              id,
+              userykbid,
             })
-            .catch(e => console.error('GetApplyListProvisionalAuth', e));
-        } else {
-          //OA流程
-          window.open(url);
-        }
-      }}>
+              .then(res => {
+                window.open(res.url);
+              })
+              .catch(e => console.error('GetApplyListProvisionalAuth', e));
+          } else {
+            //OA流程
+            window.open(url);
+          }
+        }}
+      >
         <div className="item-top">
           <div className="left-tag" style={{ backgroundColor }}>
             {type}
           </div>
           <Tooltip title={content}>
-            <div
-              className="content">
-              {content}
-            </div>
+            <div className="content">{content}</div>
           </Tooltip>
         </div>
         {isDone && (
@@ -156,7 +157,7 @@ export default function ProcessCard(props) {
         )}
         {processDataList?.length === 0 && (
           <Empty
-            description="暂无待办事项"
+            description="暂无流程"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             style={{ width: '100%' }}
           />
