@@ -50,6 +50,7 @@ class ItemBtn extends React.Component {
     xwhyaModalVisible: false,
     src: '',
     hardWareBidModalVisible: false,
+    hardWareContrastModalVisible: false,
   };
 
   componentDidMount() {
@@ -64,15 +65,17 @@ class ItemBtn extends React.Component {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       this.setState({
         hardWareBidModalVisible: false,
+        hardWareContrastModalVisible: false,
       });
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       this.setState({
         hardWareBidModalVisible: false,
+        hardWareContrastModalVisible: false,
       });
       //刷新数据
       this.props.refresh();
-      message.success('操作成功', 1);
+      message.success(this.state.lbModalTitle + '成功', 1);
     }
   };
 
@@ -222,33 +225,36 @@ class ItemBtn extends React.Component {
   };
 
   //硬件中标信息录入
-  getYjzbxxlr = (done, item) => {
-    const xxlr = item => {
-      this.setState({
-        hardWareBidModalVisible: true,
-        lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
-          JSON.stringify({ xmid: item.xmid, type: 'ADD' }),
-        )}`,
-      });
-    };
-    const xxxg = item => {
-      this.setState({
-        hardWareBidModalVisible: true,
-        lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
-          JSON.stringify({ xmid: item.xmid, type: 'UPDATE' }),
-        )}`,
-      });
+  getYjxxlr = (done, item, isBid = true) => {
+    const lrxg = (item, isBid = true, type) => {
+      if (isBid)
+        this.setState({
+          hardWareBidModalVisible: true,
+          lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
+            JSON.stringify({ xmid: item.xmid, type }),
+          )}`,
+          lbModalTitle: '硬件中标信息录入',
+        });
+      else {
+        this.setState({
+          hardWareContrastModalVisible: true,
+          lbModalUrl: `/#/single/pms/AgreementEnter/${EncryptBase64(
+            JSON.stringify({ xmid: item.xmid, type }),
+          )}`,
+          lbModalTitle: '硬件合同信息录入',
+        });
+      }
     };
     if (done)
       return (
         <div className="opr-more">
-          <div className="reopr-btn" onClick={() => xxxg(item)}>
+          <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'UPDATE')}>
             修改
           </div>
         </div>
       );
     return (
-      <div className="opr-btn" onClick={() => xxlr(item)}>
+      <div className="opr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
         录入
       </div>
     );
@@ -582,7 +588,9 @@ class ItemBtn extends React.Component {
       case '合同信息录入':
         return this.getXxlrxg(done, item);
       case '硬件中标信息录入':
-        return this.getYjzbxxlr(done, item);
+        return this.getYjxxlr(done, item);
+      case '硬件合同信息录入':
+        return this.getYjxxlr(done, item);
 
       //文档上传
       case '总办会会议纪要':
@@ -641,13 +649,25 @@ class ItemBtn extends React.Component {
       xwhyaModalVisible,
       src,
       hardWareBidModalVisible,
+      hardWareContrastModalVisible,
     } = this.state;
     const { item, xmmc, xmbh } = this.props;
+
+    //硬件合同信息录入
+    const hardWareContrastModalProps = {
+      isAllWindow: 1,
+      title: lbModalTitle,
+      width: '1000px',
+      height: '780px',
+      style: { top: '10px' },
+      visible: true,
+      footer: null,
+    };
 
     //硬件中标信息录入
     const hardWareBidModalProps = {
       isAllWindow: 1,
-      title: '硬件中标信息录入',
+      title: lbModalTitle,
       width: '1000px',
       height: '780px',
       style: { top: '10px' },
@@ -712,6 +732,7 @@ class ItemBtn extends React.Component {
       <>
         {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}
 
+        {/* 硬件中标信息录入 */}
         {hardWareBidModalVisible && (
           <BridgeModel
             isSpining="customize"
@@ -719,6 +740,20 @@ class ItemBtn extends React.Component {
             onCancel={() => {
               this.setState({
                 hardWareBidModalVisible: false,
+              });
+            }}
+            src={lbModalUrl}
+          />
+        )}
+
+        {/* 硬件中标信息录入 */}
+        {hardWareContrastModalVisible && (
+          <BridgeModel
+            isSpining="customize"
+            modalProps={hardWareContrastModalProps}
+            onCancel={() => {
+              this.setState({
+                hardWareContrastModalVisible: false,
               });
             }}
             src={lbModalUrl}
