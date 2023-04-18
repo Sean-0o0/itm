@@ -2599,7 +2599,7 @@ class NewProjectModelV2 extends React.Component {
                             lineHeight: 1
                           }}>*</span>是否在硬件入围内</span>}>
                             {getFieldDecorator('SFYJRW', {
-                              initialValue: basicInfo.SFYJRW
+                              initialValue: Number(basicInfo.SFYJRW)
                             })(
                               <Radio.Group onChange={e => {
                                 console.log("eeeee", e);
