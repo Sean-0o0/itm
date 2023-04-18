@@ -13,10 +13,68 @@ export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjData, setPrjData] = useState({}); //项目信息-所有
-  const { HJRYDJ, ZSCQLX, RYGW, CGFS, XMLX } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
+  const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  // console.log('🚀 ~ file: index.js ~ line 13 ~ ProjectDetail ~ dictionary', dictionary);
+  const [isHwPrj, setIsHwPrj] = useState(false); //是否硬件项目
+  const XMLX = [
+    {
+      ibm: '-3',
+      note: '自研项目',
+    },
+    {
+      ibm: '-2',
+      note: '外采项目',
+    },
+    {
+      ibm: '-1',
+      note: '全部',
+    },
+    {
+      ibm: '1',
+      note: '普通软件项目',
+    },
+    {
+      ibm: '2',
+      note: '普通项目',
+    },
+    {
+      ibm: '4',
+      note: '软件入围项目',
+    },
+    {
+      ibm: '5',
+      note: '普通硬件项目',
+    },
+    {
+      ibm: '6',
+      note: '硬件入围项目',
+    },
+    {
+      ibm: '7',
+      note: '集合类项目',
+    },
+    {
+      ibm: '8',
+      note: '工程类项目',
+    },
+    {
+      ibm: '9',
+      note: '咨询服务项目',
+    },
+    {
+      ibm: '10',
+      note: '普通人力服务项目',
+    },
+    {
+      ibm: '11',
+      note: '人力服务入围项目',
+    },
+    {
+      ibm: '13',
+      note: '集合项目',
+    },
+  ];
 
   useEffect(() => {
     if (xmid !== -1) {
@@ -28,7 +86,7 @@ export default function ProjectDetail(props) {
       htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     }
     return () => {};
-  }, [HJRYDJ, ZSCQLX, RYGW, CGFS, XMLX, xmid]);
+  }, [HJRYDJ, ZSCQLX, RYGW, CGFS, xmid]);
 
   //判断用户是否为领导
   const getIsLeader = () => {
@@ -63,19 +121,20 @@ export default function ProjectDetail(props) {
             if (isArr) return JSON.parse(str) || [];
             return JSON.parse(str)[0] || {};
           };
-          //字典处理
-          let award = p(res.hjxxRecord);
-          award.forEach(item => {
-            item.RYDJ = HJRYDJ?.filter(x => x.ibm === item.RYDJ)[0]?.note;
-            item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
-            item.HJSJ = item.HJSJ.slice(0, 10);
-          });
-
           let member = p(res.ryxxRecord);
           member.forEach(item => {
             item.GW = RYGW?.filter(x => x.ibm === item.GW)[0]?.note;
           });
           let prjBasic = p(res.xmjbxxRecord, false);
+          setIsHwPrj(prjBasic.XMLX === '6');
+          //字典处理
+          let award = p(res.hjxxRecord);
+          prjBasic.XMLX === '6' &&
+            award.forEach(item => {
+              item.RYDJ = HJRYDJ?.filter(x => x.ibm === item.RYDJ)[0]?.note;
+              item.ZSCQLX = ZSCQLX?.filter(x => x.ibm === item.ZSCQLX)[0]?.note;
+              item.HJSJ = item.HJSJ.slice(0, 10);
+            });
           prjBasic.ZBFS = CGFS?.filter(x => x.ibm === prjBasic.ZBFS)[0]?.note;
           prjBasic.XMLX = XMLX?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
           let obj = {
@@ -99,6 +158,7 @@ export default function ProjectDetail(props) {
         console.error('QueryProjectInfoAll', e);
       });
   };
+
   return (
     <Spin
       spinning={isSpinning}
@@ -123,7 +183,13 @@ export default function ProjectDetail(props) {
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}
             />
-            <InfoDisplay prjData={prjData} routes={routes} xmid={xmid} isLeader={isLeader} />
+            <InfoDisplay
+              isHwPrj={isHwPrj}
+              prjData={prjData}
+              routes={routes}
+              xmid={xmid}
+              isLeader={isLeader}
+            />
           </div>
           <div className="col-right">
             <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />

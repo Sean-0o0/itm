@@ -8,7 +8,7 @@ import { QuerySupplierDetailInfo } from '../../../../services/pmsServices';
 const { TabPane } = Tabs;
 
 export default function TableTabs(props) {
-  const { WBRYGW = [], splId } = props;
+  const { WBRYGW = [], splId = -2 } = props;
   const [prjPurchase, setPrjPurchase] = useState([]); //采购项目
   const [HROutsource, setHROutsource] = useState([]); //人力外包
   const [splEvaluation, setSplEvaluation] = useState([]); //供应商评价
@@ -24,6 +24,15 @@ export default function TableTabs(props) {
     getTableData(1, 10, 'CGXM');
     return () => {};
   }, []);
+
+  useEffect(() => {
+    if (splId !== -2) {
+      setCurPage(1);
+      setCurPageSize(10);
+      getTableData(1, 10, 'CGXM');
+    }
+    return () => {};
+  }, [splId]);
 
   const handleTabsChange = key => {
     setCurPage(1);
@@ -150,19 +159,18 @@ export default function TableTabs(props) {
     },
     {
       title: '项目金额(元)',
-      dataIndex: 'ZF',
+      dataIndex: 'XMYS',
       width: '14%',
       align: 'right',
-      key: 'ZF',
+      key: 'XMYS',
       ellipsis: true,
       sorter: (a, b) => Number(a.ZF) - Number(b.ZF),
       sortDirections: ['descend', 'ascend'],
-      render: (txt, row) =>
-        String(LOGIN_USER_INFO.id) === String(row.FZRID) ? (
-          <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>
-        ) : (
-          '***'
-        ),
+      render: (txt, row) => (
+        <span style={{ marginRight: 20 }}>
+          {String(LOGIN_USER_INFO.id) === String(row.FZRID) ? getAmountFormat(txt) : '***'}
+        </span>
+      ),
     },
     {
       title: '已支付金额(元)',
@@ -173,12 +181,11 @@ export default function TableTabs(props) {
       ellipsis: true,
       sorter: (a, b) => Number(a.YZFJE || 0) - Number(b.YZFJE || 0),
       sortDirections: ['descend', 'ascend'],
-      render: (txt, row) =>
-        String(LOGIN_USER_INFO.id) === String(row.FZRID) ? (
-          <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>
-        ) : (
-          '***'
-        ),
+      render: (txt, row) => (
+        <span style={{ marginRight: 20 }}>
+          {String(LOGIN_USER_INFO.id) === String(row.FZRID) ? getAmountFormat(txt) : '***'}
+        </span>
+      ),
     },
     {
       title: '项目开始结束时间',
@@ -367,7 +374,7 @@ export default function TableTabs(props) {
             showSizeChanger: true,
             hideOnSinglePage: false,
             showQuickJumper: true,
-            showTotal: t => `共 ${total} 条数据`,
+            showTotal: () => `共 ${total} 条数据`,
             total: total,
           }}
           scroll={dataSourse.length > 10 ? { y: 397 } : {}}

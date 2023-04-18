@@ -15,7 +15,8 @@ export default forwardRef(function TopConsole(props, ref) {
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [prjMngerData, setPrjMngerData] = useState([]); //项目经理
   const [orgData, setOrgData] = useState([]); //应用部门
-  const { XMLX } = props.dictionary; //项目类型
+  const { XMLX } = props.dictionary; //
+  const [prjTypeData, setPrjTypeData] = useState([]); //项目类型
   //查询的值
   const [budget, setBudget] = useState(undefined); //关联预算
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
@@ -208,6 +209,7 @@ export default forwardRef(function TopConsole(props, ref) {
             );
           }
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
+          setPrjTypeData([])//'projectTypeRecord
         }
       })
       .catch(e => {

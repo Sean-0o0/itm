@@ -20,7 +20,7 @@ const { api } = config;
 const {
   pmsServices: { getStreamByLiveBos },
 } = api;
-
+let timer = null;
 class ItemBtn extends React.Component {
   state = {
     //Livebos弹窗
@@ -52,30 +52,45 @@ class ItemBtn extends React.Component {
     hardWareBidModalVisible: false,
     hardWareContrastModalVisible: false,
   };
+  // timer = null;
 
   componentDidMount() {
     window.addEventListener('message', this.handleIframePostMessage);
   }
   componentWillUnmount() {
     window.removeEventListener('message', this.handleIframePostMessage);
+    // clearTimeout(timer);
   }
-
+  // 防抖
+  debounce = (fn, waits = 500) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn();
+    }, waits);
+  };
   //监听弹窗状态-按钮
   handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      this.setState({
-        hardWareBidModalVisible: false,
-        hardWareContrastModalVisible: false,
+      this.debounce(() => {
+        this.setState({
+          hardWareBidModalVisible: false,
+          hardWareContrastModalVisible: false,
+        });
       });
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
-      this.setState({
-        hardWareBidModalVisible: false,
-        hardWareContrastModalVisible: false,
+      this.debounce(() => {
+        this.setState({
+          hardWareBidModalVisible: false,
+          hardWareContrastModalVisible: false,
+        });
+        //刷新数据
+        this.props.refresh();
+        message.success(this.state.lbModalTitle + '成功', 1);
       });
-      //刷新数据
-      this.props.refresh();
-      message.success(this.state.lbModalTitle + '成功', 1);
     }
   };
 

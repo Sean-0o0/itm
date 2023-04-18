@@ -47,10 +47,10 @@ export default function CptBudgetCard(props) {
         />
         <div className="item-bottom">
           <Tooltip title={getAmountFormat(target) + '万元'}>
-            <span>目标值：{getAmountFormat(target)}万元</span>
+            <span style={{ cursor: 'default' }}>目标值：{getAmountFormat(target)}万元</span>
           </Tooltip>
           <Tooltip title={getAmountFormat(remain) + '万元'}>
-            <span>剩余值：{getAmountFormat(remain)}万元</span>
+            <span style={{ cursor: 'default' }}>剩余值：{getAmountFormat(remain)}万元</span>
           </Tooltip>
         </div>
       </div>

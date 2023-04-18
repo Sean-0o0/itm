@@ -3,7 +3,7 @@ import { node } from 'prop-types';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 
 export default function BasicInfo(props) {
-  const { detailData } = props;
+  const { detailData, splId } = props;
   const { splInfo = {}, contactInfo = [] } = detailData;
   // const [jydzFold, setJydzFold] = useState(false); //详情显隐
   // const [zzsmFold, setZzsmFold] = useState(false); //详情显隐
@@ -29,7 +29,7 @@ export default function BasicInfo(props) {
       setJyfwFold(!(node.clientHeight <= 44 && node.scrollHeight <= 44));
     }
     return () => {};
-  }, [splInfo.JYFW]);
+  }, [splInfo.JYFW, splId]);
 
   //信息块
   const getInfoItemJYFW = (label = '--', content = '暂无信息', bool) => {

@@ -11,7 +11,7 @@ const {
 } = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, xmid, routes, isLeader } = props;
+  const { prjData, xmid, routes, isLeader, isHwPrj } = props;
   const {
     prjBasic = {},
     award = [],
@@ -163,165 +163,173 @@ export default function InfoDisplay(props) {
               查看详情
             </Link>
           </div>
-          <div className="info-item">
-            <span>获奖信息：</span>
-            {award.length === 0 ? (
-              '暂无数据'
-            ) : (
-              <Popover
-                placement="bottom"
-                title={null}
-                content={tablePopover(award, [
-                  {
-                    title: '奖项名称',
-                    dataIndex: 'JXMC',
-                    width: 180,
-                    key: 'JXMC',
-                    ellipsis: true,
-                    render: txt => (
-                      <Tooltip title={txt} placement="topLeft">
-                        <span style={{ cursor: 'default' }}>{txt}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: '荣誉等级',
-                    dataIndex: 'RYDJ',
-                    width: 150,
-                    key: 'RYDJ',
-                    ellipsis: true,
-                    render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                  },
-                  {
-                    title: '知识产权类型',
-                    dataIndex: 'ZSCQLX',
-                    width: 150,
-                    key: 'ZSCQLX',
-                    ellipsis: true,
-                    render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                  },
-                  {
-                    title: '获奖日期',
-                    dataIndex: 'HJSJ',
-                    key: 'HJSJ',
-                    ellipsis: true,
-                    render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                  },
-                ])}
-                overlayClassName="project-topic-content-popover"
-              >
-                <a style={{ color: '#3361ff' }}>查看详情</a>
-              </Popover>
-            )}
-          </div>
-          <div className="info-item">
-            <span>项目课题：</span>
-            {topic.length === 0 ? (
-              '暂无数据'
-            ) : (
-              <Popover
-                placement="bottomLeft"
-                title={null}
-                content={tablePopover(topic, [
-                  {
-                    title: '课题名称',
-                    dataIndex: 'XMKT',
-                    width: 160,
-                    key: 'XMKT',
-                    ellipsis: true,
-                    render: txt => (
-                      <Tooltip title={txt} placement="topLeft">
-                        <span style={{ cursor: 'default' }}>{txt}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: '进度',
-                    dataIndex: 'JD',
-                    width: 100,
-                    key: 'JD',
-                    ellipsis: true,
-                    render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
-                  },
-                  {
-                    title: '简介',
-                    dataIndex: 'JJ',
-                    key: 'JJ',
-                    ellipsis: true,
-                    render: txt => (
-                      <Tooltip title={txt} placement="topLeft">
-                        <span style={{ cursor: 'default' }}>{txt}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: '当前进展',
-                    dataIndex: 'DQJZ',
-                    width: 100,
-                    key: 'DQJZ',
-                    ellipsis: true,
-                    render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                  },
-                ])}
-                overlayClassName="project-topic-content-popover"
-              >
-                <a style={{ color: '#3361ff' }}>查看详情</a>
-              </Popover>
-            )}
-          </div>
+          {!isHwPrj && (
+            <div className="info-item">
+              <span>获奖信息：</span>
+              {award.length === 0 ? (
+                '暂无数据'
+              ) : (
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  content={tablePopover(award, [
+                    {
+                      title: '奖项名称',
+                      dataIndex: 'JXMC',
+                      width: 180,
+                      key: 'JXMC',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '荣誉等级',
+                      dataIndex: 'RYDJ',
+                      width: 150,
+                      key: 'RYDJ',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                    {
+                      title: '知识产权类型',
+                      dataIndex: 'ZSCQLX',
+                      width: 150,
+                      key: 'ZSCQLX',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                    {
+                      title: '获奖日期',
+                      dataIndex: 'HJSJ',
+                      key: 'HJSJ',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                  ])}
+                  overlayClassName="project-topic-content-popover"
+                >
+                  <a style={{ color: '#3361ff' }}>查看详情</a>
+                </Popover>
+              )}
+            </div>
+          )}
+          {!isHwPrj && (
+            <div className="info-item">
+              <span>项目课题：</span>
+              {topic.length === 0 ? (
+                '暂无数据'
+              ) : (
+                <Popover
+                  placement="bottomLeft"
+                  title={null}
+                  content={tablePopover(topic, [
+                    {
+                      title: '课题名称',
+                      dataIndex: 'XMKT',
+                      width: 160,
+                      key: 'XMKT',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '进度',
+                      dataIndex: 'JD',
+                      width: 100,
+                      key: 'JD',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
+                    },
+                    {
+                      title: '简介',
+                      dataIndex: 'JJ',
+                      key: 'JJ',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '当前进展',
+                      dataIndex: 'DQJZ',
+                      width: 100,
+                      key: 'DQJZ',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                  ])}
+                  overlayClassName="project-topic-content-popover"
+                >
+                  <a style={{ color: '#3361ff' }}>查看详情</a>
+                </Popover>
+              )}
+            </div>
+          )}
         </div>
-        <div className="info-row">
-          <div className="info-item">
-            <span>变更类/计划外需求：</span>
-            {demand.length === 0 ? (
-              '暂无数据'
-            ) : (
-              <Popover
-                placement="bottom"
-                title={null}
-                content={tablePopover(demand, [
-                  {
-                    title: '需求标题',
-                    dataIndex: 'XQBT',
-                    width: 144,
-                    key: 'XQBT',
-                    ellipsis: true,
-                    render: txt => (
-                      <Tooltip title={txt} placement="topLeft">
-                        <span style={{ cursor: 'default' }}>{txt}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: '需求内容',
-                    dataIndex: 'XQNR',
-                    width: 188,
-                    key: 'XQNR',
-                    ellipsis: true,
-                    render: txt => (
-                      <Tooltip title={txt} placement="topLeft">
-                        <span style={{ cursor: 'default' }}>{txt}</span>
-                      </Tooltip>
-                    ),
-                  },
-                  {
-                    title: '需求日期',
-                    dataIndex: 'XQRQ',
-                    // width: 100,
-                    key: 'XQRQ',
-                    ellipsis: true,
-                    render: txt => (
-                      <span style={{ cursor: 'default' }}>{moment(txt).format('YYYY-MM-DD')}</span>
-                    ),
-                  },
-                ])}
-                overlayClassName="unplanned-demand-content-popover"
-              >
-                <a style={{ color: '#3361ff' }}>查看详情</a>
-              </Popover>
-            )}
+        {!isHwPrj && (
+          <div className="info-row">
+            <div className="info-item">
+              <span>变更类/计划外需求：</span>
+              {demand.length === 0 ? (
+                '暂无数据'
+              ) : (
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  content={tablePopover(demand, [
+                    {
+                      title: '需求标题',
+                      dataIndex: 'XQBT',
+                      width: 144,
+                      key: 'XQBT',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '需求内容',
+                      dataIndex: 'XQNR',
+                      width: 188,
+                      key: 'XQNR',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '需求日期',
+                      dataIndex: 'XQRQ',
+                      // width: 100,
+                      key: 'XQRQ',
+                      ellipsis: true,
+                      render: txt => (
+                        <span style={{ cursor: 'default' }}>
+                          {moment(txt).format('YYYY-MM-DD')}
+                        </span>
+                      ),
+                    },
+                  ])}
+                  overlayClassName="unplanned-demand-content-popover"
+                >
+                  <a style={{ color: '#3361ff' }}>查看详情</a>
+                </Popover>
+              )}
+            </div>
           </div>
-        </div>
+        )}
       </div>
       {/* 预算信息 */}
       {isMember() ? (
@@ -366,160 +374,185 @@ export default function InfoDisplay(props) {
         </div>
       )}
       {/* 供应商信息 */}
-      <div className="info-box" key="gysxx">
-        <div className="top-title">供应商信息</div>
-        {isNullArr([supplier[0]?.GYSMC, supplier[0]?.GYSLX, supplier[0]?.LXR]) ? (
-          <Empty
-            description="暂无信息"
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            style={{ width: '100%', marginBottom: '16px' }}
-          />
-        ) : (
-          <div className="info-row">
-            {notNull(supplier[0]?.GYSMC) !== '暂无数据' && (
-              <div
-                className="info-item"
-                key="供应商名称："
-                style={{ display: 'flex', height: 'unset' }}
-              >
-                <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
-                <Link
-                  to={{
-                    pathname:
-                      '/pms/manage/SupplierDetail/' +
-                      EncryptBase64(
-                        JSON.stringify({
-                          splId: supplier[0]?.GYSID,
-                        }),
-                      ),
-                    state: { routes },
-                  }}
-                  style={{
-                    whiteSpace: 'break-spaces',
-                    color: '#3361ff',
-                  }}
-                >
-                  {supplier[0]?.GYSMC}
-                </Link>
-              </div>
-            )}
-            {notNull(supplier[0]?.GYSLX) !== '暂无数据' &&
-              getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
-            {supplier[0]?.LXR && (
-              <div
-                className="info-item"
-                key="供应商联系人："
-                style={{ display: 'flex', height: 'unset' }}
-              >
-                <div className="payment-label" style={{ width: 98 }}>
-                  供应商联系人：
-                </div>
-                <div className="payment-plan">
-                  {supplier.map(x => (
-                    <div key={x.LXRXXID}>
-                      {x.LXR || ''} {x.DH || ''}
-                    </div>
-                  ))}
-                </div>
-              </div>
-            )}
-          </div>
-        )}
-      </div>
-      {/* 招采信息 */}
-      {isMember() ? (
-        <div className="info-box" key="zcxx">
-          <div className="top-title">招采信息</div>
-          {isNullArr([
-            contrast.HTJE,
-            prjBasic.ZBFS,
-            contrast.QSRQ,
-            bidding.TBBZJ,
-            bidding.LYBZJ,
-            bidding.PBBG,
-            otrSupplier[0]?.GYSMC,
-          ]) ? (
+      {!isHwPrj && (
+        <div className="info-box" key="gysxx">
+          <div className="top-title">供应商信息</div>
+          {isNullArr([supplier[0]?.GYSMC, supplier[0]?.GYSLX, supplier[0]?.LXR]) ? (
             <Empty
               description="暂无信息"
               image={Empty.PRESENTED_IMAGE_SIMPLE}
-              style={{ width: '100%', marginBottom: '16px' }}
+              style={{ width: '100%', margin: 0 }}
             />
           ) : (
-            <div className="info-row-box">
-              {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
-              {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-              {contrast.QSRQ &&
-                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-              {bidding.TBBZJ && getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
-              {bidding.LYBZJ && getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
-              {bidding.PBBG && (
-                <div className="info-item" key="评标报告：">
-                  <span>评标报告：</span>
-                  <a
-                    style={{ color: '#3361ff' }}
-                    onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+            <div className="info-row">
+              {notNull(supplier[0]?.GYSMC) !== '暂无数据' && (
+                <div
+                  className="info-item"
+                  key="供应商名称："
+                  style={{ display: 'flex', height: 'unset' }}
+                >
+                  <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
+                  <Link
+                    to={{
+                      pathname:
+                        '/pms/manage/SupplierDetail/' +
+                        EncryptBase64(
+                          JSON.stringify({
+                            splId: supplier[0]?.GYSID,
+                          }),
+                        ),
+                      state: { routes },
+                    }}
+                    style={{
+                      whiteSpace: 'break-spaces',
+                      color: '#3361ff',
+                    }}
                   >
-                    {bidding.PBBG}
-                  </a>
+                    {supplier[0]?.GYSMC}
+                  </Link>
                 </div>
               )}
-              {payment.length !== 0 && getPmtPlan(payment)}
-              {otrSupplier.length !== 0 && (
-                <div className="info-item" key="zcxx-4-1">
-                  <span>其他投标供应商：</span>
-                  <Popover
-                    placement="rightTop"
-                    title={null}
-                    content={otherSupplierPopover(otrSupplier)}
-                    overlayClassName="other-supplier-content-popover"
-                  >
-                    <a style={{ color: '#3361ff' }}>查看详情</a>
-                  </Popover>
+              {notNull(supplier[0]?.GYSLX) !== '暂无数据' &&
+                getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
+              {supplier[0]?.LXR && (
+                <div
+                  className="info-item"
+                  key="供应商联系人："
+                  style={{ display: 'flex', height: 'unset' }}
+                >
+                  <div className="payment-label" style={{ width: 98 }}>
+                    供应商联系人：
+                  </div>
+                  <div className="payment-plan">
+                    {supplier.map(x => (
+                      <div key={x.LXRXXID}>
+                        {x.LXR || ''} {x.DH || ''}
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
           )}
         </div>
-      ) : (
+      )}
+      {/* 招采信息 */}
+      {!isHwPrj &&
+        (isMember() ? (
+          <div className="info-box" key="zcxx">
+            <div className="top-title">招采信息</div>
+            {isNullArr([
+              contrast.HTJE,
+              prjBasic.ZBFS,
+              contrast.QSRQ,
+              bidding.TBBZJ,
+              bidding.LYBZJ,
+              bidding.PBBG,
+              otrSupplier[0]?.GYSMC,
+            ]) ? (
+              <Empty
+                description="暂无信息"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ width: '100%', margin: 0 }}
+              />
+            ) : (
+              <div className="info-row-box">
+                {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
+                {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
+                {contrast.QSRQ &&
+                  getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+                {bidding.TBBZJ &&
+                  getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
+                {bidding.LYBZJ &&
+                  getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
+                {bidding.PBBG && (
+                  <div className="info-item" key="评标报告：">
+                    <span>评标报告：</span>
+                    <a
+                      style={{ color: '#3361ff' }}
+                      onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                    >
+                      {bidding.PBBG}
+                    </a>
+                  </div>
+                )}
+                {payment.length !== 0 && getPmtPlan(payment)}
+                {otrSupplier.length !== 0 && (
+                  <div className="info-item" key="zcxx-4-1">
+                    <span>其他投标供应商：</span>
+                    <Popover
+                      placement="rightTop"
+                      title={null}
+                      content={otherSupplierPopover(otrSupplier)}
+                      overlayClassName="other-supplier-content-popover"
+                    >
+                      <a style={{ color: '#3361ff' }}>查看详情</a>
+                    </Popover>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ) : (
+          <div className="info-box" key="zcxx">
+            <div className="top-title">招采信息</div>
+            {isNullArr([prjBasic.ZBFS, contrast.QSRQ, bidding.PBBG, otrSupplier[0]?.GYSMC]) ? (
+              <Empty
+                description="暂无信息"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ width: '100%', margin: 0 }}
+              />
+            ) : (
+              <div className="info-row-box">
+                {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
+                {contrast.QSRQ &&
+                  getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+                {bidding.PBBG && (
+                  <div className="info-item" key="评标报告：">
+                    <span>评标报告：</span>
+                    <a
+                      style={{ color: '#3361ff' }}
+                      onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                    >
+                      {bidding.PBBG}
+                    </a>
+                  </div>
+                )}
+                {otrSupplier.length !== 0 && (
+                  <div className="info-item" key="zcxx-4-1">
+                    <span>其他投标供应商：</span>
+                    <Popover
+                      placement="rightTop"
+                      title={null}
+                      content={otherSupplierPopover(otrSupplier)}
+                      overlayClassName="other-supplier-content-popover"
+                    >
+                      <a style={{ color: '#3361ff' }}>查看详情</a>
+                    </Popover>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
+        ))}
+      {/* 实施信息 */}
+      {isHwPrj && (
         <div className="info-box" key="zcxx">
-          <div className="top-title">招采信息</div>
-          {isNullArr([prjBasic.ZBFS, contrast.QSRQ, bidding.PBBG, otrSupplier[0]?.GYSMC]) ? (
-            <Empty
-              description="暂无信息"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              style={{ width: '100%', marginBottom: '16px' }}
-            />
-          ) : (
-            <div className="info-row-box">
-              {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-              {contrast.QSRQ &&
-                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-              {bidding.PBBG && (
-                <div className="info-item" key="评标报告：">
-                  <span>评标报告：</span>
-                  <a
-                    style={{ color: '#3361ff' }}
-                    onClick={() => handleFile(bidding.ID, bidding.PBBG)}
-                  >
-                    {bidding.PBBG}
-                  </a>
-                </div>
-              )}
-              {otrSupplier.length !== 0 && (
-                <div className="info-item" key="zcxx-4-1">
-                  <span>其他投标供应商：</span>
-                  <Popover
-                    placement="rightTop"
-                    title={null}
-                    content={otherSupplierPopover(otrSupplier)}
-                    overlayClassName="other-supplier-content-popover"
-                  >
-                    <a style={{ color: '#3361ff' }}>查看详情</a>
-                  </Popover>
-                </div>
-              )}
+          <div className="top-title">实施信息</div>
+          <div className="info-row">
+            <div className="info-item" key="需求列表：">
+              <span>需求列表：</span>
+              {award[0]?.ID === '0' ? '暂无数据' : <a style={{ color: '#3361ff' }}>查看详情</a>}
             </div>
-          )}
+            <div className="info-item" key="询比结果：">
+              <span>询比结果：</span>
+              {topic[0]?.XMID === '0' ? '暂无数据' : <a style={{ color: '#3361ff' }}>查看详情</a>}
+            </div>
+            <div className="info-item" key="标段统计：">
+              <span>标段统计：</span>
+              {demand[0]?.XMID === '0' ? '暂无数据' : <a style={{ color: '#3361ff' }}>查看详情</a>}
+            </div>
+          </div>
         </div>
       )}
     </div>

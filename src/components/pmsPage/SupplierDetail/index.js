@@ -69,7 +69,7 @@ export default function SupplierDetail(props) {
           getDetailData={getDetailData}
           splId={splId}
         />
-        <BasicInfo detailData={detailData} />
+        <BasicInfo detailData={detailData} splId={splId}/>
         <TableTabs detailData={detailData} WBRYGW={WBRYGW} splId={splId}/>
       </Spin>
     </div>
