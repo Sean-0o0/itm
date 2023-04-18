@@ -31,6 +31,8 @@ import moment from "moment";
 import {FetchQueryHardwareTendersAndContract, UpdateHardwareTenderInfo} from "../../../../services/projectManage";
 import {DecryptBase64} from "../../../Common/Encrypt";
 
+
+const {confirm} = Modal;
 const {Option, OptGroup} = Select;
 
 const PASE_SIZE = 10; //关联供应商选择器分页长度
@@ -434,29 +436,25 @@ class EnterBidInfoModel extends React.Component {
   }
 
   handleSaveZbxx = () => {
-      const {
-        tableData,
-        tableDataDel,
-        bidInfo,
-        selectedRowIds,
-        uploadFileParams,
-        fileList,
-        pbbgTurnRed,
-        glgys,
-        addGysModalVisible,
-        xmid,
-        operateType,
-      } = this.state;
-      const {bidBond, tenders, totalRows, performanceBond,} = bidInfo;
-      const {
-        columnName,
-        documentData,
-        fileLength,
-        fileName,
-        filePath,
-        id,
-        objectName,
-      } = uploadFileParams;
+    const {
+      tableData,
+      tableDataDel,
+      bidInfo,
+      uploadFileParams,
+      fileList,
+      xmid,
+      operateType,
+    } = this.state;
+    const {bidBond, performanceBond,} = bidInfo;
+    const {
+      columnName,
+      documentData,
+      fileLength,
+      fileName,
+      filePath,
+      id,
+      objectName,
+    } = uploadFileParams;
       console.log("fileList", fileList)
       if (fileList.length === 0 || tableData.length === 0) {
         message.warn("中标信息未填写完整！")
