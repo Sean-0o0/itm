@@ -6,6 +6,7 @@ import {useLocation} from 'react-router';
 import axios from "axios";
 import moment from "moment";
 import config from "../../../../../utils/config";
+import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
 
 const {api} = config;
 const {pmsServices: {queryFileStream}} = api;
@@ -13,6 +14,9 @@ const {pmsServices: {queryFileStream}} = api;
 
 export default function InfoTable(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
+  const [xbjglrModalVisible, setXbjglrModalVisible] = useState(false); //项目详情弹窗显示
+  const [lbModalUrl, setLbModalUrl] = useState(''); //项目详情弹窗显示
+  const [lbModalTitle, setLbModalTitle] = useState(''); //项目详情弹窗显示
   const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
   console.log("🚀 ~ tableData:", tableData)
@@ -25,6 +29,15 @@ export default function InfoTable(props) {
     };
   }, []);
 
+  const openEditModel = (row) =>{
+    console.log("recordrecordrecord",row)
+    setLbModalTitle('询比结果编辑');
+    setLbModalUrl(`/#/single/pms/PollResultInfo/${EncryptBase64(
+      JSON.stringify({ record: JSON.stringify(row), type:'UPDATE' }),
+    )}`);
+    setXbjglrModalVisible(true);
+  }
+
   //监听新建项目弹窗状态-按钮
   const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
@@ -33,37 +46,6 @@ export default function InfoTable(props) {
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       closeFileAddModal();
     }
-  };
-
-  //获取项目标签数据
-  const getTagData = (tag, idtxt) => {
-    // console.log("🚀 ~ file: index.js:52 ~ getTagData ~ tag, idtxt:", tag, idtxt)
-    let arr = [];
-    let arr2 = [];
-    if (
-      tag !== '' &&
-      tag !== null &&
-      tag !== undefined &&
-      idtxt !== '' &&
-      idtxt !== null &&
-      idtxt !== undefined
-    ) {
-      if (tag.includes(',')) {
-        arr = tag.split(',');
-        arr2 = idtxt.split(',');
-      } else {
-        arr.push(tag);
-        arr2.push(idtxt);
-      }
-    }
-    let arr3 = arr.map((x, i) => {
-      return {
-        name: x,
-        id: arr2[i],
-      };
-    });
-    // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
-    return arr3;
   };
 
   //表格操作后更新数据
@@ -212,23 +194,41 @@ export default function InfoTable(props) {
       width: '10%',
       // fixed: 'right',
       ellipsis: true,
-      render: (text, record) =>
+      render: (text, row, index) =>
         tableData.length >= 1 ? (
           <>
-            <Popconfirm title="确定要删除吗?" onConfirm={() => {
-              return this.handleSingleDelete(record.XQID)
-            }}>
-              <a style={{color: '#3361ff'}}>删除</a>
-            </Popconfirm>
-            <a style={{color: '#3361ff'}}>&nbsp;&nbsp;编辑</a>
+            <a onClick={() =>openEditModel(row)} style={{color: '#3361ff'}}>&nbsp;&nbsp;编辑</a>
           </>
-
         ) : null,
     }
   ];
 
+  //硬件合同信息录入
+  const xbjglrModalProps = {
+    isAllWindow: 1,
+    title: lbModalTitle,
+    width: '800px',
+    height: '600px',
+    style: { top: '60px' },
+    visible: true,
+    footer: null,
+  };
+
   return (
     <div className="info-table">
+      {/* 硬件合同信息录入 */}
+      {xbjglrModalVisible && (
+        <BridgeModel
+          isSpining="customize"
+          modalProps={xbjglrModalProps}
+          onCancel={() => {
+            this.setState({
+              xbjglrModalVisible: false,
+            });
+          }}
+          src={lbModalUrl}
+        />
+      )}
       <div className="project-info-table-box">
         <Table
           loading={tableLoading}

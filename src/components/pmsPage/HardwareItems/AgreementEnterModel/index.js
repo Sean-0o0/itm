@@ -425,7 +425,7 @@ class AgreementEnterModel extends React.Component {
                     placeholder="请选择采购供应商"
                     className="skzh-box"
                     showSearch
-                    allowClear
+                    // allowClear
                     onChange={e => {
                       console.log("请选择采购供应商", e)
                       this.setState({contractInfo: {...contractInfo, supplierId: e}});

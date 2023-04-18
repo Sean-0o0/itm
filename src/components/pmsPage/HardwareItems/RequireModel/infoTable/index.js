@@ -6,7 +6,7 @@ import {useLocation} from 'react-router';
 
 export default function InfoTable(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const {tableData, tableLoading, getTableData, total, params, callBackParams} = props; //表格数据
+  const {tableData, tableLoading, getTableData, total, params, callBackParams,FRQData} = props; //表格数据
   const location = useLocation();
   // console.log("🚀 tableDatatableData:", tableData)
 
@@ -104,6 +104,11 @@ export default function InfoTable(props) {
       width: '10%',
       key: 'FQR',
       // ellipsis: true,
+      render: (text, row, index) => {
+        return (
+          <span>{FRQData?.filter(item =>item.FQR == text)[0]?.NAME}</span>
+        )
+      }
     },
     {
       title: '发起日期',

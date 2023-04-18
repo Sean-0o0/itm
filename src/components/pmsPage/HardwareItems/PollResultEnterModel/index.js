@@ -30,7 +30,7 @@ import {connect} from "dva";
 import moment from "moment";
 import {
   FetchQueryHardwareTendersAndContract,
-  FetchQueryInquiryComparisonInfo, UpdateHardwareTenderInfo,
+  FetchQueryInquiryComparisonInfo, GetDocumentByLiveBos, UpdateHardwareTenderInfo,
   UpdateInquiryComparisonInfo
 } from "../../../../services/projectManage";
 import {DecryptBase64} from "../../../Common/Encrypt";
@@ -46,6 +46,8 @@ class PollResultEnterModel extends React.Component {
       //中标信息
       name: '',
       flowId: '',
+      XBBG: '',
+      ID: '',
     },
     glxq: [],
     uploadFileParams: {
@@ -77,10 +79,23 @@ class PollResultEnterModel extends React.Component {
         xmid: Number(params.xmid)
       })
     }
+    console.log("paramsparams", params)
+    console.log("JSON.parse(params.record)",JSON.parse(params.record))
+    const rec = JSON.parse(params.record);
     setTimeout(function () {
       _this.fetchQueryInquiryComparisonInfoLCXX()
       if (params.type === "UPDATE") {
-        _this.fetchQueryInquiryComparisonInfo();
+        console.log("1111")
+        _this.getDocumentByLiveBos(rec)
+        _this.setState({
+          pollInfo: {
+            //中标信息
+            name: rec?.XBXM,
+            flowId: Number(rec?.GLXQ),
+            // XBBG: rec?.XBBG,
+            ID: rec?.ID,
+          },
+        });
       }
     }, 300);
   };
@@ -88,10 +103,24 @@ class PollResultEnterModel extends React.Component {
 
   // 获取url参数
   getUrlParams = () => {
-    console.log("paramsparams", this.props.match.params)
     const {match: {params: {params: encryptParams = ''}}} = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
     return params;
+  }
+
+  getDocumentByLiveBos = (rec) =>{
+    const {items} = JSON.parse(rec.XBBG)
+    GetDocumentByLiveBos({
+      objectName: "TXMXX_YJXBJG",
+      columnName: "XBBG",
+      title: '22.txt',
+      entryNo: '',
+      id: 0
+    }).then(res => {
+      if (res.success) {
+        console.log("resresresres",res)
+      }
+    });
   }
 
 
@@ -167,9 +196,9 @@ class PollResultEnterModel extends React.Component {
     } = uploadFileParams;
     let submitdata = {
       projectId: xmid,
-      infoId: '-1',
+      infoId: operateType == "UPDATE"?pollInfo.ID:'-1',
       name: pollInfo.name,
-      flowId: pollInfo.flowId,
+      flowId: String(pollInfo.flowId),
       fileInfo: [{fileName, data: documentData}],
       type: 'ADD',
     };

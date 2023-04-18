@@ -7,6 +7,7 @@ import {FetchQueryHardwareDemandInfo} from "../../../../services/projectManage";
 
 export default function RequireModel(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
+  const [FRQData, setFRQData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
@@ -31,6 +32,7 @@ export default function RequireModel(props) {
     })
       .then(res => {
         if (res?.success) {
+          setFRQData([...JSON.parse(res.fqrResult)])
           setTableData([...JSON.parse(res.result)]);
           setTotal(res.totalrows);
           setTableLoading(false);
@@ -88,8 +90,9 @@ export default function RequireModel(props) {
         >
           <strong>需求列表</strong>
         </div>
-        <TopConsole params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
+        <TopConsole FRQData={FRQData} params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable
+          FRQData={FRQData}
           params={params}
           callBackParams={callBackParams}
           tableData={tableData}

@@ -9,7 +9,7 @@ export default function TopConsole(props) {
   const [demand, setDemand] = useState(""); //询比项目名称
   const [drafter, setDrafter] = useState(""); //发起人
   //查询的值
-  const {handleSearch, callBackParams, params} = props;
+  const {handleSearch, callBackParams, params,FRQData} = props;
 
   useEffect(() => {
     return () => {
@@ -21,6 +21,7 @@ export default function TopConsole(props) {
   const handleReset = v => {
     setDemand('')
     setDrafter('')
+    callBackParams({...params, demand:'',drafter:'', current: 1})
   };
 
   // onChange-start
@@ -33,9 +34,9 @@ export default function TopConsole(props) {
 
   //发起人
   const handleFQRNameChange = v => {
-    console.log('发起人发起人发起人', v.target.value);
-    setDrafter(v.target.value)
-    callBackParams({...params, drafter: Number(v.target.value), current: 1})
+    console.log('发起人发起人发起人', v);
+    setDrafter(v)
+    callBackParams({...params, drafter: Number(v), current: 1})
   };
   // onChange-end
 
@@ -48,7 +49,23 @@ export default function TopConsole(props) {
         </div>
         <div className="console-item" style={{width: '30%'}}>
           <div className="item-label">发起人</div>
-          <Input placeholder="请输入" value={drafter} onChange={handleFQRNameChange}/>
+          <Select
+          style={{borderRadius: '8px !important',width:"50%",marginLeft:'8px'}}
+          placeholder="发起人"
+          showSearch
+          allowClear
+          onChange={handleFQRNameChange}
+          filterOption={(input, option) =>
+            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+          }>
+          {
+            FRQData?.map((item = {}, ind) => {
+              return <Option key={item.FQR} value={item.FQR}>
+                {item.NAME}
+              </Option>
+            })
+          }
+        </Select>
         </div>
         <div className="btn-item" style={{width: '35%'}}>
           <Button

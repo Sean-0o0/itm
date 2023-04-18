@@ -20,6 +20,7 @@ export default function TopConsole(props) {
   //重置按钮
   const handleReset = v => {
     setDemand('')
+    callBackParams({...params, demand:'', current: 1})
   };
 
   // onChange-start
