@@ -729,7 +729,7 @@ class ItemBtn extends React.Component {
       title: lbModalTitle,
       width: '1000px',
       height: '600px',
-      style: { top: '60px' },
+      style: {top: '20px'},
       visible: true,
       footer: null,
     };
@@ -739,8 +739,8 @@ class ItemBtn extends React.Component {
       isAllWindow: 1,
       title: lbModalTitle,
       width: '1000px',
-      height: '600px',
-      style: { top: '60px' },
+      height: '770px',
+      style: {top: '20px'},
       visible: true,
       footer: null,
     };
