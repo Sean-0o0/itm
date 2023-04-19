@@ -251,7 +251,7 @@ class ItemBtn extends React.Component {
           lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
             JSON.stringify({ xmid: item.xmid, type }),
           )}`,
-          lbModalTitle: '硬件中标信息录入',
+          lbModalTitle: '硬件中标信息' + (type === 'ADD' ? '录入' : '修改'),
         });
       else {
         this.setState({
@@ -259,7 +259,7 @@ class ItemBtn extends React.Component {
           lbModalUrl: `/#/single/pms/AgreementEnter/${EncryptBase64(
             JSON.stringify({ xmid: item.xmid, type }),
           )}`,
-          lbModalTitle: '硬件合同信息录入',
+          lbModalTitle: '硬件合同信息' + (type === 'ADD' ? '录入' : '修改'),
         });
       }
     };

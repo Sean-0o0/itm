@@ -5,6 +5,7 @@ import { Link } from 'react-router-dom';
 import config from '../../../../utils/config';
 import axios from 'axios';
 import { EncryptBase64 } from '../../../Common/Encrypt';
+import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
@@ -25,6 +26,33 @@ export default function InfoDisplay(props) {
     member = [],
   } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  //liveBos弹窗配置
+  const [lbModal, setLbModal] = useState({
+    url: '#',
+    title: '',
+    xqlbModalVisible: false,
+    xbjglbModalVisible: false,
+  });
+  //询比结果录入
+  const xbjglbModalProps = {
+    isAllWindow: 1,
+    title: lbModal.title,
+    width: '1000px',
+    height: '600px',
+    style: { top: '60px' },
+    visible: true,
+    footer: null,
+  };
+  //询比结果录入
+  const xqlbModalProps = {
+    isAllWindow: 1,
+    title: lbModal.title,
+    width: '1000px',
+    height: '600px',
+    style: { top: '60px' },
+    visible: true,
+    footer: null,
+  };
 
   useEffect(() => {
     return () => {};
@@ -138,8 +166,65 @@ export default function InfoDisplay(props) {
     });
     return data.length === 0;
   };
+  //需求列表
+  const openXqlbModal = xmid => {
+    setLbModal(p => {
+      return {
+        ...p,
+        xqlbModalVisible: true,
+        title: '需求列表',
+        url: `/#/single/pms/RequireList/${EncryptBase64(JSON.stringify({ xmid }))}`,
+      };
+    });
+  };
+
+  //询比结果列表
+  const openXbjglbModal = xmid => {
+    setLbModal(p => {
+      return {
+        ...p,
+        xqlbModalVisible: true,
+        title: '询比结果',
+        url: `/#/single/pms/PollResultList/${EncryptBase64(JSON.stringify({ xmid }))}`,
+      };
+    });
+  };
   return (
     <div className="info-display-box">
+      {/* 需求列表 */}
+      {lbModal.xqlbModalVisible && (
+        <BridgeModel
+          isSpining="customize"
+          modalProps={xqlbModalProps}
+          onCancel={() => {
+            setLbModal(p => {
+              return {
+                ...p,
+                xqlbModalVisible: false,
+              };
+            });
+          }}
+          src={lbModal.url}
+        />
+      )}
+
+      {/* 询比结果列表 */}
+      {lbModal.xbjglbModalVisible && (
+        <BridgeModel
+          isSpining="customize"
+          modalProps={xbjglbModalProps}
+          onCancel={() => {
+            setLbModal(p => {
+              return {
+                ...p,
+                xbjglbModalVisible: false,
+              };
+            });
+          }}
+          src={lbModal.url}
+        />
+      )}
+
       {/* 项目信息 */}
       <div className="info-box" key="xmxx">
         <div className="top-title">项目信息</div>
@@ -542,15 +627,33 @@ export default function InfoDisplay(props) {
           <div className="info-row">
             <div className="info-item" key="需求列表：">
               <span>需求列表：</span>
-              {award[0]?.ID === '0' ? '暂无数据' : <a style={{ color: '#3361ff' }}>查看详情</a>}
+              {award[0]?.ID === '0' ? (
+                '暂无数据'
+              ) : (
+                <a style={{ color: '#3361ff' }} onClick={() => openXqlbModal(xmid)}>
+                  查看详情
+                </a>
+              )}
             </div>
             <div className="info-item" key="询比结果：">
               <span>询比结果：</span>
-              {topic[0]?.XMID === '0' ? '暂无数据' : <a style={{ color: '#3361ff' }}>查看详情</a>}
+              {topic[0]?.XMID === '0' ? (
+                '暂无数据'
+              ) : (
+                <a style={{ color: '#3361ff' }} onClick={() => openXbjglbModal(xmid)}>
+                  查看详情
+                </a>
+              )}
             </div>
             <div className="info-item" key="标段统计：">
               <span>标段统计：</span>
-              {demand[0]?.XMID === '0' ? '暂无数据' : <a style={{ color: '#3361ff' }}>查看详情</a>}
+              {demand[0]?.XMID === '0' ? (
+                '暂无数据'
+              ) : (
+                <a style={{ color: '#3361ff' }} onClick={() => openXqlbModal(xmid)}>
+                  查看详情
+                </a>
+              )}
             </div>
           </div>
         </div>
