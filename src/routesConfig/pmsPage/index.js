@@ -129,8 +129,18 @@ exports.routes = [
     component: './pmsPage/AgreementEnter',
   },
   {
-    // 硬件项目相关-合同信息录入
+    // 硬件项目相关-询比结果录入
     path: `${prefix}/PollResultInfo`,
     component: './pmsPage/PollResultInfo',
+  },
+  {
+    // 硬件项目相关-询比结果列表
+    path: `${prefix}/PollResultList`,
+    component: './pmsPage/PollResultList',
+  },
+  {
+    // 硬件项目相关-需求列表
+    path: `${prefix}/RequireList`,
+    component: './pmsPage/RequireList',
   },
 ];

@@ -45,7 +45,7 @@ class PollResultEnterModel extends React.Component {
     pollInfo: {
       //中标信息
       name: '',
-      flowId: '',
+      flowId: [],
       XBBG: '',
       ID: '',
     },
@@ -64,15 +64,15 @@ class PollResultEnterModel extends React.Component {
     isSpinning: false, //弹窗加载状态
   };
 
-  componentDidMount() {
-    this.fetchQueryInquiryComparisonInfo()
-  }
+  // componentDidMount() {
+  //   this.fetchQueryInquiryComparisonInfo()
+  // }
 
   componentDidMount = async () => {
     const _this = this;
     const params = this.getUrlParams();
     if (params.xmid && params.xmid !== -1) {
-      console.log("paramsparams", params)
+      console.log("paramsparams000000", params)
       // 修改项目操作
       this.setState({
         operateType: params.type,
@@ -80,22 +80,28 @@ class PollResultEnterModel extends React.Component {
       })
     }
     console.log("paramsparams", params)
-    console.log("JSON.parse(params.record)",JSON.parse(params.record))
-    const rec = JSON.parse(params.record);
     setTimeout(function () {
       _this.fetchQueryInquiryComparisonInfoLCXX()
       if (params.type === "UPDATE") {
-        console.log("1111")
+        console.log("JSON.parse(params.record)", JSON.parse(params.record))
+        const rec = JSON.parse(params.record);
+        let newFlowId = []
+        if (rec?.GLXQ) {
+          newFlowId = rec?.GLXQ.split(",");
+        }
         _this.getDocumentByLiveBos(rec)
         _this.setState({
           pollInfo: {
             //中标信息
             name: rec?.XBXM,
-            flowId: Number(rec?.GLXQ),
+            flowId: newFlowId,
             // XBBG: rec?.XBBG,
             ID: rec?.ID,
           },
         });
+        console.log("this.ssssss", _this.state)
+        console.log("this.ssssss", _this.state.fileList)
+        console.log("this.ssssss", _this.state.uploadFileParams)
       }
     }, 300);
   };
@@ -110,15 +116,35 @@ class PollResultEnterModel extends React.Component {
 
   getDocumentByLiveBos = (rec) =>{
     const {items} = JSON.parse(rec.XBBG)
+    console.log("itemsitems", items)
     GetDocumentByLiveBos({
       objectName: "TXMXX_YJXBJG",
       columnName: "XBBG",
-      title: '22.txt',
-      entryNo: '',
-      id: 0
+      title: items[0][1],
+      entryNo: 0,
+      id: rec?.ID
     }).then(res => {
+      if (res) {
+      }
+    }).catch((res) => {
+      console.log("eeeeee", res)
       if (res.success) {
-        console.log("resresresres",res)
+        let arrTemp = [];
+        if (res.documentUrl && res.documentData && items[0][1]) {
+          arrTemp.push({
+            uid: Date.now(),
+            name: items[0][1],
+            status: 'done',
+            url: res.documentUrl,
+          });
+        }
+        this.setState({
+          uploadFileParams: {
+            documentData: res.documentData,
+            fileName: items[0][1],
+          },
+          fileList: [...this.state.fileList, ...arrTemp]
+        })
       }
     });
   }
@@ -196,11 +222,11 @@ class PollResultEnterModel extends React.Component {
     } = uploadFileParams;
     let submitdata = {
       projectId: xmid,
-      infoId: operateType == "UPDATE"?pollInfo.ID:'-1',
+      infoId: operateType == "UPDATE" ? pollInfo.ID : '-1',
       name: pollInfo.name,
       flowId: String(pollInfo.flowId),
       fileInfo: [{fileName, data: documentData}],
-      type: 'ADD',
+      type: operateType,
     };
     console.log('🚀submitdata', submitdata);
     UpdateInquiryComparisonInfo({

@@ -2,13 +2,14 @@ import React, {useEffect, useState} from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {QueryProjectListInfo} from '../../../../services/pmsServices';
-import {message, Modal} from 'antd';
+import {message, Spin,} from 'antd';
 import {FetchQueryHardwareDemandInfo} from "../../../../services/projectManage";
 
 export default function RequireModel(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [FRQData, setFRQData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
+  const [isSpinning, setIsSpinning] = useState(true); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [params, setParams] = useState({demand: '', drafter: '', current: 1, pageSize: 10});
@@ -17,6 +18,7 @@ export default function RequireModel(props) {
 
   useEffect(() => {
     getTableData();
+    setIsSpinning(false)
     return () => {
     };
   }, []);
@@ -56,40 +58,8 @@ export default function RequireModel(props) {
   };
 
   return (
-    <div>
-      <Modal
-        wrapClassName="poll-result-box"
-        width={'1000px'}
-        maskClosable={false}
-        zIndex={100}
-        cancelText={'取消'}
-        okText={"保存"}
-        bodyStyle={{
-          padding: '0',
-        }}
-        style={{top: '45px'}}
-        title={null}
-        visible={visible}
-        onCancel={() => {
-          // this.setState({ tableData: [] });
-          closeModal();
-        }}
-      >
-        <div
-          style={{
-            height: '42px',
-            width: '100%',
-            display: 'flex',
-            alignItems: 'center',
-            backgroundColor: '#3361FF',
-            color: 'white',
-            padding: '0 24px',
-            borderRadius: '8px 8px 0 0',
-            fontSize: '2.333rem',
-          }}
-        >
-          <strong>需求列表</strong>
-        </div>
+    <div className="require-list-box" style={{overflow: 'hidden', height: "100%"}}>
+      <Spin spinning={isSpinning} tip="加载中" size="large">
         <TopConsole FRQData={FRQData} params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable
           FRQData={FRQData}
@@ -100,7 +70,7 @@ export default function RequireModel(props) {
           getTableData={getTableData}
           total={total}
         />
-      </Modal>
+      </Spin>
     </div>
   );
 }

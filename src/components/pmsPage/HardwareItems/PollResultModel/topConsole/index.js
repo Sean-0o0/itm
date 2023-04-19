@@ -36,7 +36,7 @@ export default function TopConsole(props) {
     <div className="top-console">
       <div className="item-box">
         <div className="console-item" style={{width: '50%'}}>
-          <div className="item-label">询比项目名称</div>
+          <div className="item-label">询比项目名称：</div>
           <Input placeholder="请输入" value={demand} onChange={handleNameChange}/>
         </div>
         <div className="btn-item" style={{width: '50%'}}>
