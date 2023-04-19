@@ -57,7 +57,7 @@ export default function ToDoCard(props) {
     // console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
     setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
-    setIsHwPrj(['5', '6'].includes(item.xmlx));
+    setIsHwPrj(['6'].includes(item.xmlx));
     setCurrentXmid(item.xmid);
   };
 

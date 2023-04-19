@@ -968,20 +968,15 @@
 .monthly-report-detail,
 .weekly-report-summary {
   overflow: hidden;
+  height: 100%;
 
   & .top-console {
-    height: 9.5232rem;
-    margin: 24px 24px 0 24px;
+    height: 55px;
     background-color: white;
-    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
-    border-radius: 8px 8px 0 0;
-    display: flex;
-    flex-direction: row;
-    align-items: center;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
     padding: 0 24px;
-    .font-s14();
+    .font-size-16();
     font-family: PingFangSC-Regular;
-    font-weight: 400;
     color: #303133;
 
     .ant-tabs-nav .ant-tabs-tab {
@@ -994,6 +989,7 @@
 
     .ant-tabs-nav .ant-tabs-tab-active {
       color: #3361ff !important;
+      font-weight: bold;
 
       &:hover {
         color: #3363ffc7 !important;
@@ -1003,31 +999,40 @@
     .ant-tabs-ink-bar {
       background-color: #3361ff;
     }
-
-    & .console-title {
-      .font-s18();
-      font-family: PingFangSC-Medium;
-      font-weight: 600;
-      // margin-right: 56.1472rem;
-    }
   }
 
   & .table-box {
-    height: calc(100vh - 21.44rem);
-    margin: 0 24px 24px 24px;
+    margin: 24px;
+    height: calc(100% - 103px);
     background-color: white;
-    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
-    border-radius: 0 0 8px 8px;
-    margin-top: -1.86rem;
+    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border-radius: 8px;
 
     & .table-console {
       display: flex;
       flex-direction: row;
       align-items: center;
       width: 100%;
-      height: 9.5232rem;
-      border-bottom: 1px#edf1f4 solid;
+      height: 64px;
       padding: 0 24px;
+      button {
+        .antd-btn-default();
+      }
+
+      .month-slt-btn {
+        button {
+          &:first-child {
+            border-right: 0;
+            border-radius: 4px 0 0 4px;
+            &:hover {
+              border-right: 1px solid #3361ffaf;
+            }
+          }
+          &:last-child {
+            border-radius: 0 4px 4px 0;
+          }
+        }
+      }
 
       & .console-date {
         display: flex;
@@ -1049,71 +1054,72 @@
     }
 
     & .table-content {
-      // display: flex;
-      padding: 0 24px;
-      margin-top: 2.232rem;
-      text-align: right;
+      padding: 24px;
+      padding-top: 0;
+      height: calc(100% - 64px);
+      overflow: hidden;
     }
   }
-
+  .ant-table-wrapper {
+    border: 1px solid #e8e8e8;
+    // border-bottom: 0;
+  }
   .ant-table {
     th,
     td {
-      padding: 5px;
-      text-align: center;
+      padding: 9.2px;
       position: relative;
     }
 
     th {
-      font-weight: 600;
-      padding: 16px;
-    }
-
-    //与下边ant-table-body-inner高度差要差1rem
-    .ant-table-body {
-      height: calc(100vh - 50rem);
+      // padding: 16px;
+      font-weight: bold;
+      background-color: #f5f7fa;
     }
 
     .ant-table-placeholder {
       position: absolute;
       width: 100%;
-      top: 8rem;
-      height: calc(100vh - 60rem);
+      top: 55px;
     }
-  }
 
-  //高度要一致
-  .ant-table-body-inner {
-    max-height: calc(100vh - 50rem) !important;
+    .ant-table-body {
+      margin-top: 0.5px;
+    }
   }
 
   .ant-table-fixed-right {
     & ::-webkit-scrollbar {
-      // width: 10px;
-      // width: 17px;
       background-color: #fafafa;
+      // border-radius: 9px;
     }
 
     & ::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
-      border-radius: 1.3392rem;
+      border-radius: 9px;
+    }
+    // .ant-table-bordered.ant-table-fixed-header
+    //   .ant-table-scroll
+    //   .ant-table-header::-webkit-scrollbar {
+    //   // border: 0;
+    // }
+    // .ant-table-fixed-header .ant-table-scroll .ant-table-header::-webkit-scrollbar {
+    //   // border: 0;
+    // }
+    .ant-table-header {
+      background-color: #f5f7fa;
     }
   }
 
   .ant-table-scroll {
     & ::-webkit-scrollbar {
-      // height: 10px;
-      // width: 10px;
-      // height: 17px;
-      // width: 17px;
-      background-color: transparent;
-      // display: none;
-      // height: 0;
+      background-color: #fafafa;
+      // border-radius: 9px;
     }
 
     & ::-webkit-scrollbar-thumb {
-      background-color: transparent;
-      border-radius: 5px;
+      background-color: #c1c1c1;
+      border-radius: 9px;
     }
   }
 
@@ -1122,7 +1128,7 @@
   }
 
   .edited-img {
-    height: 2.232rem;
+    height: 15px;
     position: absolute;
     top: 0;
     left: 0;
@@ -1147,7 +1153,7 @@
   .editable-cell-value-wrap {
     // height: 13.8rem;
     min-height: 32px;
-    padding: 0.744rem 12px;
+    padding: 5px 12px;
     cursor: pointer;
     overflow: hidden;
     text-overflow: ellipsis;
@@ -1163,15 +1169,6 @@
     padding: 4px 1.6368rem;
   }
 }
-
-// .monthly-report-detail,
-// .weekly-report-summary {
-
-//   //高度要一致
-//   .ant-table-body-inner {
-//     max-height: calc(100vh - 50rem) !important;
-//   }
-// }
 
 //外包生命周期
 .epiboly-life-cycle {
@@ -2128,20 +2125,19 @@
     }
   }
   & .diy-style-spin {
-    padding-top: 16px;
-    max-height: 89.28rem;
+    max-height: 600px;
     overflow: hidden;
     overflow-y: auto;
 
     &::-webkit-scrollbar {
       width: 10px;
       background-color: #f5f5f5;
-      border-radius: 1.3392rem;
+      border-radius: 5px;
     }
 
     &::-webkit-scrollbar-thumb {
       background-color: #c1c1c1;
-      border-radius: 1.3392rem;
+      border-radius: 5px;
     }
   }
 
@@ -2188,7 +2184,11 @@
       }
     }
   }
-
+  .ant-upload-list-item-info {
+    a {
+      color: #3361ff;
+    }
+  }
   //表格滚动条
   .ant-table-header {
     min-width: 0 !important;
@@ -4687,7 +4687,7 @@
               font-weight: bold;
               color: #3361ff;
             }
-            a{
+            a {
               color: #3361ff;
             }
           }
@@ -5656,8 +5656,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
 
           .ant-steps-item {
-            width: 285.33px;
-            flex: unset;
+            // width: 285.33px;
+            // flex: unset;
             .ant-steps-item-container {
               padding-bottom: 16px;
             }
@@ -9265,7 +9265,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   //  line-height: 22px !important;
   //}
 
-
   //收款账户下拉箭头位置
   .skzh-box {
     .ant-select-arrow {
@@ -9715,21 +9714,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
 
-          .tag-item-0{
+          .tag-item-0 {
             max-width: 140px;
           }
-          
-          .tag-item-1{
+
+          .tag-item-1 {
             max-width: 90px;
           }
 
-          .tag-item-last{
+          .tag-item-last {
             width: 20px;
             padding-left: 0px;
             padding-right: 0px;
             text-align: center;
           }
-        
 
           .ant-table-thead {
             position: sticky;

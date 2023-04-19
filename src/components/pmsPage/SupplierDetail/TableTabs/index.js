@@ -216,7 +216,7 @@ export default function TableTabs(props) {
               to={{
                 pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                   JSON.stringify({
-                    xmid: row.XMID,
+                    xmid: row.WBXMID,
                   }),
                 )}`,
                 state: {

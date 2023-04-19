@@ -701,7 +701,7 @@ class BidInfoUpdate extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
-          width={'1030px'}
+          width={'860px'}
           maskClosable={false}
           zIndex={100}
           cancelText={'关闭'}
@@ -894,7 +894,7 @@ class BidInfoUpdate extends React.Component {
               <Row>
                 <Col span={12}>
                   <Form.Item
-                    label="履约保证金金额（元）"
+                    label="履约保证金(元)"
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
                   >
@@ -903,19 +903,19 @@ class BidInfoUpdate extends React.Component {
                       rules: [
                         {
                           required: true,
-                          message: '履约保证金金额（元）不允许空值',
+                          message: '履约保证金金额(元)不允许空值',
                         },
                         {
                           pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
                           message: '最多不超过13位数字且小数点后数字不超过2位',
                         },
                       ],
-                    })(<Input placeholder="请输入履约保证金金额（元）" />)}
+                    })(<Input placeholder="请输入履约保证金金额(元)" />)}
                   </Form.Item>
                 </Col>
                 <Col span={12}>
                   <Form.Item
-                    label="投标保证金（元）"
+                    label="投标保证金(元)"
                     labelCol={{ span: 8 }}
                     wrapperCol={{ span: 16 }}
                   >
@@ -924,14 +924,14 @@ class BidInfoUpdate extends React.Component {
                       rules: [
                         {
                           required: true,
-                          message: '投标保证金（元）不允许空值',
+                          message: '投标保证金(元)不允许空值',
                         },
                         {
                           pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
                           message: '最多不超过13位数字且小数点后数字不超过2位',
                         },
                       ],
-                    })(<Input placeholder="请输入投标保证金（元）" />)}
+                    })(<Input placeholder="请输入投标保证金(元)" />)}
                   </Form.Item>
                 </Col>
               </Row>

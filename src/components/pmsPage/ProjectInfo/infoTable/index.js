@@ -178,7 +178,7 @@ export default function InfoTable(props) {
     {
       title: '项目类型',
       dataIndex: 'projectType',
-      width: '9%',
+      width: '11%',
       key: 'projectType',
       ellipsis: true,
       render: text => (

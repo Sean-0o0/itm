@@ -76,6 +76,7 @@ class ItemBtn extends React.Component {
   handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       this.debounce(() => {
+        console.log('jkk');
         this.setState({
           hardWareBidModalVisible: false,
           hardWareContrastModalVisible: false,
@@ -272,7 +273,15 @@ class ItemBtn extends React.Component {
         </div>
       </div>
     );
-    if (done)
+    if (done) {
+      if (isBid)
+        return (
+          <div className="opr-more">
+            <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'UPDATE')}>
+              修改
+            </div>
+          </div>
+        );
       return (
         <div className="opr-more">
           <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
@@ -290,6 +299,8 @@ class ItemBtn extends React.Component {
           </Popover>
         </div>
       );
+    }
+
     return (
       <div className="opr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
         录入

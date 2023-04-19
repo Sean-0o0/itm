@@ -214,7 +214,7 @@ export default function TopConsole(props) {
     title: '编辑项目',
     width: '1000px',
     height: '780px',
-    style: {top: '10px'},
+    style: {top: '60px'},
     visible: fileAddVisible,
     footer: null,
   };
@@ -226,7 +226,7 @@ export default function TopConsole(props) {
     title: sqModaltxt,
     width: '600px',
     height: '400px',
-    style: { top: '20px' },
+    style: { top: '60px' },
     visible: sqModalVisible,
     footer: null,
   };

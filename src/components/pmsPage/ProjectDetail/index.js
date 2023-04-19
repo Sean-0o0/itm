@@ -29,51 +29,51 @@ export default function ProjectDetail(props) {
     },
     {
       ibm: '-1',
-      note: '全部',
+      note: '全部项目',
     },
     {
       ibm: '1',
-      note: '普通软件',
+      note: '普通软件项目',
     },
     {
       ibm: '2',
-      note: '普通',
+      note: '普通项目',
     },
     {
       ibm: '4',
-      note: '软件入围',
+      note: '软件入围项目',
     },
     {
       ibm: '5',
-      note: '普通硬件',
+      note: '普通硬件项目',
     },
     {
       ibm: '6',
-      note: '硬件入围',
+      note: '硬件入围项目',
     },
     {
       ibm: '7',
-      note: '集合类',
+      note: '集合类项目',
     },
     {
       ibm: '8',
-      note: '工程类',
+      note: '工程类项目',
     },
     {
       ibm: '9',
-      note: '咨询服务',
+      note: '咨询服务项目',
     },
     {
       ibm: '10',
-      note: '普通人力服务',
+      note: '普通人力服务项目',
     },
     {
       ibm: '11',
-      note: '人力服务入围',
+      note: '人力服务入围项目',
     },
     {
       ibm: '13',
-      note: '集合',
+      note: '集合项目',
     },
   ];
 
@@ -128,7 +128,7 @@ export default function ProjectDetail(props) {
           });
           let prjBasic = p(res.xmjbxxRecord, false);
           setIsHwSltPrj(prjBasic.XMLX === '6');
-          setIsHwPrj(['5', '6'].includes(prjBasic.XMLX));
+          setIsHwPrj(['6'].includes(prjBasic.XMLX));
           //字典处理
           let award = p(res.hjxxRecord);
           prjBasic.XMLX !== '6' &&

@@ -54,9 +54,32 @@ export default function InfoDisplay(props) {
     footer: null,
   };
 
-  useEffect(() => {
-    return () => {};
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener('message', handleIframePostMessage);
+  //   return () => {
+  //     window.removeEventListener('message', handleIframePostMessage);
+  //   };
+  // }, []);
+  // 
+  // //监听弹窗状态
+  // const handleIframePostMessage = event => {
+  //   if (typeof event.data !== 'string' && event.data.operate === 'close') {
+  //     setLbModal(p => {
+  //       return {
+  //         ...p,
+  //         xbjglbModalVisible: false
+  //       };
+  //     });
+  //   }
+  //   if (typeof event.data !== 'string' && event.data.operate === 'success') {
+  //     setLbModal(p => {
+  //       return {
+  //         ...p,
+  //         xbjglbModalVisible: false
+  //       };
+  //     });
+  //   }
+  // };
 
   //评标报告预览下载
   const handleFile = (id, fileName) => {
@@ -189,6 +212,7 @@ export default function InfoDisplay(props) {
       };
     });
   };
+  
   return (
     <div className="info-display-box">
       {/* 需求列表 */}
