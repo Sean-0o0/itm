@@ -646,7 +646,7 @@ class EnterBidInfoModel extends React.Component {
         title: '操作',
         dataIndex: 'operator',
         key: 'operator',
-        width: '6%',
+        width: '75px',
         ellipsis: true,
         render: (text, record) =>
           this.state.tableData.length >= 1 ? (
@@ -691,9 +691,9 @@ class EnterBidInfoModel extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新增供应商',
-      width: '120rem',
-      height: '90rem',
-      style: {top: '20rem'},
+      width: '800px',
+      height: '500px',
+      style: {top: '80px'},
       visible: addGysModalVisible,
       footer: null,
     };
@@ -834,7 +834,7 @@ class EnterBidInfoModel extends React.Component {
                         let arrData = tableData;
                         arrData.push({
                           ID: Date.now(),
-                          ['BJLX' + Date.now()]: '',
+                          ['BJLX' + Date.now()]: "1",
                           ['BJMC' + Date.now()]: '',
                           ['ZBGYS' + Date.now()]: '',
                         });

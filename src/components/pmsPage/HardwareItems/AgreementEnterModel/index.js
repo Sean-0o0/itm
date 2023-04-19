@@ -252,9 +252,9 @@ class AgreementEnterModel extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新增供应商',
-      width: '120rem',
-      height: '90rem',
-      style: {top: '20rem'},
+      width: '800px',
+      height: '500px',
+      style: {top: '30px'},
       visible: addGysModalVisible,
       footer: null,
     };
