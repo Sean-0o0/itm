@@ -20,7 +20,7 @@ class AttachLibrary extends Component {
 
     componentDidMount() {
         const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
-        if (LOGIN_USERID!==undefined) {
+        if (LOGIN_USERID !== undefined) {
             QueryUserRole({
                 userId: Number(LOGIN_USERID),
             }).then(res => {
@@ -28,7 +28,7 @@ class AttachLibrary extends Component {
                 if (code > 0) {
                     this.setState({
                         cxlx: role === '普通人员' ? 'FQCY' : 'BM'
-                    },()=>{
+                    }, () => {
                         this.handleSearch()
                     })
                 }
@@ -36,22 +36,26 @@ class AttachLibrary extends Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps (){
+    UNSAFE_componentWillReceiveProps() {
         this.setState({
             pageParams: {
                 ...this.state.pageParams,
                 xmid: this.props.xmid
             }
-        },()=>{
+        }, () => {
             this.handleSearch()
         })
-        
+
     }
 
     handleSearch = async (params = {}) => {
         const { pageParams = {}, cxlx } = this.state
         this.setState({
             tableLoading: true,
+            pageParams: {
+                ...pageParams,
+                ...params
+            }
         })
 
         QueryAttachLibraryList({
@@ -67,8 +71,6 @@ class AttachLibrary extends Component {
                         attachList: record,
                         tableLoading: false,
                         pageParams: {
-                            ...pageParams,
-                            ...params,
                             total,
                         }
                     })
@@ -87,7 +89,8 @@ class AttachLibrary extends Component {
 
     render() {
         const { tableLoading = false, attachList = [], pageParams, cxlx } = this.state
-        const { dictionary, xmid, pathname } = this.props;
+        const { xmid } = pageParams
+        const { dictionary, pathname } = this.props;
         return (<div className="attach-library-box">
             <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid} />
             <InfoTable pathname={pathname} tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />

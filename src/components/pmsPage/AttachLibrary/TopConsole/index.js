@@ -5,6 +5,7 @@ import TreeUtils from '../../../../utils/treeUtils';
 
 class ToConsole extends Component {
   state = {
+    time: 0,
     labelList: [],
     xmlist: [],
     wdlxList: [],
@@ -243,6 +244,7 @@ class ToConsole extends Component {
   handleXmid = v => {
     const { params = {} } = this.state;
     this.setState({
+      time: 1,
       params: {
         ...params,
         xmid: v.join(';'),
