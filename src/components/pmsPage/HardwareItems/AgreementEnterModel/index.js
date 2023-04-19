@@ -87,13 +87,14 @@ class AgreementEnterModel extends React.Component {
     return params;
   }
 
-  // 查询硬件项目的招标信息，合同信息---查询反显信息
+  // 查询硬件项目的招标信息，合同信息----查询相关流程
   fetchQueryHardwareTendersAndContract = () => {
-    const {xmid} = this.state;
+    const {xmid, operateType} = this.state;
     FetchQueryHardwareTendersAndContract({
       xmmc: xmid,
       flowId: -1,
       type: 'HTXX',
+      flowType: operateType,
     }).then(res => {
       if (res.success) {
         const {lcxx} = res;
@@ -106,13 +107,14 @@ class AgreementEnterModel extends React.Component {
     });
   };
 
-  // 查询硬件项目的招标信息，合同信息----查询相关流程
+  // 查询硬件项目的招标信息，合同信息---查询反显信息
   fetchQueryHardwareContract = () => {
-    const {xmid, contractInfo} = this.state;
+    const {xmid, contractInfo, operateType} = this.state;
     FetchQueryHardwareTendersAndContract({
       xmmc: xmid,
       flowId: -1,
       type: 'HTXX',
+      flowType: operateType,
     }).then(res => {
       if (res.success) {
         const {htxx} = res;
@@ -200,6 +202,10 @@ class AgreementEnterModel extends React.Component {
   handleSaveHtxx = () => {
     const {contractInfo = [], xmid, operateType} = this.state;
     console.log("contractInfocontractInfo", contractInfo)
+    if (contractInfo.amount == '' || contractInfo.date == '' || contractInfo.supplierId == '' || contractInfo.flow == '') {
+      message.warn("合同信息未填写完整！", 1);
+      return;
+    }
     let submitdata = {
       projectId: Number(xmid),
       amount: Number(contractInfo.amount),
@@ -246,9 +252,9 @@ class AgreementEnterModel extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新增供应商',
-      width: '120rem',
-      height: '90rem',
-      style: {top: '20rem'},
+      width: '800px',
+      height: '500px',
+      style: {top: '30px'},
       visible: addGysModalVisible,
       footer: null,
     };

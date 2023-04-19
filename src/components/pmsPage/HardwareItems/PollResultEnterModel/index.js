@@ -210,7 +210,7 @@ class PollResultEnterModel extends React.Component {
 
 
   handleSavePollInfo = () => {
-    const {xmid, operateType, uploadFileParams, pollInfo} = this.state;
+    const {xmid, operateType, uploadFileParams, pollInfo, fileList} = this.state;
     const {
       columnName,
       documentData,
@@ -220,6 +220,10 @@ class PollResultEnterModel extends React.Component {
       id,
       objectName,
     } = uploadFileParams;
+    if (pollInfo.name == '' || pollInfo.flowId == '' || fileList.length == 0) {
+      message.warn("询比信息未填写完整！", 1);
+      return;
+    }
     let submitdata = {
       projectId: xmid,
       infoId: operateType == "UPDATE" ? pollInfo.ID : '-1',

@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip, Empty, Popconfirm} from 'antd';
+import {Button, Table, Popover, message, Tooltip, Empty, Popconfirm, Modal, Divider} from 'antd';
 import {EncryptBase64} from '../../../../Common/Encrypt';
 import {Link} from 'react-router-dom';
 import {useLocation} from 'react-router';
@@ -7,6 +7,13 @@ import axios from "axios";
 import moment from "moment";
 import config from "../../../../../utils/config";
 import BridgeModel from "../../../../Common/BasicModal/BridgeModel";
+import PollResultEnterModel from "../../PollResultEnterModel";
+import PollResultEditModel from "../../PollResultEditModel";
+import {
+  FetchQueryInquiryComparisonInfo,
+  GetDocumentByLiveBos,
+  UpdateInquiryComparisonInfo
+} from "../../../../../services/projectManage";
 
 const {api} = config;
 const {pmsServices: {queryFileStream}} = api;
@@ -15,8 +22,9 @@ const {pmsServices: {queryFileStream}} = api;
 export default function InfoTable(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
   const [xbjglrModalVisible, setXbjglrModalVisible] = useState(false); //项目详情弹窗显示
-  const [lbModalUrl, setLbModalUrl] = useState(''); //项目详情弹窗显示
-  const [lbModalTitle, setLbModalTitle] = useState(''); //项目详情弹窗显示
+  const [pollInfo, setPollInfo] = useState({}); //项目详情弹窗显示
+  const [uploadFileParams, setUploadFileParams] = useState([]); //项目详情弹窗显示
+  const [fileList, setFileList] = useState([]); //项目详情弹窗显示
   const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ tableData:", tableData)
@@ -29,13 +37,56 @@ export default function InfoTable(props) {
     };
   }, []);
 
-  const openEditModel = (row) =>{
+  const getUuid = () => {
+    var s = []
+    var hexDigits = '0123456789abcdef'
+    for (var i = 0; i < 36; i++) {
+      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+    }
+    s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = '-'
+
+    let uuid = s.join('')
+    return uuid
+  }
+
+  const openEditModel = (row) => {
     console.log("recordrecordrecord", row)
     setXbjglrModalVisible(true);
-    setLbModalTitle('询比结果编辑');
-    setLbModalUrl(`/#/single/pms/PollResultInfo/${EncryptBase64(
-      JSON.stringify({xmid: row.XMID, record: JSON.stringify(row), type: 'UPDATE'}),
-    )}`);
+    let newFlowId = []
+    if (row?.GLXQ) {
+      newFlowId = row?.GLXQ.split(",");
+    }
+    // getDocumentByLiveBos(row)
+    console.log("uploadFileParams000", uploadFileParams)
+    console.log("fileListfileList000", fileList)
+    let arrTemp = [];
+    let arrTemp2 = [];
+    if (row.FileInfo.length > 0) {
+      row.FileInfo.map(item => {
+        arrTemp.push({
+          uid: getUuid(),
+          name: item.fileName,
+          status: 'done',
+          url: item.url,
+        });
+        arrTemp2.push({
+          documentData: item.data,
+          fileName: item.fileName,
+        })
+      })
+      setFileList([...fileList, ...arrTemp])
+      setUploadFileParams([...uploadFileParams, ...arrTemp2])
+    }
+    setPollInfo({
+      //中标信息
+      xmid: row?.XMID,
+      name: row?.XBXM,
+      flowId: newFlowId,
+      // XBBG: rec?.XBBG,
+      ID: row?.ID,
+    })
   }
 
   //监听新建项目弹窗状态-按钮
@@ -59,6 +110,7 @@ export default function InfoTable(props) {
     setFileAddVisible(true);
   };
   const closeFileAddModal = () => {
+    setFileList([]);
     setFileAddVisible(false);
   };
 
@@ -130,7 +182,7 @@ export default function InfoTable(props) {
       key: 'GLXQ',
       // ellipsis: true,
       render: (text, row, index) => {
-        console.log("texttext", text)
+        // console.log("texttext", text)
         let bt = ''
         const str = text.split(',')
         if (str.length > 0) {
@@ -211,30 +263,85 @@ export default function InfoTable(props) {
     }
   ];
 
-  //硬件合同信息录入
-  const xbjglrModalProps = {
-    isAllWindow: 1,
-    title: lbModalTitle,
-    width: '800px',
-    height: '600px',
-    style: {top: '60px'},
-    visible: true,
-    footer: null,
-  };
 
   const handleCancel = () => {
+    setFileList([]);
     setXbjglrModalVisible(false)
+  }
+
+  const handleSavePollInfo = () => {
+    if (pollInfo.name == '' || pollInfo.flowId == '' || fileList.length == 0) {
+      message.warn("询比信息未填写完整！", 1);
+      return;
+    }
+    let fileInfo = [];
+    uploadFileParams.map(item => {
+      fileInfo.push({fileName: item.fileName, data: item.documentData})
+    })
+    let submitdata = {
+      projectId: pollInfo.xmid,
+      // projectId: 397,
+      infoId: pollInfo.ID,
+      name: pollInfo.name,
+      flowId: String(pollInfo.flowId),
+      fileInfo: [...fileInfo],
+      type: "UPDATE",
+    };
+    console.log('🚀submitdata', submitdata);
+    UpdateInquiryComparisonInfo({
+      ...submitdata,
+    }).then(res => {
+      if (res?.code === 1) {
+        message.info('信息修改成功', 1);
+        getTableData()
+        setXbjglrModalVisible(false);
+      } else {
+        message.error('信息修改失败', 1);
+      }
+      setFileList([]);
+    });
+  }
+
+  const handleDataCallback = (params) => {
+    setPollInfo({...pollInfo, ...params})
+  }
+
+  const handleFileCallback = (params) => {
+    setFileList(params)
+  }
+
+  const handleParamsCallback = (params) => {
+    setUploadFileParams(params)
   }
 
   return (
     <>
       {xbjglrModalVisible && (
-        <BridgeModel
-          isSpining="customize"
-          modalProps={xbjglrModalProps}
+        // <BridgeModel
+        //   isSpining="customize"
+        //   modalProps={xbjglrModalProps}
+        //   onCancel={handleCancel}
+        //   src={lbModalUrl}
+        // />
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'880px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
+          style={{top: '60px'}}
+          visible={xbjglrModalVisible}
+          okText="保存"
+          onOk={handleSavePollInfo}
           onCancel={handleCancel}
-          src={lbModalUrl}
-        />
+          title={<span color='white'>询比结果编辑</span>}
+          cancelText="取消"
+        >
+          <PollResultEditModel glxq={lcxxData} handleDataCallback={handleDataCallback}
+                               handleFileCallback={handleFileCallback} handleParamsCallback={handleParamsCallback}
+                               pollInfo={pollInfo} uploadFileParams={uploadFileParams} fileList={fileList}
+                               handleSavePollInfo={handleSavePollInfo}/>
+        </Modal>
       )}
       <div className="info-table">
         {/* 硬件合同信息录入 */}
