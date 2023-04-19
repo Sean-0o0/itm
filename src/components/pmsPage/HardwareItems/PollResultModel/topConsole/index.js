@@ -6,7 +6,7 @@ const {Option} = Select;
 
 export default function TopConsole(props) {
 
-  const [demand, setDemand] = useState(""); //询比项目名称
+  const [compareName, setCompareName] = useState(""); //询比项目名称
   //查询的值
   const {handleSearch, callBackParams, params} = props;
 
@@ -19,16 +19,16 @@ export default function TopConsole(props) {
 
   //重置按钮
   const handleReset = v => {
-    setDemand('')
-    callBackParams({...params, demand:'', current: 1})
+    setCompareName('')
+    callBackParams({...params, compareName: '', current: 1})
   };
 
   // onChange-start
   //询比项目名称
   const handleNameChange = v => {
     console.log('询比项目名称询比项目名称询比项目名称', v.target.value);
-    setDemand(v.target.value)
-    callBackParams({...params, demand: String(v.target.value), current: 1})
+    setCompareName(v.target.value)
+    callBackParams({...params, compareName: String(v.target.value), current: 1})
   };
   // onChange-end
 
@@ -37,7 +37,7 @@ export default function TopConsole(props) {
       <div className="item-box">
         <div className="console-item" style={{width: '50%'}}>
           <div className="item-label">询比项目名称：</div>
-          <Input placeholder="请输入" value={demand} onChange={handleNameChange}/>
+          <Input placeholder="请输入" value={compareName} onChange={handleNameChange}/>
         </div>
         <div className="btn-item" style={{width: '50%'}}>
           <Button

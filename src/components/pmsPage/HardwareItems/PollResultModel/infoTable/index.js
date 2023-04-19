@@ -23,7 +23,7 @@ export default function InfoTable(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
   const [xbjglrModalVisible, setXbjglrModalVisible] = useState(false); //项目详情弹窗显示
   const [pollInfo, setPollInfo] = useState({}); //项目详情弹窗显示
-  const [uploadFileParams, setUploadFileParams] = useState({}); //项目详情弹窗显示
+  const [uploadFileParams, setUploadFileParams] = useState([]); //项目详情弹窗显示
   const [fileList, setFileList] = useState([]); //项目详情弹窗显示
   const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
@@ -37,6 +37,20 @@ export default function InfoTable(props) {
     };
   }, []);
 
+  const getUuid = () => {
+    var s = []
+    var hexDigits = '0123456789abcdef'
+    for (var i = 0; i < 36; i++) {
+      s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1)
+    }
+    s[14] = '4' // bits 12-15 of the time_hi_and_version field to 0010
+    s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1) // bits 6-7 of the clock_seq_hi_and_reserved to 01
+    s[8] = s[13] = s[18] = s[23] = '-'
+
+    let uuid = s.join('')
+    return uuid
+  }
+
   const openEditModel = (row) => {
     console.log("recordrecordrecord", row)
     setXbjglrModalVisible(true);
@@ -44,9 +58,27 @@ export default function InfoTable(props) {
     if (row?.GLXQ) {
       newFlowId = row?.GLXQ.split(",");
     }
-    getDocumentByLiveBos(row)
+    // getDocumentByLiveBos(row)
     console.log("uploadFileParams000", uploadFileParams)
     console.log("fileListfileList000", fileList)
+    let arrTemp = [];
+    let arrTemp2 = [];
+    if (row.FileInfo.length > 0) {
+      row.FileInfo.map(item => {
+        arrTemp.push({
+          uid: getUuid(),
+          name: item.fileName,
+          status: 'done',
+          url: item.url,
+        });
+        arrTemp2.push({
+          documentData: item.data,
+          fileName: item.fileName,
+        })
+      })
+      setFileList([...fileList, ...arrTemp])
+      setUploadFileParams([...uploadFileParams, ...arrTemp2])
+    }
     setPollInfo({
       //中标信息
       xmid: row?.XMID,
@@ -55,39 +87,6 @@ export default function InfoTable(props) {
       // XBBG: rec?.XBBG,
       ID: row?.ID,
     })
-  }
-
-  const getDocumentByLiveBos = (rec) => {
-    const {items} = JSON.parse(rec.XBBG)
-    console.log("itemsitems", items)
-    GetDocumentByLiveBos({
-      objectName: "TXMXX_YJXBJG",
-      columnName: "XBBG",
-      title: items[0][1],
-      entryNo: 0,
-      id: rec?.ID
-    }).then(res => {
-      if (res) {
-      }
-    }).catch((res) => {
-      console.log("eeeeee", res)
-      if (res.success) {
-        let arrTemp = [];
-        if (res.documentUrl && res.documentData && items[0][1]) {
-          arrTemp.push({
-            uid: Date.now(),
-            name: items[0][1],
-            status: 'done',
-            url: res.documentUrl,
-          });
-        }
-        setUploadFileParams({
-          documentData: res.documentData,
-          fileName: items[0][1],
-        })
-        setFileList([...fileList, ...arrTemp])
-      }
-    });
   }
 
   //监听新建项目弹窗状态-按钮
@@ -111,6 +110,7 @@ export default function InfoTable(props) {
     setFileAddVisible(true);
   };
   const closeFileAddModal = () => {
+    setFileList([]);
     setFileAddVisible(false);
   };
 
@@ -265,6 +265,7 @@ export default function InfoTable(props) {
 
 
   const handleCancel = () => {
+    setFileList([]);
     setXbjglrModalVisible(false)
   }
 
@@ -273,13 +274,17 @@ export default function InfoTable(props) {
       message.warn("询比信息未填写完整！", 1);
       return;
     }
+    let fileInfo = [];
+    uploadFileParams.map(item => {
+      fileInfo.push({fileName: item.fileName, data: item.documentData})
+    })
     let submitdata = {
-      // projectId: pollInfo.xmid,
-      projectId: 397,
+      projectId: pollInfo.xmid,
+      // projectId: 397,
       infoId: pollInfo.ID,
       name: pollInfo.name,
       flowId: String(pollInfo.flowId),
-      fileInfo: [{fileName: uploadFileParams.fileName, data: uploadFileParams.documentData}],
+      fileInfo: [...fileInfo],
       type: "UPDATE",
     };
     console.log('🚀submitdata', submitdata);
@@ -293,6 +298,7 @@ export default function InfoTable(props) {
       } else {
         message.error('信息修改失败', 1);
       }
+      setFileList([]);
     });
   }
 

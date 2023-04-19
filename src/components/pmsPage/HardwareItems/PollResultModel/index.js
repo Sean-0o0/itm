@@ -15,7 +15,7 @@ export default function PollResultModel(props) {
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const {match: {params: {params: encryptParams = ''}}} = props;
-  const [params, setParams] = useState({demand: '', current: 1, pageSize: 10});
+  const [params, setParams] = useState({compareName: '', current: 1, pageSize: 10});
 
   useEffect(() => {
     const params = getUrlParams();
@@ -25,13 +25,14 @@ export default function PollResultModel(props) {
       setXmid(Number(params.xmid));
     }
     console.log("paramsparams", params)
+    console.log("xmid", xmid)
     setTimeout(function () {
       getTableData();
       setIsSpinning(false);
     }, 300);
     return () => {
     };
-  }, []);
+  }, [xmid]);
 
   // 获取url参数
   const getUrlParams = () => {
@@ -45,8 +46,8 @@ export default function PollResultModel(props) {
     FetchQueryInquiryComparisonInfo(
       {
         ...params,
-        projectId: "397",
-        // projectId: xmid,
+        // projectId: "397",
+        projectId: xmid,
         flowId: "-1",
         paging: 1,
         queryType: "ALL",
@@ -55,8 +56,15 @@ export default function PollResultModel(props) {
       })
       .then(res => {
         if (res?.success) {
-          const {xbxx, lcxx} = res
-          setTableData(p => [...JSON.parse(xbxx)]);
+          const {xbxx, lcxx, wjxx} = res
+          const wjxxJson = JSON.parse(wjxx)
+          const xbxxJson = JSON.parse(xbxx)
+          xbxxJson.map(item => {
+            item.FileInfo = wjxxJson.filter(i => i.id == item.ID)
+          })
+          console.log("wjxxJson", wjxxJson)
+          console.log("xbxxJson", xbxxJson)
+          setTableData(p => [...xbxxJson]);
           setLcxxData(p => [...JSON.parse(lcxx)]);
           setTotal(res.totalrows);
           setTableLoading(false);

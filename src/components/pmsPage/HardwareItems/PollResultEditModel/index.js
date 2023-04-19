@@ -58,11 +58,13 @@ class PollResultEditModel extends React.Component {
   }
 
   handleFileCallback = (params) => {
+    console.log("当前文件信息", params)
     const {handleFileCallback} = this.props;
     handleFileCallback(params)
   }
 
-  handleParamsCallback = (params) => {
+  handleParamsCallback = (params = []) => {
+    console.log("当前文件信息2222", params)
     const {handleParamsCallback} = this.props;
     handleParamsCallback(params)
   }
@@ -169,7 +171,7 @@ class PollResultEditModel extends React.Component {
                     }}
                     onChange={(info) => {
                       let fileList = [...info.fileList];
-                      fileList = fileList.slice(-1);
+                      // fileList = fileList.slice(-1);
                       this.handleFileCallback(fileList)
                       // this.setState({fileList}, () => {
                       //   // //console.log('目前fileList', this.state.fileList);
@@ -190,19 +192,15 @@ class PollResultEditModel extends React.Component {
                       reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
                       reader.onload = (e) => { //文件读取成功完成时触发
                         let urlArr = e.target.result.split(',');
-                        //console.log('uploadFileParamsuploadFileParams', uploadFileParams);
-                        this.handleParamsCallback({
-                          ...this.state.uploadFileParams,
+                        console.log('eeee-cccc', e.target.result);
+                        let arrTemp = []
+                        arrTemp.push({
                           documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
                           fileName: file.name,
                         })
-                        // this.setState({
-                        //   uploadFileParams: {
-                        //     ...this.state.uploadFileParams,
-                        //     documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
-                        //     fileName: file.name,
-                        //   }
-                        // });
+                        let uploadFileParamsTemp = [...uploadFileParams, ...arrTemp]
+                        console.log('arrTemp', uploadFileParamsTemp);
+                        this.handleParamsCallback(uploadFileParamsTemp)
                       }
                     }}
                     accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
