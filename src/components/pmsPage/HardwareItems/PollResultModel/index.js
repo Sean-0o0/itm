@@ -4,23 +4,40 @@ import TopConsole from './TopConsole';
 import {QueryProjectListInfo} from '../../../../services/pmsServices';
 import {message, Spin} from 'antd';
 import {FetchQueryInquiryComparisonInfo} from "../../../../services/projectManage";
+import {DecryptBase64} from "../../../Common/Encrypt";
 
 export default function PollResultModel(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
+  const [xmid, setXmid] = useState(-1); //表格数据-项目列表
   const [lcxxData, setLcxxData] = useState([]); //关联需求
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const [isSpinning, setIsSpinning] = useState(true); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
-  const {visible = false, closeModal} = props;
+  const {match: {params: {params: encryptParams = ''}}} = props;
   const [params, setParams] = useState({demand: '', current: 1, pageSize: 10});
 
   useEffect(() => {
-    getTableData();
-    setIsSpinning(false);
+    const params = getUrlParams();
+    if (params.xmid && params.xmid !== -1) {
+      console.log("paramsparams000000", params)
+      // 修改项目操作
+      setXmid(Number(params.xmid));
+    }
+    console.log("paramsparams", params)
+    setTimeout(function () {
+      getTableData();
+      setIsSpinning(false);
+    }, 300);
     return () => {
     };
   }, []);
+
+  // 获取url参数
+  const getUrlParams = () => {
+    console.log("paramsparams", encryptParams)
+    return JSON.parse(DecryptBase64(encryptParams));
+  }
 
   //获取表格数据
   const getTableData = () => {
@@ -29,6 +46,7 @@ export default function PollResultModel(props) {
       {
         ...params,
         projectId: "397",
+        // projectId: xmid,
         flowId: "-1",
         paging: 1,
         queryType: "ALL",
