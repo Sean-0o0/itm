@@ -19,7 +19,7 @@ export default function InfoTable(props) {
   const [lbModalTitle, setLbModalTitle] = useState(''); //项目详情弹窗显示
   const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
-  console.log("🚀 ~ tableData:", tableData)
+  // console.log("🚀 ~ tableData:", tableData)
 
 
   useEffect(() => {
@@ -30,12 +30,12 @@ export default function InfoTable(props) {
   }, []);
 
   const openEditModel = (row) =>{
-    console.log("recordrecordrecord",row)
+    console.log("recordrecordrecord", row)
+    setXbjglrModalVisible(true);
     setLbModalTitle('询比结果编辑');
     setLbModalUrl(`/#/single/pms/PollResultInfo/${EncryptBase64(
-      JSON.stringify({ record: JSON.stringify(row), type:'UPDATE' }),
+      JSON.stringify({xmid: row.XMID, record: JSON.stringify(row), type: 'UPDATE'}),
     )}`);
-    setXbjglrModalVisible(true);
   }
 
   //监听新建项目弹窗状态-按钮
@@ -130,8 +130,16 @@ export default function InfoTable(props) {
       key: 'GLXQ',
       // ellipsis: true,
       render: (text, row, index) => {
+        console.log("texttext", text)
+        let bt = ''
+        const str = text.split(',')
+        if (str.length > 0) {
+          str.map(i => {
+            bt = lcxxData.filter(item => item.ID == i)[0]?.BT + ',' + bt;
+          })
+        }
         return (
-          <span>{lcxxData.filter(item => item.ID == text)[0]?.BT}</span>
+          <span>{bt}</span>
         );
       }
     },
@@ -176,7 +184,7 @@ export default function InfoTable(props) {
                 items.map((item, index) => {
                   const [id, title] = item;
                   return <a key={id} className='opr-btn' onClick={() => {
-                    this.downlown(id, title, wdid)
+                    downlown(id, title, wdid)
                   }}>{title};&nbsp;</a>
                 })
               }
@@ -209,45 +217,47 @@ export default function InfoTable(props) {
     title: lbModalTitle,
     width: '800px',
     height: '600px',
-    style: { top: '60px' },
+    style: {top: '60px'},
     visible: true,
     footer: null,
   };
 
+  const handleCancel = () => {
+    setXbjglrModalVisible(false)
+  }
+
   return (
-    <div className="info-table">
-      {/* 硬件合同信息录入 */}
+    <>
       {xbjglrModalVisible && (
         <BridgeModel
           isSpining="customize"
           modalProps={xbjglrModalProps}
-          onCancel={() => {
-            this.setState({
-              xbjglrModalVisible: false,
-            });
-          }}
+          onCancel={handleCancel}
           src={lbModalUrl}
         />
       )}
-      <div className="project-info-table-box">
-        <Table
-          loading={tableLoading}
-          columns={columns}
-          rowKey={'projectId'}
-          dataSource={tableData}
-          onChange={handleTableChange}
-          // scroll={{ y: 500 }}
-          pagination={{
-            pageSizeOptions: ['10', '20', '30', '40'],
-            showSizeChanger: true,
-            hideOnSinglePage: false,
-            showQuickJumper: true,
-            showTotal: t => `共 ${total} 条数据`,
-            total: total,
-          }}
-          // bordered
-        />
+      <div className="info-table">
+        {/* 硬件合同信息录入 */}
+        <div className="project-info-table-box">
+          <Table
+            loading={tableLoading}
+            columns={columns}
+            rowKey={'projectId'}
+            dataSource={tableData}
+            onChange={handleTableChange}
+            // scroll={{ y: 500 }}
+            pagination={{
+              pageSizeOptions: ['10', '20', '30', '40'],
+              showSizeChanger: true,
+              hideOnSinglePage: false,
+              showQuickJumper: true,
+              showTotal: t => `共 ${total} 条数据`,
+              total: total,
+            }}
+            // bordered
+          />
+        </div>
       </div>
-    </div>
+    </>
   );
 }

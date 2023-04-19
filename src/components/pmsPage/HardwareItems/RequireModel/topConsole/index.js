@@ -44,21 +44,21 @@ export default function TopConsole(props) {
     <div className="top-console">
       <div className="item-box">
         <div className="console-item" style={{width: '35%'}}>
-          <div className="item-label">询比项目名称</div>
+          <div className="item-label">询比项目名称：</div>
           <Input placeholder="请输入" value={demand} onChange={handleNameChange}/>
         </div>
         <div className="console-item" style={{width: '30%'}}>
-          <div className="item-label">发起人</div>
+          <div className="item-label">发起人：</div>
           <Select
-          style={{borderRadius: '8px !important',width:"50%",marginLeft:'8px'}}
-          placeholder="发起人"
-          showSearch
-          allowClear
-          onChange={handleFQRNameChange}
-          filterOption={(input, option) =>
-            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-          }>
-          {
+            style={{borderRadius: '8px !important', width: "50%", marginLeft: '8px'}}
+            placeholder="发起人"
+            showSearch
+            allowClear
+            onChange={handleFQRNameChange}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }>
+            {
             FRQData?.map((item = {}, ind) => {
               return <Option key={item.FQR} value={item.FQR}>
                 {item.NAME}

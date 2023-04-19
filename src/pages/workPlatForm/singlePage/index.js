@@ -16,6 +16,8 @@ import EditProjectInfoModel from "../../../components/pmsPage/EditProjectInfoMod
 import EnterBidInfoModel from "../../../components/pmsPage/HardwareItems/EnterBidInfoModel";
 import AgreementEnterModel from "../../../components/pmsPage/HardwareItems/AgreementEnterModel";
 import PollResultEnterModel from "../../../components/pmsPage/HardwareItems/PollResultEnterModel";
+import PollResultModel from "../../../components/pmsPage/HardwareItems/PollResultModel";
+import RequireModel from "../../../components/pmsPage/HardwareItems/RequireModel";
 
 const {events} = Bridge.constants;
 
@@ -38,7 +40,7 @@ class SinglePage extends Component {
     const {
       match: { url: parentUrl = '' },
     } = this.props;
-    // console.log('urlurlurl', parentUrl, this.props);
+    console.log('urlurlurl', parentUrl, this.props);
     return (
       <Fragment>
         <Switch>
@@ -103,6 +105,28 @@ class SinglePage extends Component {
             path={`${parentUrl}/PollResultInfo/:params`}
             render={props => (
               <PollResultEnterModel
+                {...props}
+                submitOperate={this.submitOperate}
+                closeDialog={this.closeDialog}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={`${parentUrl}/PollResultList/:params`}
+            render={props => (
+              <PollResultModel
+                {...props}
+                submitOperate={this.submitOperate}
+                closeDialog={this.closeDialog}
+              />
+            )}
+          />
+          <Route
+            exact
+            path={`${parentUrl}/RequireList/:params`}
+            render={props => (
+              <RequireModel
                 {...props}
                 submitOperate={this.submitOperate}
                 closeDialog={this.closeDialog}

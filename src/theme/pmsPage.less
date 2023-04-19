@@ -9300,6 +9300,225 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
+//需求列表
+.require-list-box {
+  .ant-form label {
+    font-size: 14px !important;
+    color: #606266 !important;
+  }
+
+  .top-console {
+    margin: 24px 24px 0 24px;
+
+    .item-box {
+      display: -webkit-box;
+
+      .console-item {
+        //width: 50%;
+        display: flex;
+        align-items: center;
+
+        .item-label {
+          font-size: 14px;
+        }
+
+        .ant-input {
+          margin-left: 8px;
+          width: 200px;
+        }
+      }
+
+      .btn-item {
+        //width: 50%;
+        display: inline-block;
+        text-align: end;
+
+        & > .btn-search {
+          .antd-btn-primary();
+        }
+
+        & > .btn-reset {
+          .antd-btn-default();
+          margin-left: 8px;
+        }
+      }
+    }
+  }
+
+  .info-table {
+    //padding: 16px 24px;
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
+    border-radius: 8;
+    overflow: hidden;
+  }
+
+  .info-table {
+    margin: 16px 24px 24px 24px;
+    // height: calc(100vh - 235px);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+
+    & > .btn-add-prj-box {
+      margin-bottom: 16px;
+
+      .btn-add-prj {
+        .antd-btn-primary();
+      }
+    }
+
+    .project-info-table-box {
+      flex-grow: 1;
+      overflow: hidden;
+      overflow-y: auto;
+      padding-right: 4px;
+
+      &::-webkit-scrollbar {
+        width: 8px;
+        background-color: #ffffff;
+        border-radius: 4px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #d8d8d8;
+        border-radius: 4px;
+      }
+
+      .prj-info-table-link-strong {
+        &:hover {
+          font-weight: bold;
+        }
+      }
+
+      .ant-table {
+        td {
+          padding: 9px;
+          font-size: 14px;
+          font-family: Roboto-Regular, Roboto;
+          font-weight: 400;
+          color: #303133;
+        }
+
+        th {
+          //width: 33%;
+          padding: 9px;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: bold;
+          color: #606266;
+        }
+
+        .ant-table-body {
+          // min-height: 560px;
+          table {
+            border: 1px solid #e8e8e8;
+          }
+        }
+
+        .ant-table-scroll .ant-table-header {
+          margin-bottom: -16.5px !important; //表格表头底部边框
+          background-color: #f5f7fa;
+        }
+
+        .ant-table-placeholder {
+          border-bottom: 0;
+
+          .ant-empty-description {
+            font-size: 14px;
+          }
+        }
+
+        .ant-table-thead {
+          position: sticky;
+          top: 0;
+        }
+
+        //项目标签
+        .prj-tags {
+          width: 100%;
+          color: #606266;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .tag-item {
+            color: #3361ff;
+            font-size: 12px;
+            border: 1px solid rgba(51, 97, 255, 0.3);
+            border-radius: 4px;
+            background-color: #3363ff14;
+            padding: 1px 8px 2px 8px;
+            margin-right: 8px;
+            max-width: 38%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: initial;
+            cursor: pointer;
+
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+
+      .ant-table-pagination {
+        font-size: 14px;
+        display: flex;
+        flex-direction: row;
+        //align-items: center;
+        background-color: #fff;
+        //width: 100%;
+        position: sticky;
+        bottom: 0;
+
+        .ant-select {
+          font-size: 14px !important;
+        }
+      }
+
+      .ant-pagination-item-active {
+        background-color: #3361ff;
+
+        a {
+          color: #fff;
+        }
+      }
+
+      .ant-pagination-item {
+        border: 0;
+      }
+
+      .ant-pagination-total-text {
+        //margin-right: auto;
+        //color: #909399;
+      }
+
+      .ant-pagination-disabled {
+        background-color: #f5f7fa;
+
+        a {
+          background-color: #f5f7fa;
+        }
+      }
+
+      .ant-pagination-options-quick-jumper input {
+        &:hover {
+          border-color: #3361ff;
+        }
+
+        &:focus {
+          border-color: #3361ff;
+          box-shadow: 0 0 0 2px #3361ff33;
+        }
+      }
+    }
+  }
+}
+
 //询比结果列表
 .poll-result-box {
   .ant-form label {
