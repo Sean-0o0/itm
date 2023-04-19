@@ -365,7 +365,7 @@ export default function TableTabs(props) {
           columns={columns}
           rowKey={rowKey}
           dataSource={dataSourse}
-          size="middle"
+          // size="middle"
           pagination={{
             current: curPage,
             pageSize: curPageSize,

@@ -263,12 +263,31 @@ class ItemBtn extends React.Component {
         });
       }
     };
-    if (done)
-      return (
-        <div className="opr-more">
+    const reoprMoreCotent = (
+      <div className="list">
+        <div className="item">
           <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'UPDATE')}>
             修改
           </div>
+        </div>
+      </div>
+    );
+    if (done)
+      return (
+        <div className="opr-more">
+          <div className="reopr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
+            录入
+          </div>
+          <Popover
+            placement="bottom"
+            title={null}
+            content={reoprMoreCotent}
+            overlayClassName="btn-more-content-popover"
+          >
+            <div className="reopr-more">
+              <i className="iconfont icon-more2" />
+            </div>
+          </Popover>
         </div>
       );
     return (
