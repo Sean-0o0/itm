@@ -72,6 +72,7 @@ class AttachLibrary extends Component {
                         tableLoading: false,
                         pageParams: {
                             ...pageParams,
+                            ...params,
                             total,
                         }
                     })
