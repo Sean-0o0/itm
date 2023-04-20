@@ -17,8 +17,8 @@ import {
 
 const { Option } = Select;
 import React from 'react';
-import { connect } from "dva";
-import OperateTab from "./OperateTab";
+import { connect } from 'dva';
+import OperateTab from './OperateTab';
 import moment from 'moment';
 import { isArrayLike } from 'lodash';
 import { QueryOafilerela } from '../../../../services/pmsServices';
@@ -40,7 +40,7 @@ class AssociatedFile extends React.Component {
     selectedRowKeys: [],
     tableData: [],
     tbFilterData: [], //查询后数据
-  }
+  };
 
   componentDidMount() {
     this.getTableData();
@@ -120,14 +120,13 @@ class AssociatedFile extends React.Component {
     //   tableData: [...data?.result],
     //   tbFilterData: [...data?.result],
     // });
-    QueryOafilerela({ projectCode: String(this.props.xmbh || '') })
-      .then(res => {
-        console.log('表格数据：', res);
-        this.setState({
-          tableData: [...JSON.parse(res?.responseBody)],
-          tbFilterData: [...JSON.parse(res?.responseBody)],
-        });
+    QueryOafilerela({ projectCode: String(this.props.xmbh || '') }).then(res => {
+      console.log('表格数据：', res);
+      this.setState({
+        tableData: [...JSON.parse(res?.responseBody)],
+        tbFilterData: [...JSON.parse(res?.responseBody)],
       });
+    });
   }
 
   //查询
@@ -136,15 +135,15 @@ class AssociatedFile extends React.Component {
       let data = [];
       if (list.length != 0 && search) {
         let str = `\S*${search}\S*`;
-        let reg = new RegExp(str, 'i');//不区分大小写
+        let reg = new RegExp(str, 'i'); //不区分大小写
         list.map(item => {
           if (reg.test(item.objectname)) {
             data.push(item);
           }
-        })
+        });
       }
       return data;
-    }
+    };
 
     if (fileType === '' && draftDate.length === 0) {
       this.setState({
@@ -157,11 +156,14 @@ class AssociatedFile extends React.Component {
         if (moment(item.createdate).isBetween(moment(draftDate[0]), moment(draftDate[1]))) {
           arr2.push(item);
         }
-      })
+      });
       this.setState({
         tbFilterData: [...arr2],
       });
-    } else if (fileType !== '' && draftDate.length === 0 || fileType !== '' && draftDate.length === 0) {
+    } else if (
+      (fileType !== '' && draftDate.length === 0) ||
+      (fileType !== '' && draftDate.length === 0)
+    ) {
       let arr = [...this.state.tableData];
       this.setState({
         tbFilterData: fuzzySearch(arr, fileType),
@@ -174,7 +176,7 @@ class AssociatedFile extends React.Component {
         if (moment(item.createdate).isBetween(moment(draftDate[0]), moment(draftDate[1]))) {
           arr2.push(item);
         }
-      })
+      });
       this.setState({
         tbFilterData: [...arr2],
       });
@@ -197,14 +199,8 @@ class AssociatedFile extends React.Component {
     this.setState({ selectedRowKeys });
   };
 
-
   render() {
-    const {
-      isSpinning = false,
-      selectedRowKeys,
-      tableData,
-      tbFilterData,
-    } = this.state;
+    const { isSpinning = false, selectedRowKeys, tableData, tbFilterData } = this.state;
     const columns = [
       {
         title: '标题',
@@ -226,7 +222,10 @@ class AssociatedFile extends React.Component {
         key: 'objectname',
       },
     ];
-    const { associatedFileVisible, dictionary: { LCJJCD = [], YZLX = [] } } = this.props;
+    const {
+      associatedFileVisible,
+      dictionary: { LCJJCD = [], YZLX = [] },
+    } = this.props;
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
@@ -242,41 +241,54 @@ class AssociatedFile extends React.Component {
       selectedRowKeys,
       onChange: this.onSelectChange,
     };
-    return (<>
-      <Modal wrapClassName='editMessage-modify' width={'120rem'}
-        title={null}
-        zIndex={100}
-        bodyStyle={{
-          padding: '0'
-        }}
-        onOk={() => this.props.onConfirm(this.getDataSelected(selectedRowKeys, tableData))}
-        onCancel={this.props.closeAssociatedFileModal}
-        visible={associatedFileVisible}>
-        <div style={{
-          height: '6.2496rem',
-          width: '100%',
-          display: 'flex',
-          alignItems: 'center',
-          backgroundColor: '#3361FF',
-          color: 'white',
-          marginBottom: '2.3808rem',
-          padding: '0 3.5712rem',
-          borderRadius: '1.1904rem 1.1904rem 0 0',
-          fontSize: '2.333rem'
-        }}>
-          <strong>关联文件搜索</strong>
-        </div>
-        <Spin spinning={isSpinning} tip='加载中' size='large' wrapperClassName='diy-style-spin'>
-          <div style={{ padding: '0 3.5712rem' }}>
-            <div className="steps-content">
-              <div>
-                <OperateTab handleTableFilter={(item) => this.handleTableFilter(item)} />
-              </div>
-              <Table rowSelection={rowSelection} columns={columns} dataSource={tbFilterData} rowKey={record => record.id} />
-            </div>
+    return (
+      <>
+        <Modal
+          wrapClassName="editMessage-modify"
+          width={'120rem'}
+          title={null}
+          zIndex={100}
+          bodyStyle={{
+            padding: '0',
+          }}
+          onOk={() => this.props.onConfirm(this.getDataSelected(selectedRowKeys, tableData))}
+          onCancel={this.props.closeAssociatedFileModal}
+          visible={associatedFileVisible}
+        >
+          <div
+            style={{
+              height: '6.2496rem',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#3361FF',
+              color: 'white',
+              marginBottom: '2.3808rem',
+              padding: '0 3.5712rem',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '2.333rem',
+            }}
+          >
+            <strong>关联文件搜索</strong>
           </div>
-        </Spin>
-      </Modal></>);
+          <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="diy-style-spin">
+            <div style={{ padding: '0 3.5712rem' }}>
+              <div className="steps-content">
+                <div>
+                  <OperateTab handleTableFilter={item => this.handleTableFilter(item)} />
+                </div>
+                <Table
+                  rowSelection={rowSelection}
+                  columns={columns}
+                  dataSource={tbFilterData}
+                  rowKey={record => record.id}
+                />
+              </div>
+            </div>
+          </Spin>
+        </Modal>
+      </>
+    );
   }
 }
 

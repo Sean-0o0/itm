@@ -198,7 +198,7 @@ const UploadReceipt = props => {
               点击上传
             </Button>
             <div
-              style={{ marginTop: '1.1904rem' }}
+              style={{ marginTop: '8px' }}
               onClick={e => {
                 e.stopPropagation();
               }}

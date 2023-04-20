@@ -133,14 +133,16 @@ export default function InfoTable(props) {
             <div className="lxr-txt">
               {arr[0]?.LXR}({arr[0]?.ZW}){arr[0]?.DH}
             </div>
-            <Popover
-              title={null}
-              content={getLxrinfContent(arr)}
-              placement="bottomRight"
-              overlayClassName="lxr-info-popover"
-            >
-              <span>更多</span>
-            </Popover>
+            {arr.length > 1 && (
+              <Popover
+                title={null}
+                content={getLxrinfContent(arr)}
+                placement="bottomRight"
+                overlayClassName="lxr-info-popover"
+              >
+                <span>更多</span>
+              </Popover>
+            )}
           </div>
         ),
     },

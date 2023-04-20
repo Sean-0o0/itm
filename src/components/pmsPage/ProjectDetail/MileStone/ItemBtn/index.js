@@ -75,24 +75,21 @@ class ItemBtn extends React.Component {
   //监听弹窗状态-按钮
   handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      this.debounce(() => {
-        console.log('jkk');
-        this.setState({
-          hardWareBidModalVisible: false,
-          hardWareContrastModalVisible: false,
-          xbjglrModalVisible: false,
-        });
+      this.setState({
+        hardWareBidModalVisible: false,
+        hardWareContrastModalVisible: false,
+        xbjglrModalVisible: false,
       });
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      this.setState({
+        hardWareBidModalVisible: false,
+        hardWareContrastModalVisible: false,
+        xbjglrModalVisible: false,
+      });
+      //刷新数据
+      this.props.refresh();
       this.debounce(() => {
-        this.setState({
-          hardWareBidModalVisible: false,
-          hardWareContrastModalVisible: false,
-          xbjglrModalVisible: false,
-        });
-        //刷新数据
-        this.props.refresh();
         message.success(this.state.lbModalTitle + '成功', 1);
       });
     }
@@ -740,7 +737,7 @@ class ItemBtn extends React.Component {
       title: lbModalTitle,
       width: '1000px',
       height: '600px',
-      style: {top: '20px'},
+      style: { top: '20px' },
       visible: true,
       footer: null,
     };
@@ -751,7 +748,7 @@ class ItemBtn extends React.Component {
       title: lbModalTitle,
       width: '1000px',
       height: '770px',
-      style: {top: '20px'},
+      style: { top: '20px' },
       visible: true,
       footer: null,
     };

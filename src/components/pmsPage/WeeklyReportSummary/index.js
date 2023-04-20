@@ -16,6 +16,7 @@ export default function WeeklyReportSummary() {
   const [currentXmid, setCurrentXmid] = useState(-1);
   const [edited, setEdited] = useState(false);
   const [monthData, setMonthData] = useState(new moment());
+  const [originData, setOriginData] = useState([]); //编辑前table数据
 
   useEffect(() => {
     queryProjectData();
@@ -75,9 +76,11 @@ export default function WeeklyReportSummary() {
               [getKeyId('dqjd')]: nullCheck(item.dqjd)?.trim(),
               [getKeyId('zysjsm')]: nullCheck(item.zysjsm)?.trim(),
               // submitted: Number(item.id) % 2 === 0 ? false : true, //非提交
+              zt: item.zt,
             };
           });
           setTableData(preState => [...newArr]);
+          setOriginData(preState => [...newArr]);
           console.log('🚀 ~ file: index.js ~ line 59 ~ queryTableData ~ newArr', newArr);
           setTableLoading(false);
         }
@@ -120,6 +123,7 @@ export default function WeeklyReportSummary() {
         setCurrentXmid={setCurrentXmid}
         setMonthData={setMonthData}
         projectData={projectData}
+        originData={originData}
       />
     </div>
   );
