@@ -71,6 +71,7 @@ class AttachLibrary extends Component {
                         attachList: record,
                         tableLoading: false,
                         pageParams: {
+                            ...pageParams,
                             total,
                         }
                     })
