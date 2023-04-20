@@ -136,7 +136,7 @@ class PollResultEditModel extends React.Component {
             </Row>
             <Row>
               <Col span={12}>
-                <Form.Item label="评标报告" required
+                <Form.Item label="询比报告" required
                   // help={pbbgTurnRed ? '请上传合同附件' : ''}
                            validateStatus={pbbgTurnRed ? 'error' : 'success'}
                 >
@@ -162,20 +162,40 @@ class PollResultEditModel extends React.Component {
                         link.click();
                         window.URL.revokeObjectURL(link.href);
                       }
-
                     }}
                     showUploadList={{
                       showDownloadIcon: true,
                       showRemoveIcon: true,
                       showPreviewIcon: true,
                     }}
+                    multiple={true}
                     onChange={(info) => {
                       let fileList = [...info.fileList];
-                      // fileList = fileList.slice(-1);
+                      console.log("fileListfileList", fileList)
+                      let newArr = [];
+                      fileList.forEach(item => {
+                        console.log("item.originFileObj", item.originFileObj)
+                        if (item.originFileObj === undefined) {
+                          newArr.push({
+                            name: item.name,
+                            base64: item.base64,
+                          });
+                        } else {
+                          let reader = new FileReader(); //实例化文件读取对象
+                          reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                          reader.onload = e => {
+                            let urlArr = e.target.result.split(',');
+                            newArr.push({
+                              name: item.name,
+                              base64: urlArr[1],
+                            });
+                            if (newArr.length === fileList.length) {
+                              this.handleParamsCallback([...newArr])
+                            }
+                          };
+                        }
+                      });
                       this.handleFileCallback(fileList)
-                      // this.setState({fileList}, () => {
-                      //   // //console.log('目前fileList', this.state.fileList);
-                      // });
                       if (fileList.length === 0) {
                         this.setState({
                           pbbgTurnRed: true
@@ -187,21 +207,25 @@ class PollResultEditModel extends React.Component {
                       }
                     }}
                     beforeUpload={(file, fileList) => {
-                      // //console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
-                      let reader = new FileReader(); //实例化文件读取对象
-                      reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                      reader.onload = (e) => { //文件读取成功完成时触发
-                        let urlArr = e.target.result.split(',');
-                        console.log('eeee-cccc', e.target.result);
-                        let arrTemp = []
-                        arrTemp.push({
-                          documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
-                          fileName: file.name,
-                        })
-                        let uploadFileParamsTemp = [...uploadFileParams, ...arrTemp]
-                        console.log('arrTemp', uploadFileParamsTemp);
-                        this.handleParamsCallback(uploadFileParamsTemp)
-                      }
+                      let arr = [];
+                      console.log('目前file', file);
+                      console.log('目前fileList2222', fileList);
+                      console.log('目前fileList333', this.props.fileList);
+                      fileList.forEach(item => {
+                        let reader = new FileReader(); //实例化文件读取对象
+                        reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                        reader.onload = e => {
+                          let urlArr = e.target.result.split(',');
+                          arr.push({
+                            name: item.name,
+                            base64: urlArr[1],
+                          });
+                          if (arr.length === fileList.length) {
+                            // console.log('arrarrarr', arr);
+                            this.handleParamsCallback([...arr, ...uploadFileParams])
+                          }
+                        };
+                      });
                     }}
                     accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
                     fileList={[...fileList]}>

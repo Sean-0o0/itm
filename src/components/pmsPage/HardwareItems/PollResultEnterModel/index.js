@@ -50,16 +50,8 @@ class PollResultEnterModel extends React.Component {
       ID: '',
     },
     glxq: [],
-    uploadFileParams: {
-      columnName: '',
-      documentData: '',
-      fileLength: '',
-      fileName: '',
-      filePath: '',
-      id: 0,
-      objectName: '',
-    },
-    fileList: [],
+    uploadFileParams: [],
+    pollFileList: [],
     pbbgTurnRed: false,
     isSpinning: false, //弹窗加载状态
   };
@@ -82,27 +74,6 @@ class PollResultEnterModel extends React.Component {
     console.log("paramsparams", params)
     setTimeout(function () {
       _this.fetchQueryInquiryComparisonInfoLCXX()
-      if (params.type === "UPDATE") {
-        console.log("JSON.parse(params.record)", JSON.parse(params.record))
-        const rec = JSON.parse(params.record);
-        let newFlowId = []
-        if (rec?.GLXQ) {
-          newFlowId = rec?.GLXQ.split(",");
-        }
-        _this.getDocumentByLiveBos(rec)
-        _this.setState({
-          pollInfo: {
-            //中标信息
-            name: rec?.XBXM,
-            flowId: newFlowId,
-            // XBBG: rec?.XBBG,
-            ID: rec?.ID,
-          },
-        });
-        console.log("this.ssssss", _this.state)
-        console.log("this.ssssss", _this.state.fileList)
-        console.log("this.ssssss", _this.state.uploadFileParams)
-      }
     }, 300);
   };
 
@@ -112,41 +83,6 @@ class PollResultEnterModel extends React.Component {
     const {match: {params: {params: encryptParams = ''}}} = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
     return params;
-  }
-
-  getDocumentByLiveBos = (rec) =>{
-    const {items} = JSON.parse(rec.XBBG)
-    console.log("itemsitems", items)
-    GetDocumentByLiveBos({
-      objectName: "TXMXX_YJXBJG",
-      columnName: "XBBG",
-      title: items[0][1],
-      entryNo: 0,
-      id: rec?.ID
-    }).then(res => {
-      if (res) {
-      }
-    }).catch((res) => {
-      console.log("eeeeee", res)
-      if (res.success) {
-        let arrTemp = [];
-        if (res.documentUrl && res.documentData && items[0][1]) {
-          arrTemp.push({
-            uid: Date.now(),
-            name: items[0][1],
-            status: 'done',
-            url: res.documentUrl,
-          });
-        }
-        this.setState({
-          uploadFileParams: {
-            documentData: res.documentData,
-            fileName: items[0][1],
-          },
-          fileList: [...this.state.fileList, ...arrTemp]
-        })
-      }
-    });
   }
 
 
@@ -210,7 +146,7 @@ class PollResultEnterModel extends React.Component {
 
 
   handleSavePollInfo = () => {
-    const {xmid, operateType, uploadFileParams, pollInfo, fileList} = this.state;
+    const {xmid, operateType, uploadFileParams, pollInfo, pollFileList} = this.state;
     const {
       columnName,
       documentData,
@@ -220,16 +156,20 @@ class PollResultEnterModel extends React.Component {
       id,
       objectName,
     } = uploadFileParams;
-    if (pollInfo.name == '' || pollInfo.flowId == '' || fileList.length == 0) {
+    if (pollInfo.name == '' || pollInfo.flowId == '' || pollFileList.length == 0) {
       message.warn("询比信息未填写完整！", 1);
       return;
     }
+    let fileInfo = [];
+    uploadFileParams.map(item => {
+      fileInfo.push({fileName: item.name, data: item.base64})
+    })
     let submitdata = {
       projectId: xmid,
       infoId: operateType == "UPDATE" ? pollInfo.ID : '-1',
       name: pollInfo.name,
       flowId: String(pollInfo.flowId),
-      fileInfo: [{fileName, data: documentData}],
+      fileInfo: [...fileInfo],
       type: operateType,
     };
     console.log('🚀submitdata', submitdata);
@@ -253,7 +193,7 @@ class PollResultEnterModel extends React.Component {
     const {
       pollInfo,
       uploadFileParams,
-      fileList,
+      pollFileList,
       pbbgTurnRed,
       glxq,
       isSpinning,
@@ -317,7 +257,7 @@ class PollResultEnterModel extends React.Component {
               </Row>
               <Row>
                 <Col span={12}>
-                  <Form.Item label="评标报告" required
+                  <Form.Item label="询比报告" required
                     // help={pbbgTurnRed ? '请上传合同附件' : ''}
                              validateStatus={pbbgTurnRed ? 'error' : 'success'}
                   >
@@ -350,11 +290,30 @@ class PollResultEnterModel extends React.Component {
                         showRemoveIcon: true,
                         showPreviewIcon: true,
                       }}
+                      multiple={true}
                       onChange={(info) => {
                         let fileList = [...info.fileList];
-                        fileList = fileList.slice(-1);
-                        this.setState({fileList}, () => {
-                          // //console.log('目前fileList', this.state.fileList);
+                        this.setState({pollFileList: [...fileList]}, () => {
+                          console.log('目前fileList', this.state.pollFileList);
+                          let arr = [];
+                          console.log('目前fileList2222', fileList);
+                          fileList.forEach(item => {
+                            let reader = new FileReader(); //实例化文件读取对象
+                            reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                            reader.onload = e => {
+                              let urlArr = e.target.result.split(',');
+                              arr.push({
+                                name: item.name,
+                                base64: urlArr[1],
+                              });
+                              console.log("arrarr", arr)
+                              if (arr.length === fileList.length) {
+                                this.setState({
+                                  uploadFileParams: [...arr]
+                                });
+                              }
+                            };
+                          });
                         });
                         if (fileList.length === 0) {
                           this.setState({
@@ -367,23 +326,31 @@ class PollResultEnterModel extends React.Component {
                         }
                       }}
                       beforeUpload={(file, fileList) => {
-                        // //console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
-                        let reader = new FileReader(); //实例化文件读取对象
-                        reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                        reader.onload = (e) => { //文件读取成功完成时触发
-                          let urlArr = e.target.result.split(',');
-                          //console.log('uploadFileParamsuploadFileParams', uploadFileParams);
-                          this.setState({
-                            uploadFileParams: {
-                              ...this.state.uploadFileParams,
-                              documentData: urlArr[1],//获得文件读取成功后的DataURL,也就是base64编码
-                              fileName: file.name,
+                        let arr = [];
+                        console.log('目前fileList2222', fileList);
+                        fileList.forEach(item => {
+                          let reader = new FileReader(); //实例化文件读取对象
+                          reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                          reader.onload = e => {
+                            let urlArr = e.target.result.split(',');
+                            arr.push({
+                              name: item.name,
+                              base64: urlArr[1],
+                            });
+                            if (arr.length === fileList.length) {
+                              this.setState({
+                                uploadFileParams: [...arr]
+                              });
                             }
-                          });
-                        }
+                          };
+                        });
+                        console.log("uploadFileParams-cccc", this.state.uploadFileParams)
+                      }}
+                      onRemove={(file) => {
+                        console.log('file--cc-rrr', file);
                       }}
                       accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
-                      fileList={[...fileList]}>
+                      fileList={[...pollFileList]}>
                       <Button type="dashed">
                         <Icon type="upload"/>点击上传
                       </Button>

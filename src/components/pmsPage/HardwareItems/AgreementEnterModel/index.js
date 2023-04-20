@@ -46,7 +46,7 @@ class AgreementEnterModel extends React.Component {
       date: '',
       supplierId: '',
       flow: '',
-      payDate: '',
+      payDate: '-1',
     },
     glgys: [],
     lcxx: [],
@@ -307,42 +307,35 @@ class AgreementEnterModel extends React.Component {
                     allowClear
                     onChange={e => {
                       console.log("请选择关联主流程", e)
-                      // this.setState({contractInfo: {...contractInfo, flow: e}});
+                      this.setState({contractInfo: {...contractInfo, flow: e}});
                       //流程变更 数据变更
-                      FetchQueryHardwareTendersAndContract({
-                        xmmc: xmid,
-                        flowId: e,
-                        type: 'HTXX',
-                      }).then(res => {
-                        if (res.success) {
-                          const {htxx} = res;
-                          const htxxJson = JSON.parse(htxx);
-                          console.log("htxxJson", htxxJson)
-                          if (htxxJson.length > 0) {
-                            this.setState({
-                              operateType: 'UPDATE',
-                              contractInfo: {
-                                flow: e,
-                                amount: htxxJson[0].HTJE,
-                                date: htxxJson[0].QSRQ,
-                                supplierId: htxxJson[0].GYSID,
-                                payDate: htxxJson[0].FKRQ,
-                              },
-                            })
-                          } else {
-                            this.setState({
-                              operateType: 'ADD',
-                              contractInfo: {
-                                flow: e,
-                                amount: '',
-                                date: '',
-                                supplierId: '',
-                                payDate: '',
-                              },
-                            })
+                      if (operateType == 'UPDATE') {
+                        FetchQueryHardwareTendersAndContract({
+                          xmmc: xmid,
+                          flowId: e,
+                          type: 'HTXX',
+                          flowType: 'UPDATE',
+                        }).then(res => {
+                          if (res.success) {
+                            const {htxx} = res;
+                            const htxxJson = JSON.parse(htxx);
+                            console.log("htxxJson", htxxJson)
+                            if (htxxJson.length > 0) {
+                              this.setState({
+                                operateType: 'UPDATE',
+                                contractInfo: {
+                                  flow: e,
+                                  amount: htxxJson[0].HTJE,
+                                  date: htxxJson[0].QSRQ,
+                                  supplierId: htxxJson[0].GYSID,
+                                  payDate: htxxJson[0].FKRQ,
+                                },
+                              })
+                            }
                           }
-                        }
-                      });
+                        });
+                      }
+
                     }}
                     filterOption={(input, option) =>
                       option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -493,7 +486,7 @@ class AgreementEnterModel extends React.Component {
                     }} id="datePicker">
                       <DatePicker format="YYYY-MM-DD"
                                   allowClear={false}
-                                  value={contractInfo.payDate != '' ? moment(contractInfo.payDate, 'YYYY-MM-DD') : undefined}
+                                  value={contractInfo.payDate != '-1' ? moment(contractInfo.payDate, 'YYYY-MM-DD') : undefined}
                                   onChange={(date, dateString) => {
                                     console.log("付款日期", dateString)
                                     this.setState({contractInfo: {...contractInfo, payDate: dateString}});

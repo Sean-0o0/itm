@@ -51,6 +51,30 @@ export default function InfoTable(props) {
     return uuid
   }
 
+  const handleSingleDelete = (row) => {
+    console.log("rowrowrow", row)
+    let submitdata = {
+      projectId: row?.XMID,
+      // projectId: 397,
+      infoId: row?.ID,
+      name: row?.XBXM,
+      flowId: String(row.GLXQ),
+      fileInfo: [],
+      type: "DELETE",
+    };
+    console.log('🚀submitdata', submitdata);
+    UpdateInquiryComparisonInfo({
+      ...submitdata,
+    }).then(res => {
+      if (res?.code === 1) {
+        message.info('信息修改成功', 1);
+        getTableData()
+      } else {
+        message.error('信息修改失败', 1);
+      }
+    });
+  }
+
   const openEditModel = (row) => {
     console.log("recordrecordrecord", row)
     setXbjglrModalVisible(true);
@@ -70,10 +94,11 @@ export default function InfoTable(props) {
           name: item.fileName,
           status: 'done',
           url: item.url,
+          base64: item.data,
         });
         arrTemp2.push({
-          documentData: item.data,
-          fileName: item.fileName,
+          base64: item.data,
+          name: item.fileName,
         })
       })
       setFileList([...fileList, ...arrTemp])
@@ -251,13 +276,19 @@ export default function InfoTable(props) {
       title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
       dataIndex: 'operator',
       key: 'operator',
-      width: '10%',
+      width: '12%',
       // fixed: 'right',
       ellipsis: true,
       render: (text, row, index) =>
         tableData.length >= 1 ? (
           <>
-            <a onClick={() =>openEditModel(row)} style={{color: '#3361ff'}}>&nbsp;&nbsp;编辑</a>
+            <a onClick={() => openEditModel(row)} style={{color: '#3361ff'}}>编辑</a>
+            <Popconfirm
+              title="确定要删除吗?"
+              onConfirm={() => handleSingleDelete(row)}
+            >
+              <a style={{color: '#3361ff'}}>&nbsp;&nbsp;删除</a>
+            </Popconfirm>
           </>
         ) : null,
     }
@@ -275,8 +306,9 @@ export default function InfoTable(props) {
       return;
     }
     let fileInfo = [];
+    console.log('uploadFileParams', uploadFileParams);
     uploadFileParams.map(item => {
-      fileInfo.push({fileName: item.fileName, data: item.documentData})
+      fileInfo.push({fileName: item.name, data: item.base64})
     })
     let submitdata = {
       projectId: pollInfo.xmid,
@@ -352,7 +384,7 @@ export default function InfoTable(props) {
             rowKey={'projectId'}
             dataSource={tableData}
             onChange={handleTableChange}
-            // scroll={{ y: 500 }}
+            scroll={{y: 360}}
             pagination={{
               pageSizeOptions: ['10', '20', '30', '40'],
               showSizeChanger: true,
