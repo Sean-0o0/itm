@@ -28,7 +28,6 @@ export default function PollResultModel(props) {
     console.log("xmid", xmid)
     setTimeout(function () {
       getTableData();
-      setIsSpinning(false);
     }, 300);
     return () => {
     };
@@ -68,12 +67,14 @@ export default function PollResultModel(props) {
           setLcxxData(p => [...JSON.parse(lcxx)]);
           setTotal(res.totalrows);
           setTableLoading(false);
+          setIsSpinning(false);
         }
         // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
       })
       .catch(e => {
         // console.error('getTableData', e);
         setTableLoading(false);
+        setIsSpinning(false);
       });
   };
 

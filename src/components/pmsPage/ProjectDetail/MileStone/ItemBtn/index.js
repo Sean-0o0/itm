@@ -5,7 +5,7 @@ import {
   FetchQueryOwnerWorkflow,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import { message, Popover } from 'antd';
+import {message, Popover} from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
@@ -13,14 +13,19 @@ import AssociatedFile from '../../../LifeCycleManagement/AssociatedFile';
 import ContractSigning from '../../../LifeCycleManagement/ContractSigning';
 import ContractInfoUpdate from '../../../LifeCycleManagement/ContractInfoUpdate';
 import PaymentProcess from '../../../LifeCycleManagement/PaymentProcess';
-import { EncryptBase64 } from '../../../../Common/Encrypt';
+import {EncryptBase64} from '../../../../Common/Encrypt';
+import EnterBidInfoModel from "../../../HardwareItems/EnterBidInfoModel";
+import AgreementEnterModel from "../../../HardwareItems/AgreementEnterModel";
+import PollResultEnterModel from "../../../HardwareItems/PollResultEnterModel";
+
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
-const { api } = config;
+const {api} = config;
 const {
-  pmsServices: { getStreamByLiveBos },
+  pmsServices: {getStreamByLiveBos},
 } = api;
 let timer = null;
+
 class ItemBtn extends React.Component {
   state = {
     //Livebos弹窗
@@ -819,44 +824,75 @@ class ItemBtn extends React.Component {
 
         {/* 硬件中标信息录入 */}
         {hardWareBidModalVisible && (
-          <BridgeModel
-            isSpining="customize"
-            modalProps={hardWareBidModalProps}
-            onCancel={() => {
+          // <BridgeModel
+          //   isSpining="customize"
+          //   modalProps={hardWareBidModalProps}
+          //   onCancel={() => {
+          //     this.setState({
+          //       hardWareBidModalVisible: false,
+          //     });
+          //   }}
+          //   src={lbModalUrl}
+          // />
+
+          <EnterBidInfoModel
+            xmid={Number(item.xmid)}
+            operateType="UPDATE"
+            visible={hardWareBidModalVisible}
+            closeModal={() =>
               this.setState({
                 hardWareBidModalVisible: false,
-              });
-            }}
-            src={lbModalUrl}
-          />
+              })}
+            onSuccess={() => this.onSuccess('信息修改')}
+          ></EnterBidInfoModel>
+
         )}
 
-        {/* 硬件合同信息录入 */}
+        {/* 硬件询比结果录入 */}
         {xbjglrModalVisible && (
-          <BridgeModel
-            isSpining="customize"
-            modalProps={xbjglrModalProps}
-            onCancel={() => {
+          <PollResultEnterModel
+            xmid={Number(item.xmid)}
+            visible={xbjglrModalVisible}
+            closeModal={() =>
               this.setState({
                 xbjglrModalVisible: false,
-              });
-            }}
-            src={lbModalUrl}
-          />
+              })}
+            onSuccess={() => this.onSuccess('信息修改')}
+          ></PollResultEnterModel>
+          // <BridgeModel
+          //   isSpining="customize"
+          //   modalProps={xbjglrModalProps}
+          //   onCancel={() => {
+          //     this.setState({
+          //       xbjglrModalVisible: false,
+          //     });
+          //   }}
+          //   src={lbModalUrl}
+          // />
         )}
 
-        {/* 询比结果录入 */}
+        {/* 硬件合同信息录入录入 */}
         {hardWareContrastModalVisible && (
-          <BridgeModel
-            isSpining="customize"
-            modalProps={hardWareContrastModalProps}
-            onCancel={() => {
+          // <BridgeModel
+          //   isSpining="customize"
+          //   modalProps={hardWareContrastModalProps}
+          //   onCancel={() => {
+          //     this.setState({
+          //       hardWareContrastModalVisible: false,
+          //     });
+          //   }}
+          //   src={lbModalUrl}
+          // />
+          <AgreementEnterModel
+            xmid={Number(item.xmid)}
+            operateType="UPDATE"
+            visible={hardWareContrastModalVisible}
+            closeModal={() =>
               this.setState({
                 hardWareContrastModalVisible: false,
-              });
-            }}
-            src={lbModalUrl}
-          />
+              })}
+            onSuccess={() => this.onSuccess('信息修改')}
+          ></AgreementEnterModel>
         )}
 
         {/*文档上传、修改弹窗*/}

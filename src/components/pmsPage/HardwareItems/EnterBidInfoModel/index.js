@@ -242,22 +242,11 @@ class EnterBidInfoModel extends React.Component {
   // }
 
   componentDidMount = async () => {
-    const _this = this;
-    const params = this.getUrlParams();
-    if (params.xmid && params.xmid !== -1) {
-      console.log('paramsparams', params);
-      // 修改项目操作
-      this.setState({
-        operateType: params.type,
-        xmid: Number(params.xmid),
-      });
+    const {operateType, xmid} = this.props
+    this.fetchQueryGysInZbxx(1, PASE_SIZE);
+    if (operateType === 'UPDATE') {
+      this.fetchQueryHardwareTendersAndContract();
     }
-    setTimeout(function() {
-      _this.fetchQueryGysInZbxx(1, PASE_SIZE);
-      if (params.type === 'UPDATE') {
-        _this.fetchQueryHardwareTendersAndContract();
-      }
-    }, 300);
   };
 
   // 获取url参数
@@ -275,9 +264,11 @@ class EnterBidInfoModel extends React.Component {
   // 查询硬件项目的招标信息，合同信息
   fetchQueryHardwareTendersAndContract = () => {
     const {
-      dictionary: { BJLX = [] },
+      dictionary: {BJLX = []},
+      xmid,
+      operateType
     } = this.props;
-    const { glgys, xmid } = this.state;
+    const {glgys} = this.state;
     FetchQueryHardwareTendersAndContract({
       xmmc: xmid,
       flowId: -1,
@@ -357,11 +348,15 @@ class EnterBidInfoModel extends React.Component {
 
   //中标信息表格单行删除
   handleSingleDelete = id => {
+    this.setState({
+      isSpinning: true,
+    })
     const dataSource = [...this.state.tableData];
     const del = this.state.tableDataSearch.filter(item => item.ID === id);
     this.setState({
       tableData: dataSource.filter(item => item.ID !== id),
       tableDataDel: del,
+      isSpinning: false,
     });
   };
 
@@ -441,11 +436,7 @@ class EnterBidInfoModel extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        if (_this.state.operateType) {
-          window.parent && window.parent.postMessage({ operate: 'close' }, '*');
-        } else {
-          _this.props.closeDialog();
-        }
+        _this.props.closeModal()
       },
       onCancel() {},
     });
@@ -458,8 +449,6 @@ class EnterBidInfoModel extends React.Component {
       bidInfo,
       uploadFileParams,
       fileList,
-      xmid,
-      operateType,
     } = this.state;
     const { bidBond, performanceBond } = bidInfo;
     const {
@@ -471,11 +460,15 @@ class EnterBidInfoModel extends React.Component {
       id,
       objectName,
     } = uploadFileParams;
+    const {xmid, operateType} = this.props
     console.log('fileList', fileList);
     if (fileList.length === 0 || tableData.length === 0) {
       message.warn('中标信息未填写完整！');
       return;
     }
+    this.setState({
+      isSpinning: true,
+    })
     let num = 0;
     if (tableData.length > 0) {
       tableData.map(item => {
@@ -536,13 +529,15 @@ class EnterBidInfoModel extends React.Component {
       ...submitdata,
     }).then(res => {
       if (res?.code === 1) {
-        if (operateType) {
-          window.parent && window.parent.postMessage({ operate: 'close' }, '*');
-        } else {
-          this.props.closeDialog();
-        }
+        this.setState({
+          isSpinning: false,
+        })
+        message.info("信息修改成功！", 3)
       } else {
-        message.error('信息修改失败', 1);
+        this.setState({
+          isSpinning: false,
+        })
+        message.error('信息修改失败！', 3);
       }
     });
   };
@@ -559,16 +554,16 @@ class EnterBidInfoModel extends React.Component {
       glgys,
       addGysModalVisible,
       isSpinning,
-      xmid,
-      operateType,
     } = this.state;
     const {
+      xmid,
+      operateType,
       visible,
       closeModal,
       onSuccess,
-      dictionary: { BJLX = [] },
+      dictionary: {BJLX = []},
     } = this.props;
-    const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
+    const {getFieldDecorator, getFieldValue, setFieldsValue, validateFields} = this.props.form;
     const _this = this;
     const tableColumns = [
       {
@@ -752,11 +747,11 @@ class EnterBidInfoModel extends React.Component {
       footer: null,
     };
     return (
-      <div className="poll-result-box" style={{ overflow: 'hidden', height: '100%' }}>
+      <>
         {addGysModalVisible && (
           <BridgeModel
             modalProps={addGysModalProps}
-            onCancel={() => this.setState({ addGysModalVisible: false })}
+            onCancel={() => this.setState({addGysModalVisible: false})}
             onSucess={this.OnGysSuccess}
             src={
               localStorage.getItem('livebos') +
@@ -764,177 +759,202 @@ class EnterBidInfoModel extends React.Component {
             }
           />
         )}
-        <Spin
-          spinning={isSpinning}
-          tip="正在努力的加载中..."
-          size="large"
-          style={{ height: '100%' }}
+        <Modal
+          wrapClassName="editMessage-modify"
+          style={{top: '20px', paddingBottom: '0'}}
+          width={'1000px'}
+          title={null}
+          zIndex={100}
+          bodyStyle={{
+            padding: '0',
+            height: '710px',
+          }}
+          onCancel={this.props.closeModal}
+          footer={<div className="modal-footer">
+            <Button className="btn-default" onClick={this.props.closeModal}>
+              取消
+            </Button>
+            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        暂存草稿
+      </Button> */}
+            <Button disabled={isSpinning} className="btn-primary" type="primary" onClick={this.handleSaveZbxx}>
+              确定
+            </Button>
+          </div>}
+          visible={visible}
         >
-          <Form name="nest-messages" style={{ padding: '24px' }}>
-            <Row>
-              <Col span={12} style={{paddingRight: '24px',}}>
-                <Form.Item label="履约保证金金额（元）" className="formItem">
-                  {getFieldDecorator('performanceBond', {
-                    initialValue: bidInfo?.performanceBond,
-                  })(
-                    <Input
-                      placeholder="请输入履约保证金金额（元）"
-                      onChange={e => {
-                        this.setState({bidInfo: {...bidInfo, performanceBond: e.target.value}});
-                      }}
-                    />,
-                  )}
-                </Form.Item>{' '}
-              </Col>
-              <Col span={12} style={{paddingLeft: '24px',}}>
-                <Form.Item label="投标保证金（元）" className="formItem">
-                  {getFieldDecorator('bidBond', {
-                    initialValue: bidInfo?.bidBond,
-                  })(
-                    <Input
-                      placeholder="请输入投标保证金（元）"
-                      onChange={e => {
-                        this.setState({bidInfo: {...bidInfo, bidBond: e.target.value}});
-                      }}
-                    />,
-                  )}
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={12}>
-                <Form.Item
-                  label="评标报告"
-                  required
-                  // help={pbbgTurnRed ? '请上传合同附件' : ''}
-                  validateStatus={pbbgTurnRed ? 'error' : 'success'}
-                >
-                  <Upload
-                    className="uploadStyle"
-                    action={'/api/projectManage/queryfileOnlyByupload'}
-                    onDownload={file => {
-                      if (!file.url) {
-                        let reader = new FileReader();
-                        reader.readAsDataURL(file.originFileObj);
-                        reader.onload = e => {
+          <div
+            style={{
+              height: '40px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#3361FF',
+              color: 'white',
+              padding: '0 24px',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '16px',
+            }}
+          >
+            <strong>硬件中标信息录入</strong>
+          </div>
+          <Spin
+            spinning={isSpinning}
+            tip="正在努力的加载中..."
+            size="large"
+            style={{position: 'fixed'}}
+          >
+            <Form name="nest-messages" style={{padding: '24px', overflowY: 'auto'}}>
+              <Row>
+                <Col span={12} style={{paddingRight: '24px',}}>
+                  <Form.Item label="履约保证金金额（元）" className="formItem">
+                    {getFieldDecorator('performanceBond', {
+                      initialValue: bidInfo?.performanceBond,
+                    })(
+                      <Input
+                        placeholder="请输入履约保证金金额（元）"
+                        onChange={e => {
+                          this.setState({bidInfo: {...bidInfo, performanceBond: e.target.value}});
+                        }}
+                      />,
+                    )}
+                  </Form.Item>{' '}
+                </Col>
+                <Col span={12} style={{paddingLeft: '24px',}}>
+                  <Form.Item label="投标保证金（元）" className="formItem">
+                    {getFieldDecorator('bidBond', {
+                      initialValue: bidInfo?.bidBond,
+                    })(
+                      <Input
+                        placeholder="请输入投标保证金（元）"
+                        onChange={e => {
+                          this.setState({bidInfo: {...bidInfo, bidBond: e.target.value}});
+                        }}
+                      />,
+                    )}
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={12}>
+                  <Form.Item
+                    label="评标报告"
+                    required
+                    // help={pbbgTurnRed ? '请上传合同附件' : ''}
+                    validateStatus={pbbgTurnRed ? 'error' : 'success'}
+                  >
+                    <Upload
+                      className="uploadStyle"
+                      action={'/api/projectManage/queryfileOnlyByupload'}
+                      onDownload={file => {
+                        if (!file.url) {
+                          let reader = new FileReader();
+                          reader.readAsDataURL(file.originFileObj);
+                          reader.onload = e => {
+                            var link = document.createElement('a');
+                            link.href = e.target.result;
+                            link.download = file.name;
+                            link.click();
+                            window.URL.revokeObjectURL(link.href);
+                          };
+                        } else {
+                          // window.location.href=file.url;
                           var link = document.createElement('a');
-                          link.href = e.target.result;
+                          link.href = file.url;
                           link.download = file.name;
                           link.click();
                           window.URL.revokeObjectURL(link.href);
+                        }
+                      }}
+                      showUploadList={{
+                        showDownloadIcon: true,
+                        showRemoveIcon: true,
+                        showPreviewIcon: true,
+                      }}
+                      onChange={info => {
+                        let fileList = [...info.fileList];
+                        fileList = fileList.slice(-1);
+                        this.setState({ fileList });
+                      }}
+                      beforeUpload={(file, fileList) => {
+                        // //console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
+                        let reader = new FileReader(); //实例化文件读取对象
+                        reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
+                        reader.onload = e => {
+                          //文件读取成功完成时触发
+                          let urlArr = e.target.result.split(',');
+                          //console.log('uploadFileParamsuploadFileParams', uploadFileParams);
+                          this.setState({
+                            uploadFileParams: {
+                              ...this.state.uploadFileParams,
+                              documentData: urlArr[1], //获得文件读取成功后的DataURL,也就是base64编码
+                              fileName: file.name,
+                            },
+                          });
                         };
-                      } else {
-                        // window.location.href=file.url;
-                        var link = document.createElement('a');
-                        link.href = file.url;
-                        link.download = file.name;
-                        link.click();
-                        window.URL.revokeObjectURL(link.href);
+                      }}
+                      accept={
+                        '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                       }
-                    }}
-                    showUploadList={{
-                      showDownloadIcon: true,
-                      showRemoveIcon: true,
-                      showPreviewIcon: true,
-                    }}
-                    onChange={info => {
-                      let fileList = [...info.fileList];
-                      fileList = fileList.slice(-1);
-                      this.setState({ fileList });
-                    }}
-                    beforeUpload={(file, fileList) => {
-                      // //console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
-                      let reader = new FileReader(); //实例化文件读取对象
-                      reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                      reader.onload = e => {
-                        //文件读取成功完成时触发
-                        let urlArr = e.target.result.split(',');
-                        //console.log('uploadFileParamsuploadFileParams', uploadFileParams);
-                        this.setState({
-                          uploadFileParams: {
-                            ...this.state.uploadFileParams,
-                            documentData: urlArr[1], //获得文件读取成功后的DataURL,也就是base64编码
-                            fileName: file.name,
-                          },
-                        });
-                      };
-                    }}
-                    accept={
-                      '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                    }
-                    fileList={[...fileList]}
-                  >
-                    <Button type="dashed">
-                      <Icon type="upload" />
-                      点击上传
-                    </Button>
-                  </Upload>
-                </Form.Item>
-              </Col>
-            </Row>
-            <Row>
-              <Col span={24}>
-                <Form.Item label={'标段信息'} required>
-                  <div className="tableBox2">
-                    <Table
-                      columns={columns}
-                      components={components}
-                      rowKey={record => record.ID}
-                      rowClassName={() => 'editable-row'}
-                      dataSource={tableData}
-                      // rowSelection={rowSelection}
-                      scroll={tableData.length > 4 ? { y: 260 } : {}}
-                      pagination={false}
-                      bordered
-                      size="middle"
-                      style={{ paddingBottom: '12px' }}
-                    ></Table>
-                    <div
-                      style={{
-                        textAlign: 'center',
-                        border: '1px dashed #e0e0e0',
-                        lineHeight: '32px',
-                        height: '32px',
-                        cursor: 'pointer',
-                      }}
-                      onClick={() => {
-                        let arrData = tableData;
-                        arrData.push({
-                          ID: Date.now(),
-                          ['BJLX' + Date.now()]: '1',
-                          ['BJMC' + Date.now()]: '',
-                          ['ZBGYS' + Date.now()]: '',
-                        });
-                        this.setState({ tableData: arrData });
-                      }}
+                      fileList={[...fileList]}
                     >
+                      <Button type="dashed">
+                        <Icon type="upload" />
+                        点击上传
+                      </Button>
+                    </Upload>
+                  </Form.Item>
+                </Col>
+              </Row>
+              <Row>
+                <Col span={24}>
+                  <Form.Item label={'标段信息'} required>
+                    <div className="tableBox2">
+                      <Table
+                        columns={columns}
+                        components={components}
+                        rowKey={record => record.ID}
+                        rowClassName={() => 'editable-row'}
+                        dataSource={tableData}
+                        // rowSelection={rowSelection}
+                        scroll={tableData.length > 4 ? { y: 260 } : {}}
+                        pagination={false}
+                        bordered
+                        size="middle"
+                        style={{ paddingBottom: '12px' }}
+                      ></Table>
+                      <div
+                        style={{
+                          textAlign: 'center',
+                          border: '1px dashed #e0e0e0',
+                          lineHeight: '32px',
+                          height: '32px',
+                          cursor: 'pointer',
+                        }}
+                        onClick={() => {
+                          let arrData = tableData;
+                          arrData.push({
+                            ID: Date.now(),
+                            ['BJLX' + Date.now()]: '1',
+                            ['BJMC' + Date.now()]: '',
+                            ['ZBGYS' + Date.now()]: '',
+                          });
+                          this.setState({ tableData: arrData });
+                        }}
+                      >
                       <span className="addHover">
-                        <Icon type="plus" style={{ fontSize: '12px' }} />
-                        <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增标段信息</span>
+                        <Icon type="plus" style={{fontSize: '12px'}}/>
+                        <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增标段信息</span>
                       </span>
+                      </div>
                     </div>
-                  </div>
-                </Form.Item>
-              </Col>
-            </Row>
-          </Form>
-          <div className="footer">
-            <Divider />
-            <div style={{ padding: '16px 24px' }}>
-              <Button onClick={this.handleCancel}>取消</Button>
-              <div className="steps-action">
-                <Button
-                  style={{ marginLeft: '12px', backgroundColor: '#3361FF' }}
-                  type="primary"
-                  onClick={e => this.handleSaveZbxx()}
-                >
-                  保存
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Spin>
-      </div>
+                  </Form.Item>
+                </Col>
+              </Row>
+            </Form>
+          </Spin>
+        </Modal>
+      </>
     );
   }
 }

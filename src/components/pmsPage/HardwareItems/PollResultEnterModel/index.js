@@ -40,8 +40,6 @@ const {Option, OptGroup} = Select;
 
 class PollResultEnterModel extends React.Component {
   state = {
-    xmid: '-1',
-    operateType: 'ADD',
     pollInfo: {
       //中标信息
       name: '',
@@ -61,20 +59,7 @@ class PollResultEnterModel extends React.Component {
   // }
 
   componentDidMount = async () => {
-    const _this = this;
-    const params = this.getUrlParams();
-    if (params.xmid && params.xmid !== -1) {
-      console.log("paramsparams000000", params)
-      // 修改项目操作
-      this.setState({
-        operateType: params.type,
-        xmid: Number(params.xmid)
-      })
-    }
-    console.log("paramsparams", params)
-    setTimeout(function () {
-      _this.fetchQueryInquiryComparisonInfoLCXX()
-    }, 300);
+    this.fetchQueryInquiryComparisonInfoLCXX()
   };
 
 
@@ -88,7 +73,7 @@ class PollResultEnterModel extends React.Component {
 
   // 查询中标信息修改时的供应商下拉列表
   fetchQueryInquiryComparisonInfoLCXX = () => {
-    const {xmid} = this.state;
+    const {xmid} = this.props;
     FetchQueryInquiryComparisonInfo({
       flowId: "-1",
       projectId: xmid,
@@ -105,7 +90,7 @@ class PollResultEnterModel extends React.Component {
 
   // 查询glxq
   fetchQueryInquiryComparisonInfo = () => {
-    const {xmid} = this.state;
+    const {xmid} = this.props;
     FetchQueryInquiryComparisonInfo({
       flowId: "-1",
       projectId: xmid,
@@ -133,11 +118,7 @@ class PollResultEnterModel extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        if (_this.state.operateType) {
-          window.parent && window.parent.postMessage({operate: 'close'}, '*');
-        } else {
-          _this.props.closeDialog();
-        }
+        _this.props.closeModal()
       },
       onCancel() {
       },
@@ -146,7 +127,7 @@ class PollResultEnterModel extends React.Component {
 
 
   handleSavePollInfo = () => {
-    const {xmid, operateType, uploadFileParams, pollInfo, pollFileList} = this.state;
+    const {uploadFileParams, pollInfo, pollFileList} = this.state;
     const {
       columnName,
       documentData,
@@ -156,34 +137,40 @@ class PollResultEnterModel extends React.Component {
       id,
       objectName,
     } = uploadFileParams;
+    const {xmid} = this.props
     if (pollInfo.name == '' || pollInfo.flowId == '' || pollFileList.length == 0) {
       message.warn("询比信息未填写完整！", 1);
       return;
     }
+    this.setState({
+      isSpinning: true,
+    })
     let fileInfo = [];
     uploadFileParams.map(item => {
       fileInfo.push({fileName: item.name, data: item.base64})
     })
     let submitdata = {
       projectId: xmid,
-      infoId: operateType == "UPDATE" ? pollInfo.ID : '-1',
+      infoId: '-1',
       name: pollInfo.name,
       flowId: String(pollInfo.flowId),
       fileInfo: [...fileInfo],
-      type: operateType,
+      type: 'ADD',
     };
     console.log('🚀submitdata', submitdata);
     UpdateInquiryComparisonInfo({
       ...submitdata,
     }).then(res => {
       if (res?.code === 1) {
-        if (operateType) {
-          window.parent && window.parent.postMessage({operate: 'close'}, '*');
-        } else {
-          this.props.closeDialog();
-        }
+        this.setState({
+          isSpinning: false,
+        })
+        message.info('信息修改成功！', 3);
       } else {
-        message.error('信息修改失败', 1);
+        this.setState({
+          isSpinning: false,
+        })
+        message.error('信息修改失败！', 3);
       }
     });
   }
@@ -199,31 +186,69 @@ class PollResultEnterModel extends React.Component {
       isSpinning,
     } = this.state;
     const {
-      currentXmid,
       visible,
       closeModal,
-      onSuccess,
     } = this.props;
     const {getFieldDecorator, getFieldValue, setFieldsValue, validateFields} = this.props.form;
     return (
-      <div className="poll-result-box" style={{overflow: 'hidden', height: "100%"}}>
-        <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="PollResultEnterModel">
-          <Form name="nest-messages" style={{padding: '24px'}}>
-            <Row>
-              <Col span={12}>
-                <Form.Item
-                  label="询比项目名称" required
-                  className="formItem"
-                >
-                  {getFieldDecorator('name', {
-                    initialValue: pollInfo.name,
-                  })(<Input onChange={e => {
-                    console.log("请输入询比项目名称", e.target.value)
-                    this.setState({pollInfo: {...pollInfo, name: e.target.value}});
-                  }} placeholder="请输入询比项目名称"/>)}
-                </Form.Item>{' '}
+      <>
+        <Modal
+          wrapClassName="editMessage-modify"
+          style={{top: '20px', paddingBottom: '0'}}
+          width={'800px'}
+          title={null}
+          zIndex={100}
+          bodyStyle={{
+            padding: '0',
+            height: '300px',
+          }}
+          onCancel={this.props.closeModal}
+          footer={<div className="modal-footer">
+            <Button className="btn-default" onClick={closeModal}>
+              取消
+            </Button>
+            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        暂存草稿
+      </Button> */}
+            <Button disabled={isSpinning} className="btn-primary" type="primary" onClick={this.handleSavePollInfo}>
+              确定
+            </Button>
+          </div>}
+          visible={visible}
+        >
+          <div
+            style={{
+              height: '40px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#3361FF',
+              color: 'white',
+              padding: '0 24px',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '16px',
+            }}
+          >
+            <strong>硬件中标信息录入</strong>
+          </div>
+          <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="PollResultEnterModel"
+                style={{position: 'fixed'}}>
+            <Form name="nest-messages" style={{padding: '24px'}}>
+              <Row>
+                <Col span={12} style={{paddingRight: '24px'}}>
+                  <Form.Item
+                    label="询比项目名称" required
+                    className="formItem"
+                  >
+                    {getFieldDecorator('name', {
+                      initialValue: pollInfo.name,
+                    })(<Input onChange={e => {
+                      console.log("请输入询比项目名称", e.target.value)
+                      this.setState({pollInfo: {...pollInfo, name: e.target.value}});
+                    }} placeholder="请输入询比项目名称"/>)}
+                  </Form.Item>{' '}
                 </Col>
-                <Col span={12} style={{paddingLeft: '65px', paddingRight: '70px'}}>
+                <Col span={12} style={{paddingLeft: '24px'}}>
                   <Form.Item
                     label="关联需求" required
                     className="formItem"
@@ -256,7 +281,7 @@ class PollResultEnterModel extends React.Component {
                 </Col>
               </Row>
               <Row>
-                <Col span={12}>
+                <Col span={12} style={{paddingRight: '24px'}}>
                   <Form.Item label="询比报告" required
                     // help={pbbgTurnRed ? '请上传合同附件' : ''}
                              validateStatus={pbbgTurnRed ? 'error' : 'success'}
@@ -357,21 +382,10 @@ class PollResultEnterModel extends React.Component {
                     </Upload>
                   </Form.Item></Col>
               </Row>
-          </Form>
-          <div className="footer">
-            <Divider/>
-            <div style={{padding: '16px 24px'}}>
-              <Button onClick={this.handleCancel}>取消</Button>
-              <div className="steps-action">
-                <Button style={{marginLeft: '12px', backgroundColor: '#3361FF'}} type="primary"
-                        onClick={e => this.handleSavePollInfo()}>
-                  保存
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Spin>
-      </div>
+            </Form>
+          </Spin>
+        </Modal>
+      </>
     );
   }
 }

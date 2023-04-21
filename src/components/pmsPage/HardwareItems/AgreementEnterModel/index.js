@@ -60,23 +60,12 @@ class AgreementEnterModel extends React.Component {
   }
 
   componentDidMount = async () => {
-    const _this = this;
-    const params = this.getUrlParams();
-    if (params.xmid && params.xmid !== -1) {
-      console.log("paramsparams", params)
-      // 修改项目操作
-      this.setState({
-        operateType: params.type,
-        xmid: Number(params.xmid)
-      })
+    const {operateType, xmid} = this.props
+    this.fetchQueryGysInZbxx(1, PASE_SIZE);
+    this.fetchQueryHardwareTendersAndContract();
+    if (operateType == "UPDATE") {
+      this.fetchQueryHardwareContract();
     }
-    setTimeout(function () {
-      _this.fetchQueryGysInZbxx(1, PASE_SIZE);
-      _this.fetchQueryHardwareTendersAndContract();
-      if (params.type == "UPDATE") {
-        _this.fetchQueryHardwareContract();
-      }
-    }, 300);
   };
 
   // 获取url参数
@@ -89,7 +78,7 @@ class AgreementEnterModel extends React.Component {
 
   // 查询硬件项目的招标信息，合同信息----查询相关流程
   fetchQueryHardwareTendersAndContract = () => {
-    const {xmid, operateType} = this.state;
+    const {xmid, operateType} = this.props
     FetchQueryHardwareTendersAndContract({
       xmmc: xmid,
       flowId: -1,
@@ -109,7 +98,8 @@ class AgreementEnterModel extends React.Component {
 
   // 查询硬件项目的招标信息，合同信息---查询反显信息
   fetchQueryHardwareContract = () => {
-    const {xmid, contractInfo, operateType} = this.state;
+    const {contractInfo} = this.state;
+    const {xmid, operateType} = this.props
     FetchQueryHardwareTendersAndContract({
       xmmc: xmid,
       flowId: -1,
@@ -188,11 +178,7 @@ class AgreementEnterModel extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        if (_this.state.operateType) {
-          window.parent && window.parent.postMessage({operate: 'close'}, '*');
-        } else {
-          _this.props.closeDialog();
-        }
+        _this.props.closeModal()
       },
       onCancel() {
       },
@@ -200,12 +186,16 @@ class AgreementEnterModel extends React.Component {
   }
 
   handleSaveHtxx = () => {
-    const {contractInfo = [], xmid, operateType} = this.state;
+    const {contractInfo = []} = this.state;
+    const {xmid, operateType} = this.props;
     console.log("contractInfocontractInfo", contractInfo)
     if (contractInfo.amount == '' || contractInfo.date == '' || contractInfo.supplierId == '' || contractInfo.flow == '') {
       message.warn("合同信息未填写完整！", 1);
       return;
     }
+    this.setState({
+      isSpinning: true,
+    })
     let submitdata = {
       projectId: Number(xmid),
       amount: Number(contractInfo.amount),
@@ -220,13 +210,15 @@ class AgreementEnterModel extends React.Component {
       ...submitdata,
     }).then(res => {
       if (res?.code === 1) {
-        if (operateType) {
-          window.parent && window.parent.postMessage({operate: 'close'}, '*');
-        } else {
-          this.props.closeDialog();
-        }
+        this.setState({
+          isSpinning: false,
+        })
+        message.info('信息修改成功！', 3);
       } else {
-        message.error('信息修改失败', 1);
+        this.setState({
+          isSpinning: false,
+        })
+        message.error('信息修改失败！', 3);
       }
     });
   }
@@ -238,9 +230,9 @@ class AgreementEnterModel extends React.Component {
       contractInfo,
       glgys,
       lcxx,
-      xmid,
     } = this.state;
     const {
+      xmid,
       visible,
       closeModal,
       onSuccess,
@@ -270,7 +262,7 @@ class AgreementEnterModel extends React.Component {
       },
     };
     return (
-      <div className="enterAgreementModel" style={{overflow: 'hidden', height: "100%"}}>
+      <>
         {addGysModalVisible && (
           <BridgeModel
             modalProps={addGysModalProps}
@@ -282,17 +274,56 @@ class AgreementEnterModel extends React.Component {
             }
           />
         )}
-        <Spin spinning={isSpinning} tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
-          <Form {...basicFormItemLayout} name="nest-messages" style={{padding: '24px'}}>
-            <Row>
-              <Col span={24}>
-                <Form.Item labelCol={{span: 4}} wrapperCol={{span: 20}} label={<span><span style={{
-                  textAlign: 'left',
-                  fontFamily: 'SimSun, sans-serif',
-                  color: '#f5222d',
-                  marginRight: '4px',
-                  lineHeight: 1
-                }}>*</span>设备采购有合同流程</span>} className="formItem">
+        <Modal
+          wrapClassName="editMessage-modify"
+          style={{top: '40px', paddingBottom: '0'}}
+          width={'920px'}
+          title={null}
+          zIndex={100}
+          bodyStyle={{
+            padding: '0',
+            height: '340px',
+          }}
+          onCancel={this.props.closeModal}
+          footer={<div className="modal-footer">
+            <Button className="btn-default" onClick={this.props.closeModal}>
+              取消
+            </Button>
+            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        暂存草稿
+      </Button> */}
+            <Button disabled={isSpinning} className="btn-primary" type="primary" onClick={this.handleSaveHtxx}>
+              确定
+            </Button>
+          </div>}
+          visible={visible}
+        >
+          <div
+            style={{
+              height: '40px',
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#3361FF',
+              color: 'white',
+              padding: '0 24px',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '16px',
+            }}
+          >
+            <strong>硬件合同信息录入</strong>
+          </div>
+          <Spin spinning={isSpinning} tip="正在努力的加载中..." size="large" style={{height: "100%", position: 'fixed'}}>
+            <Form {...basicFormItemLayout} name="nest-messages" style={{padding: '24px'}}>
+              <Row>
+                <Col span={24}>
+                  <Form.Item labelCol={{span: 4}} wrapperCol={{span: 20}} label={<span><span style={{
+                    textAlign: 'left',
+                    fontFamily: 'SimSun, sans-serif',
+                    color: '#f5222d',
+                    marginRight: '4px',
+                    lineHeight: 1
+                  }}>*</span>设备采购有合同流程</span>} className="formItem">
                   {getFieldDecorator('flow', {
                     // rules: [{
                     //   required: true,
@@ -496,21 +527,10 @@ class AgreementEnterModel extends React.Component {
                 </Form.Item>
               </Col>
             </Row>
-          </Form>
-          <div className="footer">
-            <Divider/>
-            <div style={{padding: '16px 24px'}}>
-              <Button onClick={this.handleCancel}>取消</Button>
-              <div className="steps-action">
-                <Button style={{marginLeft: '12px', backgroundColor: '#3361FF'}} type="primary"
-                        onClick={e => this.handleSaveHtxx()}>
-                  保存
-                </Button>
-              </div>
-            </div>
-          </div>
-        </Spin>
-      </div>
+            </Form>
+          </Spin>
+        </Modal>
+      </>
     );
   }
 }
