@@ -110,7 +110,7 @@ class PollResultEditModel extends React.Component {
                     initialValue: pollInfo?.flowId ? pollInfo.flowId : null,
                   })(<Select
                     style={{borderRadius: '8px !important'}}
-                    placeholder="请选择关联主流程"
+                    placeholder="请选择关联设备采购无合同流程"
                     mode='multiple'
                     // className="skzh-box"
                     showSearch
@@ -173,28 +173,41 @@ class PollResultEditModel extends React.Component {
                       let fileList = [...info.fileList];
                       console.log("fileListfileList", fileList)
                       let newArr = [];
-                      fileList.forEach(item => {
-                        console.log("item.originFileObj", item.originFileObj)
-                        if (item.originFileObj === undefined) {
+                      if (fileList.filter(item => item.originFileObj !== undefined).length === 0) {
+                        fileList.forEach(item => {
                           newArr.push({
                             name: item.name,
                             base64: item.base64,
                           });
-                        } else {
-                          let reader = new FileReader(); //实例化文件读取对象
-                          reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
-                          reader.onload = e => {
-                            let urlArr = e.target.result.split(',');
+                        });
+                        if (newArr.length === fileList.length) {
+                          this.handleParamsCallback([...newArr])
+                        }
+                      } else {
+                        fileList.forEach(item => {
+                          console.log("item.originFileObj", item.originFileObj)
+                          if (item.originFileObj === undefined) {
                             newArr.push({
                               name: item.name,
-                              base64: urlArr[1],
+                              base64: item.base64,
                             });
-                            if (newArr.length === fileList.length) {
-                              this.handleParamsCallback([...newArr])
-                            }
-                          };
-                        }
-                      });
+                          } else {
+                            let reader = new FileReader(); //实例化文件读取对象
+                            reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                            reader.onload = e => {
+                              let urlArr = e.target.result.split(',');
+                              newArr.push({
+                                name: item.name,
+                                base64: urlArr[1],
+                              });
+                              if (newArr.length === fileList.length) {
+                                this.handleParamsCallback([...newArr])
+                              }
+                            };
+                          }
+                        });
+                      }
+
                       this.handleFileCallback(fileList)
                       if (fileList.length === 0) {
                         this.setState({
