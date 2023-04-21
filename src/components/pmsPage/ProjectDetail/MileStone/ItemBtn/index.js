@@ -5,7 +5,7 @@ import {
   FetchQueryOwnerWorkflow,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import {message, Popover} from 'antd';
+import { message, Popover } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
@@ -13,16 +13,16 @@ import AssociatedFile from '../../../LifeCycleManagement/AssociatedFile';
 import ContractSigning from '../../../LifeCycleManagement/ContractSigning';
 import ContractInfoUpdate from '../../../LifeCycleManagement/ContractInfoUpdate';
 import PaymentProcess from '../../../LifeCycleManagement/PaymentProcess';
-import {EncryptBase64} from '../../../../Common/Encrypt';
-import EnterBidInfoModel from "../../../HardwareItems/EnterBidInfoModel";
-import AgreementEnterModel from "../../../HardwareItems/AgreementEnterModel";
-import PollResultEnterModel from "../../../HardwareItems/PollResultEnterModel";
+import { EncryptBase64 } from '../../../../Common/Encrypt';
+import EnterBidInfoModel from '../../../HardwareItems/EnterBidInfoModel';
+import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
+import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
-const {api} = config;
+const { api } = config;
 const {
-  pmsServices: {getStreamByLiveBos},
+  pmsServices: { getStreamByLiveBos },
 } = api;
 let timer = null;
 
@@ -251,17 +251,13 @@ class ItemBtn extends React.Component {
       if (isBid)
         this.setState({
           hardWareBidModalVisible: true,
-          lbModalUrl: `/#/single/pms/EnterBidInfo/${EncryptBase64(
-            JSON.stringify({ xmid: item.xmid, type }),
-          )}`,
+          lbModalUrl: type,
           lbModalTitle: '硬件中标信息' + (type === 'ADD' ? '录入' : '修改'),
         });
       else {
         this.setState({
           hardWareContrastModalVisible: true,
-          lbModalUrl: `/#/single/pms/AgreementEnter/${EncryptBase64(
-            JSON.stringify({ xmid: item.xmid, type }),
-          )}`,
+          lbModalUrl: type,
           lbModalTitle: '硬件合同信息' + (type === 'ADD' ? '录入' : '修改'),
         });
       }
@@ -837,15 +833,15 @@ class ItemBtn extends React.Component {
 
           <EnterBidInfoModel
             xmid={Number(item.xmid)}
-            operateType="UPDATE"
+            operateType={lbModalUrl} //type
             visible={hardWareBidModalVisible}
             closeModal={() =>
               this.setState({
                 hardWareBidModalVisible: false,
-              })}
-            onSuccess={() => this.onSuccess('信息修改')}
+              })
+            }
+            onSuccess={() => this.onSuccess(lbModalTitle)}
           ></EnterBidInfoModel>
-
         )}
 
         {/* 硬件询比结果录入 */}
@@ -856,7 +852,8 @@ class ItemBtn extends React.Component {
             closeModal={() =>
               this.setState({
                 xbjglrModalVisible: false,
-              })}
+              })
+            }
             onSuccess={() => this.onSuccess('信息修改')}
           ></PollResultEnterModel>
           // <BridgeModel
@@ -885,13 +882,14 @@ class ItemBtn extends React.Component {
           // />
           <AgreementEnterModel
             xmid={Number(item.xmid)}
-            operateType="UPDATE"
+            operateType={lbModalUrl}
             visible={hardWareContrastModalVisible}
             closeModal={() =>
               this.setState({
                 hardWareContrastModalVisible: false,
-              })}
-            onSuccess={() => this.onSuccess('信息修改')}
+              })
+            }
+            onSuccess={() => this.onSuccess(lbModalTitle)}
           ></AgreementEnterModel>
         )}
 
