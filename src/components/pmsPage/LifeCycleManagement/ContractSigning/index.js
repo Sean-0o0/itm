@@ -183,6 +183,9 @@ class ContractSigning extends React.Component {
           message.warn('请上传合同附件！');
           return;
         } else {
+          _this.setState({
+            isSpinning: true
+          })
           _this.individuationGetOAResult(values);
         }
       }
@@ -196,11 +199,17 @@ class ContractSigning extends React.Component {
       .then(result => {
         const { code = -1, record = [] } = result;
         if (code > 0) {
+          this.setState({
+            isSpinning: false
+          })
           this.props.closeContractModal();
           this.props.onSuccess('合同签署');
         }
       })
       .catch(error => {
+        this.setState({
+          isSpinning: false
+        })
         message.error(!error.success ? error.message : error.note);
       });
   };
@@ -358,14 +367,27 @@ class ContractSigning extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
+          style={{top: '60px'}}
           width={'148.8rem'}
           title={null}
           zIndex={100}
           bodyStyle={{
             padding: '0',
           }}
-          onOk={e => this.handleFormValidate(e)}
+          // onOk={e => this.handleFormValidate(e)}
           onCancel={this.props.closeContractModal}
+          footer={<div className="modal-footer">
+            <Button className="btn-default" onClick={this.props.closeContractModal}>
+              取消
+            </Button>
+            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        暂存草稿
+      </Button> */}
+            <Button disabled={isSpinning} className="btn-primary" type="primary"
+                    onClick={e => this.handleFormValidate(e)}>
+              确定
+            </Button>
+          </div>}
           visible={contractSigningVisible}
         >
           <div
@@ -384,16 +406,17 @@ class ContractSigning extends React.Component {
           >
             <strong>合同签署流程发起</strong>
           </div>
-          <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="diy-style-spin">
-            <div style={{ padding: '0 3.5712rem' }}>
+          <Spin spinning={isSpinning} style={{position: 'fixed'}} tip="加载中" size="large"
+                wrapperClassName="diy-style-spin">
+            <div style={{padding: '0 3.5712rem'}}>
               <div className="steps-content">
                 <React.Fragment>
                   <Form
                     {...basicFormItemLayout}
                     ref={e => (this.basicForm = e)}
-                    style={{ width: '98%' }}
+                    style={{width: '98%'}}
                   >
-                    <div className="title" style={{ borderBottom: '1px solid #F1F1F1' }}>
+                    <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
                       <Icon
                         type={basicInfoCollapse ? 'caret-right' : 'caret-down'}
                         onClick={() => this.setState({ basicInfoCollapse: !basicInfoCollapse })}

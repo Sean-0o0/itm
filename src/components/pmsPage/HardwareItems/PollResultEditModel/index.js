@@ -41,7 +41,6 @@ const {Option, OptGroup} = Select;
 class PollResultEditModel extends React.Component {
   state = {
     pbbgTurnRed: false,
-    isSpinning: false, //弹窗加载状态
   };
 
   componentDidMount() {
@@ -72,13 +71,13 @@ class PollResultEditModel extends React.Component {
   render() {
     const {
       pbbgTurnRed,
-      isSpinning,
     } = this.state;
     const {
       pollInfo,
       uploadFileParams,
       fileList,
       glxq,
+      isSpinning,
     } = this.props;
     console.log("fileListfileList", fileList)
     const {getFieldDecorator, getFieldValue, setFieldsValue, validateFields} = this.props.form;

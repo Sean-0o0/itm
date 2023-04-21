@@ -25,6 +25,7 @@ export default function InfoTable(props) {
   const [pollInfo, setPollInfo] = useState({}); //项目详情弹窗显示
   const [uploadFileParams, setUploadFileParams] = useState([]); //项目详情弹窗显示
   const [fileList, setFileList] = useState([]); //项目详情弹窗显示
+  const [isSpinning, setIsSpinning] = useState(false); //项目详情弹窗显示
   const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ tableData:", tableData)
@@ -53,6 +54,7 @@ export default function InfoTable(props) {
 
   const handleSingleDelete = (row) => {
     console.log("rowrowrow", row)
+    setIsSpinning(true)
     let submitdata = {
       projectId: row?.XMID,
       // projectId: 397,
@@ -69,6 +71,7 @@ export default function InfoTable(props) {
       if (res?.code === 1) {
         message.info('信息修改成功', 1);
         getTableData()
+        setIsSpinning(false)
       } else {
         message.error('信息修改失败', 1);
       }
@@ -195,9 +198,18 @@ export default function InfoTable(props) {
       title: '询比项目名称',
       dataIndex: 'XBXM',
       // width: 200,
-      width: '40%',
+      width: '20%',
       key: 'XBXM',
       // ellipsis: true,
+      render: (text, record) => {
+        if (text.length > 20) {
+          return <Tooltip title={text}>
+            <span>{text.slice(0, 20) + '...'}</span>
+          </Tooltip>
+        } else {
+          return <span>{text}</span>
+        }
+      }
     },
     {
       title: '关联需求',
@@ -208,16 +220,47 @@ export default function InfoTable(props) {
       // ellipsis: true,
       render: (text, row, index) => {
         // console.log("texttext", text)
-        let bt = ''
+        let bt = []
         const str = text.split(',')
         if (str.length > 0) {
           str.map(i => {
-            bt = lcxxData.filter(item => item.ID == i)[0]?.BT + ',' + bt;
+            bt.push(lcxxData.filter(item => item.ID == i)[0]?.BT);
           })
         }
-        return (
-          <span>{bt}</span>
-        );
+        return <div className="prj-tags">
+          {bt.length !== 0 && (
+            <>
+              {bt?.slice(0, 4)
+                .map((x, i) => (
+                  <div key={i} className="tag-item">
+                    {x}
+                  </div>
+                ))}
+              {bt?.length > 4 && (
+                <Popover
+                  overlayClassName="tag-more-popover"
+                  content={
+                    <div className="tag-more">
+                      {bt?.slice(4)
+                        .map((x, i) => (
+                          <div key={i} className="tag-item">
+                            {x}
+                          </div>
+                        ))}
+                    </div>
+                  }
+                  title={null}
+                >
+                  <div className="tag-item">...</div>
+                </Popover>
+              )}
+            </>
+          )}
+        </div>
+
+        // return (
+        //   <span>{bt}</span>
+        // );
       }
     },
     {
@@ -302,9 +345,10 @@ export default function InfoTable(props) {
 
   const handleSavePollInfo = () => {
     if (pollInfo.name == '' || pollInfo.flowId == '' || fileList.length == 0) {
-      message.warn("询比信息未填写完整！", 1);
+      message.warn("询比信息未填写完整！", 3);
       return;
     }
+    setIsSpinning(true)
     let fileInfo = [];
     console.log('uploadFileParams', uploadFileParams);
     uploadFileParams.map(item => {
@@ -324,11 +368,12 @@ export default function InfoTable(props) {
       ...submitdata,
     }).then(res => {
       if (res?.code === 1) {
-        message.info('信息修改成功', 1);
+        message.info('信息修改成功', 3);
         getTableData()
+        setIsSpinning(false)
         setXbjglrModalVisible(false);
       } else {
-        message.error('信息修改失败', 1);
+        message.error('信息修改失败', 3);
       }
       setFileList([]);
     });
@@ -364,12 +409,23 @@ export default function InfoTable(props) {
           style={{top: '60px'}}
           visible={xbjglrModalVisible}
           okText="保存"
-          onOk={handleSavePollInfo}
+          // onOk={handleSavePollInfo}
           onCancel={handleCancel}
           title={<span color='white'>询比结果编辑</span>}
           cancelText="取消"
+          footer={<div className="modal-footer">
+            <Button className="btn-default" onClick={handleCancel}>
+              取消
+            </Button>
+            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        暂存草稿
+      </Button> */}
+            <Button disabled={isSpinning} className="btn-primary" type="primary" onClick={handleSavePollInfo}>
+              确定
+            </Button>
+          </div>}
         >
-          <PollResultEditModel glxq={lcxxData} handleDataCallback={handleDataCallback}
+          <PollResultEditModel isSpinning={isSpinning} glxq={lcxxData} handleDataCallback={handleDataCallback}
                                handleFileCallback={handleFileCallback} handleParamsCallback={handleParamsCallback}
                                pollInfo={pollInfo} uploadFileParams={uploadFileParams} fileList={fileList}
                                handleSavePollInfo={handleSavePollInfo}/>
