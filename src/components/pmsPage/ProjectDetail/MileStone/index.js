@@ -63,10 +63,10 @@ export default function MileStone(props) {
   useEffect(() => {
     if (xmid !== -1) {
       getMileStoneData(false);
-      setIsUnfold(false);
+      setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};
-  }, [xmid]);
+  }, [xmid, prjBasic]);
 
   //展开、收起
   const handleUnfold = bool => {
@@ -353,6 +353,7 @@ export default function MileStone(props) {
 
   //切换里程碑 - 按钮触发
   const stepSwitch = txt => {
+    setIsUnfold(true);
     let data = [...mileStoneData];
     let st = 0;
     let ed = 3;

@@ -151,15 +151,13 @@ export default function HomePage(props) {
         if (res?.code === 1) {
           const { role = '' } = res;
           setUserRole(role);
-          getOverviewInfo(role);
+          getBudgetData(role);
           if (['二级部门领导', '普通人员'].includes(role)) {
-            getToDoData();
             getProcessData();
           } else {
             getTeamData(role);
-            getSupplierData(role);
           }
-          getBudgetData(role);
+          getOverviewInfo(role);
         }
       })
       .catch(e => {
@@ -265,6 +263,7 @@ export default function HomePage(props) {
             };
           });
           setTeamData(p => [...arr]);
+          getSupplierData(role);
         }
       })
       .catch(e => {
@@ -361,6 +360,7 @@ export default function HomePage(props) {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
           setProcessData(p => [...res?.record]);
+          getToDoData();
         }
       })
       .catch(e => {
