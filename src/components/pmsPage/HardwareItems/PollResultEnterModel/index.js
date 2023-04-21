@@ -194,7 +194,7 @@ class PollResultEnterModel extends React.Component {
       <>
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '20px', paddingBottom: '0'}}
+          style={{top: '40px', paddingBottom: '0'}}
           width={'800px'}
           title={null}
           zIndex={100}

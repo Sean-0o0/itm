@@ -213,12 +213,12 @@ class AgreementEnterModel extends React.Component {
         this.setState({
           isSpinning: false,
         })
-        message.info('信息修改成功！', 3);
+        message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3);
       } else {
         this.setState({
           isSpinning: false,
         })
-        message.error('信息修改失败！', 3);
+        message.error('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '失败！', 3);
       }
     });
   }
@@ -234,6 +234,7 @@ class AgreementEnterModel extends React.Component {
     const {
       xmid,
       visible,
+      operateType,
       closeModal,
       onSuccess,
       dictionary: {}
@@ -311,7 +312,7 @@ class AgreementEnterModel extends React.Component {
               fontSize: '16px',
             }}
           >
-            <strong>硬件合同信息录入</strong>
+            <strong>硬件合同信息{operateType === "UPDATE" ? "编辑" : "录入"}</strong>
           </div>
           <Spin spinning={isSpinning} tip="正在努力的加载中..." size="large" style={{height: "100%", position: 'fixed'}}>
             <Form {...basicFormItemLayout} name="nest-messages" style={{padding: '24px'}}>

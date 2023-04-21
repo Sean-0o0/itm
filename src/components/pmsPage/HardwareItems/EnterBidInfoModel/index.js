@@ -532,12 +532,12 @@ class EnterBidInfoModel extends React.Component {
         this.setState({
           isSpinning: false,
         })
-        message.info("信息修改成功！", 3)
+        message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3)
       } else {
         this.setState({
           isSpinning: false,
         })
-        message.error('信息修改失败！', 3);
+        message.error('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '失败！', 3);
       }
     });
   };
@@ -796,7 +796,7 @@ class EnterBidInfoModel extends React.Component {
               fontSize: '16px',
             }}
           >
-            <strong>硬件中标信息录入</strong>
+            <strong>硬件中标信息{operateType === "UPDATE" ? "编辑" : "录入"}</strong>
           </div>
           <Spin
             spinning={isSpinning}
