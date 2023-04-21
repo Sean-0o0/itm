@@ -80,7 +80,7 @@ class Overview extends Component {
                 orient: 'vertical',
                 textStyle: {
                     color: "#606266",
-                    fontSize: 14,
+                    fontSize: 12,
                     rich: {
                         // 给labelMark添加样式
                         labelMark: {
@@ -136,7 +136,7 @@ class Overview extends Component {
                 {
                     name: '',
                     type: 'pie', //饼状图
-                    radius: ['40%', '70%'], //大小
+                    radius: ['45%', '65%'], //大小
                     center: ['20%', '50%'], //显示位置
                     data: data,
                     itemStyle: {
@@ -156,7 +156,7 @@ class Overview extends Component {
                 {
                     name: '',
                     type: 'pie', //饼状图
-                    radius: ['40%', '70%'], //大小
+                    radius: ['45%', '65%'], //大小
                     center: ['20%', '50%'], //显示位置
                     data: data,
                     itemStyle: {
@@ -177,15 +177,15 @@ class Overview extends Component {
         }
 
         return (
-            <div className='cont-block staff-overview' style={{ margin: order === 1 ? '0px 12px 0px 24px' : '0px 24px 0px 12px' }}>
-                <div style={{color: '#303133',fontSize: 16, fontWeight: 'bold'}}>自研团队建设</div>
+            <div className='cont-block staff-overview' style={{ margin: order === 1 ? '0px 12px 0px 24px' : '0px 24px 0px 12px', padding: '0 24px' }}>
+                <div style={{color: '#303133',fontSize: 16, fontWeight: 'bold', height: '30px', lineHeight: '35px'}}>自研团队建设</div>
                 <React.Fragment>
                     <ReactEchartsCore
                         echarts={echarts}
                         option={option}
                         notMerge
                         lazyUpdate
-                        style={{ height: '100%' }}
+                        style={{ height: 'calc(100% - 30px)' }}
                         theme=""
                     />
                 </React.Fragment>

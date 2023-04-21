@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
 import { Spin, Tabs } from 'antd'
-
+import StaffTable from './StaffTable'
 
 const { TabPane } = Tabs;
 
@@ -11,24 +11,31 @@ class InfoTable extends Component {
   render() {
     const { loading } = this.state;
     const allTabs = [{
-
+      xmid: '1',
+      xmmc: '大数据应用开发部',
+    },{
+      xmid: '2',
+      xmmc: '移动金融开发部',
+    },{
+      xmid: '3',
+      xmmc: '项目管理部',
+    },{
+      xmid: '4',
+      xmmc: '内控开发部',
     }]
-    return (<div>
+    return (<div className='info-table'>
       <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <Tabs
-          tabBarStyle={{
-            backgroundColor: 'white',
-            margin: '0',
-            padding: '3.571rem 0 0 3.571rem',
-          }}
           onChange={this.callback}
           type="card"
-          activeKey={1}
+          activeKey='1'
         >
           {allTabs.map(items => {
             // console.log("1111",item)
             return (
-              <TabPane tab={items.xmmc} key={items.xmid}>1111</TabPane>
+              <TabPane tab={items.xmmc} key={items.xmid}>
+                <StaffTable/>
+              </TabPane>
             )
           })}
 
