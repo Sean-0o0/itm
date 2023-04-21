@@ -179,7 +179,7 @@ const InputReceipt = props => {
       return (
         <div className="bottom-tip-box">
           <p>1、可查验使用增值税发票管理新系统开具的发票，包括：</p>
-          <div style={{ paddingLeft: '1.1904rem' }}>
+          <div style={{ paddingLeft: '8px' }}>
             <p>（1）增值税专用发票</p>
             <p>（2）增值税普通发票（含电子普通发票、卷式发票、通行费发票）</p>
             <p>（3）机动车销售统一发票</p>
@@ -188,7 +188,7 @@ const InputReceipt = props => {
             <p>不在上述范围之内的发票，请按照原查验渠道进行查验。</p>
           </div>
           <p>2、可查验的时间范围：</p>
-          <div style={{ paddingLeft: '1.1904rem' }}>
+          <div style={{ paddingLeft: '8px' }}>
             <p>（1）可查验最近1年内增值税发票管理新系统开具的发票</p>
             <p>（2）当日开具的发票如开票方已将发票数据上传税局，则当日可查验否则最快次日查验</p>
           </div>

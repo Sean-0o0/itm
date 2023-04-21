@@ -814,7 +814,7 @@ const AddExpense = props => {
         <Form.Item label="发票类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
           {getFieldDecorator('fplx')(
             <Select
-              style={{ width: '100%', borderRadius: '1.1904rem !important' }}
+              style={{ width: '100%', borderRadius: '8px !important' }}
               showSearch
               placeholder="请选择"
               onChange={handleFplxChange}

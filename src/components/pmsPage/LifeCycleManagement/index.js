@@ -1312,11 +1312,11 @@ class LifeCycleManagementTabs extends React.Component {
           <img
             src={require('../../../image/pms/LifeCycleManagement/search.png')}
             alt=""
-            style={{ marginBottom: '0.5952rem', marginRight: '1.1904rem', height: '2.976rem' }}
+            style={{ marginBottom: '0.5952rem', marginRight: '8px', height: '2.976rem' }}
           />
           <Select
             // ref={this.selectRef}
-            style={{ width: '34rem', borderRadius: '1.1904rem !important' }}
+            style={{ width: '228px', borderRadius: '8px !important' }}
             showSearch
             placeholder="请选择项目名称"
             optionFilterProp="children"
@@ -1534,12 +1534,11 @@ class LifeCycleManagementTabs extends React.Component {
                             <div
                               className="LifeCycleManage"
                               style={{
-                                borderTopLeftRadius: index === 0 ? '1.1904rem' : '',
-                                borderTopRightRadius: index === 0 ? '1.1904rem' : '',
-                                borderBottomLeftRadius:
-                                  index === basicData.length - 1 ? '1.1904rem' : '',
+                                borderTopLeftRadius: index === 0 ? '8px' : '',
+                                borderTopRightRadius: index === 0 ? '8px' : '',
+                                borderBottomLeftRadius: index === basicData.length - 1 ? '8px' : '',
                                 borderBottomRightRadius:
-                                  index === basicData.length - 1 ? '1.1904rem' : '',
+                                  index === basicData.length - 1 ? '8px' : '',
                               }}
                             >
                               <div className="head">
@@ -1694,7 +1693,7 @@ class LifeCycleManagementTabs extends React.Component {
                                       style={{
                                         width: '100%',
                                         padding: '3rem 3rem calc(3rem - 2.3808rem) 3rem',
-                                        borderRadius: '1.1904rem',
+                                        borderRadius: '8px',
                                         maxHeight: '50rem',
                                       }}
                                       className="cont"

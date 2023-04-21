@@ -1022,7 +1022,7 @@
       .month-slt-btn {
         button {
           &:first-child {
-            border-right: 0;
+            border-right: 1px solid transparent;
             border-radius: 4px 0 0 4px;
             &:hover {
               border-right: 1px solid #3361ffaf;
@@ -1058,6 +1058,30 @@
       padding-top: 0;
       height: calc(100% - 64px);
       overflow: hidden;
+      .update-col {
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        span {
+          // flex-grow: 1;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+        .update-tag {
+          display: inline-block;
+          text-align: center;
+          // flex-shrink: 0;
+          width: 52px;
+          height: 24px;
+          background: #fff5e5;
+          border-radius: 12px;
+          border: 1px solid #ffda9f;
+          font-size: 12px;
+          color: #e58c00;
+          line-height: 24px;
+          margin-left: 6px;
+        }
+      }
     }
   }
   .ant-table-wrapper {
@@ -1072,7 +1096,6 @@
     }
 
     th {
-      // padding: 16px;
       font-weight: bold;
       background-color: #f5f7fa;
     }
@@ -1080,11 +1103,13 @@
     .ant-table-placeholder {
       position: absolute;
       width: 100%;
-      top: 55px;
+      height: 180px;
+      top: 41px;
     }
 
     .ant-table-body {
-      margin-top: 0.5px;
+      // margin-top: 0.5px;
+      min-height: 197px;
     }
   }
 
@@ -3637,7 +3662,7 @@
 }
 
 .lifecyclemanage-box-wrapper {
-  height: calc(100vh - 34rem);
+  height: calc(100vh - 228px);
   margin: 0 3.571rem;
   border-radius: 8px;
   padding: 12px 12px 12px 0;
