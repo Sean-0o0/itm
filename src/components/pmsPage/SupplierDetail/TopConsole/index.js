@@ -50,9 +50,9 @@ export default function TopConsole(props) {
         )}
         <div className="right-txt">
           <div className="label">{label}</div>
-          <Tooltip title={value} placement="topLeft" >
+          {/* <Tooltip title={value} placement="topLeft" > */}
            <span style={{ cursor: 'default' }}> {value}</span>
-          </Tooltip>
+          {/* </Tooltip> */}
         </div>
       </div>
     );

@@ -48,7 +48,9 @@ const TableBox = props => {
   const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
   const [open, setOpen] = useState(false); //项目选择
   const [editing, setEditing] = useState(false); //编辑状态
+  const [editingIndex, setEditingIndex] = useState(-1); //编辑
   const [editData, setEditData] = useState([]); //编辑数据
+  const [dltData, setDltData] = useState([]); //删除行id
 
   useEffect(() => {
     // setTableLoading(true);
@@ -119,7 +121,7 @@ const TableBox = props => {
     });
     let newEdit = [...editData];
     let index2 = newEdit.findIndex(item => row.id === item.id);
-    if (index !== -1) {
+    if (index2 === -1) {
       newEdit.push(row);
     } else {
       newEdit.splice(index2, 1, {
@@ -176,38 +178,57 @@ const TableBox = props => {
             V_BZNR: String(item[getKeyStr('bznr')]).trim(),
             V_XZJH: String(item[getKeyStr('xzjh')]).trim(),
             V_BBH: String(item[getKeyStr('bbh')]).trim(),
-            V_JHSXRQ:
-              item[getKeyStr('jhsxrq')] === null
-                ? '-1'
-                : moment(item[getKeyStr('jhsxrq')]).format('YYYYMMDD'),
+            V_JHSXRQ: ['', ' ', null, undefined].includes(item[getKeyStr('jhsxrq')])
+              ? '-1'
+              : moment(item[getKeyStr('jhsxrq')]).format('YYYYMMDD'),
             V_DQZT: String(getCurS(item[getKeyStr('dqzt')])).trim(),
             V_DQJD: String(item[getKeyStr('dqjd')]).trim(),
             V_ZYSJSM: String(item[getKeyStr('zysjsm')]).trim(),
           };
         });
-        editArr.push({});
-        console.log('submitTable', submitTable);
-        let submitData = {
-          czr: 0,
-          jsoninfo: JSON.stringify(submitTable),
-          infocount: submitTable.length,
-          type: 'UPDATE',
-        };
-        OperateHjgWeeklyReport({ ...submitData }).then(res => {
-          if (res?.code === 1) {
-            message.success('保存成功', 1);
-            queryTableData(
-              Number(dateRange[0].format('YYYYMMDD')),
-              Number(dateRange[1].format('YYYYMMDD')),
-              Number(currentXmid),
-            );
-            setIsSaved(true);
-            setEditing(false);
-          } else {
-            message.error('保存失败', 1);
-          }
+        submitTable.push({});
+        let deleteIdArr = dltData.map(x => {
+          return {
+            V_ID: x,
+          };
         });
-        console.log('submitData', submitData);
+        deleteIdArr.push({});
+        OperateHjgWeeklyReport({
+          jsoninfo: JSON.stringify(deleteIdArr),
+          infocount: dltData.length,
+          type: 'DELETE',
+        })
+          .then(res => {
+            if (res.success) {
+              console.log('submitTable', submitTable);
+              let submitData = {
+                czr: 0,
+                jsoninfo: JSON.stringify(submitTable),
+                infocount: submitTable.length - 1,
+                type: 'UPDATE',
+              };
+              OperateHjgWeeklyReport({ ...submitData }).then(res => {
+                if (res?.code === 1) {
+                  queryTableData(
+                    Number(dateRange[0].format('YYYYMMDD')),
+                    Number(dateRange[1].format('YYYYMMDD')),
+                    Number(currentXmid),
+                  );
+                  setIsSaved(true);
+                  setEditing(false);
+                  setEditingIndex(-1);
+                  setDltData([]);
+                  message.success('保存成功', 1);
+                } else {
+                  message.error('保存失败', 1);
+                }
+              });
+              console.log('submitData', submitData);
+            }
+          })
+          .catch(e => {
+            console.error('handleDelete操作失败', 1);
+          });
       }
     });
   };
@@ -545,32 +566,37 @@ const TableBox = props => {
       editable: true,
     },
     {
-      title: '操作',
+      title: editing ? '操作' : '',
       dataIndex: 'operation',
       key: 'operation',
-      width: 80,
-      fixed: 'right',
+      width: editing ? 80 : 0,
+      fixed: editing ? 'right' : false,
       render: (text, row, index) => {
-        return (
-          <div>
-            {/* <a
-              style={{ color: '#3361ff', marginRight: '10px' }}
-              onClick={() => getLcbqkModalUrl(row.id)}
-            >
-              查看
-            </a>
-            {authIdData?.includes(CUR_USER_ID) && (
-              <>
-                <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
-                  <a style={{ color: '#3361ff', marginRight: '10px' }}>退回</a>
-                </Popconfirm> */}
-            <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
-              <a style={{ color: '#3361ff' }}>删除</a>
-            </Popconfirm>
-            {/* </>
-            )} */}
-          </div>
-        );
+        if (editing)
+          return (
+            <div>
+              {dltData.includes(row.id) ? (
+                <a
+                  style={{ color: '#3361ff' }}
+                  onClick={() => setDltData(p => [...dltData.filter(x => x !== row.id)])}
+                >
+                  撤销删除
+                </a>
+              ) : (
+                <Popconfirm
+                  title="确定要删除吗?"
+                  onConfirm={() => {
+                    if (!dltData.includes(row.id)) {
+                      setDltData(p => [...p, row.id]);
+                    }
+                  }}
+                >
+                  <a style={{ color: '#3361ff' }}>删除</a>
+                </Popconfirm>
+              )}
+            </div>
+          );
+        return '';
       },
     },
   ];
@@ -591,8 +617,9 @@ const TableBox = props => {
           formdecorate: form,
           issaved: isSaved,
           managerdata: managerData,
-          editing,
+          editingindex: editingIndex,
           editdata: editData,
+          dltdata: dltData,
         };
       },
     };
@@ -684,10 +711,11 @@ const TableBox = props => {
   //修改
   const handleEdit = () => {
     setEditing(true);
-    //编辑态的数据需要处理
+    if (tableData.length > 0) setEditingIndex(tableData[0]?.id);
   };
   const handleEditCancel = () => {
     setEditing(false);
+    setEditingIndex(-1);
     setTableData(p => [...originData]);
     setEdited(false);
   };
@@ -787,6 +815,7 @@ const TableBox = props => {
             {/* <Button style={{ marginRight: '8px'}} onClick={handleSummary}>手动汇总</Button> */}
             {editing ? (
               <>
+                <span>（点击指定行进行编辑）</span>
                 <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
                   取消
                 </Button>
@@ -807,6 +836,28 @@ const TableBox = props => {
         </div>
         <div className="table-content">
           <Table
+            onRow={record => {
+              return {
+                onClick: () => {
+                  if (editing) {
+                    // 编辑态的数据需要处理;
+                    // let arr = tableData.map((item, index) => {
+                    //   if (item.id === record.id)
+                    //     return {
+                    //       ...item,
+                    //       ['manager' + item.id]: item.fzrid,
+                    //       ['orgName' + item.id]:
+                    //         orgArr.filter(z => z.orgId === item['orgName' + item.id])[0]?.orgName ||
+                    //         '',
+                    //     };
+                    //   return fzrTableData[index];
+                    // });
+                    // setTableData(p => [...arr]);
+                    setEditingIndex(record.id);
+                  }
+                },
+              };
+            }}
             loading={tableLoading}
             columns={columns}
             components={components}

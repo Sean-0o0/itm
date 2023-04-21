@@ -8,6 +8,8 @@ import {
   QueryDigitalSpecialClassWeeklyReport,
 } from '../../../services/pmsServices';
 import moment from 'moment';
+import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
+import TreeUtils from '../../../utils/treeUtils';
 const { TabPane } = Tabs;
 
 export default function WeeklyReportTableDetail() {
@@ -22,9 +24,13 @@ export default function WeeklyReportTableDetail() {
   const [monthData, setMonthData] = useState(new moment());
   const [activeKey, setActiveKey] = useState('1');
   const [originData, setOriginData] = useState([]); //编辑前table数据
+  const [fzrTableData, setFzrTableData] = useState([]); //表格数据，里边是负责人文本
+  const [orgData, setOrgData] = useState([]); //部门数据
+  const [orgArr, setOrgArr] = useState([]); //部门数据-非树结构
 
   useEffect(() => {
-    queryProjectData();
+    // queryProjectData();
+    getOrgData();
     // setDateRange(p => [...getCurrentWeek(new Date())]);
   }, []);
 
@@ -37,11 +43,33 @@ export default function WeeklyReportTableDetail() {
     }).then(res => {
       if (res.code === 1) {
         setProjectData(p => [...res.record]);
-        let defaultSTime = Number(monthData.startOf('month').format('YYYYMMDD'));
-        let defaultETime = Number(monthData.endOf('month').format('YYYYMMDD'));
-        queryTableData(defaultSTime, defaultETime, currentXmid);
       }
     });
+  };
+  //部门数据
+  const getOrgData = () => {
+    FetchQueryOrganizationInfo({
+      type: 'XXJS',
+    })
+      .then(res => {
+        if (res?.success) {
+          let data = TreeUtils.toTreeData(res.record, {
+            keyName: 'orgId',
+            pKeyName: 'orgFid',
+            titleName: 'orgName',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          })[0].children;
+          setOrgData(data);
+          setOrgArr([...res.record]);
+          let defaultSTime = Number(monthData.startOf('month').format('YYYYMMDD'));
+          let defaultETime = Number(monthData.endOf('month').format('YYYYMMDD'));
+          queryTableData(defaultSTime, defaultETime, currentXmid, [...res.record]);
+        }
+      })
+      .catch(e => {
+        console.error('FetchQueryOrganizationInfo', e);
+      });
   };
   const queryTableData = (startTime, endTime, xmid) => {
     QueryDigitalSpecialClassWeeklyReport({
@@ -79,7 +107,7 @@ export default function WeeklyReportTableDetail() {
           x.fzrid = arr;
           x.fzr = arr2;
         });
-        // console.log('@@', uniqueArr);
+
         const newArr = uniqueArr?.map(item => {
           return {
             id: item.id,
@@ -93,7 +121,7 @@ export default function WeeklyReportTableDetail() {
             ['curStatus' + item.id]: item.dqzt.trim(),
             ['riskDesc' + item.id]: item.fxsm.trim(),
             ['peopleNumber' + item.id]: item.zbrs.trim(),
-            ['orgName' + item.id]: item.sybm.trim(),
+            ['orgName' + item.id]: item.sybm,
             ['status']: getStatus(item.zt.trim()),
             fzrid: item.fzrid,
             zt: item.zt,
@@ -114,7 +142,7 @@ export default function WeeklyReportTableDetail() {
             // ['peopleNumber' + current.id]: current['peopleNumber' + current.id],
             // ['orgName' + current.id]: current['orgName' + current.id],
             // ['status']: current['status'],
-            ...current
+            ...current,
           });
           return pre;
         }, {});
@@ -128,14 +156,15 @@ export default function WeeklyReportTableDetail() {
             finalArr.push({ module: item, ...x });
           });
         }
-        
-        setOriginData(preState => [...finalArr]);
+
+        setOriginData(preState => [...newArr]);
+        setFzrTableData(preState => [...newArr]);
         // let finalArr2 = finalArr.map(x=>{
         //   return {
         //     ...x,
         //   }
         // })
-        setTableData(preState => [...finalArr]);
+        setTableData(preState => [...newArr]);
         console.log('🚀 ~ file: index.js ~ line 136 ~ queryTableData ~ finalArr]', finalArr);
         setTableLoading(false);
       }
@@ -188,6 +217,11 @@ export default function WeeklyReportTableDetail() {
           setMonthData={setMonthData}
           projectData={projectData}
           originData={originData}
+          setOriginData={setOriginData}
+          fzrTableData={fzrTableData}
+          setFzrTableData={setFzrTableData}
+          orgData={orgData}
+          orgArr={orgArr}
         />
       )}
       {activeKey === '2' && <MonthlyReportTable />}

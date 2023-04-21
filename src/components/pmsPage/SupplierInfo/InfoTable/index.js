@@ -136,7 +136,7 @@ export default function InfoTable(props) {
             {arr.length > 1 && (
               <Popover
                 title={null}
-                content={getLxrinfContent(arr)}
+                content={getLxrinfContent(arr.slice(1))}
                 placement="bottomRight"
                 overlayClassName="lxr-info-popover"
               >

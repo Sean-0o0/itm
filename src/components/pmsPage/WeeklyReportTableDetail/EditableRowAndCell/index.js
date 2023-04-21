@@ -15,6 +15,7 @@ const EditableRow = ({ form, index, ...props }) => {
 };
 const EditableFormRow = Form.create()(EditableRow);
 const EditableCell = props => {
+  // console.log('n');
   const [edited, setEdited] = useState(false);
   const [curPOpen, setCurPOpen] = useState(false);
   const [curSOpen, setCurSOpen] = useState(false);
@@ -31,8 +32,9 @@ const EditableCell = props => {
     index,
     handleSave,
     children,
-    editing,
+    editingindex,
     orgdata,
+    dltdata,
     ...restProps
   } = props;
 
@@ -43,10 +45,11 @@ const EditableCell = props => {
           console.log('有错误，不予保存');
           return;
         }
+        setEdited(true);
         handleSave({ ...record, ...values });
       });
     } else {
-      // console.log('🚀 ~ file: index.js:40 ~ save ~ e:', e.currentTarget.value);
+      setEdited(true);
       handleSave({ ...record, [e.currentTarget.id]: e.currentTarget.value });
     }
   };
@@ -80,11 +83,11 @@ const EditableCell = props => {
     let message = `${getTitle(dataIndex)}不允许空值`;
     const getRules = dataIndex => {
       switch (dataIndex) {
+        case 'manager':
+          return [{ required, message }];
         case 'cplTime':
         case 'curProgress':
         case 'curStatus':
-        case 'manager':
-          // return [{ required, message }];
           return [];
         case 'annualPlan':
         case 'riskDesc':
@@ -112,6 +115,7 @@ const EditableCell = props => {
     return form.getFieldDecorator(idDataIndex, { rules, initialValue: value })(
       node ? node : <Input onBlur={save} />,
     );
+    // return node ? node : <Input onBlur={save} defaultValue={value} maxLength={30}/>
   };
 
   const handleMonthChange = (d, ds) => {
@@ -278,11 +282,12 @@ const EditableCell = props => {
     const managerNode = getManagerSelect();
     const orgNode = (
       <TreeSelect
-        style={{ width: '350px', borderRadius: '8px !important' }}
+        style={{ width: '200px', borderRadius: '8px !important' }}
         allowClear
         className="item-selector"
         showSearch
         treeNodeFilterProp="title"
+        treeDefaultExpandAll
         dropdownClassName="newproject-treeselect"
         dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
         treeData={orgdata}
@@ -363,14 +368,21 @@ const EditableCell = props => {
   return (
     <>
       <td style={dataIndex === 'module' ? { borderRight: '1px solid #e8e8e8' } : {}} {...restProps}>
-        {!issaved && edited && editing && (
+        {!issaved && edited && (
           <img
             className="edited-img"
             src={require('../../../../image/pms/WeeklyReportDetail/edited.png')}
             alt=""
           ></img>
         )}
-        {editing && editable ? (
+        {dltdata.includes(record.id) && !['module', 'operation'].includes(dataIndex) ? (
+          <div
+            className="normal-cell-value-wrap"
+            style={{ textDecoration: 'line-through', color: 'red' }}
+          >
+            {handleTxt(dataIndex, record, children)}
+          </div>
+        ) : editingindex === record.id && editable ? (
           <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
         ) : (
           <div className="normal-cell-value-wrap">{handleTxt(dataIndex, record, children)}</div>

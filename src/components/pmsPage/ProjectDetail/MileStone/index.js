@@ -620,7 +620,7 @@ export default function MileStone(props) {
           </>
         ) : (
           <div className="more-item" onClick={() => handleUnfold(true)}>
-            更多
+            展开
             <i className="iconfont icon-down" />
           </div>
         ))}

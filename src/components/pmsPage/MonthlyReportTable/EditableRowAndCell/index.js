@@ -26,7 +26,8 @@ const EditableCell = props => {
     record,
     handleSave,
     children,
-    editing,
+    editingindex,
+    dltdata,
     ...restProps
   } = props;
 
@@ -60,7 +61,7 @@ const EditableCell = props => {
   const getSelect = (onChange, open, setOpen, data) => {
     return (
       <Select
-        style={{ width: '28rem', borderRadius: '8px !important' }}
+        style={{ width: '180', borderRadius: '8px !important' }}
         placeholder="请选择填报人"
         mode="multiple"
         showSearch
@@ -99,9 +100,7 @@ const EditableCell = props => {
             { max: 1000, message: `${getTitle(dataIndex)}长度不能超过1000` },
           ];
         case 'txr':
-          return [
-            { required, message }
-          ];
+          return [{ required, message }];
         default:
           return [
             // { required, message },
@@ -149,18 +148,6 @@ const EditableCell = props => {
     return (
       <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
     );
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
-    ) : dataIndex !== 'txr' ? (
-      <Tooltip title={String(record[dataIndex + record['id']])}>
-        <div className="editable-cell-value-wrap">
-          {String(record[dataIndex + record['id']])}
-          {/* {dataIndex === 'txr' ? txrValue.join('、') : String(record[dataIndex + record['id']])} */}
-        </div>
-      </Tooltip>
-    ) : (
-      <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
-    );
   };
   const handleTxt = (dataIndex, record, children) => {
     let item = record[dataIndex + record.id];
@@ -192,7 +179,14 @@ const EditableCell = props => {
             alt=""
           ></img>
         )}
-        {editing && editable ? (
+        {dltdata.includes(record.id) && ['zmk', 'bywcqk', 'xygzjh'].includes(dataIndex) ? (
+          <div
+            className="normal-cell-value-wrap"
+            style={{ textDecoration: 'line-through', color: 'red' }}
+          >
+            {handleTxt(dataIndex, record, children)}
+          </div>
+        ) : editingindex === record.id && editable ? (
           <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
         ) : (
           <div className="normal-cell-value-wrap">{handleTxt(dataIndex, record, children)}</div>

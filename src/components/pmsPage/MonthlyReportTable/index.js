@@ -6,6 +6,7 @@ import {
   QueryMonthlyList,
 } from '../../../services/pmsServices';
 import moment from 'moment';
+import { setTextRange } from 'typescript';
 
 export default function MonthlyReportTable() {
   const [monthData, setMonthData] = useState(new moment());
@@ -16,9 +17,10 @@ export default function MonthlyReportTable() {
   const [edited, setEdited] = useState(false);
   const [txrData, setTxrData] = useState([]);
   const [originData, setOriginData] = useState([]); //编辑前table数据
+  const [txrTableData, setTxrTableData] = useState([]); //表格数据，里边是填写人文本
 
   useEffect(() => {
-    queryProjectData();
+    // queryProjectData();
     getTxrData();
   }, []);
 
@@ -86,6 +88,7 @@ export default function MonthlyReportTable() {
         });
         setTableData(preState => [...newArr]);
         setOriginData(preState => [...newArr]);
+        setTxrTableData(preState => [...newArr]);
         setTableLoading(false);
       }
     });
@@ -137,6 +140,8 @@ export default function MonthlyReportTable() {
         setCurrentXmid={setCurrentXmid}
         setMonthData={setMonthData}
         originData={originData}
+        txrTableData={txrTableData}
+        setTxrTableData={setTxrTableData}
       ></TableBox>
     </div>
   );

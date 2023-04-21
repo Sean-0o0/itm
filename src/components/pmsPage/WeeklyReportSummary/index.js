@@ -19,8 +19,11 @@ export default function WeeklyReportSummary() {
   const [originData, setOriginData] = useState([]); //编辑前table数据
 
   useEffect(() => {
-    queryProjectData();
+    // queryProjectData();
     setDateRange(p => [...getCurrentWeek(new Date())]);
+    let defaultSTime = Number(getCurrentWeek(new Date())[0].format('YYYYMMDD'));
+    let defaultETime = Number(getCurrentWeek(new Date())[1].format('YYYYMMDD'));
+    queryTableData(defaultSTime, defaultETime, currentXmid);
   }, []);
 
   const queryProjectData = () => {
@@ -32,9 +35,6 @@ export default function WeeklyReportSummary() {
     }).then(res => {
       if (res.code === 1) {
         setProjectData(p => [...res.record]);
-        let defaultSTime = Number(getCurrentWeek(new Date())[0].format('YYYYMMDD'));
-        let defaultETime = Number(getCurrentWeek(new Date())[1].format('YYYYMMDD'));
-        queryTableData(defaultSTime, defaultETime, currentXmid);
       }
     });
   };

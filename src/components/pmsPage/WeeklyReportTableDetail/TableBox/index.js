@@ -38,6 +38,11 @@ const TableBox = props => {
     setCurrentXmid,
     setMonthData,
     originData,
+    setOriginData,
+    orgData,
+    orgArr,
+    fzrTableData,
+    setFzrTableData,
   } = props;
   const [isSaved, setIsSaved] = useState(false);
   const [summaryModalUrl, setSummaryModalUrl] = useState('');
@@ -49,16 +54,17 @@ const TableBox = props => {
   const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
   const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
   const [editing, setEditing] = useState(false); //编辑状态
-  const [orgData, setOrgData] = useState({}); //部门数据
+  const [editingIndex, setEditingIndex] = useState(-1); //编辑
   const [editData, setEditData] = useState([]); //编辑数据
+  const [dltData, setDltData] = useState([]); //删除行id
 
+  let timer = null;
   // const downloadRef = useRef(null);
 
   useEffect(() => {
     setTableLoading(true);
     getAutnIdData();
     getManagerData();
-    getOrgData();
     // const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
     // tableNode.addEventListener('scroll', e => {
     //   // console.log(Math.floor(tableNode.scrollWidth - tableNode.clientWidth));
@@ -76,7 +82,51 @@ const TableBox = props => {
     //     setToRight(false);
     //   }
     // });
+    return () => {
+      clearTimeout(timer);
+    };
   }, []);
+
+  //防抖
+  const debounce = (fn, waits) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
+
+  //表格跨行合并
+  const getRowSpanCount = (data, key, target, bool = false) => {
+    //当合并项为可编辑时，最后传true
+    if (!Array.isArray(data)) return 1;
+    data = data.map(_ => _[key + (bool ? _.id : '')]); // 只取出筛选项
+    let preValue = data[0];
+    const res = [[preValue]]; // 放进二维数组里
+    let index = 0; // 二维数组下标
+    for (let i = 1; i < data.length; i++) {
+      if (data[i] === preValue) {
+        // 相同放进二维数组
+        res[index].push(data[i]);
+      } else {
+        // 不相同二维数组下标后移
+        index += 1;
+        res[index] = [];
+        res[index].push(data[i]);
+        preValue = data[i];
+      }
+    }
+    const arr = [];
+    res.forEach(_ => {
+      const len = _.length;
+      for (let i = 0; i < len; i++) {
+        arr.push(i === 0 ? len : 0);
+      }
+    });
+    return arr[target];
+  };
 
   //负责人下拉框数据
   const getManagerData = () => {
@@ -89,27 +139,7 @@ const TableBox = props => {
       }
     });
   };
-  //部门数据
-  const getOrgData = () => {
-    FetchQueryOrganizationInfo({
-      type: 'ZZJG',
-    })
-      .then(res => {
-        if (res?.success) {
-          let data = TreeUtils.toTreeData(res.record, {
-            keyName: 'orgId',
-            pKeyName: 'orgFid',
-            titleName: 'orgName',
-            normalizeTitleName: 'title',
-            normalizeKeyName: 'value',
-          })[0].children[0];
-          setOrgData(data);
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOrganizationInfo', e);
-      });
-  };
+
   const getAutnIdData = () => {
     QueryUserInfo({
       type: 'ZBAUTH',
@@ -153,10 +183,23 @@ const TableBox = props => {
       ...item, //old row data
       ...newRow, //new row data
     });
+    // console.log('🚀 ~ file: index.js:173 ~ handleTableSave ~ newData:', newData);
+    let fzrTableArr = newData.map(x => {
+      let fzrArr = x['manager' + x.id].map(y => managerData.filter(z => z.id === y)[0]?.name || '');
+      let bmTxt = orgArr.filter(z => z.orgId === x['orgName' + x.id])[0]?.orgName || '';
+      if (x.id === row.id)
+        return {
+          ...x,
+          ['manager' + x.id]: fzrArr,
+          ['orgName' + x.id]: bmTxt,
+        };
+      return x;
+    });
 
     let newEdit = [...editData];
     let index2 = newEdit.findIndex(item => row.id === item.id);
-    if (index !== -1) {
+    console.log('🚀 ~ file: index.js:187 ~ handleTableSave ~ index2:', index2);
+    if (index2 === -1) {
       newEdit.push(row);
     } else {
       newEdit.splice(index2, 1, {
@@ -164,8 +207,11 @@ const TableBox = props => {
         ...newRow, //new row data
       });
     }
+
+    setFzrTableData(p => [...fzrTableArr]);
+    // console.log('🚀 ~ file: index.js:202 ~ handleTableSave ~ [...fzrTableArr]:', [...fzrTableArr]);
     setEditData(p => [...newEdit]);
-    console.log('🚀 ~ file: index.js:167 ~ handleTableSave ~ [...newEdit]:', [...newEdit]);
+    // console.log('🚀 ~ file: index.js:167 ~ handleTableSave ~ [...newEdit]:', [...newEdit]);
     setEdited(true);
     // console.log('TableData', newData);
     setTableData(preState => [...newData]);
@@ -174,7 +220,13 @@ const TableBox = props => {
   const handleSubmit = () => {
     form.validateFields(err => {
       if (!err) {
-        let submitTable = editData.map(item => {
+        let editDataDelFilter = [];
+        editData.forEach(x => {
+          if (!dltData.includes(x.id)) {
+            editDataDelFilter.push(x);
+          }
+        });
+        let submitTable = editDataDelFilter.map(item => {
           const getCurP = txt => {
             switch (txt) {
               case '规划中':
@@ -236,27 +288,47 @@ const TableBox = props => {
           };
         });
         submitTable.push({});
-        // console.log('submitTable', submitTable);
+        console.log('submitTable', submitTable);
         let submitData = {
           json: JSON.stringify(submitTable),
-          count: editData.length,
+          count: editDataDelFilter.length,
           type: 'UPDATE',
         };
-        // console.log('🚀 ~ file: index.js:186 ~ handleSubmit ~ submitData:', submitData);
-        OperateSZHZBWeekly({ ...submitData }).then(res => {
-          if (res?.code === 1) {
-            message.success('保存成功', 1);
-            queryTableData(
-              Number(monthData.startOf('month').format('YYYYMMDD')),
-              Number(monthData.endOf('month').format('YYYYMMDD')),
-              Number(currentXmid),
-            );
-            setIsSaved(true);
-            setEditing(false);
-          } else {
-            message.error('保存失败', 1);
-          }
+        let deleteIdArr = dltData.map(x => {
+          return {
+            V_ID: x,
+          };
         });
+        deleteIdArr.push({});
+        OperateSZHZBWeekly({
+          json: JSON.stringify(deleteIdArr),
+          count: dltData.length,
+          type: 'DELETE',
+        })
+          .then(res => {
+            if (res.success) {
+              console.log('🚀 ~ file: index.js:186 ~ handleSubmit ~ submitData:', submitData);
+              OperateSZHZBWeekly({ ...submitData }).then(res => {
+                if (res?.code === 1) {
+                  queryTableData(
+                    Number(monthData.startOf('month').format('YYYYMMDD')),
+                    Number(monthData.endOf('month').format('YYYYMMDD')),
+                    Number(currentXmid),
+                  );
+                  setIsSaved(true);
+                  setEditing(false);
+                  setEditingIndex(-1);
+                  setDltData([]);
+                  message.success('保存成功', 1);
+                } else {
+                  message.error('保存失败', 1);
+                }
+              });
+            }
+          })
+          .catch(e => {
+            message.error('操作失败', 1);
+          });
       }
     });
   };
@@ -287,30 +359,9 @@ const TableBox = props => {
       });
   };
   const handleDelete = id => {
-    let deleteData = {
-      json: JSON.stringify([
-        {
-          V_ID: String(id),
-        },
-        {},
-      ]),
-      count: 1,
-      type: 'DELETE',
-    };
-    OperateSZHZBWeekly({ ...deleteData })
-      .then(res => {
-        if (res.success) {
-          queryTableData(
-            Number(monthData.startOf('month').format('YYYYMMDD')),
-            Number(monthData.endOf('month').format('YYYYMMDD')),
-            Number(currentXmid),
-          );
-          message.success('操作成功', 1);
-        }
-      })
-      .catch(e => {
-        message.error('操作失败', 1);
-      });
+    if (!dltData.includes(id)) {
+      setDltData(p => [...p, id]);
+    }
   };
   const handleSkipCurWeek = () => {
     Modal.confirm({
@@ -411,6 +462,9 @@ const TableBox = props => {
         message.error(!error.success ? error.message : error.note);
       });
   };
+  const handleDeleteCancel = id => {
+    setDltData(p => [...dltData.filter(x => x !== id)]);
+  };
   const tableColumns = [
     {
       title: '模块',
@@ -419,16 +473,24 @@ const TableBox = props => {
       width: 120,
       fixed: true,
       ellipsis: true,
+      // render: (value, row, index) => {
+      //   const obj = {
+      //     children: value,
+      //     props: {},
+      //   };
+      //   if ((index > 0 && row.module !== tableData[index - 1].module) || index === 0) {
+      //     obj.props.rowSpan = groupData[value]?.length;
+      //   } else {
+      //     obj.props.rowSpan = 0;
+      //   }
+      //   return obj;
+      // },
       render: (value, row, index) => {
         const obj = {
           children: value,
           props: {},
         };
-        if ((index > 0 && row.module !== tableData[index - 1].module) || index === 0) {
-          obj.props.rowSpan = groupData[value]?.length;
-        } else {
-          obj.props.rowSpan = 0;
-        }
+        obj.props.rowSpan = getRowSpanCount(tableData, 'module', index);
         return obj;
       },
     },
@@ -510,7 +572,7 @@ const TableBox = props => {
       title: '使用部门',
       dataIndex: 'orgName',
       key: 'orgName',
-      with: 425,
+      width: 220,
       ellipsis: true,
       editable: true,
     },
@@ -537,39 +599,32 @@ const TableBox = props => {
     //     editable: true,
     // },
     {
-      title: '操作',
+      title: editing ? '操作' : '',
       dataIndex: 'operation',
       key: 'operation',
-      width: 80,
-      fixed: 'right',
+      align: 'center',
+      width: editing ? 80 : 0,
+      fixed: editing ? 'right' : false,
       render: (text, row, index) => {
-        return (
-          <div>
-            {/* <a
-              style={{ color: '#3361ff', marginRight: '1.488rem' }}
-              onClick={() => getLcbqkModalUrl(row.id)}
-            >
-              查看
-            </a> */}
-            {/* {authIdData?.includes(CUR_USER_ID) && (
-              <> */}
-            {/* <Popconfirm title="确定要退回吗?" onConfirm={() => handleSendBack(row.id)}>
-                  <a style={{ color: '#3361ff', marginRight: '1.488rem' }}>退回</a>
-                </Popconfirm> */}
-            <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
-              <a style={{ color: '#3361ff' }}>删除</a>
-            </Popconfirm>
-            {/* </>
-            )} */}
-          </div>
-        );
+        if (editing)
+          return (
+            <div>
+              {dltData.includes(row.id) ? (
+                <a style={{ color: '#3361ff' }} onClick={() => handleDeleteCancel(row.id)}>
+                  撤销删除
+                </a>
+              ) : (
+                <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row.id)}>
+                  <a style={{ color: '#3361ff' }}>删除</a>
+                </Popconfirm>
+              )}
+            </div>
+          );
+        return '';
       },
     },
   ];
   const columns = tableColumns.map(col => {
-    // if (!col.editable) {
-    //   return col;
-    // }
     return {
       ...col,
       onCell: record => {
@@ -582,8 +637,9 @@ const TableBox = props => {
           formdecorate: form,
           issaved: isSaved,
           managerdata: managerData,
-          editing,
           orgdata: orgData,
+          editingindex: editingIndex,
+          dltdata: dltData,
         };
       },
     };
@@ -696,20 +752,14 @@ const TableBox = props => {
   //修改
   const handleEdit = () => {
     setEditing(true);
-    //编辑态的数据需要处理
-    let arr = tableData.map(item => {
-      return {
-        ...item,
-        ['manager' + item.id]: item.fzrid,
-      };
-    });
-    setTableData(p => [...arr]);
+    if (tableData.length > 0) setEditingIndex(tableData[0]?.id);
   };
 
   const handleEditCancel = () => {
     setEditing(false);
+    setEditingIndex(-1);
     setTableData(p => [...originData]);
-    setEdited(fasle);
+    setEdited(false);
   };
   return (
     <>
@@ -808,6 +858,7 @@ const TableBox = props => {
 
             {editing ? (
               <>
+                <span>（点击指定行进行编辑）</span>
                 <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
                   取消
                 </Button>
@@ -827,6 +878,28 @@ const TableBox = props => {
         </div>
         <div className="table-content">
           <Table
+            onRow={record => {
+              return {
+                onClick: () => {
+                  if (editing) {
+                    // 编辑态的数据需要处理;
+                    let arr = tableData.map((item, index) => {
+                      if (item.id === record.id)
+                        return {
+                          ...item,
+                          ['manager' + item.id]: item.fzrid,
+                          ['orgName' + item.id]:
+                            orgArr.filter(z => z.orgId === item['orgName' + item.id])[0]?.orgName ||
+                            '',
+                        };
+                      return fzrTableData[index];
+                    });
+                    setTableData(p => [...arr]);
+                    setEditingIndex(record.id);
+                  }
+                },
+              };
+            }}
             loading={tableLoading}
             columns={columns}
             components={components}
@@ -837,13 +910,13 @@ const TableBox = props => {
               tableData?.length > (document.body.clientHeight - 278) / (editing ? 59 : 40)
                 ? {
                     y: document.body.clientHeight - 278,
-                    x: 2100,
+                    x: 1900,
                   }
-                : { y: false, x: 2100 }
+                : { y: false, x: 1900 }
             }
             pagination={false}
             // bordered
-          ></Table>
+          />
         </div>
       </div>
     </>

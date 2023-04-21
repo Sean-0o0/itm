@@ -29,7 +29,8 @@ const EditableCell = props => {
     index,
     handleSave,
     children,
-    editing,
+    editingindex,
+    dltdata,
     ...restProps
   } = props;
 
@@ -116,17 +117,11 @@ const EditableCell = props => {
 
   const handleDateChange = (d, ds) => {
     const { record, handleSave, formdecorate } = props;
-    formdecorate.validateFields(['jhsxrq' + record['id']], (error, values) => {
-      if (error) {
-        console.log('有错误，不予保存');
-        return;
-      }
-      let newVal = {
-        ['jhsxrq' + record['id']]: moment(ds).format('YYYYMMDD'),
-      };
-      setEdited(true);
-      handleSave({ ...record, ...newVal });
-    });
+    let newVal = {
+      ['jhsxrq' + record['id']]: ds === '' ? '' : moment(ds).format('YYYYMMDD'),
+    };
+    setEdited(true);
+    handleSave({ ...record, ...newVal });
   };
 
   const handlecurSChange = num => {
@@ -208,7 +203,9 @@ const EditableCell = props => {
         // disabled={disabled} //非提交
       />
     );
-    const cplTimeValue = record[idDataIndex] === null ? null : moment(String(record[idDataIndex]));
+    const cplTimeValue = ['', ' ', null, undefined].includes(record[idDataIndex])
+      ? null
+      : moment(String(record[idDataIndex]));
     const curStatusNode = getSelect(handlecurSChange, curSOpen, setCurSOpen, curSData);
     switch (dataIndex) {
       case 'jhsxrq':
@@ -229,15 +226,6 @@ const EditableCell = props => {
   const renderCell = form => {
     const { children, dataIndex, record, formdecorate } = props;
     return (
-      <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
-    );
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
-    ) : !['jhsxrq'].includes(dataIndex) ? (
-      <Tooltip title={String(record[dataIndex + record['id']])}>
-        <div className="editable-cell-value-wrap">{String(record[dataIndex + record['id']])}</div>
-      </Tooltip>
-    ) : (
       <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
     );
   };
@@ -280,7 +268,15 @@ const EditableCell = props => {
             alt=""
           ></img>
         )}
-        {editing && editable ? (
+        {dltdata.includes(record.id) &&
+        !['gzmk', 'operation', 'bznr', 'xzjh'].includes(dataIndex) ? (
+          <div
+            className="normal-cell-value-wrap"
+            style={{ textDecoration: 'line-through', color: 'red' }}
+          >
+            {handleTxt(dataIndex, record, children)}
+          </div>
+        ) : editingindex === record.id && editable ? (
           <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
         ) : (
           <div className="normal-cell-value-wrap">{handleTxt(dataIndex, record, children)}</div>
