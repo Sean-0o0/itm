@@ -311,9 +311,7 @@ class ItemBtn extends React.Component {
     const lrxg = (item, type) => {
       this.setState({
         xbjglrModalVisible: true,
-        lbModalUrl: `/#/single/pms/PollResultInfo/${EncryptBase64(
-          JSON.stringify({ xmid: item.xmid, type }),
-        )}`,
+        lbModalUrl: type,
         lbModalTitle: '询比结果录入',
       });
     };
@@ -820,17 +818,6 @@ class ItemBtn extends React.Component {
 
         {/* 硬件中标信息录入 */}
         {hardWareBidModalVisible && (
-          // <BridgeModel
-          //   isSpining="customize"
-          //   modalProps={hardWareBidModalProps}
-          //   onCancel={() => {
-          //     this.setState({
-          //       hardWareBidModalVisible: false,
-          //     });
-          //   }}
-          //   src={lbModalUrl}
-          // />
-
           <EnterBidInfoModel
             xmid={Number(item.xmid)}
             operateType={lbModalUrl} //type
@@ -854,32 +841,12 @@ class ItemBtn extends React.Component {
                 xbjglrModalVisible: false,
               })
             }
-            onSuccess={() => this.onSuccess('信息修改')}
+            onSuccess={() => this.onSuccess(lbModalTitle)}
           ></PollResultEnterModel>
-          // <BridgeModel
-          //   isSpining="customize"
-          //   modalProps={xbjglrModalProps}
-          //   onCancel={() => {
-          //     this.setState({
-          //       xbjglrModalVisible: false,
-          //     });
-          //   }}
-          //   src={lbModalUrl}
-          // />
         )}
 
         {/* 硬件合同信息录入录入 */}
         {hardWareContrastModalVisible && (
-          // <BridgeModel
-          //   isSpining="customize"
-          //   modalProps={hardWareContrastModalProps}
-          //   onCancel={() => {
-          //     this.setState({
-          //       hardWareContrastModalVisible: false,
-          //     });
-          //   }}
-          //   src={lbModalUrl}
-          // />
           <AgreementEnterModel
             xmid={Number(item.xmid)}
             operateType={lbModalUrl}
