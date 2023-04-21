@@ -772,7 +772,7 @@ class EnterBidInfoModel extends React.Component {
         >
           <Form name="nest-messages" style={{ padding: '24px' }}>
             <Row>
-              <Col span={12}>
+              <Col span={12} style={{paddingRight: '24px',}}>
                 <Form.Item label="履约保证金金额（元）" className="formItem">
                   {getFieldDecorator('performanceBond', {
                     initialValue: bidInfo?.performanceBond,
@@ -780,13 +780,13 @@ class EnterBidInfoModel extends React.Component {
                     <Input
                       placeholder="请输入履约保证金金额（元）"
                       onChange={e => {
-                        this.setState({ bidInfo: { ...bidInfo, performanceBond: e.target.value } });
+                        this.setState({bidInfo: {...bidInfo, performanceBond: e.target.value}});
                       }}
                     />,
                   )}
                 </Form.Item>{' '}
               </Col>
-              <Col span={12} style={{ paddingLeft: '65px', paddingRight: '70px' }}>
+              <Col span={12} style={{paddingLeft: '24px',}}>
                 <Form.Item label="投标保证金（元）" className="formItem">
                   {getFieldDecorator('bidBond', {
                     initialValue: bidInfo?.bidBond,
@@ -794,7 +794,7 @@ class EnterBidInfoModel extends React.Component {
                     <Input
                       placeholder="请输入投标保证金（元）"
                       onChange={e => {
-                        this.setState({ bidInfo: { ...bidInfo, bidBond: e.target.value } });
+                        this.setState({bidInfo: {...bidInfo, bidBond: e.target.value}});
                       }}
                     />,
                   )}
