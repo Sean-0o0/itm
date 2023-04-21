@@ -39,6 +39,7 @@ class ToConsole extends Component {
     if (xmid !== newid) {
       this.setState({
         params: {
+          ...this.state.params,
           xmid: newid,
         },
       });
