@@ -112,7 +112,7 @@ export default function ProcessCard(props) {
             已完成
           </div>
         )}
-        发起日期：{date}
+        {isDone ? '结束' : '发起'}日期：{date}
       </div>
     );
   };

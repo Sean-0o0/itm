@@ -33,7 +33,7 @@ export default function ProjectDetail(props) {
     },
     {
       ibm: '1',
-      note: '普通软件项目',
+      note: '软硬件项目',
     },
     {
       ibm: '2',
@@ -45,7 +45,7 @@ export default function ProjectDetail(props) {
     },
     {
       ibm: '5',
-      note: '普通硬件项目',
+      note: '软硬件项目',
     },
     {
       ibm: '6',

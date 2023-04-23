@@ -31,8 +31,8 @@ export default function InfoTable(props) {
     isAllWindow: 1,
     title: '新建项目',
     width: '1000px',
-    height: '750px',
-    style: {top: '10px'},
+    height: '700px',
+    style: { top: '10px' },
     visible: true,
     footer: null,
   };
@@ -56,10 +56,10 @@ export default function InfoTable(props) {
     }
   };
 
-    //金额格式化
-    const getAmountFormat = (value = 0) => {
-      return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-    };
+  //金额格式化
+  const getAmountFormat = (value = 0) => {
+    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  };
 
   //获取项目标签数据
   const getTagData = (tag, idtxt) => {

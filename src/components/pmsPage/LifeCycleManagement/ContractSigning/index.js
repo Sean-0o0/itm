@@ -367,8 +367,8 @@ class ContractSigning extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '60px'}}
-          width={'148.8rem'}
+          style={{top: '10px'}}
+          width={'860px'}
           title={null}
           zIndex={100}
           bodyStyle={{
@@ -392,22 +392,22 @@ class ContractSigning extends React.Component {
         >
           <div
             style={{
-              height: '6.2496rem',
+              height: '42px',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
               backgroundColor: '#3361FF',
               color: 'white',
-              marginBottom: '2.3808rem',
-              padding: '0 3.5712rem',
+              // marginBottom: '16px',
+              padding: '0 24px',
               borderRadius: '8px 8px 0 0',
-              fontSize: '2.333rem',
+              fontSize: '15px',
             }}
           >
             <strong>合同签署流程发起</strong>
           </div>
           <Spin spinning={isSpinning} style={{position: 'fixed'}} tip="加载中" size="large"
-                wrapperClassName="diy-style-spin">
+                wrapperClassName="contrast-signing-modal-spin">
             <div style={{padding: '0 3.5712rem'}}>
               <div className="steps-content">
                 <React.Fragment>

@@ -2392,7 +2392,7 @@ class NewProjectModelV2 extends React.Component {
                               treeData={projectTypeList}
                               // treeCheckable
                               placeholder="请选择项目类型"
-                              // treeDefaultExpandAll
+                              treeDefaultExpandAll
                               // treeDefaultExpandedKeys={orgExpendKeys}
                               getPopupContainer={triggerNode => triggerNode.parentNode}
                               onChange={(e, nodeArr, extra) => {
@@ -2443,7 +2443,7 @@ class NewProjectModelV2 extends React.Component {
                               treeCheckable
                               placeholder="请选择项目标签"
                               // treeDefaultExpandAll
-                              // treeDefaultExpandedKeys={orgExpendKeys}
+                              treeDefaultExpandedKeys={['1']}
                               getPopupContainer={triggerNode => triggerNode.parentNode}
                               onChange={(e, nodeArr, extra) => {
                                 //选根节点的话入参就是把这个根节点里面的标签都选上

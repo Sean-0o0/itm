@@ -746,7 +746,7 @@ class ItemBtn extends React.Component {
       isAllWindow: 1,
       title: lbModalTitle,
       width: '1000px',
-      height: '770px',
+      height: '700px',
       style: { top: '20px' },
       visible: true,
       footer: null,
@@ -757,7 +757,7 @@ class ItemBtn extends React.Component {
       isAllWindow: 1,
       width: '760px',
       height:
-        lbModalTitle === '中标公告上传' || lbModalTitle === '中标公告修改' ? '310px' : '530px',
+        lbModalTitle === '中标公告上传' || lbModalTitle === '中标公告修改' ? '310px' : '380px',
       title: lbModalTitle,
       style: { top: '60px' },
       visible: uploadVisible,
@@ -773,7 +773,7 @@ class ItemBtn extends React.Component {
           ? '1100px'
           : '864px',
       height: '700px',
-      style: { top: '60px' },
+      style: { top: '10px' },
       visible: sendVisible,
       footer: null,
     };

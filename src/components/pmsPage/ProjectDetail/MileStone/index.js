@@ -42,7 +42,7 @@ export default function MileStone(props) {
     width: '670px',
     height: '400px',
     title: riskTxt,
-    style: { top: '67px' },
+    style: { top: '60px' },
     visible: riskVisible,
     footer: null,
   };
@@ -353,7 +353,6 @@ export default function MileStone(props) {
 
   //切换里程碑 - 按钮触发
   const stepSwitch = txt => {
-    setIsUnfold(true);
     let data = [...mileStoneData];
     let st = 0;
     let ed = 3;
@@ -397,6 +396,7 @@ export default function MileStone(props) {
   const handleStepChange = v => {
     // console.log('handleStepChange', v);
     setCurrentStep(v);
+    setIsUnfold(true);
   };
 
   //高亮的里程碑数据

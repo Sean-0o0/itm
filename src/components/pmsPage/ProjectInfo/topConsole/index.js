@@ -216,7 +216,7 @@ export default forwardRef(function TopConsole(props, ref) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
-          setPrjTypeData(p=>[...[xmlx]]);
+          setPrjTypeData(p => [...[xmlx]]);
         }
       })
       .catch(e => {
@@ -493,6 +493,7 @@ export default forwardRef(function TopConsole(props, ref) {
             placeholder="请选择"
             onChange={handleLabelChange}
             value={label}
+            treeDefaultExpandedKeys={['1']}
           />
         </div>
         <div className="console-item">
@@ -515,6 +516,7 @@ export default forwardRef(function TopConsole(props, ref) {
             placeholder="请选择"
             onChange={handleOrgChange}
             value={org}
+            treeDefaultExpandedKeys={['1', '8857']}
           />
         </div>
         <div className="console-item">

@@ -538,9 +538,11 @@ class ContractInfoUpdate extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
-          width="1030px"
+          width="860px"
           maskClosable={false}
-          // destroyOnClose
+          style={{
+            top: '60px',
+          }}
           zIndex={100}
           cancelText={'关闭'}
           bodyStyle={{

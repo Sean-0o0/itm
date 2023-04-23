@@ -60,7 +60,7 @@ export default function InfoDisplay(props) {
   //     window.removeEventListener('message', handleIframePostMessage);
   //   };
   // }, []);
-  // 
+  //
   // //监听弹窗状态
   // const handleIframePostMessage = event => {
   //   if (typeof event.data !== 'string' && event.data.operate === 'close') {
@@ -163,7 +163,24 @@ export default function InfoDisplay(props) {
     <div className="list">
       {data.map(x => (
         <div className="item" key={x.GYSID} onClick={() => {}}>
-          {x.GYSMC}
+          <Link
+            to={{
+              pathname:
+                '/pms/manage/SupplierDetail/' +
+                EncryptBase64(
+                  JSON.stringify({
+                    splId: x.GYSID,
+                  }),
+                ),
+              state: { routes },
+            }}
+            style={{
+              // whiteSpace: 'break-spaces',
+              color: '#3361ff',
+            }}
+          >
+            {x.GYSMC}
+          </Link>
         </div>
       ))}
     </div>
@@ -212,7 +229,7 @@ export default function InfoDisplay(props) {
       };
     });
   };
-  
+
   return (
     <div className="info-display-box">
       {/* 需求列表 */}

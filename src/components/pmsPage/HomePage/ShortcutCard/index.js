@@ -29,10 +29,7 @@ export default function ShortcutCard(props) {
     return (
       <div className="shortcut-item" onClick={fn}>
         <div className="item-img">
-          <img
-            src={require(`../../../../assets/homePage/icon_${imgTxt}@2x.png`)}
-            alt=""
-          />
+          <img src={require(`../../../../assets/homePage/icon_${imgTxt}@2x.png`)} alt="" />
         </div>
         <div className="item-txt">{txt}</div>
       </div>
@@ -86,8 +83,8 @@ export default function ShortcutCard(props) {
     // defaultFullScreen: true,
     title: '新建项目',
     width: '1000px',
-    height: '750px',
-    style: {top: '10px'},
+    height: '700px',
+    style: { top: '10px' },
     visible: fileAddVisible,
     footer: null,
   };

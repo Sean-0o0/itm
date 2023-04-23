@@ -294,7 +294,7 @@ const PaymentProcess = props => {
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
         cancelText={'关闭'}
         style={{
-          top: '14px',
+          top: '10px',
         }}
         bodyStyle={{
           padding: '0',

@@ -705,6 +705,9 @@ class BidInfoUpdate extends React.Component {
           maskClosable={false}
           zIndex={100}
           cancelText={'关闭'}
+          style={{
+            top: '10px',
+          }}
           bodyStyle={{
             padding: '0',
           }}

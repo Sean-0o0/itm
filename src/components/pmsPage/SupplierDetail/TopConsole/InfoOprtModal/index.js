@@ -90,7 +90,8 @@ function InfoOprtModal(props) {
         tableArr = tableArr.map(x => {
           return {
             ...x,
-            YWSX: x['YWSX' + x.ID],
+            // YWSX: x['YWSX' + x.ID],
+            YWSX: '1',
             LXR: x['LXR' + x.ID],
             ZW: x['ZW' + x.ID],
             DH: x['DH' + x.ID],
@@ -172,14 +173,14 @@ function InfoOprtModal(props) {
   //列配置
   const getSpan = txt => <span style={{ marginLeft: 12 }}>{txt}</span>;
   const tableColumns = [
-    {
-      title: getSpan('业务事项'),
-      dataIndex: 'YWSX',
-      width: '14%',
-      key: 'YWSX',
-      ellipsis: true,
-      editable: true,
-    },
+    // {
+    //   title: getSpan('业务事项'),
+    //   dataIndex: 'YWSX',
+    //   width: '14%',
+    //   key: 'YWSX',
+    //   ellipsis: true,
+    //   editable: true,
+    // },
     {
       title: getSpan('联系人'),
       dataIndex: 'LXR',
@@ -282,7 +283,7 @@ function InfoOprtModal(props) {
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
       cancelText={'关闭'}
-      style={{ top: '60px' }}
+      style={{ top: '10px' }}
       title={null}
       visible={visible}
       okText="保存"

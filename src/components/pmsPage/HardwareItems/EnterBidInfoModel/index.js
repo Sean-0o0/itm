@@ -242,7 +242,7 @@ class EnterBidInfoModel extends React.Component {
   // }
 
   componentDidMount = async () => {
-    const {operateType, xmid} = this.props
+    const { operateType, xmid } = this.props;
     this.fetchQueryGysInZbxx(1, PASE_SIZE);
     if (operateType === 'UPDATE') {
       this.fetchQueryHardwareTendersAndContract();
@@ -264,11 +264,11 @@ class EnterBidInfoModel extends React.Component {
   // 查询硬件项目的招标信息，合同信息
   fetchQueryHardwareTendersAndContract = () => {
     const {
-      dictionary: {BJLX = []},
+      dictionary: { BJLX = [] },
       xmid,
-      operateType
+      operateType,
     } = this.props;
-    const {glgys} = this.state;
+    const { glgys } = this.state;
     FetchQueryHardwareTendersAndContract({
       xmmc: xmid,
       flowId: -1,
@@ -351,7 +351,7 @@ class EnterBidInfoModel extends React.Component {
     const {tableDataDel} = this.state;
     this.setState({
       isSpinning: true,
-    })
+    });
     const dataSource = [...this.state.tableData];
     const del = this.state.tableDataSearch.filter(item => item.ID === id);
     this.setState({
@@ -437,20 +437,14 @@ class EnterBidInfoModel extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        _this.props.closeModal()
+        _this.props.closeModal();
       },
       onCancel() {},
     });
   };
 
   handleSaveZbxx = () => {
-    const {
-      tableData,
-      tableDataDel,
-      bidInfo,
-      uploadFileParams,
-      fileList,
-    } = this.state;
+    const { tableData, tableDataDel, bidInfo, uploadFileParams, fileList } = this.state;
     const { bidBond, performanceBond } = bidInfo;
     const {
       columnName,
@@ -461,7 +455,7 @@ class EnterBidInfoModel extends React.Component {
       id,
       objectName,
     } = uploadFileParams;
-    const {xmid, operateType} = this.props
+    const { xmid, operateType } = this.props;
     console.log('fileList', fileList);
     if (fileList.length === 0 || tableData.length === 0) {
       message.warn('中标信息未填写完整！');
@@ -469,7 +463,7 @@ class EnterBidInfoModel extends React.Component {
     }
     this.setState({
       isSpinning: true,
-    })
+    });
     let num = 0;
     if (tableData.length > 0) {
       tableData.map(item => {
@@ -564,9 +558,9 @@ class EnterBidInfoModel extends React.Component {
       visible,
       closeModal,
       onSuccess,
-      dictionary: {BJLX = []},
+      dictionary: { BJLX = [] },
     } = this.props;
-    const {getFieldDecorator, getFieldValue, setFieldsValue, validateFields} = this.props.form;
+    const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
     const _this = this;
     const tableColumns = [
       {
@@ -754,7 +748,7 @@ class EnterBidInfoModel extends React.Component {
         {addGysModalVisible && (
           <BridgeModel
             modalProps={addGysModalProps}
-            onCancel={() => this.setState({addGysModalVisible: false})}
+            onCancel={() => this.setState({ addGysModalVisible: false })}
             onSucess={this.OnGysSuccess}
             src={
               localStorage.getItem('livebos') +
@@ -770,20 +764,28 @@ class EnterBidInfoModel extends React.Component {
           zIndex={100}
           bodyStyle={{
             padding: '0',
-            height: '710px',
+            height: '647px',
+            overflow: 'hidden',
           }}
           onCancel={this.props.closeModal}
-          footer={<div className="modal-footer">
-            <Button className="btn-default" onClick={this.props.closeModal}>
-              取消
-            </Button>
-            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+          footer={
+            <div className="modal-footer">
+              <Button className="btn-default" onClick={this.props.closeModal}>
+                取消
+              </Button>
+              {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
         暂存草稿
       </Button> */}
-            <Button disabled={isSpinning} className="btn-primary" type="primary" onClick={this.handleSaveZbxx}>
-              确定
-            </Button>
-          </div>}
+              <Button
+                disabled={isSpinning}
+                className="btn-primary"
+                type="primary"
+                onClick={this.handleSaveZbxx}
+              >
+                确定
+              </Button>
+            </div>
+          }
           visible={visible}
         >
           <div
@@ -799,18 +801,19 @@ class EnterBidInfoModel extends React.Component {
               fontSize: '16px',
             }}
           >
-            <strong>硬件中标信息{operateType === "UPDATE" ? "编辑" : "录入"}</strong>
+            <strong>硬件中标信息{operateType === 'UPDATE' ? '编辑' : '录入'}</strong>
           </div>
           <Spin
             wrapperClassName='enterBid-box-style'
             spinning={isSpinning}
             tip="正在努力的加载中..."
             size="large"
-            style={{position: 'fixed'}}
+            style={{ position: 'fixed' }}
+            // wrapperClassName="enter-bid-info-modal-spin"
           >
-            <Form name="nest-messages" style={{padding: '24px', height: '100%', overflowY: 'auto'}}>
+            <Form name="nest-messages" style={{ padding: '24px', overflowY: 'auto' }}>
               <Row>
-                <Col span={12} style={{paddingRight: '24px',}}>
+                <Col span={12} style={{ paddingRight: '24px' }}>
                   <Form.Item label="履约保证金金额（元）" className="formItem">
                     {getFieldDecorator('performanceBond', {
                       initialValue: bidInfo?.performanceBond,
@@ -818,13 +821,15 @@ class EnterBidInfoModel extends React.Component {
                       <Input
                         placeholder="请输入履约保证金金额（元）"
                         onChange={e => {
-                          this.setState({bidInfo: {...bidInfo, performanceBond: e.target.value}});
+                          this.setState({
+                            bidInfo: { ...bidInfo, performanceBond: e.target.value },
+                          });
                         }}
                       />,
                     )}
                   </Form.Item>{' '}
                 </Col>
-                <Col span={12} style={{paddingLeft: '24px',}}>
+                <Col span={12} style={{ paddingLeft: '24px' }}>
                   <Form.Item label="投标保证金（元）" className="formItem">
                     {getFieldDecorator('bidBond', {
                       initialValue: bidInfo?.bidBond,
@@ -832,7 +837,7 @@ class EnterBidInfoModel extends React.Component {
                       <Input
                         placeholder="请输入投标保证金（元）"
                         onChange={e => {
-                          this.setState({bidInfo: {...bidInfo, bidBond: e.target.value}});
+                          this.setState({ bidInfo: { ...bidInfo, bidBond: e.target.value } });
                         }}
                       />,
                     )}
@@ -946,10 +951,10 @@ class EnterBidInfoModel extends React.Component {
                           this.setState({ tableData: arrData });
                         }}
                       >
-                      <span className="addHover">
-                        <Icon type="plus" style={{fontSize: '12px'}}/>
-                        <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增标段信息</span>
-                      </span>
+                        <span className="addHover">
+                          <Icon type="plus" style={{ fontSize: '12px' }} />
+                          <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增标段信息</span>
+                        </span>
                       </div>
                     </div>
                   </Form.Item>
