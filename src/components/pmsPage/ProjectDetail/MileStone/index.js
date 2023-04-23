@@ -17,7 +17,7 @@ const { Step } = Steps;
 
 export default function MileStone(props) {
   const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwPrj } = props;
-  const { risk = [], member = [], prjBasic = [] } = prjData;
+  const { risk = [], member = [], prjBasic = {} } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
@@ -61,7 +61,7 @@ export default function MileStone(props) {
   }, []);
 
   useEffect(() => {
-    if (xmid !== -1) {
+    if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
       getMileStoneData(false);
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
@@ -136,8 +136,6 @@ export default function MileStone(props) {
                       });
                       // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
-                      setIsSpinning(false);
-
                       if (!noNewCurStep) {
                         //初次刷新，自动选择当前里程碑
                         setCurrentStep(currentIndex);
@@ -184,6 +182,8 @@ export default function MileStone(props) {
                           setNextBtnVisible(false);
                         }
                       }
+                      setIsSpinning(false);
+                      console.log('我被调用了');
                     }
                   })
                   .catch(e => {
