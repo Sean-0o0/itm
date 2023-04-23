@@ -23,6 +23,7 @@ export default function WeeklyReportSummary() {
     setDateRange(p => [...getCurrentWeek(new Date())]);
     let defaultSTime = Number(getCurrentWeek(new Date())[0].format('YYYYMMDD'));
     let defaultETime = Number(getCurrentWeek(new Date())[1].format('YYYYMMDD'));
+    setTableLoading(true);
     queryTableData(defaultSTime, defaultETime, currentXmid);
   }, []);
 

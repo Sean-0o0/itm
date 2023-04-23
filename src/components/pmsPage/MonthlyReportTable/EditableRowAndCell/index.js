@@ -20,14 +20,14 @@ const EditableCell = props => {
   const editingRef = useRef(false);
   const {
     issaved,
-    txrdata,
+    txrdata = [],
     editable,
     dataIndex,
     record,
     handleSave,
     children,
     editingindex,
-    dltdata,
+    dltdata = [],
     ...restProps
   } = props;
 
@@ -153,7 +153,8 @@ const EditableCell = props => {
     let item = record[dataIndex + record.id];
     switch (dataIndex) {
       case 'txr':
-        return item?.join('、');
+        let arr = item?.map(x => txrdata.filter(y => y.id === x)[0]?.name || '');
+        return arr?.join('、') || '';
       case 'bywcqk':
       case 'xygzjh':
       case 'ldyj':

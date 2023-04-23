@@ -6,6 +6,7 @@ import WeeklyReportSummary from '../WeeklyReportSummary/index';
 import {
   FetchQueryOwnerProjectList,
   QueryDigitalSpecialClassWeeklyReport,
+  QueryUserInfo,
 } from '../../../services/pmsServices';
 import moment from 'moment';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
@@ -27,10 +28,11 @@ export default function WeeklyReportTableDetail() {
   const [fzrTableData, setFzrTableData] = useState([]); //表格数据，里边是负责人文本
   const [orgData, setOrgData] = useState([]); //部门数据
   const [orgArr, setOrgArr] = useState([]); //部门数据-非树结构
+  const [managerData, setManagerData] = useState([]); //负责人下拉框数据
 
   useEffect(() => {
     // queryProjectData();
-    getOrgData();
+    getManagerData();
     // setDateRange(p => [...getCurrentWeek(new Date())]);
   }, []);
 
@@ -43,6 +45,18 @@ export default function WeeklyReportTableDetail() {
     }).then(res => {
       if (res.code === 1) {
         setProjectData(p => [...res.record]);
+      }
+    });
+  };
+  //负责人下拉框数据
+  const getManagerData = () => {
+    QueryUserInfo({
+      type: '信息技术事业部',
+    }).then(res => {
+      if (res.success) {
+        setManagerData(p => [...res.record]);
+        // console.log(res);
+        getOrgData();
       }
     });
   };
@@ -61,6 +75,7 @@ export default function WeeklyReportTableDetail() {
             normalizeKeyName: 'value',
           })[0].children;
           setOrgData(data);
+          // console.log('🚀 ~ file: index.js:83 ~ getOrgData ~ data:', data);
           setOrgArr([...res.record]);
           let defaultSTime = Number(monthData.startOf('month').format('YYYYMMDD'));
           let defaultETime = Number(monthData.endOf('month').format('YYYYMMDD'));
@@ -71,7 +86,7 @@ export default function WeeklyReportTableDetail() {
         console.error('FetchQueryOrganizationInfo', e);
       });
   };
-  const queryTableData = (startTime, endTime, xmid) => {
+  const queryTableData = (startTime, endTime, xmid, orgNameArr = []) => {
     QueryDigitalSpecialClassWeeklyReport({
       kssj: startTime,
       jssj: endTime,
@@ -113,7 +128,7 @@ export default function WeeklyReportTableDetail() {
             id: item.id,
             module: item.mk.trim(),
             sysBuilding: item.xtjs.trim(),
-            ['manager' + item.id]: [...item.fzr],
+            ['manager' + item.id]: [...item.fzrid],
             ['annualPlan' + item.id]: item.ndgh.trim(),
             ['cplTime' + item.id]: item.wcsj,
             ['curProgress' + item.id]: item.dqjz.trim(),
@@ -121,7 +136,7 @@ export default function WeeklyReportTableDetail() {
             ['curStatus' + item.id]: item.dqzt.trim(),
             ['riskDesc' + item.id]: item.fxsm.trim(),
             ['peopleNumber' + item.id]: item.zbrs.trim(),
-            ['orgName' + item.id]: item.sybm,
+            ['orgName' + item.id]: orgNameArr.filter(x => x.orgName === item.sybm)[0]?.orgId || '',
             ['status']: getStatus(item.zt.trim()),
             fzrid: item.fzrid,
             zt: item.zt,
@@ -187,7 +202,7 @@ export default function WeeklyReportTableDetail() {
   };
   const handleTabsChange = key => {
     setActiveKey(key);
-    if (key === '1') queryProjectData();
+    if (key === '1') getManagerData();
   };
 
   return (
@@ -222,6 +237,7 @@ export default function WeeklyReportTableDetail() {
           setFzrTableData={setFzrTableData}
           orgData={orgData}
           orgArr={orgArr}
+          managerData={managerData}
         />
       )}
       {activeKey === '2' && <MonthlyReportTable />}
