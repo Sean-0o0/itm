@@ -11,7 +11,7 @@ export default function PollResultModel(props) {
   const [xmid, setXmid] = useState(-1); //表格数据-项目列表
   const [lcxxData, setLcxxData] = useState([]); //关联需求
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
-  const [isSpinning, setIsSpinning] = useState(true); //表格加载状态
+  const [isSpinning, setIsSpinning] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const {match: {params: {params: encryptParams = ''}}} = props;
@@ -27,7 +27,7 @@ export default function PollResultModel(props) {
     console.log("paramsparams", params)
     console.log("xmid", xmid)
     setTimeout(function () {
-      getTableData();
+      getTableData(params);
     }, 300);
     return () => {
     };
@@ -40,8 +40,8 @@ export default function PollResultModel(props) {
   }
 
   //获取表格数据
-  const getTableData = () => {
-    setTableLoading(true);
+  const getTableData = (params) => {
+    // setTableLoading(true);
     FetchQueryInquiryComparisonInfo(
       {
         ...params,
@@ -67,19 +67,21 @@ export default function PollResultModel(props) {
           setLcxxData(p => [...JSON.parse(lcxx)]);
           setTotal(res.totalrows);
           setTableLoading(false);
-          setIsSpinning(false);
+          // setIsSpinning(false);
         }
         // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
       })
       .catch(e => {
         // console.error('getTableData', e);
         setTableLoading(false);
-        setIsSpinning(false);
+        // setIsSpinning(false);
       });
   };
 
   const callBackParams = (params) => {
+    console.log("params", params)
     setParams({...params})
+    getTableData(params);
   }
 
   //点击查询
@@ -89,7 +91,7 @@ export default function PollResultModel(props) {
   };
 
   return (
-    <div className="require-list-box" style={{overflow: 'hidden', height: "100%"}}>
+    <div className="require-list-box" style={{overflow: 'hidden', height: "540px", margin: '24px'}}>
       <Spin spinning={isSpinning} tip="加载中" size="large">
         <TopConsole params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable
