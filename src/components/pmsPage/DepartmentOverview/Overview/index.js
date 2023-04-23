@@ -9,46 +9,21 @@ import ReactEchartsCore from 'echarts-for-react/lib/core';
 
 class Overview extends Component {
     state = {}
+
     render() {
-        const { order = 1 } = this.props;
-        const data = [
-            {
-                name: '项目经理',
-                value: '97'
-            },
-            {
-                name: '开发工程师',
-                value: '97'
-            },
-            {
-                name: '运维工程师',
-                value: '97'
-            },
-            {
-                name: '架构工程师',
-                value: '97'
-            },
-            {
-                name: '产品经理',
-                value: '97'
-            },
-            {
-                name: '网络工程师',
-                value: '97'
-            },
-            {
-                name: '质量工程师',
-                value: '97'
-            },
-            {
-                name: '设计师',
-                value: '97'
-            }
-        ]
-        const length = Math.ceil(data.length/2);
+        const { order = 1, title = '-', dataSource = [] } = this.props;
+        const length = Math.ceil(dataSource.length / 2);
+        let data = []
+        dataSource.forEach(element => {
+            const { GW = '', RYSL = '' } = element
+            data.push({
+                name: GW,
+                value: RYSL
+            })
+        });
         const option = {
-            color: ['#3361FF', '#86E0FF', '#FDC041', '#FF8D84', 
-                '#F2A1C3', '#DA6D5D', '#F49B5A', '#5B6BB9', '#00ACFF','#BA00FF'],
+            color: ['#3361FF', '#86E0FF', '#FDC041', '#FF8D84',
+                '#F2A1C3', '#DA6D5D', '#F49B5A', '#5B6BB9', '#00ACFF', '#BA00FF'],
             tooltip: {
                 trigger: 'item',
                 formatter: '{b}: {c}&nbsp;&nbsp;&nbsp;{d}%'
@@ -57,6 +32,9 @@ class Overview extends Component {
                 left: '38%',
                 y: 'center',
                 data: data.length > length ? data.slice(0, length) : data,
+                tooltip: {
+                    show: true
+                },
                 formatter: function (name) {
                     // 获取legend显示内容
                     let data = option.series[0].data;
@@ -80,7 +58,7 @@ class Overview extends Component {
                 orient: 'vertical',
                 textStyle: {
                     color: "#606266",
-                    fontSize: 12,
+                    fontSize: 13,
                     rich: {
                         // 给labelMark添加样式
                         labelMark: {
@@ -96,6 +74,9 @@ class Overview extends Component {
                 left: '67%',
                 y: 'center',
                 data: data.length > length ? data.slice(length) : [],
+                tooltip: {
+                    show: true
+                },
                 formatter: function (name) {
                     // 获取legend显示内容
                     let data = option.series[0].data;
@@ -119,7 +100,7 @@ class Overview extends Component {
                 orient: 'vertical',
                 textStyle: {
                     color: "#606266",
-                    fontSize: 12,
+                    fontSize: 13,
                     rich: {
                         // 给labelMark添加样式
                         labelMark: {
@@ -136,7 +117,7 @@ class Overview extends Component {
                 {
                     name: '',
                     type: 'pie', //饼状图
-                    radius: ['45%', '65%'], //大小
+                    radius: ['50%', '70%'], //大小
                     center: ['20%', '50%'], //显示位置
                     data: data,
                     itemStyle: {
@@ -156,7 +137,7 @@ class Overview extends Component {
                 {
                     name: '',
                     type: 'pie', //饼状图
-                    radius: ['45%', '65%'], //大小
+                    radius: ['50%', '70%'], //大小
                     center: ['20%', '50%'], //显示位置
                     data: data,
                     itemStyle: {
@@ -166,8 +147,34 @@ class Overview extends Component {
                     },
                     avoidLabelOverlap: true,
                     label: {
-                        color: '#fff',
                         show: false,
+                        position: 'center',
+                        formatter: params => {
+                            const num = data?.filter(x => x.name === params.name)[0].value;
+                            return `{a|${params.name}}\n{b|${num}}`;
+                        },
+                        color: 'black',
+                        fontFamily: 'PingFangSC-Regular, PingFang SC',
+                        textStyle: {
+                            rich: {
+                                a: {
+                                    fontSize: 14,
+                                    color: '#606266',
+                                    lineHeight: 29,
+                                },
+                                b: {
+                                    fontSize: 24,
+                                    fontWeight: 'bold',
+                                    color: '#222222',
+                                },
+                            },
+                        },
+                    },
+                    emphasis: {
+                        label: {
+                            show: true,
+                            fontSize: '13',
+                        },
                     },
                     labelLine: { //指示线状态
                         show: false,
@@ -178,7 +185,7 @@ class Overview extends Component {
 
         return (
             <div className='cont-block staff-overview' style={{ margin: order === 1 ? '0px 12px 0px 24px' : '0px 24px 0px 12px', padding: '0 24px' }}>
-                <div style={{color: '#303133',fontSize: 16, fontWeight: 'bold', height: '30px', lineHeight: '35px'}}>自研团队建设</div>
+                <div style={{ color: '#303133', fontSize: 16, fontWeight: 'bold', height: '30px', lineHeight: '35px' }}>{title}</div>
                 <React.Fragment>
                     <ReactEchartsCore
                         echarts={echarts}

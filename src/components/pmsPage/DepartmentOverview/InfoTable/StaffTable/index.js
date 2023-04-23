@@ -1,10 +1,26 @@
 import React, { Component } from 'react'
 import { Table, Pagination } from 'antd'
-
+import moment from 'moment';
+import { Link } from 'react-router-dom';
+import 'moment/locale/zh-cn';
+import { EncryptBase64 } from "../../../../Common/Encrypt";
 class StaffTable extends Component {
     state = {
-        tableLoading: false
+
     }
+
+    handleChange = (current, pageSize) => {
+        const { fetchData, queryType, gwbm, pageParam } = this.props;
+        if (fetchData) {
+            fetchData(queryType, gwbm, {
+                ...pageParam,
+                current: current,
+                pageSize: pageSize,
+                total: -1,
+            })
+        }
+    }
+
     //计算合并
     rowspan = (userData) => {
         let spanArr = [];
@@ -15,7 +31,7 @@ class StaffTable extends Component {
                 position = 0;
             } else {
                 //需要合并的地方判断
-                if (userData[index].xh === userData[index - 1].xh) {
+                if (userData[index].XMID === userData[index - 1].XMID) {
                     spanArr[position] += 1;
                     spanArr.push(0);
                 } else {
@@ -43,192 +59,130 @@ class StaffTable extends Component {
     // };
 
     render() {
-        const { tableLoading } = this.state
-        const tableData = [{
-            id: 1,
-            xh: '1',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 2,
-            xh: '2',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 3,
-            xh: '3',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 4,
-            xh: '3',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 5,
-            xh: '3',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 6,
-            xh: '4',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 7,
-            xh: '4',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 8,
-            xh: '5',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 9,
-            xh: '6',
-            rymc: '张三',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        },
-        {
-            id: 10,
-            xh: '6',
-            rymc: '张三1',
-            rzsj: '2022-01-01',
-            szxm: 'ADM备份恢复验证软件',
-            xmjd: '20%',
-            gw: '项目经理',
-            gzqk: '4.5',
-            pf: '8.8'
-        }]
+        const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
+        console.log('routes',routes)
+        const { current = 1, pageSize = 10 } = pageParam;
         const rowspan = this.rowspan(tableData);
         const columns = [{
             title: '序号',
-            dataIndex: 'xh',
+            dataIndex: 'RYID',
             width: '5%',
-            key: 'xh',
+            key: 'RYID',
+            align: 'center',
             ellipsis: true,
+            render: (value, row, index) => {
+                return (current - 1) * pageSize + index + 1;
+            },
         }, {
             title: '人员名称',
-            dataIndex: 'rymc',
+            dataIndex: 'RYMC',
             width: '10%',
-            key: 'rymc',
+            key: 'RYMC',
             ellipsis: true,
             render: (value, row, index) => {
+                const { RYID = '' } = row;
                 let obj = {
-                  children: value,
-                  props: {
-                  },
+                    children: <div >
+                        <Link
+                            className='opr-btn'
+                            to={{
+                                pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                      ryid: RYID,
+                                    }),
+                                  )}`,
+                                state: {
+                                    routes: routes,
+                                },
+                            }}
+
+                        >
+                            {value}
+                        </Link></div>,
+                    props: {
+                    },
                 };
                 const _row = rowspan[index];
                 obj.props.rowSpan = _row;
                 return obj;
-              },
+            },
         }, {
             title: '入职时间',
-            dataIndex: 'rzsj',
+            dataIndex: 'RZSJ',
             width: '15%',
-            key: 'rzsj',
+            key: 'RZSJ',
             ellipsis: true,
             render: (value, row, index) => {
                 let obj = {
-                  children: value,
-                  props: {
-                  },
+                    children: moment(value, 'YYYYMMDD').format('YYYY-MM-DD'),
+                    props: {
+                    },
                 };
                 const _row = rowspan[index];
                 obj.props.rowSpan = _row;
                 return obj;
-              },
+            },
         }, {
             title: '所在项目',
-            dataIndex: 'szxm',
+            dataIndex: 'SZXM',
             width: '30%',
-            key: 'szxm',
+            key: 'SZXM',
             ellipsis: true,
+            render: (text, row, index) => {
+                const { XMID = '' } = row;
+                return <div >
+                    <Link
+                        className='opr-btn'
+                        to={{
+                            pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                                JSON.stringify({
+                                    xmid: XMID,
+                                }),
+                            )}`,
+                            state: {
+                                routes: routes,
+                            },
+                        }}
+
+                    >
+                        {text}
+                    </Link></div>
+            }
         },
         {
             title: '项目进度',
-            dataIndex: 'xmjd',
+            dataIndex: 'XMJD',
             width: '12%',
-            key: 'xmjd',
+            key: 'XMJD',
             ellipsis: true,
+            render: (value, row, index) => {
+                return value + '%';
+            },
         }, {
             title: '岗位',
-            dataIndex: 'gw',
+            dataIndex: 'GW',
             width: '12%',
-            key: 'gw',
+            key: 'GW',
             ellipsis: true,
         }, {
-            title: '工作情况(人员)',
-            dataIndex: 'gzqk',
+            title: '工时情况(人员)',
+            dataIndex: 'GS',
             width: '13%',
-            key: 'gzqk',
+            key: 'GS',
+            align: 'right',
             ellipsis: true,
         },
         {
             title: '评分',
-            dataIndex: 'pf',
+            dataIndex: 'PJ',
             width: '5%',
-            key: 'pf',
+            key: 'PJ',
+            align: 'center',
             ellipsis: true,
         }
         ]
 
-        return (<div className='table-box' style={{height: 'calc(100vh - 375px)'}}>
+        return (<div className='table-box' style={{ height: (role === '信息技术事业部领导' || role === '一级部门领导') ? 'calc(100vh - 375px)' : 'calc(100vh - 235px)' }}>
             <div className="project-info-table-box">
                 <Table
                     loading={tableLoading}
@@ -242,9 +196,10 @@ class StaffTable extends Component {
             <div className='page-individual'>
                 <Pagination
                     onChange={this.handleChange}
-                    pageSize={10}
-                    current={1}
-                    total={11}
+                    onShowSizeChange={this.handleChange}
+                    pageSize={pageParam.pageSize}
+                    current={pageParam.current}
+                    total={pageParam.total}
                     pageSizeOptions={['10', '20', '30', '40']}
                     showSizeChanger={true}
                     hideOnSinglePage={true}

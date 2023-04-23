@@ -6,35 +6,55 @@ const { TabPane } = Tabs;
 
 class InfoTable extends Component {
   state = {
-    loading: false
+    activeKey: '1',
+    queryType: 'MX_ALL',
+    gwbm: ''
   }
+
+  handleTab = id => {
+    let queryType = '';
+    let gwbm = '';
+    if (id === '1') {
+      queryType = 'MX_ALL';
+      gwbm = ''
+    } else {
+      queryType = 'MX_SINGLE';
+      gwbm = id
+    }
+    this.setState({
+      activeKey: id,
+      queryType,
+      gwbm
+    }, () => {
+      this.props.fetchData(queryType, gwbm, {
+        current: 1,
+        pageSize: 10,
+        paging: 1,
+        sort: "",
+        total: -1
+      })
+    })
+
+  }
+
   render() {
-    const { loading } = this.state;
-    const allTabs = [{
-      xmid: '1',
-      xmmc: '大数据应用开发部',
-    },{
-      xmid: '2',
-      xmmc: '移动金融开发部',
-    },{
-      xmid: '3',
-      xmmc: '项目管理部',
-    },{
-      xmid: '4',
-      xmmc: '内控开发部',
-    }]
+    const { activeKey, queryType, gwbm } = this.state;
+    const { gwfb = [], bgxx = [], tableLoading, pageParam, role, routes } = this.props;
     return (<div className='info-table'>
-      <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
+      <Spin spinning={false} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <Tabs
-          onChange={this.callback}
+          onChange={this.handleTab}
           type="card"
-          activeKey='1'
+          activeKey={activeKey}
         >
-          {allTabs.map(items => {
-            // console.log("1111",item)
+          <TabPane tab='全部' key='1'>
+            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+          </TabPane>
+          {gwfb.map(item => {
+            const { BMGW = '-', BMGWID = '-' } = item
             return (
-              <TabPane tab={items.xmmc} key={items.xmid}>
-                <StaffTable/>
+              <TabPane tab={BMGW} key={BMGWID}>
+                <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
               </TabPane>
             )
           })}
