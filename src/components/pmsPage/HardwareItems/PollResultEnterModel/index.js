@@ -194,13 +194,13 @@ class PollResultEnterModel extends React.Component {
       <>
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '40px', paddingBottom: '0'}}
-          width={'800px'}
+          style={{top: '60px', paddingBottom: '0'}}
+          width={'760px'}
           title={null}
           zIndex={100}
           bodyStyle={{
             padding: '0',
-            height: '300px',
+            height: '260px',
           }}
           onCancel={this.props.closeModal}
           footer={<div className="modal-footer">
@@ -229,7 +229,7 @@ class PollResultEnterModel extends React.Component {
               fontSize: '16px',
             }}
           >
-            <strong>硬件中标信息录入</strong>
+            <strong>询比结果录入</strong>
           </div>
           <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="PollResultEnterModel"
                 style={{position: 'fixed'}}>

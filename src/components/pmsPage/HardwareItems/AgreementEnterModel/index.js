@@ -213,11 +213,13 @@ class AgreementEnterModel extends React.Component {
         this.setState({
           isSpinning: false,
         })
+        this.props.closeModal();
         message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3);
       } else {
         this.setState({
           isSpinning: false,
         })
+        this.props.closeModal();
         message.error('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '失败！', 3);
       }
     });
@@ -255,11 +257,11 @@ class AgreementEnterModel extends React.Component {
     const basicFormItemLayout = {
       labelCol: {
         xs: {span: 24},
-        sm: {span: 8},
+        sm: {span: 12},
       },
       wrapperCol: {
         xs: {span: 24},
-        sm: {span: 16},
+        sm: {span: 12},
       },
     };
     return (
@@ -277,8 +279,8 @@ class AgreementEnterModel extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '40px', paddingBottom: '0'}}
-          width={'920px'}
+          style={{top: '60px', paddingBottom: '0'}}
+          width={'760px'}
           title={null}
           zIndex={100}
           bodyStyle={{
@@ -318,17 +320,17 @@ class AgreementEnterModel extends React.Component {
             <Form {...basicFormItemLayout} name="nest-messages" style={{padding: '24px'}}>
               <Row>
                 <Col span={24}>
-                  <Form.Item labelCol={{span: 4}} wrapperCol={{span: 20}} label={<span><span style={{
+                  <Form.Item labelCol={{span: 6}} wrapperCol={{span: 18}} label={<span><span style={{
                     textAlign: 'left',
                     fontFamily: 'SimSun, sans-serif',
                     color: '#f5222d',
                     marginRight: '4px',
                     lineHeight: 1
                   }}>*</span>设备采购有合同流程</span>} className="formItem">
-                  {getFieldDecorator('flow', {
-                    // rules: [{
-                    //   required: true,
-                    //   message: '请输入合同金额'
+                    {getFieldDecorator('flow', {
+                      // rules: [{
+                      //   required: true,
+                      //   message: '请输入合同金额'
                     // }],
                     initialValue: contractInfo.flow
                   })(<Select
@@ -425,6 +427,7 @@ class AgreementEnterModel extends React.Component {
                       // width: '270px'
                     }} id="datePicker">
                       <DatePicker format="YYYY-MM-DD"
+                                  style={{width: '100%'}}
                                   allowClear={false}
                                   value={contractInfo.date != '' ? moment(contractInfo.date, 'YYYY-MM-DD') : undefined}
                                   onChange={(date, dateString) => {
@@ -438,7 +441,7 @@ class AgreementEnterModel extends React.Component {
             </Row>
             <Row>
               <Col span={24} style={{position: 'relative'}}>
-                <Form.Item labelCol={{span: 4}} wrapperCol={{span: 20}} label={<span><span style={{
+                <Form.Item labelCol={{span: 6}} wrapperCol={{span: 18}} label={<span><span style={{
                   textAlign: 'left',
                   fontFamily: 'SimSun, sans-serif',
                   color: '#f5222d',
@@ -514,9 +517,10 @@ class AgreementEnterModel extends React.Component {
                     initialValue: contractInfo.payDate
                   })(
                     <div style={{
-                      width: '270px'
+                      // width: '100%'
                     }} id="datePicker">
                       <DatePicker format="YYYY-MM-DD"
+                                  style={{width: '100%'}}
                                   allowClear={false}
                                   value={contractInfo.payDate != '-1' ? moment(contractInfo.payDate, 'YYYY-MM-DD') : undefined}
                                   onChange={(date, dateString) => {

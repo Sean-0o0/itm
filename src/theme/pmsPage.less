@@ -2931,16 +2931,21 @@
   }
 
   .footer {
+    height: 53px;
     width: 100%;
     text-align: right;
     position: fixed;
     bottom: 0%;
-    background-color: #f6f6f9;
-    padding: 6px 18px;
+    //background-color: #f6f6f9;
+    //padding: 8px 12px;
 
     .steps-action {
       display: inline-block;
     }
+  }
+
+  .ant-divider-horizontal {
+    margin: 0 !important;
   }
 }
 
@@ -2958,6 +2963,10 @@
 
   .ant-tabs-nav .ant-tabs-tab:hover {
     color: #3361ff;
+  }
+
+  .ant-tabs-bar {
+    height: 100%;
   }
 
   .ant-table-thead > tr > th,
@@ -3623,13 +3632,13 @@
   }
 
   .footer {
-    height: 8%;
+    height: 53px;
     width: 100%;
     text-align: right;
     position: fixed;
     bottom: 0%;
     //background-color: #f6f6f9;
-    //padding: 6px 18px;
+    //padding: 8px 12px;
 
     .steps-action {
       display: inline-block;
@@ -9271,13 +9280,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .footer {
-    height: 64px;
+    height: 53px;
     width: 100%;
     text-align: right;
     position: fixed;
     bottom: 0%;
     //background-color: #f6f6f9;
-    //padding: 6px 18px;
+    //padding: 8px 12px;
 
     .steps-action {
       display: inline-block;
@@ -9311,13 +9320,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .footer {
-    height: 64px;
+    height: 53px;
     width: 100%;
     text-align: right;
     position: fixed;
     bottom: 0%;
     //background-color: #f6f6f9;
-    //padding: 6px 18px;
+    //padding: 8px 12px;
 
     .steps-action {
       display: inline-block;
@@ -9328,6 +9337,14 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .PollResultEnterModel {
   height: 260px;
   overflow-y: auto;
+
+  .ant-form-item-label {
+    color: #d70e19;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: left !important;
+  }
 }
 //需求列表
 .require-list-box {
@@ -9560,13 +9577,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .footer {
-    height: 64px;
+    height: 53px;
     width: 100%;
     text-align: right;
     position: fixed;
     bottom: 0%;
     //background-color: #f6f6f9;
-    //padding: 6px 18px;
+    //padding: 8px 12px;
 
     .steps-action {
       display: inline-block;
@@ -9854,6 +9871,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     background-color: #3361ff;
   }
 
+  .ant-modal-header {
+    padding: 9px 12px;
+  }
+
   .ant-modal-title {
     color: white;
   }
@@ -9920,7 +9941,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
   .info-table{
     margin: 20px 24px;
-    
+
     .ant-tabs-bar{
       margin-bottom: 0;
     }
@@ -9940,7 +9961,24 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         padding-right: 4px;
         .ants-table-adaptation();
       }
-     
+
     }
+  }
+}
+
+//硬件中标信息编辑/录入
+.enterBid-box-style {
+  height: 670px;
+
+  .ant-form-item-label {
+    color: #d70e19;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: left !important;
+  }
+
+  .ant-spin-container {
+    height: 100%;
   }
 }

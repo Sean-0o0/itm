@@ -348,6 +348,7 @@ class EnterBidInfoModel extends React.Component {
 
   //中标信息表格单行删除
   handleSingleDelete = id => {
+    const {tableDataDel} = this.state;
     this.setState({
       isSpinning: true,
     })
@@ -355,7 +356,7 @@ class EnterBidInfoModel extends React.Component {
     const del = this.state.tableDataSearch.filter(item => item.ID === id);
     this.setState({
       tableData: dataSource.filter(item => item.ID !== id),
-      tableDataDel: del,
+      tableDataDel: [...del, ...tableDataDel],
       isSpinning: false,
     });
   };
@@ -532,11 +533,13 @@ class EnterBidInfoModel extends React.Component {
         this.setState({
           isSpinning: false,
         })
+        this.props.closeModal();
         message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3)
       } else {
         this.setState({
           isSpinning: false,
         })
+        this.props.closeModal();
         message.error('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '失败！', 3);
       }
     });
@@ -761,7 +764,7 @@ class EnterBidInfoModel extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '20px', paddingBottom: '0'}}
+          style={{top: '10px', paddingBottom: '0'}}
           width={'1000px'}
           title={null}
           zIndex={100}
@@ -799,12 +802,13 @@ class EnterBidInfoModel extends React.Component {
             <strong>硬件中标信息{operateType === "UPDATE" ? "编辑" : "录入"}</strong>
           </div>
           <Spin
+            wrapperClassName='enterBid-box-style'
             spinning={isSpinning}
             tip="正在努力的加载中..."
             size="large"
             style={{position: 'fixed'}}
           >
-            <Form name="nest-messages" style={{padding: '24px', overflowY: 'auto'}}>
+            <Form name="nest-messages" style={{padding: '24px', height: '100%', overflowY: 'auto'}}>
               <Row>
                 <Col span={12} style={{paddingRight: '24px',}}>
                   <Form.Item label="履约保证金金额（元）" className="formItem">

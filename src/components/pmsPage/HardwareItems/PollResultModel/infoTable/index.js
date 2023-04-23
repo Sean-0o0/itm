@@ -402,7 +402,7 @@ export default function InfoTable(props) {
         // />
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"
-          width={'880px'}
+          width={'760px'}
           maskClosable={false}
           zIndex={100}
           maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
@@ -411,7 +411,19 @@ export default function InfoTable(props) {
           okText="保存"
           // onOk={handleSavePollInfo}
           onCancel={handleCancel}
-          title={<span color='white'>询比结果编辑</span>}
+          title={<div
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#3361FF',
+              color: 'white',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '16px',
+            }}
+          >
+            <strong>询比结果编辑</strong>
+          </div>}
           cancelText="取消"
           footer={<div className="modal-footer">
             <Button className="btn-default" onClick={handleCancel}>

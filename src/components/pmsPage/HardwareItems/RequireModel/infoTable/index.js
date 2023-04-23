@@ -18,7 +18,7 @@ export default function InfoTable(props) {
     isAllWindow: 1,
     title: '新建项目',
     width: '1000px',
-    height: '780px',
+    height: '750px',
     style: {top: '10px'},
     visible: true,
     footer: null,

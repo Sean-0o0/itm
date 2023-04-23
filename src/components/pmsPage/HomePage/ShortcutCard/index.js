@@ -86,8 +86,8 @@ export default function ShortcutCard(props) {
     // defaultFullScreen: true,
     title: '新建项目',
     width: '1000px',
-    height: '780px',
-    style: { top: '10px' },
+    height: '750px',
+    style: {top: '10px'},
     visible: fileAddVisible,
     footer: null,
   };

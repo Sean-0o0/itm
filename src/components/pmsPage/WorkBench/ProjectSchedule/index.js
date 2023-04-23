@@ -1041,7 +1041,7 @@ class ProjectSchedule extends React.Component {
       // defaultFullScreen: true,
       title: '新建项目',
       width: '1000px',
-      height: '780px',
+      height: '750px',
       style: {top: '10px'},
       visible: fileAddVisible,
       footer: null,

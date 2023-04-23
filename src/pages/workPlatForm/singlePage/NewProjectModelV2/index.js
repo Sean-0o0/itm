@@ -18,7 +18,7 @@ import {
   Button,
   TreeSelect,
   Tree,
-  Tooltip,
+  Tooltip, Divider,
 } from 'antd';
 import { connect } from 'dva';
 import GridLayout from 'react-grid-layout';
@@ -2831,7 +2831,8 @@ class NewProjectModelV2 extends React.Component {
                 </React.Fragment></div>
               }
               {
-                current === 1 && <div style={{display: 'flex', height: '75%', margin: '12px 0 12px 120px'}}>
+                current === 1 &&
+                <div style={{display: 'flex', height: 'calc(100% - 75px - 53px - 24px)', margin: '12px 0 12px 120px'}}>
                   <Steps progressDot style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '18px 0'}}
                          direction="vertical"
                          current={minicurrent} onChange={this.onChange}>
@@ -3809,28 +3810,31 @@ class NewProjectModelV2 extends React.Component {
               }
               {/*<div className="steps-content">{steps[current].content}</div>*/}
               <div className="footer">
-                <Button onClick={this.handleCancel}>取消</Button>
-                <Button onClick={e => this.handleFormValidate(e, 0)} style={{
-                  marginLeft: '2rem',
-                  display: this.state.projectStatus === "MOD" ? 'none' : ''
-                }}>暂存草稿</Button>
-                <div className="steps-action">
-                  {current > 0 && (
-                    <Button style={{ marginLeft: '2rem' }} onClick={() => this.prev()}>
-                      上一步
-                    </Button>
-                  )}
-                  {current < steps.length - 1 && (
-                    <Button type="primary" style={{ marginLeft: '2rem' }} onClick={() => this.next()}>
-                      下一步
-                    </Button>
-                  )}
-                  {current === steps.length - 1 && (
-                    <Button style={{ marginLeft: '2rem' }} type="primary"
-                      onClick={e => this.handleFormValidate(e, 1)}>
-                      完成
-                    </Button>
-                  )}
+                <Divider/>
+                <div style={{padding: '10px 16px'}}>
+                  <Button onClick={this.handleCancel}>取消</Button>
+                  <Button onClick={e => this.handleFormValidate(e, 0)} style={{
+                    marginLeft: '2rem',
+                    display: this.state.projectStatus === "MOD" ? 'none' : ''
+                  }}>暂存草稿</Button>
+                  <div className="steps-action">
+                    {current > 0 && (
+                      <Button style={{marginLeft: '2rem'}} onClick={() => this.prev()}>
+                        上一步
+                      </Button>
+                    )}
+                    {current < steps.length - 1 && (
+                      <Button type="primary" style={{marginLeft: '2rem'}} onClick={() => this.next()}>
+                        下一步
+                      </Button>
+                    )}
+                    {current === steps.length - 1 && (
+                      <Button style={{marginLeft: '2rem'}} type="primary"
+                              onClick={e => this.handleFormValidate(e, 1)}>
+                        完成
+                      </Button>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>

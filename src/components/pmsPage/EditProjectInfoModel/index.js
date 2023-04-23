@@ -3485,14 +3485,14 @@ class EditProjectInfoModel extends React.Component {
           >
             <div style={{ overflow: 'hidden', height: '100%' }}>
               <div style={{ height: '7%' }}>
-                <Tabs defaultActiveKey="0" onChange={this.tabsCallback}>
+                <Tabs className='tabs' style={{height: '100%'}} defaultActiveKey="0" onChange={this.tabsCallback}>
                   {htxxVisiable || zbxxVisiable
                     ? tabs.map(item => {
-                        return <TabPane tab={item.title} key={item.key}></TabPane>;
-                      })
+                      return <TabPane tab={item.title} key={item.key}></TabPane>;
+                    })
                     : tabsdel.map(item => {
-                        return <TabPane tab={item.title} key={item.key}></TabPane>;
-                      })}
+                      return <TabPane tab={item.title} key={item.key}></TabPane>;
+                    })}
                 </Tabs>
               </div>
               {// 基本信息
@@ -4115,10 +4115,10 @@ class EditProjectInfoModel extends React.Component {
               )}
               {// 里程碑信息
               current == 2 && (
-                <div style={{ display: 'flex', height: '86%' }}>
+                <div style={{display: 'flex', height: 'calc(93% - 53px)'}}>
                   <Steps
                     progressDot
-                    style={{ height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px' }}
+                    style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px'}}
                     direction="vertical"
                     current={minicurrent}
                     onChange={this.onChange}
@@ -6064,12 +6064,12 @@ class EditProjectInfoModel extends React.Component {
                 </div>
               )}
               <div className="footer">
-                <Divider />
-                <div style={{ padding: '16px 24px' }}>
+                <Divider/>
+                <div style={{padding: '10px 16px'}}>
                   <Button onClick={this.handleCancel}>取消</Button>
                   <div className="steps-action">
                     <Button
-                      style={{ marginLeft: '12px', backgroundColor: '#3361FF' }}
+                      style={{marginLeft: '12px', backgroundColor: '#3361FF'}}
                       type="primary"
                       onClick={e => this.handleFormValidate(e, 1)}
                     >
