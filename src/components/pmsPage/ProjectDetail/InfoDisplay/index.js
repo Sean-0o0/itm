@@ -39,7 +39,7 @@ export default function InfoDisplay(props) {
     title: lbModal.title,
     width: '1000px',
     height: '650px',
-    style: {top: '60px'},
+    style: {top: '10px'},
     visible: true,
     footer: null,
   };
@@ -49,7 +49,7 @@ export default function InfoDisplay(props) {
     title: lbModal.title,
     width: '1000px',
     height: '650px',
-    style: {top: '60px'},
+    style: {top: '10px'},
     visible: true,
     footer: null,
   };
