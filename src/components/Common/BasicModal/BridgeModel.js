@@ -102,7 +102,8 @@ class BridgeModal extends React.Component {
       footer: null,
       ...modalProps,
       height: modalHeight,
-      onCancel: this.close
+      onCancel: this.close,
+      className: 'lb-modal-public-style', //弹窗样式统一
     };
 
     // diy-style-spin样式写于pmsPage.less里
