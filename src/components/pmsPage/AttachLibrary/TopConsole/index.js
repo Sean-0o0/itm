@@ -428,6 +428,7 @@ class ToConsole extends Component {
               }}
               dropdownClassName="newproject-treeselect"
               dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+              treeDefaultExpandedKeys={['1']}
               treeData={labelList}
               placeholder="请选择"
               onChange={this.handleXmbq}

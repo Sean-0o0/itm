@@ -850,7 +850,9 @@ const TableBox = props => {
             {/* <Button style={{ marginRight: '8px'}} onClick={handleSummary}>手动汇总</Button> */}
             {editing ? (
               <>
-                <span>（点击指定行进行编辑）</span>
+                <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
+                  （点击指定行进行编辑）
+                </span>
                 <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
                   取消
                 </Button>

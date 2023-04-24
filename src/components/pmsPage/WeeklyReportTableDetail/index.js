@@ -180,7 +180,7 @@ export default function WeeklyReportTableDetail() {
         //   }
         // })
         setTableData(preState => [...newArr]);
-        console.log('🚀 ~ file: index.js ~ line 136 ~ queryTableData ~ finalArr]', finalArr);
+        // console.log('🚀 ~ file: index.js ~ line 136 ~ queryTableData ~ finalArr]', finalArr);
         setTableLoading(false);
       }
     });

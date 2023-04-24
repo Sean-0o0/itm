@@ -251,11 +251,11 @@ const PaymentProcess = props => {
       <Button className="btn-default" onClick={closePaymentProcessModal}>
         取消
       </Button>
-      {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
-        暂存草稿
-      </Button> */}
+      <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        提交为草稿
+      </Button>
       <Button className="btn-primary" type="primary" onClick={() => handleSubmit('send')}>
-        确定
+        提交审批
       </Button>
     </div>
   );

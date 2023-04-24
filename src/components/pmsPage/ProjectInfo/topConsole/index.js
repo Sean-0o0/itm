@@ -453,6 +453,7 @@ export default forwardRef(function TopConsole(props, ref) {
           </Select> */}
           <TreeSelect
             allowClear
+            showArrow
             className="item-selector"
             showSearch
             treeNodeFilterProp="title"
@@ -477,6 +478,7 @@ export default forwardRef(function TopConsole(props, ref) {
           <div className="item-label">项目标签</div>
           <TreeSelect
             allowClear
+            showArrow
             className="item-selector"
             showSearch
             treeCheckable
@@ -500,6 +502,7 @@ export default forwardRef(function TopConsole(props, ref) {
           <div className="item-label">应用部门</div>
           <TreeSelect
             allowClear
+            showArrow
             className="item-selector"
             showSearch
             treeCheckable

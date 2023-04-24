@@ -3565,7 +3565,7 @@ class EditProjectInfoModel extends React.Component {
                                 treeData={projectTypeList}
                                 // treeCheckable
                                 placeholder="请选择项目类型"
-                                // treeDefaultExpandAll
+                                treeDefaultExpandAll
                                 // treeDefaultExpandedKeys={orgExpendKeys}
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
@@ -3617,7 +3617,7 @@ class EditProjectInfoModel extends React.Component {
                                 treeCheckable
                                 placeholder="请选择项目标签"
                                 // treeDefaultExpandAll
-                                // treeDefaultExpandedKeys={orgExpendKeys}
+                                treeDefaultExpandedKeys={['1']}
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
                                   //选根节点的话入参就是把这个根节点里面的标签都选上
@@ -3717,7 +3717,7 @@ class EditProjectInfoModel extends React.Component {
                                   treeData={bindMethodData}
                                   placeholder="请选择采购方式"
                                   // treeCheckable
-                                  // treeDefaultExpandAll
+                                  treeDefaultExpandAll
                                   // getPopupContainer={triggerNode => triggerNode.parentNode}
                                   // treeDefaultExpandedKeys={orgExpendKeys}
                                   onChange={e => {

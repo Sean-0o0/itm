@@ -287,14 +287,17 @@ export default function HomePage(props) {
             gysmc: [],
           };
           JSON.parse(res?.gysxx)?.forEach(item => {
-            obj.cgje.push(Number(item.cgje));
-            obj.cgsl.push(Number(item.cgsl));
+            obj.cgje.push(Number(item.CGJE));
+            obj.cgsl.push(Number(item.CGSL));
             obj.gysmc.push({
-              name: item.gysmc,
-              max: Number(item.cgje) === 0 ? 10 : Number(item.cgje) * 1.5,
+              name: item.GYSMC,
+              max: Number(item.CGJE) === 0 ? 10 : Number(item.CGJE) * 1.5,
             });
           });
-          // console.log('🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj', obj);
+          // console.log(
+          //   '🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj',
+          //   obj,
+          // );
           setSupplierData(obj);
         }
       })
