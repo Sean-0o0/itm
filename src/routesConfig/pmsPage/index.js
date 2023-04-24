@@ -146,6 +146,16 @@ exports.routes = [
   {
     // 统计分析-概览部门
     path: `${prefix}/DepartmentOverview`,
-    component: './pmsPage/departmentOverview',
+    component: './pmsPage/DepartmentOverview',
+  },
+  {
+    // 统计分析-项目建设
+    path: `${prefix}/ProjectBuilding`,
+    component: './pmsPage/ProjectBuilding',
+  },
+  {
+    // 统计分析-预算执行
+    path: `${prefix}/BudgetExcute`,
+    component: './pmsPage/BudgetExcute',
   },
 ];
