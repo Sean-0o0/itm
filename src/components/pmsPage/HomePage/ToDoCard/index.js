@@ -14,7 +14,7 @@ export default function ToDoCard(props) {
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
   const [currentXmid, setCurrentXmid] = useState(-1); //当前项目id
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
-  const [isHwPrj, setIsHwPrj] = useState(false); //是否为普通硬件、硬件入围类型
+  const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   const ryxztxModalProps = {
@@ -54,10 +54,10 @@ export default function ToDoCard(props) {
 
   //付款流程
   const handlePaymentProcess = item => {
-    // console.log('handlePaymentProcess', item);
+    console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
     setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
-    setIsHwPrj(['6'].includes(item.xmlx));
+    setIsHwPrj(item.sfbhyj === '1'); //1是2否
     setCurrentXmid(item.xmid);
   };
 

@@ -17,7 +17,7 @@ export default function RequireModel(props) {
 
 
   useEffect(() => {
-    getTableData();
+    getTableData(params);
     setIsSpinning(false)
     return () => {
     };
@@ -49,6 +49,7 @@ export default function RequireModel(props) {
 
   const callBackParams = (params) => {
     setParams({...params})
+    getTableData(params);
   }
 
   //点击查询
@@ -58,7 +59,7 @@ export default function RequireModel(props) {
   };
 
   return (
-    <div className="require-list-box" style={{overflow: 'hidden', height: "100%"}}>
+    <div className="require-list-box" style={{overflow: 'hidden', height: "540px", margin: '24px'}}>
       <Spin spinning={isSpinning} tip="加载中" size="large">
         <TopConsole FRQData={FRQData} params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable

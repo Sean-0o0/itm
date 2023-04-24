@@ -165,6 +165,7 @@ class PollResultEnterModel extends React.Component {
         this.setState({
           isSpinning: false,
         })
+        this.props.closeModal();
         message.info('信息修改成功！', 3);
       } else {
         this.setState({

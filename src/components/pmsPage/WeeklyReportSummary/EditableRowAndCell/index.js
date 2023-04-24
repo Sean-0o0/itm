@@ -30,7 +30,7 @@ const EditableCell = props => {
     handleSave,
     children,
     editingindex,
-    dltdata,
+    dltdata = [],
     ...restProps
   } = props;
 

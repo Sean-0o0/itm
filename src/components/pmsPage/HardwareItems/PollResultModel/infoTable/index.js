@@ -28,7 +28,7 @@ export default function InfoTable(props) {
   const [isSpinning, setIsSpinning] = useState(false); //项目详情弹窗显示
   const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
-  // console.log("🚀 ~ tableData:", tableData)
+  console.log("🚀 ~ tableData:", tableData)
 
 
   useEffect(() => {
@@ -129,7 +129,7 @@ export default function InfoTable(props) {
 
   //表格操作后更新数据
   const handleTableChange = obj => {
-    // console.log('handleTableChange', obj);
+    console.log('handleTableChange', obj);
     const {current = 1, pageSize = 10} = obj;
     callBackParams({...params, current, pageSize})
   };
@@ -269,7 +269,7 @@ export default function InfoTable(props) {
       key: 'XBBG',
       width: '20%',
       // width: 100,
-      // ellipsis: true,
+      ellipsis: true,
       render: (text, record) => {
         if (text) {
           const {wdid = ''} = record;
@@ -380,26 +380,26 @@ export default function InfoTable(props) {
   }
 
   const handleDataCallback = (params) => {
+    setIsSpinning(true)
     setPollInfo({...pollInfo, ...params})
+    setIsSpinning(false)
   }
 
   const handleFileCallback = (params) => {
+    setIsSpinning(true)
     setFileList(params)
+    setIsSpinning(false)
   }
 
   const handleParamsCallback = (params) => {
+    setIsSpinning(true)
     setUploadFileParams(params)
+    setIsSpinning(false)
   }
 
   return (
     <>
       {xbjglrModalVisible && (
-        // <BridgeModel
-        //   isSpining="customize"
-        //   modalProps={xbjglrModalProps}
-        //   onCancel={handleCancel}
-        //   src={lbModalUrl}
-        // />
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"
           width={'760px'}
@@ -452,7 +452,7 @@ export default function InfoTable(props) {
             rowKey={'projectId'}
             dataSource={tableData}
             onChange={handleTableChange}
-            scroll={{y: 360}}
+            scroll={{y: 405}}
             pagination={{
               pageSizeOptions: ['10', '20', '30', '40'],
               showSizeChanger: true,

@@ -52,7 +52,7 @@ const TableBox = props => {
   const [dltData, setDltData] = useState([]); //删除行id
 
   useEffect(() => {
-    getAutnIdData();
+    // getAutnIdData();
     setTableLoading(true);
     // const tableNode = document.querySelector('.monthly-report-detail .ant-table .ant-table-body');
     // tableNode.addEventListener('scroll', e => {
@@ -112,15 +112,15 @@ const TableBox = props => {
       ...item, //old row data
       ...newRow, //new row data
     });
-    let txrTableArr = newData.map(x => {
-      let txrArr = x['txr' + x.id].map(y => txrData.filter(z => z.id === y)[0]?.name || '');
-      if (x.id === row.id)
-        return {
-          ...x,
-          ['txr' + x.id]: txrArr,
-        };
-      return x;
-    });
+    // let txrTableArr = newData.map(x => {
+    //   let txrArr = x['txr' + x.id].map(y => txrData.filter(z => z.id === y)[0]?.name || '');
+    //   if (x.id === row.id)
+    //     return {
+    //       ...x,
+    //       ['txr' + x.id]: txrArr,
+    //     };
+    //   return x;
+    // });
     let newEdit = [...editData];
     let index2 = newEdit.findIndex(item => row.id === item.id);
     if (index2 === -1) {
@@ -131,13 +131,14 @@ const TableBox = props => {
         ...newRow, //new row data
       });
     }
-    setTxrTableData(p => [...txrTableArr]);
+    // setTxrTableData(p => [...txrTableArr]);
     setEditData(p => [...newEdit]);
     // console.log('newTable', newData);
     setEdited(true);
     setTableData(preState => [...newData]);
   };
   const handleSubmit = () => {
+    setTableLoading(true);
     form.validateFields(err => {
       if (!err) {
         let editIdArr = [];
@@ -178,31 +179,57 @@ const TableBox = props => {
           };
         });
         deleteIdArr.push({});
-        OperateMonthly({
-          json: JSON.stringify(deleteIdArr),
-          count: dltData.length,
-          type: 'DELETE',
-        })
-          .then(res => {
-            if (res.success) {
-              OperateMonthly({ ...submitData }).then(res => {
-                if (res?.code === 1) {
-                  queryTableData(Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
-                  setIsSaved(true);
-                  setEditing(false);
-                  setEditingIndex(-1);
-                  setDltData([]);
-                  message.success('保存成功', 1);
-                } else {
-                  message.error('保存失败', 1);
-                }
-              });
-              console.log('submitData', submitData);
-            }
+        if (dltData.length === 0) {
+          OperateMonthly({ ...submitData })
+            .then(res => {
+              if (res?.code === 1) {
+                queryTableData(Number(monthData.format('YYYYMM')), Number(currentXmid), txrData);
+                setIsSaved(true);
+                setEditing(false);
+                setEditingIndex(-1);
+                setDltData([]);
+                setTableLoading(false);
+                message.success('保存成功', 1);
+              }
+            })
+            .catch(e => {
+              message.error('操作失败', 1);
+              setTableLoading(false);
+            });
+          console.log('submitData', submitData);
+        } else {
+          OperateMonthly({
+            json: JSON.stringify(deleteIdArr),
+            count: dltData.length,
+            type: 'DELETE',
           })
-          .catch(e => {
-            message.error('操作失败', 1);
-          });
+            .then(res => {
+              if (res.success) {
+                OperateMonthly({ ...submitData }).then(res => {
+                  if (res?.code === 1) {
+                    queryTableData(
+                      Number(monthData.format('YYYYMM')),
+                      Number(currentXmid),
+                      txrData,
+                    );
+                    setIsSaved(true);
+                    setEditing(false);
+                    setEditingIndex(-1);
+                    setDltData([]);
+                    setTableLoading(false);
+                    message.success('保存成功', 1);
+                  } else {
+                    message.error('保存失败', 1);
+                  }
+                });
+                console.log('submitData', submitData);
+              }
+            })
+            .catch(e => {
+              message.error('操作失败', 1);
+              setTableLoading(false);
+            });
+        }
       }
     });
   };
@@ -573,6 +600,7 @@ const TableBox = props => {
     setEditingIndex(-1);
     setTableData(p => [...originData]);
     setEdited(false);
+    setDltData([]);
   };
   return (
     <>
@@ -674,16 +702,16 @@ const TableBox = props => {
               return {
                 onClick: () => {
                   if (editing) {
-                    //编辑态的数据需要处理
-                    let arr = tableData.map((item, index) => {
-                      if (item.id === record.id)
-                        return {
-                          ...item,
-                          ['txr' + item.id]: item.txrid,
-                        };
-                      return txrTableData[index];
-                    });
-                    setTableData(p => [...arr]);
+                    // //编辑态的数据需要处理
+                    // let arr = tableData.map((item, index) => {
+                    //   if (item.id === record.id)
+                    //     return {
+                    //       ...item,
+                    //       ['txr' + item.id]: item.txrid,
+                    //     };
+                    //   return txrTableData[index];
+                    // });
+                    // setTableData(p => [...arr]);
                     setEditingIndex(record.id);
                   }
                 },

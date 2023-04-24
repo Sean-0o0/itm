@@ -43,6 +43,7 @@ const TableBox = props => {
     orgArr,
     fzrTableData,
     setFzrTableData,
+    managerData,
   } = props;
   const [isSaved, setIsSaved] = useState(false);
   const [summaryModalUrl, setSummaryModalUrl] = useState('');
@@ -50,7 +51,6 @@ const TableBox = props => {
   const [authIdData, setAuthIdData] = useState([]); //权限用户id
   const [toLeft, setToLeft] = useState(false); //是否允许左滚
   const [toRight, setToRight] = useState(true);
-  const [managerData, setManagerData] = useState([]); //负责人下拉框数据
   const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
   const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
   const [editing, setEditing] = useState(false); //编辑状态
@@ -63,8 +63,7 @@ const TableBox = props => {
 
   useEffect(() => {
     setTableLoading(true);
-    getAutnIdData();
-    getManagerData();
+    // getAutnIdData();
     // const tableNode = document.querySelector('.weekly-report-detail .ant-table .ant-table-body');
     // tableNode.addEventListener('scroll', e => {
     //   // console.log(Math.floor(tableNode.scrollWidth - tableNode.clientWidth));
@@ -128,18 +127,6 @@ const TableBox = props => {
     return arr[target];
   };
 
-  //负责人下拉框数据
-  const getManagerData = () => {
-    QueryUserInfo({
-      type: '信息技术事业部',
-    }).then(res => {
-      if (res.success) {
-        setManagerData(p => [...res.record]);
-        // console.log(res);
-      }
-    });
-  };
-
   const getAutnIdData = () => {
     QueryUserInfo({
       type: 'ZBAUTH',
@@ -184,21 +171,20 @@ const TableBox = props => {
       ...newRow, //new row data
     });
     // console.log('🚀 ~ file: index.js:173 ~ handleTableSave ~ newData:', newData);
-    let fzrTableArr = newData.map(x => {
-      let fzrArr = x['manager' + x.id].map(y => managerData.filter(z => z.id === y)[0]?.name || '');
-      let bmTxt = orgArr.filter(z => z.orgId === x['orgName' + x.id])[0]?.orgName || '';
-      if (x.id === row.id)
-        return {
-          ...x,
-          ['manager' + x.id]: fzrArr,
-          ['orgName' + x.id]: bmTxt,
-        };
-      return x;
-    });
+    // let fzrTableArr = newData.map(x => {
+    //   let fzrArr = x['manager' + x.id].map(y => managerData.filter(z => z.id === y)[0]?.name || '');
+    //   // let bmTxt = orgArr.filter(z => z.orgId === x['orgName' + x.id])[0]?.orgName || '';
+    //   if (x.id === row.id)
+    //     return {
+    //       ...x,
+    //       ['manager' + x.id]: fzrArr,
+    //       // ['orgName' + x.id]: bmTxt,
+    //     };
+    //   return x;
+    // });
 
     let newEdit = [...editData];
     let index2 = newEdit.findIndex(item => row.id === item.id);
-    console.log('🚀 ~ file: index.js:187 ~ handleTableSave ~ index2:', index2);
     if (index2 === -1) {
       newEdit.push(row);
     } else {
@@ -208,7 +194,7 @@ const TableBox = props => {
       });
     }
 
-    setFzrTableData(p => [...fzrTableArr]);
+    // setFzrTableData(p => [...fzrTableArr]);
     // console.log('🚀 ~ file: index.js:202 ~ handleTableSave ~ [...fzrTableArr]:', [...fzrTableArr]);
     setEditData(p => [...newEdit]);
     // console.log('🚀 ~ file: index.js:167 ~ handleTableSave ~ [...newEdit]:', [...newEdit]);
@@ -218,6 +204,7 @@ const TableBox = props => {
   };
 
   const handleSubmit = () => {
+    setTableLoading(true);
     form.validateFields(err => {
       if (!err) {
         let editDataDelFilter = [];
@@ -285,6 +272,7 @@ const TableBox = props => {
             V_FXSM: String(notNullStr(item['riskDesc' + item.id])),
             V_ZBRS: String(notNullNum(item['peopleNumber' + item.id])),
             V_SYBM: String(notNullNum(item['orgName' + item.id])),
+            // V_SYBM: '11167',
           };
         });
         submitTable.push({});
@@ -300,35 +288,63 @@ const TableBox = props => {
           };
         });
         deleteIdArr.push({});
-        OperateSZHZBWeekly({
-          json: JSON.stringify(deleteIdArr),
-          count: dltData.length,
-          type: 'DELETE',
-        })
-          .then(res => {
-            if (res.success) {
-              console.log('🚀 ~ file: index.js:186 ~ handleSubmit ~ submitData:', submitData);
-              OperateSZHZBWeekly({ ...submitData }).then(res => {
-                if (res?.code === 1) {
-                  queryTableData(
-                    Number(monthData.startOf('month').format('YYYYMMDD')),
-                    Number(monthData.endOf('month').format('YYYYMMDD')),
-                    Number(currentXmid),
-                  );
-                  setIsSaved(true);
-                  setEditing(false);
-                  setEditingIndex(-1);
-                  setDltData([]);
-                  message.success('保存成功', 1);
-                } else {
-                  message.error('保存失败', 1);
-                }
-              });
-            }
+        if (dltData.length === 0) {
+          console.log('🚀 ~ file: index.js:186 ~ handleSubmit ~ submitData:', submitData);
+          OperateSZHZBWeekly({ ...submitData })
+            .then(res => {
+              if (res?.code === 1) {
+                queryTableData(
+                  Number(monthData.startOf('month').format('YYYYMMDD')),
+                  Number(monthData.endOf('month').format('YYYYMMDD')),
+                  Number(currentXmid),
+                  [...orgArr],
+                );
+                setIsSaved(true);
+                setEditing(false);
+                setEditingIndex(-1);
+                setDltData([]);
+                setTableLoading(false);
+                message.success('保存成功', 1);
+              }
+            })
+            .catch(e => {
+              message.error('操作失败', 1);
+              setTableLoading(false);
+            });
+        } else {
+          OperateSZHZBWeekly({
+            json: JSON.stringify(deleteIdArr),
+            count: dltData.length,
+            type: 'DELETE',
           })
-          .catch(e => {
-            message.error('操作失败', 1);
-          });
+            .then(res => {
+              if (res.success) {
+                console.log('🚀 ~ file: index.js:186 ~ handleSubmit ~ submitData:', submitData);
+                OperateSZHZBWeekly({ ...submitData }).then(res => {
+                  if (res?.code === 1) {
+                    queryTableData(
+                      Number(monthData.startOf('month').format('YYYYMMDD')),
+                      Number(monthData.endOf('month').format('YYYYMMDD')),
+                      Number(currentXmid),
+                      [...orgArr],
+                    );
+                    setIsSaved(true);
+                    setEditing(false);
+                    setEditingIndex(-1);
+                    setDltData([]);
+                    setTableLoading(false);
+                    message.success('保存成功', 1);
+                  } else {
+                    message.error('保存失败', 1);
+                  }
+                });
+              }
+            })
+            .catch(e => {
+              message.error('操作失败', 1);
+              setTableLoading(false);
+            });
+        }
       }
     });
   };
@@ -350,6 +366,7 @@ const TableBox = props => {
             Number(monthData.startOf('month').format('YYYYMMDD')),
             Number(monthData.endOf('month').format('YYYYMMDD')),
             Number(currentXmid),
+            [...orgArr],
           );
           message.success('操作成功', 1);
         }
@@ -389,6 +406,7 @@ const TableBox = props => {
                 Number(dateRange[0].format('YYYYMMDD')),
                 Number(dateRange[1].format('YYYYMMDD')),
                 Number(currentXmid),
+                [...orgArr],
               );
             }
           })
@@ -638,6 +656,7 @@ const TableBox = props => {
           issaved: isSaved,
           managerdata: managerData,
           orgdata: orgData,
+          orgarr: orgArr,
           editingindex: editingIndex,
           dltdata: dltData,
         };
@@ -719,6 +738,7 @@ const TableBox = props => {
       Number(time.startOf('month').format('YYYYMMDD')),
       Number(time.endOf('month').format('YYYYMMDD')),
       currentXmid,
+      [...orgArr],
     );
   };
   const handleDateChange = (d, ds) => {
@@ -728,6 +748,7 @@ const TableBox = props => {
       Number(d.startOf('month').format('YYYYMMDD')),
       Number(d.endOf('month').format('YYYYMMDD')),
       currentXmid,
+      [...orgArr],
     );
   };
   const handleProjectChange = value => {
@@ -737,6 +758,7 @@ const TableBox = props => {
         Number(monthData.startOf('month').format('YYYYMMDD')),
         Number(monthData.endOf('month').format('YYYYMMDD')),
         Number(value),
+        [...orgArr],
       );
     } else {
       setCurrentXmid(-1);
@@ -744,6 +766,7 @@ const TableBox = props => {
         Number(monthData.startOf('month').format('YYYYMMDD')),
         Number(monthData.endOf('month').format('YYYYMMDD')),
         -1,
+        [...orgArr],
       );
     }
     setTableLoading(true);
@@ -760,6 +783,7 @@ const TableBox = props => {
     setEditingIndex(-1);
     setTableData(p => [...originData]);
     setEdited(false);
+    setDltData([]);
   };
   return (
     <>
@@ -771,6 +795,7 @@ const TableBox = props => {
               Number(monthData.startOf('month').format('YYYYMMDD')),
               Number(monthData.endOf('month').format('YYYYMMDD')),
               Number(currentXmid),
+              [...orgArr],
             );
             setSummaryModalVisible(false);
             message.success('汇总成功', 1);
@@ -883,18 +908,18 @@ const TableBox = props => {
                 onClick: () => {
                   if (editing) {
                     // 编辑态的数据需要处理;
-                    let arr = tableData.map((item, index) => {
-                      if (item.id === record.id)
-                        return {
-                          ...item,
-                          ['manager' + item.id]: item.fzrid,
-                          ['orgName' + item.id]:
-                            orgArr.filter(z => z.orgId === item['orgName' + item.id])[0]?.orgName ||
-                            '',
-                        };
-                      return fzrTableData[index];
-                    });
-                    setTableData(p => [...arr]);
+                    // let arr = tableData.map((item, index) => {
+                    //   if (item.id === record.id)
+                    //     return {
+                    //       ...item,
+                    //       ['manager' + item.id]: item.fzrid,
+                    //       // ['orgName' + item.id]:
+                    //       //   orgArr.filter(z => z.orgId === item['orgName' + item.id])[0]?.orgName ||
+                    //       //   '',
+                    //     };
+                    //   return fzrTableData[index];
+                    // });
+                    // setTableData(p => [...arr]);
                     setEditingIndex(record.id);
                   }
                 },

@@ -23,7 +23,7 @@ const EditableCell = props => {
 
   const targetNode = useRef(null);
   const {
-    managerdata,
+    managerdata = [],
     issaved,
     editable,
     dataIndex,
@@ -33,8 +33,9 @@ const EditableCell = props => {
     handleSave,
     children,
     editingindex,
-    orgdata,
-    dltdata,
+    orgdata = [],
+    orgarr = [],
+    dltdata = [],
     ...restProps
   } = props;
 
@@ -336,30 +337,23 @@ const EditableCell = props => {
     return (
       <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
     );
-    return editing ? (
-      <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
-    ) : !['cplTime', 'manager'].includes(dataIndex) ? (
-      <Tooltip title={String(record[dataIndex + record['id']])}>
-        <div className="editable-cell-value-wrap">{String(record[dataIndex + record['id']])}</div>
-      </Tooltip>
-    ) : (
-      <Form.Item style={{ margin: 0 }}>{renderItem(formdecorate, dataIndex, record)}</Form.Item>
-    );
   };
   const handleTxt = (dataIndex, record, children) => {
     let item = record[dataIndex + record['id']];
     switch (dataIndex) {
       case 'manager':
-        return item?.join('、');
+        let arr = item?.map(x => managerdata.filter(y => y.id === x)[0]?.name || '');
+        return arr?.join('、') || '';
       case 'cplTime':
         return ['', ' ', null, undefined].includes(item) ? '' : moment(item).format('YYYY-MM');
+      case 'orgName':
+        return orgarr.filter(x => x.orgId === item)[0]?.orgName || '';
       case 'curProgress':
       case 'curRate':
       case 'curStatus':
       case 'annualPlan':
       case 'riskDesc':
       case 'peopleNumber':
-      case 'orgName':
         return item;
       default:
         return children;

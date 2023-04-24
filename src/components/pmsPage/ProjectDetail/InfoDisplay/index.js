@@ -38,8 +38,8 @@ export default function InfoDisplay(props) {
     isAllWindow: 1,
     title: lbModal.title,
     width: '1000px',
-    height: '600px',
-    style: { top: '60px' },
+    height: '650px',
+    style: {top: '10px'},
     visible: true,
     footer: null,
   };
@@ -48,8 +48,8 @@ export default function InfoDisplay(props) {
     isAllWindow: 1,
     title: lbModal.title,
     width: '1000px',
-    height: '600px',
-    style: { top: '60px' },
+    height: '650px',
+    style: {top: '10px'},
     visible: true,
     footer: null,
   };

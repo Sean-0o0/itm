@@ -53,9 +53,9 @@ const TableBox = props => {
   const [dltData, setDltData] = useState([]); //删除行id
 
   useEffect(() => {
-    // setTableLoading(true);
+    setTableLoading(true);
     //获取允许操作用户id
-    getAuthIdData();
+    // getAuthIdData();
     //左右滚动
     // const tableNode = document.querySelector('.weekly-report-summary .ant-table .ant-table-body');
     // tableNode.addEventListener('scroll', e => {
@@ -136,6 +136,7 @@ const TableBox = props => {
   };
   //保存按钮
   const handleSubmit = () => {
+    setTableLoading(true);
     form.validateFields(err => {
       if (!err) {
         let editIdArr = [];
@@ -193,42 +194,75 @@ const TableBox = props => {
           };
         });
         deleteIdArr.push({});
-        OperateHjgWeeklyReport({
-          jsoninfo: JSON.stringify(deleteIdArr),
-          infocount: dltData.length,
-          type: 'DELETE',
-        })
-          .then(res => {
-            if (res.success) {
-              console.log('submitTable', submitTable);
-              let submitData = {
-                czr: 0,
-                jsoninfo: JSON.stringify(submitTable),
-                infocount: submitTable.length - 1,
-                type: 'UPDATE',
-              };
-              OperateHjgWeeklyReport({ ...submitData }).then(res => {
-                if (res?.code === 1) {
-                  queryTableData(
-                    Number(dateRange[0].format('YYYYMMDD')),
-                    Number(dateRange[1].format('YYYYMMDD')),
-                    Number(currentXmid),
-                  );
-                  setIsSaved(true);
-                  setEditing(false);
-                  setEditingIndex(-1);
-                  setDltData([]);
-                  message.success('保存成功', 1);
-                } else {
-                  message.error('保存失败', 1);
-                }
-              });
-              console.log('submitData', submitData);
-            }
+        if (dltData.length === 0) {
+          console.log('submitTable', submitTable);
+          let submitData = {
+            czr: 0,
+            jsoninfo: JSON.stringify(submitTable),
+            infocount: submitTable.length - 1,
+            type: 'UPDATE',
+          };
+          OperateHjgWeeklyReport({ ...submitData })
+            .then(res => {
+              if (res?.code === 1) {
+                queryTableData(
+                  Number(dateRange[0].format('YYYYMMDD')),
+                  Number(dateRange[1].format('YYYYMMDD')),
+                  Number(currentXmid),
+                );
+                setIsSaved(true);
+                setEditing(false);
+                setEditingIndex(-1);
+                setDltData([]);
+                message.success('保存成功', 1);
+                setTableLoading(false);
+              }
+            })
+            .catch(e => {
+              console.error('操作失败', 1);
+              setTableLoading(false);
+            });
+          console.log('submitData', submitData);
+        } else {
+          OperateHjgWeeklyReport({
+            jsoninfo: JSON.stringify(deleteIdArr),
+            infocount: dltData.length,
+            type: 'DELETE',
           })
-          .catch(e => {
-            console.error('handleDelete操作失败', 1);
-          });
+            .then(res => {
+              if (res.success) {
+                console.log('submitTable', submitTable);
+                let submitData = {
+                  czr: 0,
+                  jsoninfo: JSON.stringify(submitTable),
+                  infocount: submitTable.length - 1,
+                  type: 'UPDATE',
+                };
+                OperateHjgWeeklyReport({ ...submitData }).then(res => {
+                  if (res?.code === 1) {
+                    queryTableData(
+                      Number(dateRange[0].format('YYYYMMDD')),
+                      Number(dateRange[1].format('YYYYMMDD')),
+                      Number(currentXmid),
+                    );
+                    setIsSaved(true);
+                    setEditing(false);
+                    setEditingIndex(-1);
+                    setDltData([]);
+                    message.success('保存成功', 1);
+                    setTableLoading(false);
+                  } else {
+                    message.error('保存失败', 1);
+                  }
+                });
+                console.log('submitData', submitData);
+              }
+            })
+            .catch(e => {
+              console.error('handleDelete操作失败', 1);
+              setTableLoading(false);
+            });
+        }
       }
     });
   };
@@ -718,6 +752,7 @@ const TableBox = props => {
     setEditingIndex(-1);
     setTableData(p => [...originData]);
     setEdited(false);
+    setDltData([]);
   };
   return (
     <>

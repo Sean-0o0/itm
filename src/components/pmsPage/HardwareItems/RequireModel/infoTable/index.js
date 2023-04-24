@@ -124,7 +124,11 @@ export default function InfoTable(props) {
       // width: 200,
       width: '10%',
       key: 'YHTBT',
-      // ellipsis: true,
+      render: (text, record) => {
+        return <Tooltip title={text}>
+          <span style={{color: '#3361ff'}}>查看详情</span>
+        </Tooltip>
+      }
     },
     {
       title: '关联系统设备采购合同流程',
@@ -159,7 +163,7 @@ export default function InfoTable(props) {
           rowKey={'XQID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          // scroll={{ y: 500 }}
+          scroll={{y: 405}}
           pagination={{
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,
