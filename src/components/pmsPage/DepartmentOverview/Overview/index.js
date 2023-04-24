@@ -160,7 +160,7 @@ class Overview extends Component {
                                 a: {
                                     fontSize: 14,
                                     color: '#606266',
-                                    lineHeight: 29,
+                                    lineHeight: 29
                                 },
                                 b: {
                                     fontSize: 24,

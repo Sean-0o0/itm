@@ -31,7 +31,7 @@ class StaffTable extends Component {
                 position = 0;
             } else {
                 //需要合并的地方判断
-                if (userData[index].XMID === userData[index - 1].XMID) {
+                if (userData[index].RYID === userData[index - 1].RYID) {
                     spanArr[position] += 1;
                     spanArr.push(0);
                 } else {
@@ -60,7 +60,6 @@ class StaffTable extends Component {
 
     render() {
         const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
-        console.log('routes',routes)
         const { current = 1, pageSize = 10 } = pageParam;
         const rowspan = this.rowspan(tableData);
         const columns = [{
@@ -82,7 +81,7 @@ class StaffTable extends Component {
             render: (value, row, index) => {
                 const { RYID = '' } = row;
                 let obj = {
-                    children: <div >
+                    children: <div title={value}>
                         <Link
                             className='opr-btn'
                             to={{
@@ -109,12 +108,13 @@ class StaffTable extends Component {
         }, {
             title: '入职时间',
             dataIndex: 'RZSJ',
-            width: '15%',
+            width: '13%',
             key: 'RZSJ',
             ellipsis: true,
             render: (value, row, index) => {
+                const result = moment(value, 'YYYYMMDD').format('YYYY-MM-DD')
                 let obj = {
-                    children: moment(value, 'YYYYMMDD').format('YYYY-MM-DD'),
+                    children: <div className='opr-btn-box' title={result}>{result}</div>,
                     props: {
                     },
                 };
@@ -130,7 +130,7 @@ class StaffTable extends Component {
             ellipsis: true,
             render: (text, row, index) => {
                 const { XMID = '' } = row;
-                return <div >
+                return <div title={text}>
                     <Link
                         className='opr-btn'
                         to={{
@@ -156,21 +156,24 @@ class StaffTable extends Component {
             key: 'XMJD',
             ellipsis: true,
             render: (value, row, index) => {
-                return value + '%';
+                return <div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>
             },
         }, {
             title: '岗位',
             dataIndex: 'GW',
-            width: '12%',
+            width: '14%',
             key: 'GW',
             ellipsis: true,
         }, {
-            title: '工时情况(人员)',
+            title: '工时(人天)',
             dataIndex: 'GS',
             width: '13%',
             key: 'GS',
             align: 'right',
             ellipsis: true,
+            render: (text, row, index) => {
+                return text|| '暂无'
+            }
         },
         {
             title: '评分',
@@ -179,6 +182,9 @@ class StaffTable extends Component {
             key: 'PJ',
             align: 'center',
             ellipsis: true,
+            render: (text, row, index) => {
+                return text|| '暂无'
+            }
         }
         ]
 
