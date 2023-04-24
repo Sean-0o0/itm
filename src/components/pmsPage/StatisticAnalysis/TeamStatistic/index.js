@@ -58,7 +58,7 @@ export default function TeamStatistic(props) {
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
-            fontFamily: 'Roboto-Regular, Roboto',
+            fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontWeight: 400,
             showMaxLabel: true,
             formatter: '{value}',

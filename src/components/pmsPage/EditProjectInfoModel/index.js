@@ -635,7 +635,15 @@ class EditProjectInfoModel extends React.Component {
       biddingMethod: 1,
       budget: 0,
       label: this.state.basicInfo.labelTxt,
-      queryType: 'ALL',
+      queryType: "ALL",
+      //项目预算类型
+      haveType: 1,
+      //项目软件预算
+      softBudget: 0,
+      //框架预算
+      frameBudget: 0,
+      //单独采购预算
+      singleBudget: 0,
     });
     //招采信息
     // await this.firstTimeQueryPaymentAccountList();
@@ -1908,8 +1916,15 @@ class EditProjectInfoModel extends React.Component {
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
-    params.isShortListed =
-      this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1';
+    params.isShortListed = this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1';
+    // 软件预算
+    params.softBudget = 0;
+    // 框架预算
+    params.frameBudget = 0;
+    // 单独采购金额
+    params.singleBudget = 0;
+    // 是否包含硬件
+    params.haveHard = 2;
     this.operateCreatProject(params, type);
   };
 
@@ -3558,6 +3573,7 @@ class EditProjectInfoModel extends React.Component {
                               <TreeSelect
                                 // multiple
                                 showSearch
+
                                 treeNodeFilterProp="title"
                                 style={{ width: '100%' }}
                                 dropdownClassName="newproject-treeselect"
@@ -3581,6 +3597,14 @@ class EditProjectInfoModel extends React.Component {
                                   this.fetchQueryMilepostInfo({
                                     type: e,
                                     isShortListed: PTRJFlag ? '2' : '-1',
+                                    //项目预算类型
+                                    haveType: 1,
+                                    //项目软件预算
+                                    softBudget: 0,
+                                    //框架预算
+                                    frameBudget: 0,
+                                    //单独采购预算
+                                    singleBudget: 0,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: budgetInfo.projectBudget,
@@ -3602,6 +3626,7 @@ class EditProjectInfoModel extends React.Component {
                               <TreeSelect
                                 multiple
                                 showSearch
+                                showArrow
                                 treeNodeFilterProp="title"
                                 style={{ width: '100%' }}
                                 // tagRender={item => {
@@ -3631,8 +3656,15 @@ class EditProjectInfoModel extends React.Component {
                                   });
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,
-                                    isShortListed:
-                                      basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                    //项目预算类型
+                                    haveType: 1,
+                                    //项目软件预算
+                                    softBudget: 0,
+                                    //框架预算
+                                    frameBudget: 0,
+                                    //单独采购预算
+                                    singleBudget: 0,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: budgetInfo.projectBudget,
@@ -3727,8 +3759,15 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed:
-                                        basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      //项目预算类型
+                                      haveType: 1,
+                                      //项目软件预算
+                                      softBudget: 0,
+                                      //框架预算
+                                      frameBudget: 0,
+                                      //单独采购预算
+                                      singleBudget: 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: e,
                                       budget: budgetInfo.projectBudget,
@@ -3829,6 +3868,14 @@ class EditProjectInfoModel extends React.Component {
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
                                       isShortListed: String(e.target.value),
+                                      //项目预算类型
+                                      haveType: 1,
+                                      //项目软件预算
+                                      softBudget: 0,
+                                      //框架预算
+                                      frameBudget: 0,
+                                      //单独采购预算
+                                      singleBudget: 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
                                       budget: budgetInfo.projectBudget,
@@ -4081,8 +4128,15 @@ class EditProjectInfoModel extends React.Component {
                                   if (projectBudgetChangeFlag) {
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed:
-                                        basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      //项目预算类型
+                                      haveType: 1,
+                                      //项目软件预算
+                                      softBudget: 0,
+                                      //框架预算
+                                      frameBudget: 0,
+                                      //单独采购预算
+                                      singleBudget: 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
                                       budget: budgetInfo.projectBudget,

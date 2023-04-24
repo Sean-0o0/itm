@@ -44,9 +44,9 @@ export default function SupplierCard(props) {
           },
           name:{
             color: '#606266',
-            fontFamily: 'Roboto-Regular, Roboto',
+            fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontSize: 12,
-            formatter: function(value) {
+            formatter: function (value) {
               let list = value.split('');
               let result = '';
               for (let i = 1; i <= list.length; i++) {

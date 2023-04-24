@@ -285,7 +285,7 @@ class AgreementEnterModel extends React.Component {
           zIndex={100}
           bodyStyle={{
             padding: '0',
-            height: '340px',
+            height: '428px',
           }}
           onCancel={this.props.closeModal}
           footer={<div className="modal-footer">
@@ -303,7 +303,7 @@ class AgreementEnterModel extends React.Component {
         >
           <div
             style={{
-              height: '40px',
+              height: '42px',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
@@ -316,11 +316,12 @@ class AgreementEnterModel extends React.Component {
           >
             <strong>硬件合同信息{operateType === "UPDATE" ? "编辑" : "录入"}</strong>
           </div>
-          <Spin spinning={isSpinning} tip="正在努力的加载中..." size="large" style={{height: "100%", position: 'fixed'}}>
-            <Form {...basicFormItemLayout} name="nest-messages" style={{padding: '24px'}}>
+          <Spin wrapperClassName='agreement-box-style' spinning={isSpinning} tip="正在努力的加载中..." size="large"
+                style={{height: "100%", position: 'fixed'}}>
+            <Form name="nest-messages" style={{padding: '24px'}}>
               <Row>
                 <Col span={24}>
-                  <Form.Item labelCol={{span: 6}} wrapperCol={{span: 18}} label={<span><span style={{
+                  <Form.Item label={<span><span style={{
                     textAlign: 'left',
                     fontFamily: 'SimSun, sans-serif',
                     color: '#f5222d',
@@ -409,7 +410,7 @@ class AgreementEnterModel extends React.Component {
                 </Form.Item>
               </Col>
               <Col span={12}>
-                <Form.Item label={<span><span style={{
+                <Form.Item style={{paddingLeft: '24px'}} label={<span><span style={{
                   textAlign: 'left',
                   fontFamily: 'SimSun, sans-serif',
                   color: '#f5222d',
@@ -441,7 +442,7 @@ class AgreementEnterModel extends React.Component {
             </Row>
             <Row>
               <Col span={24} style={{position: 'relative'}}>
-                <Form.Item labelCol={{span: 6}} wrapperCol={{span: 18}} label={<span><span style={{
+                <Form.Item label={<span><span style={{
                   textAlign: 'left',
                   fontFamily: 'SimSun, sans-serif',
                   color: '#f5222d',
@@ -485,7 +486,7 @@ class AgreementEnterModel extends React.Component {
                     marginTop: '10px',
                     cursor: 'pointer',
                     position: 'absolute',
-                    top: '0',
+                    top: '23px',
                     right: '35px',
                   }}
                 ></div>
@@ -498,7 +499,7 @@ class AgreementEnterModel extends React.Component {
                     marginTop: '5px',
                     cursor: 'pointer',
                     position: 'absolute',
-                    top: '0',
+                    top: '23px',
                     right: '8px',
                     color: '#c7c7c7',
                     fontSize: '20px',

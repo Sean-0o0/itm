@@ -112,11 +112,13 @@ export default function InfoTable(props) {
     },
     {
       title: '发起日期',
-      dataIndex: 'projectName',
+      dataIndex: 'FQRQ',
       // width: 200,
       width: '10%',
-      key: 'projectName',
-      // ellipsis: true,
+      key: 'FQRQ',
+      render: (text, record) => {
+        return <span>{text.slice(0, 4) + "-" + text.slice(4, 6) + "-" + text.slice(6, 8)}</span>
+      }
     },
     {
       title: '请示报告内容',
@@ -163,7 +165,7 @@ export default function InfoTable(props) {
           rowKey={'XQID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          scroll={{y: 405}}
+          scroll={{y: 407}}
           pagination={{
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,

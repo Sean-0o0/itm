@@ -219,7 +219,7 @@ class PollResultEnterModel extends React.Component {
         >
           <div
             style={{
-              height: '40px',
+              height: '42px',
               width: '100%',
               display: 'flex',
               alignItems: 'center',

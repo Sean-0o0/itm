@@ -33,7 +33,7 @@ export default function NonCapitalBudget() {
             color: '#858585',
             align: 'left',
             fontSize: 14,
-            fontFamily: 'Roboto-Regular, Roboto',
+            fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontWeight: 400,
             interval: 0,
             rotate: -30,
@@ -61,7 +61,7 @@ export default function NonCapitalBudget() {
           axisLabel: {
             color: '#858585',
             fontSize: 14,
-            fontFamily: 'Roboto-Regular, Roboto',
+            fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontWeight: 400,
             showMaxLabel: true,
           },

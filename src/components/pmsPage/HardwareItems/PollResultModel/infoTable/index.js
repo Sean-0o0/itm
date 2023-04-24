@@ -452,7 +452,7 @@ export default function InfoTable(props) {
             rowKey={'projectId'}
             dataSource={tableData}
             onChange={handleTableChange}
-            scroll={{y: 405}}
+            scroll={{y: 407}}
             pagination={{
               pageSizeOptions: ['10', '20', '30', '40'],
               showSizeChanger: true,

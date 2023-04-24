@@ -46,7 +46,7 @@ export default function SupplierStatistic() {
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
-            fontFamily: 'Roboto-Regular, Roboto',
+            fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontWeight: 400,
             showMaxLabel: true,
             formatter: '{value}'
@@ -75,7 +75,7 @@ export default function SupplierStatistic() {
           axisLabel: {
             color: '#858585',
             // fontSize: 14,
-            fontFamily: 'Roboto-Regular, Roboto',
+            fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontWeight: 400,
             showMaxLabel: true,
             formatter: '{value}'

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useCallback, useEffect, useState} from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {QueryProjectListInfo} from '../../../../services/pmsServices';
@@ -10,7 +10,7 @@ export default function PollResultModel(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [xmid, setXmid] = useState(-1); //表格数据-项目列表
   const [lcxxData, setLcxxData] = useState([]); //关联需求
-  const [tableLoading, setTableLoading] = useState(false); //表格加载状态
+  const [tableLoading, setTableLoading] = useState(true); //表格加载状态
   const [isSpinning, setIsSpinning] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
@@ -41,7 +41,7 @@ export default function PollResultModel(props) {
 
   //获取表格数据
   const getTableData = (params) => {
-    // setTableLoading(true);
+    setTableLoading(true);
     FetchQueryInquiryComparisonInfo(
       {
         ...params,
@@ -66,15 +66,13 @@ export default function PollResultModel(props) {
           setTableData(p => [...xbxxJson]);
           setLcxxData(p => [...JSON.parse(lcxx)]);
           setTotal(res.totalrows);
-          setTableLoading(false);
-          // setIsSpinning(false);
+          setTableLoading(false)
         }
         // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
       })
       .catch(e => {
-        // console.error('getTableData', e);
-        setTableLoading(false);
-        // setIsSpinning(false);
+        message.error(e, 3);
+        setTableLoading(false)
       });
   };
 

@@ -537,8 +537,8 @@ class ContractSigning extends React.Component {
                     {!contractInfoCollapse && (
                       <div style={{ margin: '2rem 0 0 0' }}>
                         <Row gutter={24}>
-                          <Col span={12} style={{ display: 'flex' }}>
-                            <Form.Item label="供应商" style={{ width: '100%' }}>
+                          <Col span={12} style={{display: 'flex', position: 'relative'}}>
+                            <Form.Item label="供应商" style={{width: '100%'}}>
                               {getFieldDecorator('gys', {
                                 // initialValue: '1',
                                 // rules: [
@@ -551,6 +551,7 @@ class ContractSigning extends React.Component {
                                 <Select
                                   style={{ width: '100%', borderRadius: '8px !important' }}
                                   placeholder="请选择供应商"
+                                  className="skzh-box"
                                   showSearch
                                   allowClear
                                   open={isSelectorOpen}
@@ -573,23 +574,38 @@ class ContractSigning extends React.Component {
                                 </Select>,
                               )}
                             </Form.Item>
-                            <div style={{ position: 'absolute', right: '8%', top: '14%' }}>
-                              <img
-                                src={require('../../../../image/pms/LifeCycleManagement/add.png')}
-                                onClick={() => {
-                                  this.setState({ addGysModalVisible: true });
-                                }}
-                                alt=""
-                                style={{
-                                  height: '2.976rem',
-                                  cursor: 'pointer',
-                                }}
-                              />
-                            </div>
+                            <div
+                              style={{
+                                height: '20px',
+                                width: '1px',
+                                backgroundColor: '#c7c7c7',
+                                // marginLeft: '8px',
+                                marginTop: '10px',
+                                cursor: 'pointer',
+                                position: 'absolute',
+                                top: '0',
+                                right: '50px',
+                              }}
+                            ></div>
+                            <i
+                              className="iconfont circle-add"
+                              onClick={() => {
+                                this.setState({addGysModalVisible: true});
+                              }}
+                              style={{
+                                marginTop: '5px',
+                                cursor: 'pointer',
+                                position: 'absolute',
+                                top: '0',
+                                right: '22px',
+                                color: '#c7c7c7',
+                                fontSize: '20px',
+                              }}
+                            />
                           </Col>
                           <Col span={12} className="glys">
                             <Form.Item label="合同编号">
-                              <Input placeholder="请输入合同编号" disabled={true} />
+                              <Input placeholder="请输入合同编号" disabled={true}/>
                             </Form.Item>
                           </Col>
                         </Row>
