@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, Pagination } from 'antd'
+import { Table, Pagination, Popover } from 'antd'
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import 'moment/locale/zh-cn';
@@ -21,101 +21,41 @@ class StaffTable extends Component {
         }
     }
 
-    //计算合并
-    rowspan = (userData) => {
-        let spanArr = [];
-        let position = 0;
-        userData.forEach((item, index) => {
-            if (index === 0) {
-                spanArr.push(1);
-                position = 0;
+    //获取标签数据
+    getTagData = tag => {
+        let arr = [];
+        if (tag !== '' && tag !== null && tag !== undefined) {
+            if (tag.includes(',')) {
+                arr = tag.split(',');
             } else {
-                //需要合并的地方判断
-                if (userData[index].RYID === userData[index - 1].RYID) {
-                    spanArr[position] += 1;
-                    spanArr.push(0);
-                } else {
-                    spanArr.push(1);
-                    position = index;
-                }
+                arr.push(tag);
             }
-        });
-        return spanArr
-    }
+        }
+        return arr;
+    };
 
     render() {
-        const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
+        const { tableLoading = false, bgxx: tableData = [], pageParam = {}, routes = [] } = this.props
         const { current = 1, pageSize = 10 } = pageParam;
-        const rowspan = this.rowspan(tableData);
         const columns = [{
             title: '序号',
-            dataIndex: 'RYID',
+            dataIndex: 'ID',
             width: '5%',
-            key: 'RYID',
+            key: 'ID',
             align: 'center',
             ellipsis: true,
             render: (value, row, index) => {
                 return (current - 1) * pageSize + index + 1;
             },
         }, {
-            title: '人员名称',
-            dataIndex: 'RYMC',
-            width: '10%',
-            key: 'RYMC',
+            title: '项目名称',
+            dataIndex: 'XMMC',
+            width: '20%',
+            key: 'XMMC',
             ellipsis: true,
             render: (value, row, index) => {
-                const { RYID = '' } = row;
-                let obj = {
-                    children: <div title={value}>
-                        <Link
-                            className='opr-btn'
-                            to={{
-                                pathname: `/pms/manage/staffDetail/${EncryptBase64(
-                                    JSON.stringify({
-                                      ryid: RYID,
-                                    }),
-                                  )}`,
-                                state: {
-                                    routes: routes,
-                                },
-                            }}
-
-                        >
-                            {value}
-                        </Link></div>,
-                    props: {
-                    },
-                };
-                const _row = rowspan[index];
-                obj.props.rowSpan = _row;
-                return obj;
-            },
-        }, {
-            title: '入职时间',
-            dataIndex: 'RZSJ',
-            width: '13%',
-            key: 'RZSJ',
-            ellipsis: true,
-            render: (value, row, index) => {
-                const result = moment(value, 'YYYYMMDD').format('YYYY-MM-DD')
-                let obj = {
-                    children: <div className='opr-btn-box' title={result}>{result}</div>,
-                    props: {
-                    },
-                };
-                const _row = rowspan[index];
-                obj.props.rowSpan = _row;
-                return obj;
-            },
-        }, {
-            title: '所在项目',
-            dataIndex: 'SZXM',
-            width: '30%',
-            key: 'SZXM',
-            ellipsis: true,
-            render: (text, row, index) => {
                 const { XMID = '' } = row;
-                return <div title={text}>
+                return <div title={value}>
                     <Link
                         className='opr-btn'
                         to={{
@@ -130,44 +70,143 @@ class StaffTable extends Component {
                         }}
 
                     >
-                        {text}
+                        {value}
                     </Link></div>
+            },
+        }, {
+            title: '项目经理',
+            dataIndex: 'XMJL',
+            width: '10%',
+            key: 'XMJL',
+            ellipsis: true,
+            render: (value, row, index) => {
+                const { RYID = '' } = row;
+                return <div title={value}>
+                    <Link
+                        className='opr-btn'
+                        to={{
+                            pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                                JSON.stringify({
+                                    ryid: RYID,
+                                }),
+                            )}`,
+                            state: {
+                                routes: routes,
+                            },
+                        }}
+
+                    >
+                        {value}
+                    </Link></div>
+            },
+        }, {
+            title: '立项时间',
+            dataIndex: 'LXSJ',
+            width: '10%',
+            key: 'LXSJ',
+            ellipsis: true,
+            render: (text, row, index) => {
+                return text?moment(text, 'YYYYMMDD').format('YYYY-MM-DD'): ''
             }
         },
         {
+            title: '项目类型',
+            dataIndex: 'XMLX',
+            width: '10%',
+            key: 'XMLX',
+            ellipsis: true,
+        }, {
             title: '项目进度',
             dataIndex: 'XMJD',
-            width: '12%',
+            width: '8%',
             key: 'XMJD',
+            align: 'center',
             ellipsis: true,
             render: (value, row, index) => {
                 return <div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>
             },
         }, {
-            title: '岗位',
-            dataIndex: 'GW',
-            width: '14%',
-            key: 'GW',
-            ellipsis: true,
-        }, {
-            title: '工时（人天）',
-            dataIndex: 'GS',
-            width: '13%',
-            key: 'GS',
+            title: '当前里程碑',
+            dataIndex: 'DQLCB',
+            width: '10%',
+            key: 'DQLCB',
             align: 'right',
             ellipsis: true,
-        },
-        {
-            title: '评分',
-            dataIndex: 'PJ',
-            width: '5%',
-            key: 'PJ',
-            align: 'center',
+        }, {
+            title: '项目标签',
+            dataIndex: 'XMBQ',
+            key: 'XMBQ',
             ellipsis: true,
+            render: (text, row, index) => {
+                // console.log("rowrow",row)
+                const { XMBQID = '' } = row;
+                const ids = this.getTagData(XMBQID);
+                const data = this.getTagData(text);
+                return <div className="prj-tags">
+                    {data.length !== 0 && (
+                        <>
+                            {data?.slice(0, 4)
+                                .map((x, i) => (
+                                    <div key={i} className="tag-item">
+                                        <Link
+                                            to={{
+                                                pathname:
+                                                    '/pms/manage/labelDetail/' +
+                                                    EncryptBase64(
+                                                        JSON.stringify({
+                                                            bqid: ids[i],
+                                                        }),
+                                                    ),
+                                                state: {
+                                                    routes: routes,
+                                                },
+                                            }}
+                                        >
+                                            {x}
+                                        </Link>
+                                    </div>
+                                ))}
+                            {data?.length > 4 && (
+                                <Popover
+                                    overlayClassName="tag-more-popover"
+                                    content={
+                                        <div className="tag-more">
+                                            {data?.slice(4)
+                                                .map((x, i) => (
+                                                    <div key={i} className="tag-item">
+                                                        <Link
+                                                            to={{
+                                                                pathname:
+                                                                    '/pms/manage/labelDetail/' +
+                                                                    EncryptBase64(
+                                                                        JSON.stringify({
+                                                                            bqid: ids[i],
+                                                                        }),
+                                                                    ),
+                                                                state: {
+                                                                    routes: routes,
+                                                                },
+                                                            }}
+                                                        >
+                                                            {x}
+                                                        </Link>
+                                                    </div>
+                                                ))}
+                                        </div>
+                                    }
+                                    title={null}
+                                >
+                                    <div className="tag-item">...</div>
+                                </Popover>
+                            )}
+                        </>
+                    )}
+                </div>
+            }
         }
         ]
 
-        return (<div className='table-box' style={{height: 'calc(100vh - 296px)'}}>
+        return (<div className='table-box' style={{ height: 'calc(100vh - 296px)' }}>
             <div className="project-info-table-box">
                 <Table
                     loading={tableLoading}

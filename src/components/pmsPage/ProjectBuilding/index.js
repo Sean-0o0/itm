@@ -3,16 +3,41 @@ import TopConsole from './TopConsole'
 import Overview from './Overview'
 import InfoTable from './InfoTable'
 import { message } from 'antd'
-import { QueryMemberOverviewInfo, QueryUserRole } from '../../../services/pmsServices'
+import { QueryProjectGeneralInfo, QueryUserRole } from '../../../services/pmsServices'
 
 class ProjectBuilding extends Component {
     state = {
         role: '',
         orgid: '',
-        bmry: [],
-        wbry: [],
-        gwfb: [],
-        bgxx: [],
+        fxxx: [],
+        jrxz: [],
+        ryxx: [],
+        xmxx: [],
+        data: [{
+            name: '自研项目',
+            total: 0,
+            add: 0
+        }, {
+            name: '外采项目',
+            total: 0,
+            add: 0
+        }, {
+            name: '专项项目',
+            total: 0,
+            add: 0
+        }, {
+            name: '迭代项目',
+            total: 0,
+            add: 0
+        }, {
+            name: '信创项目',
+            total: 0,
+            add: 0
+        }, {
+            name: '课题项目',
+            total: 0,
+            add: 0
+        }],
         tableLoading: false,
         pageParam: {
             current: 1,
@@ -24,7 +49,7 @@ class ProjectBuilding extends Component {
     }
 
     componentDidMount() {
-        // this.fetchRole();
+        this.fetchRole();
     }
 
     fetchRole = () => {
@@ -40,7 +65,7 @@ class ProjectBuilding extends Component {
                         orgid: JSON.parse(sessionStorage.getItem("user"))?.org
                     }, () => {
                         const { pageParam = {} } = this.state;
-                        this.queryMemberOverviewInfo('MX_ALL_ONE', '', pageParam)
+                        this.queryProjectGeneralInfo('MX_ALL_ONE', '', pageParam)
                     })
                 }
             }).catch(err => {
@@ -49,26 +74,25 @@ class ProjectBuilding extends Component {
         }
     }
 
-    queryMemberOverviewInfo = (queryType, gwbm, param) => {
+    queryProjectGeneralInfo = (queryType, xmzt, param) => {
         const { role, orgid, pageParam } = this.state;
         this.setState({
             tableLoading: true,
         })
-        QueryMemberOverviewInfo({
+        QueryProjectGeneralInfo({
+            xmzt: xmzt,
             org: orgid,
-            orgStation: gwbm,
             queryType: queryType,
             role: role,
+            ...pageParam,
             ...param
         }).then(res => {
-            const { code = 0, bmry, wbry, gwfb, bgxx, note, total } = res
+            const { code = 0, fxxx, jrxz, ryxx, xmxx, note, totalrows: total } = res
             if (code > 0) {
                 if (queryType === 'MX_ALL_ONE') {
+                    this.handleData(fxxx, ryxx, jrxz)
                     this.setState({
-                        bmry: JSON.parse(bmry),
-                        wbry: JSON.parse(wbry),
-                        gwfb: JSON.parse(gwfb),
-                        bgxx: JSON.parse(bgxx),
+                        xmxx: JSON.parse(xmxx),
                         tableLoading: false,
                         pageParam: {
                             ...pageParam,
@@ -78,7 +102,7 @@ class ProjectBuilding extends Component {
                     })
                 } else {
                     this.setState({
-                        bgxx: JSON.parse(bgxx),
+                        xmxx: JSON.parse(xmxx),
                         tableLoading: false,
                         pageParam: {
                             ...pageParam,
@@ -95,56 +119,129 @@ class ProjectBuilding extends Component {
                 })
             }
         }).catch(err => {
-            message.error("查询人员列表失败")
+            message.error("查询项目列表失败")
             this.setState({
                 tableLoading: false,
             })
         })
     }
 
+    handleData = (fxxx, ryxx, jrxz) => {
+        const zy = {
+            name: '自研项目',
+            total: 0,
+            add: 0
+        };
+        const wc = {
+            name: '外采项目',
+            total: 0,
+            add: 0
+        };
+        const zb = {
+            name: '专班项目',
+            total: 0,
+            add: 0
+        }
+        const dd = {
+            name: '迭代项目',
+            total: 0,
+            add: 0
+        }
+        const xc = {
+            name: '信创项目',
+            total: 0,
+            add: 0
+        }
+        const kt = {
+            name: '课题项目',
+            total: 0,
+            add: 0
+        }
+        const fxxxInfo = JSON.parse(fxxx);
+        const ryxxInfo = JSON.parse(ryxx);
+        const jrxzInfo = JSON.parse(jrxz);
+        fxxxInfo.forEach(item => {
+            const { BQNAME, XMSL } = item;
+            switch (BQNAME) {
+                case '迭代项目':
+                    dd.total = Number.parseInt(XMSL);
+                    break;
+                case '信创项目':
+                    xc.total = Number.parseInt(XMSL);
+                    break;
+                case '课题项目':
+                    kt.total = Number.parseInt(XMSL);
+                    break;
+                default:
+                    zb.total += Number.parseInt(XMSL);
+                    break;
+            }
+        })
+        ryxxInfo.forEach(item => {
+            const { LXNAME, XMSL } = item;
+            switch (LXNAME) {
+                case '普通自研项目':
+                    zy.total = Number.parseInt(XMSL);
+                    break;
+                default:
+                    wc.total += Number.parseInt(XMSL);
+                    break;
+            }
+        })
+        const [one] = jrxzInfo;
+        const keys = Object.keys(one||{});
+        keys.forEach(item => {
+            const XMSL = one[item]
+            switch (item) {
+                case 'JRZY':
+                    zy.add = Number.parseInt(XMSL);
+                    break;
+                case 'JRWC':
+                    wc.add = Number.parseInt(XMSL);
+                    break;
+                case 'JRZB':
+                    zb.add = Number.parseInt(XMSL);
+                    break;
+                case 'JBDD':
+                    dd.add = Number.parseInt(XMSL);
+                    break;
+                case 'JBXC':
+                    xc.add = Number.parseInt(XMSL);
+                    break;
+                case 'JBKT':
+                    kt.add = Number.parseInt(XMSL);
+                    break;
+                default:
+                    break;
+            }
+        });
+        this.setState({
+            data:[
+                zy,wc,zb,dd,xc,kt
+            ]
+        })
+    }
+
     render() {
         const { routes } = this.props
         const { role = '',
-            gwfb = [],
-            bgxx = [],
+            orgid = '',
             tableLoading,
-            pageParam
+            pageParam,
+            data,
+            xmxx = []
         } = this.state
-        const data = [{
-            name: '自研项目',
-            total: 15,
-            add: 3
-        },{
-            name: '外采项目',
-            total: 15,
-            add: 3
-        },{
-            name: '专项项目',
-            total: 15,
-            add: 3
-        },{
-            name: '迭代项目',
-            total: 15,
-            add: 3
-        },{
-            name: '信创项目',
-            total: 15,
-            add: 3
-        },{
-            name: '课题项目',
-            total: 15,
-            add: 3
-        }]
+
 
         return (<div className="project-build-box cont-box">
             <TopConsole routes={routes} />
             <div className="overview-box">
-                {data.map((item, index)=>{
-                    return <Overview key={index} data={item} order={index}/>
+                {data.map((item, index) => {
+                    return <Overview routes={routes} role={role} orgid={orgid} key={index} data={item} order={index} />
                 })
                 }
             </div>
-            <InfoTable routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} gwfb={gwfb} bgxx={bgxx} fetchData={this.queryMemberOverviewInfo} />
+            <InfoTable xmxx={xmxx} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} fetchData={this.queryProjectGeneralInfo} />
         </div>);
     }
 }

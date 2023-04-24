@@ -38,8 +38,8 @@ class InfoTable extends Component {
   }
 
   render() {
-    const { activeKey, queryType, gwbm } = this.state;
-    const { gwfb = [], bgxx = [], tableLoading, pageParam, role, routes } = this.props;
+    const { activeKey } = this.state;
+    const { xmxx = [], tableLoading, pageParam, role, routes } = this.props;
     return (<div className='info-table'>
       <Spin spinning={false} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <Tabs
@@ -48,16 +48,16 @@ class InfoTable extends Component {
           activeKey={activeKey}
         >
           <TabPane tab='全部项目' key='1'>
-            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+            <StaffTable routes={routes} role={role} queryType={'MX_ALL'} gwbm={''} fetchData={this.props.fetchData} bgxx={xmxx} tableLoading={tableLoading} pageParam={pageParam} />
           </TabPane>
-          <TabPane tab='进行中项目' key='2'>
-            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+          <TabPane tab='进行中项目' key='JXZ'>
+            <StaffTable routes={routes} role={role} queryType={'MX_SINGLE'} gwbm={'JXZ'} fetchData={this.props.fetchData} bgxx={xmxx} tableLoading={tableLoading} pageParam={pageParam} />
           </TabPane>
-          <TabPane tab='未开始项目' key='3'>
-            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+          <TabPane tab='未开始项目' key='WKS'>
+            <StaffTable routes={routes} role={role} queryType={'MX_SINGLE'} gwbm={'WKS'} fetchData={this.props.fetchData} bgxx={xmxx} tableLoading={tableLoading} pageParam={pageParam} />
           </TabPane>
-          <TabPane tab='完结项目' key='4'>
-            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+          <TabPane tab='完结项目' key='YJS'>
+            <StaffTable routes={routes} role={role} queryType={'MX_SINGLE'} gwbm={'YJS'} fetchData={this.props.fetchData} bgxx={xmxx} tableLoading={tableLoading} pageParam={pageParam} />
           </TabPane>
 
         </Tabs>
