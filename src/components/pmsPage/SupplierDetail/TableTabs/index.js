@@ -20,13 +20,15 @@ export default function TableTabs(props) {
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
 
-  useEffect(() => {
-    getTableData(1, 10, 'CGXM');
-    return () => {};
-  }, []);
+  // useEffect(() => {
+  //   setCurTab('CGXM');
+  //   getTableData(1, 10, 'CGXM');
+  //   return () => {};
+  // }, []);
 
   useEffect(() => {
     if (splId !== -2) {
+      setCurTab('CGXM');
       setCurPage(1);
       setCurPageSize(10);
       getTableData(1, 10, 'CGXM');
@@ -38,16 +40,8 @@ export default function TableTabs(props) {
     setCurPage(1);
     setCurPageSize(10);
     setTableLoading(true);
-    if (key === '1') {
-      getTableData(1, 10, 'CGXM');
-      setCurTab('CGXM');
-    } else if (key === '2') {
-      getTableData(1, 10, 'RLWB');
-      setCurTab('RLWB');
-    } else {
-      getTableData(1, 10, 'GYSPJ');
-      setCurTab('GYSPJ');
-    }
+    getTableData(1, 10, key);
+    setCurTab(key);
   };
 
   //金额格式化
@@ -377,7 +371,7 @@ export default function TableTabs(props) {
             showTotal: () => `共 ${total} 条数据`,
             total: total,
           }}
-          scroll={dataSourse.length > 10 ? { y: 397 } : {}}
+          // scroll={dataSourse.length > 10 ? { y: 397 } : {}}
           onChange={handleTableChange}
           loading={tableLoading}
           // bordered
@@ -387,8 +381,8 @@ export default function TableTabs(props) {
   };
   return (
     <div className="table-tabs-box">
-      <Tabs onChange={handleTabsChange} type="card">
-        <TabPane tab="采购项目" key="1">
+      <Tabs onChange={handleTabsChange} type="card" activeKey={curTab}>
+        <TabPane tab="采购项目" key="CGXM">
           {getTableContent({
             columns: prjPurchaseClm,
             rowKey: 'XMID',
@@ -396,7 +390,7 @@ export default function TableTabs(props) {
             tableLoading,
           })}
         </TabPane>
-        <TabPane tab="人力外包" key="2">
+        <TabPane tab="人力外包" key="RLWB">
           {getTableContent({
             columns: HROutsourceClm,
             rowKey: 'WBXMID',
@@ -404,7 +398,7 @@ export default function TableTabs(props) {
             tableLoading,
           })}
         </TabPane>
-        <TabPane tab="供应商评价" key="3">
+        <TabPane tab="供应商评价" key="GYSPJ">
           {getTableContent({
             columns: splEvaluationClm,
             rowKey: 'PJID',

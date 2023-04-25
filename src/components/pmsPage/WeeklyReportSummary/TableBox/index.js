@@ -856,9 +856,11 @@ const TableBox = props => {
                 <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
                   取消
                 </Button>
-                <Button disabled={!edited} onClick={handleSubmit}>
-                  保存
-                </Button>
+                <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
+                  <Button disabled={!edited}>
+                    保存
+                  </Button>
+                </Popconfirm>
               </>
             ) : (
               <Button onClick={handleEdit}>修改</Button>
@@ -868,7 +870,9 @@ const TableBox = props => {
                 导出
               </Button>
             </Popconfirm>
-            <Button onClick={handleSkipCurWeek}>跳过本周</Button>
+            <Popconfirm title="确定要跳过本周吗？" onConfirm={handleSkipCurWeek}>
+              <Button>跳过本周</Button>
+            </Popconfirm>
           </div>
         </div>
         <div className="table-content">

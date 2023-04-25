@@ -277,6 +277,11 @@ export default function HomePage(props) {
       org: Number(LOGIN_USER_INFO.org),
       queryType: 'SY',
       role,
+      paging: -1,
+      current: 1,
+      pageSize: 9999,
+      total: -1,
+      sort: '',
     })
       .then(res => {
         if (res?.success) {
