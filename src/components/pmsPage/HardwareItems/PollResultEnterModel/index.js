@@ -259,7 +259,8 @@ class PollResultEnterModel extends React.Component {
                     })(<Select
                       style={{borderRadius: '8px !important'}}
                       placeholder="请选择关联设备采购无合同流程"
-                      mode='multiple'
+                      // mode='multiple'
+                      showArrow={true}
                       // className="skzh-box"
                       showSearch
                       allowClear

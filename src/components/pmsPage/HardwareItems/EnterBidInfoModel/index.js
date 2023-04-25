@@ -649,6 +649,7 @@ class EnterBidInfoModel extends React.Component {
             <Select
               value={record['ZBGYS' + record.ID] ? record['ZBGYS' + record.ID].split(',') : []}
               showSearch
+              showArrow={true}
               // onSearch={onSearch}
               maxTagCount={2}
               maxTagTextLength={30}
@@ -667,7 +668,7 @@ class EnterBidInfoModel extends React.Component {
                   {menu}
                   <Divider style={{ margin: '4px 0' }} />
                   <div
-                    style={{ textAlign: 'center', color: '#3361ff', cursor: 'pointer' }}
+                    style={{margin: '4px 0', textAlign: 'center', color: '#3361ff', cursor: 'pointer'}}
                     onMouseDown={e => e.preventDefault()}
                     onClick={_this.addItem}
                   >
