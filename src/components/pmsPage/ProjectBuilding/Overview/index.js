@@ -3,11 +3,11 @@ import { Popover, message, Empty, Spin } from 'antd';
 import { Link } from 'react-router-dom';
 import { EncryptBase64 } from "../../../Common/Encrypt";
 import ddxm from '../../../../assets/projectBuilding/ddxm.png'
-import ktxm from '../../../../assets/projectBuilding/ddxm.png'
-import wcxm from '../../../../assets/projectBuilding/ddxm.png'
-import xcxm from '../../../../assets/projectBuilding/ddxm.png'
-import zbxm from '../../../../assets/projectBuilding/ddxm.png'
-import zyxm from '../../../../assets/projectBuilding/ddxm.png'
+import ktxm from '../../../../assets/projectBuilding/ktxm.png'
+import wcxm from '../../../../assets/projectBuilding/wcxm.png'
+import xcxm from '../../../../assets/projectBuilding/xcxm.png'
+import zbxm from '../../../../assets/projectBuilding/zbxm.png'
+import zyxm from '../../../../assets/projectBuilding/zyxm.png'
 import { QueryProjectGeneralInfo } from '../../../../services/pmsServices'
 
 class Overview extends Component {
@@ -19,10 +19,13 @@ class Overview extends Component {
     fetchData = (name) => {
         const { role, orgid, order } = this.props;
         let queryType = '';
+        let xmlxbq = name
+        
         if (order === 0 || order === 1) {
             queryType = 'FC_XMLX'
         } else {
             queryType = 'FC_XMBQ'
+            xmlxbq = name.slice(0,2)
         }
         this.setState({
             loading: true,
@@ -33,7 +36,7 @@ class Overview extends Component {
             paging: 0,
             sort: "",
             total: -1,
-            xmlxbq: name,
+            xmlxbq: xmlxbq,
             org: orgid,
             queryType: queryType,
             role: role,

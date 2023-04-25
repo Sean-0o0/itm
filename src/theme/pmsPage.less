@@ -10357,6 +10357,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             text-align: right;
             opacity: 0.8;
             font-weight: bold;
+            cursor: pointer;
           }
         }
       }
@@ -10469,12 +10470,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   justify-content: center;
 }
 .hover-cont{
-  width: 207px;
+  min-width: 207px;
   max-height: 373px;
-  min-height: 50px;
   overflow-y: auto;
   padding-left: 16px;
-  padding: 4px 16px;
+  padding: 4px 0;
 
   &::-webkit-scrollbar {
     width: 8px;
@@ -10492,6 +10492,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .xm-item {
+    background: #f3f4f4 !important;
+    border-radius: 4px;
+    padding-left: 10px;
+    margin: 8px 16px;
+    
     .opr-btn {
       color: #3361ff;
       cursor: pointer;

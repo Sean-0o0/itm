@@ -120,7 +120,7 @@ class StaffTable extends Component {
             dataIndex: 'XMJD',
             width: '8%',
             key: 'XMJD',
-            align: 'center',
+            align: 'right',
             ellipsis: true,
             render: (value, row, index) => {
                 return <div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>
@@ -138,14 +138,13 @@ class StaffTable extends Component {
             key: 'XMBQ',
             ellipsis: true,
             render: (text, row, index) => {
-                // console.log("rowrow",row)
                 const { XMBQID = '' } = row;
                 const ids = this.getTagData(XMBQID);
                 const data = this.getTagData(text);
                 return <div className="prj-tags">
                     {data.length !== 0 && (
                         <>
-                            {data?.slice(0, 4)
+                            {data?.slice(0, 3)
                                 .map((x, i) => (
                                     <div key={i} className="tag-item">
                                         <Link
@@ -166,12 +165,12 @@ class StaffTable extends Component {
                                         </Link>
                                     </div>
                                 ))}
-                            {data?.length > 4 && (
+                            {data?.length > 3 && (
                                 <Popover
                                     overlayClassName="tag-more-popover"
                                     content={
                                         <div className="tag-more">
-                                            {data?.slice(4)
+                                            {data?.slice(3)
                                                 .map((x, i) => (
                                                     <div key={i} className="tag-item">
                                                         <Link
