@@ -6,6 +6,7 @@ import config from '../../../../utils/config';
 import axios from 'axios';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import BidSectionModel from '../../HardwareItems/BidSectionModel';
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
@@ -32,6 +33,7 @@ export default function InfoDisplay(props) {
     title: '',
     xqlbModalVisible: false,
     xbjglbModalVisible: false,
+    bdtjlbModalVisible: false,
   });
   //询比结果录入
   const xbjglbModalProps = {
@@ -39,7 +41,7 @@ export default function InfoDisplay(props) {
     title: lbModal.title,
     width: '1000px',
     height: '650px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: true,
     footer: null,
   };
@@ -49,7 +51,7 @@ export default function InfoDisplay(props) {
     title: lbModal.title,
     width: '1000px',
     height: '650px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: true,
     footer: null,
   };
@@ -230,6 +232,18 @@ export default function InfoDisplay(props) {
     });
   };
 
+  //标段统计列表
+  const openBdtjlbModal = xmid => {
+    setLbModal(p => {
+      return {
+        ...p,
+        bdtjlbModalVisible: true,
+        // title: '标段统计',
+        url: xmid,
+      };
+    });
+  };
+
   return (
     <div className="info-display-box">
       {/* 需求列表 */}
@@ -263,6 +277,22 @@ export default function InfoDisplay(props) {
             });
           }}
           src={lbModal.url}
+        />
+      )}
+
+      {/* 标段统计 */}
+      {lbModal.bdtjlbModalVisible && (
+        <BidSectionModel
+          xmid={lbModal.url}
+          visible={lbModal.bdtjlbModalVisible}
+          closeModal={() =>
+            setLbModal(p => {
+              return {
+                ...p,
+                bdtjlbModalVisible: false,
+              };
+            })
+          }
         />
       )}
 
@@ -691,7 +721,7 @@ export default function InfoDisplay(props) {
               {demand[0]?.XMID === '0' ? (
                 '暂无数据'
               ) : (
-                <a style={{ color: '#3361ff' }} onClick={() => openXqlbModal(xmid)}>
+                <a style={{ color: '#3361ff' }} onClick={() => openBdtjlbModal(xmid)}>
                   查看详情
                 </a>
               )}

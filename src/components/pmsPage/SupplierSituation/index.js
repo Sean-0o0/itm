@@ -28,6 +28,7 @@ export default function SupplierSituation(props) {
 
   //获取用户角色
   const getUserRole = () => {
+    setIsSpinning(true);
     QueryUserRole({
       userId: String(LOGIN_USER_INFO.id),
     })
@@ -83,6 +84,7 @@ export default function SupplierSituation(props) {
           setTableData(p => [...JSON.parse(res.xmxx)]);
           setTotal(res.total);
           setTableLoading(false);
+          setIsSpinning(false);
           console.log('🚀 ~ setTableData', JSON.parse(res.xmxx));
         }
       })

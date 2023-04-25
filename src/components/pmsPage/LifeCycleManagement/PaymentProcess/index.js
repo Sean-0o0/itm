@@ -10,6 +10,8 @@ import {
 import ExpenseDetail from './ExpenseDetail';
 import moment from 'moment';
 
+const { confirm } = Modal;
+
 const PaymentProcess = props => {
   //是否有合同 单选 1是 2否
   const [sfyht, setSfyht] = useState(1);
@@ -127,103 +129,114 @@ const PaymentProcess = props => {
       }
       if (!err) {
         if (!isXzTurnRed) {
-          let details = [];
-          let lcid = '-1';
-          expenseDetail?.forEach(item => {
-            lcid = String(item.lcid);
-            let detailInfo = JSON.stringify({
-              FYLX: item.fylxInfo.ID,
-              JE: String(item.je),
-              RQ: item.date,
-              FPLX: item.fplxInfo?.ID,
-              YSXM: item.ysxmInfo?.ID,
-              XFSY: item.consumptionReasons,
-              SFWK: String(item.isFinalPay), //1,2
-            });
-            let invoice = item.receiptFileInfo.map(x => {
-              return { fileName: x.fileName, code64: x.base64.split(',')[1] };
-            });
-            let invoiceCheckInfo = item.receiptFileInfo.map(x => {
-              return {
-                CYXX: x.message,
-                YKBID: x.invoiceId,
-                MXID: x.detailIds,
-                FPMC: x.fileName,
-                ZJE: x.zje,
-                SE: x.se,
-                SL: x.sl,
-                CYJG: x.isCheck,
-                FILEID: x.fileId,
-                KEY: x.key,
+          confirm({
+            title: `将提交该流程到易快报中，${
+              operateType === 'send' ? '直接发起流程进行审批' : '存为草稿'
+            }，请确认！`,
+            content: null,
+            onOk() {
+              let details = [];
+              let lcid = '-1';
+              expenseDetail?.forEach(item => {
+                lcid = String(item.lcid);
+                let detailInfo = JSON.stringify({
+                  FYLX: item.fylxInfo.ID,
+                  JE: String(item.je),
+                  RQ: item.date,
+                  FPLX: item.fplxInfo?.ID,
+                  YSXM: item.ysxmInfo?.ID,
+                  XFSY: item.consumptionReasons,
+                  SFWK: String(item.isFinalPay), //1,2
+                });
+                let invoice = item.receiptFileInfo.map(x => {
+                  return { fileName: x.fileName, code64: x.base64.split(',')[1] };
+                });
+                let invoiceCheckInfo = item.receiptFileInfo.map(x => {
+                  return {
+                    CYXX: x.message,
+                    YKBID: x.invoiceId,
+                    MXID: x.detailIds,
+                    FPMC: x.fileName,
+                    ZJE: x.zje,
+                    SE: x.se,
+                    SL: x.sl,
+                    CYJG: x.isCheck,
+                    FILEID: x.fileId,
+                    KEY: x.key,
+                  };
+                });
+                let codeInfo = {
+                  FYLXBM: item.fylxInfo.FYLXDM,
+                  FYLXMBDM: item.fylxInfo.MBDM,
+                  FPBM: item.fplxInfo?.BM,
+                  YSFYDM: item.ysxmInfo?.YSFYDM,
+                };
+                let oaFile = item.OAProcessFileInfo?.map(x => {
+                  return {
+                    fileName: x.name,
+                    code64: x.base64.split(',')[1],
+                  };
+                });
+                let detailItem = {
+                  detailInfo,
+                  invoice,
+                  codeInfo,
+                  contract: (item.contractFileInfo?.base64.split(','))[1] || '无',
+                  contractName: item.contractFileInfo?.name,
+                  report: (item.checkFileInfo?.base64.split(','))[1] || '无',
+                  reportName: item.checkFileInfo?.name,
+                  oaFile,
+                  invoiceCheckInfo,
+                  invoiceType: item.fplxInfo?.NAME,
+                  feeType: item.fylxInfo.NAME,
+                  consumptionReasons: item.consumptionReasons,
+                  date: item.date,
+                  taxAmount: String(item.taxAmount),
+                };
+                details.push(detailItem);
+              });
+              const submitData = {
+                title: String(getFieldValue('bt')),
+                submitterId: String(userykbid),
+                expenseDepartment: String(orgykbid),
+                expenseDate: String(moment(sqrq).format('YYYYMMDD')),
+                payeeId: String(ykbSkzhId),
+                description: String(getFieldValue('ms')),
+                details,
+                haveContract: String(sfyht),
+                contractAmount: String(getFieldValue('htje')),
+                paidAmount: String(getFieldValue('yfkje')),
+                attQuantity: String(getFieldValue('fjzs')),
+                legalEntity: '浙商证券股份有限公司（ZSZQ）',
+                orgId: String(LOGIN_USER_ORG_ID),
+                projectName: String(currentXmmc),
+                payName: String(skzhId),
+                projectId: String(currentXmid),
+                projectCode,
+                operateType,
+                lcid,
               };
-            });
-            let codeInfo = {
-              FYLXBM: item.fylxInfo.FYLXDM,
-              FYLXMBDM: item.fylxInfo.MBDM,
-              FPBM: item.fplxInfo?.BM,
-              YSFYDM: item.ysxmInfo?.YSFYDM,
-            };
-            let oaFile = item.OAProcessFileInfo?.map(x => {
-              return {
-                fileName: x.name,
-                code64: x.base64.split(',')[1],
-              };
-            });
-            let detailItem = {
-              detailInfo,
-              invoice,
-              codeInfo,
-              contract: (item.contractFileInfo?.base64.split(','))[1] || '无',
-              contractName: item.contractFileInfo?.name,
-              report: (item.checkFileInfo?.base64.split(','))[1] || '无',
-              reportName: item.checkFileInfo?.name,
-              oaFile,
-              invoiceCheckInfo,
-              invoiceType: item.fplxInfo?.NAME,
-              feeType: item.fylxInfo.NAME,
-              consumptionReasons: item.consumptionReasons,
-              date: item.date,
-              taxAmount: String(item.taxAmount),
-            };
-            details.push(detailItem);
-          });
-          const submitData = {
-            title: String(getFieldValue('bt')),
-            submitterId: String(userykbid),
-            expenseDepartment: String(orgykbid),
-            expenseDate: String(moment(sqrq).format('YYYYMMDD')),
-            payeeId: String(ykbSkzhId),
-            description: String(getFieldValue('ms')),
-            details,
-            haveContract: String(sfyht),
-            contractAmount: String(getFieldValue('htje')),
-            paidAmount: String(getFieldValue('yfkje')),
-            attQuantity: String(getFieldValue('fjzs')),
-            legalEntity: '浙商证券股份有限公司（ZSZQ）',
-            orgId: String(LOGIN_USER_ORG_ID),
-            projectName: String(currentXmmc),
-            payName: String(skzhId),
-            projectId: String(currentXmid),
-            projectCode,
-            operateType,
-            lcid,
-          };
-          isHwPrj && (submitData.yjyhtid = String(getFieldValue('glsb')));
-          console.log('submitData', submitData);
-          CreatPaymentFlow(submitData)
-            .then(res => {
-              if (res.code === 200) {
-                if (onSuccess === undefined) onSuccess();
-                else
-                  message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
+              isHwPrj && (submitData.yjyhtid = String(getFieldValue('glsb')));
+              console.log('submitData', submitData);
+              CreatPaymentFlow(submitData)
+                .then(res => {
+                  if (res.code === 200) {
+                    if (onSuccess === undefined) onSuccess();
+                    else
+                      message.success(
+                        `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
+                        1,
+                      );
 
-                resetFields();
-                fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
-              }
-            })
-            .catch(e => {
-              console.error(e);
-            });
+                    resetFields();
+                    fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
+                  }
+                })
+                .catch(e => {
+                  console.error(e);
+                });
+            },
+          });
           closePaymentProcessModal();
         }
       }
