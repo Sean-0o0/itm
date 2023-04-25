@@ -650,10 +650,10 @@ class EnterBidInfoModel extends React.Component {
               value={record['ZBGYS' + record.ID] ? record['ZBGYS' + record.ID].split(',') : []}
               showSearch
               // onSearch={onSearch}
-              maxTagCount={1}
+              maxTagCount={2}
               maxTagTextLength={30}
               maxTagPlaceholder={extraArr => {
-                return `等${extraArr.length + 1}个`;
+                return `等${extraArr.length + 2}个`;
               }}
               mode="multiple"
               onChange={e => {

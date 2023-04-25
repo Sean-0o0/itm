@@ -26,7 +26,7 @@ export default function InfoTable(props) {
   const [uploadFileParams, setUploadFileParams] = useState([]); //项目详情弹窗显示
   const [fileList, setFileList] = useState([]); //项目详情弹窗显示
   const [isSpinning, setIsSpinning] = useState(false); //项目详情弹窗显示
-  const {tableData, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
+  const {tableData, setTableLoading, tableLoading, getTableData, total, params, callBackParams, lcxxData} = props; //表格数据
   const location = useLocation();
   console.log("🚀 ~ tableData:", tableData)
 
@@ -37,6 +37,16 @@ export default function InfoTable(props) {
       window.removeEventListener('message', handleIframePostMessage);
     };
   }, []);
+
+  useEffect(() => {
+    if (tableData.length !== 0) {
+      setTableLoading(false)
+    } else {
+      setTimeout(function () {
+        setTableLoading(false)
+      }, 3000);
+    }
+  }, [tableData]);
 
   const getUuid = () => {
     var s = []
