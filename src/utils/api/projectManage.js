@@ -27,5 +27,6 @@ export default [
     dis: '新增、修改硬件项目询比结果信息'
   },
   {code: '', key: 'queryHardwareDemandInfo', url: '/projectManage/queryHardwareDemandInfo', dis: '查询硬件项目-需求列表'},
+  {code: '', key: 'queryTenderStatisticsInfo', url: '/projectManage/queryTenderStatisticsInfo', dis: '查询硬件项目-标段统计'},
   {code: '', key: 'getDocumentByLiveBos', url: '/livebosService/v1/getDocumentByLiveBos', dis: '查询硬件项目-需求列表'},
 ];

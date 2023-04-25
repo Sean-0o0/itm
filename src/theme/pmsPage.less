@@ -10429,12 +10429,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             a {
               color: #3361ff;
             }
-    
+
             &:hover {
               color: #3361ff;
               font-weight: bold;
             }
-            
+
             &:last-child {
               margin-right: 0;
             }
@@ -10496,7 +10496,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     border-radius: 4px;
     padding-left: 10px;
     margin: 8px 16px;
-    
+
     .opr-btn {
       color: #3361ff;
       cursor: pointer;
@@ -10518,6 +10518,88 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       height: 42px;
       & > .ant-modal-title {
         line-height: unset;
+      }
+    }
+  }
+}
+
+.bidSection-list-box {
+  .ant-tabs-nav .ant-tabs-tab:hover {
+    color: #3361ff;
+  }
+
+  .ant-tabs-bar {
+    height: 100%;
+  }
+
+  .ant-tabs-ink-bar {
+    height: 4px;
+    background-color: #3361ff !important;
+  }
+
+  .ant-tabs-bar {
+    margin: 0;
+  }
+
+  .ant-tabs-nav {
+    margin-left: 24px;
+
+    .ant-tabs-tab {
+      font-size: 16px;
+      font-weight: 400;
+      color: #303133;
+      line-height: 24px;
+      margin: 0 56px 0 0;
+      padding: 12px 0 12px 0;
+    }
+  }
+
+  .ant-tabs-nav .ant-tabs-tab-active {
+    color: #3361ff !important;
+    font-weight: bold;
+    line-height: 24px;
+    font-size: 16px;
+  }
+
+  .ant-tabs-nav .ant-tabs-tab-active {
+    color: #3361ff !important;
+    font-weight: bold;
+    line-height: 24px;
+    font-size: 16px;
+  }
+
+  .info-table {
+    & .table-content {
+      padding: 24px;
+      padding-top: 0;
+      height: calc(100% - 64px);
+      overflow: hidden;
+
+      .update-col {
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+
+        span {
+          // flex-grow: 1;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+        }
+
+        .update-tag {
+          display: inline-block;
+          text-align: center;
+          // flex-shrink: 0;
+          width: 52px;
+          height: 24px;
+          background: #fff5e5;
+          border-radius: 12px;
+          border: 1px solid #ffda9f;
+          font-size: 12px;
+          color: #e58c00;
+          line-height: 24px;
+          margin-left: 6px;
+        }
       }
     }
   }
