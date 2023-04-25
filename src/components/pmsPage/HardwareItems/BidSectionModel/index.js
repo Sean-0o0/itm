@@ -12,7 +12,7 @@ export default function BidSectionModel(props) {
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [params, setParams] = useState({current: 1, pageSize: 10});
-  const {visible = false, closeModal} = props;
+  const {visible = false, xmid, closeModal} = props;
 
 
   useEffect(() => {
@@ -82,9 +82,9 @@ export default function BidSectionModel(props) {
           padding: '0',
           height: '697px',
         }}
-        // onCancel={this.props.closeModal}
+        onCancel={closeModal}
         footer={<div className="modal-footer">
-          <Button className="btn-default">
+          <Button className="btn-default" onClick={closeModal}>
             取消
           </Button>
           {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>

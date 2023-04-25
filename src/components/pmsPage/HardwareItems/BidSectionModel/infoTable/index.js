@@ -146,7 +146,7 @@ export default function InfoTable(props) {
       console.log("arr", arr)
       let total = 0;
       num.map(item => {
-        total = item.XMJE + total;
+        total = Number(item.XMJE) + total;
       })
       for (let i = 0; i < len; i++) {
         totalarr.push(i === 0 ? total : 0);
@@ -255,7 +255,7 @@ export default function InfoTable(props) {
           rowKey={'BJID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          scroll={{y: 407}}
+          // scroll={{y: 407}}
           pagination={{
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,
