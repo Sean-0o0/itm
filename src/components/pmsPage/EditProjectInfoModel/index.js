@@ -565,6 +565,10 @@ class EditProjectInfoModel extends React.Component {
     zbxxCzlx: 'ADD',
     //中标信息是否展示
     zbxxVisiable: false,
+    //应用部门是否展开
+    isDownOrg: true,
+    //标签是否展开
+    isDownLabel: true,
   };
   componentDidMount = async () => {
     const _this = this;
@@ -3134,6 +3138,30 @@ class EditProjectInfoModel extends React.Component {
     });
   };
 
+  onOrgDropdown = (open) => {
+    if (open) {
+      this.setState({
+        isDownOrg: false
+      });
+    } else {
+      this.setState({
+        isDownOrg: true
+      });
+    }
+  }
+
+  onLabelDropdown = (open) => {
+    if (open) {
+      this.setState({
+        isDownLabel: false
+      });
+    } else {
+      this.setState({
+        isDownLabel: true
+      });
+    }
+  }
+
   render() {
     let {
       tags,
@@ -3204,6 +3232,10 @@ class EditProjectInfoModel extends React.Component {
       //合同信息是否展示
       htxxVisiable = false,
       zbxxVisiable = false,
+      //应用部门是否展开
+      isDownOrg = false,
+      //应用部门是否展开
+      isDownLabel = false,
     } = this.state;
     console.log('purchaseInfopurchaseInfo', purchaseInfo);
     const { getFieldDecorator } = this.props.form;
@@ -3623,56 +3655,76 @@ class EditProjectInfoModel extends React.Component {
                             {getFieldDecorator('projectLabel', {
                               initialValue: basicInfo.projectLabel,
                             })(
-                              <TreeSelect
-                                multiple
-                                showSearch
-                                showArrow
-                                treeNodeFilterProp="title"
-                                style={{ width: '100%' }}
-                                // tagRender={item => {
-                                //   return "weqweqwe" + item;
-                                // }}
-                                maxTagCount={3}
-                                maxTagTextLength={42}
-                                maxTagPlaceholder={extraArr => {
-                                  return `等${extraArr.length + 3}个`;
-                                }}
-                                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-                                treeData={projectLabelList}
-                                treeCheckable
-                                placeholder="请选择项目标签"
-                                // treeDefaultExpandAll
-                                treeDefaultExpandedKeys={['1']}
-                                getPopupContainer={triggerNode => triggerNode.parentNode}
-                                onChange={(e, nodeArr, extra) => {
-                                  //选根节点的话入参就是把这个根节点里面的标签都选上
-                                  //console.log("extraextra", extra)
-                                  let labelTxt = nodeArr.map(x => x);
-                                  labelTxt = labelTxt.join(';');
-                                  //console.log("labelTxt", labelTxt)
-                                  //console.log("eeeeee", e)
-                                  this.setState({
-                                    basicInfo: { ...basicInfo, projectLabel: e, labelTxt },
-                                  });
-                                  this.fetchQueryMilepostInfo({
-                                    type: basicInfo.projectType,
-                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
-                                    //项目预算类型
-                                    haveType: 1,
-                                    //项目软件预算
-                                    softBudget: 0,
-                                    //框架预算
-                                    frameBudget: 0,
-                                    //单独采购预算
-                                    singleBudget: 0,
-                                    xmid: basicInfo.projectId,
-                                    biddingMethod: basicInfo.biddingMethod,
-                                    budget: budgetInfo.projectBudget,
-                                    label: labelTxt,
-                                    queryType: 'ALL',
-                                  });
-                                }}
-                              />,
+                              <div
+                                id="down"
+                                style={{
+                                  width: '100%',
+                                  display: "inline-block",
+                                  position: "relative",
+                                  verticalAlign: "super",
+                                }}>
+                                <TreeSelect
+                                  multiple
+                                  showSearch
+                                  showArrow
+                                  treeNodeFilterProp="title"
+                                  style={{width: '100%'}}
+                                  // tagRender={item => {
+                                  //   return "weqweqwe" + item;
+                                  // }}
+                                  maxTagCount={3}
+                                  maxTagTextLength={42}
+                                  maxTagPlaceholder={extraArr => {
+                                    return `等${extraArr.length + 3}个`;
+                                  }}
+                                  onDropdownVisibleChange={(open) => this.onLabelDropdown(open)}
+                                  dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                  treeData={projectLabelList}
+                                  treeCheckable
+                                  placeholder="请选择项目标签"
+                                  // treeDefaultExpandAll
+                                  treeDefaultExpandedKeys={['1']}
+                                  getPopupContainer={triggerNode => triggerNode.parentNode}
+                                  onChange={(e, nodeArr, extra) => {
+                                    //选根节点的话入参就是把这个根节点里面的标签都选上
+                                    //console.log("extraextra", extra)
+                                    let labelTxt = nodeArr.map(x => x);
+                                    labelTxt = labelTxt.join(';');
+                                    //console.log("labelTxt", labelTxt)
+                                    //console.log("eeeeee", e)
+                                    this.setState({
+                                      basicInfo: { ...basicInfo, projectLabel: e, labelTxt },
+                                    });
+                                    this.fetchQueryMilepostInfo({
+                                      type: basicInfo.projectType,
+                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      //项目预算类型
+                                      haveType: 1,
+                                      //项目软件预算
+                                      softBudget: 0,
+                                      //框架预算
+                                      frameBudget: 0,
+                                      //单独采购预算
+                                      singleBudget: 0,
+                                      xmid: basicInfo.projectId,
+                                      biddingMethod: basicInfo.biddingMethod,
+                                      budget: budgetInfo.projectBudget,
+                                      label: labelTxt,
+                                      queryType: 'ALL',
+                                    });
+                                  }}
+                                />
+                                <i
+                                  className={isDownLabel ? 'iconfont icon-down' : 'iconfont icon-up'}
+                                  style={{
+                                    position: "absolute",
+                                    top: "16px",
+                                    right: "10px",
+                                    color: "rgba(0,0,0,0.25)",
+                                    fontSize: "12px",
+                                  }}
+                                />
+                              </div>,
                             )}
                           </Form.Item>
                         </Col>
@@ -3809,29 +3861,49 @@ class EditProjectInfoModel extends React.Component {
                               // }],
                               initialValue: basicInfo.org ? basicInfo.org : null,
                             })(
-                              <TreeSelect
-                                multiple
-                                showSearch
-                                treeNodeFilterProp="title"
-                                style={{ width: '100%' }}
-                                maxTagCount={3}
-                                maxTagTextLength={42}
-                                maxTagPlaceholder={extraArr => {
-                                  return `等${extraArr.length + 3}个`;
-                                }}
-                                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-                                treeData={organizationTreeList}
-                                placeholder="请选择应用部门"
-                                // treeCheckable
-                                // treeDefaultExpandAll
-                                // getPopupContainer={triggerNode => triggerNode.parentNode}
-                                treeDefaultExpandedKeys={orgExpendKeys}
-                                onChange={e => {
-                                  this.setState({
-                                    basicInfo: { ...basicInfo, org: e },
-                                  });
-                                }}
-                              />,
+                              <div
+                                id="down"
+                                style={{
+                                  width: '100%',
+                                  display: "inline-block",
+                                  position: "relative",
+                                  verticalAlign: "super",
+                                }}>
+                                <TreeSelect
+                                  multiple
+                                  showSearch
+                                  treeNodeFilterProp="title"
+                                  style={{width: '100%'}}
+                                  maxTagCount={3}
+                                  maxTagTextLength={42}
+                                  maxTagPlaceholder={extraArr => {
+                                    return `等${extraArr.length + 3}个`;
+                                  }}
+                                  onDropdownVisibleChange={(open) => this.onOrgDropdown(open)}
+                                  dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                  treeData={organizationTreeList}
+                                  placeholder="请选择应用部门"
+                                  // treeCheckable
+                                  // treeDefaultExpandAll
+                                  // getPopupContainer={triggerNode => triggerNode.parentNode}
+                                  treeDefaultExpandedKeys={orgExpendKeys}
+                                  onChange={e => {
+                                    this.setState({
+                                      basicInfo: {...basicInfo, org: e},
+                                    });
+                                  }}
+                                />
+                                <i
+                                  className={isDownOrg ? 'iconfont icon-down' : 'iconfont icon-up'}
+                                  style={{
+                                    position: "absolute",
+                                    top: "16px",
+                                    right: "10px",
+                                    color: "rgba(0,0,0,0.25)",
+                                    fontSize: "12px",
+                                  }}
+                                />
+                              </div>,
                             )}
                           </Form.Item>
                         </Col>

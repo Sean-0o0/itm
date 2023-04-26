@@ -66,7 +66,7 @@ export default function PollResultModel(props) {
           setTableData(p => [...xbxxJson]);
           setLcxxData(p => [...JSON.parse(lcxx)]);
           setTotal(res.totalrows);
-          setTableLoading(false)
+          // setTableLoading(false)
         }
         // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
       })
@@ -95,6 +95,7 @@ export default function PollResultModel(props) {
         <InfoTable
           lcxxData={lcxxData}
           params={params}
+          setTableLoading={setTableLoading}
           callBackParams={callBackParams}
           tableData={tableData}
           tableLoading={tableLoading}

@@ -1,10 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { getAmountFormat } from '..';
 import { EncryptBase64 } from '../../../Common/Encrypt';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
+
 export default function OverviewCard(props) {
   const { width = '70%', overviewInfo = [], userRole = '', toDoDataNum = 0 } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const location = useLocation();
 
   //获取招呼语
   const getGreeting = () => {
@@ -32,7 +36,8 @@ export default function OverviewCard(props) {
     percent = '--',
     addNum = '--',
     unit = '',
-    fn = () => {},
+    fn = false,
+    linkTo = false,
   }) => {
     return (
       <div className="overview-item" style={{ width }}>
@@ -41,10 +46,26 @@ export default function OverviewCard(props) {
             className="top-img"
             src={require(`../../../../assets/homePage/icon_${img}@2x.png`)}
           />
-          <div className="top-txt" onClick={fn}>
-            {title}
-            {more && <i className="iconfont icon-right" />}
-          </div>
+          {!fn && !linkTo && (
+            <div className="top-txt">
+              {title}
+              {more && <i className="iconfont icon-right" />}
+            </div>
+          )}
+          {fn && (
+            <div className="top-txt top-txt-link" onClick={fn}>
+              {title}
+              {more && <i className="iconfont icon-right" />}
+            </div>
+          )}
+          {linkTo && (
+            <div className="top-txt top-txt-link">
+              <Link to={linkTo}>
+                {title}
+                {more && <i className="iconfont icon-right" />}
+              </Link>
+            </div>
+          )}
         </div>
         <div className="item-middle">
           {amount}
@@ -160,6 +181,12 @@ export default function OverviewCard(props) {
             addNum: overviewInfo?.gysjrxz,
             unit: '家',
             width: '22%',
+            linkTo: {
+              pathname: `/pms/manage/SupplierSituation`,
+              state: {
+                routes: [{ name: '首页', pathname: location.pathname }],
+              },
+            },
           })}
         </div>
       ) : (

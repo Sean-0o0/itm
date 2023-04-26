@@ -1,9 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
 import * as echarts from 'echarts';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default function SupplierCard(props) {
   const { supplierData, time } = props;
   const radarChartRef = useRef(null);
+  const location = useLocation();
   //防抖定时器
   let timer = null;
 
@@ -42,11 +45,11 @@ export default function SupplierCard(props) {
               width: 2,
             },
           },
-          name:{
+          name: {
             color: '#606266',
             fontFamily: 'Roboto-Regular, Roboto,PingFangSC-Regular,PingFang SC',
             fontSize: 12,
-            formatter: function (value) {
+            formatter: function(value) {
               let list = value.split('');
               let result = '';
               for (let i = 1; i <= list.length; i++) {
@@ -58,7 +61,7 @@ export default function SupplierCard(props) {
               }
               return result;
             },
-          }
+          },
           // triggerEvent: true,
         },
         series: [
@@ -114,8 +117,17 @@ export default function SupplierCard(props) {
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>
         供应商情况
         <span>
-          全部
-          <i className="iconfont icon-right" />
+          <Link
+            to={{
+              pathname: `/pms/manage/SupplierSituation`,
+              state: {
+                routes: [{ name: '首页', pathname: location.pathname }],
+              },
+            }}
+          >
+            全部
+            <i className="iconfont icon-right" />
+          </Link>
         </span>
       </div>
       <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px', marginLeft: '24px' }}>

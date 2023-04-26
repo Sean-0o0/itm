@@ -21,6 +21,7 @@ const { projectManage: {
   queryInquiryComparisonInfo,
   updateInquiryComparisonInfo,
   queryHardwareDemandInfo,
+  queryTenderStatisticsInfo,
   getDocumentByLiveBos,
 } } = api;
 
@@ -201,6 +202,16 @@ export async function UpdateInquiryComparisonInfo(payload, configObj) {
 export async function FetchQueryHardwareDemandInfo(payload, configObj) {
   const option = {
     url: queryHardwareDemandInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//硬件项目-标段统计
+export async function FetchQueryTenderStatisticsInfo(payload, configObj) {
+  const option = {
+    url: queryTenderStatisticsInfo,
     method: 'post',
     data: payload,
   };

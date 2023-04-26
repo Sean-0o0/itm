@@ -686,9 +686,11 @@ const TableBox = props => {
                 <Button onClick={handleEditCancel} style={{ marginRight: '8px' }}>
                   取消
                 </Button>
-                <Button disabled={!edited} onClick={handleSubmit}>
-                  保存
-                </Button>
+                <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
+                  <Button disabled={!edited}>
+                    保存
+                  </Button>
+                </Popconfirm>
               </>
             ) : (
               <Button onClick={handleEdit}>修改</Button>

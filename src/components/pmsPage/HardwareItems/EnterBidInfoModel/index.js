@@ -528,13 +528,14 @@ class EnterBidInfoModel extends React.Component {
           isSpinning: false,
         })
         this.props.closeModal();
-        message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3)
+        this.props.onSuccess(operateType === "UPDATE" ? "硬件中标信息编辑" : "硬件中标信息录入");
+        // message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3)
       } else {
         this.setState({
           isSpinning: false,
         })
         this.props.closeModal();
-        message.error('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '失败！', 3);
+        message.error(operateType === "UPDATE" ? "硬件中标信息编辑" : "硬件中标信息录入" + '失败！', 3);
       }
     });
   };
@@ -649,11 +650,12 @@ class EnterBidInfoModel extends React.Component {
             <Select
               value={record['ZBGYS' + record.ID] ? record['ZBGYS' + record.ID].split(',') : []}
               showSearch
+              showArrow={true}
               // onSearch={onSearch}
-              maxTagCount={1}
+              maxTagCount={2}
               maxTagTextLength={30}
               maxTagPlaceholder={extraArr => {
-                return `等${extraArr.length + 1}个`;
+                return `等${extraArr.length + 2}个`;
               }}
               mode="multiple"
               onChange={e => {
@@ -667,7 +669,7 @@ class EnterBidInfoModel extends React.Component {
                   {menu}
                   <Divider style={{ margin: '4px 0' }} />
                   <div
-                    style={{ textAlign: 'center', color: '#3361ff', cursor: 'pointer' }}
+                    style={{margin: '4px 0', textAlign: 'center', color: '#3361ff', cursor: 'pointer'}}
                     onMouseDown={e => e.preventDefault()}
                     onClick={_this.addItem}
                   >

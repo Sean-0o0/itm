@@ -4,6 +4,7 @@ import PollResultModel from "./PollResultModel";
 import PollResultEnterModel from "./PollResultEnterModel";
 import RequireModel from "./RequireModel";
 import AgreementEnterModal from "./AgreementEnterModel";
+import BidSectionModel from "./BidSectionModel";
 
 //首页
 export default function HardwareItems(props) {
@@ -52,7 +53,7 @@ export default function HardwareItems(props) {
       )
       }
       {requireVisible && (
-        <RequireModel closeModal={closeRequireVisibleModal} visible={requireVisible}/>
+        <BidSectionModel closeModal={closeRequireVisibleModal} visible={requireVisible}/>
       )
       }
       {agreementEnterVisible && (

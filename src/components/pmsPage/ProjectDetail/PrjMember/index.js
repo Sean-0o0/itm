@@ -70,20 +70,10 @@ export default function PrjMember(props) {
 
   //成员块
   const getMemberItem = ({ position = '--', gender = '男', name = '--', key }) => {
-    const jumpToStfDetail = id => {
-      window.location.href = `/#/pms/manage/StaffDetail/${EncryptBase64(
-        JSON.stringify({
-          routes,
-          ryid: id,
-        }),
-      )}`;
-    };
     return (
       <div
         className="member-item"
-        // style={{ width: itemWidth }}
         key={key}
-        // onClick={() => jumpToStfDetail(key)}
       >
         <Link
           to={{
@@ -108,6 +98,7 @@ export default function PrjMember(props) {
       </div>
     );
   };
+  
   return (
     <div className="prj-member-box">
       <div className="top-title">项目人员</div>

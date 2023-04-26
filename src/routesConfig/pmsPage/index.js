@@ -158,4 +158,14 @@ exports.routes = [
     path: `${prefix}/BudgetExcute`,
     component: './pmsPage/BudgetExcute',
   },
+  {
+    // 统计分析-供应商情况
+    path: `${prefix}/SupplierSituation`,
+    component: './pmsPage/SupplierSituation',
+  },
+  {
+    // 人员列表
+    path: `${prefix}/StaffInfo`,
+    component: './pmsPage/StaffInfo',
+  },
 ];

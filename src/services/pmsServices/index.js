@@ -65,6 +65,7 @@ const {
     queryZCXX,
     operateSupplierInfo,
     querySupplierDetailInfo,
+    queryMemberInfo,
   },
 } = api;
 
@@ -671,6 +672,16 @@ export async function QuerySupplierDetailInfo(payload) {
 export async function OperateSupplierInfo(payload) {
   const option = {
     url: operateSupplierInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员信息
+export async function QueryMemberInfo(payload) {
+  const option = {
+    url: queryMemberInfo,
     method: 'post',
     data: payload,
   };

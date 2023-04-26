@@ -10,20 +10,6 @@ export default function InfoTable(props) {
   const location = useLocation();
   // console.log("🚀 tableDatatableData:", tableData)
 
-  //lb弹窗配置
-  const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(
-    JSON.stringify({xmid: -1, type: true}),
-  )}`;
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    title: '新建项目',
-    width: '1000px',
-    height: '750px',
-    style: {top: '10px'},
-    visible: true,
-    footer: null,
-  };
-
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
     return () => {
@@ -128,7 +114,7 @@ export default function InfoTable(props) {
       key: 'YHTBT',
       render: (text, record) => {
         return <Tooltip title={text}>
-          <span style={{color: '#3361ff'}}>查看详情</span>
+          <a style={{color: '#3361ff'}}>查看详情</a>
         </Tooltip>
       }
     },

@@ -110,12 +110,13 @@ class PollResultEditModel extends React.Component {
                   })(<Select
                     style={{borderRadius: '8px !important'}}
                     placeholder="请选择关联设备采购无合同流程"
-                    mode='multiple'
+                    // mode='multiple'
+                    showArrow={true}
                     // className="skzh-box"
                     showSearch
                     allowClear
                     onChange={e => {
-                      console.log("请选择关联主流程", e)
+                      console.log("请选择关联设备采购无合同流程", e)
                       this.handleDataCallback({flowId: e})
                       // this.setState({pollInfo: {...pollInfo, flowId: e}});
                     }}
