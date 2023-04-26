@@ -155,8 +155,18 @@ class BudgetExcute extends Component {
             KYMBZ = 0,
             KYSYZ = 0,
             ZBRJZYS = '',
-            ZBRJKZX = '',
+            ZBRJKZX = 0,
         } = ysglxx
+
+        let zyswcz = Number.parseFloat(ZBRJZYS) - Number.parseFloat(ZBRJSYZ);
+        let zyswcl = Number.parseFloat(ZBRJSYZ)*100 / Number.parseFloat(ZBRJZYS)
+        zyswcz = !isNaN(zyswcz)?zyswcz.toFixed(2):0;
+        zyswcl = !isNaN(zyswcl)?zyswcl.toFixed(2):0;
+
+        let kzxsyz = Number.parseFloat(ZBRJKZX) - Number.parseFloat(ZBRJWCZ);
+        let kzxwcl = Number.parseFloat(kzxsyz)*100 / Number.parseFloat(ZBRJKZX)
+        kzxsyz = !isNaN(kzxsyz)?kzxsyz.toFixed(2):0;
+        kzxwcl = !isNaN(kzxwcl)?kzxwcl.toFixed(2):0;
 
         return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large"><div className="buget-excute-box cont-box" style={{height: 'auto'}}>
             <TopConsole routes={routes} />
@@ -164,8 +174,8 @@ class BudgetExcute extends Component {
                 <div className='cont-block staff-overview' style={{ width: 'calc(50% - 24px)', marginRight: '24px' }}>
                     <div className='title'>资本性预算</div>
                     <div style={{display: 'flex'}}>
-                        <BudgetType title={ZBRJZYS} wcz={ZBRJWCZ} wcl={ZBRJWCL} mbz={ZBRJMBZ} syz={ZBRJSYZ} type='left'/>
-                        <BudgetType title={ZBRJKZX} wcz={ZBYJWCZ} wcl={ZBYJWCL} mbz={ZBYJMBZ} syz={ZBYJSYZ} type='left'/>
+                        <BudgetType title='总预算(万元)' wcz={!isNaN(zyswcz)?zyswcz:0} wcl={zyswcl} mbz={ZBRJZYS} syz={ZBRJSYZ} type='left'/>
+                        <BudgetType title='可执行总预算(万元)' wcz={ZBRJWCZ} wcl={kzxwcl} mbz={ZBRJKZX} syz={kzxsyz} type='left'/>
                     </div>
                 </div>
                 <div className='cont-block staff-overview' style={{ width: 'calc(25% - 12px)', marginRight: '24px' }}>
