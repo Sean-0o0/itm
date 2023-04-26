@@ -343,4 +343,10 @@ export default [
     url: '/projectManage/operateSupplierInfo',
     dis: '编辑供应商详情',
   },
+  {
+    code: '',
+    key: 'queryMemberInfo',
+    url: '/projectManage/queryMemberInfo',
+    dis: '查询人员信息',
+  },
 ];

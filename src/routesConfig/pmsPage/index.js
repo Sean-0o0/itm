@@ -163,4 +163,9 @@ exports.routes = [
     path: `${prefix}/SupplierSituation`,
     component: './pmsPage/SupplierSituation',
   },
+  {
+    // 人员列表
+    path: `${prefix}/StaffInfo`,
+    component: './pmsPage/StaffInfo',
+  },
 ];
