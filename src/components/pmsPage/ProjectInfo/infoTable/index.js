@@ -5,11 +5,13 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
+import PrjTypeModal from '../../HomePage/ShortcutCard/PrjTypeModal';
 
 export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
+  const [visible, setVisible] = useState(false); //类型弹窗显隐
   const {
     tableData,
     tableLoading,
@@ -101,7 +103,7 @@ export default function InfoTable(props) {
   };
 
   const openVisible = () => {
-    setFileAddVisible(true);
+    setVisible(true);
   };
   const closeFileAddModal = () => {
     setFileAddVisible(false);
@@ -318,6 +320,11 @@ export default function InfoTable(props) {
           src={src_fileAdd}
         />
       )}
+      <PrjTypeModal
+        visible={visible}
+        setVisible={setVisible}
+        setFileAddVisible={setFileAddVisible}
+      />
       <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible} />
       <div className="btn-add-prj-box">
         <Button type="primary" className="btn-add-prj" onClick={openVisible}>

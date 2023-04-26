@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { message } from 'antd';
+import PrjTypeModal from './PrjTypeModal';
 
 export default function ShortcutCard(props) {
   const { userRole, getPrjInfo } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [visible, setVisible] = useState(false); //类型弹窗显隐
 
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
@@ -42,13 +44,19 @@ export default function ShortcutCard(props) {
     if (userRole === '普通人员')
       return (
         <div className="shortcut-box">
-          {getShortcutItem('xjxm', '新建项目', () => setFileAddVisible(true))}
+          {getShortcutItem('xjxm', '新建项目', () => {
+            setVisible(true);
+            // setFileAddVisible(true)
+          })}
           {getShortcutItem('bgtx', '报告填写', () => jumpToLBPage('ZBYBTX'))}
         </div>
       );
     return (
       <div className="shortcut-box">
-        {getShortcutItem('xjxm', '新建项目', () => setFileAddVisible(true))}
+        {getShortcutItem('xjxm', '新建项目', () => {
+          setVisible(true);
+          // setFileAddVisible(true)
+        })}
         {getShortcutItem('yian', '议案审批', () => jumpToLBPage('V_XWHYALC_LDSP'))}
         {getShortcutItem('ysck', '预算查看', () => jumpToLBPage('YSTJ'))}
         {getShortcutItem(
@@ -100,6 +108,7 @@ export default function ShortcutCard(props) {
           src={src_fileAdd}
         />
       )}
+      <PrjTypeModal visible={visible} setVisible={setVisible} setFileAddVisible={setFileAddVisible}/>
       {getShortcutBox()}
     </div>
   );
