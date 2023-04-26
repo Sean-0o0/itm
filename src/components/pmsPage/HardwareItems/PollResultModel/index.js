@@ -27,7 +27,9 @@ export default function PollResultModel(props) {
     console.log("paramsparams", params)
     console.log("xmid", xmid)
     setTimeout(function () {
-      getTableData(params);
+      if (xmid !== -1) {
+        getTableData(params);
+      }
     }, 300);
     return () => {
     };
@@ -41,6 +43,7 @@ export default function PollResultModel(props) {
 
   //获取表格数据
   const getTableData = (params) => {
+    console.log("11111111")
     setTableLoading(true);
     FetchQueryInquiryComparisonInfo(
       {
