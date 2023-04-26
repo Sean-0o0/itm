@@ -154,8 +154,8 @@ class BudgetExcute extends Component {
             KYWCL = 0,
             KYMBZ = 0,
             KYSYZ = 0,
-            ZBRJZYS = 0,
-            ZBRJKZX = 0,
+            ZBRJZYS = '',
+            ZBRJKZX = '',
         } = ysglxx
 
         return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large"><div className="buget-excute-box cont-box" style={{height: 'auto'}}>
@@ -164,8 +164,8 @@ class BudgetExcute extends Component {
                 <div className='cont-block staff-overview' style={{ width: 'calc(50% - 24px)', marginRight: '24px' }}>
                     <div className='title'>资本性预算</div>
                     <div style={{display: 'flex'}}>
-                        <BudgetType title='已执行软件预算(万元)' wcz={ZBRJWCZ} wcl={ZBRJWCL} mbz={ZBRJMBZ} syz={ZBRJSYZ} type='left'/>
-                        <BudgetType title='已执行硬件预算(万元)' wcz={ZBYJWCZ} wcl={ZBYJWCL} mbz={ZBYJMBZ} syz={ZBYJSYZ} type='left'/>
+                        <BudgetType title={ZBRJZYS} wcz={ZBRJWCZ} wcl={ZBRJWCL} mbz={ZBRJMBZ} syz={ZBRJSYZ} type='left'/>
+                        <BudgetType title={ZBRJKZX} wcz={ZBYJWCZ} wcl={ZBYJWCL} mbz={ZBYJMBZ} syz={ZBYJSYZ} type='left'/>
                     </div>
                 </div>
                 <div className='cont-block staff-overview' style={{ width: 'calc(25% - 12px)', marginRight: '24px' }}>

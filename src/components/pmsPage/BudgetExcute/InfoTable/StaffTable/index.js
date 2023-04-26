@@ -153,6 +153,9 @@ class StaffTable extends Component {
                 key: 'KZXYS',
                 ellipsis: true,
                 align: 'right',
+                render: (value, row, index) => {
+                    return value?value:0
+                },
             },
             {
                 title: '已执行预算(万元)',
@@ -161,6 +164,9 @@ class StaffTable extends Component {
                 key: 'YZXYS',
                 ellipsis: true,
                 align: 'right',
+                render: (value, row, index) => {
+                    return value?value:0
+                },
             }, {
                 title: '预计执行率',
                 dataIndex: 'YJZXL',
@@ -170,7 +176,7 @@ class StaffTable extends Component {
                 ellipsis: true,
                 render: (value, row, index) => {
                     const { YZXYS, KZXYS} = row
-                    let rate = Number.parseFloat(YZXYS)/Number.parseFloat(KZXYS);
+                    let rate = Number.parseFloat(YZXYS)*100/Number.parseFloat(KZXYS);
                     rate = rate&&!isNaN(rate)?rate.toFixed(2): '0'
                     return rate?rate + '%':''
                 },
@@ -206,6 +212,9 @@ class StaffTable extends Component {
             key: 'ZYS',
             ellipsis: true,
             align: 'right',
+            render: (value, row, index) => {
+                return value?value:0
+            },
         }, {
             title: '可执行预算(万元)',
             dataIndex: 'KZXYS',
@@ -213,6 +222,9 @@ class StaffTable extends Component {
             key: 'KZXYS',
             ellipsis: true,
             align: 'right',
+            render: (value, row, index) => {
+                return value?value:0
+            },
         },
         {
             title: '已执行预算(万元)',
@@ -221,6 +233,9 @@ class StaffTable extends Component {
             key: 'YZXYS',
             ellipsis: true,
             align: 'right',
+            render: (value, row, index) => {
+                return value?value:0
+            },
         }, {
             title: '预计执行率',
             dataIndex: 'YJZXL',
