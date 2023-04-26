@@ -30,11 +30,12 @@ class ToConsole extends Component {
   };
 
   componentDidMount() {
-    this.getFilterData();
+    this.getFilterData(this.props);
   }
 
   UNSAFE_componentWillReceiveProps(nextprops) {
-    const { xmid: newid } = nextprops;
+    const { xmid: newid, cxlx } = nextprops;
+    const { cxlx: newCxlx } = this.props;
     const { xmid } = this.state;
     if (xmid !== newid) {
       this.setState({
@@ -44,11 +45,14 @@ class ToConsole extends Component {
         },
       });
     }
+    if(newCxlx!==cxlx){
+      this.getFilterData(nextprops)
+    }
   }
 
   //顶部下拉框查询数据
-  getFilterData = () => {
-    const { cxlx = 'FQCY' } = this.props;
+  getFilterData = (props) => {
+    const { cxlx = 'FQCY' } = props;
     QueryProjectListPara({
       paging: -1,
       cxlx: cxlx === 'FQCY' ? 'WDLBPT' : 'WDLBLD',

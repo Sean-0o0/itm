@@ -225,7 +225,7 @@ class StaffTable extends Component {
                     total={pageParam.total}
                     pageSizeOptions={['10', '20', '30', '40']}
                     showSizeChanger={true}
-                    hideOnSinglePage={true}
+                    // hideOnSinglePage={true}
                     showQuickJumper={true}
                     showTotal={total => `共 ${total} 条数据`}
                 />

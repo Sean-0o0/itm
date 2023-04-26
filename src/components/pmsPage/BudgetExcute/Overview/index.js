@@ -10,46 +10,174 @@ import ReactEchartsCore from 'echarts-for-react/lib/core';
 class Overview extends Component {
     state = {}
 
-    render() {
-        const { title = '-' } = this.props
-        const data = []
-        const option = {
-            // tooltip: {
-            //     trigger: 'item',
-            //     formatter: '{c}'
-            // },
-            tooltip: {
-                trigger: 'axis',
-                axisPointer: {            // 坐标轴指示器，坐标轴触发有效
-                    type: 'cross',       // 默认为直线，可选为：'line' | 'shadow'
-                },
-                textStyle: {
-                    align: 'left'
+    sortArr = (arr) => {
+        let map = {};
+        let myArr = [];
+        for (let i = 0; i < arr.length; i++) {
+            if (arr[i].FKSJ) {
+                if (!map[arr[i].FKSJ]) {
+                    const { YSLX, YZXYS } = arr[i];
+                    myArr.push({
+                        FKSJ: arr[i].FKSJ,
+                        [YSLX]: YZXYS
+                    });
+                    map[arr[i].FKSJ] = arr[i]
+                } else {
+                    for (let j = 0; j < myArr.length; j++) {
+                        if (arr[i].FKSJ === myArr[j].FKSJ) {
+                            const { YSLX, YZXYS } = arr[i];
+                            myArr[j][YSLX] = YZXYS;
+                            break
+                        }
+                    }
                 }
-            },
+            }
+        }
+        return myArr;
+    }
+
+    render() {
+        const { title = '-', ysqs = [] } = this.props
+        const data = this.sortArr(ysqs);
+        const option = {
             color: ['#5B8FF9', '#9EE6FF', '#FDCD67'],
+            tooltip: {
+                trigger: 'axis'
+            },
             legend: {
-                data: data,
-                x: 'center',      //可设定图例在左、右、居中
-                y: 'top',
-                textStyle: {//图例文字的样式
-                    color: '#333333',
-                    fontSize: 12
-                },
+                itemHeight: 0, //圆点大小
+                data: ['资本性预算执行(万元)', '非资本性预算(万元)', '自主研发投入(万元)']
             },
             grid: {
+                bottom: 36,
                 right: 24,
-                bottom: 30,
-                containLabel: true,
+                left: 72,
+                top: 36
             },
-            xAxis: this.getXAxisOption(),
-            yAxis: this.getYAxisOption(),
-            series: this.getSeriesData(),
+            xAxis: {
+                axisTick: {
+                    show: false,
+                },
+                type: 'category',
+                boundaryGap: false,
+                axisLine: {
+                    lineStyle: {
+                        color: 'rgba(0, 0, 0, 0.45)',
+                    }
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: '#A5A7AF'   //这里用参数代替了
+                    },
+                },
+                data: data.map(item=> item.FKSJ)
+            },
+            yAxis: {
+                axisTick: {
+                    show: false,
+                },
+                type: 'value',
+                axisLine: {
+                    lineStyle: {
+                        color: '#EDEDED',
+                    }
+                },
+                axisLabel: {
+                    show: true,
+                    textStyle: {
+                        color: '#A5A7AF'   //这里用参数代替了
+                    },
+                },
+                splitLine: {
+                    lineStyle: {
+                        type: 'dashed'
+                    }
+                },
+                splitNumber: 5
+            },
+            series: [
+                {
+                    name: '资本性预算执行(万元)',
+                    type: 'line',
+                    stack: 'Total',
+                    symbolSize: 1,
+                    data: data.map(item=> item['资本性预算执行']||0),
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgba(91, 143, 249, 1)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgba(91, 143, 249, 0)'
+
+                        }]),
+                        opacity: 0.7
+                    },
+                    emphasis:{
+                        itemStyle: {
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                            shadowBlur: 10
+                        }
+                    }
+                },
+                {
+                    name: '非资本性预算(万元)',
+                    type: 'line',
+                    stack: 'Total',
+                    symbolSize: 1,
+                    data: data.map(item=> item['非资本性预算执行']||0),
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgba(158, 230, 255, 1)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgba(158, 230, 255, 0)'
+
+                        }]),
+                        opacity: 0.7
+                    },
+                    emphasis:{
+                        itemStyle: {
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                            shadowBlur: 10
+                        }
+                    }
+                },
+                {
+                    name: '自主研发投入(万元)',
+                    type: 'line',
+                    stack: 'Total',
+                    symbolSize: 1,
+                    data: data.map(item=> item['科研预算执行']||0),
+                    areaStyle: {
+                        color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [{
+                            offset: 0,
+                            color: 'rgba(253, 205, 103, 1)'
+                        },
+                        {
+                            offset: 1,
+                            color: 'rgba(253, 205, 103, 0)'
+    
+                        }]),
+                        opacity: 0.7
+                    },
+                    emphasis:{
+                        itemStyle: {
+                            shadowColor: 'rgba(0, 0, 0, 0.5)',
+                            shadowBlur: 10
+                        }
+                    }
+                }
+            ]
         };
 
         return (
-            <div className='cont-block staff-overview' style={{ margin: '24px 12px 0', padding: '0 24px' }}>
-                <div style={{ color: '#303133', fontSize: 16, fontWeight: 'bold', height: '30px', lineHeight: '35px' }}>{title}</div>
+            <div className='cont-block trend-overview' style={{ margin: '24px 24px 0' }}>
+                <div style={{ paddingLeft: '24px', color: '#303133', fontSize: 16, fontWeight: 'bold', height: '30px', lineHeight: '40px' }}>{title}</div>
                 <React.Fragment>
                     <ReactEchartsCore
                         echarts={echarts}

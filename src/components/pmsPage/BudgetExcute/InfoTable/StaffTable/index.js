@@ -1,18 +1,22 @@
 import React, { Component } from 'react'
-import { Table, Pagination } from 'antd'
+import { Table, Pagination, message } from 'antd'
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import 'moment/locale/zh-cn';
 import { EncryptBase64 } from "../../../../Common/Encrypt";
+import { QueryBudgetOverviewInfo } from '../../../../../services/pmsServices'
+import { isNumber } from 'lodash';
+
 class StaffTable extends Component {
     state = {
-
+        subTabData: {},
+        loading: {}
     }
 
     handleChange = (current, pageSize) => {
-        const { fetchData, queryType, gwbm, pageParam } = this.props;
+        const { fetchData, queryType, pageParam } = this.props;
         if (fetchData) {
-            fetchData(queryType, gwbm, {
+            fetchData(queryType, {
                 ...pageParam,
                 current: current,
                 pageSize: pageSize,
@@ -21,47 +25,164 @@ class StaffTable extends Component {
         }
     }
 
-    //计算合并
-    rowspan = (userData) => {
-        let spanArr = [];
-        let position = 0;
-        userData.forEach((item, index) => {
-            if (index === 0) {
-                spanArr.push(1);
-                position = 0;
-            } else {
-                //需要合并的地方判断
-                if (userData[index].RYID === userData[index - 1].RYID) {
-                    spanArr[position] += 1;
-                    spanArr.push(0);
-                } else {
-                    spanArr.push(1);
-                    position = index;
-                }
+    queryBudgetOverviewInfo = (ysid) => {
+        this.setState({
+            loading: {
+                ...this.state.loading,
+                [ysid]: true,
             }
-        });
-        return spanArr
+        })
+        const { role, orgid, queryType } = this.props;
+        QueryBudgetOverviewInfo({
+            ysid: ysid,
+            org: orgid,
+            queryType: queryType,
+            role: role,
+        }).then(res => {
+            const { code = 0, note = '', zbysxmxx, fzbysxmxx, kyysxmxx } = res
+            if (code > 0) {
+                let data = [];
+                if (queryType === 'MX_ZB') {
+                    data = JSON.parse(zbysxmxx)
+                } else if (queryType === 'MX_FZB') {
+                    data = JSON.parse(fzbysxmxx)
+                } else if (queryType === 'MX_KY') {
+                    data = JSON.parse(kyysxmxx)
+                }
+                this.setState({
+                    subTabData: {
+                        ...this.state.subTabData,
+                        [ysid]: data,
+                    },
+                    loading: {
+                        ...this.state.loading,
+                        [ysid]: false,
+                    }
+                })
+            } else {
+                message.error(note)
+                this.setState({
+                    loading: {
+                        ...this.state.loading,
+                        [ysid]: false,
+                    }
+                })
+            }
+        }).catch(err => {
+            this.setState({
+                loading: {
+                    ...this.state.loading,
+                    [ysid]: false,
+                }
+            })
+            message.error("查询项目详情失败")
+        })
     }
 
-    // renderContent = (value, row, index) => {
-    //     const obj = {
-    //         children: value,
-    //         attrs: {}
-    //     };
-    //     const _row = spanArr[index];
-    //     const _col = _row > 0 ? 1 : 0;
-    //     obj.attrs = {
-    //         rowSpan: _row,
-    //         colSpan: _col
-    //     };
+    onExpand = (expanded, record) => {
+        const { YSID } = record
+        if (expanded === false) {
+            // 因为如果不断的添加键值对，会造成数据过于庞大，浪费资源，
+            // 因此在每次合并的时候讲相应键值下的数据清空
+            console.log("合并！");
+            this.setState({
+                subTabData: {
+                    ...this.state.subTabData,
+                    [YSID]: [],
+                }
+            });
+        } else {
+            console.log("展开！");
+            this.queryBudgetOverviewInfo(YSID)
+        }
+    }
 
-    //     return obj;
-    // };
+    expandedRowRender = (record, index, indent, expanded) => {
+        console.log('record', record)
+        const { YSID } = record;
+        const { routes } = this.props;
+        const { subTabData = {}, loading = {} } = this.state;
+        const columns = [
+            {
+                title: '序号',
+                dataIndex: 'XMID',
+                width: '5%',
+                key: 'XMID',
+                align: 'center',
+                ellipsis: true,
+                render: (value, row, index) => {
+                    return ''
+                },
+            }, {
+                title: '项目名称',
+                dataIndex: 'XMMC',
+                width: '25%',
+                key: 'XMMC',
+                ellipsis: true,
+                render: (text, row, index) => {
+                    const { XMID = '' } = row;
+                    return <div title={text}>
+                        <Link
+                            className='opr-btn'
+                            to={{
+                                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                        xmid: XMID,
+                                    }),
+                                )}`,
+                                state: {
+                                    routes: routes,
+                                },
+                            }}
+
+                        >
+                            {text}
+                        </Link></div>
+                }
+            }, {
+                title: '总预算(万元)',
+                dataIndex: 'ZYS',
+                width: '17%',
+                key: 'ZYS',
+                ellipsis: true,
+                align: 'right',
+            }, {
+                title: '可执行预算(万元)',
+                dataIndex: 'KZXYS',
+                width: '17%',
+                key: 'KZXYS',
+                ellipsis: true,
+                align: 'right',
+            },
+            {
+                title: '已执行预算(万元)',
+                dataIndex: 'YZXYS',
+                width: '17%',
+                key: 'YZXYS',
+                ellipsis: true,
+                align: 'right',
+            }, {
+                title: '预计执行率',
+                dataIndex: 'YJZXL',
+                width: '17%',
+                key: 'YJZXL',
+                align: 'right',
+                ellipsis: true,
+                render: (value, row, index) => {
+                    const { YZXYS, KZXYS} = row
+                    let rate = Number.parseFloat(YZXYS)/Number.parseFloat(KZXYS);
+                    rate = rate&&!isNaN(rate)?rate.toFixed(2): '0'
+                    return rate?rate + '%':''
+                },
+            }
+        ];
+
+        return <Table loading={loading[YSID]} showHeader={false}  columns={columns} dataSource={subTabData[YSID]} pagination={false} />;
+    };
 
     render() {
-        const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
+        const { tableLoading = false, bgxx: tableData = [], pageParam = {} } = this.props
         const { current = 1, pageSize = 10 } = pageParam;
-        const rowspan = this.rowspan(tableData);
         const columns = [{
             title: '序号',
             dataIndex: 'RYID',
@@ -73,127 +194,57 @@ class StaffTable extends Component {
                 return (current - 1) * pageSize + index + 1;
             },
         }, {
-            title: '人员名称',
-            dataIndex: 'RYMC',
-            width: '10%',
-            key: 'RYMC',
+            title: '项目名称',
+            dataIndex: 'YSXMMC',
+            width: '25%',
+            key: 'YSXMMC',
             ellipsis: true,
-            render: (value, row, index) => {
-                const { RYID = '' } = row;
-                let obj = {
-                    children: <div title={value}>
-                        <Link
-                            className='opr-btn'
-                            to={{
-                                pathname: `/pms/manage/staffDetail/${EncryptBase64(
-                                    JSON.stringify({
-                                      ryid: RYID,
-                                    }),
-                                  )}`,
-                                state: {
-                                    routes: routes,
-                                },
-                            }}
-
-                        >
-                            {value}
-                        </Link></div>,
-                    props: {
-                    },
-                };
-                const _row = rowspan[index];
-                obj.props.rowSpan = _row;
-                return obj;
-            },
         }, {
-            title: '入职时间',
-            dataIndex: 'RZSJ',
-            width: '13%',
-            key: 'RZSJ',
+            title: '总预算(万元)',
+            dataIndex: 'ZYS',
+            width: '17%',
+            key: 'ZYS',
             ellipsis: true,
-            render: (value, row, index) => {
-                const result = moment(value, 'YYYYMMDD').format('YYYY-MM-DD')
-                let obj = {
-                    children: <div className='opr-btn-box' title={result}>{result}</div>,
-                    props: {
-                    },
-                };
-                const _row = rowspan[index];
-                obj.props.rowSpan = _row;
-                return obj;
-            },
+            align: 'right',
         }, {
-            title: '所在项目',
-            dataIndex: 'SZXM',
-            width: '30%',
-            key: 'SZXM',
+            title: '可执行预算(万元)',
+            dataIndex: 'KZXYS',
+            width: '17%',
+            key: 'KZXYS',
             ellipsis: true,
-            render: (text, row, index) => {
-                const { XMID = '' } = row;
-                return <div title={text}>
-                    <Link
-                        className='opr-btn'
-                        to={{
-                            pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                                JSON.stringify({
-                                    xmid: XMID,
-                                }),
-                            )}`,
-                            state: {
-                                routes: routes,
-                            },
-                        }}
-
-                    >
-                        {text}
-                    </Link></div>
-            }
+            align: 'right',
         },
         {
-            title: '项目进度',
-            dataIndex: 'XMJD',
-            width: '12%',
-            key: 'XMJD',
+            title: '已执行预算(万元)',
+            dataIndex: 'YZXYS',
+            width: '17%',
+            key: 'YZXYS',
             ellipsis: true,
-            render: (value, row, index) => {
-                return <div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>
-            },
+            align: 'right',
         }, {
-            title: '岗位',
-            dataIndex: 'GW',
-            width: '14%',
-            key: 'GW',
-            ellipsis: true,
-        }, {
-            title: '工时(人天)',
-            dataIndex: 'GS',
-            width: '13%',
-            key: 'GS',
+            title: '预计执行率',
+            dataIndex: 'YJZXL',
+            width: '17%',
+            key: 'YJZXL',
             align: 'right',
             ellipsis: true,
-            render: (text, row, index) => {
-                return text|| '暂无'
-            }
-        },
-        {
-            title: '评分',
-            dataIndex: 'PJ',
-            width: '5%',
-            key: 'PJ',
-            align: 'center',
-            ellipsis: true,
-            render: (text, row, index) => {
-                return text|| '暂无'
-            }
+            render: (value, row, index) => {
+                return value?value + '%':''
+            },
         }
         ]
 
-        return (<div className='table-box' style={{ height: (role === '信息技术事业部领导' || role === '一级部门领导') ? 'calc(100vh - 375px)' : 'calc(100vh - 235px)' }}>
+        return (<div className='table-box'>
             <div className="project-info-table-box">
                 <Table
                     loading={tableLoading}
                     columns={columns}
-                    rowKey={'id'}
+                    class="components-table-demo-nested"
+                    expandedRowRender={this.expandedRowRender}
+                    onExpand={(expanded, record) => this.onExpand(expanded, record)}
+                    expandIconColumnIndex={1}
+                    expandIconAsCell={false}
+                    rowKey={'YSXMMC'}
                     dataSource={tableData}
                     onChange={this.handleTableChange}
                     pagination={false}
@@ -208,7 +259,7 @@ class StaffTable extends Component {
                     total={pageParam.total}
                     pageSizeOptions={['10', '20', '30', '40']}
                     showSizeChanger={true}
-                    hideOnSinglePage={true}
+                    // hideOnSinglePage={true}
                     showQuickJumper={true}
                     showTotal={total => `共 ${total} 条数据`}
                 />

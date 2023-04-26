@@ -6,27 +6,17 @@ const { TabPane } = Tabs;
 
 class InfoTable extends Component {
   state = {
-    activeKey: '1',
-    queryType: 'MX_ALL',
-    gwbm: ''
+    activeKey: 'MX_ZB',
+    queryType: 'MX_ZB',
   }
 
   handleTab = id => {
-    let queryType = '';
-    let gwbm = '';
-    if (id === '1') {
-      queryType = 'MX_ALL';
-      gwbm = ''
-    } else {
-      queryType = 'MX_SINGLE';
-      gwbm = id
-    }
+    let queryType = id;
     this.setState({
       activeKey: id,
       queryType,
-      gwbm
     }, () => {
-      this.props.fetchData(queryType, gwbm, {
+      this.props.fetchData(queryType, {
         current: 1,
         pageSize: 10,
         paging: 1,
@@ -38,30 +28,24 @@ class InfoTable extends Component {
   }
 
   render() {
-    const { activeKey, queryType, gwbm } = this.state;
-    const { gwfb = [], bgxx = [], tableLoading, pageParam, role, routes } = this.props;
+    const { activeKey, queryType } = this.state;
+    const { data = [], tableLoading, pageParam, role, routes, orgid } = this.props;
     return (<div className='info-table'>
-      <Spin spinning={false} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <Tabs
           onChange={this.handleTab}
           type="card"
           activeKey={activeKey}
         >
-          <TabPane tab='全部' key='1'>
-            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+          <TabPane tab='资本性预算' key='MX_ZB'>
+            <StaffTable routes={routes} orgid={orgid} role={role} queryType={queryType} fetchData={this.props.fetchData} bgxx={data} tableLoading={tableLoading} pageParam={pageParam} />
           </TabPane>
-          {gwfb.map(item => {
-            const { BMGW = '-', BMGWID = '-' } = item
-            return (
-              <TabPane tab={BMGW} key={BMGWID}>
-                <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
-              </TabPane>
-            )
-          })}
-
+          <TabPane tab='非资本性预算' key='MX_FZB'>
+            <StaffTable routes={routes} orgid={orgid} role={role} queryType={queryType} fetchData={this.props.fetchData} bgxx={data} tableLoading={tableLoading} pageParam={pageParam} />
+          </TabPane>
+          <TabPane tab='科研预算' key='MX_KY'>
+            <StaffTable routes={routes} orgid={orgid} role={role} queryType={queryType} fetchData={this.props.fetchData} bgxx={data} tableLoading={tableLoading} pageParam={pageParam} />
+          </TabPane>
         </Tabs>
-      </Spin>
-
     </div>);
   }
 }

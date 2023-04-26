@@ -3,18 +3,17 @@ import TopConsole from './TopConsole'
 import Overview from './Overview'
 import BudgetType from './BudgetType'
 import InfoTable from './InfoTable'
-import { message } from 'antd'
-import { QueryMemberOverviewInfo, QueryUserRole } from '../../../services/pmsServices'
+import { message, Spin } from 'antd'
+import { QueryBudgetOverviewInfo, QueryUserRole } from '../../../services/pmsServices'
 
 class BudgetExcute extends Component {
     state = {
         role: '',
         orgid: '',
-        bmry: [],
-        wbry: [],
-        gwfb: [],
-        bgxx: [],
+        ysglxx: {},
         tableLoading: false,
+        ysqs: [],
+        loading: false,
         pageParam: {
             current: 1,
             pageSize: 10,
@@ -25,10 +24,13 @@ class BudgetExcute extends Component {
     }
 
     componentDidMount() {
-        // this.fetchRole();
+        this.fetchRole();
     }
 
     fetchRole = () => {
+        this.setState({
+            loading: true
+        })
         const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
         if (LOGIN_USERID !== undefined) {
             QueryUserRole({
@@ -38,57 +40,76 @@ class BudgetExcute extends Component {
                 if (code > 0) {
                     this.setState({
                         role: role,
-                        orgid: JSON.parse(sessionStorage.getItem("user"))?.org
+                        orgid: JSON.parse(sessionStorage.getItem("user"))?.org,
                     }, () => {
                         const { pageParam = {} } = this.state;
-                        this.queryMemberOverviewInfo('MX_ALL_ONE', '', pageParam)
+                        this.queryHeaderInfo('MX')
+                        this.queryBudgetOverviewInfo('MX_ZB', undefined, pageParam)
                     })
                 }
             }).catch(err => {
                 message.error("查询人员角色失败")
+                this.setState({
+                    loading: false
+                })
             })
         }
     }
 
-    queryMemberOverviewInfo = (queryType, gwbm, param) => {
-        const { role, orgid, pageParam } = this.state;
+    queryHeaderInfo = (queryType) => {
+        const { role, orgid } = this.state;
+        QueryBudgetOverviewInfo({
+            org: orgid,
+            queryType: queryType,
+            role: role,
+        }).then(res => {
+            const { code = 0, note, ysglxx, ysqs } = res
+            if (code > 0) {
+                const [one] = JSON.parse(ysglxx)
+                this.setState({
+                    ysglxx: one,
+                    ysqs: JSON.parse(ysqs),
+                    loading: false
+                })
+            } else {
+                this.setState({
+                    loading: false
+                })
+                message.error(note)
+            }
+        })
+    }
+
+    queryBudgetOverviewInfo = (queryType, param) => {
         this.setState({
             tableLoading: true,
         })
-        QueryMemberOverviewInfo({
+        const { role, orgid, pageParam } = this.state;
+        QueryBudgetOverviewInfo({
             org: orgid,
-            orgStation: gwbm,
             queryType: queryType,
             role: role,
             ...param
         }).then(res => {
-            const { code = 0, bmry, wbry, gwfb, bgxx, note, total } = res
+            const { code = 0, note = '', total, zbysxm, fzbysxm, kyysxm  } = res
             if (code > 0) {
-                if (queryType === 'MX_ALL_ONE') {
-                    this.setState({
-                        bmry: JSON.parse(bmry),
-                        wbry: JSON.parse(wbry),
-                        gwfb: JSON.parse(gwfb),
-                        bgxx: JSON.parse(bgxx),
-                        tableLoading: false,
-                        pageParam: {
-                            ...pageParam,
-                            ...param,
-                            total
-                        }
-                    })
-                } else {
-                    this.setState({
-                        bgxx: JSON.parse(bgxx),
-                        tableLoading: false,
-                        pageParam: {
-                            ...pageParam,
-                            ...param,
-                            total
-                        }
-                    })
+                let data = [];
+                if(queryType==='MX_ZB'){
+                    data = JSON.parse(zbysxm)
+                }else if(queryType==='MX_FZB'){
+                    data = JSON.parse(fzbysxm)
+                }else if(queryType==='MX_KY'){
+                    data = JSON.parse(kyysxm)
                 }
-
+                this.setState({
+                    data: data,
+                    tableLoading: false,
+                    pageParam: {
+                        ...pageParam,
+                        ...param,
+                        total
+                    }
+                })
             } else {
                 message.error(note)
                 this.setState({
@@ -96,34 +117,69 @@ class BudgetExcute extends Component {
                 })
             }
         }).catch(err => {
-            message.error("查询人员列表失败")
             this.setState({
+                loading: false,
                 tableLoading: false,
             })
+            message.error("查询预算概览失败")
         })
     }
+
 
     render() {
         const { routes } = this.props
         const { role = '',
-            bmry = [],
-            wbry = [],
-            gwfb = [],
-            bgxx = [],
+            orgid = '',
+            ysglxx = {},
+            ysqs = [],
+            data = [],
             tableLoading,
-            pageParam
+            pageParam,
+            loading
         } = this.state
 
-        return (<div className="department-staff-box cont-box">
+        const { ZBRJWCZ = 0,
+            ZBRJWCL = 0,
+            ZBRJMBZ = 0,
+            ZBRJSYZ = 0,
+            ZBYJWCZ = 0,
+            ZBYJWCL = 0,
+            ZBYJMBZ = 0,
+            ZBYJSYZ = 0,
+            FZBWCZ = 0,
+            FZBWCL = 0,
+            FZBMBZ = 0,
+            FZBSYZ = 0,
+            KYWCZ = 0,
+            KYWCL = 0,
+            KYMBZ = 0,
+            KYSYZ = 0,
+            ZBRJZYS = 0,
+            ZBRJKZX = 0,
+        } = ysglxx
+
+        return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large"><div className="buget-excute-box cont-box" style={{height: 'auto'}}>
             <TopConsole routes={routes} />
             <div className="overview-box">
-                <BudgetType order={1} title='资本性预算' dataSource={bmry} />
-                <BudgetType order={2} title='非资本性预算' dataSource={wbry} />
-                <BudgetType order={2} title='科研预算' dataSource={wbry} />
+                <div className='cont-block staff-overview' style={{ width: 'calc(50% - 24px)', marginRight: '24px' }}>
+                    <div className='title'>资本性预算</div>
+                    <div style={{display: 'flex'}}>
+                        <BudgetType title='已执行软件预算(万元)' wcz={ZBRJWCZ} wcl={ZBRJWCL} mbz={ZBRJMBZ} syz={ZBRJSYZ} type='left'/>
+                        <BudgetType title='已执行硬件预算(万元)' wcz={ZBYJWCZ} wcl={ZBYJWCL} mbz={ZBYJMBZ} syz={ZBYJSYZ} type='left'/>
+                    </div>
+                </div>
+                <div className='cont-block staff-overview' style={{ width: 'calc(25% - 12px)', marginRight: '24px' }}>
+                    <div className='title'>非资本性预算</div>
+                    <BudgetType title='已执行预算(万元)' wcz={FZBWCZ} wcl={FZBWCL} mbz={FZBMBZ} syz={FZBSYZ} />
+                </div>
+                <div className='cont-block staff-overview' style={{ width: 'calc(25% - 12px)' }}>
+                    <div className='title'>科研预算</div>
+                    <BudgetType title='已执行预算(万元)' wcz={KYWCZ} wcl={KYWCL} mbz={KYMBZ} syz={KYSYZ} />
+                </div>
             </div>
-            <Overview title='项目研发投入情况' dataSource={bmry}/>
-            <InfoTable routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} gwfb={gwfb} bgxx={bgxx} fetchData={this.queryMemberOverviewInfo} />
-        </div>);
+            <Overview title='项目研发投入情况' ysqs={ysqs} />
+            <InfoTable orgid={orgid} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} data={data} fetchData={this.queryBudgetOverviewInfo} />
+        </div></Spin>);
     }
 }
 
