@@ -528,13 +528,14 @@ class EnterBidInfoModel extends React.Component {
           isSpinning: false,
         })
         this.props.closeModal();
-        message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3)
+        this.props.onSuccess(operateType === "UPDATE" ? "硬件中标信息编辑" : "硬件中标信息录入");
+        // message.info('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '成功！', 3)
       } else {
         this.setState({
           isSpinning: false,
         })
         this.props.closeModal();
-        message.error('信息' + operateType === "UPDATE" ? "编辑" : "录入" + '失败！', 3);
+        message.error(operateType === "UPDATE" ? "硬件中标信息编辑" : "硬件中标信息录入" + '失败！', 3);
       }
     });
   };

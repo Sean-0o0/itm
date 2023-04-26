@@ -166,7 +166,8 @@ class PollResultEnterModel extends React.Component {
           isSpinning: false,
         })
         this.props.closeModal();
-        message.info('信息修改成功！', 3);
+        this.props.onSuccess("询比结果编辑");
+        // message.info('信息修改成功！', 3);
       } else {
         this.setState({
           isSpinning: false,
