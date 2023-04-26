@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
-import { Collapse, Spin, Icon } from 'antd';
+import { Collapse, Spin, Icon, Empty } from 'antd';
 import moment from 'moment';
 import { EncryptBase64 } from '../../Common/Encrypt';
 import { Link } from 'react-router-dom';
@@ -91,36 +91,10 @@ export default function StaffInfo(props) {
             normalizeKeyName: 'value',
           })[0].children[0].children[0].children[0].children;
           data.push({
-            value: '11168',
-            title: '机构中心',
+            value: 'szyyzx',
+            title: '数字应用中心',
             fid: '11167',
-            children: [
-              {
-                value: '11169',
-                title: '项目管理部',
-                fid: '11168',
-              },
-              {
-                value: '11170',
-                title: '移动金融开发部',
-                fid: '11168',
-              },
-              {
-                value: '11172',
-                title: '大数据应用开发部',
-                fid: '11168',
-              },
-              {
-                value: '11173',
-                title: '质量控制部',
-                fid: '11168',
-              },
-              {
-                value: '13243',
-                title: '内控开发部',
-                fid: '11168',
-              },
-            ],
+            children: [],
           });
           setOrgData([...data]);
           console.log('🚀 ~ FetchQueryOrganizationInfo ~ res', data);
@@ -199,35 +173,48 @@ export default function StaffInfo(props) {
     return (
       <div className="staff-org-item" key={data.value}>
         <div className="top-name">{data.title || '--'}</div>
-        <div className="bottom-box">
-          <div className="leader-list">
-            {data.members.map(m => (
-              <div className="leader-item" key={m.id}>
-                <div className="position">
-                  <i>#</i> {m.gw || '--'}
-                </div>
-                {getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id })}
-              </div>
-            ))}
+        {data.children.length === 0 ? (
+          <div className="item-empty">
+            <Empty description="暂无数据..." />
           </div>
-          <Collapse
-            // accordion
-            bordered={false}
-            defaultActiveKey={[data.children[0]?.value]}
-            expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
-          >
-            {data.children.map(x => (
-              <Panel header={x.title} key={x.value}>
-                <div className="panel-content">
-                  {x.members.map(m =>
-                    getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id }),
-                  )}
-                  {getAfterItem(itemWidth)}
+        ) : (
+          <div className="bottom-box">
+            <div className="leader-list">
+              {data.members.map(m => (
+                <div className="leader-item" key={m.id}>
+                  <div className="position">
+                    <i>#</i> {m.gw || '--'}
+                  </div>
+                  {getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id })}
                 </div>
-              </Panel>
-            ))}
-          </Collapse>
-        </div>
+              ))}
+            </div>
+            <Collapse
+              // accordion
+              bordered={false}
+              defaultActiveKey={[data.children[0]?.value]}
+              expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
+            >
+              {data.children.map(x => (
+                <Panel header={x.title} key={x.value}>
+                  <div className="panel-content">
+                    {x.members.map(m =>
+                      getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id }),
+                    )}
+                    {x.members.length === 0 && (
+                      <Empty
+                        description="暂无数据..."
+                        image={Empty.PRESENTED_IMAGE_SIMPLE}
+                        style={{ width: '100%', margin: 0 }}
+                      />
+                    )}
+                    {getAfterItem(itemWidth)}
+                  </div>
+                </Panel>
+              ))}
+            </Collapse>
+          </div>
+        )}
       </div>
     );
   };
@@ -240,7 +227,9 @@ export default function StaffInfo(props) {
         size="large"
         wrapperClassName="staff-info-spin-wrapper"
       >
-        {staffData.map(x => getOrgItem(x))}
+        {getOrgItem(staffData[1])}
+        {getOrgItem(staffData[0])}
+        {getOrgItem(staffData[2])}
       </Spin>
     </div>
   );

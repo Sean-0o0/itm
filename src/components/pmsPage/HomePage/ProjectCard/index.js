@@ -419,7 +419,13 @@ export default function ProjectCard(props) {
             {/* <i className="iconfont circle-info" /> */}
           </div>
           {userRole !== '普通人员' && (
-            <span>
+            <span
+              onClick={() =>
+                (window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                  JSON.stringify({}),
+                )}`)
+              }
+            >
               全部
               <i className="iconfont icon-right" />
             </span>

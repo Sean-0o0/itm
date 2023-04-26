@@ -381,7 +381,7 @@ export default function HomePage(props) {
       spinning={isSpinning}
       tip="加载中"
       size="large"
-      wrapperClassName="diy-style-spin payment-process-box"
+      wrapperClassName="home-page-box-spin-wrapper"
     >
       <div className="home-page-box">
         <div className="row-box">

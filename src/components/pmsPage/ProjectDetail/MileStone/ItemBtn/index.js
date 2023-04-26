@@ -3,6 +3,7 @@ import {
   CreateOperateHyperLink,
   FetchQueryOAUrl,
   FetchQueryOwnerWorkflow,
+  GetApplyListProvisionalAuth,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
 import { message, Popover } from 'antd';
@@ -364,7 +365,7 @@ class ItemBtn extends React.Component {
           current: 1,
           pageSize: 9999,
           total: -1,
-          sort: '',
+          sort: 'XQ',
         })
           .then(ret => {
             const { code = 0, record = [] } = ret;

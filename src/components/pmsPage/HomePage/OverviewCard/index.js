@@ -60,7 +60,7 @@ export default function OverviewCard(props) {
           )}
           {linkTo && (
             <div className="top-txt top-txt-link">
-              <Link to={linkTo}>
+              <Link to={linkTo} style={{ color: '#606266FF' }}>
                 {title}
                 {more && <i className="iconfont icon-right" />}
               </Link>
@@ -156,6 +156,12 @@ export default function OverviewCard(props) {
             addNum: overviewInfo?.xmjrxz,
             unit: '项',
             width: '22%',
+            linkTo: {
+              pathname: `/pms/manage/projectBuilding`,
+              state: {
+                routes: [{ name: '首页', pathname: location.pathname }],
+              },
+            },
           })}
           {getOverviewItem({
             title: '部门队伍数量',
@@ -164,6 +170,12 @@ export default function OverviewCard(props) {
             addNum: overviewInfo?.ryjrxz,
             unit: '人',
             width: '22%',
+            linkTo: {
+              pathname: `/pms/manage/departmentOverview`,
+              state: {
+                routes: [{ name: '首页', pathname: location.pathname }],
+              },
+            },
           })}
           {getOverviewItem({
             title: '预算执行金额(万元)/执行率',
@@ -173,6 +185,12 @@ export default function OverviewCard(props) {
             addNum: overviewInfo?.ysjrxz,
             unit: '万元',
             width: '34%',
+            linkTo: {
+              pathname: `/pms/manage/BudgetExcute`,
+              state: {
+                routes: [{ name: '首页', pathname: location.pathname }],
+              },
+            },
           })}
           {getOverviewItem({
             title: '供应商数量',

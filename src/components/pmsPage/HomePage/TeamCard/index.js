@@ -1,8 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 import * as echarts from 'echarts';
 
 export default function TeamCard(props) {
   const { teamData } = props;
+  const location = useLocation();
   const pieChartRef = useRef(null);
 
   useEffect(() => {
@@ -118,8 +121,17 @@ export default function TeamCard(props) {
       <div className="home-card-title-box">
         部门队伍建设(含外包)
         <span>
-          全部
-          <i className="iconfont icon-right" />
+          <Link
+            to={{
+              pathname: `/pms/manage/departmentOverview`,
+              state: {
+                routes: [{ name: '首页', pathname: location.pathname }],
+              },
+            }}
+          >
+            全部
+            <i className="iconfont icon-right" />
+          </Link>
         </span>
       </div>
       <div className="team-chart" ref={pieChartRef} />

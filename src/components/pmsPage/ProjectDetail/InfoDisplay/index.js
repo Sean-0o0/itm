@@ -301,23 +301,49 @@ export default function InfoDisplay(props) {
         <div className="top-title">项目信息</div>
         <div className="info-row">
           {getInfoItem('项目类型：', notNull(prjBasic.XMLX))}
-          {getInfoItem('关联软件：', notNull(prjBasic.GLXT))}
-          {getInfoItem('应用部门：', notNull(prjBasic.SSBM))}
+          <div className="info-item" key="关联软件：">
+            <span>关联软件：</span>
+            {notNull(prjBasic.GLXT) === '暂无数据' ? (
+              '暂无数据'
+            ) : (
+              <Tooltip placement="topLeft" title={prjBasic.GLXT.replace(/,/g, '、')}>
+                <span style={{ cursor: 'default', color: '#303133' }}>
+                  {prjBasic.GLXT.replace(/,/g, '、')}
+                </span>
+              </Tooltip>
+            )}
+          </div>
+          <div className="info-item" key="应用部门：">
+            <span>应用部门：</span>
+            {notNull(prjBasic.SSBM) === '暂无数据' ? (
+              '暂无数据'
+            ) : (
+              <Tooltip placement="topLeft" title={prjBasic.SSBM.replace(/,/g, '、')}>
+                <span style={{ cursor: 'default', color: '#303133' }}>
+                  {prjBasic.SSBM.replace(/,/g, '、')}
+                </span>
+              </Tooltip>
+            )}
+          </div>
         </div>
         <div className="info-row">
           <div className="info-item" key="文档库：">
             <span>文档库：</span>
-            <Link
-              to={{
-                pathname: '/pms/manage/attachLibrary',
-                query: {
-                  xmid,
-                },
-              }}
-              style={{ color: '#3361ff' }}
-            >
-              查看详情
-            </Link>
+            {isMember() ? (
+              <Link
+                to={{
+                  pathname: '/pms/manage/attachLibrary',
+                  query: {
+                    xmid,
+                  },
+                }}
+                style={{ color: '#3361ff' }}
+              >
+                查看详情
+              </Link>
+            ) : (
+              '非项目人员不可查看'
+            )}
           </div>
           {!isHwSltPrj && (
             <div className="info-item">

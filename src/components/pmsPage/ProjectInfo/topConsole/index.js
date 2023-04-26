@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { Select, Button, Input, TreeSelect, Row, Col } from 'antd';
+import { Select, Button, Input, TreeSelect, Row, Col, Icon } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
 import { set } from 'store';
@@ -30,6 +30,8 @@ export default forwardRef(function TopConsole(props, ref) {
   const [ltAmount, setLtAmount] = useState(undefined); //项目金额，小于
   const [minAmount, setMinAmount] = useState(undefined); //项目金额，最小
   const [maxAmount, setMaxAmount] = useState(undefined); //项目金额，最大
+  const [labelOpen, setLabelOpen] = useState(false); //下拉框展开
+  const [orgOpen, setOrgOpen] = useState(false); //下拉框展开
 
   const {
     setTableLoading,
@@ -496,6 +498,12 @@ export default forwardRef(function TopConsole(props, ref) {
             onChange={handleLabelChange}
             value={label}
             treeDefaultExpandedKeys={['1']}
+            open={labelOpen}
+            onDropdownVisibleChange={v => setLabelOpen(v)}
+          />
+          <Icon
+            type="down"
+            className={'label-selector-arrow' + (labelOpen ? ' selector-rotate' : '')}
           />
         </div>
         <div className="console-item">
@@ -520,6 +528,12 @@ export default forwardRef(function TopConsole(props, ref) {
             onChange={handleOrgChange}
             value={org}
             treeDefaultExpandedKeys={['1', '8857']}
+            open={orgOpen}
+            onDropdownVisibleChange={v => setOrgOpen(v)}
+          />
+          <Icon
+            type="down"
+            className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
           />
         </div>
         <div className="console-item">

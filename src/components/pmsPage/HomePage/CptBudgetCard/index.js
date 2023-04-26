@@ -1,14 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { getAmountFormat } from '..';
 import { Progress, Tooltip } from 'antd';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default function CptBudgetCard(props) {
   const { isVertical = false, userRole, budgetData, time } = props;
-
+  const location = useLocation();
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  useEffect(() => {
-    return () => {};
-  }, []);
 
   const getBudgetItem = ({
     title = '--',
@@ -62,8 +61,17 @@ export default function CptBudgetCard(props) {
         <div>资本性预算执行情况</div>
         {userRole !== '普通人员' && (
           <span>
-            全部
-            <i className="iconfont icon-right" />
+            <Link
+              to={{
+                pathname: `/pms/manage/BudgetExcute`,
+                state: {
+                  routes: [{ name: '首页', pathname: location.pathname }],
+                },
+              }}
+            >
+              全部
+              <i className="iconfont icon-right" />
+            </Link>
           </span>
         )}
       </div>
