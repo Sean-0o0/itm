@@ -1,10 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Empty, Icon, Modal, Spin } from 'antd';
 import moment from 'moment';
+import { EncryptBase64 } from '../../../../Common/Encrypt';
 import { FetchQueryProjectLabel } from '../../../../../services/projectManage';
 
 export default function PrjTypeModal(props) {
-  const { visible, setVisible, setFileAddVisible } = props;
+  const { visible, setVisible, setFileAddVisible, setSrc_fileAdd } = props;
   const [typeData, setTypeData] = useState([]); //项目类型
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   useEffect(() => {
@@ -12,10 +13,9 @@ export default function PrjTypeModal(props) {
     FetchQueryProjectLabel({})
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ FetchQueryProjectLabel ~ res', JSON.parse(res.xmlxRecord));
-          setTypeData(p => [
-            ...JSON.parse(res.xmlxRecord).filter(x => !['0', '1'].includes(x.GRADE)),
-          ]);
+          let data = JSON.parse(res.xmlxRecord).filter(x => !['0', '1'].includes(x.GRADE));
+          console.log('🚀 ~ file: index.js:17 ~ useEffect ~ data:', data);
+          setTypeData(p => [...data]);
           setIsSpinning(false);
         }
       })
@@ -24,9 +24,14 @@ export default function PrjTypeModal(props) {
       });
 
     return () => {};
-  }, []);
+  }, [visible]);
 
-  const newProject = () => {
+  const newProject = projectType => {
+    setSrc_fileAdd(
+      `/#/single/pms/SaveProject/${EncryptBase64(
+        JSON.stringify({ xmid: -1, type: true, projectType }),
+      )}`,
+    );
     setVisible(false);
     setFileAddVisible(true);
   };
@@ -36,40 +41,45 @@ export default function PrjTypeModal(props) {
       wrapClassName="editMessage-modify prj-type-modal"
       width={'880px'}
       maskClosable={false}
+      destroyOnClose={true}
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-      centered
+      style={{ top: '10px' }}
       title={null}
       footer={null}
       visible={visible}
       onCancel={() => setVisible(false)}
     >
       <div className="body-title-box" style={{ fontSize: '16px' }}>
-        <strong>点击想要创建的项目类型</strong>
+        <strong>选择项目类型</strong>
       </div>
       <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="prj-type-modal-spin">
-        {typeData.map(x => (
-          <div className="type-item" key={x.id} onClick={newProject}>
-            <div className="title">
-              <Icon type="pushpin" className="item-icon" />
-              {x.NAME || '--'}
-            </div>
-            <div className="desc">
-              {x.SM || (
-                <div className="desc-empty">
-                  <Empty
-                    description="暂无描述"
-                    image={Empty.PRESENTED_IMAGE_SIMPLE}
-                    style={{ width: '100%' }}
-                  />
-                </div>
-              )}
-            </div>
-            {/* <div className="footer-btn" onClick={newProject}>
+        <div className="content-title">点击想要创建的项目类型</div>
+        <div className="content-list">
+          {typeData.map((x, i) => (
+            <div className="type-item" key={x.ID} onClick={() => newProject(x.ID)}>
+              <div className="title">
+                {/* <Icon type="pushpin" className="item-icon" /> */}
+                <div className="item-icon">{i + 1}</div>
+                {x.NAME || '--'}
+              </div>
+              <div className="desc">
+                {x.SM || (
+                  <div className="desc-empty">
+                    <Empty
+                      description="暂无描述"
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      style={{ width: '100%' }}
+                    />
+                  </div>
+                )}
+              </div>
+              {/* <div className="footer-btn" onClick={newProject}>
               新建项目
             </div> */}
-          </div>
-        ))}
+            </div>
+          ))}
+        </div>
       </Spin>
     </Modal>
   );

@@ -12,9 +12,6 @@ export default function ShortcutCard(props) {
 
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
-    setSrc_fileAdd(
-      `/#/single/pms/SaveProject/${EncryptBase64(JSON.stringify({ xmid: -1, type: true }))}`,
-    );
     return () => {
       window.removeEventListener('message', handleIframePostMessage);
     };
@@ -108,7 +105,7 @@ export default function ShortcutCard(props) {
           src={src_fileAdd}
         />
       )}
-      <PrjTypeModal visible={visible} setVisible={setVisible} setFileAddVisible={setFileAddVisible}/>
+      <PrjTypeModal visible={visible} setVisible={setVisible} setFileAddVisible={setFileAddVisible} setSrc_fileAdd={setSrc_fileAdd}/>
       {getShortcutBox()}
     </div>
   );

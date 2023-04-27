@@ -326,136 +326,136 @@ export default function InfoDisplay(props) {
             )}
           </div>
         </div>
-        <div className="info-row">
-          <div className="info-item" key="文档库：">
-            <span>文档库：</span>
-            {isMember() ? (
-              <Link
-                to={{
-                  pathname: '/pms/manage/attachLibrary',
-                  query: {
-                    xmid,
-                  },
-                }}
-                style={{ color: '#3361ff' }}
-              >
-                查看详情
-              </Link>
-            ) : (
-              '非项目人员不可查看'
+        {(isMember() || !isHwSltPrj) && (
+          <div className="info-row">
+            {isMember() && (
+              <div className="info-item" key="文档库：">
+                <span>文档库：</span>
+                <Link
+                  to={{
+                    pathname: '/pms/manage/attachLibrary',
+                    query: {
+                      xmid,
+                    },
+                  }}
+                  style={{ color: '#3361ff' }}
+                >
+                  查看详情
+                </Link>
+              </div>
+            )}
+            {!isHwSltPrj && (
+              <div className="info-item">
+                <span>获奖信息：</span>
+                {award.length === 0 ? (
+                  '暂无数据'
+                ) : (
+                  <Popover
+                    placement="bottom"
+                    title={null}
+                    content={tablePopover(award, [
+                      {
+                        title: '奖项名称',
+                        dataIndex: 'JXMC',
+                        width: 180,
+                        key: 'JXMC',
+                        ellipsis: true,
+                        render: txt => (
+                          <Tooltip title={txt} placement="topLeft">
+                            <span style={{ cursor: 'default' }}>{txt}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: '荣誉等级',
+                        dataIndex: 'RYDJ',
+                        width: 150,
+                        key: 'RYDJ',
+                        ellipsis: true,
+                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                      },
+                      {
+                        title: '知识产权类型',
+                        dataIndex: 'ZSCQLX',
+                        width: 150,
+                        key: 'ZSCQLX',
+                        ellipsis: true,
+                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                      },
+                      {
+                        title: '获奖日期',
+                        dataIndex: 'HJSJ',
+                        key: 'HJSJ',
+                        ellipsis: true,
+                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                      },
+                    ])}
+                    overlayClassName="project-topic-content-popover"
+                  >
+                    <a style={{ color: '#3361ff' }}>查看详情</a>
+                  </Popover>
+                )}
+              </div>
+            )}
+            {!isHwSltPrj && (
+              <div className="info-item">
+                <span>项目课题：</span>
+                {topic.length === 0 ? (
+                  '暂无数据'
+                ) : (
+                  <Popover
+                    placement="bottomLeft"
+                    title={null}
+                    content={tablePopover(topic, [
+                      {
+                        title: '课题名称',
+                        dataIndex: 'XMKT',
+                        width: 160,
+                        key: 'XMKT',
+                        ellipsis: true,
+                        render: txt => (
+                          <Tooltip title={txt} placement="topLeft">
+                            <span style={{ cursor: 'default' }}>{txt}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: '进度',
+                        dataIndex: 'JD',
+                        width: 100,
+                        key: 'JD',
+                        ellipsis: true,
+                        render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
+                      },
+                      {
+                        title: '简介',
+                        dataIndex: 'JJ',
+                        key: 'JJ',
+                        ellipsis: true,
+                        render: txt => (
+                          <Tooltip title={txt} placement="topLeft">
+                            <span style={{ cursor: 'default' }}>{txt}</span>
+                          </Tooltip>
+                        ),
+                      },
+                      {
+                        title: '当前进展',
+                        dataIndex: 'DQJZ',
+                        width: 100,
+                        key: 'DQJZ',
+                        ellipsis: true,
+                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                      },
+                    ])}
+                    overlayClassName="project-topic-content-popover"
+                  >
+                    <a style={{ color: '#3361ff' }}>查看详情</a>
+                  </Popover>
+                )}
+              </div>
             )}
           </div>
-          {!isHwSltPrj && (
-            <div className="info-item">
-              <span>获奖信息：</span>
-              {award.length === 0 ? (
-                '暂无数据'
-              ) : (
-                <Popover
-                  placement="bottom"
-                  title={null}
-                  content={tablePopover(award, [
-                    {
-                      title: '奖项名称',
-                      dataIndex: 'JXMC',
-                      width: 180,
-                      key: 'JXMC',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '荣誉等级',
-                      dataIndex: 'RYDJ',
-                      width: 150,
-                      key: 'RYDJ',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                    {
-                      title: '知识产权类型',
-                      dataIndex: 'ZSCQLX',
-                      width: 150,
-                      key: 'ZSCQLX',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                    {
-                      title: '获奖日期',
-                      dataIndex: 'HJSJ',
-                      key: 'HJSJ',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                  ])}
-                  overlayClassName="project-topic-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
-              )}
-            </div>
-          )}
-          {!isHwSltPrj && (
-            <div className="info-item">
-              <span>项目课题：</span>
-              {topic.length === 0 ? (
-                '暂无数据'
-              ) : (
-                <Popover
-                  placement="bottomLeft"
-                  title={null}
-                  content={tablePopover(topic, [
-                    {
-                      title: '课题名称',
-                      dataIndex: 'XMKT',
-                      width: 160,
-                      key: 'XMKT',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '进度',
-                      dataIndex: 'JD',
-                      width: 100,
-                      key: 'JD',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
-                    },
-                    {
-                      title: '简介',
-                      dataIndex: 'JJ',
-                      key: 'JJ',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      ),
-                    },
-                    {
-                      title: '当前进展',
-                      dataIndex: 'DQJZ',
-                      width: 100,
-                      key: 'DQJZ',
-                      ellipsis: true,
-                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                    },
-                  ])}
-                  overlayClassName="project-topic-content-popover"
-                >
-                  <a style={{ color: '#3361ff' }}>查看详情</a>
-                </Popover>
-              )}
-            </div>
-          )}
-        </div>
+        )}
         {!isHwSltPrj && (
           <div className="info-row">
             <div className="info-item">

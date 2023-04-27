@@ -11,6 +11,7 @@ export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
   const {
     tableData,
@@ -24,11 +25,7 @@ export default function InfoTable(props) {
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
-
-  //lb弹窗配置
-  const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(
-    JSON.stringify({ xmid: -1, type: true }),
-  )}`;
+  
   const fileAddModalProps = {
     isAllWindow: 1,
     title: '新建项目',
@@ -324,6 +321,7 @@ export default function InfoTable(props) {
         visible={visible}
         setVisible={setVisible}
         setFileAddVisible={setFileAddVisible}
+        setSrc_fileAdd={setSrc_fileAdd}
       />
       <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible} />
       <div className="btn-add-prj-box">
