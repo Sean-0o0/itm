@@ -23,6 +23,8 @@ const { projectManage: {
   queryHardwareDemandInfo,
   queryTenderStatisticsInfo,
   getDocumentByLiveBos,
+  insertSubProjects,
+  querySubProjectsInfo,
 } } = api;
 
 // 查询软件清单
@@ -222,6 +224,26 @@ export async function FetchQueryTenderStatisticsInfo(payload, configObj) {
 export async function GetDocumentByLiveBos(payload, configObj) {
   const option = {
     url: getDocumentByLiveBos,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//集合项目-新增子项目
+export async function InsertSubProjects(payload, configObj) {
+  const option = {
+    url: insertSubProjects,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//集合项目-查询子项目
+export async function FetchQuerySubProjectsInfo(payload, configObj) {
+  const option = {
+    url: querySubProjectsInfo,
     method: 'post',
     data: payload,
   };

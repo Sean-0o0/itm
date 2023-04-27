@@ -29,4 +29,6 @@ export default [
   {code: '', key: 'queryHardwareDemandInfo', url: '/projectManage/queryHardwareDemandInfo', dis: '查询硬件项目-需求列表'},
   {code: '', key: 'queryTenderStatisticsInfo', url: '/projectManage/queryTenderStatisticsInfo', dis: '查询硬件项目-标段统计'},
   {code: '', key: 'getDocumentByLiveBos', url: '/livebosService/v1/getDocumentByLiveBos', dis: '查询硬件项目-需求列表'},
+  {code: '', key: 'insertSubProjects', url: '/projectManage/insertSubProjects', dis: '集合项目-新增子项目'},
+  {code: '', key: 'querySubProjectsInfo', url: '/projectManage/querySubProjectsInfo', dis: '集合项目-查询子项目'},
 ];

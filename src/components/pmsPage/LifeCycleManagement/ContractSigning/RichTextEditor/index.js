@@ -5,7 +5,6 @@ import {EncryptBase64, DecryptBase64} from '../../../../Common/Encrypt';
 let editor = null
 
 function RichTextEditor(props) {
-  //{"MODULAR_ID":6,"MODULAR_NAME":"激励方式","NOTE":"激励方式说明内容","SNO":1}
   const {value, onChange} = props;
 
 
@@ -39,7 +38,7 @@ function RichTextEditor(props) {
   }, [])
 
   useEffect(() => {
-    if (editor) {
+    if (value !== editor.txt.html()) {
       editor.txt.html(value);
     }
   }, [value])
