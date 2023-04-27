@@ -951,6 +951,10 @@ class EnterBidInfoModel extends React.Component {
                             ['ZBGYS' + Date.now()]: '',
                           });
                           this.setState({ tableData: arrData });
+                          setTimeout(() => {
+                            const table = document.querySelectorAll(`.tableBox2 .ant-table-body`)[0];
+                            table.scrollTop = table.scrollHeight;
+                          }, 200);
                         }}
                       >
                         <span className="addHover">

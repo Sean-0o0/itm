@@ -1,20 +1,20 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip} from 'antd';
-import {EncryptBase64} from '../../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
-import BasicIndexTable from "../../../../Common/BasicIndexTable";
-import moment from "moment";
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip } from 'antd';
+import { EncryptBase64 } from '../../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
+import BasicIndexTable from '../../../../Common/BasicIndexTable';
+import moment from 'moment';
 
 export default function InfoTable(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const {tableData, tableLoading, total, params, callBackParams} = props; //表格数据
+  const { tableData, tableLoading, total, params, callBackParams } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 tableDatatableData:", tableData)
 
   //lb弹窗配置
   const src_fileAdd = `/#/single/pms/SaveProject/${EncryptBase64(
-    JSON.stringify({xmid: -1, type: true}),
+    JSON.stringify({ xmid: -1, type: true }),
   )}`;
 
   useEffect(() => {
@@ -69,8 +69,8 @@ export default function InfoTable(props) {
   //表格操作后更新数据
   const handleTableChange = obj => {
     // console.log('handleTableChange', obj);
-    const {current = 1, pageSize = 10} = obj;
-    callBackParams({...params, current, pageSize})
+    const { current = 1, pageSize = 10 } = obj;
+    callBackParams({ ...params, current, pageSize });
   };
 
   const openVisible = () => {
@@ -114,9 +114,9 @@ export default function InfoTable(props) {
   const getRowNumCount = (data, key, target, bool = false) => {
     //当合并项为可编辑时，最后传true
     if (!Array.isArray(data)) return 1;
-    console.log("datadatadata", data)
+    console.log('datadatadata', data);
     data = data.map(_ => _[key + (bool ? _.id : '')]); // 只取出筛选项
-    console.log("datadatadata22222", data)
+    console.log('datadatadata22222', data);
     let preValue = data[0];
     const res = [[preValue]]; // 放进二维数组里
     let index = 0; // 二维数组下标
@@ -133,29 +133,28 @@ export default function InfoTable(props) {
       }
     }
     const arr = [];
-    console.log("resresresres", res)
+    console.log('resresresres', res);
     const totalarr = [];
     let num = [];
     res.forEach(_ => {
       const len = _.length;
       for (let i = 0; i < len; i++) {
-        num = tableData.filter(item => item.BJID === _[i])
+        num = tableData.filter(item => item.BJID === _[i]);
         arr.push(i === 0 ? len : 0);
       }
-      console.log("numnum", num)
-      console.log("arr", arr)
+      console.log('numnum', num);
+      console.log('arr', arr);
       let total = 0;
       num.map(item => {
         total = Number(item.XMJE) + total;
-      })
+      });
       for (let i = 0; i < len; i++) {
         totalarr.push(i === 0 ? total : 0);
       }
-      console.log("totalarr", totalarr)
+      console.log('totalarr', totalarr);
     });
     return totalarr[target];
   };
-
 
   //列配置
   const columns = [
@@ -194,7 +193,7 @@ export default function InfoTable(props) {
       title: '标段合计金额(元)',
       dataIndex: 'BDHJJE',
       // width: 200,
-      width: '12.5%',
+      width: '16%',
       key: 'BDHJJE',
       render: (value, row, index) => {
         const obj = {
@@ -220,33 +219,39 @@ export default function InfoTable(props) {
         return obj;
       },
     },
-    {
-      //0|未发起，1|已发起
-      title: '备注',
-      dataIndex: 'BZ',
-      key: 'BZ',
-      width: '22.5%',
-      // width: 100,
-      // ellipsis: true,
-      render: (text, row, index) => {
-        return (
-          text == '0' ? <span>未发起</span> : <span>已发起</span>
-        )
-      }
-    },
+    // {
+    //   //0|未发起，1|已发起
+    //   title: '备注',
+    //   dataIndex: 'BZ',
+    //   key: 'BZ',
+    //   width: '22.5%',
+    //   // width: 100,
+    //   // ellipsis: true,
+    //   render: (text, row, index) => {
+    //     return (
+    //       text == '0' ? <span>未发起</span> : <span>已发起</span>
+    //     )
+    //   }
+    // },
   ];
 
   return (
     <div className="info-table">
       {/*<div className="project-info-table-box">*/}
-      <div style={{display: 'flex', padding: '12px 24px'}}>
-        <div style={{width: '50%', textAlign: 'left', color: '#303133', fontSize: '14px'}}>总类占比：49%</div>
-        <div style={{
-          width: '50%',
-          textAlign: 'right',
-          color: 'rgba(0, 0, 0, 0.65)',
-          fontSize: '14px'
-        }}>更新时间：{moment(new Date()).format("YYYY-MM-DD HH:mm:ss")}</div>
+      <div style={{ display: 'flex', padding: '12px 24px' }}>
+        {/* <div style={{width: '50%', textAlign: 'left', color: '#303133', fontSize: '14px'}}>总类占比：49%</div> */}
+        {tableData.length > 0 && (
+          <div
+            style={{
+              width: '100%',
+              // textAlign: 'right',
+              color: 'rgba(0, 0, 0, 0.65)',
+              fontSize: '14px',
+            }}
+          >
+            更新时间：{moment(tableData[0].GXSJ).format('YYYY-MM-DD')}
+          </div>
+        )}
       </div>
       <div className="table-content">
         <Table

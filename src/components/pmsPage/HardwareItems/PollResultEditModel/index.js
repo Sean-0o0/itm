@@ -86,7 +86,7 @@ class PollResultEditModel extends React.Component {
         <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="PollResultEnterModel">
           <Form name="nest-messages">
             <Row>
-              <Col span={12}>
+              <Col span={11}>
                 <Form.Item
                   label="询比项目名称" required
                   className="formItem"
@@ -98,9 +98,10 @@ class PollResultEditModel extends React.Component {
                     this.handleDataCallback({name: e.target.value})
                     // this.setState({pollInfo: {...pollInfo, name: e.target.value}});
                   }} placeholder="请输入询比项目名称"/>)}
-                </Form.Item>{' '}
+                </Form.Item>
               </Col>
-              <Col span={12} style={{paddingLeft: '65px', paddingRight: '70px'}}>
+              <Col span={2}></Col>
+              <Col span={11}>
                 <Form.Item
                   label="关联需求" required
                   className="formItem"

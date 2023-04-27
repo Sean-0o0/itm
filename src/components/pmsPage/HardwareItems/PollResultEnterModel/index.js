@@ -77,7 +77,7 @@ class PollResultEnterModel extends React.Component {
     FetchQueryInquiryComparisonInfo({
       flowId: "-1",
       projectId: xmid,
-      queryType: "ALL"
+      queryType: "GLXQ"
     }).then(res => {
       if (res.success) {
         const {lcxx} = res
@@ -94,7 +94,7 @@ class PollResultEnterModel extends React.Component {
     FetchQueryInquiryComparisonInfo({
       flowId: "-1",
       projectId: xmid,
-      queryType: "ALL"
+      queryType: "GLXQ"
     }).then(res => {
       if (res.success) {
         const {xbxx} = res

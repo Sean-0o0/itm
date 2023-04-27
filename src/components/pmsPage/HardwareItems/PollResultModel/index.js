@@ -52,7 +52,7 @@ export default function PollResultModel(props) {
         projectId: xmid,
         flowId: "-1",
         paging: 1,
-        queryType: "ALL",
+        queryType: "XBJG",
         sort: "",
         total: -1
       })
