@@ -78,6 +78,16 @@ class StaffTable extends Component {
             width: '10%',
             key: 'RYMC',
             ellipsis: true,
+            onCell: (record, index) => { // 传入两个形参，分别为行内容record与行index
+                const _row = rowspan[index];
+                if (_row > 1) { 
+                    return {
+                        style: {
+                            borderLeft: '1px solid #e8e8e8', //此处需注意
+                        },
+                    };
+                }
+            },
             render: (value, row, index) => {
                 const { RYID = '' } = row;
                 let obj = {
@@ -87,9 +97,9 @@ class StaffTable extends Component {
                             to={{
                                 pathname: `/pms/manage/staffDetail/${EncryptBase64(
                                     JSON.stringify({
-                                      ryid: RYID,
+                                        ryid: RYID,
                                     }),
-                                  )}`,
+                                )}`,
                                 state: {
                                     routes: routes,
                                 },
@@ -111,6 +121,16 @@ class StaffTable extends Component {
             width: '13%',
             key: 'RZSJ',
             ellipsis: true,
+            onCell: (record, index) => { // 传入两个形参，分别为行内容record与行index
+                const _row = rowspan[index];
+                if (_row > 1) { 
+                    return {
+                        style: {
+                            borderRight: '1px solid #e8e8e8', //此处需注意
+                        },
+                    };
+                }
+            },
             render: (value, row, index) => {
                 const result = moment(value, 'YYYYMMDD').format('YYYY-MM-DD')
                 let obj = {
@@ -172,7 +192,7 @@ class StaffTable extends Component {
             align: 'right',
             ellipsis: true,
             render: (text, row, index) => {
-                return text|| '暂无'
+                return text || '暂无'
             }
         },
         {
@@ -183,7 +203,7 @@ class StaffTable extends Component {
             align: 'center',
             ellipsis: true,
             render: (text, row, index) => {
-                return text|| '暂无'
+                return text || '暂无'
             }
         }
         ]

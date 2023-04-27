@@ -185,14 +185,14 @@ class Overview extends Component {
 
         return (
             <div className='cont-block staff-overview' style={{ margin: order === 1 ? '0px 12px 0px 24px' : '0px 24px 0px 12px', padding: '0 24px' }}>
-                <div style={{ color: '#303133', fontSize: 16, fontWeight: 'bold', height: '30px', lineHeight: '35px' }}>{title}</div>
+                <div style={{ color: '#303133', fontSize: 16, fontWeight: 'bold', height: '40px', lineHeight: '48px' }}>{title}</div>
                 <React.Fragment>
                     <ReactEchartsCore
                         echarts={echarts}
                         option={option}
                         notMerge
                         lazyUpdate
-                        style={{ height: 'calc(100% - 30px)' }}
+                        style={{ height: 'calc(100% - 48px)' }}
                         theme=""
                     />
                 </React.Fragment>

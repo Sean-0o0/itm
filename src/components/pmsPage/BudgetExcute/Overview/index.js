@@ -46,12 +46,13 @@ class Overview extends Component {
             },
             legend: {
                 itemHeight: 0, //圆点大小
+                itemGap: 50,
                 data: ['资本性预算执行(万元)', '非资本性预算(万元)', '自主研发投入(万元)']
             },
             grid: {
                 bottom: 36,
                 right: 24,
-                left: 72,
+                left: 56,
                 top: 36
             },
             xAxis: {
