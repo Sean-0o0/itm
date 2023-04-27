@@ -14,7 +14,7 @@ export default function PrjTypeModal(props) {
       .then(res => {
         if (res?.success) {
           let data = JSON.parse(res.xmlxRecord).filter(x => !['0', '1'].includes(x.GRADE));
-          console.log('🚀 ~ file: index.js:17 ~ useEffect ~ data:', data);
+          // console.log('🚀 ~ file: index.js:17 ~ useEffect ~ data:', data);
           setTypeData(p => [...data]);
           setIsSpinning(false);
         }
@@ -39,7 +39,7 @@ export default function PrjTypeModal(props) {
   return (
     <Modal
       wrapClassName="editMessage-modify prj-type-modal"
-      width={'880px'}
+      width={'980px'}
       maskClosable={false}
       destroyOnClose={true}
       zIndex={100}
@@ -54,32 +54,29 @@ export default function PrjTypeModal(props) {
         <strong>选择项目类型</strong>
       </div>
       <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="prj-type-modal-spin">
-        <div className="content-title">点击想要创建的项目类型</div>
-        <div className="content-list">
-          {typeData.map((x, i) => (
-            <div className="type-item" key={x.ID} onClick={() => newProject(x.ID)}>
-              <div className="title">
-                {/* <Icon type="pushpin" className="item-icon" /> */}
-                <div className="item-icon">{i + 1}</div>
-                {x.NAME || '--'}
-              </div>
-              <div className="desc">
-                {x.SM || (
-                  <div className="desc-empty">
-                    <Empty
-                      description="暂无描述"
-                      image={Empty.PRESENTED_IMAGE_SIMPLE}
-                      style={{ width: '100%' }}
-                    />
-                  </div>
-                )}
-              </div>
-              {/* <div className="footer-btn" onClick={newProject}>
-              新建项目
-            </div> */}
+        {typeData.map((x, i) => (
+          <div className="type-item" key={x.ID}>
+            <div className="title">
+              {/* <Icon type="pushpin" className="item-icon" /> */}
+              {/* <div className="item-icon">{i + 1}</div> */}
+              {x.NAME || '--'}
             </div>
-          ))}
-        </div>
+            <div className="desc">
+              {x.SM || (
+                <div className="desc-empty">
+                  <Empty
+                    description="暂无描述"
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    style={{ width: '100%' }}
+                  />
+                </div>
+              )}
+            </div>
+            <div className="footer-btn" onClick={() => newProject(x.ID)}>
+              新建项目
+            </div>
+          </div>
+        ))}
       </Spin>
     </Modal>
   );
