@@ -38,7 +38,7 @@ import {
   FetchQueryMemberInfo,
   FetchQueryMilestoneStageInfo,
   FetchQueryMatterUnderMilepost,
-  FetchQueryStationInfo,
+  FetchQueryStationInfo, InsertSubProjects,
 } from '../../../services/projectManage';
 import { DecryptBase64, EncryptBase64 } from '../../Common/Encrypt';
 import config from '../../../utils/config';
@@ -57,6 +57,7 @@ import {
 import BridgeModel from '../../Common/BasicModal/BridgeModel';
 import TableFullScreen from '../LifeCycleManagement/ContractInfoUpdate/TableFullScreen';
 import OthersInfos from './OthersInfos';
+import SubItemInfo from "../../../pages/workPlatForm/singlePage/NewProjectModelV2/SubItemInfo";
 
 const { Option, OptGroup } = Select;
 const { api } = config;
@@ -447,10 +448,13 @@ class EditProjectInfoModel extends React.Component {
       projectType: 1,
       projectLabel: [],
       org: '',
-      software: '',
+      software: [],
       biddingMethod: 1,
       labelTxt: '',
     },
+    //是否包含子项目信息
+    subItem: 2,
+    subItemRecord: [],
     //招采信息
     purchaseInfo: {
       //合同金额
@@ -1147,10 +1151,13 @@ class EditProjectInfoModel extends React.Component {
           if (result.orgId) {
             newOrg = result.orgId.split(';');
           }
-          //console.log("jobArrjobArrjobArr", jobArr)
+          console.log("newOrgnewOrgnewOrg", newOrg)
+          console.log("labellabel", result.projectLabel === '' ? [] : result.projectLabel.split(','))
+          console.log("softwaresoftware", result.softwareId === '' ? [] : result.softwareId.split(','))
           const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0;
           const PTRJFlag = result?.projectType == '5';
           this.setState({
+            subItem: result.haveChild,
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
@@ -1162,7 +1169,7 @@ class EditProjectInfoModel extends React.Component {
               projectType: Number(result.projectType),
               projectLabel: result.projectLabel === '' ? [] : result.projectLabel.split(','),
               org: newOrg,
-              software: result.softwareId,
+              software: result.softwareId === '' ? [] : result.softwareId.split(','),
               biddingMethod: Number(result.biddingMethod),
             },
             budgetInfo: {
@@ -2129,17 +2136,8 @@ class EditProjectInfoModel extends React.Component {
         if (code > 0) {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
-          if (this.state.type) {
-            window.parent && window.parent.postMessage({ operate: 'success' }, '*');
-          } else {
-            this.props.submitOperate();
-          }
-          const params = {
-            projectId: projectId,
-          };
-          //projectId跳转到生命周期页面
-          // window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
-          // window.location.href =`/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
+          //保存子项目信息
+          this.operateInsertSubProjects(params, projectId);
         } else {
           message.error(note);
         }
@@ -3162,6 +3160,45 @@ class EditProjectInfoModel extends React.Component {
     }
   }
 
+  // ---------------子项目相关数据处理-------------------
+  //子项目信息-数据回调
+  subItemRecordCallback = (rec) => {
+    console.log("subItemRecord", rec)
+    this.setState({
+      //子项目信息
+      subItemRecord: rec,
+    });
+  };
+
+  //子项目信息保存接口
+  // 查询其他项目信息
+  operateInsertSubProjects = (param, projectId) => {
+    console.log("-----------开始保存子项目信息-----------")
+    const {subItemRecord, budgetInfo = {}} = this.state;
+    const params = {
+      parentId: projectId,
+      parentBudget: budgetInfo.budgetProjectId === '' ? -99 : Number(budgetInfo.budgetProjectId),
+      parentBudgetType: String(budgetInfo.budgetType === '' ? '无' : budgetInfo.budgetType),
+      parentOpType: String(param.type),
+      parentYear: Number(this.state.budgetInfo.year.format("YYYY")),
+      rowcount: subItemRecord.length,
+      subProjects: JSON.stringify(subItemRecord),
+    }
+    console.log("子项目信息入参", params)
+    InsertSubProjects({...params}).then((result) => {
+      const {code = -1,} = result;
+      if (code > 0) {
+        if (this.state.type) {
+          window.parent && window.parent.postMessage({operate: 'success'}, '*');
+        } else {
+          this.props.submitOperate();
+        }
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
+  }
+
   render() {
     let {
       tags,
@@ -3236,8 +3273,12 @@ class EditProjectInfoModel extends React.Component {
       isDownOrg = false,
       //应用部门是否展开
       isDownLabel = false,
+      //是否包含子项目信息
+      subItem = 2,
+      //子项目信息
+      subItemRecord = [],
     } = this.state;
-    console.log('purchaseInfopurchaseInfo', purchaseInfo);
+    // console.log('purchaseInfopurchaseInfo', purchaseInfo);
     const { getFieldDecorator } = this.props.form;
     const tabs = [
       {
@@ -3672,6 +3713,7 @@ class EditProjectInfoModel extends React.Component {
                                   // tagRender={item => {
                                   //   return "weqweqwe" + item;
                                   // }}
+                                  value={basicInfo.projectLabel}
                                   maxTagCount={3}
                                   maxTagTextLength={42}
                                   maxTagPlaceholder={extraArr => {
@@ -3734,12 +3776,14 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: basicInfo.software,
                             })(
                               <Select
+                                mode='multiple'
                                 showSearch
+                                value={basicInfo.software}
                                 onChange={e => {
                                   softwareList.forEach(item => {
                                     if (item.id === e) {
                                       this.setState({
-                                        basicInfo: { ...basicInfo, software: e },
+                                        basicInfo: {...basicInfo, software: e},
                                       });
                                     }
                                   });
@@ -3872,6 +3916,7 @@ class EditProjectInfoModel extends React.Component {
                                 <TreeSelect
                                   multiple
                                   showSearch
+                                  value={basicInfo.org}
                                   treeNodeFilterProp="title"
                                   style={{width: '100%'}}
                                   maxTagCount={3}
@@ -4225,7 +4270,7 @@ class EditProjectInfoModel extends React.Component {
                                   }
                                   this.setState({
                                     projectBudgetChangeFlag,
-                                    budgetInfo: { ...budgetInfo, projectBudget: e },
+                                    budgetInfo: {...budgetInfo, projectBudget: e},
                                   });
                                 }}
                                 precision={0}
@@ -4233,6 +4278,42 @@ class EditProjectInfoModel extends React.Component {
                             )}
                           </Form.Item>
                         </Col>
+                      </Row>
+                      <Row gutter={24}>
+                        <Col span={12}>
+                          <Form.Item label={<span><span style={{
+                            fontFamily: 'SimSun, sans-serif',
+                            color: '#f5222d',
+                            marginRight: '4px',
+                            lineHeight: 1
+                          }}>*</span>是否包含子项目</span>}>
+                            {getFieldDecorator('subItem', {
+                              initialValue: Number(subItem)
+                            })(
+                              <Radio.Group defaultValue={Number(subItem)} onChange={e => {
+                                console.log("eeeee", e.target.value);
+                                this.setState({subItem: String(e.target.value)});
+                              }}>
+                                <Radio value={1}>是</Radio>
+                                <Radio value={2}>否</Radio>
+                              </Radio.Group>
+                            )}
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row gutter={24} style={{display: this.state.subItem == '1' ? '' : 'none'}}>
+                        {/*子项目信息*/}
+                        <SubItemInfo
+                          organizationTreeList={organizationTreeList}
+                          orgExpendKeys={orgExpendKeys}
+                          projectTypeList={projectTypeList}
+                          staffList={this.state.staffList}
+                          searchStaffList={searchStaffList}
+                          budgetProjectList={budgetProjectList}
+                          softwareList={softwareList}
+                          bindMethodData={bindMethodData}
+                          xmid={basicInfo.projectId}
+                          subItemRecordCallback={this.subItemRecordCallback}/>
                       </Row>
                     </Form>
                     {/*</Form>*/}

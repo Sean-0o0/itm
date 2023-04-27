@@ -148,9 +148,13 @@ class NewProjectModelV2 extends React.Component {
         }
       })
     }
+    if (params.projectType) {
+      console.log("params.projectType", params.projectType)
+      this.setState({basicInfo: {...this.state.basicInfo, projectType: params.projectType,}});
+    }
     // 判断是否是首页跳转过来的
     if (params.type) {
-      this.setState({ type: true });
+      this.setState({type: true});
     }
     setTimeout(function () {
       _this.fetchInterface()
@@ -1457,7 +1461,7 @@ class NewProjectModelV2 extends React.Component {
   };
 
   makeOperateParams = (params, milePostInfo, staffJobParams, projectManager, type) => {
-    this.setState({ loading: true, });
+    this.setState({loading: true,});
     // //console.log("statestate", this.state)
     let milepostInfo = [];
     let matterInfo = [];
@@ -1554,29 +1558,19 @@ class NewProjectModelV2 extends React.Component {
     this.operateCreatProject(params, type);
   };
 
-  operateCreatProject(params, type) {
+  operateCreatProject = (params, type) => {
+    console.log("-----------开始保存父项目信息-----------")
     OperateCreatProject(params).then((result) => {
-      const { code = -1, note = '', projectId } = result;
-      this.setState({ loading: false });
+      const {code = -1, note = '', projectId} = result;
+      this.setState({loading: false});
       if (code > 0) {
         sessionStorage.setItem("projectId", projectId);
         sessionStorage.setItem("handleType", type);
-        if (this.state.type) {
-          window.parent && window.parent.postMessage({ operate: 'success' }, '*');
-        } else {
-          this.props.submitOperate();
-        }
-        const params = {
-          projectId: projectId,
-        }
-        //projectId跳转到生命周期页面
-        // window.location.href = `/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
-        // window.location.href =`/#/pms/manage/LifeCycleManagement/${EncryptBase64(JSON.stringify(params))}`
+        //保存子项目信息
+        this.operateInsertSubProjects(params, projectId);
       } else {
         message.error(note);
       }
-
-      // //console.log("333333")
     }).catch((error) => {
       this.setState({ loading: false });
       message.error(!error.success ? error.message : error.note);
@@ -2390,7 +2384,8 @@ class NewProjectModelV2 extends React.Component {
                           color: '#f5222d',
                           marginRight: '4px',
                           lineHeight: 1
-                        }}>*</span>项目类型</span>}>
+                        }}>*</span>项目类型<a style={{fontSize: '14px', color: '#606266'}}
+                                          className='iconfont circle-question'/></span>}>
                           {getFieldDecorator('projectType', {
                             // rules: [{
                             //   required: true,
