@@ -906,6 +906,7 @@ class NewProjectModelV2 extends React.Component {
             projectTypePTRJFlag: PTRJFlag,
             projectTypeRYJFlag: RYJFlag,
             basicInfo: {
+              haveHard: result.haveHard,//是否包含硬件
               SFYJRW: Number(result.isShortListed),
               projectId: result.projectId,
               projectName: result.projectName,
@@ -916,6 +917,12 @@ class NewProjectModelV2 extends React.Component {
               biddingMethod: Number(result.biddingMethod)
             },
             budgetInfo: {
+              //项目软件预算
+              softBudget: Number(result.softBudget),
+              //框架预算
+              frameBudget: Number(result.frameBudget),
+              //单独采购预算
+              singleBudget: Number(result.singleBudget),
               year: moment(moment(result.year, 'YYYY').format()),
               budgetProjectId: result.budgetProject,
               budgetProjectName,
@@ -1442,8 +1449,7 @@ class NewProjectModelV2 extends React.Component {
         basicInfo.projectLabel.map((item, index) => {
           label = item.concat(";").concat(label);
         })
-      }
-      ;
+      };
       label = label.substring(0, label.length - 1)
       let software = "";
       if (basicInfo.software?.length > 0) {
@@ -1451,7 +1457,7 @@ class NewProjectModelV2 extends React.Component {
           software = item.concat(";").concat(software);
         })
       }
-      software = software.substring(0, label.length - 1)
+      software = software.substring(0, software.length - 1)
       const params = {
         projectName: basicInfo.projectName,
         projectType: basicInfo.projectType,
@@ -1582,13 +1588,13 @@ class NewProjectModelV2 extends React.Component {
     params.budgetType = this.state.budgetInfo.budgetType;
     params.isShortListed = this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1';
     // 软件预算
-    params.softBudget = 0;
+    params.softBudget = this.state.budgetInfo.softBudget;
     // 框架预算
-    params.frameBudget = 0;
+    params.frameBudget = this.state.budgetInfo.frameBudget;
     // 单独采购金额
-    params.singleBudget = 0;
+    params.singleBudget = this.state.budgetInfo.singleBudget;
     // 是否包含硬件
-    params.haveHard = 2;
+    params.haveHard = this.state.basicInfo.haveHard;
     this.operateCreatProject(params, type);
   };
 
@@ -2534,7 +2540,7 @@ class NewProjectModelV2 extends React.Component {
                                 // 当为其他的项目类型时，根据本项目金额入参判断里程碑事项。
                                 this.fetchQueryMilepostInfo({
                                   type: e,
-                                  isShortListed: '-1',
+                                  isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                   //项目预算类型
                                   haveType: 1,
                                   //项目软件预算
@@ -2609,11 +2615,11 @@ class NewProjectModelV2 extends React.Component {
                                     //项目预算类型
                                     haveType: 1,
                                     //项目软件预算
-                                    softBudget: 0,
+                                    softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                     //框架预算
-                                    frameBudget: 0,
+                                    frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                     //单独采购预算
-                                    singleBudget: 0,
+                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: budgetInfo.projectBudget,
@@ -2769,11 +2775,11 @@ class NewProjectModelV2 extends React.Component {
                                       //项目预算类型
                                       haveType: 1,
                                       //项目软件预算
-                                      softBudget: 0,
+                                      softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                       //框架预算
-                                      frameBudget: 0,
+                                      frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                       //单独采购预算
-                                      singleBudget: 0,
+                                      singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: this.state.basicInfo.projectId,
                                       biddingMethod: e,
                                       budget: budgetInfo.projectBudget,
@@ -2809,11 +2815,11 @@ class NewProjectModelV2 extends React.Component {
                                   //项目预算类型
                                   haveType: 1,
                                   //项目软件预算
-                                  softBudget: 0,
+                                  softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                   //框架预算
-                                  frameBudget: 0,
+                                  frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                   //单独采购预算
-                                  singleBudget: 0,
+                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
@@ -3015,11 +3021,11 @@ class NewProjectModelV2 extends React.Component {
                                   //项目预算类型
                                   haveType: 1,
                                   //项目软件预算
-                                  softBudget: 0,
+                                  softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                   //框架预算
-                                  frameBudget: 0,
+                                  frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                   //单独采购预算
-                                  singleBudget: 0,
+                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: this.state.basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: budgetInfo.projectBudget,
@@ -3081,11 +3087,11 @@ class NewProjectModelV2 extends React.Component {
                                 //项目预算类型
                                 haveType: 1,
                                 //项目软件预算
-                                softBudget: 0,
+                                softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                 //框架预算
-                                frameBudget: 0,
+                                frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                 //单独采购预算
-                                singleBudget: 0,
+                                singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                 xmid: basicInfo.projectId,
                                 biddingMethod: basicInfo.biddingMethod,
                                 budget: budgetInfo.projectBudget,
@@ -3121,15 +3127,15 @@ class NewProjectModelV2 extends React.Component {
                               if (softBudgetChangeFlag) {
                                 this.fetchQueryMilepostInfo({
                                   type: basicInfo.projectType,
-                                  isShortListed: '-1',
+                                  isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                   //项目预算类型
                                   haveType: 1,
                                   //项目软件预算
-                                  softBudget: e,
+                                  softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                   //框架预算
-                                  frameBudget: this.state.budgetInfo.frameBudget,
+                                  frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                   //单独采购预算
-                                  singleBudget: this.state.budgetInfo.singleBudget,
+                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: this.state.basicInfo.projectId,
                                   biddingMethod: this.state.basicInfo.biddingMethod,
                                   budget: this.state.budgetInfo.projectBudget,
@@ -3170,15 +3176,15 @@ class NewProjectModelV2 extends React.Component {
                               if (frameBudgetChangeFlag) {
                                 this.fetchQueryMilepostInfo({
                                   type: this.state.basicInfo.projectType,
-                                  isShortListed: '-1',
+                                  isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                   //项目预算类型
                                   haveType: 1,
                                   //项目软件预算
-                                  softBudget: this.state.budgetInfo.softBudget,
+                                  softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                   //框架预算
-                                  frameBudget: e,
+                                  frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                   //单独采购预算
-                                  singleBudget: this.state.budgetInfo.singleBudget,
+                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: this.state.basicInfo.projectId,
                                   biddingMethod: this.state.basicInfo.biddingMethod,
                                   budget: this.state.budgetInfo.projectBudget,
@@ -3188,12 +3194,12 @@ class NewProjectModelV2 extends React.Component {
                               }
                             }} style={{width: '100%'}} onChange={e => {
                               let frameBudgetChangeFlag = false
-                              if (e !== this.state.budgetInfo.softBudget) {
+                              if (e !== this.state.budgetInfo.frameBudget) {
                                 frameBudgetChangeFlag = true;
                               }
                               this.setState({
                                 frameBudgetChangeFlag,
-                                budgetInfo: {...budgetInfo, softBudget: e}
+                                budgetInfo: {...budgetInfo, frameBudget: e}
                               });
                             }} precision={0}/>
                           )}
@@ -3221,15 +3227,15 @@ class NewProjectModelV2 extends React.Component {
                               if (singleBudgetChangeFlag) {
                                 this.fetchQueryMilepostInfo({
                                   type: this.state.basicInfo.projectType,
-                                  isShortListed: '-1',
+                                  isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
                                   //项目预算类型
                                   haveType: 1,
                                   //项目软件预算
-                                  softBudget: this.state.budgetInfo.softBudget,
+                                  softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                   //框架预算
-                                  frameBudget: this.state.budgetInfo.frameBudget,
+                                  frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
                                   //单独采购预算
-                                  singleBudget: e,
+                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: this.state.basicInfo.projectId,
                                   biddingMethod: this.state.basicInfo.biddingMethod,
                                   budget: this.state.budgetInfo.projectBudget,

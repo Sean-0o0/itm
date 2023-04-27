@@ -282,7 +282,7 @@ class SubItemInfo extends Component {
       itm.XMJL = item['SUBXMJL' + item.ID];
       itm.XMLX = String(item['SUBXMLX' + item.ID]);
       // SUBGLRJ = item['SUBGLRJ' + item.ID];
-      itm.YYBM = item['SUBYYBM' + item.ID];
+      itm.YYBM =  String(item['SUBYYBM' + item.ID]);
       itm.CGFS = String(item['SUBCGFS' + item.ID]);
       itm.GLYS = item['SUBGLYS' + item.ID];
       itm.GLYSLX = item['GLYSLX' + item.ID];
