@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import InfoTable from './InfoTable';
-import { Button, message, Modal, Spin, Tabs } from 'antd';
+import { Button, Input, message, Modal, Spin, Tabs } from 'antd';
 import { FetchQueryTenderStatisticsInfo } from '../../../../services/projectManage';
 
 const { TabPane } = Tabs;
@@ -13,6 +13,7 @@ export default function BidSectionModel(props) {
   const [total, setTotal] = useState(0); //数据总数
   const [params, setParams] = useState({ current: 1, pageSize: 10 });
   const [updateDate, setUpdateDate] = useState('--'); //更新时间
+  const [bjmc, setBjmc] = useState(''); //包件名称
   const { visible = false, xmid, closeModal } = props;
 
   useEffect(() => {
@@ -23,23 +24,49 @@ export default function BidSectionModel(props) {
   //获取表格数据
   const getTableData = params => {
     setTableLoading(true);
-    FetchQueryTenderStatisticsInfo({
+    let p = {
       ...params,
-      // projectId: 399,
       packageId: 0,
       year: 2023,
       paging: 1,
       sort: '',
       total: -1,
-    })
+    };
+    if (bjmc !== '') {
+      p.packageId = bjmc;
+    }
+    FetchQueryTenderStatisticsInfo(p)
       .then(res => {
         if (res?.success) {
-          setTableData([...JSON.parse(res.result)]);
+          let data = [...JSON.parse(res.result)];
+          let zbData = [...JSON.parse(res.resultZB)];
+          function uniqueFunc(arr, uniId) {
+            const res = new Map();
+            return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+          }
+          let uniqueBjmc = uniqueFunc(data, 'BJMC');
+          let bjmcArr = uniqueBjmc.map(x => x.BJMC);
+          data.forEach(x => {
+            let zbArr = zbData.filter(y => y.BJID === x.BJMC);
+            zbArr.length > 0 && (x.ZB = zbArr[0].ZB);
+          });
+          bjmcArr.forEach(y => {
+            let jeSum = 0;
+            data.forEach(x => {
+              if (x.BJMC === y) {
+                jeSum += Number(x.XMJE);
+              }
+            });
+            data.forEach(x => {
+              if (x.BJMC === y) x.BDHJJE = jeSum;
+            });
+          });
+          // console.log('🚀 ~ file: index.js:68 ~ getTableData ~ data:', data);
+          setTableData([...data]);
           setTotal(res.total);
           setTableLoading(false);
           setIsSpinning(false);
         }
-        console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.result));
       })
       .catch(e => {
         // console.error('getTableData', e);
@@ -66,6 +93,10 @@ export default function BidSectionModel(props) {
     },
   ];
 
+  const handleReset = () => {
+    setBjmc('');
+  };
+
   return (
     <>
       <Modal
@@ -77,22 +108,23 @@ export default function BidSectionModel(props) {
         bodyStyle={{
           padding: '0',
           // height: '697px',
-          height: '594px',
+          height: '650px',
         }}
         onCancel={closeModal}
-        footer={
-          <div className="modal-footer">
-            <Button className="btn-default" onClick={closeModal}>
-              取消
-            </Button>
-            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
-        暂存草稿
-      </Button> */}
-            <Button disabled={isSpinning} className="btn-primary" type="primary">
-              导出
-            </Button>
-          </div>
-        }
+        //   footer={
+        //     <div className="modal-footer">
+        //       <Button className="btn-default" onClick={closeModal}>
+        //         取消
+        //       </Button>
+        //       {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+        //   暂存草稿
+        // </Button> */}
+        //       <Button disabled={isSpinning} className="btn-primary" type="primary">
+        //         导出
+        //       </Button>
+        //     </div>
+        //   }
+        footer={null}
         visible={visible}
       >
         <div
@@ -125,6 +157,26 @@ export default function BidSectionModel(props) {
               }
             </Tabs>
           </div> */}
+          <div className="top-console">
+            <div className="item-box">
+              <div className="console-item" style={{ width: '50%' }}>
+                <div className="item-label">包件名称：</div>
+                <Input
+                  placeholder="请输入包件名称"
+                  value={bjmc}
+                  onChange={e => setBjmc(e.target.value)}
+                />
+              </div>
+              <div className="btn-item" style={{ width: '50%' }}>
+                <Button className="btn-search" type="primary" onClick={() => getTableData(params)}>
+                  查询
+                </Button>
+                <Button className="btn-reset" onClick={handleReset}>
+                  重置
+                </Button>
+              </div>
+            </div>
+          </div>
           <InfoTable
             params={params}
             callBackParams={callBackParams}

@@ -761,7 +761,7 @@ class EnterBidInfoModel extends React.Component {
         <Modal
           wrapClassName="editMessage-modify"
           style={{top: '10px', paddingBottom: '0'}}
-          width={'1000px'}
+          width={'1010px'}
           title={null}
           zIndex={100}
           bodyStyle={{

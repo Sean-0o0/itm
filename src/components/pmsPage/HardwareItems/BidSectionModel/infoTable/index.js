@@ -170,7 +170,7 @@ export default function InfoTable(props) {
           children: value,
           props: {},
         };
-        obj.props.rowSpan = getRowSpanCount(tableData, 'BJID', index);
+        obj.props.rowSpan = getRowSpanCount(tableData, 'BJMC', index);
         return obj;
       },
     },
@@ -198,24 +198,25 @@ export default function InfoTable(props) {
       render: (value, row, index) => {
         const obj = {
           props: {},
+          children: value,
         };
-        obj.props.rowSpan = getRowSpanCount(tableData, 'BJID', index);
-        obj.children = getRowNumCount(tableData, 'BJID', index);
+        obj.props.rowSpan = getRowSpanCount(tableData, 'BJMC', index);
+        // obj.children = getRowNumCount(tableData, 'BJMC', index);
         return obj;
       },
     },
     {
       title: '单项占比',
-      dataIndex: 'DXZB',
+      dataIndex: 'ZB',
       // width: 205,
       width: '10%',
-      key: 'DXZB',
+      key: 'ZB',
       render: (value, row, index) => {
         const obj = {
           children: value,
           props: {},
         };
-        obj.props.rowSpan = getRowSpanCount(tableData, 'BJID', index);
+        obj.props.rowSpan = getRowSpanCount(tableData, 'BJMC', index);
         return obj;
       },
     },
