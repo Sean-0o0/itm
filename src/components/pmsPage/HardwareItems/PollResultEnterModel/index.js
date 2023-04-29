@@ -14,7 +14,8 @@ import {
   Select,
   Pagination,
   Spin,
-  Radio, Divider,
+  Radio,
+  Divider,
 } from 'antd';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import React from 'react';
@@ -25,18 +26,20 @@ import {
   CreateOperateHyperLink,
   QueryPaymentAccountList,
 } from '../../../../services/pmsServices';
-import {PluginsUrl} from '../../../../utils/config';
-import {connect} from "dva";
-import moment from "moment";
+import { PluginsUrl } from '../../../../utils/config';
+import { connect } from 'dva';
+import moment from 'moment';
 import {
   FetchQueryHardwareTendersAndContract,
-  FetchQueryInquiryComparisonInfo, GetDocumentByLiveBos, UpdateHardwareTenderInfo,
-  UpdateInquiryComparisonInfo
-} from "../../../../services/projectManage";
-import {DecryptBase64} from "../../../Common/Encrypt";
+  FetchQueryInquiryComparisonInfo,
+  GetDocumentByLiveBos,
+  UpdateHardwareTenderInfo,
+  UpdateInquiryComparisonInfo,
+} from '../../../../services/projectManage';
+import { DecryptBase64 } from '../../../Common/Encrypt';
 
-const {confirm} = Modal;
-const {Option, OptGroup} = Select;
+const { confirm } = Modal;
+const { Option, OptGroup } = Select;
 
 class PollResultEnterModel extends React.Component {
   state = {
@@ -52,6 +55,9 @@ class PollResultEnterModel extends React.Component {
     pollFileList: [],
     pbbgTurnRed: false,
     isSpinning: false, //弹窗加载状态
+    isNoMoreData: false,
+    currentPage: 1,
+    demandName: '',
   };
 
   // componentDidMount() {
@@ -59,29 +65,119 @@ class PollResultEnterModel extends React.Component {
   // }
 
   componentDidMount = async () => {
-    this.fetchQueryInquiryComparisonInfoLCXX()
+    this.fetchQueryInquiryComparisonInfoLCXX();
   };
-
 
   // 获取url参数
   getUrlParams = () => {
-    const {match: {params: {params: encryptParams = ''}}} = this.props;
+    const {
+      match: {
+        params: { params: encryptParams = '' },
+      },
+    } = this.props;
     const params = JSON.parse(DecryptBase64(encryptParams));
     return params;
-  }
-
+  };
 
   // 查询中标信息修改时的供应商下拉列表
-  fetchQueryInquiryComparisonInfoLCXX = () => {
-    const {xmid} = this.props;
+  fetchQueryInquiryComparisonInfoLCXX = (demandName = '', current = 1) => {
+    const { xmid } = this.props;
     FetchQueryInquiryComparisonInfo({
-      flowId: "-1",
+      flowId: '-1',
       projectId: xmid,
-      queryType: "GLXQ"
+      queryType: 'GLXQ',
+      paging: 1,
+      current,
+      demandName,
+      pageSize: 4,
+      total: -1,
+      sort: '',
     }).then(res => {
       if (res.success) {
-        const {lcxx} = res
+        const { lcxx } = res;
+        let rec = [...JSON.parse(lcxx)];
+        let arr = [...this.state.glxq];
+        if (rec.length === 0) {
+          this.setState({
+            glxq: arr,
+            isNoMoreData: true,
+          });
+          console.log('🚀 ~ file: index.js:103 ~ arr:', arr);
+        } else {
+          this.setState({
+            glxq: [...arr, ...rec],
+          });
+          console.log('🚀 ~ file: index.js:107 ~ [...arr, ...rec]:', [...arr, ...rec]);
+        }
+      }
+    });
+  };
+
+  handleReachBottom = e => {
+    const { scrollHeight, scrollTop, clientHeight } = e.target;
+    // throttle(() => {
+    const { isNoMoreData, currentPage, demandName } = this.state;
+    if (scrollHeight - scrollTop - clientHeight <= 10) {
+      let index = currentPage;
+      index = index + 1;
+      // console.log('🚀 ~ file: index.js:122 ~ //throttle ~ isNoMoreData:', isNoMoreData, index);
+      if (!isNoMoreData) {
+        this.setState(
+          {
+            currentPage: index,
+          },
+          () => {
+            this.fetchQueryInquiryComparisonInfoLCXX(demandName, index);
+          },
+        );
+      }
+    }
+  };
+
+  handleSltSearch = str => {
+    const { xmid } = this.props;
+    FetchQueryInquiryComparisonInfo({
+      flowId: '-1',
+      projectId: xmid,
+      queryType: 'GLXQ',
+      paging: 1,
+      current: 1,
+      pageSize: 4,
+      demandName: str,
+      total: -1,
+      sort: '',
+    }).then(res => {
+      if (res.success) {
+        const { lcxx } = res;
         this.setState({
+          currentPage: 1,
+          isNoMoreData: false,
+          demandName: str,
+          glxq: [...JSON.parse(lcxx)],
+        });
+      }
+    });
+  };
+
+  handleSltBlur = () => {
+    const { xmid } = this.props;
+    FetchQueryInquiryComparisonInfo({
+      flowId: '-1',
+      projectId: xmid,
+      queryType: 'GLXQ',
+      paging: 1,
+      current: 1,
+      pageSize: 4,
+      demandName: '',
+      total: -1,
+      sort: '',
+    }).then(res => {
+      if (res.success) {
+        const { lcxx } = res;
+        this.setState({
+          currentPage: 1,
+          isNoMoreData: false,
+          demandName: '',
           glxq: [...JSON.parse(lcxx)],
         });
       }
@@ -90,15 +186,15 @@ class PollResultEnterModel extends React.Component {
 
   // 查询glxq
   fetchQueryInquiryComparisonInfo = () => {
-    const {xmid} = this.props;
+    const { xmid } = this.props;
     FetchQueryInquiryComparisonInfo({
-      flowId: "-1",
+      flowId: '-1',
       projectId: xmid,
-      queryType: "GLXQ"
+      queryType: 'GLXQ',
     }).then(res => {
       if (res.success) {
-        const {xbxx} = res
-        const xbxxJson = JSON.parse(xbxx)
+        const { xbxx } = res;
+        const xbxxJson = JSON.parse(xbxx);
         this.setState({
           pollInfo: {
             //中标信息
@@ -118,16 +214,14 @@ class PollResultEnterModel extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        _this.props.closeModal()
+        _this.props.closeModal();
       },
-      onCancel() {
-      },
+      onCancel() {},
     });
-  }
-
+  };
 
   handleSavePollInfo = () => {
-    const {uploadFileParams, pollInfo, pollFileList} = this.state;
+    const { uploadFileParams, pollInfo, pollFileList } = this.state;
     const {
       columnName,
       documentData,
@@ -137,18 +231,18 @@ class PollResultEnterModel extends React.Component {
       id,
       objectName,
     } = uploadFileParams;
-    const {xmid} = this.props
+    const { xmid } = this.props;
     if (pollInfo.name == '' || pollInfo.flowId == '' || pollFileList.length == 0) {
-      message.warn("询比信息未填写完整！", 1);
+      message.warn('询比信息未填写完整！', 1);
       return;
     }
     this.setState({
       isSpinning: true,
-    })
+    });
     let fileInfo = [];
     uploadFileParams.map(item => {
-      fileInfo.push({fileName: item.name, data: item.base64})
-    })
+      fileInfo.push({ fileName: item.name, data: item.base64 });
+    });
     let submitdata = {
       projectId: xmid,
       infoId: '-1',
@@ -164,39 +258,28 @@ class PollResultEnterModel extends React.Component {
       if (res?.code === 1) {
         this.setState({
           isSpinning: false,
-        })
+        });
         this.props.closeModal();
-        this.props.onSuccess("询比结果编辑");
+        this.props.onSuccess('询比结果编辑');
         // message.info('信息修改成功！', 3);
       } else {
         this.setState({
           isSpinning: false,
-        })
+        });
         message.error('信息修改失败！', 3);
       }
     });
-  }
-
+  };
 
   render() {
-    const {
-      pollInfo,
-      uploadFileParams,
-      pollFileList,
-      pbbgTurnRed,
-      glxq,
-      isSpinning,
-    } = this.state;
-    const {
-      visible,
-      closeModal,
-    } = this.props;
-    const {getFieldDecorator, getFieldValue, setFieldsValue, validateFields} = this.props.form;
+    const { pollInfo, uploadFileParams, pollFileList, pbbgTurnRed, glxq, isSpinning } = this.state;
+    const { visible, closeModal } = this.props;
+    const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
     return (
       <>
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '60px', paddingBottom: '0'}}
+          style={{ top: '60px', paddingBottom: '0' }}
           width={'760px'}
           title={null}
           zIndex={100}
@@ -205,17 +288,24 @@ class PollResultEnterModel extends React.Component {
             height: '260px',
           }}
           onCancel={this.props.closeModal}
-          footer={<div className="modal-footer">
-            <Button className="btn-default" onClick={closeModal}>
-              取消
-            </Button>
-            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+          footer={
+            <div className="modal-footer">
+              <Button className="btn-default" onClick={closeModal}>
+                取消
+              </Button>
+              {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
         暂存草稿
       </Button> */}
-            <Button disabled={isSpinning} className="btn-primary" type="primary" onClick={this.handleSavePollInfo}>
-              确定
-            </Button>
-          </div>}
+              <Button
+                disabled={isSpinning}
+                className="btn-primary"
+                type="primary"
+                onClick={this.handleSavePollInfo}
+              >
+                确定
+              </Button>
+            </div>
+          }
           visible={visible}
         >
           <div
@@ -233,76 +323,91 @@ class PollResultEnterModel extends React.Component {
           >
             <strong>询比结果录入</strong>
           </div>
-          <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="PollResultEnterModel"
-                style={{position: 'fixed'}}>
-            <Form name="nest-messages" style={{padding: '24px'}}>
+          <Spin
+            spinning={isSpinning}
+            tip="加载中"
+            size="large"
+            wrapperClassName="PollResultEnterModel"
+            style={{ position: 'fixed' }}
+          >
+            <Form name="nest-messages" style={{ padding: '24px' }}>
               <Row>
-                <Col span={12} style={{paddingRight: '24px'}}>
-                  <Form.Item
-                    label="询比项目名称" required
-                    className="formItem"
-                  >
+                <Col span={12} style={{ paddingRight: '24px' }}>
+                  <Form.Item label="询比项目名称" required className="formItem">
                     {getFieldDecorator('name', {
                       initialValue: pollInfo.name,
-                    })(<Input onChange={e => {
-                      console.log("请输入询比项目名称", e.target.value)
-                      this.setState({pollInfo: {...pollInfo, name: e.target.value}});
-                    }} placeholder="请输入询比项目名称"/>)}
+                    })(
+                      <Input
+                        onChange={e => {
+                          console.log('请输入询比项目名称', e.target.value);
+                          this.setState({ pollInfo: { ...pollInfo, name: e.target.value } });
+                        }}
+                        placeholder="请输入询比项目名称"
+                      />,
+                    )}
                   </Form.Item>{' '}
                 </Col>
-                <Col span={12} style={{paddingLeft: '24px'}}>
-                  <Form.Item
-                    label="关联需求" required
-                    className="formItem"
-                  >
+                <Col span={12} style={{ paddingLeft: '24px' }}>
+                  <Form.Item label="关联需求" required className="formItem">
                     {getFieldDecorator('flowId', {
                       initialValue: pollInfo.flowId ? pollInfo.flowId : null,
-                    })(<Select
-                      style={{borderRadius: '8px !important'}}
-                      placeholder="请选择关联设备采购无合同流程"
-                      // mode='multiple'
-                      showArrow={true}
-                      // className="skzh-box"
-                      showSearch
-                      allowClear
-                      onChange={e => {
-                        console.log("请选择关联主流程", e)
-                        this.setState({pollInfo: {...pollInfo, flowId: e}});
-                      }}
-                      filterOption={(input, option) =>
-                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                      }>
-                      {
-                        glxq?.map((item = {}, ind) => {
-                          return <Option key={item.ID} value={item.ID}>
-                            {item.BT}
-                          </Option>
-                        })
-                      }
-                    </Select>)}
+                    })(
+                      <Select
+                        style={{ borderRadius: '8px !important' }}
+                        placeholder="请选择关联设备采购无合同流程"
+                        // mode='multiple'
+                        showArrow={true}
+                        // className="skzh-box"
+                        showSearch
+                        dropdownMenuStyle={{ height: 100 }}
+                        onPopupScroll={this.handleReachBottom}
+                        onSearch={this.handleSltSearch}
+                        onBlur={this.handleSltBlur}
+                        allowClear
+                        onChange={e => {
+                          console.log('请选择关联主流程', e);
+                          this.setState({ pollInfo: { ...pollInfo, flowId: e } });
+                        }}
+                        filterOption={false}
+                        optionLabelProp="children"
+                        // filterOption={(input, option) =>
+                        //   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        // }
+                      >
+                        {glxq?.map((item = {}, ind) => {
+                          return (
+                            <Option key={item.ID} value={item.ID}>
+                              {item.BT}
+                            </Option>
+                          );
+                        })}
+                      </Select>,
+                    )}
                   </Form.Item>
                 </Col>
               </Row>
               <Row>
-                <Col span={12} style={{paddingRight: '24px'}}>
-                  <Form.Item label="询比报告" required
+                <Col span={12} style={{ paddingRight: '24px' }}>
+                  <Form.Item
+                    label="询比报告"
+                    required
                     // help={pbbgTurnRed ? '请上传合同附件' : ''}
-                             validateStatus={pbbgTurnRed ? 'error' : 'success'}
+                    validateStatus={pbbgTurnRed ? 'error' : 'success'}
                   >
                     <Upload
                       className="uploadStyle"
                       action={'/api/projectManage/queryfileOnlyByupload'}
-                      onDownload={(file) => {
+                      onDownload={file => {
                         if (!file.url) {
                           let reader = new FileReader();
                           reader.readAsDataURL(file.originFileObj);
-                          reader.onload = (e) => {
+                          reader.onload = e => {
                             var link = document.createElement('a');
                             link.href = e.target.result;
                             link.download = file.name;
                             link.click();
                             window.URL.revokeObjectURL(link.href);
-                          }
+                          };
                         } else {
                           // window.location.href=file.url;
                           var link = document.createElement('a');
@@ -311,7 +416,6 @@ class PollResultEnterModel extends React.Component {
                           link.click();
                           window.URL.revokeObjectURL(link.href);
                         }
-
                       }}
                       showUploadList={{
                         showDownloadIcon: true,
@@ -319,9 +423,9 @@ class PollResultEnterModel extends React.Component {
                         showPreviewIcon: true,
                       }}
                       multiple={true}
-                      onChange={(info) => {
+                      onChange={info => {
                         let fileList = [...info.fileList];
-                        this.setState({pollFileList: [...fileList]}, () => {
+                        this.setState({ pollFileList: [...fileList] }, () => {
                           console.log('目前fileList', this.state.pollFileList);
                           let arr = [];
                           console.log('目前fileList2222', fileList);
@@ -334,10 +438,10 @@ class PollResultEnterModel extends React.Component {
                                 name: item.name,
                                 base64: urlArr[1],
                               });
-                              console.log("arrarr", arr)
+                              console.log('arrarr', arr);
                               if (arr.length === fileList.length) {
                                 this.setState({
-                                  uploadFileParams: [...arr]
+                                  uploadFileParams: [...arr],
                                 });
                               }
                             };
@@ -345,11 +449,11 @@ class PollResultEnterModel extends React.Component {
                         });
                         if (fileList.length === 0) {
                           this.setState({
-                            pbbgTurnRed: true
+                            pbbgTurnRed: true,
                           });
                         } else {
                           this.setState({
-                            pbbgTurnRed: false
+                            pbbgTurnRed: false,
                           });
                         }
                       }}
@@ -367,23 +471,28 @@ class PollResultEnterModel extends React.Component {
                             });
                             if (arr.length === fileList.length) {
                               this.setState({
-                                uploadFileParams: [...arr]
+                                uploadFileParams: [...arr],
                               });
                             }
                           };
                         });
-                        console.log("uploadFileParams-cccc", this.state.uploadFileParams)
+                        console.log('uploadFileParams-cccc', this.state.uploadFileParams);
                       }}
-                      onRemove={(file) => {
+                      onRemove={file => {
                         console.log('file--cc-rrr', file);
                       }}
-                      accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
-                      fileList={[...pollFileList]}>
+                      accept={
+                        '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                      }
+                      fileList={[...pollFileList]}
+                    >
                       <Button type="dashed">
-                        <Icon type="upload"/>点击上传
+                        <Icon type="upload" />
+                        点击上传
                       </Button>
                     </Upload>
-                  </Form.Item></Col>
+                  </Form.Item>
+                </Col>
               </Row>
             </Form>
           </Spin>
@@ -393,6 +502,6 @@ class PollResultEnterModel extends React.Component {
   }
 }
 
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(Form.create()(PollResultEnterModel));

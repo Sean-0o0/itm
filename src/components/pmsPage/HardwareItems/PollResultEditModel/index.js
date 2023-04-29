@@ -14,7 +14,8 @@ import {
   Select,
   Pagination,
   Spin,
-  Radio, Divider,
+  Radio,
+  Divider,
 } from 'antd';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import React from 'react';
@@ -25,136 +26,145 @@ import {
   CreateOperateHyperLink,
   QueryPaymentAccountList,
 } from '../../../../services/pmsServices';
-import {PluginsUrl} from '../../../../utils/config';
-import {connect} from "dva";
-import moment from "moment";
+import { PluginsUrl } from '../../../../utils/config';
+import { connect } from 'dva';
+import moment from 'moment';
 import {
   FetchQueryHardwareTendersAndContract,
-  FetchQueryInquiryComparisonInfo, GetDocumentByLiveBos, UpdateHardwareTenderInfo,
-  UpdateInquiryComparisonInfo
-} from "../../../../services/projectManage";
-import {DecryptBase64} from "../../../Common/Encrypt";
+  FetchQueryInquiryComparisonInfo,
+  GetDocumentByLiveBos,
+  UpdateHardwareTenderInfo,
+  UpdateInquiryComparisonInfo,
+} from '../../../../services/projectManage';
+import { DecryptBase64 } from '../../../Common/Encrypt';
 
-const {confirm} = Modal;
-const {Option, OptGroup} = Select;
+const { confirm } = Modal;
+const { Option, OptGroup } = Select;
 
 class PollResultEditModel extends React.Component {
   state = {
     pbbgTurnRed: false,
   };
 
-  componentDidMount() {
-  }
+  componentDidMount() {}
 
   handleSave = () => {
-    const {handleSavePollInfo} = this.props;
+    const { handleSavePollInfo } = this.props;
     handleSavePollInfo();
-  }
+  };
 
-  handleDataCallback = (params) => {
-    const {handleDataCallback} = this.props;
-    handleDataCallback(params)
-  }
+  handleDataCallback = params => {
+    const { handleDataCallback } = this.props;
+    handleDataCallback(params);
+  };
 
-  handleFileCallback = (params) => {
-    console.log("当前文件信息", params)
-    const {handleFileCallback} = this.props;
-    handleFileCallback(params)
-  }
+  handleFileCallback = params => {
+    console.log('当前文件信息', params);
+    const { handleFileCallback } = this.props;
+    handleFileCallback(params);
+  };
 
   handleParamsCallback = (params = []) => {
-    console.log("当前文件信息2222", params)
-    const {handleParamsCallback} = this.props;
-    handleParamsCallback(params)
-  }
+    console.log('当前文件信息2222', params);
+    const { handleParamsCallback } = this.props;
+    handleParamsCallback(params);
+  };
 
   render() {
-    const {
-      pbbgTurnRed,
-    } = this.state;
-    const {
-      pollInfo,
-      uploadFileParams,
-      fileList,
-      glxq,
-      isSpinning,
-    } = this.props;
-    console.log("fileListfileList", fileList)
-    const {getFieldDecorator, getFieldValue, setFieldsValue, validateFields} = this.props.form;
+    const { pbbgTurnRed } = this.state;
+    const { pollInfo, uploadFileParams, fileList, glxq, isSpinning } = this.props;
+    console.log('🚀 ~ file: index.js:76 ~ PollResultEditModel ~ render ~ glxq:', glxq);
+    // console.log('fileListfileList', fileList);
+    const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
     return (
-      <div className="poll-result-box" style={{overflow: 'hidden', height: "100%"}}>
-        <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="PollResultEnterModel">
+      <div className="poll-result-box" style={{ overflow: 'hidden', height: '100%' }}>
+        <Spin
+          spinning={isSpinning}
+          tip="加载中"
+          size="large"
+          wrapperClassName="PollResultEnterModel"
+        >
           <Form name="nest-messages">
             <Row>
               <Col span={11}>
-                <Form.Item
-                  label="询比项目名称" required
-                  className="formItem"
-                >
+                <Form.Item label="询比项目名称" required className="formItem">
                   {getFieldDecorator('name', {
                     initialValue: pollInfo?.name,
-                  })(<Input onChange={e => {
-                    console.log("请输入询比项目名称", e.target.value)
-                    this.handleDataCallback({name: e.target.value})
-                    // this.setState({pollInfo: {...pollInfo, name: e.target.value}});
-                  }} placeholder="请输入询比项目名称"/>)}
+                  })(
+                    <Input
+                      onChange={e => {
+                        console.log('请输入询比项目名称', e.target.value);
+                        this.handleDataCallback({ name: e.target.value });
+                        // this.setState({pollInfo: {...pollInfo, name: e.target.value}});
+                      }}
+                      placeholder="请输入询比项目名称"
+                    />,
+                  )}
                 </Form.Item>
               </Col>
               <Col span={2}></Col>
               <Col span={11}>
-                <Form.Item
-                  label="关联需求" required
-                  className="formItem"
-                >
+                <Form.Item label="关联需求" required className="formItem">
                   {getFieldDecorator('flowId', {
-                    initialValue: pollInfo?.flowId ? pollInfo.flowId : null,
-                  })(<Select
-                    style={{borderRadius: '8px !important'}}
-                    placeholder="请选择关联设备采购无合同流程"
-                    // mode='multiple'
-                    showArrow={true}
-                    // className="skzh-box"
-                    showSearch
-                    allowClear
-                    onChange={e => {
-                      console.log("请选择关联设备采购无合同流程", e)
-                      this.handleDataCallback({flowId: e})
-                      // this.setState({pollInfo: {...pollInfo, flowId: e}});
-                    }}
-                    filterOption={(input, option) =>
-                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                    }>
-                    {
-                      glxq?.map((item = {}, ind) => {
-                        return <Option key={item.ID} value={item.ID}>
-                          {item.BT}
-                        </Option>
-                      })
-                    }
-                  </Select>)}
+                    initialValue: pollInfo?.flowMc ? pollInfo.flowMc : null,
+                  })(
+                    <Select
+                      style={{ borderRadius: '8px !important' }}
+                      placeholder="请选择关联设备采购无合同流程"
+                      // mode='multiple'
+                      showArrow={true}
+                      // className="skzh-box"
+                      showSearch
+                      allowClear
+                      dropdownMenuStyle={{ height: 100 }}
+                      onPopupScroll={this.props.handleReachBottom}
+                      onChange={e => {
+                        console.log('请选择关联设备采购无合同流程', e);
+                        this.handleDataCallback({ flowId: e });
+                        // this.setState({pollInfo: {...pollInfo, flowId: e}});
+                      }}
+                      onSearch={this.props.handleSltSearch}
+                      onBlur={this.props.handleSltBlur}
+                      filterOption={false}
+                      optionLabelProp="children"
+                      // filterOption={(input, option) =>
+                      //   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                      // }
+                    >
+                      {glxq.map((item = {}, ind) => {
+                        return (
+                          <Option key={item.ID} value={item.ID}>
+                            {item.BT}
+                          </Option>
+                        );
+                      })}
+                    </Select>,
+                  )}
                 </Form.Item>
               </Col>
             </Row>
             <Row>
               <Col span={12}>
-                <Form.Item label="询比报告" required
+                <Form.Item
+                  label="询比报告"
+                  required
                   // help={pbbgTurnRed ? '请上传合同附件' : ''}
-                           validateStatus={pbbgTurnRed ? 'error' : 'success'}
+                  validateStatus={pbbgTurnRed ? 'error' : 'success'}
                 >
                   <Upload
                     className="uploadStyle"
                     action={'/api/projectManage/queryfileOnlyByupload'}
-                    onDownload={(file) => {
+                    onDownload={file => {
                       if (!file.url) {
                         let reader = new FileReader();
                         reader.readAsDataURL(file.originFileObj);
-                        reader.onload = (e) => {
+                        reader.onload = e => {
                           var link = document.createElement('a');
                           link.href = e.target.result;
                           link.download = file.name;
                           link.click();
                           window.URL.revokeObjectURL(link.href);
-                        }
+                        };
                       } else {
                         // window.location.href=file.url;
                         var link = document.createElement('a');
@@ -170,9 +180,9 @@ class PollResultEditModel extends React.Component {
                       showPreviewIcon: true,
                     }}
                     multiple={true}
-                    onChange={(info) => {
+                    onChange={info => {
                       let fileList = [...info.fileList];
-                      console.log("fileListfileList", fileList)
+                      console.log('fileListfileList', fileList);
                       let newArr = [];
                       if (fileList.filter(item => item.originFileObj !== undefined).length === 0) {
                         fileList.forEach(item => {
@@ -182,11 +192,11 @@ class PollResultEditModel extends React.Component {
                           });
                         });
                         if (newArr.length === fileList.length) {
-                          this.handleParamsCallback([...newArr])
+                          this.handleParamsCallback([...newArr]);
                         }
                       } else {
                         fileList.forEach(item => {
-                          console.log("item.originFileObj", item.originFileObj)
+                          console.log('item.originFileObj', item.originFileObj);
                           if (item.originFileObj === undefined) {
                             newArr.push({
                               name: item.name,
@@ -202,21 +212,21 @@ class PollResultEditModel extends React.Component {
                                 base64: urlArr[1],
                               });
                               if (newArr.length === fileList.length) {
-                                this.handleParamsCallback([...newArr])
+                                this.handleParamsCallback([...newArr]);
                               }
                             };
                           }
                         });
                       }
 
-                      this.handleFileCallback(fileList)
+                      this.handleFileCallback(fileList);
                       if (fileList.length === 0) {
                         this.setState({
-                          pbbgTurnRed: true
+                          pbbgTurnRed: true,
                         });
                       } else {
                         this.setState({
-                          pbbgTurnRed: false
+                          pbbgTurnRed: false,
                         });
                       }
                     }}
@@ -236,18 +246,23 @@ class PollResultEditModel extends React.Component {
                           });
                           if (arr.length === fileList.length) {
                             // console.log('arrarrarr', arr);
-                            this.handleParamsCallback([...arr, ...uploadFileParams])
+                            this.handleParamsCallback([...arr, ...uploadFileParams]);
                           }
                         };
                       });
                     }}
-                    accept={'.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'}
-                    fileList={[...fileList]}>
+                    accept={
+                      '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                    }
+                    fileList={[...fileList]}
+                  >
                     <Button type="dashed">
-                      <Icon type="upload"/>点击上传
+                      <Icon type="upload" />
+                      点击上传
                     </Button>
                   </Upload>
-                </Form.Item></Col>
+                </Form.Item>
+              </Col>
             </Row>
           </Form>
         </Spin>
@@ -256,6 +271,6 @@ class PollResultEditModel extends React.Component {
   }
 }
 
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
 }))(Form.create()(PollResultEditModel));

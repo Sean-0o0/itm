@@ -14,6 +14,10 @@ export default function PollResultModel(props) {
   const [isSpinning, setIsSpinning] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
+  const [currentPage, setCurrentPage] = useState(1); //收款账户数据懒加载页号
+  const [isNoMoreData, setIsNoMoreData] = useState(false); //没有更多数据了
+  const [demandName, setDemandName] = useState(''); //
+
   const {
     match: {
       params: { params: encryptParams = '' },
@@ -33,7 +37,7 @@ export default function PollResultModel(props) {
     setTimeout(function() {
       if (xmid !== -1) {
         getTableData(params);
-        fetchQueryInquiryComparisonInfoLCXX();
+        fetchQueryInquiryComparisonInfoLCXX(demandName);
       }
     }, 300);
     return () => {};
@@ -81,16 +85,98 @@ export default function PollResultModel(props) {
       });
   };
 
-  const fetchQueryInquiryComparisonInfoLCXX = () => {
+  const fetchQueryInquiryComparisonInfoLCXX = (demandName = '', current = 1) => {
     FetchQueryInquiryComparisonInfo({
       flowId: '-1',
       projectId: xmid,
       queryType: 'GLXQ',
+      paging: 1,
+      current,
+      pageSize: 4,
+      demandName,
+      total: -1,
+      sort: '',
     }).then(res => {
       if (res.success) {
         const { lcxx } = res;
+        let rec = [...JSON.parse(lcxx)];
+        let arr = [...lcxxData];
+        if (rec.length === 0) {
+          setLcxxData(p => [...arr]);
+          setIsNoMoreData(true);
+          console.log('🚀 ~ file: index.js:108 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...arr]:', [
+            ...arr,
+          ]);
+        } else {
+          setCurrentPage(current);
+          setLcxxData(p => [...arr, ...rec]);
+          console.log(
+            '🚀 ~ file: index.js:108 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...arr, ...rec]:',
+            [...arr, ...rec],
+          );
+        }
+      }
+    });
+  };
+  const handleReachBottom = e => {
+    const { scrollHeight, scrollTop, clientHeight } = e.target;
+    // throttle(() => {
+    if (scrollHeight - scrollTop - clientHeight <= 10) {
+      let index = currentPage;
+      index = index + 1;
+      console.log('🚀 ~ file: index.js:122 ~ //throttle ~ isNoMoreData:', isNoMoreData, index);
+      if (!isNoMoreData) {
+        fetchQueryInquiryComparisonInfoLCXX(demandName, index);
+      }
+    }
+  };
+  const handleSltSearch = str => {
+    FetchQueryInquiryComparisonInfo({
+      flowId: '-1',
+      projectId: xmid,
+      queryType: 'GLXQ',
+      paging: 1,
+      current: 1,
+      pageSize: 4,
+      demandName: str,
+      total: -1,
+      sort: '',
+    }).then(res => {
+      if (res.success) {
+        const { lcxx } = res;
+        setCurrentPage(1);
+        setIsNoMoreData(false);
+        setDemandName(str);
         setLcxxData(p => [...JSON.parse(lcxx)]);
-        console.log("🚀 ~ file: index.js:94 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...JSON.parse(lcxx)]:", [...JSON.parse(lcxx)])
+        console.log(
+          '🚀 ~ file: index.js:151 ~ handleSltSearch ~ JSON.parse(lcxx):',
+          JSON.parse(lcxx),
+          str,
+        );
+      }
+    });
+  };
+
+  const handleSltBlur = () => {
+    setCurrentPage(1);
+    setIsNoMoreData(false);
+    setDemandName('');
+    FetchQueryInquiryComparisonInfo({
+      flowId: '-1',
+      projectId: xmid,
+      queryType: 'GLXQ',
+      paging: 1,
+      current: 1,
+      pageSize: 4,
+      demandName: '',
+      total: -1,
+      sort: '',
+    }).then(res => {
+      if (res.success) {
+        const { lcxx } = res;
+        setCurrentPage(1);
+        setIsNoMoreData(false);
+        setLcxxData(p => [...JSON.parse(lcxx)]);
       }
     });
   };
@@ -117,12 +203,16 @@ export default function PollResultModel(props) {
         <InfoTable
           lcxxData={lcxxData}
           params={params}
+          handleReachBottom={handleReachBottom}
           setTableLoading={setTableLoading}
           callBackParams={callBackParams}
           tableData={tableData}
           tableLoading={tableLoading}
           getTableData={getTableData}
           total={total}
+          demandName={demandName}
+          handleSltSearch={handleSltSearch}
+          handleSltBlur={handleSltBlur}
         />
       </Spin>
     </div>

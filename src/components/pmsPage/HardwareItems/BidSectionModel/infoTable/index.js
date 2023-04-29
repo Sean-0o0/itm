@@ -261,7 +261,7 @@ export default function InfoTable(props) {
           rowKey={'BJID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          // scroll={{y: 407}}
+          scroll={{ y: 400 }}
           pagination={{
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,

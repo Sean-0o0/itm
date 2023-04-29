@@ -10655,11 +10655,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       padding: 14px 16px;
       width: calc(16.7% - 24px);
 
-      &:hover{
+      &:hover {
         box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-        0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+          0px 9px 28px 8px rgba(0, 0, 0, 0.05);
       }
-      
 
       .basic-info {
         display: flex;
@@ -10937,6 +10936,106 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       padding-top: 0;
       height: calc(100% - 64px);
       overflow: hidden;
+      .ant-table {
+        th,
+        td {
+          text-align: left;
+        }
+
+        td {
+          padding: 9px !important;
+          font-size: 14px;
+          font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+        }
+
+        th {
+          padding: 9px !important;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: bold;
+          color: #606266 !important;
+        }
+
+        .ant-table-body {
+          // min-height: 560px;
+          table {
+            border: 1px solid #e8e8e8;
+          }
+        }
+
+        .ant-table-scroll .ant-table-header {
+          margin-bottom: -16.5px !important; //表格表头底部边框
+          background-color: #f5f7fa;
+        }
+
+        .ant-table-placeholder {
+          border-bottom: 0;
+
+          .ant-empty-description {
+            font-size: 14px;
+          }
+        }
+
+        // .ant-table-thead {
+        //   position: sticky;
+        //   top: 0;
+        //   z-index: 1;
+        // }
+      }
+
+      .ant-table-pagination {
+        font-size: 14px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        background-color: #fff;
+        width: 100%;
+        // position: sticky;
+        // bottom: 0;
+
+        .ant-select {
+          font-size: 14px !important;
+        }
+      }
+
+      .ant-pagination-item-active {
+        background-color: #3361ff;
+
+        a {
+          color: #fff;
+        }
+      }
+
+      .ant-pagination-item {
+        border: 0;
+      }
+
+      .ant-pagination-total-text {
+        margin-right: auto;
+        color: #909399;
+      }
+
+      .ant-pagination-disabled {
+        background-color: #f5f7fa;
+
+        a {
+          background-color: #f5f7fa;
+        }
+      }
+
+      .ant-pagination-options-quick-jumper input {
+        &:hover {
+          border-color: #3361ff;
+        }
+
+        &:focus {
+          border-color: #3361ff;
+          box-shadow: 0 0 0 2px #3361ff33;
+        }
+      }
 
       .update-col {
         font-family: PingFangSC-Regular, PingFang SC;
@@ -10962,75 +11061,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           color: #e58c00;
           line-height: 24px;
           margin-left: 6px;
-        }
-      }
-      .ant-table {
-        td {
-          padding: 9px;
-          font-size: 14px;
-          font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
-          font-weight: 400;
-          color: #303133;
-        }
-
-        th {
-          padding: 9px;
-          font-size: 14px;
-          background-color: #f5f7fa;
-          font-family: PingFangSC-Medium, PingFang SC;
-          font-weight: bold;
-          color: #606266;
-        }
-
-        .ant-table-body {
-          // min-height: 560px;
-          table {
-            border: 1px solid #e8e8e8;
-          }
-        }
-
-        .ant-table-scroll .ant-table-header {
-          margin-bottom: -16.5px !important; //表格表头底部边框
-          background-color: #f5f7fa;
-        }
-
-        .ant-table-placeholder {
-          border-bottom: 0;
-
-          .ant-empty-description {
-            font-size: 14px;
-          }
-        }
-
-        .ant-table-thead {
-          position: sticky;
-          top: 0;
-        }
-
-        .ant-table-body {
-          // min-height: 560px;
-          table {
-            border: 1px solid #e8e8e8;
-          }
-        }
-
-        .ant-table-scroll .ant-table-header {
-          margin-bottom: -16.5px !important; //表格表头底部边框
-          background-color: #f5f7fa;
-        }
-
-        .ant-table-placeholder {
-          border-bottom: 0;
-
-          .ant-empty-description {
-            font-size: 14px;
-          }
-        }
-
-        .ant-table-thead {
-          position: sticky;
-          top: 0;
-          z-index: 1;
         }
       }
     }

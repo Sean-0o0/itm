@@ -36,6 +36,10 @@ export default function InfoTable(props) {
     params,
     callBackParams,
     lcxxData,
+    handleReachBottom,
+    demandName,
+    handleSltSearch,
+    handleSltBlur,
   } = props; //表格数据
   const location = useLocation();
   console.log('🚀 ~ tableData:', tableData);
@@ -101,9 +105,11 @@ export default function InfoTable(props) {
     console.log('recordrecordrecord', row);
     setXbjglrModalVisible(true);
     let newFlowId = [];
-    if (row?.GLXQMC) {
-      newFlowId = row?.GLXQMC.split(',');
-    }
+    let newFlowMc = [];
+    // if (row?.GLXQMC) {
+    //   newFlowId = row?.GLXQ?.split(',');
+    //   newFlowMc = row?.GLXQMC?.split(',');
+    // }
     // getDocumentByLiveBos(row)
     console.log('uploadFileParams000', uploadFileParams);
     console.log('fileListfileList000', fileList);
@@ -130,7 +136,10 @@ export default function InfoTable(props) {
       //中标信息
       xmid: row?.XMID,
       name: row?.XBXM,
-      flowId: newFlowId,
+      // flowId: newFlowId,
+      // flowMc: newFlowMc,
+      flowId: row?.GLXQ,
+      flowMc: row?.GLXQMC,
       // XBBG: rec?.XBBG,
       ID: row?.ID,
     });
@@ -394,12 +403,13 @@ export default function InfoTable(props) {
     uploadFileParams.map(item => {
       fileInfo.push({ fileName: item.name, data: item.base64 });
     });
+    console.log('🚀 ~ file: index.js:405 ~ handleSavePollInfo ~ fileInfo:', fileInfo);
     let submitdata = {
       projectId: pollInfo.xmid,
       // projectId: 397,
       infoId: pollInfo.ID,
       name: pollInfo.name,
-      flowId: String(pollInfo.flowId),
+      flowId: pollInfo.flowId,
       fileInfo: [...fileInfo],
       type: 'UPDATE',
     };
@@ -496,6 +506,10 @@ export default function InfoTable(props) {
             uploadFileParams={uploadFileParams}
             fileList={fileList}
             handleSavePollInfo={handleSavePollInfo}
+            handleReachBottom={handleReachBottom}
+            demandName={demandName}
+            handleSltSearch={handleSltSearch}
+            handleSltBlur={handleSltBlur}
           />
         </Modal>
       )}
