@@ -390,7 +390,13 @@ class BidInfoUpdate extends React.Component {
       if (res.success) {
         let rec = res.record;
         let arr = [...this.state.skzhData];
-        if (rec.length === 0) {
+        if (res.totalrows <= 10) {
+          this.setState({
+            skzhData: [...rec],
+            fetching: false,
+            isNoMoreData: true,
+          });
+        } else if (rec.length === 0) {
           this.setState({
             skzhData: [...arr],
             fetching: false,

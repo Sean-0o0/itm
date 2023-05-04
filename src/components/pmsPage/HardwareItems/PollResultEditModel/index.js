@@ -72,7 +72,7 @@ class PollResultEditModel extends React.Component {
 
   render() {
     const { pbbgTurnRed } = this.state;
-    const { pollInfo, uploadFileParams, fileList, glxq, isSpinning } = this.props;
+    const { pollInfo, uploadFileParams, fileList, glxq, isSpinning, isNoMoreData } = this.props;
     console.log('🚀 ~ file: index.js:76 ~ PollResultEditModel ~ render ~ glxq:', glxq);
     // console.log('fileListfileList', fileList);
     const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
@@ -138,6 +138,16 @@ class PollResultEditModel extends React.Component {
                           </Option>
                         );
                       })}
+                      {isNoMoreData && (
+                        <Select.Option
+                          key={'无更多数据'}
+                          value={'无更多数据'}
+                          style={{ textAlign: 'center', color: 'rgba(0, 0, 0, 0.65)' }}
+                          disabled={true}
+                        >
+                          无更多数据
+                        </Select.Option>
+                      )}
                     </Select>,
                   )}
                 </Form.Item>

@@ -129,8 +129,13 @@ export default function FormOperate(props) {
       .then(res => {
         if (res.success) {
           let rec = res.record;
+          console.log('🚀 ~ file: index.js:132 ~ getSkzhData ~ res:', res);
           let arr = [...skzh];
-          if (rec.length === 0) {
+          if (res.totalrows <= 10) {
+            setSkzh(p => [...rec]);
+            setIsNoMoreData(true);
+            setFetching(false);
+          } else if (rec.length === 0) {
             setSkzh(p => [...arr]);
             setIsNoMoreData(true);
             setFetching(false);
