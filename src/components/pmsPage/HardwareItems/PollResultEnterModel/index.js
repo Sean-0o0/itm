@@ -97,17 +97,22 @@ class PollResultEnterModel extends React.Component {
         const { lcxx } = res;
         let rec = [...JSON.parse(lcxx)];
         let arr = [...this.state.glxq];
-        if (rec.length === 0) {
+        if (res.totalrows <= 30) {
+          this.setState({
+            glxq: rec,
+            isNoMoreData: true,
+          });
+        } else if (rec.length === 0) {
           this.setState({
             glxq: arr,
             isNoMoreData: true,
           });
-          console.log('🚀 ~ file: index.js:103 ~ arr:', arr);
+          // console.log('🚀 ~ file: index.js:103 ~ arr:', arr);
         } else {
           this.setState({
             glxq: [...arr, ...rec],
           });
-          console.log('🚀 ~ file: index.js:107 ~ [...arr, ...rec]:', [...arr, ...rec]);
+          // console.log('🚀 ~ file: index.js:107 ~ [...arr, ...rec]:', [...arr, ...rec]);
         }
       }
     });
@@ -272,7 +277,15 @@ class PollResultEnterModel extends React.Component {
   };
 
   render() {
-    const { pollInfo, uploadFileParams, pollFileList, pbbgTurnRed, glxq, isSpinning } = this.state;
+    const {
+      pollInfo,
+      uploadFileParams,
+      pollFileList,
+      pbbgTurnRed,
+      glxq,
+      isSpinning,
+      isNoMoreData,
+    } = this.state;
     const { visible, closeModal } = this.props;
     const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
     return (
@@ -381,6 +394,16 @@ class PollResultEnterModel extends React.Component {
                             </Option>
                           );
                         })}
+                        {isNoMoreData && (
+                          <Select.Option
+                            key={'无更多数据'}
+                            value={'无更多数据'}
+                            style={{ textAlign: 'center', color: 'rgba(0, 0, 0, 0.65)' }}
+                            disabled={true}
+                          >
+                            无更多数据
+                          </Select.Option>
+                        )}
                       </Select>,
                     )}
                   </Form.Item>

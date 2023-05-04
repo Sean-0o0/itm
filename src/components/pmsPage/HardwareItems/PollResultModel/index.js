@@ -101,19 +101,22 @@ export default function PollResultModel(props) {
         const { lcxx } = res;
         let rec = [...JSON.parse(lcxx)];
         let arr = [...lcxxData];
-        if (rec.length === 0) {
+        if (res.totalrows <= 30) {
+          setLcxxData(p => [...rec]);
+          setIsNoMoreData(true);
+        } else if (rec.length === 0) {
           setLcxxData(p => [...arr]);
           setIsNoMoreData(true);
-          console.log('🚀 ~ file: index.js:108 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...arr]:', [
-            ...arr,
-          ]);
+          // console.log('🚀 ~ file: index.js:108 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...arr]:', [
+          //   ...arr,
+          // ]);
         } else {
           setCurrentPage(current);
           setLcxxData(p => [...arr, ...rec]);
-          console.log(
-            '🚀 ~ file: index.js:108 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...arr, ...rec]:',
-            [...arr, ...rec],
-          );
+          // console.log(
+          //   '🚀 ~ file: index.js:108 ~ fetchQueryInquiryComparisonInfoLCXX ~ [...arr, ...rec]:',
+          //   [...arr, ...rec],
+          // );
         }
       }
     });
@@ -124,7 +127,7 @@ export default function PollResultModel(props) {
     if (scrollHeight - scrollTop - clientHeight <= 10) {
       let index = currentPage;
       index = index + 1;
-      console.log('🚀 ~ file: index.js:122 ~ //throttle ~ isNoMoreData:', isNoMoreData, index);
+      // console.log('🚀 ~ file: index.js:122 ~ //throttle ~ isNoMoreData:', isNoMoreData, index);
       if (!isNoMoreData) {
         fetchQueryInquiryComparisonInfoLCXX(demandName, index);
       }
@@ -148,11 +151,11 @@ export default function PollResultModel(props) {
         setIsNoMoreData(false);
         setDemandName(str);
         setLcxxData(p => [...JSON.parse(lcxx)]);
-        console.log(
-          '🚀 ~ file: index.js:151 ~ handleSltSearch ~ JSON.parse(lcxx):',
-          JSON.parse(lcxx),
-          str,
-        );
+        // console.log(
+        //   '🚀 ~ file: index.js:151 ~ handleSltSearch ~ JSON.parse(lcxx):',
+        //   JSON.parse(lcxx),
+        //   str,
+        // );
       }
     });
   };
@@ -213,6 +216,7 @@ export default function PollResultModel(props) {
           demandName={demandName}
           handleSltSearch={handleSltSearch}
           handleSltBlur={handleSltBlur}
+          isNoMoreData={isNoMoreData}
         />
       </Spin>
     </div>

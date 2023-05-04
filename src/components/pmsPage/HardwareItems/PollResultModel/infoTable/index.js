@@ -40,6 +40,7 @@ export default function InfoTable(props) {
     demandName,
     handleSltSearch,
     handleSltBlur,
+    isNoMoreData,
   } = props; //表格数据
   const location = useLocation();
   console.log('🚀 ~ tableData:', tableData);
@@ -510,6 +511,7 @@ export default function InfoTable(props) {
             demandName={demandName}
             handleSltSearch={handleSltSearch}
             handleSltBlur={handleSltBlur}
+            isNoMoreData={isNoMoreData}
           />
         </Modal>
       )}
