@@ -1689,6 +1689,7 @@ class EditProjectInfoModel extends React.Component {
       topicInfoRecord = [],
       requirementInfoRecord = [],
       prizeInfoRecord = [],
+      subItemFlag,
     } = this.state;
     //校验基础信息
     let basicflag;
@@ -1862,44 +1863,46 @@ class EditProjectInfoModel extends React.Component {
       }
     }
     //其他信息校验
-    console.log('开始校验其他信息tab');
-    console.log('-------需求信息-------', requirementInfoRecord);
-    console.log('-------获奖信息-------', prizeInfoRecord);
-    console.log('-------课题信息-------', topicInfoRecord);
-    let requirementInfoFlag = 0;
-    let prizeInfoFlag = 0;
-    let topicInfoFlag = 0;
-    if (requirementInfoRecord.length > 0) {
-      requirementInfoRecord.map(item => {
-        if (item.XQBT === '' || item.XQRQ === '' || item.XQNR === '') {
-          requirementInfoFlag++;
+    if(!subItemFlag){
+      console.log('开始校验其他信息tab');
+      console.log('-------需求信息-------', requirementInfoRecord);
+      console.log('-------获奖信息-------', prizeInfoRecord);
+      console.log('-------课题信息-------', topicInfoRecord);
+      let requirementInfoFlag = 0;
+      let prizeInfoFlag = 0;
+      let topicInfoFlag = 0;
+      if (requirementInfoRecord.length > 0) {
+        requirementInfoRecord.map(item => {
+          if (item.XQBT === '' || item.XQRQ === '' || item.XQNR === '') {
+            requirementInfoFlag++;
+          }
+        });
+        if (requirementInfoFlag > 0) {
+          message.warn('其他信息-需求信息未填写完整!');
+          return;
         }
-      });
-      if (requirementInfoFlag > 0) {
-        message.warn('其他信息-需求信息未填写完整!');
-        return;
       }
-    }
-    if (prizeInfoRecord.length > 0) {
-      prizeInfoRecord.map(item => {
-        if (item.JXMC === '' || item.HJSJ === '' || item.RYDJ === '' || item.ZSCQLX === '') {
-          prizeInfoFlag++;
+      if (prizeInfoRecord.length > 0) {
+        prizeInfoRecord.map(item => {
+          if (item.JXMC === '' || item.HJSJ === '' || item.RYDJ === '' || item.ZSCQLX === '') {
+            prizeInfoFlag++;
+          }
+        });
+        if (prizeInfoFlag > 0) {
+          message.warn('其他信息-获奖信息未填写完整!');
+          return;
         }
-      });
-      if (prizeInfoFlag > 0) {
-        message.warn('其他信息-获奖信息未填写完整!');
-        return;
       }
-    }
-    if (topicInfoRecord.length > 0) {
-      topicInfoRecord.map(item => {
-        if (item.XMKT === '' || item.JJ === '' || item.JD === '' || item.DQJZ === '') {
-          topicInfoFlag++;
+      if (topicInfoRecord.length > 0) {
+        topicInfoRecord.map(item => {
+          if (item.XMKT === '' || item.JJ === '' || item.JD === '' || item.DQJZ === '') {
+            topicInfoFlag++;
+          }
+        });
+        if (topicInfoFlag > 0) {
+          message.warn('其他信息-课题信息未填写完整!');
+          return;
         }
-      });
-      if (topicInfoFlag > 0) {
-        message.warn('其他信息-课题信息未填写完整!');
-        return;
       }
     }
     let staffJobParam = [];
@@ -2011,12 +2014,10 @@ class EditProjectInfoModel extends React.Component {
         });
       });
     });
-    let operateType = '';
     if (type === 0) {
       this.setState({
         operateType: 'SAVE',
       });
-      operateType = 'SAVE';
     }
     //修改项目的时候隐藏暂存草稿,点完成type传MOD
     // ////console.log("handleType", type)
@@ -2026,33 +2027,28 @@ class EditProjectInfoModel extends React.Component {
       this.setState({
         operateType: 'MOD',
       });
-      operateType = 'MOD';
     }
     //修改草稿点完成type入参就传ADD
     if (type === 1 && this.state.projectStatus === 'SAVE') {
       this.setState({
         operateType: 'ADD',
       });
-      operateType = 'ADD';
     }
     //暂存草稿就还是SAVE
     if (type === 0 && this.state.projectStatus === 'SAVE') {
       this.setState({
         operateType: 'SAVE',
       });
-      operateType = 'SAVE';
     }
     if ((type === 0 && this.state.projectStatus === '') || this.state.projectStatus === null) {
       this.setState({
         operateType: 'SAVE',
       });
-      operateType = 'SAVE';
     }
     if ((type === 1 && this.state.projectStatus === '') || this.state.projectStatus === null) {
       this.setState({
         operateType: 'ADD',
       });
-      operateType = 'ADD';
     }
     params.mileposts = milepostInfo;
     params.matters = matterInfo;
@@ -2068,7 +2064,7 @@ class EditProjectInfoModel extends React.Component {
         ? -1
         : Number(this.state.basicInfo.projectId);
     // ////console.log("operateType", operateType)
-    params.type = 'MOD';
+    params.type = this.state.subItemFlag?'ADD':'MOD';
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
@@ -2284,6 +2280,12 @@ class EditProjectInfoModel extends React.Component {
           //保存子项目信息
           if (subItem == "1") {
             this.operateInsertSubProjects(params, projectId);
+          }else{
+            if (this.state.type) {
+              window.parent && window.parent.postMessage({operate: 'success'}, '*');
+            } else {
+              this.props.submitOperate();
+            }
           }
         } else {
           message.error(note);
@@ -3730,10 +3732,22 @@ class EditProjectInfoModel extends React.Component {
                 <Tabs className='tabs' style={{height: '100%'}} defaultActiveKey="0" onChange={this.tabsCallback}>
                   {htxxVisiable || zbxxVisiable
                     ? tabs.map(item => {
-                      return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      if(item.key === 4 && subItemFlag){
+                        return null;
+                      }else if(item.key === 4 && !subItemFlag){
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }else{
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }
                     })
                     : tabsdel.map(item => {
-                      return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      if(item.key === 4 && subItemFlag){
+                        return null;
+                      }else if(item.key === 4 && !subItemFlag){
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }else{
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }
                     })}
                 </Tabs>
               </div>
@@ -3835,7 +3849,7 @@ class EditProjectInfoModel extends React.Component {
                                     singleBudget: RYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: basicInfo.labelTxt,
                                     queryType: 'ALL',
                                   });
@@ -3905,7 +3919,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -4019,7 +4033,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: e,
-                                      budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -4354,7 +4368,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ONLYLX',
                                     });
@@ -4448,7 +4462,7 @@ class EditProjectInfoModel extends React.Component {
                                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                                  xmid: basicInfo.projectId,
                                                  biddingMethod: basicInfo.biddingMethod,
-                                                 budget: total - this.state.budgetInfo.frameBudget,
+                                                 budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                                  label: basicInfo.labelTxt,
                                                  queryType: "ALL"
                                                });
@@ -4518,7 +4532,7 @@ class EditProjectInfoModel extends React.Component {
                                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: total - this.state.budgetInfo.frameBudget,
+                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -4592,7 +4606,7 @@ class EditProjectInfoModel extends React.Component {
                                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: total - this.state.budgetInfo.frameBudget,
+                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -4669,7 +4683,7 @@ class EditProjectInfoModel extends React.Component {
                                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: total - this.state.budgetInfo.frameBudget,
+                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -5314,13 +5328,13 @@ class EditProjectInfoModel extends React.Component {
                                             {' '}
                                           </div>
                                           {item.lcbmc}{subItemFlag && item.lcbmc?.includes('项目立项') ? <div
-                                          style={{fontSize: '12px', fontWeight: 500,}}>&nbsp;(父项目已完成所有立项内容)</div> : ''}
+                                          style={{fontSize: '12px', fontWeight: 500,}}>&nbsp;(父项目已完成所有立项内容,无须额外操作)</div> : ''}
                                         </span>
                                       </div>
                                     </div>
                                     {
                                       <div className="right" style={{ marginTop: '12px' }}>
-                                        {index > 0 ? (
+                                        {index > 0 && !subItemFlag && item.lcbmc?.includes('项目立项') ? (
                                           <Tooltip title="上移">
                                             <a
                                               style={{
@@ -5333,7 +5347,7 @@ class EditProjectInfoModel extends React.Component {
                                             />
                                           </Tooltip>
                                         ) : null}
-                                        {index !== milePostInfo.length - 1 ? (
+                                        {index !== milePostInfo.length - 1 && !subItemFlag && item.lcbmc?.includes('项目立项') ? (
                                           <Tooltip title="下移">
                                             <a
                                               style={{

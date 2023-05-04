@@ -346,14 +346,23 @@ class SubItemInfo extends Component {
         let arr = [];
         for (let i = 0; i < data.length; i++) {
           let SUBGLYSTXT = '';
+          let SUBZYS = 0;
+          let SUBKZXYS = 0;
+          let SUBSYYS = 0;
           this.props.budgetProjectList.forEach(item => {
             item?.children?.forEach(ite => {
               if (String(data[i]?.GLYSXM) === 0) {
                 SUBGLYSTXT = '备用预算'
+                SUBZYS = 0;
+                SUBKZXYS = ite.ysKZX;
+                SUBSYYS = 0;
               }
               ite?.children?.forEach(ie => {
                 if (String(data[i]?.GLYSXM) === ie.ysID) {
                   SUBGLYSTXT = ie.ysName;
+                  SUBZYS = Number(ie.ysZJE);
+                  SUBKZXYS = Number(ie.ysKZX);
+                  SUBSYYS = Number(ie.ysKGL);
                 }
               })
             })
@@ -375,6 +384,9 @@ class SubItemInfo extends Component {
             ['SUBSFYJRW' + data[i]?.ID]: String(data[i]?.SFYJRW ? data[i]?.SFYJRW : '1'),
             ['SUBKJCGJE' + data[i]?.ID]: data[i]?.KJCGJE ? data[i]?.KJCGJE : 0,
             ['SUBDDCGJE' + data[i]?.ID]: data[i]?.DDCGJE ? data[i]?.DDCGJE : 0,
+            ['SUBZYS' + data[i]?.ID]: SUBZYS,
+            ['SUBKZXYS' + data[i]?.ID]: SUBKZXYS,
+            ['SUBSYYS' + data[i]?.ID]: SUBSYYS,
           });
         }
         this.setState({
@@ -705,7 +717,7 @@ class SubItemInfo extends Component {
           color: '#f5222d',
           marginRight: '4px',
           lineHeight: 1
-        }}>*</span>总预算(元)</span>,
+        }}>*</span>可执行预算(元)</span>,
         dataIndex: 'SUBKZXYS',
         width: '155px',
         key: 'SUBKZXYS',
@@ -725,7 +737,7 @@ class SubItemInfo extends Component {
           color: '#f5222d',
           marginRight: '4px',
           lineHeight: 1
-        }}>*</span>总预算(元)</span>,
+        }}>*</span>剩余预算(元)</span>,
         dataIndex: 'SUBSYYS',
         width: '155px',
         key: 'SUBSYYS',
@@ -773,7 +785,7 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select disabled={record['SUBXMLX' + record.ID] !== '1'}
+          return (<Select disabled={record['SUBXMLX' + record.ID] != '1'}
                           value={record['SUBSFBHYJ' + record.ID]} style={{width: 120}}
                           onChange={(e) => _this.itemChange(e, record, index, 'SUBSFBHYJ')}>
             <Option value="1">是</Option>
@@ -794,7 +806,7 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "1"}
+          return (<Select disabled={record['SUBSFBHYJ' + record.ID] !== "1"}
                           value={record['SUBSFYJRW' + record.ID]} style={{width: 120}}
                           defaultValue={record['SUBSFYJRW' + record.ID]}
                           onChange={(e) => _this.itemChange(e, record, index, 'SUBSFYJRW')}>

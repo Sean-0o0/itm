@@ -908,7 +908,19 @@ class NewProjectModelV2 extends React.Component {
           }
           const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0
           const RYJFlag = result?.projectType == '1';
+          //判断项目预算类型
+          let haveType = 1;
+          if (Number(result.softBudget) === 0 && Number(result.frameBudget) !== 0 || Number(result.singleBudget) !== 0) {
+            haveType = 2;
+          }
+          if (Number(result.softBudget) !== 0 && Number(result.frameBudget) === 0 && Number(result.singleBudget) === 0) {
+            haveType = 1;
+          }
+          if (Number(result.softBudget) !== 0 && Number(result.frameBudget) !== 0 && Number(result.singleBudget) !== 0) {
+            haveType = 3;
+          }
           this.setState({
+            haveType,
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
@@ -1711,6 +1723,12 @@ class NewProjectModelV2 extends React.Component {
         //保存子项目信息
         if (subItem == "1") {
           this.operateInsertSubProjects(params, projectId);
+        }else{
+          if (this.state.type) {
+            window.parent && window.parent.postMessage({operate: 'success'}, '*');
+          } else {
+            this.props.submitOperate();
+          }
         }
       } else {
         message.error(note);
@@ -2668,7 +2686,7 @@ class NewProjectModelV2 extends React.Component {
                                   singleBudget: RYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
-                                  budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                  budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                   label: basicInfo.labelTxt,
                                   queryType: "ALL"
                                 })
@@ -2739,7 +2757,7 @@ class NewProjectModelV2 extends React.Component {
                                     singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: labelTxt,
                                     queryType: "ALL"
                                   });
@@ -2889,7 +2907,7 @@ class NewProjectModelV2 extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: this.state.basicInfo.projectId,
                                       biddingMethod: e,
-                                      budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: basicInfo.labelTxt,
                                       queryType: "ALL"
                                     });
@@ -3096,7 +3114,7 @@ class NewProjectModelV2 extends React.Component {
                                     singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: this.state.basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: Number(this.state.budgetInfo.projectBudget) - Number(this.state.budgetInfo.frameBudget),
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: basicInfo.labelTxt,
                                     queryType: "ONLYLX"
                                   });
@@ -3181,7 +3199,7 @@ class NewProjectModelV2 extends React.Component {
                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                   xmid: basicInfo.projectId,
                                   biddingMethod: basicInfo.biddingMethod,
-                                  budget: total - Number(this.state.budgetInfo.frameBudget),
+                                  budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                   label: basicInfo.labelTxt,
                                   queryType: "ALL"
                                 });
@@ -3241,7 +3259,7 @@ class NewProjectModelV2 extends React.Component {
                                     type: basicInfo.projectType,
                                     isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                     //项目预算类型
-                                    haveType: this.state.haveType,
+                                    haveType: haveType,
                                     //项目软件预算
                                     softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                     //框架预算
@@ -3250,7 +3268,7 @@ class NewProjectModelV2 extends React.Component {
                                     singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: this.state.basicInfo.projectId,
                                     biddingMethod: this.state.basicInfo.biddingMethod,
-                                    budget: total - Number(this.state.budgetInfo.frameBudget),
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: this.state.basicInfo.labelTxt,
                                     queryType: "ONLYLX"
                                   });
@@ -3314,7 +3332,7 @@ class NewProjectModelV2 extends React.Component {
                                     type: this.state.basicInfo.projectType,
                                     isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                     //项目预算类型
-                                    haveType: this.state.haveType,
+                                    haveType: haveType,
                                     //项目软件预算
                                     softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                     //框架预算
@@ -3323,7 +3341,7 @@ class NewProjectModelV2 extends React.Component {
                                     singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: this.state.basicInfo.projectId,
                                     biddingMethod: this.state.basicInfo.biddingMethod,
-                                    budget: total - Number(this.state.budgetInfo.frameBudget),
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: this.state.basicInfo.labelTxt,
                                     queryType: "ONLYLX"
                                   });
@@ -3390,7 +3408,7 @@ class NewProjectModelV2 extends React.Component {
                                     type: this.state.basicInfo.projectType,
                                     isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                     //项目预算类型
-                                    haveType: this.state.haveType,
+                                    haveType: haveType,
                                     //项目软件预算
                                     softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                     //框架预算
@@ -3399,7 +3417,7 @@ class NewProjectModelV2 extends React.Component {
                                     singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: this.state.basicInfo.projectId,
                                     biddingMethod: this.state.basicInfo.biddingMethod,
-                                    budget: total - Number(this.state.budgetInfo.frameBudget),
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: this.state.basicInfo.labelTxt,
                                     queryType: "ONLYLX"
                                   });
