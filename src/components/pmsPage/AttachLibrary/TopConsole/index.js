@@ -1,6 +1,6 @@
 import React, { Component } from 'react';
 import { QueryProjectListPara } from '../../../../services/pmsServices';
-import { Select, Button, TreeSelect, Input, message } from 'antd';
+import { Select, Button, TreeSelect, Input, message, Icon } from 'antd';
 import TreeUtils from '../../../../utils/treeUtils';
 
 class ToConsole extends Component {
@@ -14,6 +14,10 @@ class ToConsole extends Component {
     filterFold: true,
     glysid: [],
     prjTypeList: [],
+    xmlxOpen: false,
+    xmbqOpen: false,
+    wdlxOpen: false,
+    glysOpen: false,
     params: {
       xmid: undefined,
       xmlx: undefined,
@@ -45,7 +49,7 @@ class ToConsole extends Component {
         },
       });
     }
-    if(newCxlx!==cxlx){
+    if (newCxlx !== cxlx) {
       this.getFilterData(nextprops)
     }
   }
@@ -360,6 +364,10 @@ class ToConsole extends Component {
       filterFold,
       glysid,
       prjTypeList,
+      xmlxOpen = false,
+      xmbqOpen = false,
+      wdlxOpen = false,
+      glysOpen = false,
       params: { xmid, xmbq, xmlx, wdlx, xmjl, yssxlx, ysje1, ysje2 },
     } = this.state;
     const { dictionary = {} } = this.props;
@@ -372,6 +380,7 @@ class ToConsole extends Component {
             <div className="item-label">项目名称</div>
             <Select
               className="item-selector"
+              showArrow
               dropdownClassName={'item-selector-dropdown'}
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -400,6 +409,7 @@ class ToConsole extends Component {
             <TreeSelect
               allowClear
               className="item-selector"
+              showArrow
               showSearch
               treeNodeFilterProp="title"
               treeCheckable
@@ -415,6 +425,14 @@ class ToConsole extends Component {
               onChange={this.handleXmlx}
               value={xmlx ? xmlx.split(';') : []}
               treeDefaultExpandAll
+              open={xmlxOpen}
+              onDropdownVisibleChange={v => this.setState({
+                xmlxOpen: v
+              })}
+            />
+            <Icon
+              type="down"
+              className={'label-selector-arrow' + (xmlxOpen ? ' selector-rotate' : '')}
             />
           </div>
           <div className="console-item">
@@ -423,6 +441,7 @@ class ToConsole extends Component {
               allowClear
               className="item-selector"
               showSearch
+              showArrow
               treeNodeFilterProp="title"
               treeCheckable
               maxTagCount={1}
@@ -437,6 +456,14 @@ class ToConsole extends Component {
               placeholder="请选择"
               onChange={this.handleXmbq}
               value={xmbq ? xmbq.split(';') : []}
+              open={xmbqOpen}
+              onDropdownVisibleChange={v => this.setState({
+                xmbqOpen: v
+              })}
+            />
+            <Icon
+              type="down"
+              className={'label-selector-arrow' + (xmbqOpen ? ' selector-rotate' : '')}
             />
           </div>
           <Button className="btn-search" type="primary" onClick={this.handleSearch}>
@@ -453,6 +480,7 @@ class ToConsole extends Component {
               allowClear
               className="item-selector"
               showSearch
+              showArrow
               treeNodeFilterProp="title"
               dropdownClassName="newproject-treeselect"
               dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
@@ -466,6 +494,14 @@ class ToConsole extends Component {
               placeholder="请选择"
               onChange={this.handleWdlx}
               value={wdlx ? wdlx.split(';') : []}
+              open={wdlxOpen}
+              onDropdownVisibleChange={v => this.setState({
+                wdlxOpen: v
+              })}
+            />
+            <Icon
+              type="down"
+              className={'label-selector-arrow' + (wdlxOpen ? ' selector-rotate' : '')}
             />
           </div>
           <div className="console-item">
@@ -476,6 +512,7 @@ class ToConsole extends Component {
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
+              showArrow
               showSearch
               allowClear
               placeholder="请选择"
@@ -501,6 +538,7 @@ class ToConsole extends Component {
               allowClear
               className="item-selector"
               showSearch
+              showArrow
               treeNodeFilterProp="title"
               dropdownClassName="newproject-treeselect"
               maxTagCount={1}
@@ -514,6 +552,14 @@ class ToConsole extends Component {
               multiple={true}
               onChange={this.handleGlys}
               value={glysid}
+              open={glysOpen}
+              onDropdownVisibleChange={v => this.setState({
+                glysOpen: v
+              })}
+            />
+            <Icon
+              type="down"
+              className={'label-selector-arrow' + (glysOpen ? ' selector-rotate' : '')}
             />
           </div>
           {filterFold && (

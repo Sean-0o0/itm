@@ -7972,6 +7972,22 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         align-items: center;
         // justify-content: center;
         width: 29%;
+        position: relative;
+
+        .label-selector-arrow {
+          position: absolute;
+          top: 50%;
+          right: 37px;
+          margin-top: -6px;
+          color: rgba(0, 0, 0, 0.25);
+          font-size: 12px;
+          line-height: 1;
+          cursor: pointer;
+          transition: all 0.3s;
+        }
+        .selector-rotate {
+          transform: rotate(180deg);
+        }
 
         .item-label {
           flex-shrink: 0;
