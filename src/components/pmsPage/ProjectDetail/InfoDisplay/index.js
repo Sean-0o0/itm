@@ -244,6 +244,26 @@ export default function InfoDisplay(props) {
     });
   };
 
+  //联系人展示
+  const getLxrinfContent = (arr = []) => {
+    return (
+      <div className="list">
+        {arr.map(x => (
+          <div className="item" key={x.LXRXXID}>
+            <div className="top">
+              <div>{x.LXR}</div>
+              <div className="position-tag">{x.ZW}</div>
+            </div>
+            <div className="bottom">
+              <span>电话：</span> {x.DH || '无'}
+              <span className="email">｜ 邮箱：</span> {x.QTLXFS || '无'}
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   return (
     <div className="info-display-box">
       {/* 需求列表 */}
@@ -299,7 +319,7 @@ export default function InfoDisplay(props) {
       {/* 项目信息 */}
       <div className="info-box" key="xmxx">
         <div className="top-title">项目信息</div>
-        <div className="info-row">
+        <div className="info-row-box">
           {getInfoItem('项目类型：', notNull(prjBasic.XMLX))}
           <div className="info-item" key="关联软件：">
             <span>关联软件：</span>
@@ -325,139 +345,136 @@ export default function InfoDisplay(props) {
               </Tooltip>
             )}
           </div>
-        </div>
-        {(isMember() || !isHwSltPrj) && (
-          <div className="info-row">
-            {isMember() && (
-              <div className="info-item" key="文档库：">
-                <span>文档库：</span>
-                <Link
-                  to={{
-                    pathname: '/pms/manage/attachLibrary',
-                    query: {
-                      xmid,
+          {prjBasic.FXMMC && getInfoItem('父项目名称：', prjBasic.FXMMC)}
+          {getInfoItem('是否包含硬件：', prjBasic.SFBHYJ === '1' ? '是' : '否')}
+          {getInfoItem('是否在硬件入围内：', prjBasic.SFYJRW === '1' ? '是' : '否')}
+          {isMember() && (
+            <div className="info-item" key="文档库：">
+              <span>文档库：</span>
+              <Link
+                to={{
+                  pathname: '/pms/manage/attachLibrary',
+                  query: {
+                    xmid,
+                  },
+                }}
+                style={{ color: '#3361ff' }}
+              >
+                查看详情
+              </Link>
+            </div>
+          )}
+          {!isHwSltPrj && (
+            <div className="info-item">
+              <span>获奖信息：</span>
+              {award.length === 0 ? (
+                '暂无数据'
+              ) : (
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  content={tablePopover(award, [
+                    {
+                      title: '奖项名称',
+                      dataIndex: 'JXMC',
+                      width: 180,
+                      key: 'JXMC',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
                     },
-                  }}
-                  style={{ color: '#3361ff' }}
+                    {
+                      title: '荣誉等级',
+                      dataIndex: 'RYDJ',
+                      width: 150,
+                      key: 'RYDJ',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                    {
+                      title: '知识产权类型',
+                      dataIndex: 'ZSCQLX',
+                      width: 150,
+                      key: 'ZSCQLX',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                    {
+                      title: '获奖日期',
+                      dataIndex: 'HJSJ',
+                      key: 'HJSJ',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                  ])}
+                  overlayClassName="project-topic-content-popover"
                 >
-                  查看详情
-                </Link>
-              </div>
-            )}
-            {!isHwSltPrj && (
-              <div className="info-item">
-                <span>获奖信息：</span>
-                {award.length === 0 ? (
-                  '暂无数据'
-                ) : (
-                  <Popover
-                    placement="bottom"
-                    title={null}
-                    content={tablePopover(award, [
-                      {
-                        title: '奖项名称',
-                        dataIndex: 'JXMC',
-                        width: 180,
-                        key: 'JXMC',
-                        ellipsis: true,
-                        render: txt => (
-                          <Tooltip title={txt} placement="topLeft">
-                            <span style={{ cursor: 'default' }}>{txt}</span>
-                          </Tooltip>
-                        ),
-                      },
-                      {
-                        title: '荣誉等级',
-                        dataIndex: 'RYDJ',
-                        width: 150,
-                        key: 'RYDJ',
-                        ellipsis: true,
-                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                      },
-                      {
-                        title: '知识产权类型',
-                        dataIndex: 'ZSCQLX',
-                        width: 150,
-                        key: 'ZSCQLX',
-                        ellipsis: true,
-                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                      },
-                      {
-                        title: '获奖日期',
-                        dataIndex: 'HJSJ',
-                        key: 'HJSJ',
-                        ellipsis: true,
-                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                      },
-                    ])}
-                    overlayClassName="project-topic-content-popover"
-                  >
-                    <a style={{ color: '#3361ff' }}>查看详情</a>
-                  </Popover>
-                )}
-              </div>
-            )}
-            {!isHwSltPrj && (
-              <div className="info-item">
-                <span>项目课题：</span>
-                {topic.length === 0 ? (
-                  '暂无数据'
-                ) : (
-                  <Popover
-                    placement="bottomLeft"
-                    title={null}
-                    content={tablePopover(topic, [
-                      {
-                        title: '课题名称',
-                        dataIndex: 'XMKT',
-                        width: 160,
-                        key: 'XMKT',
-                        ellipsis: true,
-                        render: txt => (
-                          <Tooltip title={txt} placement="topLeft">
-                            <span style={{ cursor: 'default' }}>{txt}</span>
-                          </Tooltip>
-                        ),
-                      },
-                      {
-                        title: '进度',
-                        dataIndex: 'JD',
-                        width: 100,
-                        key: 'JD',
-                        ellipsis: true,
-                        render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
-                      },
-                      {
-                        title: '简介',
-                        dataIndex: 'JJ',
-                        key: 'JJ',
-                        ellipsis: true,
-                        render: txt => (
-                          <Tooltip title={txt} placement="topLeft">
-                            <span style={{ cursor: 'default' }}>{txt}</span>
-                          </Tooltip>
-                        ),
-                      },
-                      {
-                        title: '当前进展',
-                        dataIndex: 'DQJZ',
-                        width: 100,
-                        key: 'DQJZ',
-                        ellipsis: true,
-                        render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
-                      },
-                    ])}
-                    overlayClassName="project-topic-content-popover"
-                  >
-                    <a style={{ color: '#3361ff' }}>查看详情</a>
-                  </Popover>
-                )}
-              </div>
-            )}
-          </div>
-        )}
-        {!isHwSltPrj && (
-          <div className="info-row">
+                  <a style={{ color: '#3361ff' }}>查看详情</a>
+                </Popover>
+              )}
+            </div>
+          )}
+          {!isHwSltPrj && (
+            <div className="info-item">
+              <span>项目课题：</span>
+              {topic.length === 0 ? (
+                '暂无数据'
+              ) : (
+                <Popover
+                  placement="bottomLeft"
+                  title={null}
+                  content={tablePopover(topic, [
+                    {
+                      title: '课题名称',
+                      dataIndex: 'XMKT',
+                      width: 160,
+                      key: 'XMKT',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '进度',
+                      dataIndex: 'JD',
+                      width: 100,
+                      key: 'JD',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}%</span>,
+                    },
+                    {
+                      title: '简介',
+                      dataIndex: 'JJ',
+                      key: 'JJ',
+                      ellipsis: true,
+                      render: txt => (
+                        <Tooltip title={txt} placement="topLeft">
+                          <span style={{ cursor: 'default' }}>{txt}</span>
+                        </Tooltip>
+                      ),
+                    },
+                    {
+                      title: '当前进展',
+                      dataIndex: 'DQJZ',
+                      width: 100,
+                      key: 'DQJZ',
+                      ellipsis: true,
+                      render: txt => <span style={{ cursor: 'default' }}>{txt}</span>,
+                    },
+                  ])}
+                  overlayClassName="project-topic-content-popover"
+                >
+                  <a style={{ color: '#3361ff' }}>查看详情</a>
+                </Popover>
+              )}
+            </div>
+          )}
+          {!isHwSltPrj && (
             <div className="info-item">
               <span>变更类/计划外需求：</span>
               {demand.length === 0 ? (
@@ -510,14 +527,14 @@ export default function InfoDisplay(props) {
                 </Popover>
               )}
             </div>
-          </div>
-        )}
+          )}
+        </div>
       </div>
       {/* 预算信息 */}
       {isMember() ? (
         <div className="info-box" key="ysxx">
           <div className="top-title">预算信息</div>
-          <div className="info-row">
+          <div className="info-row-box">
             {getInfoItem('项目预算：', getAmountFormat(prjBasic.YSJE) + '元')}
             <div
               className="info-item"
@@ -527,7 +544,12 @@ export default function InfoDisplay(props) {
               <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
               <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
             </div>
-
+            {prjBasic.SFBHYJ === '1' &&
+              getInfoItem('本项目软件金额：', getAmountFormat(prjBasic.RJYSJE) + '元')}
+            {prjBasic.SFBHYJ === '1' &&
+              getInfoItem('框架采购金额：', getAmountFormat(prjBasic.KJCGJE) + '元')}
+            {prjBasic.SFBHYJ === '1' &&
+              getInfoItem('单独采购金额：', getAmountFormat(prjBasic.DDCGJE) + '元')}
             <div className="info-item" style={{ height: '44px' }}>
               <div className="item-top">
                 <span>已执行预算</span>
@@ -543,7 +565,13 @@ export default function InfoDisplay(props) {
       ) : (
         <div className="info-box" key="ysxx">
           <div className="top-title">预算信息</div>
-          <div className="info-row">
+          <div className="info-row-box">
+            {prjBasic.SFBHYJ === '1' &&
+              getInfoItem('本项目软件金额：', getAmountFormat(prjBasic.RJYSJE) + '元')}
+            {prjBasic.SFBHYJ === '1' &&
+              getInfoItem('框架采购金额：', getAmountFormat(prjBasic.KJCGJE) + '元')}
+            {prjBasic.SFBHYJ === '1' &&
+              getInfoItem('单独采购金额：', getAmountFormat(prjBasic.DDCGJE) + '元')}
             <div
               className="info-item"
               key="关联预算项目："
@@ -605,12 +633,20 @@ export default function InfoDisplay(props) {
                   <div className="payment-label" style={{ width: 98 }}>
                     供应商联系人：
                   </div>
-                  <div className="payment-plan">
-                    {supplier.map(x => (
-                      <div key={x.LXRXXID}>
-                        {x.LXR || ''} {x.DH || ''}
-                      </div>
-                    ))}
+                  <div className="lxr-info">
+                    <div className="lxr-txt">
+                      {supplier[0]?.LXR}({supplier[0]?.ZW}){supplier[0]?.DH}
+                    </div>
+                    {supplier.length > 1 && (
+                      <Popover
+                        title={null}
+                        content={getLxrinfContent(supplier.slice(1))}
+                        placement="bottomRight"
+                        overlayClassName="lxr-info-popover"
+                      >
+                        <span>更多</span>
+                      </Popover>
+                    )}
                   </div>
                 </div>
               )}

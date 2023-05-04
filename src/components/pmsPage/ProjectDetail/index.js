@@ -128,7 +128,7 @@ export default function ProjectDetail(props) {
             item.GW = RYGW?.filter(x => x.ibm === item.GW)[0]?.note;
           });
           let prjBasic = p(res.xmjbxxRecord, false);
-          console.log('🚀 ~ file: index.js:130 ~ getPrjDtlData ~ prjBasic:', prjBasic);
+          // console.log('🚀 ~ file: index.js:130 ~ getPrjDtlData ~ prjBasic:', prjBasic);
           setIsHwSltPrj(prjBasic.XMLX === '6');
           setIsHwPrj(prjBasic.SFBHYJ === '1');
           //字典处理

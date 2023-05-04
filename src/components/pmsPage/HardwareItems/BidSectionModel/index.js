@@ -27,6 +27,7 @@ export default function BidSectionModel(props) {
     let p = {
       ...params,
       packageId: 0,
+      projectId: 0,
       year: 2023,
       paging: 1,
       sort: '',
