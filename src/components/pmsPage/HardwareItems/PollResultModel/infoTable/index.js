@@ -390,6 +390,7 @@ export default function InfoTable(props) {
 
   const handleCancel = () => {
     setFileList([]);
+    setUploadFileParams([]);
     setXbjglrModalVisible(false);
   };
 
@@ -427,6 +428,7 @@ export default function InfoTable(props) {
         message.error('信息修改失败', 3);
       }
       setFileList([]);
+      setUploadFileParams([])
     });
   };
 

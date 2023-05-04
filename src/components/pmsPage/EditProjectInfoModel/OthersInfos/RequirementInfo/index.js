@@ -154,8 +154,11 @@ class RequirementInfo extends Component {
     };
   }
 
-  componentDidMount() {
-    this.fetchQueryProjectInfoAll();
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.xmid !== prevProps.xmid && this.props.xmid != '-1') {
+      console.log("xmidxmid", this.props.xmid)
+      this.fetchQueryProjectInfoAll();
+    }
   }
 
 //----------------其他供应商-----------------//
@@ -201,9 +204,6 @@ class RequirementInfo extends Component {
   callbackData = () => {
     const {xqxxRecordCallback} = this.props;
     const {tableData, xqxxRecordFlag} = this.state;
-    //表格数据变化后存全局
-    sessionStorage.setItem("xqxxTableData", JSON.stringify(tableData));
-    sessionStorage.setItem("xqxxTableDataFlag", "true");
     let newArr = [];
     tableData.map((item) => {
       let obj = {
@@ -221,40 +221,33 @@ class RequirementInfo extends Component {
   fetchQueryProjectInfoAll = () => {
     const {tableData = []} = this.state;
     const {xmid} = this.props;
-    let flag = sessionStorage.getItem("xqxxTableDataFlag")
-    if (flag === "true") {
-      this.setState({
-        tableData: JSON.parse(sessionStorage.getItem("xqxxTableData"))
-      })
-    } else {
-      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
-        const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
-        if (code > 0) {
-          let data = JSON.parse(xqxxRecord);
-          let arr = [];
-          for (let i = 0; i < data.length; i++) {
-            arr.push({
-              XQID: String(data[i]?.XQID),
-              ['XQBT' + data[i]?.XQID]: String(data[i]?.XQBT),
-              ['XQNR' + data[i]?.XQID]: String(data[i]?.XQNR),
-              ['XQRQ' + data[i]?.XQID]: String(data[i]?.XQRQ),
-            });
-          }
-          let xqxxRecordFlag = false;
-          if (data.length > 0) {
-            xqxxRecordFlag = true
-          }
-          this.setState({
-            tableData: arr,
-            xqxxRecordFlag,
-          }, () => {
-            this.callbackData();
-          })
+    FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
+      const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
+      if (code > 0) {
+        let data = JSON.parse(xqxxRecord);
+        let arr = [];
+        for (let i = 0; i < data.length; i++) {
+          arr.push({
+            XQID: String(data[i]?.XQID),
+            ['XQBT' + data[i]?.XQID]: String(data[i]?.XQBT),
+            ['XQNR' + data[i]?.XQID]: String(data[i]?.XQNR),
+            ['XQRQ' + data[i]?.XQID]: String(data[i]?.XQRQ),
+          });
         }
-      }).catch((error) => {
-        message.error(!error.success ? error.message : error.note);
-      });
-    }
+        let xqxxRecordFlag = false;
+        if (data.length > 0) {
+          xqxxRecordFlag = true
+        }
+        this.setState({
+          tableData: arr,
+          xqxxRecordFlag,
+        }, () => {
+          this.callbackData();
+        })
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   render() {

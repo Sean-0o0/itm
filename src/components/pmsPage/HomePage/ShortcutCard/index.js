@@ -79,6 +79,7 @@ export default function ShortcutCard(props) {
 
   //关闭新建项目弹窗
   const closeFileAddModal = () => {
+    sessionStorage.setItem("subItemTableDataFlag", "false");
     setFileAddVisible(false);
   };
 

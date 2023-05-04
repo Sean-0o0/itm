@@ -2398,6 +2398,22 @@
 .newProject {
   height: 100%;
 
+  .label-selector-arrow {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    margin-top: -7px;
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .selector-rotate {
+    transform: rotate(180deg);
+  }
+
   .ant-form-item-label {
     line-height: 22px;
   }
@@ -2956,6 +2972,8 @@
   }
 
   .staffInfo {
+    //margin-top: 12px;
+    height: 100%;
     width: 100%;
     display: flex;
     flex-direction: row;
@@ -2965,7 +2983,7 @@
       overflow-y: auto;
       width: 50%;
       //margin: 12px 12px 30px 16px;
-      height: 70vh;
+      //height: 75vh;
       padding: 18px 18px 0 21px;
       background-color: #fafafb;
 
@@ -2991,7 +3009,7 @@
     }
 
     .tree {
-      height: 70vh;
+      //height: 75vh;
       width: 50%;
       overflow: auto;
       //margin: 12px 16px 12px 12px;
@@ -3031,6 +3049,22 @@
 .editProject {
   height: 100%;
 
+  .label-selector-arrow {
+    position: absolute;
+    top: 50%;
+    right: 12px;
+    margin-top: -7px;
+    color: rgba(0, 0, 0, 0.25);
+    font-size: 12px;
+    line-height: 1;
+    cursor: pointer;
+    transition: all 0.3s;
+  }
+
+  .selector-rotate {
+    transform: rotate(180deg);
+  }
+
   .ant-tabs-nav .ant-tabs-tab:hover {
     color: #3361ff;
   }
@@ -3058,7 +3092,7 @@
   }
 
   .steps-content {
-    height: 86%;
+    height: calc(93% - 53px);
     width: auto;
     padding: 24px;
 
@@ -3657,6 +3691,7 @@
   }
 
   .staffInfo {
+    //margin-top: 12px;
     height: 100%;
     width: 100%;
     display: flex;

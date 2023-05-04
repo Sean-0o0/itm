@@ -4,9 +4,10 @@ import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services
 import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import {EncryptBase64} from "../../../Common/Encrypt";
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [] } = props;
+  const {itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = []} = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -16,13 +17,15 @@ export default function ToDoCard(props) {
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
 
   const ryxztxModalProps = {
     isAllWindow: 1,
     width: '720px',
     height: '300px',
     title: '人员新增提醒',
-    style: { top: '60px' },
+    style: {top: '60px'},
     visible: ryxztxModalVisible,
     footer: null,
   };
@@ -159,6 +162,8 @@ export default function ToDoCard(props) {
         return handleRyxztx(item);
       case '信委会会议结果':
         return handleXwhhyjg(item);
+      case '项目信息完善':
+        return jumpToEditProjectInfo(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -174,6 +179,15 @@ export default function ToDoCard(props) {
         return;
     }
   };
+
+  const jumpToEditProjectInfo = (item) => {
+    setFileAddVisible(true);
+    setSrc_fileAdd(
+      `/#/single/pms/EditProject/${EncryptBase64(
+        JSON.stringify({xmid: item.xmid, type: true, subItemFlag: true, projectStatus: 'SAVE'}),
+      )}`,
+    );
+  }
 
   //获取操作按钮文本
   const getBtnTxt = (txt, sxmc) => {
@@ -210,17 +224,28 @@ export default function ToDoCard(props) {
     else setDataList(p => [...toDoData?.slice(0, 2)]);
   };
 
+  const fileAddModalProps = {
+    isAllWindow: 1,
+    // defaultFullScreen: true,
+    title: '编辑项目',
+    width: '1000px',
+    height: '700px',
+    style: {top: '10px'},
+    visible: fileAddVisible,
+    footer: null,
+  };
+
   //待办块
   const getToDoItem = ({
-    title = '--',
-    content = '--',
-    btnTxt = '--',
-    isLate = false,
-    isDueSoon = false,
-    lateDay = '--',
-    key,
-    item = {},
-  }) => {
+                         title = '--',
+                         content = '--',
+                         btnTxt = '--',
+                         isLate = false,
+                         isDueSoon = false,
+                         lateDay = '--',
+                         key,
+                         item = {},
+                       }) => {
     let borderColor = '#3361ff';
     let fontColor = '#3361FF';
     if (isDueSoon) {
@@ -307,6 +332,17 @@ export default function ToDoCard(props) {
           }}
           onCancel={() => setRyxztxModalVisible(false)}
           src={ryxztxUrl}
+        />
+      )}
+      {/* 编辑项目弹窗 */}
+      {fileAddVisible && (
+        <BridgeModel
+          isSpining="customize"
+          modalProps={fileAddModalProps}
+          src={src_fileAdd}
+          onCancel={() => {
+            setFileAddVisible(false);
+          }}
         />
       )}
       <div className="home-card-title-box">我的待办</div>

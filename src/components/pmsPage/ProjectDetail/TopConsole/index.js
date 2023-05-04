@@ -47,13 +47,6 @@ export default function TopConsole(props) {
   };
 
   const closeFileAddModal = () => {
-    //其他信息tab表格内数据清空
-    //获奖信息
-    sessionStorage.setItem('hjxxTableDataFlag', 'false');
-    //需求信息
-    sessionStorage.setItem('xqxxTableDataFlag', 'false');
-    //课题信息
-    sessionStorage.setItem('ktxxTableDataFlag', 'false');
     setFileAddVisible(false);
   };
 
@@ -239,7 +232,7 @@ export default function TopConsole(props) {
           modalProps={fileAddModalProps}
           src={src_fileAdd}
           onCancel={() => {
-            setFileAddVisible(false);
+            closeFileAddModal();
           }}
         />
       )}
