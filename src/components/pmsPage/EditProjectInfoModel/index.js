@@ -4043,7 +4043,7 @@ class EditProjectInfoModel extends React.Component {
                         ) : null}
                         <Col
                           span={12}
-                          style={{ paddingLeft: !projectTypeZYFlag ? '24px' : '12px' }}
+                          style={{ paddingLeft: !projectTypeZYFlag ? '24px' : '12px', paddingRight: '24px' }}
                         >
                           <Form.Item
                             label={

@@ -2947,7 +2947,7 @@ class NewProjectModelV2 extends React.Component {
                           {/*{getFieldDecorator('year', {*/}
                           {/*  initialValue: budgetInfo.year*/}
                           {/*})(*/}
-                          <DatePicker value={budgetInfo.year} allowClear={false} ref={picker => this.picker = picker}
+                          <DatePicker style={{ width: '100%' }} value={budgetInfo.year} allowClear={false} ref={picker => this.picker = picker}
                             onChange={v => {
                               const _this = this;
                               this.setState({

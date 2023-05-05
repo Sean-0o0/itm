@@ -76,13 +76,13 @@ export default function OverviewCard(props) {
             </>
           )}
         </div>
-        {addNum !== '--' ? (
+        {!['--', 0, '0'].includes(addNum) ? (
           <div className="item-bottom">
             今日新增<span>{addNum}</span>
             {unit}
           </div>
         ) : (
-          <div className="item-bottom"></div>
+          ''// <div className="item-bottom"></div>
         )}
       </div>
     );
@@ -97,11 +97,13 @@ export default function OverviewCard(props) {
         <div className="title">
           <span>{getGreeting()}</span>
           <div className="desc">
-            {overviewInfo?.gw}，这是你在浙商证券的第
+            {overviewInfo?.gw}
+            {overviewInfo?.gw && '，'}这是你在浙商证券的第
             {moment().diff(moment(overviewInfo?.rzsj), 'days')}天
           </div>
         </div>
       </div>
+      <div className="divider"></div>
       {userRole === '普通人员' ? (
         <div className="overview-row">
           {getOverviewItem({

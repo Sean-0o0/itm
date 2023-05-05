@@ -98,7 +98,8 @@ export default function ShortcutCard(props) {
 
   return (
     <div className="shortcut-card-box">
-      快捷入口
+      <div className="home-card-title-box">快捷入口</div>
+
       {fileAddVisible && (
         <BridgeModel
           isSpining="customize"
