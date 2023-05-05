@@ -387,6 +387,7 @@ class SubItemInfo extends Component {
             ['SUBZYS' + data[i]?.ID]: SUBZYS,
             ['SUBKZXYS' + data[i]?.ID]: SUBKZXYS,
             ['SUBSYYS' + data[i]?.ID]: SUBSYYS,
+            ['SUBYSJE-TOTAL' + data[i]?.ID]: Number(data[i]?.RJYSJE) + Number(data[i]?.KJCGJE) + Number(data[i]?.DDCGJE)
           });
         }
         this.setState({
@@ -498,8 +499,10 @@ class SubItemInfo extends Component {
       staffList = [],
       budgetProjectList = [],
       bindMethodData = [],
-      softwareList = []
+      softwareList = [],
+      projectTypeZY = []
     } = this.props;
+    console.log("projectTypeZY", projectTypeZY)
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     const tableColumns = [
       {
@@ -640,9 +643,11 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
+          console.log("recordrecord", record)
           return (<TreeSelect
               allowClear
               showSearch
+              disabled={projectTypeZY.filter(item => item.ID == record['SUBXMLX' + record.ID]).length > 0}
               value={record['SUBCGFS' + record.ID]}
               dropdownClassName="newproject-treeselect"
               treeNodeFilterProp="title"
