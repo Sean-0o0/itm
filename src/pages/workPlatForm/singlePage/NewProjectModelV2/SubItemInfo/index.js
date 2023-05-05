@@ -530,7 +530,7 @@ class SubItemInfo extends Component {
         // editable: true,
         render(text, record, index) {
           // console.log("recordrecord",record)
-          return (<Tooltip title={record['SUBXMJL' + record.ID]}><Select
+          return (<Select
               allowClear
               placeholder="请输入名字搜索人员"
               // value={jobStaffName.length > 0 ? jobStaffName[9] : []}
@@ -554,7 +554,6 @@ class SubItemInfo extends Component {
                 })
               }
             </Select>
-            </Tooltip>
           )
         }
       },

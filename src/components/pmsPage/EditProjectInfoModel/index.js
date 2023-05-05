@@ -665,14 +665,14 @@ class EditProjectInfoModel extends React.Component {
     await this.fetchQueryMatterUnderMilepost({ type: 'ALL', lcbid: 0 });
     // 查询里程碑信息
     await this.fetchQueryMilepostInfo({
-      type: 1,
-      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? this.state.basicInfo.SFYJRW : '1',
+      type: Number(this.state.basicInfo.projectType),
+      isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : this.state.basicInfo.SFYJRW,
       xmid: this.state.subItemFlag ? '-1' : this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
       label: this.state.basicInfo.labelTxt,
       queryType: "ALL",
-      //项目预算类型（1.纯软件,硬件相关费用为0   2.纯硬件,软件相关费用为0   3.软硬件费用都有）
+      //项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
       haveType: this.state.haveType,
       //项目软件预算
       softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
@@ -1185,16 +1185,14 @@ class EditProjectInfoModel extends React.Component {
           // console.log("softwaresoftware", result.softwareId === '' ? [] : result.softwareId.split(','))
           const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0;
           const RYJFlag = result?.projectType == '1';
-          //判断项目预算类型
+          //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
           let haveType = 1;
-          if (Number(result.softBudget) === 0 && Number(result.frameBudget) !== 0 || Number(result.singleBudget) !== 0) {
-            haveType = 2;
-          }
-          if (Number(result.softBudget) !== 0 && Number(result.frameBudget) === 0 && Number(result.singleBudget) === 0) {
-            haveType = 1;
-          }
-          if (Number(result.softBudget) !== 0 && Number(result.frameBudget) !== 0 && Number(result.singleBudget) !== 0) {
-            haveType = 3;
+          if (result.haveHard == '2') {
+            haveType = 1
+          } else if (result.haveHard == '1' && Number(result.softBudget) === 0) {
+            haveType = 2
+          } else if (result.haveHard == '1' && Number(result.softBudget) > 0) {
+            haveType = 3
           }
           this.setState({
             haveType,
@@ -2068,7 +2066,7 @@ class EditProjectInfoModel extends React.Component {
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
-    params.isShortListed = this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? this.state.basicInfo.SFYJRW : '1';
+    params.isShortListed = this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : this.state.basicInfo.SFYJRW;
     // 软件预算
     params.softBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.softBudget : 0;
     // 框架预算
@@ -3838,18 +3836,18 @@ class EditProjectInfoModel extends React.Component {
                                   });
                                   this.fetchQueryMilepostInfo({
                                     type: e,
-                                    isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                    isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                     //项目预算类型
                                     haveType: this.state.haveType,
                                     //项目软件预算
-                                    softBudget: RYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                    softBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                     //框架预算
-                                    frameBudget: RYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                    frameBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                     //单独采购预算
-                                    singleBudget: RYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                    singleBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                    budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: basicInfo.labelTxt,
                                     queryType: 'ALL',
                                   });
@@ -3908,18 +3906,18 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                      isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                       //项目预算类型
                                       haveType: this.state.haveType,
                                       //项目软件预算
-                                      softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                      softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                       //框架预算
-                                      frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                      frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                       //单独采购预算
-                                      singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                      singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                      budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -4022,18 +4020,18 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                      isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                       //项目预算类型
                                       haveType: this.state.haveType,
                                       //项目软件预算
-                                      softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                      softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                       //框架预算
-                                      frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                      frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                       //单独采购预算
-                                      singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                      singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: e,
-                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                      budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -4357,18 +4355,18 @@ class EditProjectInfoModel extends React.Component {
                                   if (projectBudgetChangeFlag) {
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                      isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                       //项目预算类型
                                       haveType: this.state.haveType,
                                       //项目软件预算
-                                      softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                      softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                       //框架预算
-                                      frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                      frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                       //单独采购预算
-                                      singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                      singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                      budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ONLYLX',
                                     });
@@ -4409,13 +4407,54 @@ class EditProjectInfoModel extends React.Component {
                                                console.log("eeeee", e);
                                                //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
                                                //包含硬件选择<否> 不展示 <是否在硬件入围内> <本项目软件金额> <框架采购金额> <单独采购金额> 把数据重置。
+                                               //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
+                                               let haveType = 1;
+                                               if (String(e.target.value) === '2') {
+                                                 haveType = 1
+                                                 this.setState({
+                                                   budgetInfo: {
+                                                     ...budgetInfo,
+                                                     softBudget: 0,
+                                                     singleBudget: 0,
+                                                     frameBudget: 0
+                                                   }
+                                                 })
+                                               } else if (String(e.target.value) === '1' && Number(this.state.budgetInfo.softBudget) === 0) {
+                                                 haveType = 2
+                                               } else if (String(e.target.value) === '1' && Number(this.state.budgetInfo.softBudget) > 0) {
+                                                 haveType = 3
+                                               }
                                                this.setState({
+                                                 haveType,
                                                  basicInfo: {
                                                    ...basicInfo,
                                                    haveHard: String(e.target.value),
                                                    SFYJRW: '1'
                                                  },
-                                                 budgetInfo: {...budgetInfo, projectBudget: 0}
+                                                 budgetInfo: {
+                                                   ...budgetInfo,
+                                                   projectBudget: 0,
+                                                   softBudget: 0,
+                                                   singleBudget: 0,
+                                                   frameBudget: 0
+                                                 }
+                                               });
+                                               this.fetchQueryMilepostInfo({
+                                                 type: basicInfo.projectType,
+                                                 isShortListed: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? '2' : basicInfo.SFYJRW,
+                                                 //项目预算类型
+                                                 haveType: haveType,
+                                                 //项目软件预算
+                                                 softBudget: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? 0 : this.state.budgetInfo.softBudget,
+                                                 //框架预算
+                                                 frameBudget: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? 0 : this.state.budgetInfo.frameBudget,
+                                                 //单独采购预算
+                                                 singleBudget: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? 0 : this.state.budgetInfo.singleBudget,
+                                                 xmid: basicInfo.projectId,
+                                                 biddingMethod: basicInfo.biddingMethod,
+                                                 budget: String(e.target.value) === '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                                 label: basicInfo.labelTxt,
+                                                 queryType: "ALL"
                                                });
                                              }}>
                                   <Radio value={1}>是</Radio>
@@ -4455,14 +4494,14 @@ class EditProjectInfoModel extends React.Component {
                                                  //项目预算类型
                                                  haveType: this.state.haveType,
                                                  //项目软件预算
-                                                 softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                 softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                                  //框架预算
-                                                 frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                 frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                                  //单独采购预算
-                                                 singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                 singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                  xmid: basicInfo.projectId,
                                                  biddingMethod: basicInfo.biddingMethod,
-                                                 budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                 budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                  label: basicInfo.labelTxt,
                                                  queryType: "ALL"
                                                });
@@ -4501,16 +4540,14 @@ class EditProjectInfoModel extends React.Component {
                                                  //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
                                                  let total = 0;
                                                  total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
-                                                 //判断项目预算类型
+                                                 //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
                                                  let haveType = 1;
-                                                 if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.frameBudget) !== 0 || Number(this.state.budgetInfo.singleBudget) !== 0) {
-                                                   haveType = 2;
-                                                 }
-                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0) {
-                                                   haveType = 1;
-                                                 }
-                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) !== 0 && Number(this.state.budgetInfo.singleBudget) !== 0) {
-                                                   haveType = 3;
+                                                 if (String(this.state.basicInfo.haveHard) === '2') {
+                                                   haveType = 1
+                                                 } else if (String(this.state.basicInfo.haveHard) === '1' && Number(this.state.budgetInfo.softBudget) === 0) {
+                                                   haveType = 2
+                                                 } else if (String(this.state.basicInfo.haveHard) === '1' && Number(this.state.budgetInfo.softBudget) > 0) {
+                                                   haveType = 3
                                                  }
                                                  this.setState({
                                                    haveType,
@@ -4521,18 +4558,18 @@ class EditProjectInfoModel extends React.Component {
                                                  })
                                                  this.fetchQueryMilepostInfo({
                                                    type: basicInfo.projectType,
-                                                   isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                                   isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                                    //项目预算类型
-                                                   haveType: this.state.haveType,
+                                                   haveType: haveType,
                                                    //项目软件预算
-                                                   softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                   softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                                    //框架预算
-                                                   frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                   frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                                    //单独采购预算
-                                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                   singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                   budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -4575,19 +4612,7 @@ class EditProjectInfoModel extends React.Component {
                                                  //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
                                                  let total = 0;
                                                  total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
-                                                 //判断项目预算类型
-                                                 let haveType = 1;
-                                                 if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.frameBudget) !== 0 || Number(this.state.budgetInfo.singleBudget) !== 0) {
-                                                   haveType = 2;
-                                                 }
-                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0) {
-                                                   haveType = 1;
-                                                 }
-                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) !== 0 && Number(this.state.budgetInfo.singleBudget) !== 0) {
-                                                   haveType = 3;
-                                                 }
                                                  this.setState({
-                                                   haveType,
                                                    budgetInfo: {
                                                      ...budgetInfo,
                                                      projectBudget: total,
@@ -4595,18 +4620,18 @@ class EditProjectInfoModel extends React.Component {
                                                  })
                                                  this.fetchQueryMilepostInfo({
                                                    type: this.state.basicInfo.projectType,
-                                                   isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                                   isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                                    //项目预算类型
                                                    haveType: this.state.haveType,
                                                    //项目软件预算
-                                                   softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                   softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                                    //框架预算
-                                                   frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                   frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                                    //单独采购预算
-                                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                   singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                   budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -4652,19 +4677,7 @@ class EditProjectInfoModel extends React.Component {
                                                  //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
                                                  let total = 0;
                                                  total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
-                                                 //判断项目预算类型
-                                                 let haveType = 1;
-                                                 if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.frameBudget) !== 0 || Number(this.state.budgetInfo.singleBudget) !== 0) {
-                                                   haveType = 2;
-                                                 }
-                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0) {
-                                                   haveType = 1;
-                                                 }
-                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) !== 0 && Number(this.state.budgetInfo.singleBudget) !== 0) {
-                                                   haveType = 3;
-                                                 }
                                                  this.setState({
-                                                   haveType,
                                                    budgetInfo: {
                                                      ...budgetInfo,
                                                      projectBudget: total,
@@ -4672,18 +4685,18 @@ class EditProjectInfoModel extends React.Component {
                                                  })
                                                  this.fetchQueryMilepostInfo({
                                                    type: this.state.basicInfo.projectType,
-                                                   isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                                   isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : basicInfo.SFYJRW,
                                                    //项目预算类型
                                                    haveType: this.state.haveType,
                                                    //项目软件预算
-                                                   softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                   softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
                                                    //框架预算
-                                                   frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                   frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                                    //单独采购预算
-                                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                   singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                   budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -5881,6 +5894,7 @@ class EditProjectInfoModel extends React.Component {
                                   </div>
                                   <div style={{ width: '65%' }}>
                                     <Select
+                                      disabled={subItemFlag}
                                       placeholder="请输入名字搜索人员"
                                       value={jobStaffName.length > 0 ? jobStaffName[9] : []}
                                       onBlur={() => this.setState({ height: 0 })}
