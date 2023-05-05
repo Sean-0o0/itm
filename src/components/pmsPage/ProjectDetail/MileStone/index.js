@@ -332,6 +332,7 @@ export default function MileStone(props) {
                 xmbh={prjBasic?.XMBM || ''}
                 xwhid={prjBasic?.XWHID || -1}
                 // getMileStoneData={getMileStoneData}
+                setIsSpinning={setIsSpinning}
                 refresh={refresh}
                 isHwPrj={isHwPrj}
               />

@@ -563,6 +563,8 @@ class ItemBtn extends React.Component {
     };
     //打印
     const lcdy = async item => {
+      const { setIsSpinning } = this.props;
+      setIsSpinning(true)
       await axios({
         method: 'GET',
         url: getStreamByLiveBos,
@@ -574,6 +576,7 @@ class ItemBtn extends React.Component {
         .then(res => {
           let blob = new Blob([res.data], { type: 'application/pdf' });
           const src = URL.createObjectURL(blob);
+          setIsSpinning(false)
           this.setState(
             {
               src,
@@ -587,7 +590,8 @@ class ItemBtn extends React.Component {
           );
         })
         .catch(err => {
-          console.error(err);
+          setIsSpinning(false)
+          message.error(err);
         });
     };
     const reoprMoreCotent = (
