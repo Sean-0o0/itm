@@ -213,9 +213,9 @@ export default class UserDrop extends React.Component {
     return (
       <a href="#" onClick={(e) => { e.preventDefault(); }} style={{ display: 'inline-block', width: '100%', height: '100%' }}>
         {/* <img className="m-avatar" style={{width: '3rem', height: '3rem'}} src={showPic} title="头像" alt="avator" onError={this.showDefaultImgError} /> */}
-        <span style={{ paddingLeft: '0.5rem' }}>
-          <span className="name" style={{fontSize: '15px'}}>{name}</span>
-          <i className="iconfont icon-down-solid-arrow" style={{fontSize: '1rem', paddingLeft: '0.5rem'}}/>
+        <span style={{ paddingLeft: '8px' }}>
+          <span className="name">{name}</span>
+          <i className="iconfont icon-fill-down"/>
         </span>
       </a>
     );
@@ -462,7 +462,7 @@ export default class UserDrop extends React.Component {
         <Spin spinning={loading}>
           <DropdownBox
             className={styles.userDrop}
-            style={{ float: 'right', width: 'auto' }}
+            style={{ float: 'right', width: 'auto', marginRight: '24px' }}
             {...dropdownBoxProps}
           />
           <BasicModal
@@ -470,7 +470,7 @@ export default class UserDrop extends React.Component {
             onCancel={this.closeModal}
             style={{ /* height: '20rem' */ }}
             footer={null}
-            width="60rem"
+            width="403px"
             title="版本信息"
           >
             <VersionInfoList />
@@ -479,7 +479,7 @@ export default class UserDrop extends React.Component {
             visible={this.state.roleVisible}
             onCancel={this.closeRoleModal}
             footer={null}
-            width="60rem"
+            width="403px"
             title="切换用户"
           >
             <OtherUser total={total} getOtherUserloading={loading} getOtherUsers={this.getOtherUsers} dispatch={dispatch} closeRoleModal={this.closeRoleModal} otherusers={otherusers} userBasicInfo={authUserInfo} />

@@ -6,8 +6,8 @@ class Watermark extends React.Component {
     const { userBasicInfo: { name = '', userid = '' }, elementID = 'htmlContent' } = this.props;
     this.getWM({ content: `${userid} ${name}` });
     // 绑定浏览器滚动条
-    const htmlContent = document.getElementById(elementID);
-    htmlContent.addEventListener('scroll', this.handleScroll);
+    // const htmlContent = document.getElementById(elementID);
+    // htmlContent.addEventListener('scroll', this.handleScroll);
   }
 
   handleScroll = () => {
@@ -24,8 +24,8 @@ class Watermark extends React.Component {
       content: 'text',
       rotate: -30,
       font: '30px microsoft yahei',
-      width: 900,
-      height: 400,
+      width: 400,
+      height: 300,
       ...payload,
     };
     // 生成新水印
@@ -41,7 +41,7 @@ class Watermark extends React.Component {
       textAlign: 'center',
       textBaseline: 'bottom',
       font: '20px microsoft yahei',
-      fillStyle: 'rgba(184, 184, 184, 0.3)',
+      fillStyle: 'rgba(184, 184, 184, 0.2)',
       content: 'text',
       rotate: 30,
       zIndex: 1000,

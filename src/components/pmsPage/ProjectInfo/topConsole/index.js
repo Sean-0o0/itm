@@ -500,6 +500,10 @@ export default forwardRef(function TopConsole(props, ref) {
           <Icon
             type="down"
             className={'label-selector-arrow' + (labelOpen ? ' selector-rotate' : '')}
+            onClick={() =>{
+              console.log('@@@', labelOpen);
+              setLabelOpen(p=>!p)
+            }}
           />
         </div>
         <div className="console-item">

@@ -2408,6 +2408,7 @@
     line-height: 1;
     cursor: pointer;
     transition: all 0.3s;
+    pointer-events: none;
   }
 
   .selector-rotate {
@@ -3062,6 +3063,7 @@
     line-height: 1;
     cursor: pointer;
     transition: all 0.3s;
+    pointer-events: none;
   }
 
   .selector-rotate {
@@ -4984,6 +4986,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           line-height: 1;
           cursor: pointer;
           transition: all 0.3s;
+          pointer-events: none;
         }
         .selector-rotate {
           transform: rotate(180deg);
@@ -8046,6 +8049,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           line-height: 1;
           cursor: pointer;
           transition: all 0.3s;
+          pointer-events: none;
         }
         .selector-rotate {
           transform: rotate(180deg);
@@ -9229,23 +9233,36 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               .avatar-box {
                 display: flex;
                 flex-direction: row;
+                flex-wrap: wrap;
                 align-items: center;
                 margin-right: 8px;
-                padding: 0 16px;
+                padding-left: 16px;
+                width: 86px;
+                height: 45px;
+                flex-shrink: 0;
 
                 .avatar {
                   width: 20px;
                   border-radius: 50%;
                   overflow: hidden;
+                  margin-left: -4px;
+                  border: 1px solid #fff;
+
+                  &:nth-child(4n + 1) {
+                    margin-left: 0;
+                  }
                 }
               }
 
               .txt {
                 max-width: 60%;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-                line-height: 1.1em;
+                line-height: 1.5em;
+                word-wrap: break-word;
+                overflow: hidden; //溢出内容隐藏
+                text-overflow: ellipsis; //文本溢出部分用省略号表示
+                display: -webkit-box; //特别显示模式
+                -webkit-line-clamp: 2; //行数
+                line-clamp: 2;
               }
             }
           }
@@ -9344,7 +9361,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
             &:hover {
               .item-txt {
-                color: #3361ff;
+                // color: #3361ff;
               }
 
               .item-img {
@@ -11707,12 +11724,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         overflow: hidden;
         width: 23.5%;
         height: 230px;
-        cursor: default;
+        cursor: pointer;
 
         &:hover {
           box-shadow: 0px 8px 32px 0px rgba(0, 0, 0, 0.12);
           & > .title {
-            color: #3361ff;
+            // color: #3361ff;
           }
           & > .footer-btn {
             display: block;
@@ -11733,9 +11750,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           white-space: nowrap;
           height: 22px;
           line-height: 22px;
-          // margin-bottom: 14px;
-          padding-left: 12px;
-          // text-align: center;
+          padding-left: 10px;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .left-bar {
+            height: 18px;
+            width: 3px;
+            background-color: #3361ff;
+            margin-right: 8px;
+          }
 
           .item-icon {
             // width: 20px;
@@ -11755,6 +11780,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           font-size: 14px;
           padding: 12px 10px;
           height: 174px;
+          line-height: 24px;
           // border: 1px solid #d6d6d6;
           border-radius: 8px;
           margin-bottom: 12px;

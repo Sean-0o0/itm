@@ -83,6 +83,12 @@ export default function MileStone(props) {
       .then(res => {
         if (res?.success) {
           let data = [...res.record];
+          if (prjBasic.SFBHZXM && prjBasic.SFBHZXM !== '0') {
+            data = [...res.record].filter(
+              x => x.lcbmc === '项目立项' || x.lcbmc === '市场及需求分析',
+            );
+          }
+
           let currentIndex = -1;
           //当前里程碑 - 添加 isCurrent，判断是否为当前里程碑
           FetchQueryLiftcycleMilestone({
@@ -139,6 +145,9 @@ export default function MileStone(props) {
                       if (!noNewCurStep) {
                         //初次刷新，自动选择当前里程碑
                         setCurrentStep(currentIndex);
+                        if (prjBasic.SFBHZXM && prjBasic.SFBHZXM !== '0') {
+                          setCurrentStep(1);
+                        }
                         if (data.length >= 3) {
                           if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {
                             setStartIndex(currentIndex - 1);

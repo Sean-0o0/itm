@@ -529,7 +529,7 @@ class ItemBtn extends React.Component {
           Loginname,
         );
       }
-      if (item.sxmc === '设备采购有合同') {
+      if (item.sxmc === '设备采购有合同' || item.sxmc === '框架外硬件采购立项') {
         params = this.getParams(
           'TLC_LCFQ',
           'TLC_LCFQ_SBCGYHT',
@@ -542,7 +542,7 @@ class ItemBtn extends React.Component {
           Loginname,
         );
       }
-      if (item.sxmc === '设备采购无合同') {
+      if (item.sxmc === '设备采购无合同' || item.sxmc === '框架内硬件采购立项') {
         params = this.getParams(
           'TLC_LCFQ',
           'TLC_LCFQ_SBCGWHT',
@@ -564,7 +564,7 @@ class ItemBtn extends React.Component {
     //打印
     const lcdy = async item => {
       const { setIsSpinning } = this.props;
-      setIsSpinning(true)
+      setIsSpinning(true);
       await axios({
         method: 'GET',
         url: getStreamByLiveBos,
@@ -576,7 +576,7 @@ class ItemBtn extends React.Component {
         .then(res => {
           let blob = new Blob([res.data], { type: 'application/pdf' });
           const src = URL.createObjectURL(blob);
-          setIsSpinning(false)
+          setIsSpinning(false);
           this.setState(
             {
               src,
@@ -590,7 +590,7 @@ class ItemBtn extends React.Component {
           );
         })
         .catch(err => {
-          setIsSpinning(false)
+          setIsSpinning(false);
           message.error(err);
         });
     };
@@ -640,7 +640,7 @@ class ItemBtn extends React.Component {
       case '软件费用审批流程-无合同':
       case '项目立项申请':
       case '招标方式变更流程':
-      case '合同签署流程':
+      case '软件合同签署流程':
       case '申请VPN':
       case '申请权限':
       case '申请餐券':
@@ -648,11 +648,13 @@ class ItemBtn extends React.Component {
       case '付款流程':
       case '设备采购有合同':
       case '设备采购无合同':
+      case '框架内硬件采购立项':
+      case '框架外硬件采购立项':
         return this.getLcfqck(done, item);
 
       //信息录入
       case '中标信息录入':
-      case '合同信息录入':
+      case '软件合同信息录入':
         return this.getXxlrxg(done, item);
       case '硬件中标信息录入':
         return this.getYjxxlr(done, item);
