@@ -532,8 +532,12 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          // console.log("recordrecord",record)
-          return (<Select
+          let title = null
+          let member = staffList.filter(item => item.id == record['SUBXMJL' + record.ID])
+          if (member.length > 0) {
+            title = member[0].name + '(' + member[0].orgName + ')';
+          }
+          return (<Tooltip title={title}><Select
               allowClear
               placeholder="请输入名字搜索人员"
               // value={jobStaffName.length > 0 ? jobStaffName[9] : []}
@@ -557,6 +561,7 @@ class SubItemInfo extends Component {
                 })
               }
             </Select>
+            </Tooltip>
           )
         }
       },
@@ -643,7 +648,6 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          console.log("recordrecord", record)
           return (<TreeSelect
               allowClear
               showSearch
@@ -677,7 +681,6 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          console.log("record['SUBGLYSTXT' + record.ID]", record['SUBGLYSTXT' + record.ID])
           return (<TreeSelect
               allowClear
               showSearch

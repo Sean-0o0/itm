@@ -2082,7 +2082,7 @@ class EditProjectInfoModel extends React.Component {
         ? -1
         : Number(this.state.basicInfo.projectId);
     // ////console.log("operateType", operateType)
-    params.type = this.state.subItemFlag?'ADD':'MOD';
+    params.type = this.state.subItemFlag && this.state.subItemFinish ? 'ADD' : 'MOD';
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
