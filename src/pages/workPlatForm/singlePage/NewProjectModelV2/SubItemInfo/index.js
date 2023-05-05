@@ -403,9 +403,9 @@ class SubItemInfo extends Component {
   }
 
   itemChange = (e, record, index, key) => {
-    console.log("e,record,index,key:", e, record, index, key)
-    console.log("this.props.budgetProjectList", this.props.budgetProjectList)
     const {tableData} = this.state;
+    const {haveHard, projectBudget, softBudget, frameBudget, singleBudget} = this.props;
+    console.log("haveHard,projectBudget,softBudget,frameBudget,singleBudget", haveHard, projectBudget, softBudget, frameBudget, singleBudget)
     if (key === 'SUBGLYS') {
       let ysID = '';
       let ysName = '';
@@ -472,6 +472,20 @@ class SubItemInfo extends Component {
         })
       }
     }
+    //子项目总金额之和
+    let subProjectBudget = 0;
+    //子项目软件金额之和
+    let subSoftBudget = 0;
+    //子项目框架金额之和
+    let subFrameBudget = 0;
+    //子项目单独采购金额之和
+    let subSingleBudget = 0;
+    tableData.map(item => {
+      subProjectBudget = subProjectBudget + Number(item['SUBYSJE' + item.ID])
+      subSoftBudget = subSoftBudget + Number(item['SUBRJYSJE' + item.ID])
+      subFrameBudget = subFrameBudget + Number(item['SUBKJCGJE' + item.ID])
+      subSingleBudget = subSingleBudget + Number(item['SUBDDCGJE' + item.ID])
+    })
     //软件预算金额/单独采购金额/框架金额变化时-XMYS为三者之和
     if (key === 'SUBRJYSJE' || key === 'SUBKJCGJE' || key === 'SUBDDCGJE') {
       tableData.map(item => {
@@ -479,6 +493,43 @@ class SubItemInfo extends Component {
           item['SUBYSJE-TOTAL' + item.ID] = Number(item['SUBRJYSJE' + item.ID]) + Number(item['SUBKJCGJE' + item.ID]) + Number(item['SUBDDCGJE' + item.ID]);
         }
       })
+      //软件预算金额/单独采购金额/框架金额变化时要校验是否超过父项目金额
+      if (haveHard == '1') {
+        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+        if (subSoftBudget > Number(softBudget) && key === 'SUBRJYSJE') {
+          message.warn("子项目软件预算金额超过父项目,请注意！")
+        }
+        if (subFrameBudget > Number(frameBudget) && key === 'SUBKJCGJE') {
+          message.warn("子项目框架采购金额超过父项目,请注意！")
+        }
+        if (subSingleBudget > Number(singleBudget) && key === 'SUBDDCGJE') {
+          message.warn("子项目单独采购金额超过父项目,请注意！")
+        }
+        //父项目不包含硬件-说明父项目只有总金额
+        if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(softBudget) + Number(frameBudget) + Number(singleBudget)) {
+          message.warn("子项目总金额超过父项目,请注意！")
+        }
+      } else {
+        //父项目不包含硬件-说明父项目只有总金额
+        if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(projectBudget)) {
+          message.warn("子项目总金额超过父项目,请注意！")
+        }
+      }
+    }
+    //预算金额变更
+    if (key === 'SUBYSJE') {
+      //软件预算金额/单独采购金额/框架金额变化时要校验是否超过父项目金额
+      if (haveHard == '1') {
+        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+        if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(softBudget) + Number(frameBudget) + Number(singleBudget)) {
+          message.warn("子项目总金额超过父项目,请注意！")
+        }
+      } else {
+        //父项目不包含硬件-说明父项目只有总金额
+        if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(projectBudget)) {
+          message.warn("子项目总金额超过父项目,请注意！")
+        }
+      }
     }
     this.setState({
       ...tableData
@@ -800,28 +851,28 @@ class SubItemInfo extends Component {
           </Select>)
         }
       },
-      {
-        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
-          fontFamily: 'SimSun, sans-serif',
-          color: '#f5222d',
-          marginRight: '4px',
-          lineHeight: 1
-        }}>*</span>是否为硬件入围内需求</span>,
-        dataIndex: 'SUBSFYJRW',
-        width: '200px',
-        key: 'SUBSFYJRW',
-        ellipsis: true,
-        // editable: true,
-        render(text, record, index) {
-          return (<Select disabled={record['SUBSFBHYJ' + record.ID] !== "1"}
-                          value={record['SUBSFYJRW' + record.ID]} style={{width: 120}}
-                          defaultValue={record['SUBSFYJRW' + record.ID]}
-                          onChange={(e) => _this.itemChange(e, record, index, 'SUBSFYJRW')}>
-            <Option value="1">是</Option>
-            <Option value="2">否</Option>
-          </Select>)
-        }
-      },
+      // {
+      //   title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+      //     fontFamily: 'SimSun, sans-serif',
+      //     color: '#f5222d',
+      //     marginRight: '4px',
+      //     lineHeight: 1
+      //   }}>*</span>是否为硬件入围内需求</span>,
+      //   dataIndex: 'SUBSFYJRW',
+      //   width: '200px',
+      //   key: 'SUBSFYJRW',
+      //   ellipsis: true,
+      //   // editable: true,
+      //   render(text, record, index) {
+      //     return (<Select disabled={record['SUBSFBHYJ' + record.ID] !== "1"}
+      //                     value={record['SUBSFYJRW' + record.ID]} style={{width: 120}}
+      //                     defaultValue={record['SUBSFYJRW' + record.ID]}
+      //                     onChange={(e) => _this.itemChange(e, record, index, 'SUBSFYJRW')}>
+      //       <Option value="1">是</Option>
+      //       <Option value="2">否</Option>
+      //     </Select>)
+      //   }
+      // },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
           fontFamily: 'SimSun, sans-serif',
