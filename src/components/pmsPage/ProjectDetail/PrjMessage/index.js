@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import moment from 'moment';
-import { Drawer, Popover, Input, Button, message, Empty, Spin } from 'antd';
+import { Drawer, Popover, Input, Button, message, Empty, Spin, Popconfirm } from 'antd';
 import { set } from 'store';
 import { QueryProjectMessages, UpdateProjectMessages } from '../../../../services/pmsServices';
 const { TextArea } = Input;
@@ -121,6 +121,13 @@ export default function PrjMessage(props) {
         >
           编辑
         </div>
+        {/* <Popconfirm
+          title="确定删除吗？"
+          onConfirm={() => {
+            handleMsgDelete(id, content);
+          }}
+          placement="leftBottom"
+        > */}
         <div
           className="item"
           onClick={() => {
@@ -129,6 +136,7 @@ export default function PrjMessage(props) {
         >
           删除
         </div>
+        {/* </Popconfirm> */}
       </div>
     );
     return (
@@ -142,6 +150,7 @@ export default function PrjMessage(props) {
               title={null}
               content={msgEditCotent}
               overlayClassName="msg-edit-content-popover"
+              // trigger="click"
             >
               <i className="iconfont icon-more" />
             </Popover>

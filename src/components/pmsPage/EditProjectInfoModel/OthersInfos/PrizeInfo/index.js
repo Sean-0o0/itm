@@ -164,8 +164,11 @@ class PrizeInfo extends Component {
     };
   }
 
-  componentDidMount = () => {
-    this.fetchQueryProjectInfoAll();
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.xmid !== prevProps.xmid && this.props.xmid != '-1') {
+      console.log("xmidxmid", this.props.xmid)
+      this.fetchQueryProjectInfoAll();
+    }
   }
 
 //----------------其他供应商-----------------//
@@ -211,9 +214,6 @@ class PrizeInfo extends Component {
   callbackData = () => {
     const {hjxxRecordCallback} = this.props;
     const {tableData, hjxxRecordFlag} = this.state;
-    //表格数据变化后存全局
-    sessionStorage.setItem("hjxxTableData", JSON.stringify(tableData));
-    sessionStorage.setItem("hjxxTableDataFlag", "true");
     let newArr = [];
     tableData.map((item) => {
       let obj = {
@@ -231,45 +231,38 @@ class PrizeInfo extends Component {
 
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
-    const { dictionary: { HJRYDJ = [],ZSCQLX = [] } } = this.props;
+    const {dictionary: {HJRYDJ = [], ZSCQLX = []}} = this.props;
     const {xmid} = this.props;
-    let flag = sessionStorage.getItem("hjxxTableDataFlag")
-    if (flag === "true") {
-      this.setState({
-        tableData: JSON.parse(sessionStorage.getItem("hjxxTableData"))
-      })
-    } else {
-      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
-        const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
-        if (code > 0) {
-          let data = JSON.parse(hjxxRecord);
-          let arr = [];
-          for (let i = 0; i < data.length; i++) {
-            arr.push({
-              ID: data[i]?.ID,
-              ['JXMC' + data[i]?.ID]: data[i]?.JXMC,
-              ['RYDJ' + data[i]?.ID]: data[i]?.RYDJ,
-              ['RYDJNAME' + data[i]?.ID]: HJRYDJ?.filter(item => item.ibm == data[i]?.RYDJ)[0]?.note || '',
-              ['ZSCQLX' + data[i]?.ID]: data[i]?.ZSCQLX,
-              ['ZSCQLXNAME' + data[i]?.ID]: ZSCQLX?.filter(item => item.ibm == data[i]?.ZSCQLX)[0]?.note || '',
-              ['HJSJ' + data[i]?.ID]: data[i]?.HJSJ,
-            });
-          }
-          let hjxxRecordFlag = false;
-          if (data.length > 0) {
-            hjxxRecordFlag = true;
-          }
-          this.setState({
-            tableData: arr,
-            hjxxRecordFlag,
-          }, () => {
-            this.callbackData();
-          })
+    FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
+      const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
+      if (code > 0) {
+        let data = JSON.parse(hjxxRecord);
+        let arr = [];
+        for (let i = 0; i < data.length; i++) {
+          arr.push({
+            ID: data[i]?.ID,
+            ['JXMC' + data[i]?.ID]: data[i]?.JXMC,
+            ['RYDJ' + data[i]?.ID]: data[i]?.RYDJ,
+            ['RYDJNAME' + data[i]?.ID]: HJRYDJ?.filter(item => item.ibm == data[i]?.RYDJ)[0]?.note || '',
+            ['ZSCQLX' + data[i]?.ID]: data[i]?.ZSCQLX,
+            ['ZSCQLXNAME' + data[i]?.ID]: ZSCQLX?.filter(item => item.ibm == data[i]?.ZSCQLX)[0]?.note || '',
+            ['HJSJ' + data[i]?.ID]: data[i]?.HJSJ,
+          });
         }
-      }).catch((error) => {
-        message.error(!error.success ? error.message : error.note);
-      });
-    }
+        let hjxxRecordFlag = false;
+        if (data.length > 0) {
+          hjxxRecordFlag = true;
+        }
+        this.setState({
+          tableData: arr,
+          hjxxRecordFlag,
+        }, () => {
+          this.callbackData();
+        })
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   RYDJChange = (e,record, index) =>{

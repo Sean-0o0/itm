@@ -414,7 +414,6 @@ class EditProjectInfoModel extends React.Component {
     projectTypeList: [], //项目类型列表
     projectTypeZY: [], //自研项目下的项目类型
     projectTypeZYFlag: false, //是否选中自研项目下的类型
-    projectTypePTRJFlag: false, //是否选中外采项目下的普通硬件项目类型
     projectTypeRYJFlag: false,//选中软硬件项目
     organizationList: [], // 组织机构列表
     organizationTreeList: [], // 树形组织机构列表
@@ -449,8 +448,8 @@ class EditProjectInfoModel extends React.Component {
     },
     //基础信息
     basicInfo: {
-      SFYJRW: -1, //是否硬件入围
-      haveHard: -1,//是否包含硬件
+      SFYJRW: 1, //是否硬件入围
+      haveHard: 2,//是否包含硬件
       projectId: -1,
       projectName: '',
       projectType: 1,
@@ -587,7 +586,18 @@ class EditProjectInfoModel extends React.Component {
     isDownOrg: true,
     //标签是否展开
     isDownLabel: true,
+    //是否是没有里程碑的子项目
+    subItemFlag: false,
+    //项目预算类型
+    haveType: 1,
   };
+
+
+  componentWillMount() {
+    // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
+    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+  }
+
   componentDidMount = async () => {
     const _this = this;
     const params = this.getUrlParams();
@@ -605,9 +615,13 @@ class EditProjectInfoModel extends React.Component {
     }
     // 判断是否是首页跳转过来的
     if (params.type) {
-      this.setState({ type: true });
+      this.setState({type: true});
     }
-    setTimeout(function() {
+    // 判断是否是没有里程碑的子项目
+    if (params.subItemFlag) {
+      this.setState({subItemFlag: true});
+    }
+    setTimeout(function () {
       _this.fetchInterface();
     }, 300);
   };
@@ -621,11 +635,11 @@ class EditProjectInfoModel extends React.Component {
     this.fetchQuerySoftwareList();
     // 查询项目标签
     this.fetchQueryProjectLabel();
-    // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
-    await this.fetchQueryBudgetProjects({
-      type: 'NF',
-      year: Number(this.state.budgetInfo.year.format('YYYY')),
-    });
+    // // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
+    // await this.fetchQueryBudgetProjects({
+    //   type: 'NF',
+    //   year: Number(this.state.budgetInfo.year.format('YYYY')),
+    // });
 
     // 查询组织机构信息-应用部门
     this.fetchQueryOrganizationYYBMInfo();
@@ -652,20 +666,20 @@ class EditProjectInfoModel extends React.Component {
     // 查询里程碑信息
     await this.fetchQueryMilepostInfo({
       type: 1,
-      isShortListed: this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1',
-      xmid: this.state.basicInfo.projectId,
+      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? this.state.basicInfo.SFYJRW : '1',
+      xmid: this.state.subItemFlag ? '-1' : this.state.basicInfo.projectId,
       biddingMethod: 1,
       budget: 0,
       label: this.state.basicInfo.labelTxt,
       queryType: "ALL",
-      //项目预算类型
-      haveType: 1,
+      //项目预算类型（1.纯软件,硬件相关费用为0   2.纯硬件,软件相关费用为0   3.软硬件费用都有）
+      haveType: this.state.haveType,
       //项目软件预算
-      softBudget: this.state.basicInfo.projectType == '1' ? this.state.budgetInfo.softBudget : 0,
+      softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
       //框架预算
-      frameBudget: this.state.basicInfo.projectType == '1' ? this.state.budgetInfo.frameBudget : 0,
+      frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
       //单独采购预算
-      singleBudget: this.state.basicInfo.projectType == '1' ? this.state.budgetInfo.singleBudget : 0,
+      singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
     });
     //招采信息
     // await this.firstTimeQueryPaymentAccountList();
@@ -1166,18 +1180,28 @@ class EditProjectInfoModel extends React.Component {
           if (result.orgId) {
             newOrg = result.orgId.split(';');
           }
-          console.log("newOrgnewOrgnewOrg", newOrg)
-          console.log("labellabel", result.projectLabel === '' ? [] : result.projectLabel.split(','))
-          console.log("softwaresoftware", result.softwareId === '' ? [] : result.softwareId.split(','))
+          // console.log("newOrgnewOrgnewOrg", newOrg)
+          // console.log("labellabel", result.projectLabel === '' ? [] : result.projectLabel.split(','))
+          // console.log("softwaresoftware", result.softwareId === '' ? [] : result.softwareId.split(','))
           const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0;
-          const PTRJFlag = result?.projectType == '5';
           const RYJFlag = result?.projectType == '1';
+          //判断项目预算类型
+          let haveType = 1;
+          if (Number(result.softBudget) === 0 && Number(result.frameBudget) !== 0 || Number(result.singleBudget) !== 0) {
+            haveType = 2;
+          }
+          if (Number(result.softBudget) !== 0 && Number(result.frameBudget) === 0 && Number(result.singleBudget) === 0) {
+            haveType = 1;
+          }
+          if (Number(result.softBudget) !== 0 && Number(result.frameBudget) !== 0 && Number(result.singleBudget) !== 0) {
+            haveType = 3;
+          }
           this.setState({
+            haveType,
             subItem: result.haveChild,
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
-            projectTypePTRJFlag: PTRJFlag,
             projectTypeRYJFlag: RYJFlag,
             basicInfo: {
               haveHard: result.haveHard,//是否包含硬件
@@ -1326,7 +1350,6 @@ class EditProjectInfoModel extends React.Component {
         const { code = -1, record = [] } = result;
         if (code > 0) {
           this.setState({ budgetProjectList: this.toItemTree(record) });
-          ////console.log(this.toItemTree(record));
         }
       })
       .catch(error => {
@@ -1650,14 +1673,15 @@ class EditProjectInfoModel extends React.Component {
 
   handleSave = (values, type) => {
     const {
+      subItem = 2,
+      subItemRecord = [],
       basicInfo = {},
       budgetInfo = {},
       staffJobList = [],
       projectTypeZYFlag = false,
-      projectTypePTRJFlag = false,
       projectTypeRYJFlag = false,
-      staffInfo: { jobStaffList = [] },
-      mileInfo: { milePostInfo = [] },
+      staffInfo: {jobStaffList = []},
+      mileInfo: {milePostInfo = []},
       purchaseInfo = {},
       fileList = [],
       htxxVisiable = false,
@@ -1665,6 +1689,7 @@ class EditProjectInfoModel extends React.Component {
       topicInfoRecord = [],
       requirementInfoRecord = [],
       prizeInfoRecord = [],
+      subItemFlag,
     } = this.state;
     //校验基础信息
     let basicflag;
@@ -1687,7 +1712,10 @@ class EditProjectInfoModel extends React.Component {
         basicflag = false;
       }
     } else {
-      basicflag = false;
+      if (type === 1) {
+        message.warn('项目预算信息-预算金额未填写完整！');
+        return;
+      }
     }
     //非自研项目还需要校验采购方式
     if (!projectTypeZYFlag) {
@@ -1698,17 +1726,106 @@ class EditProjectInfoModel extends React.Component {
           basicInfo.biddingMethod !== null
         )
       ) {
-        basicflag = false;
+        if (type === 1) {
+          message.warn('项目基本信息-采购方式未填写完整！');
+          return;
+        }
       }
     }
-    //外采项目中的普通硬件项目还需要校验是否在硬件入围内
-    if (projectTypePTRJFlag) {
-      if (!(basicInfo.SFYJRW != '-1' && basicInfo.SFYJRW != null && basicInfo.SFYJRW !== '')) {
-        basicflag = false;
+    //软硬件项目需要校验是否包含硬件 是否包含硬件选是后要校验三个新增的金额
+    if (projectTypeRYJFlag) {
+      if (!(basicInfo.haveHard != '-1' && basicInfo.haveHard != null && basicInfo.haveHard !== '')) {
+        if (type === 1) {
+          message.warn('项目预算信息-是否包含硬件未填写完整！');
+          return;
+        }
+      }
+      if (basicInfo.haveHard === '1') {
+        if (!(budgetInfo.softBudget !== '' && budgetInfo.softBudget != null)) {
+          if (type === 1) {
+            message.warn('项目预算信息-软件金额未填写完整！');
+            return;
+          }
+        }
+        if (!(budgetInfo.singleBudget !== '' && budgetInfo.singleBudget != null)) {
+          if (type === 1) {
+            message.warn('项目预算信息-单独采购金额未填写完整！');
+            return;
+          }
+        }
+        if (!(budgetInfo.frameBudget !== '' && budgetInfo.frameBudget != null)) {
+          if (type === 1) {
+            message.warn('项目预算信息-框架金额未填写完整！');
+            return;
+          }
+        }
       }
     }
     if (!basicflag && type === 1) {
       message.warn('项目基本信息及预算信息未填写完整！');
+      return;
+    }
+    //校验子项目信息
+    let subItemflag = true;
+    //校验子项目信息
+    if (subItem == "1") {
+      console.log("-----------开始校验子项目表格信息-----------")
+      subItemflag = subItemRecord.length !== 0;
+      subItemRecord.map(item => {
+        //硬件项目校验是否包含硬件
+        if (item.XMLX === '5') {
+          if (item.SFBHYJ === '' || item.SFBHYJ == null) {
+            subItemflag = false;
+          } else {
+            //子项目是否包含硬件
+            if (item.SFBHYJ === '1') {
+              if ((item.XMMC === '' || item.XMMC == null)
+                || (item.XMJL === '' || item.XMJL == null)
+                || (item.XMLX === '' || item.XMLX == null)
+                || (item.YYBM === '' || item.YYBM == null)
+                || (item.CGFS === '' || item.CGFS == null)
+                || (item.GLYS === '' || item.GLYS == null)
+                // || (item.XMYS === ''||item.XMYS == null)
+                || (item.RJYS === '' || item.RJYS == null)
+                || (item.SFBHYJ === '' || item.SFBHYJ == null)
+                || (item.SFWYJRWNXQ === '' || item.SFWYJRWNXQ == null)
+                || (item.KJCGJE === '' || item.KJCGJE == null)
+                || (item.DDCGJE === '' || item.DDCGJE == null)) {
+                subItemflag = false;
+              }
+            } else if (item.SFBHYJ === '2') {
+              if ((item.XMMC === '' || item.XMMC == null)
+                || (item.XMJL === '' || item.XMJL == null)
+                || (item.XMLX === '' || item.XMLX == null)
+                || (item.YYBM === '' || item.YYBM == null)
+                || (item.CGFS === '' || item.CGFS == null)
+                || (item.GLYS === '' || item.GLYS == null)
+                || (item.XMYS === '' || item.XMYS == null)
+                // || (item.RJYS === ''||item.RJYS == null)
+                // || (item.SFBHYJ === ''||item.SFBHYJ == null)
+              ) {
+                subItemflag = false;
+              }
+            }
+          }
+        } else {
+          if ((item.XMMC === '' || item.XMMC == null)
+            || (item.XMJL === '' || item.XMJL == null)
+            || (item.XMLX === '' || item.XMLX == null)
+            || (item.YYBM === '' || item.YYBM == null)
+            || (item.CGFS === '' || item.CGFS == null)
+            || (item.GLYS === '' || item.GLYS == null)
+            || (item.XMYS === '' || item.XMYS == null)
+            // || (item.RJYS === ''||item.RJYS == null)
+            // || (item.SFBHYJ === ''||item.SFBHYJ == null)
+          ) {
+            subItemflag = false;
+          }
+        }
+      })
+    }
+    if (!subItemflag && type === 1) {
+      message.warn('项目基本信息-子项目信息未填写完整！');
       return;
     }
     //校验里程碑信息
@@ -1746,44 +1863,46 @@ class EditProjectInfoModel extends React.Component {
       }
     }
     //其他信息校验
-    console.log('开始校验其他信息tab');
-    console.log('-------需求信息-------', requirementInfoRecord);
-    console.log('-------获奖信息-------', prizeInfoRecord);
-    console.log('-------课题信息-------', topicInfoRecord);
-    let requirementInfoFlag = 0;
-    let prizeInfoFlag = 0;
-    let topicInfoFlag = 0;
-    if (requirementInfoRecord.length > 0) {
-      requirementInfoRecord.map(item => {
-        if (item.XQBT === '' || item.XQRQ === '' || item.XQNR === '') {
-          requirementInfoFlag++;
+    if(!subItemFlag){
+      console.log('开始校验其他信息tab');
+      console.log('-------需求信息-------', requirementInfoRecord);
+      console.log('-------获奖信息-------', prizeInfoRecord);
+      console.log('-------课题信息-------', topicInfoRecord);
+      let requirementInfoFlag = 0;
+      let prizeInfoFlag = 0;
+      let topicInfoFlag = 0;
+      if (requirementInfoRecord.length > 0) {
+        requirementInfoRecord.map(item => {
+          if (item.XQBT === '' || item.XQRQ === '' || item.XQNR === '') {
+            requirementInfoFlag++;
+          }
+        });
+        if (requirementInfoFlag > 0) {
+          message.warn('其他信息-需求信息未填写完整!');
+          return;
         }
-      });
-      if (requirementInfoFlag > 0) {
-        message.warn('其他信息-需求信息未填写完整!');
-        return;
       }
-    }
-    if (prizeInfoRecord.length > 0) {
-      prizeInfoRecord.map(item => {
-        if (item.JXMC === '' || item.HJSJ === '' || item.RYDJ === '' || item.ZSCQLX === '') {
-          prizeInfoFlag++;
+      if (prizeInfoRecord.length > 0) {
+        prizeInfoRecord.map(item => {
+          if (item.JXMC === '' || item.HJSJ === '' || item.RYDJ === '' || item.ZSCQLX === '') {
+            prizeInfoFlag++;
+          }
+        });
+        if (prizeInfoFlag > 0) {
+          message.warn('其他信息-获奖信息未填写完整!');
+          return;
         }
-      });
-      if (prizeInfoFlag > 0) {
-        message.warn('其他信息-获奖信息未填写完整!');
-        return;
       }
-    }
-    if (topicInfoRecord.length > 0) {
-      topicInfoRecord.map(item => {
-        if (item.XMKT === '' || item.JJ === '' || item.JD === '' || item.DQJZ === '') {
-          topicInfoFlag++;
+      if (topicInfoRecord.length > 0) {
+        topicInfoRecord.map(item => {
+          if (item.XMKT === '' || item.JJ === '' || item.JD === '' || item.DQJZ === '') {
+            topicInfoFlag++;
+          }
+        });
+        if (topicInfoFlag > 0) {
+          message.warn('其他信息-课题信息未填写完整!');
+          return;
         }
-      });
-      if (topicInfoFlag > 0) {
-        message.warn('其他信息-课题信息未填写完整!');
-        return;
       }
     }
     let staffJobParam = [];
@@ -1895,12 +2014,10 @@ class EditProjectInfoModel extends React.Component {
         });
       });
     });
-    let operateType = '';
     if (type === 0) {
       this.setState({
         operateType: 'SAVE',
       });
-      operateType = 'SAVE';
     }
     //修改项目的时候隐藏暂存草稿,点完成type传MOD
     // ////console.log("handleType", type)
@@ -1910,33 +2027,28 @@ class EditProjectInfoModel extends React.Component {
       this.setState({
         operateType: 'MOD',
       });
-      operateType = 'MOD';
     }
     //修改草稿点完成type入参就传ADD
     if (type === 1 && this.state.projectStatus === 'SAVE') {
       this.setState({
         operateType: 'ADD',
       });
-      operateType = 'ADD';
     }
     //暂存草稿就还是SAVE
     if (type === 0 && this.state.projectStatus === 'SAVE') {
       this.setState({
         operateType: 'SAVE',
       });
-      operateType = 'SAVE';
     }
     if ((type === 0 && this.state.projectStatus === '') || this.state.projectStatus === null) {
       this.setState({
         operateType: 'SAVE',
       });
-      operateType = 'SAVE';
     }
     if ((type === 1 && this.state.projectStatus === '') || this.state.projectStatus === null) {
       this.setState({
         operateType: 'ADD',
       });
-      operateType = 'ADD';
     }
     params.mileposts = milepostInfo;
     params.matters = matterInfo;
@@ -1952,17 +2064,17 @@ class EditProjectInfoModel extends React.Component {
         ? -1
         : Number(this.state.basicInfo.projectId);
     // ////console.log("operateType", operateType)
-    params.type = 'MOD';
+    params.type = this.state.subItemFlag?'ADD':'MOD';
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
-    params.isShortListed = this.state.basicInfo.projectType == '5' ? this.state.basicInfo.SFYJRW : '-1';
+    params.isShortListed = this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? this.state.basicInfo.SFYJRW : '1';
     // 软件预算
-    params.softBudget = this.state.budgetInfo.softBudget;
+    params.softBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.softBudget : 0;
     // 框架预算
-    params.frameBudget = this.state.budgetInfo.frameBudget;
+    params.frameBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.frameBudget : 0;
     // 单独采购金额
-    params.singleBudget = this.state.budgetInfo.singleBudget;
+    params.singleBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.singleBudget : 0;
     // 是否包含硬件
     params.haveHard = this.state.basicInfo.haveHard;
     this.operateCreatProject(params, type);
@@ -2142,7 +2254,7 @@ class EditProjectInfoModel extends React.Component {
 
   async operateCreatProject(params, type) {
     //更新其他信息
-    const { requirementInfoRecord = [], prizeInfoRecord = [], topicInfoRecord = [] } = this.state;
+    const {subItem, requirementInfoRecord = [], prizeInfoRecord = [], topicInfoRecord = []} = this.state;
     if (
       requirementInfoRecord.length > 0 ||
       prizeInfoRecord.length > 0 ||
@@ -2166,7 +2278,15 @@ class EditProjectInfoModel extends React.Component {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
           //保存子项目信息
-          this.operateInsertSubProjects(params, projectId);
+          if (subItem == "1") {
+            this.operateInsertSubProjects(params, projectId);
+          }else{
+            if (this.state.type) {
+              window.parent && window.parent.postMessage({operate: 'success'}, '*');
+            } else {
+              this.props.submitOperate();
+            }
+          }
         } else {
           message.error(note);
         }
@@ -3202,8 +3322,8 @@ class EditProjectInfoModel extends React.Component {
   //子项目信息保存接口
   // 查询其他项目信息
   operateInsertSubProjects = (param, projectId) => {
-    console.log("-----------开始保存子项目信息-----------")
     const {subItemRecord, budgetInfo = {}} = this.state;
+    console.log("-----------开始保存子项目信息-----------")
     const params = {
       parentId: projectId,
       parentBudget: budgetInfo.budgetProjectId === '' ? -99 : Number(budgetInfo.budgetProjectId),
@@ -3245,7 +3365,6 @@ class EditProjectInfoModel extends React.Component {
       projectTypeList = [],
       projectTypeZY = [],
       projectTypeZYFlag = false,
-      projectTypePTRJFlag = false,
       projectTypeRYJFlag = false,
       budgetProjectList = [],
       budgetInfoCollapse,
@@ -3312,6 +3431,8 @@ class EditProjectInfoModel extends React.Component {
       subItem = 2,
       //子项目信息
       subItemRecord = [],
+      //是否是从完善页面进来的子项目
+      subItemFlag = false,
     } = this.state;
     // console.log('purchaseInfopurchaseInfo', purchaseInfo);
     const { getFieldDecorator } = this.props.form;
@@ -3611,18 +3732,31 @@ class EditProjectInfoModel extends React.Component {
                 <Tabs className='tabs' style={{height: '100%'}} defaultActiveKey="0" onChange={this.tabsCallback}>
                   {htxxVisiable || zbxxVisiable
                     ? tabs.map(item => {
-                      return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      if(item.key === 4 && subItemFlag){
+                        return null;
+                      }else if(item.key === 4 && !subItemFlag){
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }else{
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }
                     })
                     : tabsdel.map(item => {
-                      return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      if(item.key === 4 && subItemFlag){
+                        return null;
+                      }else if(item.key === 4 && !subItemFlag){
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }else{
+                        return <TabPane tab={item.title} key={item.key}></TabPane>;
+                      }
                     })}
                 </Tabs>
               </div>
               {// 基本信息
-              current == 0 && (
+                (
                 <div
                   className="steps-content"
                   style={{
+                    display: current == 0 ? '' : 'none',
                     overflowY: 'auto',
                     overflowX: 'hidden',
                   }}
@@ -3642,6 +3776,7 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: basicInfo.projectName,
                             })(
                               <Input
+                                disabled={subItemFlag}
                                 placeholder="请输入项目名称"
                                 onChange={e => {
                                   this.setState({
@@ -3681,7 +3816,7 @@ class EditProjectInfoModel extends React.Component {
                               <TreeSelect
                                 // multiple
                                 showSearch
-
+                                disabled={subItemFlag}
                                 treeNodeFilterProp="title"
                                 style={{ width: '100%' }}
                                 dropdownClassName="newproject-treeselect"
@@ -3694,21 +3829,18 @@ class EditProjectInfoModel extends React.Component {
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
                                   console.log('eeeeee', e);
-                                  const flag =
-                                    projectTypeZY.filter(item => item.ID == e).length > 0;
-                                  const PTRJFlag = e == '5';
+                                  const flag = projectTypeZY.filter(item => item.ID == e).length > 0;
                                   const RYJFlag = e == '1';
                                   this.setState({
-                                    basicInfo: { ...basicInfo, projectType: e, SFYJRW: 2 },
+                                    basicInfo: {...basicInfo, projectType: e, SFYJRW: 1},
                                     projectTypeZYFlag: flag,
-                                    projectTypePTRJFlag: PTRJFlag,
                                     projectTypeRYJFlag: RYJFlag,
                                   });
                                   this.fetchQueryMilepostInfo({
                                     type: e,
-                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                    isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                     //项目预算类型
-                                    haveType: 1,
+                                    haveType: this.state.haveType,
                                     //项目软件预算
                                     softBudget: RYJFlag ? this.state.budgetInfo.softBudget : 0,
                                     //框架预算
@@ -3717,7 +3849,7 @@ class EditProjectInfoModel extends React.Component {
                                     singleBudget: RYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: budgetInfo.projectBudget,
+                                    budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                     label: basicInfo.labelTxt,
                                     queryType: 'ALL',
                                   });
@@ -3776,9 +3908,9 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                       //项目预算类型
-                                      haveType: 1,
+                                      haveType: this.state.haveType,
                                       //项目软件预算
                                       softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                       //框架预算
@@ -3787,21 +3919,15 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: budgetInfo.projectBudget,
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: labelTxt,
                                       queryType: 'ALL',
                                     });
                                   }}
                                 />
-                                <i
-                                  className={isDownLabel ? 'iconfont icon-down' : 'iconfont icon-up'}
-                                  style={{
-                                    position: "absolute",
-                                    top: "16px",
-                                    right: "10px",
-                                    color: "rgba(0,0,0,0.25)",
-                                    fontSize: "12px",
-                                  }}
+                                <Icon
+                                  type="up"
+                                  className={'label-selector-arrow' + (isDownLabel ? ' selector-rotate' : '')}
                                 />
                               </div>,
                             )}
@@ -3878,6 +4004,7 @@ class EditProjectInfoModel extends React.Component {
                               })(
                                 <TreeSelect
                                   showSearch
+                                  disabled={subItemFlag}
                                   dropdownClassName="newproject-treeselect"
                                   treeNodeFilterProp="title"
                                   style={{ width: '100%' }}
@@ -3895,9 +4022,9 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                       //项目预算类型
-                                      haveType: 1,
+                                      haveType: this.state.haveType,
                                       //项目软件预算
                                       softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                       //框架预算
@@ -3906,7 +4033,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: e,
-                                      budget: budgetInfo.projectBudget,
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -3956,6 +4083,7 @@ class EditProjectInfoModel extends React.Component {
                                 <TreeSelect
                                   multiple
                                   showSearch
+                                  disabled={subItemFlag}
                                   value={basicInfo.org}
                                   treeNodeFilterProp="title"
                                   style={{width: '100%'}}
@@ -3978,77 +4106,15 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                   }}
                                 />
-                                <i
-                                  className={isDownOrg ? 'iconfont icon-down' : 'iconfont icon-up'}
-                                  style={{
-                                    position: "absolute",
-                                    top: "16px",
-                                    right: "10px",
-                                    color: "rgba(0,0,0,0.25)",
-                                    fontSize: "12px",
-                                  }}
+                                <Icon
+                                  type="up"
+                                  className={'label-selector-arrow' + (isDownOrg ? ' selector-rotate' : '')}
                                 />
                               </div>,
                             )}
                           </Form.Item>
                         </Col>
                       </Row>
-                      {projectTypePTRJFlag ? (
-                        <Row gutter={24}>
-                          <Col span={12}>
-                            <Form.Item
-                              label={
-                                <span>
-                                  <span
-                                    style={{
-                                      fontFamily: 'SimSun, sans-serif',
-                                      color: '#f5222d',
-                                      marginRight: '4px',
-                                      lineHeight: 1,
-                                    }}
-                                  >
-                                    *
-                                  </span>
-                                  是否在硬件入围内
-                                </span>
-                              }
-                            >
-                              {getFieldDecorator('SFYJRW', {
-                                initialValue: Number(basicInfo.SFYJRW),
-                              })(
-                                <Radio.Group
-                                  onChange={e => {
-                                    console.log('eeeee', e);
-                                    this.setState({
-                                      basicInfo: { ...basicInfo, SFYJRW: String(e.target.value) },
-                                    });
-                                    this.fetchQueryMilepostInfo({
-                                      type: basicInfo.projectType,
-                                      isShortListed: String(e.target.value),
-                                      //项目预算类型
-                                      haveType: 1,
-                                      //项目软件预算
-                                      softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
-                                      //框架预算
-                                      frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
-                                      //单独采购预算
-                                      singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
-                                      xmid: basicInfo.projectId,
-                                      biddingMethod: basicInfo.biddingMethod,
-                                      budget: budgetInfo.projectBudget,
-                                      label: basicInfo.labelTxt,
-                                      queryType: 'ALL',
-                                    });
-                                  }}
-                                >
-                                  <Radio value={1}>是</Radio>
-                                  <Radio value={2}>否</Radio>
-                                </Radio.Group>,
-                              )}
-                            </Form.Item>
-                          </Col>
-                        </Row>
-                      ) : null}
 
                       <Row gutter={24}>
                         <Col span={3} style={{ paddingRight: '4px' }}>
@@ -4074,6 +4140,7 @@ class EditProjectInfoModel extends React.Component {
                             {/*  initialValue: budgetInfo.year*/}
                             {/*})(*/}
                             <DatePicker
+                              disabled={subItemFlag}
                               value={budgetInfo.year}
                               allowClear={false}
                               ref={picker => (this.picker = picker)}
@@ -4145,6 +4212,7 @@ class EditProjectInfoModel extends React.Component {
                             })(
                               <TreeSelect
                                 showSearch
+                                disabled={subItemFlag}
                                 treeNodeFilterProp="title"
                                 style={{ width: '100%' }}
                                 dropdownClassName="newproject-treeselect"
@@ -4246,13 +4314,16 @@ class EditProjectInfoModel extends React.Component {
                           <Form.Item label="剩余预算(元)" className="formItem">
                             <InputNumber
                               disabled={true}
-                              style={{ width: '100%' }}
+                              style={{width: '100%'}}
                               value={budgetInfo.relativeBudget}
                               precision={0}
                             />
                           </Form.Item>
                         </Col>
-                        <Col span={12} style={{ paddingLeft: '24px' }}>
+                        <Col span={12} style={{
+                          paddingLeft: '24px',
+                          display: this.state.basicInfo.haveHard === "1" ? 'none' : ''
+                        }}>
                           <Form.Item
                             label={
                               <span>
@@ -4266,7 +4337,7 @@ class EditProjectInfoModel extends React.Component {
                                 >
                                   *
                                 </span>
-                                本项目预算(元)
+                                本项目金额(元)
                               </span>
                             }
                             className="formItem"
@@ -4281,13 +4352,14 @@ class EditProjectInfoModel extends React.Component {
                               initialValue: budgetInfo.projectBudget,
                             })(
                               <InputNumber
+                                disabled={subItemFlag}
                                 onBlur={e => {
                                   if (projectBudgetChangeFlag) {
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
+                                      isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
                                       //项目预算类型
-                                      haveType: 1,
+                                      haveType: this.state.haveType,
                                       //项目软件预算
                                       softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
                                       //框架预算
@@ -4296,7 +4368,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: budgetInfo.projectBudget,
+                                      budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ONLYLX',
                                     });
@@ -4320,65 +4392,90 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24}>
-                        <Col span={12}>
+                        <Col span={12} style={{display: projectTypeRYJFlag ? '' : 'none'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
                             marginRight: '4px',
                             lineHeight: 1
                           }}>*</span>是否包含硬件</span>}>
-                            {getFieldDecorator('haveHard', {
-                              initialValue: Number(basicInfo.haveHard)
-                            })(
-                              <Radio.Group onChange={e => {
-                                console.log("eeeee", e);
-                                this.setState({basicInfo: {...basicInfo, haveHard: String(e.target.value)}});
-                              }}>
-                                <Radio value={1}>是</Radio>
-                                <Radio value={2}>否</Radio>
-                              </Radio.Group>
-                            )}
+                            {
+                              //   getFieldDecorator('haveHard', {
+                              //   initialValue: Number(basicInfo.haveHard)
+                              // })
+                              (
+                                <Radio.Group disabled={subItemFlag} value={Number(this.state.basicInfo.haveHard)}
+                                             onChange={e => {
+                                               console.log("eeeee", e);
+                                               //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                               //包含硬件选择<否> 不展示 <是否在硬件入围内> <本项目软件金额> <框架采购金额> <单独采购金额> 把数据重置。
+                                               this.setState({
+                                                 basicInfo: {
+                                                   ...basicInfo,
+                                                   haveHard: String(e.target.value),
+                                                   SFYJRW: '1'
+                                                 },
+                                                 budgetInfo: {...budgetInfo, projectBudget: 0}
+                                               });
+                                             }}>
+                                  <Radio value={1}>是</Radio>
+                                  <Radio value={2}>否</Radio>
+                                </Radio.Group>
+                              )}
                           </Form.Item>
                         </Col>
-                        <Col span={12} style={{display: projectTypePTRJFlag ? '' : 'none'}}>
+                        <Col span={12}
+                             style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
                             marginRight: '4px',
                             lineHeight: 1
                           }}>*</span>是否在硬件入围内</span>}>
-                            {getFieldDecorator('SFYJRW', {
-                              initialValue: Number(basicInfo.SFYJRW)
-                            })(
-                              <Radio.Group onChange={e => {
-                                console.log("eeeee", e);
-                                this.setState({basicInfo: {...basicInfo, SFYJRW: String(e.target.value)}});
-                                this.fetchQueryMilepostInfo({
-                                  type: basicInfo.projectType,
-                                  isShortListed: String(e.target.value),
-                                  //项目预算类型
-                                  haveType: 1,
-                                  //项目软件预算
-                                  softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
-                                  //框架预算
-                                  frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
-                                  //单独采购预算
-                                  singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
-                                  xmid: basicInfo.projectId,
-                                  biddingMethod: basicInfo.biddingMethod,
-                                  budget: budgetInfo.projectBudget,
-                                  label: basicInfo.labelTxt,
-                                  queryType: "ALL"
-                                });
-                              }}>
-                                <Radio value={1}>是</Radio>
-                                <Radio value={2}>否</Radio>
-                              </Radio.Group>
-                            )}
+                            {
+                              //   getFieldDecorator('SFYJRW', {
+                              //   initialValue: Number(basicInfo.SFYJRW)
+                              // })
+                              (
+                                <Radio.Group disabled={subItemFlag} value={Number(this.state.basicInfo.SFYJRW)}
+                                             onChange={e => {
+                                               console.log("eeeee", e);
+                                               let total = 0;
+                                               total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
+                                               this.setState({
+                                                 basicInfo: {...basicInfo, SFYJRW: String(e.target.value)},
+                                                 budgetInfo: {
+                                                   ...budgetInfo,
+                                                   projectBudget: total,
+                                                 }
+                                               });
+                                               this.fetchQueryMilepostInfo({
+                                                 type: basicInfo.projectType,
+                                                 isShortListed: String(e.target.value),
+                                                 //项目预算类型
+                                                 haveType: this.state.haveType,
+                                                 //项目软件预算
+                                                 softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                 //框架预算
+                                                 frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                 //单独采购预算
+                                                 singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                 xmid: basicInfo.projectId,
+                                                 biddingMethod: basicInfo.biddingMethod,
+                                                 budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                 label: basicInfo.labelTxt,
+                                                 queryType: "ALL"
+                                               });
+                                             }}>
+                                  <Radio value={1}>是</Radio>
+                                  <Radio value={2}>否</Radio>
+                                </Radio.Group>
+                              )}
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: this.state.basicInfo.projectType == '1' ? '' : 'none'}}>
+                      <Row gutter={24}
+                           style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
                         <Col span={12}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
@@ -4386,44 +4483,69 @@ class EditProjectInfoModel extends React.Component {
                             marginRight: '4px',
                             lineHeight: 1
                           }}>*</span>本项目软件金额(元)</span>}>
-                            {getFieldDecorator('softBudget', {
-                              // rules: [{
-                              //   required: true,
-                              //   message: '请输入本项目预算(元)'
-                              // }, {
-                              //   validator: this.handleValidatorProjectBudget
-                              // }],
-                              initialValue: budgetInfo.softBudget
-                            })(
-                              <InputNumber onBlur={(e) => {
-                                if (this.state.softBudgetChangeFlag) {
-                                  this.fetchQueryMilepostInfo({
-                                    type: basicInfo.projectType,
-                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
-                                    //项目预算类型
-                                    haveType: 1,
-                                    //项目软件预算
-                                    softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
-                                    //框架预算
-                                    frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
-                                    //单独采购预算
-                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
-                                    xmid: this.state.basicInfo.projectId,
-                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                    budget: this.state.budgetInfo.projectBudget,
-                                    label: this.state.basicInfo.labelTxt,
-                                    queryType: "ONLYLX"
+                            {
+                              //   getFieldDecorator('softBudget', {
+                              //   // rules: [{
+                              //   //   required: true,
+                              //   //   message: '请输入本项目预算(元)'
+                              //   // }, {
+                              //   //   validator: this.handleValidatorProjectBudget
+                              //   // }],
+                              //   initialValue: budgetInfo.softBudget
+                              // })
+                              (
+                                <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.softBudget)}
+                                             onBlur={(e) => {
+                                               if (this.state.softBudgetChangeFlag) {
+                                                 //只有数据变动了 就说明包含硬件选择了<是>
+                                                 //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                                 let total = 0;
+                                                 total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
+                                                 //判断项目预算类型
+                                                 let haveType = 1;
+                                                 if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.frameBudget) !== 0 || Number(this.state.budgetInfo.singleBudget) !== 0) {
+                                                   haveType = 2;
+                                                 }
+                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0) {
+                                                   haveType = 1;
+                                                 }
+                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) !== 0 && Number(this.state.budgetInfo.singleBudget) !== 0) {
+                                                   haveType = 3;
+                                                 }
+                                                 this.setState({
+                                                   haveType,
+                                                   budgetInfo: {
+                                                     ...budgetInfo,
+                                                     projectBudget: total,
+                                                   }
+                                                 })
+                                                 this.fetchQueryMilepostInfo({
+                                                   type: basicInfo.projectType,
+                                                   isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                                   //项目预算类型
+                                                   haveType: this.state.haveType,
+                                                   //项目软件预算
+                                                   softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                   //框架预算
+                                                   frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                   //单独采购预算
+                                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                   xmid: this.state.basicInfo.projectId,
+                                                   biddingMethod: this.state.basicInfo.biddingMethod,
+                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                   label: this.state.basicInfo.labelTxt,
+                                                   queryType: "ONLYLX"
+                                                 });
+                                               }
+                                             }} style={{width: '100%'}} onChange={e => {
+                                  let softBudgetChangeFlag = false
+                                  if (e !== this.state.budgetInfo.softBudget) {
+                                    softBudgetChangeFlag = true;
+                                  }
+                                  this.setState({
+                                    softBudgetChangeFlag,
+                                    budgetInfo: {...budgetInfo, softBudget: e}
                                   });
-                                }
-                              }} style={{width: '100%'}} onChange={e => {
-                                let softBudgetChangeFlag = false
-                                if (e !== this.state.budgetInfo.softBudget) {
-                                  softBudgetChangeFlag = true;
-                                }
-                                this.setState({
-                                  softBudgetChangeFlag,
-                                  budgetInfo: {...budgetInfo, softBudget: e}
-                                });
                               }} precision={0}/>
                             )}
                           </Form.Item>
@@ -4435,50 +4557,76 @@ class EditProjectInfoModel extends React.Component {
                             marginRight: '4px',
                             lineHeight: 1
                           }}>*</span>框架采购金额(元)</span>}>
-                            {getFieldDecorator('frameBudget', {
-                              // rules: [{
-                              //   required: true,
-                              //   message: '请输入本项目预算(元)'
-                              // }, {
-                              //   validator: this.handleValidatorProjectBudget
-                              // }],
-                              initialValue: budgetInfo.frameBudget
-                            })(
-                              <InputNumber onBlur={(e) => {
-                                if (frameBudgetChangeFlag) {
-                                  this.fetchQueryMilepostInfo({
-                                    type: this.state.basicInfo.projectType,
-                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
-                                    //项目预算类型
-                                    haveType: 1,
-                                    //项目软件预算
-                                    softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
-                                    //框架预算
-                                    frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
-                                    //单独采购预算
-                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
-                                    xmid: this.state.basicInfo.projectId,
-                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                    budget: this.state.budgetInfo.projectBudget,
-                                    label: this.state.basicInfo.labelTxt,
-                                    queryType: "ONLYLX"
+                            {
+                              //   getFieldDecorator('frameBudget', {
+                              //   // rules: [{
+                              //   //   required: true,
+                              //   //   message: '请输入本项目预算(元)'
+                              //   // }, {
+                              //   //   validator: this.handleValidatorProjectBudget
+                              //   // }],
+                              //   initialValue: budgetInfo.frameBudget
+                              // })
+                              (
+                                <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.frameBudget)}
+                                             onBlur={(e) => {
+                                               if (frameBudgetChangeFlag) {
+                                                 //只有数据变动了 就说明包含硬件选择了<是>
+                                                 //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                                 let total = 0;
+                                                 total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
+                                                 //判断项目预算类型
+                                                 let haveType = 1;
+                                                 if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.frameBudget) !== 0 || Number(this.state.budgetInfo.singleBudget) !== 0) {
+                                                   haveType = 2;
+                                                 }
+                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0) {
+                                                   haveType = 1;
+                                                 }
+                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) !== 0 && Number(this.state.budgetInfo.singleBudget) !== 0) {
+                                                   haveType = 3;
+                                                 }
+                                                 this.setState({
+                                                   haveType,
+                                                   budgetInfo: {
+                                                     ...budgetInfo,
+                                                     projectBudget: total,
+                                                   }
+                                                 })
+                                                 this.fetchQueryMilepostInfo({
+                                                   type: this.state.basicInfo.projectType,
+                                                   isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                                   //项目预算类型
+                                                   haveType: this.state.haveType,
+                                                   //项目软件预算
+                                                   softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                   //框架预算
+                                                   frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                   //单独采购预算
+                                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                   xmid: this.state.basicInfo.projectId,
+                                                   biddingMethod: this.state.basicInfo.biddingMethod,
+                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                   label: this.state.basicInfo.labelTxt,
+                                                   queryType: "ONLYLX"
+                                                 });
+                                               }
+                                             }} style={{width: '100%'}} onChange={e => {
+                                  let frameBudgetChangeFlag = false
+                                  if (e !== this.state.budgetInfo.frameBudget) {
+                                    frameBudgetChangeFlag = true;
+                                  }
+                                  this.setState({
+                                    frameBudgetChangeFlag,
+                                    budgetInfo: {...budgetInfo, frameBudget: e}
                                   });
-                                }
-                              }} style={{width: '100%'}} onChange={e => {
-                                let frameBudgetChangeFlag = false
-                                if (e !== this.state.budgetInfo.frameBudget) {
-                                  frameBudgetChangeFlag = true;
-                                }
-                                this.setState({
-                                  frameBudgetChangeFlag,
-                                  budgetInfo: {...budgetInfo, frameBudget: e}
-                                });
-                              }} precision={0}/>
-                            )}
+                                }} precision={0}/>
+                              )}
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: this.state.basicInfo.projectType == '1' ? '' : 'none'}}>
+                      <Row gutter={24}
+                           style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
                         <Col span={12}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
@@ -4486,51 +4634,76 @@ class EditProjectInfoModel extends React.Component {
                             marginRight: '4px',
                             lineHeight: 1
                           }}>*</span>单独采购金额(元)</span>}>
-                            {getFieldDecorator('singleBudget', {
-                              // rules: [{
-                              //   required: true,
-                              //   message: '请输入本项目预算(元)'
-                              // }, {
-                              //   validator: this.handleValidatorProjectBudget
-                              // }],
-                              initialValue: budgetInfo.singleBudget
-                            })(
-                              <InputNumber onBlur={(e) => {
-                                if (singleBudgetChangeFlag) {
-                                  this.fetchQueryMilepostInfo({
-                                    type: this.state.basicInfo.projectType,
-                                    isShortListed: basicInfo.projectType == '5' ? basicInfo.SFYJRW : '-1',
-                                    //项目预算类型
-                                    haveType: 1,
-                                    //项目软件预算
-                                    softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
-                                    //框架预算
-                                    frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
-                                    //单独采购预算
-                                    singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
-                                    xmid: this.state.basicInfo.projectId,
-                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                    budget: this.state.budgetInfo.projectBudget,
-                                    label: this.state.basicInfo.labelTxt,
-                                    queryType: "ONLYLX"
+                            {
+                              //   getFieldDecorator('singleBudget', {
+                              //   // rules: [{
+                              //   //   required: true,
+                              //   //   message: '请输入本项目预算(元)'
+                              //   // }, {
+                              //   //   validator: this.handleValidatorProjectBudget
+                              //   // }],
+                              //   initialValue: budgetInfo.singleBudget
+                              // })
+                              (
+                                <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.singleBudget)}
+                                             onBlur={(e) => {
+                                               if (singleBudgetChangeFlag) {
+                                                 //只有数据变动了 就说明包含硬件选择了<是>
+                                                 //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                                 let total = 0;
+                                                 total = this.state.budgetInfo.softBudget + this.state.budgetInfo.frameBudget + this.state.budgetInfo.singleBudget
+                                                 //判断项目预算类型
+                                                 let haveType = 1;
+                                                 if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.frameBudget) !== 0 || Number(this.state.budgetInfo.singleBudget) !== 0) {
+                                                   haveType = 2;
+                                                 }
+                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0) {
+                                                   haveType = 1;
+                                                 }
+                                                 if (Number(this.state.budgetInfo.softBudget) !== 0 && Number(this.state.budgetInfo.frameBudget) !== 0 && Number(this.state.budgetInfo.singleBudget) !== 0) {
+                                                   haveType = 3;
+                                                 }
+                                                 this.setState({
+                                                   haveType,
+                                                   budgetInfo: {
+                                                     ...budgetInfo,
+                                                     projectBudget: total,
+                                                   }
+                                                 })
+                                                 this.fetchQueryMilepostInfo({
+                                                   type: this.state.basicInfo.projectType,
+                                                   isShortListed: this.state.projectTypeRYJFlag && this.state.basicInfo.haveHard ? basicInfo.SFYJRW : '1',
+                                                   //项目预算类型
+                                                   haveType: this.state.haveType,
+                                                   //项目软件预算
+                                                   softBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.softBudget : 0,
+                                                   //框架预算
+                                                   frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
+                                                   //单独采购预算
+                                                   singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+                                                   xmid: this.state.basicInfo.projectId,
+                                                   biddingMethod: this.state.basicInfo.biddingMethod,
+                                                   budget: Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget),
+                                                   label: this.state.basicInfo.labelTxt,
+                                                   queryType: "ONLYLX"
+                                                 });
+                                               }
+                                             }} style={{width: '100%'}} onChange={e => {
+                                  let singleBudgetChangeFlag = false
+                                  if (e !== this.state.budgetInfo.singleBudget) {
+                                    singleBudgetChangeFlag = true;
+                                  }
+                                  this.setState({
+                                    singleBudgetChangeFlag,
+                                    budgetInfo: {...budgetInfo, singleBudget: e}
                                   });
-                                }
-                              }} style={{width: '100%'}} onChange={e => {
-                                let singleBudgetChangeFlag = false
-                                if (e !== this.state.budgetInfo.singleBudget) {
-                                  singleBudgetChangeFlag = true;
-                                }
-                                this.setState({
-                                  singleBudgetChangeFlag,
-                                  budgetInfo: {...budgetInfo, singleBudget: e}
-                                });
                               }} precision={0}/>
                             )}
                           </Form.Item>
                         </Col>
                       </Row>
                       <Row gutter={24}>
-                        <Col span={12}>
+                        <Col span={12} style={{display: subItemFlag ? 'none' : ''}}>
                           <Form.Item label={<span><span style={{
                             fontFamily: 'SimSun, sans-serif',
                             color: '#f5222d',
@@ -4569,30 +4742,33 @@ class EditProjectInfoModel extends React.Component {
                     {/*</Form>*/}
                   </React.Fragment>
                 </div>
-              )}
+                )}
               {// 里程碑信息
-              current == 2 && (
-                <div style={{display: 'flex', height: 'calc(93% - 53px)'}}>
-                  <Steps
-                    progressDot
-                    style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px'}}
-                    direction="vertical"
-                    current={minicurrent}
-                    onChange={this.onChange}
-                  >
-                    {ministeps.map((item, index) => (
-                      <Step
-                        status={minicurrent === index ? 'finish' : 'wait'}
-                        style={{ height: 71 / (ministeps.length * 1.8) + 'vh' }}
-                        key={index}
-                        title={item.title}
-                      />
-                    ))}
-                  </Steps>
-                  <Divider type="vertical" style={{ height: 'auto' }} />
-                  <div
-                    className="steps-content-2"
-                    id="lcbxxClass"
+                (
+                  <div style={{
+                    display: current == 2 ? 'flex' : 'none',
+                    height: 'calc(93% - 53px)'
+                  }}>
+                    <Steps
+                      progressDot
+                      style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px'}}
+                      direction="vertical"
+                      current={minicurrent}
+                      onChange={this.onChange}
+                    >
+                      {ministeps.map((item, index) => (
+                        <Step
+                          status={minicurrent === index ? 'finish' : 'wait'}
+                          style={{height: 71 / (ministeps.length * 1.8) + 'vh'}}
+                          key={index}
+                          title={item.title}
+                        />
+                      ))}
+                    </Steps>
+                    <Divider type="vertical" style={{height: 'auto'}}/>
+                    <div
+                      className="steps-content-2"
+                      id="lcbxxClass"
                     style={{
                       overflowY: 'scroll',
                       overflowX: 'hidden',
@@ -5151,13 +5327,14 @@ class EditProjectInfoModel extends React.Component {
                                           >
                                             {' '}
                                           </div>
-                                          {item.lcbmc}
+                                          {item.lcbmc}{subItemFlag && item.lcbmc?.includes('项目立项') ? <div
+                                          style={{fontSize: '12px', fontWeight: 500,}}>&nbsp;(父项目已完成所有立项内容,无须额外操作)</div> : ''}
                                         </span>
                                       </div>
                                     </div>
                                     {
                                       <div className="right" style={{ marginTop: '12px' }}>
-                                        {index > 0 ? (
+                                        {index > 0 && !subItemFlag && item.lcbmc?.includes('项目立项') ? (
                                           <Tooltip title="上移">
                                             <a
                                               style={{
@@ -5170,7 +5347,7 @@ class EditProjectInfoModel extends React.Component {
                                             />
                                           </Tooltip>
                                         ) : null}
-                                        {index !== milePostInfo.length - 1 ? (
+                                        {index !== milePostInfo.length - 1 && !subItemFlag && item.lcbmc?.includes('项目立项') ? (
                                           <Tooltip title="下移">
                                             <a
                                               style={{
@@ -5204,11 +5381,14 @@ class EditProjectInfoModel extends React.Component {
                                                 onClick={() => this.removeMilePostInfo(index)}
                                               />
                                             </Tooltip>
-                                          )}
+                                        )}
                                       </div>
                                     }
                                   </div>
-                                  <div style={{ display: 'flex', padding: '6px 0 0 0' }}>
+                                  <div style={{
+                                    display: subItemFlag && item.lcbmc.includes('项目立项') ? 'none' : 'flex',
+                                    padding: '6px 0 0 0'
+                                  }}>
                                     <div
                                       style={{
                                         display: 'grid',
@@ -5307,12 +5487,11 @@ class EditProjectInfoModel extends React.Component {
                                           className="flow"
                                           key={i}
                                           style={{
-                                            display:
-                                              e.swlxmc === 'new' && e.sxlb?.length === 0
-                                                ? ''
-                                                : e.swlxmc !== 'new' && e.sxlb?.length === 0
+                                            display: subItemFlag && item.lcbmc.includes('项目立项') ? 'none' : (e.swlxmc === 'new' && e.sxlb?.length === 0
+                                              ? ''
+                                              : e.swlxmc !== 'new' && e.sxlb?.length === 0
                                                 ? 'none'
-                                                : '',
+                                                : ''),
                                           }}
                                         >
                                           <div
@@ -5621,7 +5800,11 @@ class EditProjectInfoModel extends React.Component {
                                   {item.addSxFlag && (
                                     <div
                                       className="addMilePost"
-                                      style={{ width: 'calc(46% + 3.5rem)', marginTop: '12px' }}
+                                      style={{
+                                        display: subItemFlag && item.lcbmc.includes('项目立项') ? 'none' : '',
+                                        width: 'calc(46% + 3.5rem)',
+                                        marginTop: '12px'
+                                      }}
                                       onClick={() => this.addSwlx(item?.lcblxid, index)}
                                     >
                                       <Icon type="plus" style={{ fontSize: '12px' }} />
@@ -5637,37 +5820,37 @@ class EditProjectInfoModel extends React.Component {
                         })}
                       {
                         <div className="addMilePost" onClick={this.addMilePostInfo}>
-                          <Icon type="plus" style={{ fontSize: '12px' }} />
-                          <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增里程碑</span>
+                          <Icon type="plus" style={{fontSize: '12px'}}/>
+                          <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增里程碑</span>
                         </div>
                       }
                     </React.Fragment>
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
               {// 人员信息
-              current == 1 && (
-                <div className="steps-content">
-                  <React.Fragment>
-                    <div className="staffInfo">
-                      <div className="tree" style={{ margin: '0 16px 0 0' }}>
-                        {organizationStaffTreeList.length > 0 && (
-                          <Tree
-                            defaultExpandedKeys={[11167]}
-                            checkable
-                            checkedKeys={checkedStaffKey}
-                            onCheck={this.onCheckTreeStaff}
+                (
+                  <div style={{display: current == 1 ? '' : 'none',}} className="steps-content">
+                    <React.Fragment>
+                      <div className="staffInfo">
+                        <div className="tree" style={{margin: '0 16px 0 0'}}>
+                          {organizationStaffTreeList.length > 0 && (
+                            <Tree
+                              defaultExpandedKeys={[11167]}
+                              checkable
+                              checkedKeys={checkedStaffKey}
+                              onCheck={this.onCheckTreeStaff}
+                            >
+                              {this.renderTreeNodes(organizationStaffTreeList)}
+                            </Tree>
+                          )}
+                        </div>
+                        <div className="button">
+                          <Button
+                            style={{border: '1px solid #3461FF', color: '#3461FF'}}
+                            onClick={this.clickAddStaff}
                           >
-                            {this.renderTreeNodes(organizationStaffTreeList)}
-                          </Tree>
-                        )}
-                      </div>
-                      <div className="button">
-                        <Button
-                          style={{ border: '1px solid #3461FF', color: '#3461FF' }}
-                          onClick={this.clickAddStaff}
-                        >
-                          添加&nbsp;
+                            添加&nbsp;
                           <a
                             className="iconfont icon-right"
                             style={{
@@ -5915,11 +6098,11 @@ class EditProjectInfoModel extends React.Component {
                 </div>
               )}
               {// 招采信息
-              current == 3 && (
+                (
                 <div
                   className="steps-content"
                   style={{
-                    display: htxxVisiable || zbxxVisiable ? '' : 'none',
+                    display: current == 3 && (htxxVisiable || zbxxVisiable) ? '' : 'none',
                     overflowY: 'auto',
                     overflowX: 'hidden',
                   }}
@@ -6508,18 +6691,19 @@ class EditProjectInfoModel extends React.Component {
                     {/*</Form>*/}
                   </React.Fragment>
                 </div>
-              )}
+                )}
               {// 其他信息
-              current == 4 && (
-                <div className="steps-content" style={{ overflowY: 'auto', overflowX: 'hidden' }}>
-                  <OthersInfos
-                    xmid={basicInfo.projectId}
-                    prizeInfoCallback={this.prizeInfoCallback}
-                    topicInfoCallback={this.topicInfoCallback}
-                    requirementInfoCallback={this.requirementInfoCallback}
-                  />
-                </div>
-              )}
+                (
+                  <div className="steps-content"
+                       style={{display: current == 4 ? '' : 'none', overflowY: 'auto', overflowX: 'hidden'}}>
+                    <OthersInfos
+                      xmid={basicInfo.projectId}
+                      prizeInfoCallback={this.prizeInfoCallback}
+                      topicInfoCallback={this.topicInfoCallback}
+                      requirementInfoCallback={this.requirementInfoCallback}
+                    />
+                  </div>
+                )}
               <div className="footer">
                 <Divider/>
                 <div style={{padding: '10px 16px'}}>

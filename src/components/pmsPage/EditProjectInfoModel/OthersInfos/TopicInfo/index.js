@@ -156,8 +156,11 @@ class TopicInfo extends Component {
     };
   }
 
-  componentDidMount = () => {
-    this.fetchQueryProjectInfoAll();
+  componentDidUpdate(prevProps, prevState, snapshot) {
+    if (this.props.xmid !== prevProps.xmid && this.props.xmid != '-1') {
+      console.log("xmidxmid", this.props.xmid)
+      this.fetchQueryProjectInfoAll();
+    }
   }
 
 //----------------其他供应商-----------------//
@@ -205,9 +208,6 @@ class TopicInfo extends Component {
     const {ktxxRecordCallback} = this.props;
     const {tableData, ktxxRecordFlag} = this.state;
     let newArr = [];
-    //表格数据变化后存全局
-    sessionStorage.setItem("ktxxTableData", JSON.stringify(tableData));
-    sessionStorage.setItem("ktxxTableDataFlag", "true");
     tableData.map((item) => {
       let obj = {
         KTID: String(item.KTID),
@@ -242,42 +242,35 @@ class TopicInfo extends Component {
   // 查询其他项目信息
   fetchQueryProjectInfoAll = () => {
     const {xmid} = this.props;
-    let flag = sessionStorage.getItem("ktxxTableDataFlag")
-    if (flag === "true") {
-      this.setState({
-        tableData: JSON.parse(sessionStorage.getItem("ktxxTableData"))
-      })
-    } else {
-      FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
-        const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
-        if (code > 0) {
-          let data = JSON.parse(ktxxRecord);
-          // console.log("datadata2222",data)
-          let arr = [];
-          for (let i = 0; i < data.length; i++) {
-            arr.push({
-              KTID: data[i]?.KTID,
-              ['XMKT' + data[i]?.KTID]: data[i]?.XMKT,
-              ['JJ' + data[i]?.KTID]: data[i]?.JJ,
-              ['JD' + data[i]?.KTID]: data[i]?.JD,
-              ['DQJZ' + data[i]?.KTID]: data[i]?.DQJZ,
-            });
-          }
-          let ktxxRecordFlag = false;
-          if (data.length > 0) {
-            ktxxRecordFlag = true;
-          }
-          this.setState({
-            tableData: arr,
-            ktxxRecordFlag,
-          }, () => {
-            this.callbackData();
-          })
+    FetchQueryProjectInfoAll({cxlx: 'QT', xmid: xmid}).then((result) => {
+      const {code = -1, xqxxRecord = [], hjxxRecord = [], ktxxRecord = []} = result;
+      if (code > 0) {
+        let data = JSON.parse(ktxxRecord);
+        // console.log("datadata2222",data)
+        let arr = [];
+        for (let i = 0; i < data.length; i++) {
+          arr.push({
+            KTID: data[i]?.KTID,
+            ['XMKT' + data[i]?.KTID]: data[i]?.XMKT,
+            ['JJ' + data[i]?.KTID]: data[i]?.JJ,
+            ['JD' + data[i]?.KTID]: data[i]?.JD,
+            ['DQJZ' + data[i]?.KTID]: data[i]?.DQJZ,
+          });
         }
-      }).catch((error) => {
-        message.error(!error.success ? error.message : error.note);
-      });
-    }
+        let ktxxRecordFlag = false;
+        if (data.length > 0) {
+          ktxxRecordFlag = true;
+        }
+        this.setState({
+          tableData: arr,
+          ktxxRecordFlag,
+        }, () => {
+          this.callbackData();
+        })
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   render() {

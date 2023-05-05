@@ -1,9 +1,26 @@
-import {Table, Input, Button, Popconfirm, Form, Icon, DatePicker, Select, message, TreeSelect, InputNumber} from 'antd';
+import {
+  Table,
+  Input,
+  Button,
+  Popconfirm,
+  Form,
+  Icon,
+  DatePicker,
+  Select,
+  message,
+  TreeSelect,
+  InputNumber,
+  Tooltip
+} from 'antd';
 import React, {Component} from "react";
 import moment from "moment";
 import {QueryPaymentAccountList} from "../../../../../services/pmsServices";
 import {connect} from "dva";
-import {FetchQueryProjectInfoAll, FetchQuerySubProjectsInfo} from "../../../../../services/projectManage";
+import {
+  FetchQueryBudgetProjects,
+  FetchQueryProjectInfoAll,
+  FetchQuerySubProjectsInfo
+} from "../../../../../services/projectManage";
 
 const {Option} = Select
 
@@ -173,7 +190,27 @@ class SubItemInfo extends Component {
     super(props);
 
     this.state = {
-      tableData: [],
+      tableData: [{
+        ID: Date.now(),
+        ['SUBXMMC' + Date.now()]: '',
+        ['SUBXMJL' + Date.now()]: '',
+        ['SUBXMLX' + Date.now()]: '',
+        // ['SUBGLRJ' + Date.now()]: '',
+        ['SUBYYBM' + Date.now()]: [],
+        ['SUBCGFS' + Date.now()]: '',
+        ['SUBGLYS' + Date.now()]: '',
+        ['GLYSLX' + Date.now()]: '',
+        ['SUBYSJE' + Date.now()]: '',
+        ['SUBYSJE-TOTAL' + Date.now()]: '0',
+        ['SUBRJYSJE' + Date.now()]: '0',
+        ['SUBSFBHYJ' + Date.now()]: '2',
+        ['SUBSFYJRW' + Date.now()]: '1',
+        ['SUBKJCGJE' + Date.now()]: '0',
+        ['SUBDDCGJE' + Date.now()]: '0',
+        ['SUBZYS' + Date.now()]: '0',
+        ['SUBKZXYS' + Date.now()]: '0',
+        ['SUBSYYS' + Date.now()]: '0',
+      }],
       tableDataSearch: [],
       tableDataDel: [],
     };
@@ -181,7 +218,7 @@ class SubItemInfo extends Component {
 
 
   componentDidUpdate(prevProps, prevState, snapshot) {
-    if (this.props.xmid !== prevProps.xmid && this.props.xmid != '-1') {
+    if (this.props.xmid !== prevProps.xmid && this.props.xmid != '-1' && this.props.budgetProjectList.length > 0) {
       console.log("xmidxmid", this.props.xmid)
       this.fetchQuerySubProjectsInfo();
     }
@@ -241,8 +278,8 @@ class SubItemInfo extends Component {
     const {subItemRecordCallback} = this.props;
     const {tableData, tableDataSearch, tableDataDel,} = this.state;
     //表格数据变化后存全局
-    // sessionStorage.setItem("hjxxTableData", JSON.stringify(tableData));
-    // sessionStorage.setItem("hjxxTableDataFlag", "true");
+    // sessionStorage.setItem("subItemTableData", JSON.stringify(tableData));
+    // sessionStorage.setItem("subItemTableDataFlag", "true");
     let newArr = [];
     console.log('tableDatatableData', tableData);
     tableData.map((item) => {
@@ -265,7 +302,7 @@ class SubItemInfo extends Component {
         CGFS: String(item['SUBCGFS' + item.ID]),
         GLYS: item['SUBGLYS' + item.ID],
         GLYSLX: item['GLYSLX' + item.ID],
-        XMYS: String(item['SUBYSJE' + item.ID]),
+        XMYS: item['SUBSFBHYJ' + item.ID] == '2' ? String(item['SUBYSJE' + item.ID]) : String(item['SUBYSJE-TOTAL' + item.ID]),
         RJYS: String(item['SUBRJYSJE' + item.ID]),
         SFBHYJ: item['SUBSFBHYJ' + item.ID],
         SFWYJRWNXQ: item['SUBSFYJRW' + item.ID],
@@ -277,7 +314,7 @@ class SubItemInfo extends Component {
     });
     tableDataDel.map(item => {
       let itm = {};
-      itm.ID = item.ID;
+      itm.XMID = item.ID;
       itm.XMMC = item['SUBXMMC' + item.ID];
       itm.XMJL = item['SUBXMJL' + item.ID];
       itm.XMLX = String(item['SUBXMLX' + item.ID]);
@@ -309,14 +346,23 @@ class SubItemInfo extends Component {
         let arr = [];
         for (let i = 0; i < data.length; i++) {
           let SUBGLYSTXT = '';
+          let SUBZYS = 0;
+          let SUBKZXYS = 0;
+          let SUBSYYS = 0;
           this.props.budgetProjectList.forEach(item => {
             item?.children?.forEach(ite => {
               if (String(data[i]?.GLYSXM) === 0) {
                 SUBGLYSTXT = '备用预算'
+                SUBZYS = 0;
+                SUBKZXYS = ite.ysKZX;
+                SUBSYYS = 0;
               }
               ite?.children?.forEach(ie => {
                 if (String(data[i]?.GLYSXM) === ie.ysID) {
                   SUBGLYSTXT = ie.ysName;
+                  SUBZYS = Number(ie.ysZJE);
+                  SUBKZXYS = Number(ie.ysKZX);
+                  SUBSYYS = Number(ie.ysKGL);
                 }
               })
             })
@@ -332,12 +378,15 @@ class SubItemInfo extends Component {
             ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
             ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
             ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
-            ['SUBYSJE' + data[i]?.ID]: data[i]?.YSJE,
-            ['SUBRJYSJE' + data[i]?.ID]: data[i]?.RJYSJE,
-            ['SUBSFBHYJ' + data[i]?.ID]: String(data[i]?.SFBHYJ),
-            ['SUBSFYJRW' + data[i]?.ID]: String(data[i]?.SFYJRW),
-            ['SUBKJCGJE' + data[i]?.ID]: data[i]?.KJCGJE,
-            ['SUBDDCGJE' + data[i]?.ID]: data[i]?.DDCGJE,
+            ['SUBYSJE' + data[i]?.ID]: data[i]?.YSJE ? data[i]?.YSJE : 0,
+            ['SUBRJYSJE' + data[i]?.ID]: data[i]?.RJYSJE ? data[i]?.RJYSJE : 0,
+            ['SUBSFBHYJ' + data[i]?.ID]: String(data[i]?.SFBHYJ ? data[i]?.SFBHYJ : '2'),
+            ['SUBSFYJRW' + data[i]?.ID]: String(data[i]?.SFYJRW ? data[i]?.SFYJRW : '1'),
+            ['SUBKJCGJE' + data[i]?.ID]: data[i]?.KJCGJE ? data[i]?.KJCGJE : 0,
+            ['SUBDDCGJE' + data[i]?.ID]: data[i]?.DDCGJE ? data[i]?.DDCGJE : 0,
+            ['SUBZYS' + data[i]?.ID]: SUBZYS,
+            ['SUBKZXYS' + data[i]?.ID]: SUBKZXYS,
+            ['SUBSYYS' + data[i]?.ID]: SUBSYYS,
           });
         }
         this.setState({
@@ -358,17 +407,29 @@ class SubItemInfo extends Component {
     const {tableData} = this.state;
     if (key === 'SUBGLYS') {
       let ysID = '';
+      let ysName = '';
       let ysLX = '';
+      let SUBZYS = 0;
+      let SUBKZXYS = 0;
+      let SUBSYYS = 0;
       this.props.budgetProjectList.forEach(item => {
         item?.children?.forEach(ite => {
           if (e === '0备用预算') {
             ysID = ite.ysID
+            ysName = "备用预算"
             ysLX = "资本性预算"
+            SUBZYS = 0;
+            SUBKZXYS = ite.ysKZX;
+            SUBSYYS = 0;
           }
           ite?.children?.forEach(i => {
             if (i.value === e) {
               ysID = i.ysID
+              ysName = i.ysName
               ysLX = i.ysLX
+              SUBZYS = Number(i.ysZJE);
+              SUBKZXYS = Number(i.ysKZX);
+              SUBSYYS = Number(i.ysKGL);
             }
           })
         })
@@ -377,12 +438,44 @@ class SubItemInfo extends Component {
         if (item.ID === record.ID) {
           item[key + item.ID] = ysID;
           item['GLYSLX' + item.ID] = ysLX;
+          item['SUBGLYSTXT' + item.ID] = ysName;
+          item['SUBZYS' + item.ID] = SUBZYS;
+          item['SUBKZXYS' + item.ID] = SUBKZXYS;
+          item['SUBSYYS' + item.ID] = SUBSYYS;
         }
       })
     } else {
       tableData.map(item => {
         if (item.ID === record.ID) {
           item[key + item.ID] = e;
+        }
+      })
+    }
+    if (key === 'SUBSFBHYJ') {
+      if (e === "1") {
+        tableData.map(item => {
+          if (item.ID === record.ID) {
+            item['SUBYSJE' + item.ID] = 0;
+          }
+        })
+      } else {
+        //是否包含硬件选否 后面填写的数据清空
+        tableData.map(item => {
+          if (item.ID === record.ID) {
+            item['SUBSFBHYJ' + item.ID] = '2';
+            item['SUBSFYJRW' + item.ID] = '1';
+            item['SUBKJCGJE' + item.ID] = '0';
+            item['SUBDDCGJE' + item.ID] = '0';
+            item['SUBRJYSJE' + item.ID] = '0';
+          }
+        })
+      }
+    }
+    //软件预算金额/单独采购金额/框架金额变化时-XMYS为三者之和
+    if (key === 'SUBRJYSJE' || key === 'SUBKJCGJE' || key === 'SUBDDCGJE') {
+      tableData.map(item => {
+        if (item.ID === record.ID) {
+          item['SUBYSJE-TOTAL' + item.ID] = Number(item['SUBRJYSJE' + item.ID]) + Number(item['SUBKJCGJE' + item.ID]) + Number(item['SUBDDCGJE' + item.ID]);
         }
       })
     }
@@ -418,7 +511,7 @@ class SubItemInfo extends Component {
         }}>*</span>项目名称</span>,
         dataIndex: 'SUBXMMC',
         key: 'SUBXMMC',
-        width: '200px',
+        width: '250px',
         fixed: 'left',
         ellipsis: true,
         editable: true,
@@ -432,15 +525,17 @@ class SubItemInfo extends Component {
         }}>*</span>项目经理</span>,
         dataIndex: 'SUBXMJL',
         key: 'SUBXMJL',
-        width: '160px',
+        width: '200px',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
           // console.log("recordrecord",record)
-          return (<Select
+          return (<Tooltip title={record['SUBXMJL' + record.ID]}><Select
+              allowClear
               placeholder="请输入名字搜索人员"
               // value={jobStaffName.length > 0 ? jobStaffName[9] : []}
               // onBlur={}
+              showSearch
               value={record['SUBXMJL' + record.ID]}
               filterOption={(input, option) =>
                 option.props.children[0].toLowerCase().indexOf(input.toLowerCase()) >= 0
@@ -459,6 +554,7 @@ class SubItemInfo extends Component {
                 })
               }
             </Select>
+            </Tooltip>
           )
         }
       },
@@ -470,12 +566,13 @@ class SubItemInfo extends Component {
           lineHeight: 1
         }}>*</span>项目类型</span>,
         dataIndex: 'SUBXMLX',
-        width: '200px',
+        width: '160px',
         key: 'SUBXMLX',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
           return (<TreeSelect
+              allowClear
               // multiple
               showSearch
               treeNodeFilterProp="title"
@@ -494,42 +591,6 @@ class SubItemInfo extends Component {
           )
         }
       },
-      // {
-      //   title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
-      //     fontFamily: 'SimSun, sans-serif',
-      //     color: '#f5222d',
-      //     marginRight: '4px',
-      //     lineHeight: 1
-      //   }}>*</span>关联软件</span>,
-      //   dataIndex: 'SUBGLRJ',
-      //   width: '350px',
-      //   key: 'SUBGLRJ',
-      //   ellipsis: true,
-      //   // editable: true,
-      //   render(text, record, index) {
-      //     return (<Select
-      //       showSearch
-      //       mode='multiple'
-      //       showArrow={true}
-      //       maxTagCount={1}
-      //       maxTagTextLength={42}
-      //       maxTagPlaceholder={extraArr => {
-      //         return `等${extraArr.length + 1}个`;
-      //       }}
-      //       onChange={(e) => _this.itemChange(String(e), record, index,'SUBGLRJ')}
-      //       filterOption={(input, option) =>
-      //         option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-      //       }>
-      //       {
-      //         softwareList.length > 0 && softwareList.map((item, index) => {
-      //           return (
-      //             <Option key={index} value={item.id}>{item.softName}</Option>
-      //           )
-      //         })
-      //       }
-      //     </Select>)
-      //   }
-      // },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
           fontFamily: 'SimSun, sans-serif',
@@ -538,12 +599,13 @@ class SubItemInfo extends Component {
           lineHeight: 1
         }}>*</span>应用部门</span>,
         dataIndex: 'SUBYYBM',
-        width: '350px',
+        width: '250px',
         key: 'SUBYYBM',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
           return (<TreeSelect
+            allowClear
             multiple
             showSearch
             defaultValue={record['SUBYYBM' + record.ID]}
@@ -574,12 +636,13 @@ class SubItemInfo extends Component {
           lineHeight: 1
         }}>*</span>采购方式</span>,
         dataIndex: 'SUBCGFS',
-        width: '200px',
+        width: '140px',
         key: 'SUBCGFS',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
           return (<TreeSelect
+              allowClear
               showSearch
               value={record['SUBCGFS' + record.ID]}
               dropdownClassName="newproject-treeselect"
@@ -605,13 +668,16 @@ class SubItemInfo extends Component {
           lineHeight: 1
         }}>*</span>关联预算项目</span>,
         dataIndex: 'SUBGLYS',
-        width: '310px',
+        width: '300px',
         key: 'SUBGLYS',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
+          console.log("record['SUBGLYSTXT' + record.ID]", record['SUBGLYSTXT' + record.ID])
           return (<TreeSelect
+              allowClear
               showSearch
+              // defaultValue={record['SUBGLYSTXT' + record.ID]}
               value={record['SUBGLYSTXT' + record.ID]}
               treeNodeFilterProp="title"
               style={{width: '100%'}}
@@ -631,17 +697,18 @@ class SubItemInfo extends Component {
           color: '#f5222d',
           marginRight: '4px',
           lineHeight: 1
-        }}>*</span>预算金额(元)</span>,
-        dataIndex: 'SUBYSJE',
-        width: '200px',
-        key: 'SUBYSJE',
+        }}>*</span>总预算(元)</span>,
+        dataIndex: 'SUBZYS',
+        width: '155px',
+        key: 'SUBZYS',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<InputNumber style={{width: '100%'}}
-                               value={record['SUBYSJE' + record.ID]} style={{width: '100%'}}
-                               onChange={(e) => _this.itemChange(e, record, index, 'SUBYSJE')}
-                               precision={0}/>)
+          return (
+            <InputNumber disabled={true}
+                         style={{width: '100%'}}
+                         value={record['SUBZYS' + record.ID]} style={{width: '100%'}}
+                         precision={0}/>)
         }
       },
       {
@@ -650,17 +717,59 @@ class SubItemInfo extends Component {
           color: '#f5222d',
           marginRight: '4px',
           lineHeight: 1
-        }}>*</span>软件预算金额(元)</span>,
-        dataIndex: 'SUBRJYSJE',
-        width: '200px',
-        key: 'SUBRJYSJE',
+        }}>*</span>可执行预算(元)</span>,
+        dataIndex: 'SUBKZXYS',
+        width: '155px',
+        key: 'SUBKZXYS',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<InputNumber style={{width: '100%'}}
-                               value={record['SUBRJYSJE' + record.ID]} style={{width: '100%'}}
-                               onChange={(e) => _this.itemChange(e, record, index, 'SUBRJYSJE')}
-                               precision={0}/>)
+          return (
+            <InputNumber disabled={true}
+                         style={{width: '100%'}}
+                         value={record['SUBKZXYS' + record.ID]} style={{width: '100%'}}
+                         precision={0}/>)
+        }
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>剩余预算(元)</span>,
+        dataIndex: 'SUBSYYS',
+        width: '155px',
+        key: 'SUBSYYS',
+        ellipsis: true,
+        // editable: true,
+        render(text, record, index) {
+          return (
+            <InputNumber disabled={true}
+                         style={{width: '100%'}}
+                         value={record['SUBSYYS' + record.ID]} style={{width: '100%'}}
+                         precision={0}/>)
+        }
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>预算金额(元)</span>,
+        dataIndex: 'SUBYSJE',
+        width: '155px',
+        key: 'SUBYSJE',
+        ellipsis: true,
+        // editable: true,
+        render(text, record, index) {
+          return (
+            <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "1"}
+                         style={{width: '100%'}}
+                         value={record['SUBYSJE' + record.ID]} style={{width: '100%'}}
+                         onChange={(e) => _this.itemChange(e, record, index, 'SUBYSJE')}
+                         precision={0}/>)
         }
       },
       {
@@ -671,12 +780,13 @@ class SubItemInfo extends Component {
           lineHeight: 1
         }}>*</span>是否包含硬件</span>,
         dataIndex: 'SUBSFBHYJ',
-        width: '200px',
+        width: '155px',
         key: 'SUBSFBHYJ',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select value={record['SUBSFBHYJ' + record.ID]} style={{width: 120}}
+          return (<Select disabled={record['SUBXMLX' + record.ID] != '1'}
+                          value={record['SUBSFBHYJ' + record.ID]} style={{width: 120}}
                           onChange={(e) => _this.itemChange(e, record, index, 'SUBSFBHYJ')}>
             <Option value="1">是</Option>
             <Option value="2">否</Option>
@@ -696,7 +806,8 @@ class SubItemInfo extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Select value={record['SUBSFYJRW' + record.ID]} style={{width: 120}}
+          return (<Select disabled={record['SUBSFBHYJ' + record.ID] !== "1"}
+                          value={record['SUBSFYJRW' + record.ID]} style={{width: 120}}
                           defaultValue={record['SUBSFYJRW' + record.ID]}
                           onChange={(e) => _this.itemChange(e, record, index, 'SUBSFYJRW')}>
             <Option value="1">是</Option>
@@ -710,17 +821,39 @@ class SubItemInfo extends Component {
           color: '#f5222d',
           marginRight: '4px',
           lineHeight: 1
+        }}>*</span>软件预算金额(元)</span>,
+        dataIndex: 'SUBRJYSJE',
+        width: '170px',
+        key: 'SUBRJYSJE',
+        ellipsis: true,
+        // editable: true,
+        render(text, record, index) {
+          return (
+            <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
+                         style={{width: '100%'}}
+                         value={record['SUBRJYSJE' + record.ID]} style={{width: '100%'}}
+                         onChange={(e) => _this.itemChange(e, record, index, 'SUBRJYSJE')}
+                         precision={0}/>)
+        }
+      },
+      {
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
         }}>*</span>框架采购金额(元)</span>,
         dataIndex: 'SUBKJCGJE',
-        width: '200px',
+        width: '170px',
         key: 'SUBKJCGJE',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<InputNumber
-            value={record['SUBKJCGJE' + record.ID]} style={{width: '100%'}}
-            onChange={(e) => _this.itemChange(e, record, index, 'SUBKJCGJE')}
-            precision={0}/>)
+          return (
+            <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
+                         value={record['SUBKJCGJE' + record.ID]} style={{width: '100%'}}
+                         onChange={(e) => _this.itemChange(e, record, index, 'SUBKJCGJE')}
+                         precision={0}/>)
         }
       },
       {
@@ -731,22 +864,24 @@ class SubItemInfo extends Component {
           lineHeight: 1
         }}>*</span>单独采购金额(元)</span>,
         dataIndex: 'SUBDDCGJE',
-        width: '200px',
+        width: '170px',
         key: 'SUBDDCGJE',
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<InputNumber value={record['SUBDDCGJE' + record.ID]} style={{width: '100%'}}
-                               onChange={(e) => _this.itemChange(e, record, index, 'SUBDDCGJE')}
-                               precision={0}/>)
+          return (
+            <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
+                         value={record['SUBDDCGJE' + record.ID]} style={{width: '100%'}}
+                         onChange={(e) => _this.itemChange(e, record, index, 'SUBDDCGJE')}
+                         precision={0}/>)
         }
       },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
         dataIndex: 'operator',
         key: 'operator',
-        width: '100px',
-        // fixed: 'right',
+        width: '80px',
+        fixed: 'right',
         ellipsis: true,
         render: (text, record) =>
           this.state.tableData.length >= 1 ? (
@@ -816,12 +951,17 @@ class SubItemInfo extends Component {
                 ['SUBYYBM' + Date.now()]: [],
                 ['SUBCGFS' + Date.now()]: '',
                 ['SUBGLYS' + Date.now()]: '',
+                ['GLYSLX' + Date.now()]: '',
                 ['SUBYSJE' + Date.now()]: '',
-                ['SUBRJYSJE' + Date.now()]: '',
-                ['SUBSFBHYJ' + Date.now()]: '',
-                ['SUBSFYJRW' + Date.now()]: '',
-                ['SUBKJCGJE' + Date.now()]: '',
-                ['SUBDDCGJE' + Date.now()]: '',
+                ['SUBYSJE-TOTAL' + Date.now()]: '0',
+                ['SUBRJYSJE' + Date.now()]: '0',
+                ['SUBSFBHYJ' + Date.now()]: '2',
+                ['SUBSFYJRW' + Date.now()]: '1',
+                ['SUBKJCGJE' + Date.now()]: '0',
+                ['SUBDDCGJE' + Date.now()]: '0',
+                ['SUBZYS' + Date.now()]: '0',
+                ['SUBKZXYS' + Date.now()]: '0',
+                ['SUBSYYS' + Date.now()]: '0',
               });
               this.setState({tableData: arrData}, () => {
                 this.callbackData();
