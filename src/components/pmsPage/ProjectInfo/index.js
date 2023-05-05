@@ -21,7 +21,6 @@ export default function ProjectInfo(props) {
       getTableData({});
     } else {
       //有参数
-      // console.log('prjManager, cxlx', prjManager, cxlx);
       getTableData({ projectManager: prjManager, cxlx });
     }
     return () => {};

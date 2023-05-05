@@ -204,11 +204,7 @@ export default forwardRef(function TopConsole(props, ref) {
           setOrgData(p => [...[orgTree]]);
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
           if (projectManager) {
-            setPrjMnger(
-              [...JSON.parse(res.projectManagerRecord)].filter(
-                x => Number(x.ID) === projectManager,
-              )[0]?.USERNAME,
-            );
+            setPrjMnger(String(projectManager));
           }
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
           let xmlx = TreeUtils.toTreeData(JSON.parse(res.projectTypeRecord), {
