@@ -588,6 +588,8 @@ class EditProjectInfoModel extends React.Component {
     isDownLabel: true,
     //是否是没有里程碑的子项目
     subItemFlag: false,
+    //是否是没有里程碑的子项目-完善的入口
+    subItemFinish: false,
     //项目预算类型
     haveType: 1,
   };
@@ -620,6 +622,10 @@ class EditProjectInfoModel extends React.Component {
     // 判断是否是没有里程碑的子项目
     if (params.subItemFlag) {
       this.setState({subItemFlag: true});
+    }
+    // 判断是否是没有里程碑的子项目
+    if (params.subItemFinish) {
+      this.setState({subItemFinish: true});
     }
     setTimeout(function () {
       _this.fetchInterface();
@@ -667,9 +673,9 @@ class EditProjectInfoModel extends React.Component {
     await this.fetchQueryMilepostInfo({
       type: Number(this.state.basicInfo.projectType),
       isShortListed: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? '2' : this.state.basicInfo.SFYJRW,
-      xmid: this.state.subItemFlag ? '-1' : this.state.basicInfo.projectId,
+      xmid: this.state.subItemFlag && this.state.subItemFinish ? '-1' : this.state.basicInfo.projectId,
       biddingMethod: 1,
-      budget: 0,
+      budget: this.state.subItemFlag && this.state.subItemFinish ? (this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget))) : 0,
       label: this.state.basicInfo.labelTxt,
       queryType: "ALL",
       //项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）

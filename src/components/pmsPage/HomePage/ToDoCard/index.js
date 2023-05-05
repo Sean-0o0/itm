@@ -203,7 +203,7 @@ export default function ToDoCard(props) {
     setFileAddVisible(true);
     setSrc_fileAdd(
       `/#/single/pms/EditProject/${EncryptBase64(
-        JSON.stringify({ xmid: item.xmid, type: true, subItemFlag: true, projectStatus: 'SAVE' }),
+        JSON.stringify({xmid: item.xmid, type: true, subItemFlag: true, subItemFinish: true, projectStatus: 'SAVE'}),
       )}`,
     );
   };
