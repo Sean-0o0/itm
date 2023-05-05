@@ -148,11 +148,9 @@ export default function TopConsole(props) {
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
     setFileAddVisible(true);
-    setSrc_fileAdd(
-      `/#/single/pms/EditProject/${EncryptBase64(
-        JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
-      )}`,
-    );
+    let p = { xmid, type: true, projectStatus: 'SAVE' };
+    prjBasic.FXMMC && (p.subItemFlag = true);
+    setSrc_fileAdd(`/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`);
   };
 
   //申请餐券/权限弹窗
