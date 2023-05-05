@@ -757,11 +757,11 @@ class EditProjectInfoModel extends React.Component {
               } else {
                 item.addSxFlag = true;
               }
+              const { lcblxid = '' } = item
               //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
               item.matterInfos.map(item => {
                 if (
-                  item.sxlb.length - 1 ===
-                  this.state.mileItemInfo.filter(i => i.swlx === item.swlxmc).length
+                  item.sxlb.length - 1 === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc&&i.lcbid === lcblxid).length
                 ) {
                   item.addFlag = false;
                 } else {
@@ -2587,10 +2587,10 @@ class EditProjectInfoModel extends React.Component {
     ////console.log("arrarrarrarr", arr)
     arr.forEach(item => {
       //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
+      const { lcblxid = '' } = item
       item.matterInfos.map(item => {
         if (
-          item.sxlb.filter(i => i.sxmc).length ===
-          this.state.mileItemInfo.filter(i => i.swlx === item.swlxmc).length
+          item.sxlb.length - 1 === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc&&i.lcbid === lcblxid).length
         ) {
           item.addFlag = false;
         } else {
