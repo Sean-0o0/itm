@@ -4439,18 +4439,8 @@ class EditProjectInfoModel extends React.Component {
                                                let haveType = 1;
                                                if (String(e.target.value) === '2') {
                                                  haveType = 1
-                                                 this.setState({
-                                                   budgetInfo: {
-                                                     ...budgetInfo,
-                                                     softBudget: 0,
-                                                     singleBudget: 0,
-                                                     frameBudget: 0
-                                                   }
-                                                 })
-                                               } else if (String(e.target.value) === '1' && Number(this.state.budgetInfo.softBudget) === 0) {
+                                               } else if (String(e.target.value) === '1') {
                                                  haveType = 2
-                                               } else if (String(e.target.value) === '1' && Number(this.state.budgetInfo.softBudget) > 0) {
-                                                 haveType = 3
                                                }
                                                this.setState({
                                                  haveType,
@@ -4473,14 +4463,14 @@ class EditProjectInfoModel extends React.Component {
                                                  //项目预算类型
                                                  haveType: haveType,
                                                  //项目软件预算
-                                                 softBudget: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? 0 : this.state.budgetInfo.softBudget,
+                                                 softBudget: 0,
                                                  //框架预算
-                                                 frameBudget: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? 0 : this.state.budgetInfo.frameBudget,
+                                                 frameBudget: 0,
                                                  //单独采购预算
-                                                 singleBudget: this.state.projectTypeRYJFlag && String(e.target.value) === '2' ? 0 : this.state.budgetInfo.singleBudget,
+                                                 singleBudget: 0,
                                                  xmid: basicInfo.projectId,
                                                  biddingMethod: basicInfo.biddingMethod,
-                                                 budget: String(e.target.value) === '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                                 budget: 0,
                                                  label: basicInfo.labelTxt,
                                                  queryType: "ALL"
                                                });
