@@ -4,10 +4,10 @@ import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services
 import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import {EncryptBase64} from "../../../Common/Encrypt";
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function ToDoCard(props) {
-  const {itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = []} = props;
+  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [] } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -25,7 +25,7 @@ export default function ToDoCard(props) {
     width: '720px',
     height: '300px',
     title: '人员新增提醒',
-    style: {top: '60px'},
+    style: { top: '60px' },
     visible: ryxztxModalVisible,
     footer: null,
   };
@@ -37,6 +37,25 @@ export default function ToDoCard(props) {
     }
     return () => {};
   }, [props]);
+
+  useEffect(() => {
+    window.addEventListener('message', handleIframePostMessage);
+    return () => {
+      window.removeEventListener('message', handleIframePostMessage);
+    };
+  }, []);
+
+  //监听项目弹窗状态
+  const handleIframePostMessage = event => {
+    if (typeof event.data !== 'string' && event.data.operate === 'close') {
+      setFileAddVisible(false);
+    }
+    if (typeof event.data !== 'string' && event.data.operate === 'success') {
+      setFileAddVisible(false);
+      //刷新数据
+      handleOperateSuccess('操作成功');
+    }
+  };
 
   //弹窗操作成功
   const handleOperateSuccess = txt => {
@@ -180,14 +199,14 @@ export default function ToDoCard(props) {
     }
   };
 
-  const jumpToEditProjectInfo = (item) => {
+  const jumpToEditProjectInfo = item => {
     setFileAddVisible(true);
     setSrc_fileAdd(
       `/#/single/pms/EditProject/${EncryptBase64(
-        JSON.stringify({xmid: item.xmid, type: true, subItemFlag: true, projectStatus: 'SAVE'}),
+        JSON.stringify({ xmid: item.xmid, type: true, subItemFlag: true, projectStatus: 'SAVE' }),
       )}`,
     );
-  }
+  };
 
   //获取操作按钮文本
   const getBtnTxt = (txt, sxmc) => {
@@ -230,22 +249,22 @@ export default function ToDoCard(props) {
     title: '编辑项目',
     width: '1000px',
     height: '700px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: fileAddVisible,
     footer: null,
   };
 
   //待办块
   const getToDoItem = ({
-                         title = '--',
-                         content = '--',
-                         btnTxt = '--',
-                         isLate = false,
-                         isDueSoon = false,
-                         lateDay = '--',
-                         key,
-                         item = {},
-                       }) => {
+    title = '--',
+    content = '--',
+    btnTxt = '--',
+    isLate = false,
+    isDueSoon = false,
+    lateDay = '--',
+    key,
+    item = {},
+  }) => {
     let borderColor = '#3361ff';
     let fontColor = '#3361FF';
     if (isDueSoon) {
