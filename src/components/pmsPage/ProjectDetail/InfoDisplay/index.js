@@ -345,7 +345,26 @@ export default function InfoDisplay(props) {
               </Tooltip>
             )}
           </div>
-          {prjBasic.FXMMC && getInfoItem('父项目名称：', prjBasic.FXMMC)}
+          {prjBasic.FXMMC && (
+            <div className="info-item" key="父项目名称：">
+              <span>父项目名称：</span>
+              <Link
+                style={{ color: '#3361ff' }}
+                to={{
+                  pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                    JSON.stringify({
+                      xmid: prjBasic.GLFXMID,
+                    }),
+                  )}`,
+                  state: {
+                    routes: [{ name: '项目详情', pathname: location.pathname }],
+                  },
+                }}
+              >
+                {prjBasic.FXMMC}
+              </Link>
+            </div>
+          )}
           {getInfoItem('是否包含硬件：', prjBasic.SFBHYJ === '1' ? '是' : '否')}
           {getInfoItem('是否在硬件入围内：', prjBasic.SFYJRW === '1' ? '是' : '否')}
           {isMember() && (
