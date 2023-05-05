@@ -1728,6 +1728,8 @@ class NewProjectModelV2 extends React.Component {
             window.parent && window.parent.postMessage({operate: 'success'}, '*');
           } else {
             this.props.submitOperate();
+            //新建项目成功后跳转到项目信息页面
+            window.location.href = '/#/pms/manage/ProjectInfo';
           }
         }
       } else {
@@ -2403,6 +2405,8 @@ class NewProjectModelV2 extends React.Component {
           window.parent && window.parent.postMessage({operate: 'success'}, '*');
         } else {
           this.props.submitOperate();
+          //新建项目成功后跳转到项目信息页面
+          window.location.href = '/#/pms/manage/ProjectInfo';
         }
       }
     }).catch((error) => {
