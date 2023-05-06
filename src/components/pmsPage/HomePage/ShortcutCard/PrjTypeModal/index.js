@@ -55,10 +55,11 @@ export default function PrjTypeModal(props) {
       </div>
       <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="prj-type-modal-spin">
         {typeData.map((x, i) => (
-          <div className="type-item" key={x.ID}>
+          <div className="type-item" key={x.ID} onClick={() => newProject(x.ID)}>
             <div className="title">
               {/* <Icon type="pushpin" className="item-icon" /> */}
               {/* <div className="item-icon">{i + 1}</div> */}
+              <div className="left-bar"></div>
               {x.NAME || '--'}
             </div>
             <div className="desc">
@@ -72,9 +73,7 @@ export default function PrjTypeModal(props) {
                 </div>
               )}
             </div>
-            <div className="footer-btn" onClick={() => newProject(x.ID)}>
-              新建项目
-            </div>
+            <div className="footer-btn">新建项目</div>
           </div>
         ))}
       </Spin>

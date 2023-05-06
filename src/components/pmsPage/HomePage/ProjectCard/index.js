@@ -195,8 +195,8 @@ export default function ProjectCard(props) {
       participantData?.forEach(x => {
         arr.push(x.RYMC);
       });
-      if (participantData?.length > 2)
-        return arr.slice(0, 2).join('、') + '等' + participantData?.length + '人参与';
+      if (participantData?.length > 4)
+        return arr.slice(0, 4).join('、') + '等' + participantData?.length + '人参与';
       return arr.join('、') + participantData?.length + '人参与';
     };
     const riskContent = () => {
@@ -360,7 +360,7 @@ export default function ProjectCard(props) {
           >
             <div className="item-bottom-person">
               <div className="avatar-box">
-                {participantData?.slice(0, 4).map(x => (
+                {participantData?.slice(0, 8).map(x => (
                   <div className="avatar" key={x.USERID}>
                     <img
                       src={require(`../../../../assets/homePage/img_avatar_${
@@ -371,7 +371,15 @@ export default function ProjectCard(props) {
                   </div>
                 ))}
               </div>
-              <div className="txt">{getParticipantName()}</div>
+              <div
+                className="txt"
+                style={{
+                  WebkitBoxOrient: 'vertical',
+                  WebkitLineClamp: '2',
+                }}
+              >
+                {getParticipantName()}
+              </div>
             </div>
           </Popover>
         )}

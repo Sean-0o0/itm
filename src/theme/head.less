@@ -464,7 +464,7 @@
 
 .zj-header {
   //height: 6.5rem;
-  box-shadow: -1px 0 5px 0 #d0d2d4;
+  box-shadow: 0px 1px 0 0 #d0d2d4;
   .dis-fx();
   .pos(r);
   z-index: 99;
@@ -496,10 +496,28 @@
 
       a {
         color: @title-color;
+        .name {
+          height: 24px;
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+          line-height: 24px;
+          margin-right: 6px;
+        }
+
+        i {
+          font-size: 12px;
+          color: #909399FF;
+        }
 
         &:hover,
         &:active {
           color: #3361ff;
+
+          .name, i {
+            color: #3361ff;
+          }
         }
       }
     }
