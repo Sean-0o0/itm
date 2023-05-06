@@ -6,7 +6,7 @@ import {
   GetApplyListProvisionalAuth,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import { message, Popover } from 'antd';
+import { message, Popover, Modal } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
@@ -564,35 +564,44 @@ class ItemBtn extends React.Component {
     //打印
     const lcdy = async item => {
       const { setIsSpinning } = this.props;
-      setIsSpinning(true)
-      await axios({
-        method: 'GET',
-        url: getStreamByLiveBos,
-        params: {
-          xmid: item.xmid,
-        },
-        responseType: 'blob', // 更改responseType类型为 blob
-      })
-        .then(res => {
-          let blob = new Blob([res.data], { type: 'application/pdf' });
-          const src = URL.createObjectURL(blob);
-          setIsSpinning(false)
-          this.setState(
-            {
-              src,
+      Modal.confirm({
+        title: '提示：',
+        content: `将批量打印pdf和图片附件，word文件暂不支持批量打印，麻烦您自行打印！`,
+        okText: '打印',
+        cancelText: '取消',
+        onOk:async()=> {
+          setIsSpinning(true)
+          await axios({
+            method: 'GET',
+            url: getStreamByLiveBos,
+            params: {
+              xmid: item.xmid,
             },
-            () => {
-              const printIframe = document.getElementById('Iframe');
-              printIframe.onload = () => {
-                printIframe.contentWindow.print();
-              };
-            },
-          );
-        })
-        .catch(err => {
-          setIsSpinning(false)
-          message.error(err);
-        });
+            responseType: 'blob', // 更改responseType类型为 blob
+          })
+            .then(res => {
+              let blob = new Blob([res.data], { type: 'application/pdf' });
+              const src = URL.createObjectURL(blob);
+              setIsSpinning(false)
+              this.setState(
+                {
+                  src,
+                },
+                () => {
+                  const printIframe = document.getElementById('Iframe');
+                  printIframe.onload = () => {
+                    printIframe.contentWindow.print();
+                  };
+                },
+              );
+            })
+            .catch(err => {
+              setIsSpinning(false)
+              message.error(err);
+            });
+        }
+      });
+
     };
     const reoprMoreCotent = (
       <div className="list">
