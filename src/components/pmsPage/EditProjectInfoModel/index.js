@@ -818,6 +818,9 @@ class EditProjectInfoModel extends React.Component {
                 }
                 if (data[i].lcbmc === '项目招采') {
                   milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+                  this.setState({
+                    pureHardwareFlag:false,
+                  })
                 }
                 if (data[i].lcbmc === '项目实施') {
                   milePostInfo.map(item => {
@@ -828,7 +831,7 @@ class EditProjectInfoModel extends React.Component {
                 }
               }
             }
-            if (Number(this.state.budgetInfo.softBudget) === 0 && this.state.basicInfo.haveHard == '1') {
+            if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && this.state.basicInfo.haveHard == '1') {
               //软件金额为0 去掉项目招采里程碑
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             } else {
