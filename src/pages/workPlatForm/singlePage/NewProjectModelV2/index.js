@@ -47,7 +47,6 @@ const {confirm} = Modal;
 const {TreeNode} = TreeSelect;
 const {Step} = Steps;
 
-let timer = null;
 class NewProjectModelV2 extends React.Component {
   constructor(props) {
     super(props)
@@ -200,10 +199,6 @@ class NewProjectModelV2 extends React.Component {
       _this.fetchInterface()
     }, 300);
   };
-
-  componentWillUnmount() {
-    clearTimeout(timer);
-  }
 
   next() {
     //验证项目名称必填，在点击下一步的时候就要验证
@@ -486,16 +481,6 @@ class NewProjectModelV2 extends React.Component {
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
     });
-  };
-
-  debounce = (fn, waits = 500) => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    timer = setTimeout(() => {
-      fn();
-    }, waits);
   };
 
 
