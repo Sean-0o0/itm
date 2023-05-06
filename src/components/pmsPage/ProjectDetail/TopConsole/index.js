@@ -178,7 +178,8 @@ export default function TopConsole(props) {
         }
       })
       .catch(error => {
-        message.error(!error.success ? error.message : error.note);
+        // message.error(!error.success ? error.message : error.note);
+        message.error(name + '失败', 1);
       });
   };
 

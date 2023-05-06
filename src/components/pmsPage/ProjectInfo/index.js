@@ -48,6 +48,7 @@ export default function ProjectInfo(props) {
       })
       .catch(e => {
         // console.error('getTableData', e);
+        message.error('表格数据查询失败', 1);
         setTableLoading(false);
       });
   };

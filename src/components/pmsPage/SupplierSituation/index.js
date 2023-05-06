@@ -7,7 +7,7 @@ import {
   QuerySupplierOverviewInfo,
   QueryUserRole,
 } from '../../../services/pmsServices';
-import { Spin, Breadcrumb } from 'antd';
+import { Spin, Breadcrumb, message } from 'antd';
 import { Link } from 'react-router-dom';
 
 export default function SupplierSituation(props) {
@@ -40,6 +40,7 @@ export default function SupplierSituation(props) {
         }
       })
       .catch(e => {
+        message.error('用户信息查询失败', 1);
         console.error('QueryUserRole', e);
       });
   };
@@ -63,6 +64,7 @@ export default function SupplierSituation(props) {
         }
       })
       .catch(e => {
+        message.error('供应商排名查询失败', 1);
         console.error('QuerySupplierOverviewInfo', e);
       });
   };
@@ -89,6 +91,7 @@ export default function SupplierSituation(props) {
         }
       })
       .catch(e => {
+        message.error('表格数据查询失败', 1);
         console.error('QuerySupplierOverviewInfo', e);
       });
   };

@@ -1,4 +1,4 @@
-import { Empty, Popover, Table, Tooltip } from 'antd';
+import { Empty, Popover, Table, Tooltip, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
@@ -109,6 +109,7 @@ export default function InfoDisplay(props) {
       })
       .catch(err => {
         console.error(err);
+        message.error('评标报告下载失败', 1);
       });
   };
 

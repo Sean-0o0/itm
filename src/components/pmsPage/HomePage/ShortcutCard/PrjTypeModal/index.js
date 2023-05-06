@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Empty, Icon, Modal, Spin } from 'antd';
+import { Button, Empty, Icon, Modal, Spin, message } from 'antd';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../../Common/Encrypt';
 import { FetchQueryProjectLabel } from '../../../../../services/projectManage';
@@ -21,6 +21,7 @@ export default function PrjTypeModal(props) {
       })
       .catch(e => {
         console.error('FetchQueryProjectLabel', e);
+        message.error('项目类型查询失败', 1);
       });
 
     return () => {};

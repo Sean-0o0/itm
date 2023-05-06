@@ -114,6 +114,7 @@ export default function ToDoCard(props) {
       })
       .catch(error => {
         console.error('人员新增提醒', !error.success ? error.message : error.note);
+        message.error('人员新增提醒失败', 1);
       });
   };
 
@@ -133,6 +134,7 @@ export default function ToDoCard(props) {
         }
       })
       .catch(error => {
+        message.error('操作失败', 1);
         console.error('信委会会议结果', !error.success ? error.message : error.note);
       });
   };

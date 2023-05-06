@@ -153,6 +153,7 @@ const AddExpense = props => {
       })
       .catch(e => {
         console.error('QueryCreatePaymentInfo', e);
+        message.error('下拉框信息查询失败', 1);
       });
   };
 
@@ -539,19 +540,23 @@ const AddExpense = props => {
       fileName: [data?.fileName],
       invoiceData: [(data?.base64.split(','))[1]],
       staffId: userykbid,
-    }).then(res => {
-      if (res.result[0].isCheck === 'true') message.success('查验通过', 1);
-      else {
-        message.error('查验失败', 1);
-      }
-      let arr = [...receiptDisplay];
-      arr.forEach(x => {
-        if (x.key === data.key) {
-          x.loading = false;
+    })
+      .then(res => {
+        if (res.result[0].isCheck === 'true') message.success('查验通过', 1);
+        else {
+          message.error('查验失败', 1);
         }
+        let arr = [...receiptDisplay];
+        arr.forEach(x => {
+          if (x.key === data.key) {
+            x.loading = false;
+          }
+        });
+        setReceiptDisplay(p => [...arr]);
+      })
+      .catch(e => {
+        message.error('查验失败', 1);
       });
-      setReceiptDisplay(p => [...arr]);
-    });
   };
   const handleDeleteReceipt = data => {
     let arr = receiptDisplay?.filter(item => item.key !== data.key);

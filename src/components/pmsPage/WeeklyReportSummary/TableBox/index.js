@@ -382,7 +382,7 @@ const TableBox = props => {
         message.success('请求成功，正在导出中', 1);
       })
       .catch(e => {
-        console.error('汇金谷零售业务周报导出失败', 1);
+        message.error('汇金谷零售业务周报导出失败', 1);
       });
   };
   //左右滚动

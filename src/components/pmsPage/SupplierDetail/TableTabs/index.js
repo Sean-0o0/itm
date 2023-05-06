@@ -1,4 +1,4 @@
-import { Table, Tabs, Tooltip } from 'antd';
+import { Table, Tabs, Tooltip, message } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
@@ -80,6 +80,7 @@ export default function TableTabs(props) {
         }
       })
       .catch(e => {
+        message.error('表格数据查询失败', 1);
         console.error('QuerySupplierDetailInfo', e);
       });
   };

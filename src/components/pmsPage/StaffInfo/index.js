@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
-import { Collapse, Spin, Icon, Empty } from 'antd';
+import { Collapse, Spin, Icon, Empty, message } from 'antd';
 import moment from 'moment';
 import { EncryptBase64 } from '../../Common/Encrypt';
 import { Link } from 'react-router-dom';
@@ -102,6 +102,7 @@ export default function StaffInfo(props) {
         }
       })
       .catch(e => {
+        message.error('部门信息查询失败', 1);
         console.error('FetchQueryOrganizationInfo', e);
       });
   };
@@ -137,6 +138,7 @@ export default function StaffInfo(props) {
         }
       })
       .catch(e => {
+        message.error('人员信息查询失败', 1);
         console.error('QueryMemberInfo', e);
       });
   };

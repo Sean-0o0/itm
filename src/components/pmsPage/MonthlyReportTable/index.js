@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
+import { message } from 'antd';
 import {
   FetchQueryOwnerProjectList,
   QueryUserInfo,
@@ -7,7 +8,6 @@ import {
 } from '../../../services/pmsServices';
 import moment from 'moment';
 import { setTextRange } from 'typescript';
-
 export default function MonthlyReportTable() {
   const [monthData, setMonthData] = useState(new moment());
   const [tableData, setTableData] = useState([]);
@@ -28,12 +28,16 @@ export default function MonthlyReportTable() {
   const getTxrData = () => {
     QueryUserInfo({
       type: '信息技术事业部',
-    }).then(res => {
-      if (res.success) {
-        setTxrData(p => [...res.record]);
-        queryTableData(monthData.format('YYYYMM'), currentXmid, [...res.record]);
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          setTxrData(p => [...res.record]);
+          queryTableData(monthData.format('YYYYMM'), currentXmid, [...res.record]);
+        }
+      })
+      .catch(e => {
+        message.error('填报人信息查询失败', 1);
+      });
   };
   //项目下拉框数据
   const queryProjectData = () => {
@@ -53,46 +57,50 @@ export default function MonthlyReportTable() {
     QueryMonthlyList({
       month: Number(yf),
       xmmc: Number(xmid),
-    }).then(res => {
-      if (res.code === 1) {
-        console.log('🚀 ~ file: index.js ~ line 55 ~ queryTableData ~ res', res);
-        const newArr = res.record.map(item => {
-          // const getStatus = (num) => {
-          //     switch (num) {
-          //         case '1':
-          //             return '填写中';
-          //         case '2':
-          //             return '已提交';
-          //         case '3':
-          //             return '被退回'
-          //     }
-          // };
-          let arr = item.txr?.trim() === '' ? [] : item.txr?.trim()?.split(';');
-          // let txrArr = arr?.map(item => {
-          //   return txrData?.filter(x => String(x?.id) === String(item))[0]?.name;
-          // });
-          return {
-            id: item.id,
-            zdgz: item.zdgz,
-            rwfl: item.rwfl,
-            xmmc: item.xmmc,
-            zmk: item.zmk,
-            yf: item.yf,
-            zt: item.zt,
-            ['bywcqk' + item.id]: item.bywcqk?.trim(),
-            ['xygzjh' + item.id]: item.xygzjh?.trim(),
-            ['ldyj' + item.id]: item.ldyj?.trim(),
-            ['txr' + item.id]: [...arr],
-            txrid: [...arr],
-          };
-        });
-        setTableData(preState => [...newArr]);
-        setOriginData(preState => [...newArr]);
-        setTxrTableData(preState => [...newArr]);
+    })
+      .then(res => {
+        if (res.code === 1) {
+          console.log('🚀 ~ file: index.js ~ line 55 ~ queryTableData ~ res', res);
+          const newArr = res.record.map(item => {
+            // const getStatus = (num) => {
+            //     switch (num) {
+            //         case '1':
+            //             return '填写中';
+            //         case '2':
+            //             return '已提交';
+            //         case '3':
+            //             return '被退回'
+            //     }
+            // };
+            let arr = item.txr?.trim() === '' ? [] : item.txr?.trim()?.split(';');
+            // let txrArr = arr?.map(item => {
+            //   return txrData?.filter(x => String(x?.id) === String(item))[0]?.name;
+            // });
+            return {
+              id: item.id,
+              zdgz: item.zdgz,
+              rwfl: item.rwfl,
+              xmmc: item.xmmc,
+              zmk: item.zmk,
+              yf: item.yf,
+              zt: item.zt,
+              ['bywcqk' + item.id]: item.bywcqk?.trim(),
+              ['xygzjh' + item.id]: item.xygzjh?.trim(),
+              ['ldyj' + item.id]: item.ldyj?.trim(),
+              ['txr' + item.id]: [...arr],
+              txrid: [...arr],
+            };
+          });
+          setTableData(preState => [...newArr]);
+          setOriginData(preState => [...newArr]);
+          setTxrTableData(preState => [...newArr]);
+          setTableLoading(false);
+        }
+      })
+      .catch(e => {
+        message.error('表格数据查询失败', 1);
         setTableLoading(false);
-      }
-    });
-    setTableLoading(false);
+      });
   };
   //表格跨行合并
   const getRowSpanCount = (data, key, target) => {

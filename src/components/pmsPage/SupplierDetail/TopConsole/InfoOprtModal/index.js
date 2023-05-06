@@ -123,13 +123,15 @@ function InfoOprtModal(props) {
                 //刷新数据
                 getDetailData && getDetailData(splId);
                 getTableData && getTableData({});
+                setVisible(false);
               }
             }
           })
           .catch(e => {
+            message.error((oprtType === 'ADD' ? '新增' : '编辑') + '失败', 1);
             console.error('OperateSupplierInfo', e);
           });
-        setVisible(false);
+        
       }
     });
   };

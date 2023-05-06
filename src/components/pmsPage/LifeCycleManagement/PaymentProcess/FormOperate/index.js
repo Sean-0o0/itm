@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber, Spin } from 'antd';
+import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber, Spin, message } from 'antd';
 import moment from 'moment';
 import {
   QueryCreatePaymentInfo,
@@ -51,11 +51,12 @@ export default function FormOperate(props) {
       .then(res => {
         if (res?.success) {
           setGlsbData(p => [...JSON.parse(res.lcxxRecord)]);
-          console.log('🚀 ~ getSelectorData ~ lcxxRecord:', [...JSON.parse(res.lcxxRecord)]);
+          // console.log('🚀 ~ getSelectorData ~ lcxxRecord:', [...JSON.parse(res.lcxxRecord)]);
         }
       })
       .catch(e => {
         console.error('QueryCreatePaymentInfo', e);
+        message.error('关联设备采购有合同流程数据查询失败', 1);
       });
   };
 
@@ -103,15 +104,19 @@ export default function FormOperate(props) {
       total: -1,
       khmc,
       zhid: -1,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        setCurrentPage(1);
-        setSkzh(p => [...rec]);
-        setIsNoMoreData(false);
-        setCurrentKhmc(khmc);
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          setCurrentPage(1);
+          setSkzh(p => [...rec]);
+          setIsNoMoreData(false);
+          setCurrentKhmc(khmc);
+        }
+      })
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
   const getSkzhData = (khmc = '', current = 1) => {
     setFetching(true);
@@ -146,7 +151,9 @@ export default function FormOperate(props) {
           // console.log('🚀 ~ file: index.js:124 ~ getSkzhData ~ ', [...arr, ...rec]);
         }
       })
-      .catch(e => console.error(e));
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
   //
   const handleSkzhSearch = khmc => {

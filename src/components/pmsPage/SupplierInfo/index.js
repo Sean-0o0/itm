@@ -3,6 +3,7 @@ import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import { QuerySupplierList } from '../../../services/pmsServices';
 import { setCommentRange } from 'typescript';
+import { message } from 'antd';
 
 export default function SupplierInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -60,6 +61,7 @@ export default function SupplierInfo(props) {
         }
       })
       .catch(e => {
+        message.error('表格数据查询失败', 1);
         console.error('getTableData', e);
         setTableLoading(false);
       });
@@ -81,7 +83,7 @@ export default function SupplierInfo(props) {
         }
       })
       .catch(e => {
-        console.error('getTableData', e);
+        message.error('表格数据查询失败', 1);
         setTableLoading(false);
       });
   };

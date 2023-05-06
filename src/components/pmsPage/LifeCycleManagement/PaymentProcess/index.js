@@ -100,7 +100,9 @@ const PaymentProcess = props => {
           setDgskzh(p => [...rec]);
         }
       })
-      .catch(e => console.error(e));
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
 
   //创建单据时获取基本信息
@@ -118,7 +120,10 @@ const PaymentProcess = props => {
           setIsSpinning(false);
         }
       })
-      .catch(e => console.error(e));
+      .catch(e => {
+        console.error(e);
+        message.error('单据基本信息查询失败', 1);
+      });
   };
 
   const handleSubmit = (operateType = 'send') => {
@@ -238,13 +243,13 @@ const PaymentProcess = props => {
                       );
                     resetFields();
                     fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
+                    closePaymentProcessModal();
                   }
                 })
                 .catch(e => {
                   setIsSpinning(false);
-                  console.error(e);
+                  message.error(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}失败`, 1);
                 });
-              closePaymentProcessModal();
             },
           });
         }

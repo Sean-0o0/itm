@@ -6,7 +6,7 @@ import PrjMember from './PrjMember';
 import PrjMessage from './PrjMessage';
 import TopConsole from './TopConsole';
 import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
-import { Spin } from 'antd';
+import { message, Spin } from 'antd';
 import moment from 'moment';
 import DemandInitiationModal from '../DemandInitiationModal';
 
@@ -100,6 +100,7 @@ export default function ProjectDetail(props) {
         setIsLeader(res.role !== '普通人员');
       })
       .catch(e => {
+        message.error('用户信息查询失败', 1);
         console.error('QueryIsLeader', e);
       });
   };
@@ -160,6 +161,7 @@ export default function ProjectDetail(props) {
       })
       .catch(e => {
         console.error('QueryProjectInfoAll', e);
+        message.error('项目详情信息查询失败', 1);
       });
   };
 

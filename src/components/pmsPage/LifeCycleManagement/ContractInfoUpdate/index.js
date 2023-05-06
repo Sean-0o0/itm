@@ -264,37 +264,41 @@ class ContractInfoUpdate extends React.Component {
     const { currentXmid } = this.props;
     FetchQueryHTXXByXQTC({
       xmmc: currentXmid,
-    }).then(res => {
-      let rec = res.record;
-      this.setState(
-        {
-          contractInfo: { htje: Number(rec[0]?.htje), qsrq: rec[0]?.qsrq },
-          gys: rec[0]?.gys,
-        },
-        () => {
-          this.setState({
-            currentGysId: rec[0]?.gys,
+    })
+      .then(res => {
+        let rec = res.record;
+        this.setState(
+          {
+            contractInfo: { htje: Number(rec[0]?.htje), qsrq: rec[0]?.qsrq },
+            gys: rec[0]?.gys,
+          },
+          () => {
+            this.setState({
+              currentGysId: rec[0]?.gys,
+            });
+          },
+        );
+        // console.log('🚀 ~ file: index.js ~ line 233 ~ ContractInfoUpdate ~ rec[0]?.gys', rec[0]?.gys);
+        let arr = [];
+        for (let i = 0; i < rec.length; i++) {
+          arr.push({
+            id: rec[i]?.fkxqid,
+            ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+            ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+            ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+            ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+            zt: rec[i]?.zt,
           });
-        },
-      );
-      // console.log('🚀 ~ file: index.js ~ line 233 ~ ContractInfoUpdate ~ rec[0]?.gys', rec[0]?.gys);
-      let arr = [];
-      for (let i = 0; i < rec.length; i++) {
-        arr.push({
-          id: rec[i]?.fkxqid,
-          ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
-          ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
-          ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
-          ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
-          zt: rec[i]?.zt,
+        }
+        this.setState({
+          tableData: [...this.state.tableData, ...arr],
+          isSpinning: false,
+          lxje: Number(res.lxje),
         });
-      }
-      this.setState({
-        tableData: [...this.state.tableData, ...arr],
-        isSpinning: false,
-        lxje: Number(res.lxje),
+      })
+      .catch(e => {
+        message.error('合同信息查询失败', 1);
       });
-    });
   };
   // 查询供应商下拉列表
   fetchQueryGysInZbxx = (current, pageSize) => {
@@ -305,19 +309,23 @@ class ContractInfoUpdate extends React.Component {
       current,
       pageSize,
       total: -1,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        this.setState(
-          {
-            gysData: [...rec],
-          },
-          () => {
-            this.fetchQueryHTXXByXQTC();
-          },
-        );
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState(
+            {
+              gysData: [...rec],
+            },
+            () => {
+              this.fetchQueryHTXXByXQTC();
+            },
+          );
+        }
+      })
+      .catch(e => {
+        message.error('供应商信息查询失败', 1);
+      });
   };
   //合同信息修改付款详情表格单行删除
   handleSingleDelete = id => {
@@ -605,17 +613,17 @@ class ContractInfoUpdate extends React.Component {
                     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD')),
                     gysid: Number(currentGysId),
                     czlx: 'UPDATE',
-                  }).then(res => {
-                    if (res?.code === 1) {
-                      // message.success('合同信息修改成功', 1);
-                      onSuccess();
-                    } else {
-                      message.error('信息修改失败', 1);
-                    }
-                  });
-                  // this.props.form.resetFiled();
-                  this.setState({ tableData: [] });
-                  closeMessageEditModal();
+                  })
+                    .then(res => {
+                      if (res?.code === 1) {
+                        onSuccess();
+                        this.setState({ tableData: [] });
+                        closeMessageEditModal();
+                      }
+                    })
+                    .catch(e => {
+                      message.error('合同信息修改失败', 1);
+                    });
                 }
               }
             });

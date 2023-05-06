@@ -88,7 +88,6 @@ export default function MileStone(props) {
               x => x.lcbmc === '项目立项' || x.lcbmc === '市场及需求分析',
             );
           }
-
           let currentIndex = -1;
           //当前里程碑 - 添加 isCurrent，判断是否为当前里程碑
           FetchQueryLiftcycleMilestone({
@@ -192,21 +191,24 @@ export default function MileStone(props) {
                         }
                       }
                       setIsSpinning(false);
-                      console.log('我被调用了');
+                      // console.log('我被调用了');
                     }
                   })
                   .catch(e => {
                     console.error('FetchQueryLifecycleStuff', e);
+                    message.error('里程碑事项信息查询失败', 1);
                   });
               }
             })
             .catch(e => {
               console.error('FetchQueryLiftcycleMilestone', e);
+              message.error('里程碑信息查询失败', 1);
             });
         }
       })
       .catch(e => {
         console.error('FetchQueryLiftcycleMilestone', e);
+        message.error('里程碑信息查询失败', 1);
       });
   };
 
@@ -479,6 +481,7 @@ export default function MileStone(props) {
       })
       .catch(error => {
         console.error(!error.success ? error.message : error.note);
+        message.error(riskTxt + '失败', 1);
       });
   };
 

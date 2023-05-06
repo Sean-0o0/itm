@@ -148,6 +148,7 @@ export default forwardRef(function TopConsole(props, ref) {
       })
       .catch(e => {
         console.error('handleSearch', e);
+        message.error('查询失败', 1);
         setTableLoading(false);
       });
   };

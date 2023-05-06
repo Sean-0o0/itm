@@ -6,6 +6,7 @@ import {
   QueryHjgWeeklyInfo,
 } from '../../../services/pmsServices';
 import moment from 'moment';
+import { message } from 'antd';
 
 export default function WeeklyReportSummary() {
   const [dateRange, setDateRange] = useState([null, null]);
@@ -87,6 +88,7 @@ export default function WeeklyReportSummary() {
         }
       })
       .catch(e => {
+        message.error('表格数据查询失败', 1);
         console.error('queryTableData错误', e);
       });
   };

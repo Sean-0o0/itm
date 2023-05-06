@@ -3,7 +3,7 @@ import TopConsole from './TopConsole';
 import BasicInfo from './BasicInfo';
 import TableTabs from './TableTabs';
 import { QuerySupplierDetailInfo, QuerySupplierList } from '../../../services/pmsServices';
-import { Spin } from 'antd';
+import { Spin, message } from 'antd';
 
 export default function SupplierDetail(props) {
   const { dictionary, routes, splId = -2 } = props;
@@ -56,6 +56,7 @@ export default function SupplierDetail(props) {
         }
       })
       .catch(e => {
+        message.error('供应商详情信息查询失败', 1);
         console.error('QuerySupplierDetailInfo', e);
       });
   };

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { Select, Button, Input, TreeSelect, Row, Col, Icon } from 'antd';
+import { Select, Button, Input, TreeSelect, Row, Col, Icon, message } from 'antd';
 import { QueryProjectListPara, QueryProjectListInfo } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
 import { set } from 'store';
@@ -219,6 +219,7 @@ export default forwardRef(function TopConsole(props, ref) {
       })
       .catch(e => {
         console.error('QueryProjectListPara', e);
+        message.error('下拉框信息查询失败', 1);
       });
   };
 
@@ -292,6 +293,7 @@ export default forwardRef(function TopConsole(props, ref) {
       })
       .catch(e => {
         console.error('handleSearch', e);
+        message.error('查询失败', 1);
         setTableLoading(false);
       });
   };

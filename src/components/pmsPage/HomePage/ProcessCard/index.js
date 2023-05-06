@@ -5,7 +5,7 @@ import {
 } from '../../../../services/pmsServices';
 import moment from 'moment';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { Empty, Tooltip } from 'antd';
+import { Empty, message, Tooltip } from 'antd';
 
 export default function ProcessCard(props) {
   const { processData } = props;
@@ -47,6 +47,7 @@ export default function ProcessCard(props) {
       })
       .catch(error => {
         console.error(!error.success ? error.message : error.note);
+        message.error('链接获取失败', 1);
       });
   };
 
@@ -91,7 +92,10 @@ export default function ProcessCard(props) {
               .then(res => {
                 window.open(res.url);
               })
-              .catch(e => console.error('GetApplyListProvisionalAuth', e));
+              .catch(e => {
+                console.error('GetApplyListProvisionalAuth', e);
+                message.error('链接跳转失败', 1);
+              });
           } else {
             //OA流程
             window.open(url);

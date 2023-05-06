@@ -1,4 +1,4 @@
-import { Progress, Popover, Empty, Popconfirm } from 'antd';
+import { Progress, Popover, Empty, Popconfirm, message } from 'antd';
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { OperateCreatProject } from '../../../../services/projectManage';
 import { EncryptBase64 } from '../../../Common/Encrypt';
@@ -118,11 +118,12 @@ export default function ProjectCard(props) {
       .then(res => {
         if (res.code === 1) {
           getPrjInfo(userRole);
-          console.log('触发删除');
+          // console.log('触发删除');
         }
       })
       .catch(error => {
         console.error(!error.success ? error.message : error.note);
+        message.error('草稿删除失败', 1);
       });
   };
 

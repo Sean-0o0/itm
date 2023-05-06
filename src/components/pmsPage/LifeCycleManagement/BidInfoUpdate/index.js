@@ -255,57 +255,61 @@ class BidInfoUpdate extends React.Component {
     const { currentXmid } = this.props;
     FetchQueryZBXXByXQTC({
       xmmc: currentXmid,
-    }).then(res => {
-      let rec = res.record;
-      // console.log('🚀 ~ file: index.js:228 ~ BidInfoUpdate ~ res.record:', res.record);
-      this.firstTimeQueryPaymentAccountList(rec[0].zbgysfkzhmc);
-      this.setState({
-        initialSkzhMc: rec[0].zbgysfkzhmc || '',
-        initialSkzhId: Number(rec[0].zbgysfkzh),
-        skzhId: rec[0].zbgysfkzh,
-        bidInfo: {
-          zbgys: this.state.glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
-          tbbzj: Number(rec[0].tbbzj),
-          lybzj: Number(rec[0].lybzj),
-          zbgysskzh: rec[0].zbgysfkzhmc || '',
-          pbbg: rec[0].pbbg,
-        },
-        uploadFileParams: {
-          columnName: 'PBBG',
-          documentData: res.base64,
-          fileLength: '',
-          filePath: '',
-          fileName: rec[0].pbbg,
-          id: rec[0].zbxxid,
-          objectName: 'TXMXX_ZBXX',
-        },
-      });
-      if (res.url && res.base64 && rec[0].pbbg) {
-        let arrTemp = [];
-        arrTemp.push({
-          uid: Date.now(),
-          name: rec[0].pbbg,
-          status: 'done',
-          url: res.url,
-        });
+    })
+      .then(res => {
+        let rec = res.record;
+        // console.log('🚀 ~ file: index.js:228 ~ BidInfoUpdate ~ res.record:', res.record);
+        this.firstTimeQueryPaymentAccountList(rec[0].zbgysfkzhmc);
         this.setState({
-          fileList: [...this.state.fileList, ...arrTemp],
+          initialSkzhMc: rec[0].zbgysfkzhmc || '',
+          initialSkzhId: Number(rec[0].zbgysfkzh),
+          skzhId: rec[0].zbgysfkzh,
+          bidInfo: {
+            zbgys: this.state.glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
+            tbbzj: Number(rec[0].tbbzj),
+            lybzj: Number(rec[0].lybzj),
+            zbgysskzh: rec[0].zbgysfkzhmc || '',
+            pbbg: rec[0].pbbg,
+          },
+          uploadFileParams: {
+            columnName: 'PBBG',
+            documentData: res.base64,
+            fileLength: '',
+            filePath: '',
+            fileName: rec[0].pbbg,
+            id: rec[0].zbxxid,
+            objectName: 'TXMXX_ZBXX',
+          },
         });
-      }
-      let arr = [];
-      for (let i = 0; i < rec.length; i++) {
-        let id = getID();
-        arr.push({
-          id,
-          [`gysmc${id}`]: this.state.glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
-          // [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
+        if (res.url && res.base64 && rec[0].pbbg) {
+          let arrTemp = [];
+          arrTemp.push({
+            uid: Date.now(),
+            name: rec[0].pbbg,
+            status: 'done',
+            url: res.url,
+          });
+          this.setState({
+            fileList: [...this.state.fileList, ...arrTemp],
+          });
+        }
+        let arr = [];
+        for (let i = 0; i < rec.length; i++) {
+          let id = getID();
+          arr.push({
+            id,
+            [`gysmc${id}`]: this.state.glgys.filter(x => x.id === rec[i].gysmc)[0]?.gysmc || '',
+            // [`gysskzh${id}`]: this.state.skzhData.filter(x => x.id === rec[i].gysfkzh)[0]?.khmc || '',
+          });
+        }
+        this.setState({
+          tableData: [...this.state.tableData, ...arr],
+          isSpinning: false,
         });
-      }
-      this.setState({
-        tableData: [...this.state.tableData, ...arr],
-        isSpinning: false,
+      })
+      .catch(e => {
+        message.error('中标信息查询失败', 1);
       });
-    });
   };
 
   // 查询中标信息修改时的供应商下拉列表
@@ -317,15 +321,19 @@ class BidInfoUpdate extends React.Component {
       current,
       pageSize,
       total: -1,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        this.setState({
-          glgys: [...rec],
-        });
-        this.fetchQueryZBXXByXQTC();
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            glgys: [...rec],
+          });
+          this.fetchQueryZBXXByXQTC();
+        }
+      })
+      .catch(e => {
+        message.error('供应商信息查询失败', 1);
+      });
   };
 
   firstTimeQueryPaymentAccountList = (khmc = '') => {
@@ -338,16 +346,20 @@ class BidInfoUpdate extends React.Component {
       total: -1,
       khmc,
       zhid: -1,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        this.setState({
-          currentPage: 1,
-          skzhData: [...rec],
-          isNoMoreData: false,
-        });
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            currentPage: 1,
+            skzhData: [...rec],
+            isNoMoreData: false,
+          });
+        }
+      })
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
 
   initialQueryPaymentAccountList = () => {
@@ -360,17 +372,21 @@ class BidInfoUpdate extends React.Component {
       total: -1,
       khmc: this.state.initialSkzhMc,
       zhid: -1,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        this.setState({
-          currentPage: 1,
-          skzhData: [...rec],
-          currentKhmc: '',
-          isNoMoreData: false,
-        });
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            currentPage: 1,
+            skzhData: [...rec],
+            currentKhmc: '',
+            isNoMoreData: false,
+          });
+        }
+      })
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
 
   fetchQueryPaymentAccountList = (khmc = '', current = 1, zhid = -1) => {
@@ -386,34 +402,38 @@ class BidInfoUpdate extends React.Component {
       total: -1,
       khmc,
       zhid,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        let arr = [...this.state.skzhData];
-        if (res.totalrows <= 10) {
-          this.setState({
-            skzhData: [...rec],
-            fetching: false,
-            isNoMoreData: true,
-          });
-        } else if (rec.length === 0) {
-          this.setState({
-            skzhData: [...arr],
-            fetching: false,
-            isNoMoreData: true,
-          });
-        } else {
-          this.setState({
-            skzhData: [...arr, ...rec],
-            fetching: false,
-          });
-          // console.log('🚀 ~ file: index.js:375 ~ BidInfoUpdate ~ [...arr, ...rec]:', [
-          //   ...arr,
-          //   ...rec,
-          // ]);
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          let arr = [...this.state.skzhData];
+          if (res.totalrows <= 10) {
+            this.setState({
+              skzhData: [...rec],
+              fetching: false,
+              isNoMoreData: true,
+            });
+          } else if (rec.length === 0) {
+            this.setState({
+              skzhData: [...arr],
+              fetching: false,
+              isNoMoreData: true,
+            });
+          } else {
+            this.setState({
+              skzhData: [...arr, ...rec],
+              fetching: false,
+            });
+            // console.log('🚀 ~ file: index.js:375 ~ BidInfoUpdate ~ [...arr, ...rec]:', [
+            //   ...arr,
+            //   ...rec,
+            // ]);
+          }
         }
-      }
-    });
+      })
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
 
   debounce = (fn, waits = 500) => {
@@ -437,17 +457,21 @@ class BidInfoUpdate extends React.Component {
         total: -1,
         khmc,
         zhid: -1,
-      }).then(res => {
-        if (res.success) {
-          let rec = res.record;
-          this.setState({
-            currentPage: 1,
-            skzhData: [...rec],
-            currentKhmc: khmc,
-            isNoMoreData: false,
-          });
-        }
-      });
+      })
+        .then(res => {
+          if (res.success) {
+            let rec = res.record;
+            this.setState({
+              currentPage: 1,
+              skzhData: [...rec],
+              currentKhmc: khmc,
+              isNoMoreData: false,
+            });
+          }
+        })
+        .catch(e => {
+          message.error('收款账号查询失败', 1);
+        });
     });
   };
 
@@ -520,27 +544,35 @@ class BidInfoUpdate extends React.Component {
       current: 1,
       pageSize: 10,
       total: -1,
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        this.setState({
-          glgys: [...rec],
-        });
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            glgys: [...rec],
+          });
+        }
+      })
+      .catch(e => {
+        message.error('供应商信息查询失败', 1);
+      });
   };
   OnSkzhSuccess = () => {
     this.setState({ addSkzhModalVisible: false });
     QueryPaymentAccountList({
       type: 'ALL',
-    }).then(res => {
-      if (res.success) {
-        let rec = res.record;
-        this.setState({
-          skzhData: [...rec],
-        });
-      }
-    });
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          this.setState({
+            skzhData: [...rec],
+          });
+        }
+      })
+      .catch(e => {
+        message.error('收款账号查询失败', 1);
+      });
   };
   // OnRadioChange = e => {
   //   let rec = [...this.state.staticSkzhData];
@@ -775,16 +807,18 @@ class BidInfoUpdate extends React.Component {
                   console.log('🚀submitdata', submitdata);
                   UpdateZbxx({
                     ...submitdata,
-                  }).then(res => {
-                    if (res?.code === 1) {
-                      // message.success('中标信息修改成功', 1);
-                      onSuccess();
-                    } else {
-                      message.error('信息修改失败', 1);
-                    }
-                  });
-                  this.setState({ tableData: [] });
-                  closeBidInfoModal();
+                  })
+                    .then(res => {
+                      if (res?.code === 1) {
+                        // message.success('中标信息修改成功', 1);
+                        onSuccess();
+                        closeBidInfoModal();
+                        this.setState({ tableData: [] });
+                      }
+                    })
+                    .catch(e => {
+                      message.error('中标信息修改失败', 1);
+                    });
                 }
               } else {
                 this.setState({

@@ -85,6 +85,7 @@ export default function PrjMessage(props) {
       })
       .catch(e => {
         console.error('QueryProjectMessages', e);
+        message.error('留言信息查询失败', 1);
       });
   };
   //防抖
@@ -222,6 +223,7 @@ export default function PrjMessage(props) {
           }
         })
         .catch(e => {
+          message.error('留言新增失败', 1);
           console.error('UpdateProjectMessages', e);
         });
     } else {
@@ -238,6 +240,7 @@ export default function PrjMessage(props) {
           }
         })
         .catch(e => {
+          message.error('留言修改成功', 1);
           console.error('UpdateProjectMessages', e);
         });
     }
@@ -260,6 +263,7 @@ export default function PrjMessage(props) {
         }
       })
       .catch(e => {
+        message.error('留言删除成功', 1);
         console.error('UpdateProjectMessages', e);
       });
   };
