@@ -196,6 +196,22 @@ function VisitedRoutes(props) {
             url = item;
             title = '供应商详情';
           }
+          if (item.includes('/pms/manage/projectBuilding')) {
+            url = item;
+            title = '项目建设情况';
+          }
+          if (item.includes('/pms/manage/departmentOverview')) {
+            url = item;
+            title = '部门人员情况';
+          }
+          if (item.includes('/pms/manage/BudgetExcute')) {
+            url = item;
+            title = '预算执行情况';
+          }
+          if (item.includes('/pms/manage/SupplierSituation')) {
+            url = item;
+            title = '供应商情况';
+          }
           if (item.includes('/pms/manage/HomePage')) {
             return null;
           }
