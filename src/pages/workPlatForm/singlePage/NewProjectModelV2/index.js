@@ -599,7 +599,7 @@ class NewProjectModelV2 extends React.Component {
               }
             }
           }
-          if (Number(this.state.budgetInfo.softBudget) === 0) {
+          if (Number(this.state.budgetInfo.softBudget) === 0 && this.state.basicInfo.haveHard == '1') {
             //软件金额为0 去掉项目招采里程碑
             milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
           } else {
@@ -2880,23 +2880,18 @@ class NewProjectModelV2 extends React.Component {
                                 console.log("eeeeee", e)
                                 const flag = projectTypeZY.filter(item => item.ID == e).length > 0
                                 const RYJFlag = e == '1';
-                                if (!RYJFlag) {
-                                  // console.log("1111111")
-                                  this.setState({
-                                    basicInfo: {...basicInfo, haveHard: 2, projectType: e, SFYJRW: '1'},
-                                    projectTypeZYFlag: flag,
-                                    projectTypeRYJFlag: RYJFlag,
-                                    budgetInfo: {...budgetInfo, softBudget: 0, frameBudget: 0, singleBudget: 0}
-                                  })
-                                } else {
-                                  // console.log("222222")
-                                  this.setState({
-                                    basicInfo: {...basicInfo, haveHard: 2, projectType: e, SFYJRW: '1'},
-                                    projectTypeZYFlag: flag,
-                                    projectTypeRYJFlag: RYJFlag,
-                                    budgetInfo: {...budgetInfo, softBudget: 0, frameBudget: 0, singleBudget: 0}
-                                  });
-                                }
+                                this.setState({
+                                  basicInfo: {...basicInfo, haveHard: 2, projectType: e, SFYJRW: '1'},
+                                  projectTypeZYFlag: flag,
+                                  projectTypeRYJFlag: RYJFlag,
+                                  budgetInfo: {
+                                    ...budgetInfo,
+                                    softBudget: 0,
+                                    softBudgetinit: 0,
+                                    frameBudget: 0,
+                                    singleBudget: 0
+                                  }
+                                });
                                 //当项目类型为软硬件项目时，根据本项目软件金额、框架采购金额、单独采购金额的和入参判断里程碑事项，
                                 // 当为其他的项目类型时，根据本项目金额入参判断里程碑事项。
                                 this.fetchQueryMilepostInfo({
@@ -3424,6 +3419,7 @@ class NewProjectModelV2 extends React.Component {
                                     ...budgetInfo,
                                     projectBudget: 0,
                                     softBudget: 0,
+                                    softBudgetinit: 0,
                                     singleBudget: 0,
                                     frameBudget: 0
                                   }

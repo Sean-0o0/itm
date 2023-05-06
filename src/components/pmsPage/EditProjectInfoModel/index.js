@@ -4022,9 +4022,16 @@ class EditProjectInfoModel extends React.Component {
                                   const flag = projectTypeZY.filter(item => item.ID == e).length > 0;
                                   const RYJFlag = e == '1';
                                   this.setState({
-                                    basicInfo: {...basicInfo, projectType: e, SFYJRW: 1},
+                                    basicInfo: {...basicInfo, haveHard: 2, projectType: e, SFYJRW: 1},
                                     projectTypeZYFlag: flag,
                                     projectTypeRYJFlag: RYJFlag,
+                                    budgetInfo: {
+                                      ...budgetInfo,
+                                      softBudget: 0,
+                                      softBudgetinit: 0,
+                                      frameBudget: 0,
+                                      singleBudget: 0
+                                    }
                                   });
                                   this.fetchQueryMilepostInfo({
                                     type: e,
@@ -4639,6 +4646,7 @@ class EditProjectInfoModel extends React.Component {
                                                    ...budgetInfo,
                                                    projectBudget: 0,
                                                    softBudget: 0,
+                                                   softBudgetinit: 0,
                                                    singleBudget: 0,
                                                    frameBudget: 0
                                                  }
