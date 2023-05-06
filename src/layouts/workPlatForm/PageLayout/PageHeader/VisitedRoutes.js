@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { routerRedux } from 'dva/router';
 import { Link } from 'umi';
-import { Icon, Dropdown, Menu } from 'antd';
+import { Icon, Dropdown, Menu, Divider } from 'antd';
 import { dropByCacheKey } from 'react-router-cache-route';
 import styles from './visitedRoutes.less';
 
@@ -131,33 +131,43 @@ function VisitedRoutes(props) {
         arr = arr.filter(x => x !== m);
       }
     });
-    const matches5 = arr.filter(x => /^\/HomePage\/attachLibrary/.test(x));
+    const matches5 = arr.filter(x => /^\/pms\/manage\/attachLibrary/.test(x));
     matches5.forEach((m, i) => {
       if (i !== matches5.length - 1) {
         arr = arr.filter(x => x !== m);
       }
     });
-    console.log('🚀 ~ file: VisitedRoutes.js:119 ~ handleUrls', arr);
+    const matches6 = arr.filter(x => /^\/pms\/manage\/SupplierDetail/.test(x));
+    matches6.forEach((m, i) => {
+      if (i !== matches6.length - 1) {
+        arr = arr.filter(x => x !== m);
+      }
+    });
     return arr;
   };
 
   let tabCount = 0;
 
   return (
-    <div style={{ width: '136px', height: '100%' }} className="clearfix" id="visited-scroll">
+    <div
+      style={{ width: '136px', height: '100%', alignItems: 'flex-end' }}
+      className="clearfix"
+      id="visited-scroll"
+    >
       {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
           <span style={{ margin: '0 1rem' }}>首页</span>
         </Link>
       </div> */}
-      <div key={homePage} className={`cur-tabs ${styles.tagview} `} style={{ height: '100%' }}>
+      <div key={homePage} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
         <div
           className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
             styles.isActive}`}
         >
           <Link to={'/pms/manage/HomePage'}>个人工作台</Link>
         </div>
+        <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
       </div>
       {handleUrls(urls).length > 0 &&
         handleUrls(urls).map(item => {
@@ -182,6 +192,10 @@ function VisitedRoutes(props) {
             url = item;
             title = '文档列表';
           }
+          if (item.includes('/pms/manage/SupplierDetail/')) {
+            url = item;
+            title = '供应商详情';
+          }
           if (item.includes('/pms/manage/HomePage')) {
             return null;
           }
@@ -197,18 +211,20 @@ function VisitedRoutes(props) {
           }
           tabCount++;
           return (
-            <div key={url} className={`cur-tabs ${styles.tagview} `} style={{ height: '100%' }}>
+            <div key={url} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
               <div className={`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}>
                 <Link to={url}>{title}</Link>
-                <i
-                  className="iconfont icon-close"
-                  style={{ marginLeft: '20px' }}
-                  onClick={() => {
-                    closePage(url);
-                  }}
-                />
+                <div>
+                  <i
+                    className="iconfont icon-close"
+                    style={{ margin: 0 }}
+                    onClick={() => {
+                      closePage(url);
+                    }}
+                  />
+                </div>
               </div>
-              {/* <Icon type="close-circle" theme="twoTone" twoToneColor="#ec6057"  /> */}
+              <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
             </div>
           );
         })}
