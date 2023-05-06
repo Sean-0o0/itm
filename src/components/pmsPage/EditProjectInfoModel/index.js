@@ -464,8 +464,11 @@ class EditProjectInfoModel extends React.Component {
     subItemRecord: [],
     //招采信息
     purchaseInfo: {
+      //立项金额
+      lxje: 0,
       //合同金额
       contractValue: 0,
+      contractValueFlag: false,
       //签署日期
       signData: moment(new Date()).format('YYYY-MM-DD'),
       //付款详情
@@ -2225,6 +2228,10 @@ class EditProjectInfoModel extends React.Component {
     let arr = [...tableData];
     console.log('staticSkzhData', staticSkzhData);
     //console.log("tableDatatableData", tableData)
+    if (purchaseInfo.lxje < purchaseInfo.contractValue) {
+      message.warn("合同金额不能超过本项目立项金额(" + purchaseInfo.lxje + "元),请修改！")
+      return;
+    }
     arr.forEach(item => {
       for (let i in item) {
         if (i === 'fksj' + item.id) {
@@ -3070,6 +3077,7 @@ class EditProjectInfoModel extends React.Component {
           this.setState({
             purchaseInfo: {
               ...this.state.purchaseInfo,
+              lxje: Number(res?.lxje),
               contractValue: Number(htxxRec[0]?.htje),
               signData: htxxRec[0]?.qsrq
                 ? htxxRec[0]?.qsrq
@@ -6351,11 +6359,24 @@ class EditProjectInfoModel extends React.Component {
                               <Input
                                 type="number"
                                 placeholder="请输入合同金额"
+                                onBlur={(e) => {
+                                  if (this.state.purchaseInfo.contractValueFlag) {
+                                    if (this.state.purchaseInfo.lxje < this.state.purchaseInfo.contractValue) {
+                                      message.warn("合同金额超过本项目立项金额(" + this.state.purchaseInfo.lxje + "元),请注意！")
+                                    }
+                                  }
+                                }
+                                }
                                 onChange={e => {
+                                  let contractValueFlag = false
+                                  if (e !== this.state.purchaseInfo.contractValue) {
+                                    contractValueFlag = true;
+                                  }
                                   //console.log('请输入合同金额',e.target.value)
                                   this.setState({
                                     purchaseInfo: {
                                       ...purchaseInfo,
+                                      contractValueFlag,
                                       contractValue: e.target.value,
                                     },
                                   });
