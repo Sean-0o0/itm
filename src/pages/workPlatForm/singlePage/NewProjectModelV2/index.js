@@ -588,6 +588,9 @@ class NewProjectModelV2 extends React.Component {
                 })
               }
               if (data[i].lcbmc === '项目招采') {
+                if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+                  milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+                }
                 milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
                 this.setState({
                   pureHardwareFlag:false,
@@ -601,10 +604,72 @@ class NewProjectModelV2 extends React.Component {
                 });
               }
             }
-          }
-          if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && this.state.basicInfo.haveHard == '1') {
+          }if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && this.state.basicInfo.haveHard == '1') {
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].lcbmc === "项目立项") {
+                milePostInfo.map(item => {
+                  if (item.lcbmc === "项目立项") {
+                    item.matterInfos = data[i].matterInfos
+                  }
+                })
+              }
+              if (data[i].lcbmc === '项目实施') {
+                milePostInfo.map(item => {
+                  if (item.lcbmc === '项目实施') {
+                    item.matterInfos = data[i].matterInfos;
+                  }
+                });
+              }
+            }
             //软件金额为0 去掉项目招采里程碑
             milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+          }if (Number(this.state.budgetInfo.singleBudget) !== 0 && this.state.basicInfo.haveHard == '1') {
+            if(milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0){
+              milePostInfo.splice(arr.filter(item => item.lcbmc === '项目立项')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目立项')[0])
+            }else{
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].lcbmc === "项目立项") {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === "项目立项") {
+                      item.matterInfos = data[i].matterInfos
+                    }
+                  })
+                }
+              }
+            }
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].lcbmc === '项目实施') {
+                milePostInfo.map(item => {
+                  if (item.lcbmc === '项目实施') {
+                    item.matterInfos = data[i].matterInfos;
+                  }
+                });
+              }
+            }
+            //单独采购有值的时候，都要有招采
+            if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+              milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+            }
+            milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+          }if (500000 > Number(this.state.budgetInfo.singleBudget) > 0 && this.state.basicInfo.haveHard == '1') {
+            for (let i = 0; i < data.length; i++) {
+              if (data[i].lcbmc === '项目实施') {
+                milePostInfo.map(item => {
+                  if (item.lcbmc === '项目实施') {
+                    item.matterInfos = data[i].matterInfos;
+                  }
+                });
+              }
+            }
+            //单独采购小于500000大于0时，隐藏项目立项
+            if(milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0){
+              milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目立项')
+            }
+            //单独采购有值的时候，都要有招采
+            if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+              milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+            }
+            milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
           } else {
             for (let i = 0; i < data.length; i++) {
               if (data[i].lcbmc === "项目立项") {
