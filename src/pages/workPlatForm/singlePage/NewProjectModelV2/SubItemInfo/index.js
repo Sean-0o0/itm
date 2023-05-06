@@ -302,6 +302,7 @@ class SubItemInfo extends Component {
         CGFS: String(item['SUBCGFS' + item.ID]),
         GLYS: item['SUBGLYS' + item.ID],
         GLYSLX: item['GLYSLX' + item.ID],
+        //项目预算金额/三个金额之和
         XMYS: item['SUBSFBHYJ' + item.ID] == '2' ? String(item['SUBYSJE' + item.ID]) : String(item['SUBYSJE-TOTAL' + item.ID]),
         RJYS: String(item['SUBRJYSJE' + item.ID]),
         SFBHYJ: item['SUBSFBHYJ' + item.ID],
