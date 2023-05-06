@@ -3902,7 +3902,7 @@ class NewProjectModelV2 extends React.Component {
                                                                 <span
                                                                   onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
                                                                   {/* <Icon type="close" className="icon" /> */}
-                                                                  <i className='icon-font icon-close' style={{ fontSize: 14 }}/>
+                                                                  <i className='icon-font icon-close' style={{ fontSize: 14, color: 'fafafb', marginLeft: 6 }}/>
                                                                 </span>
                                                               }
                                                             </React.Fragment>
@@ -4257,7 +4257,7 @@ class NewProjectModelV2 extends React.Component {
                                                                 <span
                                                                   onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
                                                                   {/* <Icon type="close" className="icon" /> */}
-                                                                  <i className='iconfont icon-close' style={{ fontSize: 12, color: 'fafafb' }}/>
+                                                                  <i className='iconfont icon-close' style={{ fontSize: 12, color: 'fafafb', marginLeft: 6 }}/>
                                                                 </span>
                                                               }
                                                             </React.Fragment>

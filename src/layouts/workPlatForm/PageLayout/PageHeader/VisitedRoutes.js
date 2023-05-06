@@ -157,13 +157,6 @@ function VisitedRoutes(props) {
             styles.isActive}`}
         >
           <Link to={'/pms/manage/HomePage'}>个人工作台</Link>
-          <i
-            className="iconfont icon-close"
-            style={{ marginLeft: '20px' }}
-            onClick={() => {
-              closePage('/pms/manage/HomePage');
-            }}
-          />
         </div>
       </div>
       {handleUrls(urls).length > 0 &&

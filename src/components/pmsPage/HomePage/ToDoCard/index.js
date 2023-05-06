@@ -49,11 +49,13 @@ export default function ToDoCard(props) {
   const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       setFileAddVisible(false);
+      console.log(event);
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       setFileAddVisible(false);
       //刷新数据
-      handleOperateSuccess('操作成功');
+      // handleOperateSuccess('操作成功');
+      getToDoData();
     }
   };
 
