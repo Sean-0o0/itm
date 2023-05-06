@@ -426,6 +426,8 @@ class EditProjectInfoModel extends React.Component {
     budgetInfo: {
       //项目软件预算
       softBudget: 0,
+      //项目预算初始值
+      softBudgetinit: 0,
       //框架预算
       frameBudget: 0,
       //单独采购预算
@@ -581,6 +583,8 @@ class EditProjectInfoModel extends React.Component {
     zbxxVisiable: false,
     //本项目软件预算改变标志
     softBudgetChangeFlag: false,
+    //纯硬件改变标志(软件金额从0变为其他)
+    pureHardwareFlag: false,
     //框架采购预算标志
     frameBudgetChangeFlag: false,
     //单独采购预算改变标志
@@ -747,11 +751,11 @@ class EditProjectInfoModel extends React.Component {
     console.log("------------查询里程碑信息-----------")
     return FetchQueryMilepostInfo(params)
       .then(record => {
-        const { code = -1, result = '' } = record;
-        const {
+        const {code = -1, result = ''} = record;
+        let {
           nowTime,
           tomorrowTime,
-          mileInfo: { milePostInfo },
+          mileInfo: {milePostInfo},
         } = this.state;
         if (code > 0) {
           let data = JSON.parse(result);
@@ -802,30 +806,112 @@ class EditProjectInfoModel extends React.Component {
           } else if (params.queryType === 'ONLYLX') {
             //预算变更-更改项目立场里程碑里面的事项
             let lxMatterInfos = [];
-            for (let i = 0; i < data.length; i++) {
-              if (data[i].lcbmc === '项目立项') {
-                milePostInfo.map(item => {
-                  if (item.lcbmc === '项目立项') {
-                    item.matterInfos = data[i].matterInfos;
-                  }
-                });
-              }
-              if (data[i].lcbmc === '项目招采') {
-                milePostInfo.map(item => {
-                  if (item.lcbmc === '项目招采') {
-                    item.matterInfos = data[i].matterInfos;
-                  }
-                });
-              }
-              if (data[i].lcbmc === '项目实施') {
-                milePostInfo.map(item => {
-                  if (item.lcbmc === '项目实施') {
-                    item.matterInfos = data[i].matterInfos;
-                  }
-                });
+            //纯硬件 软件金额从0变为其他  这个时候招采信息从之前的不存在变为存在
+            if (this.state.pureHardwareFlag) {
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].lcbmc === "项目立项") {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === "项目立项") {
+                      item.matterInfos = data[i].matterInfos
+                    }
+                  })
+                }
+                if (data[i].lcbmc === '项目招采') {
+                  milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+                }
+                if (data[i].lcbmc === '项目实施') {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === '项目实施') {
+                      item.matterInfos = data[i].matterInfos;
+                    }
+                  });
+                }
               }
             }
-            this.setState({ milePostInfo, mileInfo: { ...this.state.mileInfo, milePostInfo } });
+            if (Number(this.state.budgetInfo.softBudget) === 0) {
+              //软件金额为0 去掉项目招采里程碑
+              milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+            } else {
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].lcbmc === "项目立项") {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === "项目立项") {
+                      item.matterInfos = data[i].matterInfos
+                    }
+                  })
+                }
+                if (data[i].lcbmc === '项目招采') {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === '项目招采') {
+                      item.matterInfos = data[i].matterInfos;
+                    }
+                  });
+                }
+                if (data[i].lcbmc === '项目实施') {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === '项目实施') {
+                      item.matterInfos = data[i].matterInfos;
+                    }
+                  });
+                }
+              }
+            }
+            console.log("milePostInfo", milePostInfo)
+            //重新设置milePostInfo默认时间
+            let now = nowTime;
+            milePostInfo.forEach(item => {
+              if (item.lcbmc.includes("市场")) {
+                if (now !== nowTime) {
+                  item.kssj = now;
+                  item.jssj = moment(now).add(14, 'days').format('YYYY-MM-DD');
+                } else {
+                  item.kssj = nowTime;
+                  item.jssj = moment(nowTime).add(14, 'days').format('YYYY-MM-DD');
+                }
+                now = item.jssj;
+              }
+              if (item.lcbmc.includes("立项")) {
+                if (now !== nowTime) {
+                  item.kssj = now;
+                  item.jssj = moment(now).add(7, 'days').format('YYYY-MM-DD');
+                } else {
+                  item.kssj = nowTime;
+                  item.jssj = moment(nowTime).add(7, 'days').format('YYYY-MM-DD');
+                }
+                now = item.jssj;
+              }
+              if (item.lcbmc.includes("招采")) {
+                if (now !== nowTime) {
+                  item.kssj = now;
+                  item.jssj = moment(now).add(7, 'days').format('YYYY-MM-DD');
+                } else {
+                  item.kssj = nowTime;
+                  item.jssj = moment(nowTime).add(7, 'days').format('YYYY-MM-DD');
+                }
+                now = item.jssj;
+              }
+              if (item.lcbmc.includes("实施")) {
+                if (now !== nowTime) {
+                  item.kssj = now;
+                  item.jssj = moment(now).add(1, 'months').format('YYYY-MM-DD');
+                } else {
+                  item.kssj = nowTime;
+                  item.jssj = moment(nowTime).add(1, 'months').format('YYYY-MM-DD');
+                }
+                now = item.jssj;
+              }
+              if (item.lcbmc.includes("上线")) {
+                if (now !== nowTime) {
+                  item.kssj = now;
+                  item.jssj = moment(now).add(1, 'months').format('YYYY-MM-DD');
+                } else {
+                  item.kssj = nowTime;
+                  item.jssj = moment(nowTime).add(1, 'months').format('YYYY-MM-DD');
+                }
+                now = item.jssj;
+              }
+            });
+            this.setState({milePostInfo, mileInfo: {...this.state.mileInfo, milePostInfo}});
           }
         }
       })
@@ -1238,6 +1324,7 @@ class EditProjectInfoModel extends React.Component {
             budgetInfo: {
               //项目软件预算
               softBudget: Number(result.softBudget),
+              softBudgetinit: Number(result.softBudget),
               //框架预算
               frameBudget: Number(result.frameBudget),
               //单独采购预算
@@ -1406,7 +1493,7 @@ class EditProjectInfoModel extends React.Component {
           const projectTypeZY = this.state.projectTypeList[0]?.children.filter(
             item => item.NAME == '自研项目',
           )[0]?.children;
-          console.log('projectTypeZY', projectTypeZY);
+          // console.log('projectTypeZY', projectTypeZY);
           this.setState({
             projectTypeZY,
           });
@@ -3492,6 +3579,8 @@ class EditProjectInfoModel extends React.Component {
       projectBudgetChangeFlag = false,
       //本项目软件预算改变标志
       softBudgetChangeFlag = false,
+      //纯硬件改变标志(软件金额从0变为其他)
+      pureHardwareFlag = false,
       //框架采购预算标志
       frameBudgetChangeFlag = false,
       //单独采购预算改变标志
@@ -4651,6 +4740,10 @@ class EditProjectInfoModel extends React.Component {
                                                  //只有数据变动了 就说明包含硬件选择了<是>
                                                  //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
                                                  //子项目总金额之和
+                                                 let pureHardwareFlag = false
+                                                 if (Number(this.state.budgetInfo.softBudgetinit) === 0 && Number(this.state.budgetInfo.softBudget) !== 0) {
+                                                   pureHardwareFlag = true;
+                                                 }
                                                  let subProjectBudget = 0;
                                                  //子项目软件金额之和
                                                  let subSoftBudget = 0;
@@ -4692,11 +4785,12 @@ class EditProjectInfoModel extends React.Component {
                                                    haveType = 3
                                                  }
                                                  this.setState({
+                                                   pureHardwareFlag,
                                                    haveType,
                                                    budgetInfo: {
                                                      ...budgetInfo,
-                                                     // projectBudget: total,
-                                                   }
+                                                     softBudgetinit: this.state.budgetInfo.softBudget
+                                                   },
                                                  })
                                                  this.fetchQueryMilepostInfo({
                                                    type: basicInfo.projectType,

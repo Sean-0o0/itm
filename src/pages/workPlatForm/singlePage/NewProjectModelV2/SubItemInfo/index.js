@@ -554,7 +554,7 @@ class SubItemInfo extends Component {
       softwareList = [],
       projectTypeZY = []
     } = this.props;
-    console.log("projectTypeZY", projectTypeZY)
+    // console.log("projectTypeZY", projectTypeZY)
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     const tableColumns = [
       {
