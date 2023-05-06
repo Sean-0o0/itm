@@ -821,6 +821,9 @@ class EditProjectInfoModel extends React.Component {
                     milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
                   }
                   milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+                  milePostInfo.sort((a,b)=>{
+                    return( a.xh - b.xh)
+                  })
                   this.setState({
                     pureHardwareFlag:false,
                   })
@@ -856,6 +859,9 @@ class EditProjectInfoModel extends React.Component {
               //单独采购有值的时候，都要有招采
               if(milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0){
                 milePostInfo.splice(arr.filter(item => item.lcbmc === '项目立项')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目立项')[0])
+                milePostInfo.sort((a,b)=>{
+                  return( a.xh - b.xh)
+                })
               }else{
                 for (let i = 0; i < data.length; i++) {
                   if (data[i].lcbmc === "项目立项") {
@@ -881,7 +887,10 @@ class EditProjectInfoModel extends React.Component {
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
               }
               milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
-            }if (500000 > Number(this.state.budgetInfo.singleBudget) > 0 && this.state.basicInfo.haveHard == '1') {
+              milePostInfo.sort((a,b)=>{
+                return( a.xh - b.xh)
+              })
+            }if (500000 > Number(this.state.budgetInfo.singleBudget) && Number(this.state.budgetInfo.singleBudget) > 0 && Number(this.state.budgetInfo.frameBudget) === 0 && this.state.basicInfo.haveHard == '1') {
               for (let i = 0; i < data.length; i++) {
                 if (data[i].lcbmc === '项目实施') {
                   milePostInfo.map(item => {
@@ -900,6 +909,9 @@ class EditProjectInfoModel extends React.Component {
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
               }
               milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+              milePostInfo.sort((a,b)=>{
+                return( a.xh - b.xh)
+              })
             }else {
               for (let i = 0; i < data.length; i++) {
                 if (data[i].lcbmc === "项目立项") {
