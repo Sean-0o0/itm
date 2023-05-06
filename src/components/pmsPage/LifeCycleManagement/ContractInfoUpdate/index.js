@@ -252,6 +252,7 @@ class ContractInfoUpdate extends React.Component {
     currentGysId: '',
     addGysModalVisible: false,
     isSpinning: true,
+    lxje: 0, //立项金额
   };
 
   componentDidMount() {
@@ -291,6 +292,7 @@ class ContractInfoUpdate extends React.Component {
       this.setState({
         tableData: [...this.state.tableData, ...arr],
         isSpinning: false,
+        lxje: Number(res.lxje),
       });
     });
   };
@@ -672,15 +674,43 @@ class ContractInfoUpdate extends React.Component {
                       rules: [
                         {
                           required: true,
-                          message: '合同金额（元）不允许空值',
+                          message: '合同金额不允许空值',
                         },
                         {
                           pattern: /^[1-9]\d{0,11}(\.\d{1,2})?$|^0(\.\d{1,2})?$/,
                           message: '最多不超过13位数字且小数点后数字不超过2位',
                         },
+                        {
+                          validator: (rule, value, callback) => {
+                            // console.log(
+                            //   '🚀 ~ file: index.js:685 ~ ContractInfoUpdate ~ render ~ rule, value, callback:',
+                            //   rule,
+                            //   value,
+                            //   callback,
+                            // );
+                            if (Number(value) > this.state.lxje) {
+                              callback('合同金额不能超过本项目立项金额：' + this.state.lxje);
+                            } else {
+                              callback();
+                            }
+                          },
+                        },
                       ],
-                    })(<Input placeholder="请输入合同金额（元）" />)}
-                  </Form.Item>{' '}
+                    })(
+                      <Input
+                        placeholder="请输入合同金额（元）"
+                        onChange={e => {
+                          // if (Number(e.target.value) > this.state.lxje) {
+                          console.log(
+                            '🚀 ~ file: index.js:692 ~ ContractInfoUpdate ~ render ~ e.target.value:',
+                            e.target.value,
+                          );
+
+                          // }
+                        }}
+                      />,
+                    )}
+                  </Form.Item>
                 </Col>
               </Row>
               <Row>
