@@ -13,7 +13,7 @@ export default function GuideCard(props) {
       <div className="system-name">
         <img src={require('../../../../assets/homePage/text@2x.png')} alt="" />
       </div>
-      <Button className="guide-btn">查看引导</Button>
+      {/* <Button className="guide-btn">查看引导</Button> */}
       <div className="guide-img"></div>
     </div>
   );
