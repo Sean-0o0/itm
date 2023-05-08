@@ -10,84 +10,112 @@ import styles from './index.less';
 import LocalPathUtils from '../../../../utils/localPathUtils';
 
 export default class PageHeader extends React.PureComponent {
-
   componentWillUnmount() {
     LocalPathUtils.cleanRouterList();
   }
   render() {
-    const { menuTree, authorities = {}, history, dispatch, location, userBasicInfo, authUserInfo, fetchMenuDatas, messageDrop, dictionary, userTodoWorkflowNum = 0, projectName, theme } = this.props;
+    const {
+      menuTree,
+      authorities = {},
+      history,
+      dispatch,
+      location,
+      userBasicInfo,
+      authUserInfo,
+      fetchMenuDatas,
+      messageDrop,
+      dictionary,
+      userTodoWorkflowNum = 0,
+      projectName,
+      theme,
+    } = this.props;
     const { globalSearch } = authorities;
     // 引导
     const guidesRecords = [
-      { key: '1', containerId: 'guideTrigger_userDrop', content: '您在这里可以‘更换头像’、‘修改密码’、‘切换岗位用户’、‘退出’系统。' },
-      { key: '2', containerId: 'guideTrigger_globalSearch', content: '您在这里可以进行‘全局搜索’（菜单、客户、产品）。' },
+      {
+        key: '1',
+        containerId: 'guideTrigger_userDrop',
+        content: '您在这里可以‘更换头像’、‘修改密码’、‘切换岗位用户’、‘退出’系统。',
+      },
+      {
+        key: '2',
+        containerId: 'guideTrigger_globalSearch',
+        content: '您在这里可以进行‘全局搜索’（菜单、客户、产品）。',
+      },
       { key: '3', containerId: 'guideTrigger_switchMenu', content: '您在这里可以‘切换菜单方案’。' },
-      { key: '4', containerId: 'guideTrigger_messageDrop', content: '您在这里可以查看‘消息提醒’。' },
+      {
+        key: '4',
+        containerId: 'guideTrigger_messageDrop',
+        content: '您在这里可以查看‘消息提醒’。',
+      },
     ];
     const routerList = LocalPathUtils.getRoutesHaveName();
     const sysName = localStorage.getItem('sysName');
     return (
-      <div style={{width: '100%', height: "100%"}}>
-        {/* <GuideCover data={guidesRecords} /> */}
-        <div className="zj-header" style={{width: '100%', height: "100%"}}>
-          <div style={{width: '200px', borderRight: '0px solid #EBEEF5'}}>
-            <span><img className="logo" style={{width: '26px'}}
-                       src={require('../../../../assets/apex-logo-zszq-left.png')} alt=""/>
-            </span>
-            <span style={{
+      <div className="zj-header" style={{ width: '100%', height: '100%' }}>
+        <div style={{ width: '200px', borderBottom: '1px solid #eeeff1' }}>
+          <span>
+            <img
+              className="logo"
+              style={{ width: '26px' }}
+              src={require('../../../../assets/apex-logo-zszq-left.png')}
+              alt=""
+            />
+          </span>
+          <span
+            style={{
               fontSize: '15px',
               color: '#333',
               fontWeight: 'bold',
               letterSpacing: '1.68px',
-              verticalAlign: 'middle'
-            }}>{"信息技术综合管理平台"}</span>
-          </div>
-          {/* <Divider style={{height:'3rem'}} type="vertical" /> */}
-          <div id="visited_routes_container" style={{flex: 1, overflow: 'hidden', backgroundColor: 'white'}}
-               className={`${styles.historyContainer}`}>
-            <span><Scrollbars
-              autoHide
-              className='scrollbars'
-              style={{width: '100%'}}
-            >
-              <VisitedRoutes history={history} dispatch={dispatch} menuTree={menuTree} routerList={routerList}
-                             projectName={projectName}/>
-            </Scrollbars>
-            </span>
-          </div>
-          <div id="fma_opertion_drops" className="dis-fx" style={{width: 'auto', padding: '0 10px'}}>
-            {/*<div style={{ width: '4rem' }}></div>*/}
-            {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
-            {/*  <a onClick={() => {*/}
-            {/*    window.location.href = `/#/UIProcessor?Table=WORKFLOW_TOTASKS`;*/}
-            {/*  }}><Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-message'*/}
-            {/*                                                    style={{fontSize: '3.6rem'}}/></Badge></a>*/}
-            {/*</div>}*/}
-            {/*{<div id="guideTrigger_switchMenu" className="ant-menu-item" style={{position: 'relative', top: '8px'}}>*/}
-            {/*  <Badge count={userTodoWorkflowNum} showZero><i className='iconfont icon-work'*/}
-            {/*                                                 style={{fontSize: '3.6rem'}}/></Badge>*/}
-            {/*</div>}*/}
-            {
-              Object.keys(authorities).includes('remindBell') && (
-                <div id="guideTrigger_messageDrop">
-                  <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
-                </div>
-              )
-            }
-            {<div id="guideTrigger_switchMenu">
-              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
-            </div>}
-            {
-              Object.keys(authorities).includes('globalSearch') && (
-                <div id="guideTrigger_globalSearch" style={{ margin: '0 1rem' }}>
-                  <SearchInput menuTree={menuTree} searchAuth={globalSearch} />
-                </div>
-              )
-            }
-
-            <div id="guideTrigger_userDrop">
-              <UserDrop theme={theme} dispatch={dispatch} userBasicInfo={userBasicInfo} authUserInfo={authUserInfo} />
+              verticalAlign: 'middle',
+            }}
+          >
+            {'信息技术综合管理平台'}
+          </span>
+        </div>
+        <div
+          id="visited_routes_container"
+          style={{ flex: 1, overflow: 'hidden', backgroundColor: 'white' }}
+          className={`${styles.historyContainer}`}
+        >
+          <span>
+            <VisitedRoutes
+              history={history}
+              dispatch={dispatch}
+              menuTree={menuTree}
+              routerList={routerList}
+              projectName={projectName}
+            />
+          </span>
+        </div>
+        <div
+          id="fma_opertion_drops"
+          className="dis-fx"
+          style={{ width: 'auto', borderBottom: '1px solid #eeeff1'  }}
+        >
+          {Object.keys(authorities).includes('remindBell') && (
+            <div id="guideTrigger_messageDrop">
+              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
             </div>
+          )}
+          {
+            <div id="guideTrigger_switchMenu">
+              <SwitchMenu location={location} fetchMenuDatas={fetchMenuDatas} />
+            </div>
+          }
+          {Object.keys(authorities).includes('globalSearch') && (
+            <div id="guideTrigger_globalSearch" style={{ margin: '0 1rem' }}>
+              <SearchInput menuTree={menuTree} searchAuth={globalSearch} />
+            </div>
+          )}
+          <div id="guideTrigger_userDrop">
+            <UserDrop
+              theme={theme}
+              dispatch={dispatch}
+              userBasicInfo={userBasicInfo}
+              authUserInfo={authUserInfo}
+            />
           </div>
         </div>
       </div>

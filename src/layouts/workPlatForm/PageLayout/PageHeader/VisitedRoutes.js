@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { routerRedux } from 'dva/router';
 import { Link } from 'umi';
-import { Icon, Dropdown, Menu, Divider } from 'antd';
+import { Icon, Dropdown, Menu, Divider, Tabs } from 'antd';
 import { dropByCacheKey } from 'react-router-cache-route';
 import styles from './visitedRoutes.less';
+import './visitedRoutes.less';
 
 /**
  * 把树型结构数据转成扁平数据
@@ -21,7 +22,7 @@ function treeToArrayData(treeData, childrenName) {
   };
   return treeDataToCompressed(treeData, childrenName);
 }
-
+const { TabPane } = Tabs;
 function VisitedRoutes(props) {
   // props
   const { menuTree, history, routerList = [], projectName } = props;
@@ -149,143 +150,162 @@ function VisitedRoutes(props) {
   let tabCount = 0;
 
   return (
-    <div
-      style={{ width: '136px', height: '100%', alignItems: 'flex-end' }}
-      className="clearfix"
-      id="visited-scroll"
-    >
-      {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
+    <div className={'clearfix top-tabs-box'} id="visited-scroll">
+      <Tabs
+        type="editable-card"
+        hideAdd={true}
+        onEdit={(targetKey, action) => {
+          if (action === 'remove') closePage(targetKey);
+        }}
+        activeKey={newPathname}
+      >
+        {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
         <Link to={homePage}>
           <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
           <span style={{ margin: '0 1rem' }}>首页</span>
         </Link>
       </div> */}
-      <div key={homePage} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
-        <div
-          className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
-            styles.isActive}`}
-        >
-          <Link to={'/pms/manage/HomePage'}>个人工作台</Link>
-        </div>
-        <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
-      </div>
-      {handleUrls(urls).length > 0 &&
-        handleUrls(urls).map(item => {
-          let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
-          if (item.includes('/pms/manage/ProjectDetail/')) {
-            url = item;
-            title = '项目详情';
-          }
-          if (item.includes('/pms/manage/ProjectInfo/')) {
-            url = item;
-            title = '项目列表';
-          }
-          if (item.includes('/pms/manage/staffDetail/')) {
-            url = item;
-            title = '人员详情';
-          }
-          if (item.includes('/pms/manage/labelDetail/')) {
-            url = item;
-            title = '标签详情';
-          }
-          if (item.includes('/pms/manage/attachLibrary/')) {
-            url = item;
-            title = '文档列表';
-          }
-          if (item.includes('/pms/manage/SupplierDetail/')) {
-            url = item;
-            title = '供应商详情';
-          }
-          if (item.includes('/pms/manage/projectBuilding')) {
-            url = item;
-            title = '项目建设情况';
-          }
-          if (item.includes('/pms/manage/departmentOverview')) {
-            url = item;
-            title = '部门人员情况';
-          }
-          if (item.includes('/pms/manage/BudgetExcute')) {
-            url = item;
-            title = '预算执行情况';
-          }
-          if (item.includes('/pms/manage/SupplierSituation')) {
-            url = item;
-            title = '供应商情况';
-          }
-          if (item.includes('/pms/manage/HomePage')) {
-            return null;
-          }
-          if (title === '' && routerList.length > 0) {
-            const listIndex = routerList.findIndex(tempItem => {
-              return item.indexOf(tempItem.path) > -1;
-            });
-            title = listIndex >= 0 ? routerList[listIndex].note : '';
-            url = item;
-          }
-          if (title === '') {
-            return null;
-          }
-          tabCount++;
-          return (
-            <div key={url} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
-              <div className={`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}>
-                <Link to={url}>{title}</Link>
-                <div>
-                  <i
-                    className="iconfont icon-close"
-                    style={{ margin: 0 }}
-                    onClick={() => {
-                      closePage(url);
-                    }}
-                  />
-                </div>
-              </div>
-              <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
-            </div>
-          );
-        })}
-      {false && (
-        <Dropdown
-          overlay={
-            <Menu>
-              <Menu.Item>
-                <a
-                  onClick={() => {
-                    closeAll();
-                  }}
-                >
-                  关闭全部
-                </a>
-              </Menu.Item>
-              <Menu.Item>
-                <a
-                  onClick={() => {
-                    closeOthers(newPathname);
-                  }}
-                >
-                  关闭其他
-                </a>
-              </Menu.Item>
-            </Menu>
-          }
-        >
+        {/* <div key={homePage} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
           <div
-            ref={moreIconRef}
-            className={styles.tagview}
-            style={{
-              position: 'absolute',
-              left: visitedScroll,
-              zIndex: 2,
-              background: '#ffffff',
-              borderLeft: 'none',
-              height: '100%',
-              padding: '0 4px',
-            }}
+            className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
+              styles.isActive}`}
           >
-            <Icon type="more" style={{ fontSize: 12, margin: 0, color: '#1e2536' }} />
+            <Link to={'/pms/manage/HomePage'}>个人工作台</Link>
           </div>
-        </Dropdown>
-      )}
+          <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
+        </div> */}
+        <TabPane
+          // className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
+          //   styles.isActive}`}
+          className='sssss'
+          tab={<Link to="/pms/manage/HomePage">个人工作台</Link>}
+          closable={false}
+          key="/pms/manage/HomePage"
+        ></TabPane>
+        {handleUrls(urls).length > 0 &&
+          handleUrls(urls).map(item => {
+            let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
+            if (item.includes('/pms/manage/ProjectDetail/')) {
+              url = item;
+              title = '项目详情';
+            }
+            if (item.includes('/pms/manage/ProjectInfo/')) {
+              url = item;
+              title = '项目列表';
+            }
+            if (item.includes('/pms/manage/staffDetail/')) {
+              url = item;
+              title = '人员详情';
+            }
+            if (item.includes('/pms/manage/labelDetail/')) {
+              url = item;
+              title = '标签详情';
+            }
+            if (item.includes('/pms/manage/attachLibrary/')) {
+              url = item;
+              title = '文档列表';
+            }
+            if (item.includes('/pms/manage/SupplierDetail/')) {
+              url = item;
+              title = '供应商详情';
+            }
+            if (item.includes('/pms/manage/projectBuilding')) {
+              url = item;
+              title = '项目建设情况';
+            }
+            if (item.includes('/pms/manage/departmentOverview')) {
+              url = item;
+              title = '部门人员情况';
+            }
+            if (item.includes('/pms/manage/BudgetExcute')) {
+              url = item;
+              title = '预算执行情况';
+            }
+            if (item.includes('/pms/manage/SupplierSituation')) {
+              url = item;
+              title = '供应商情况';
+            }
+            if (item.includes('/pms/manage/HomePage')) {
+              return null;
+            }
+            if (title === '' && routerList.length > 0) {
+              const listIndex = routerList.findIndex(tempItem => {
+                return item.indexOf(tempItem.path) > -1;
+              });
+              title = listIndex >= 0 ? routerList[listIndex].note : '';
+              url = item;
+            }
+            if (title === '') {
+              return null;
+            }
+            tabCount++;
+            return (
+              // <div key={url} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
+              //   <div className={`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}>
+              //   <Link to={url}>{title}</Link>
+              //   <div>
+              //     <i
+              //       className="iconfont icon-close"
+              //       style={{ margin: 0 }}
+              //       onClick={() => {
+              //         closePage(url);
+              //       }}
+              //     />
+              //   </div>
+              // </div>
+              //   <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
+              // </div>
+              <TabPane
+                className={`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}
+                tab={<Link to={url}>{title}</Link>}
+                closable={true}
+                key={url}
+              ></TabPane>
+            );
+          })}
+        {false && (
+          <Dropdown
+            overlay={
+              <Menu>
+                <Menu.Item>
+                  <a
+                    onClick={() => {
+                      closeAll();
+                    }}
+                  >
+                    关闭全部
+                  </a>
+                </Menu.Item>
+                <Menu.Item>
+                  <a
+                    onClick={() => {
+                      closeOthers(newPathname);
+                    }}
+                  >
+                    关闭其他
+                  </a>
+                </Menu.Item>
+              </Menu>
+            }
+          >
+            <div
+              ref={moreIconRef}
+              className={styles.tagview}
+              style={{
+                position: 'absolute',
+                left: visitedScroll,
+                zIndex: 2,
+                background: '#ffffff',
+                borderLeft: 'none',
+                height: '100%',
+                padding: '0 4px',
+              }}
+            >
+              <Icon type="more" style={{ fontSize: 12, margin: 0, color: '#1e2536' }} />
+            </div>
+          </Dropdown>
+        )}
+      </Tabs>
     </div>
   );
 }
