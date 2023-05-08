@@ -2929,7 +2929,7 @@ class NewProjectModelV2 extends React.Component {
                             <span>
                               1、软硬件项目<br/>&nbsp;&nbsp;&nbsp;普通软件开发、硬件资源采购项目以及同时包含软硬件需求的项目<br/>
                               2、工程类项目<br/>&nbsp;&nbsp;&nbsp;场地装修，网络布置等类型项目<br/>
-                              3、服务类项目<br/>&nbsp;&nbsp;&nbsp;咨询、咨询等服务供应类型的项目<br/>
+                              3、服务类项目<br/>&nbsp;&nbsp;&nbsp;咨询、资讯等服务供应类型的项目<br/>
                               4、硬件入围项目<br/>&nbsp;&nbsp;&nbsp;标准化硬件入围项目<br/>
                               5、普通自研项目<br/>&nbsp;&nbsp;&nbsp;公司内部人力进行研发的项目<br/>
                             </span>}>
@@ -3173,14 +3173,17 @@ class NewProjectModelV2 extends React.Component {
                               marginRight: '4px',
                               lineHeight: 1
                             }}>*</span>采购方式&nbsp;
-                              <Tooltip title=
-                                         {
-                                           <span>1、货物类<br/>
-                                             &nbsp;&nbsp;&nbsp;一般软硬件设备采购项目为货物类<br/>
-                                           2、服务类<br/>
-                                             &nbsp;&nbsp;&nbsp;咨询服务、人力服务类项目为服务类<br/>
-                                           3、工程类<br/>
-                                             &nbsp;&nbsp;&nbsp;办公场地装修、改造、维修等为工程类<br/>
+                              <Tooltip
+                              overlayClassName='newproject-cgfs-tooltip'
+                               title={
+                                           <span>1、公开招标<br/>
+                                             &nbsp;&nbsp;&nbsp;一般软硬件设备采重大项目，原则上须采用公开招标的形式。非重大项目，考虑项目潜在供应商是否存在充分的市场竞争，如果有较多供应商参与竞争，须进行公开招标。<br/>
+                                             2、邀请招标<br/>
+                                             &nbsp;&nbsp;&nbsp;项目潜在供应商主要为少数几家市场巨头，可采用邀请招标的形式。<br/>
+                                             3、非招标方式采购<br/>
+                                             &nbsp;&nbsp;&nbsp;3.1、直采：对于指定系统的功能升级等必须由指定供应商进行的项目，符合直采要求的，可申请直接采购。<br/>
+                                             &nbsp;&nbsp;&nbsp;3.2、询比：对于采购内容、数量、单价等均固定项目，可采用询比的方式，如硬件入围后，实际设备采购通过入围供应商询比的方式进行。<br/>
+                                             &nbsp;&nbsp;&nbsp;3.3、谈判及竞价：对于采购内容价格等因素存在不确定的项目，可由一家或几家供应商集中进行谈判或者竞价的方式进行采购。<br/>
                                            </span>
                                          }>
                                     <Icon type="question-circle-o"/>
