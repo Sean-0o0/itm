@@ -17,7 +17,7 @@ class DepartmentOverview extends Component {
         pageParam: {
             current: 1,
             pageSize: 10,
-            paging: 1,
+            paging: -1,
             sort: "",
             total: -1
         }

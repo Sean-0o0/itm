@@ -25,20 +25,26 @@ class StaffTable extends Component {
     rowspan = (userData) => {
         let spanArr = [];
         let position = 0;
+        let order = 1
         userData.forEach((item, index) => {
+            let obj = {}
             if (index === 0) {
-                spanArr.push(1);
+                obj.num = 1;
                 position = 0;
             } else {
                 //需要合并的地方判断
                 if (userData[index].RYID === userData[index - 1].RYID) {
-                    spanArr[position] += 1;
-                    spanArr.push(0);
+                    spanArr[position].num += 1;
+                    obj.num = 0;
+
                 } else {
-                    spanArr.push(1);
+                    obj.num = 1;
                     position = index;
+                    order++;
                 }
             }
+            obj.order = order;
+            spanArr.push(obj)
         });
         return spanArr
     }
@@ -64,13 +70,20 @@ class StaffTable extends Component {
         const rowspan = this.rowspan(tableData);
         const columns = [{
             title: '序号',
-            dataIndex: 'RYID',
+            dataIndex: 'XH',
             width: '5%',
-            key: 'RYID',
+            key: 'XH',
             align: 'center',
             ellipsis: true,
             render: (value, row, index) => {
-                return (current - 1) * pageSize + index + 1;
+                let obj = {
+                    children: value,
+                    props: {
+                    },
+                };
+                const _row = rowspan[index].num;
+                obj.props.rowSpan = _row;
+                return obj;
             },
         }, {
             title: '人员名称',
@@ -78,16 +91,16 @@ class StaffTable extends Component {
             width: '10%',
             key: 'RYMC',
             ellipsis: true,
-            onCell: (record, index) => { // 传入两个形参，分别为行内容record与行index
-                const _row = rowspan[index];
-                if (_row > 1) { 
-                    return {
-                        style: {
-                            borderLeft: '1px solid #e8e8e8', //此处需注意
-                        },
-                    };
-                }
-            },
+            // onCell: (record, index) => { // 传入两个形参，分别为行内容record与行index
+            //     const _row = rowspan[index];
+            //     if (_row > 1) { 
+            //         return {
+            //             style: {
+            //                 borderLeft: '1px solid #e8e8e8', //此处需注意
+            //             },
+            //         };
+            //     }
+            // },
             render: (value, row, index) => {
                 const { RYID = '' } = row;
                 let obj = {
@@ -111,7 +124,7 @@ class StaffTable extends Component {
                     props: {
                     },
                 };
-                const _row = rowspan[index];
+                const _row = rowspan[index].num;
                 obj.props.rowSpan = _row;
                 return obj;
             },
@@ -122,8 +135,8 @@ class StaffTable extends Component {
             key: 'RZSJ',
             ellipsis: true,
             onCell: (record, index) => { // 传入两个形参，分别为行内容record与行index
-                const _row = rowspan[index];
-                if (_row > 1) { 
+                const _row = rowspan[index].num;
+                if (_row > 1) {
                     return {
                         style: {
                             borderRight: '1px solid #e8e8e8', //此处需注意
@@ -132,13 +145,13 @@ class StaffTable extends Component {
                 }
             },
             render: (value, row, index) => {
-                const result = moment(value, 'YYYYMMDD').format('YYYY-MM-DD')
+                const result = value?moment(value, 'YYYYMMDD').format('YYYY-MM-DD'):value
                 let obj = {
                     children: <div className='opr-btn-box' title={result}>{result}</div>,
                     props: {
                     },
                 };
-                const _row = rowspan[index];
+                const _row = rowspan[index].num;
                 obj.props.rowSpan = _row;
                 return obj;
             },
@@ -150,7 +163,7 @@ class StaffTable extends Component {
             ellipsis: true,
             render: (text, row, index) => {
                 const { XMID = '' } = row;
-                return <div title={text}>
+                return text&&text!==-1?<div title={text}>
                     <Link
                         className='opr-btn'
                         to={{
@@ -166,7 +179,7 @@ class StaffTable extends Component {
 
                     >
                         {text}
-                    </Link></div>
+                    </Link></div>:'暂无'
             }
         },
         {
@@ -176,7 +189,7 @@ class StaffTable extends Component {
             key: 'XMJD',
             ellipsis: true,
             render: (value, row, index) => {
-                return <div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>
+                return value&&value!==-1?<div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>:'暂无'
             },
         }, {
             title: '岗位',
@@ -184,6 +197,9 @@ class StaffTable extends Component {
             width: '14%',
             key: 'GW',
             ellipsis: true,
+            render: (text, row, index) => {
+                return text&&text!==-1?text : '暂无'
+            }
         }, {
             title: '工时(人天)',
             dataIndex: 'GS',
@@ -192,7 +208,7 @@ class StaffTable extends Component {
             align: 'right',
             ellipsis: true,
             render: (text, row, index) => {
-                return text || '暂无'
+                return text&&text!==-1?text : '暂无'
             }
         },
         {
@@ -203,7 +219,7 @@ class StaffTable extends Component {
             align: 'center',
             ellipsis: true,
             render: (text, row, index) => {
-                return text || '暂无'
+                return text&&text!==-1?text : '暂无'
             }
         }
         ]
@@ -216,10 +232,15 @@ class StaffTable extends Component {
                     rowKey={'id'}
                     dataSource={tableData}
                     onChange={this.handleTableChange}
-                    pagination={false}
+                    pagination={{
+                        pageSizeOptions:  ['10', '20', '30', '40'],
+                        showSizeChanger:  true,
+                        showQuickJumper:  true,
+                        showTotal: total => `共 ${tableData.length} 条数据`
+                    }}
                 />
             </div>
-            <div className='page-individual'>
+            {/* <div className='page-individual'>
                 <Pagination
                     onChange={this.handleChange}
                     onShowSizeChange={this.handleChange}
@@ -233,7 +254,7 @@ class StaffTable extends Component {
                     showTotal={total => `共 ${total} 条数据`}
                 />
 
-            </div>
+            </div> */}
         </div>);
     }
 }
