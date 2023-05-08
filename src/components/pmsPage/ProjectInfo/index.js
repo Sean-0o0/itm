@@ -27,14 +27,14 @@ export default function ProjectInfo(props) {
   }, [prjManager, cxlx]);
 
   //获取表格数据
-  const getTableData = ({ current = 1, pageSize = 10, projectManager = -1, cxlx = 'ALL' }) => {
+  const getTableData = ({ current = 1, pageSize = 10, projectManager = -1, cxlx = 'ALL', sort = 'XH DESC,ID DESC' }) => {
     setTableLoading(true);
     QueryProjectListInfo({
       projectManager,
       current,
       pageSize,
       paging: 1,
-      sort: 'string',
+      sort,
       total: -1,
       queryType: cxlx,
     })

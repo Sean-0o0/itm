@@ -224,7 +224,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 10) => {
+  const handleSearch = (current = 1, pageSize = 10, sort = 'XH DESC,ID DESC') => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -232,7 +232,7 @@ export default forwardRef(function TopConsole(props, ref) {
       current,
       pageSize,
       paging: 1,
-      sort: 'string',
+      sort,
       total: -1,
       queryType: 'ALL',
     };
@@ -400,7 +400,6 @@ export default forwardRef(function TopConsole(props, ref) {
             allowClear
             onChange={handlePrjMngerChange}
             value={prjMnger}
-            // defaultValue={prjMngerData?.filter(x => Number(x.ID) === projectManager)[0]?.USERNAME}
             placeholder="请选择"
           >
             {prjMngerData.map((x, i) => (
@@ -433,24 +432,6 @@ export default forwardRef(function TopConsole(props, ref) {
         </div>
         <div className="console-item">
           <div className="item-label">项目类型</div>
-          {/* <Select
-            className="item-selector"
-            dropdownClassName={'item-selector-dropdown'}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            showSearch
-            allowClear
-            onChange={handlePrjTypeChange}
-            value={prjType}
-            placeholder="请选择"
-          >
-            {XMLX?.map((x, i) => (
-              <Option key={i} value={x.ibm}>
-                {x.note}
-              </Option>
-            ))}
-          </Select> */}
           <TreeSelect
             allowClear
             showArrow
@@ -502,9 +483,9 @@ export default forwardRef(function TopConsole(props, ref) {
           <Icon
             type="down"
             className={'label-selector-arrow' + (labelOpen ? ' selector-rotate' : '')}
-            onClick={() =>{
+            onClick={() => {
               console.log('@@@', labelOpen);
-              setLabelOpen(p=>!p)
+              setLabelOpen(p => !p);
             }}
           />
         </div>

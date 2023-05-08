@@ -25,7 +25,7 @@ export default function InfoTable(props) {
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
-  
+
   const fileAddModalProps = {
     isAllWindow: 1,
     title: '新建项目',
@@ -92,10 +92,18 @@ export default function InfoTable(props) {
   };
 
   //表格操作后更新数据
-  const handleTableChange = obj => {
-    // console.log('handleTableChange', obj);
-    const { current = 1, pageSize = 10 } = obj;
-    handleSearch(current, pageSize);
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    console.log('handleTableChange', pagination, filters, sorter, extra);
+    const { current = 1, pageSize = 10 } = pagination;
+    if (sorter.order !== undefined) {
+      if (sorter.order === 'ascend') {
+        handleSearch(current, pageSize, 'YSJE ASC,XH DESC,ID DESC');
+      } else {
+        handleSearch(current, pageSize, 'YSJE DESC,XH DESC,ID DESC');
+      }
+    } else {
+      handleSearch(current, pageSize);
+    }
     return;
   };
 
@@ -205,7 +213,7 @@ export default function InfoTable(props) {
       align: 'right',
       key: 'projectBudget',
       ellipsis: true,
-      sorter: (a, b) => Number(a.projectBudget) - Number(b.projectBudget),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
     },
