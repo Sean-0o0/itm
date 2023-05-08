@@ -159,12 +159,12 @@ class BudgetExcute extends Component {
         } = ysglxx
 
         let zyswcz = Number.parseFloat(ZBRJZYS) - Number.parseFloat(ZBRJSYZ);
-        let zyswcl = Number.parseFloat(ZBRJSYZ)*100 / Number.parseFloat(ZBRJZYS)
+        let zyswcl = Number.parseFloat(zyswcz)*100 / Number.parseFloat(ZBRJZYS)
         zyswcz = !isNaN(zyswcz)?zyswcz.toFixed(2):0;
         zyswcl = !isNaN(zyswcl)?zyswcl.toFixed(2):0;
 
         let kzxsyz = Number.parseFloat(ZBRJKZX) - Number.parseFloat(ZBRJWCZ);
-        let kzxwcl = Number.parseFloat(kzxsyz)*100 / Number.parseFloat(ZBRJKZX)
+        let kzxwcl = Number.parseFloat(ZBRJWCZ)*100 / Number.parseFloat(ZBRJKZX)
         kzxsyz = !isNaN(kzxsyz)?kzxsyz.toFixed(2):0;
         kzxwcl = !isNaN(kzxwcl)?kzxwcl.toFixed(2):0;
 
