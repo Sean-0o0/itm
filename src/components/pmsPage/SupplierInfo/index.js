@@ -34,13 +34,13 @@ export default function SupplierInfo(props) {
   }, [props]);
 
   //获取表格数据
-  const getTableData = ({ current = 1, pageSize = 10, queryType = 'ALL' }) => {
+  const getTableData = ({ current = 1, pageSize = 10, queryType = 'ALL', sort = 'ID ASC' }) => {
     setTableLoading(true);
     QuerySupplierList({
       current,
       pageSize,
       paging: 1,
-      sort: 'string',
+      sort,
       total: -1,
       queryType,
     })
@@ -69,7 +69,7 @@ export default function SupplierInfo(props) {
       current,
       pageSize,
       paging: -1,
-      sort: 'string',
+      sort,
       total: -1,
       queryType,
     })
@@ -83,7 +83,7 @@ export default function SupplierInfo(props) {
         }
       })
       .catch(e => {
-        message.error('表格数据查询失败', 1);
+        message.error('下拉框数据查询失败', 1);
         setTableLoading(false);
       });
   };

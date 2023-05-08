@@ -207,7 +207,13 @@ export default function ToDoCard(props) {
     setFileAddVisible(true);
     setSrc_fileAdd(
       `/#/single/pms/EditProject/${EncryptBase64(
-        JSON.stringify({xmid: item.xmid, type: true, subItemFlag: true, subItemFinish: true, projectStatus: 'SAVE'}),
+        JSON.stringify({
+          xmid: item.xmid,
+          type: true,
+          subItemFlag: true,
+          subItemFinish: true,
+          projectStatus: 'SAVE',
+        }),
       )}`,
     );
   };
@@ -327,7 +333,7 @@ export default function ToDoCard(props) {
       </div>
     );
   };
-
+  if (dataList?.length === 0) return null;
   return (
     <div className="todo-card-box">
       {/* 付款流程发起弹窗 */}
@@ -387,13 +393,13 @@ export default function ToDoCard(props) {
         )}
         {getAfterItem('32%')}
       </div>
-      {dataList?.length === 0 && (
+      {/* {dataList?.length === 0 && (
         <Empty
           description="暂无待办事项"
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           style={{ width: '100%' }}
         />
-      )}
+      )} */}
       {toDoData?.length > 2 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>

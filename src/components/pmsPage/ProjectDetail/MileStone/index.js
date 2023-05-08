@@ -520,7 +520,7 @@ export default function MileStone(props) {
               <div className="current-plan">
                 现计划：{dateFormat(hLMileStone.kssj, hLMileStone.jssj)}
               </div>
-              {getDateDiff(hLMileStone) > 0 && (
+              {Number(hLMileStone.xgcs) > 0 && (
                 <>
                   <div className="original-plan">
                     原计划：{dateFormat(hLMileStone.yckssj, hLMileStone.ycjssj)}

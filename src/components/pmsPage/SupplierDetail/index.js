@@ -41,7 +41,7 @@ export default function SupplierDetail(props) {
       pageSize: 10,
       paging: 1,
       queryType: 'ALL',
-      sort: 'string',
+      sort: 'XMID DESC',
       supplierId,
       total: -1,
     })

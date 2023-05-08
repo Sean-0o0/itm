@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useLocation } from 'react-router';
-import { Collapse, Spin, Icon, Empty, message } from 'antd';
+import { Collapse, Spin, Icon, Empty, message, Tooltip } from 'antd';
 import moment from 'moment';
 import { EncryptBase64 } from '../../Common/Encrypt';
 import { Link } from 'react-router-dom';
@@ -116,13 +116,30 @@ export default function StaffInfo(props) {
         if (res?.success) {
           // let arr = [];
           let finalData = JSON.parse(JSON.stringify(orgArr));
-          console.log('🚀 ~ QueryMemberInfo', JSON.parse(res.record));
+          // console.log('🚀 ~ QueryMemberInfo', JSON.parse(res.record));
           let memberArr = JSON.parse(res.record);
           finalData.forEach(item => {
             let parentArr = [];
             memberArr.forEach(y => {
               if (y.orgId === item.value) parentArr.push(y);
             });
+            if (item.value === '357') {
+              let arr = [...parentArr];
+              arr.forEach(x => {
+                if (x.name === '朱校均') {
+                  x.orderNum = 1;
+                } else if (x.name === '陈燕萍') {
+                  x.orderNum = 2;
+                } else if (x.name === '陶明敏') {
+                  x.orderNum = 3;
+                } else if (x.name === '孙磊') {
+                  x.orderNum = 4;
+                } else if (x.name === '胡凡') {
+                  x.orderNum = 5;
+                }
+              });
+              parentArr = arr.sort((a, b) => a.orderNum - b.orderNum);
+            }
             item.members = parentArr;
             item.children?.forEach(x => {
               let childArr = [];
@@ -132,7 +149,7 @@ export default function StaffInfo(props) {
               x.members = childArr;
             });
           });
-          // console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
+          console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
           setStaffData(p => [...finalData]);
           setIsSpinning(false);
         }
@@ -184,9 +201,12 @@ export default function StaffInfo(props) {
             <div className="leader-list">
               {data.members.map(m => (
                 <div className="leader-item" key={m.id}>
-                  <div className="position">
-                    <i>#</i> {m.gw || '--'}
-                  </div>
+                  <Tooltip title={m.gw || '--'} placement="topLeft">
+                    <div className="position">
+                      <i>#</i>
+                      <span>{m.gw || '--'}</span>
+                    </div>
+                  </Tooltip>
                   {getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id })}
                 </div>
               ))}

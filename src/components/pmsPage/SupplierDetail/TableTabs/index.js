@@ -15,6 +15,7 @@ export default function TableTabs(props) {
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const [curPage, setCurPage] = useState(0); //当前页码
   const [curPageSize, setCurPageSize] = useState(10); //数据长度
+  const [curSort, setCurSort] = useState('XMID DESC'); //分页排序
   const [total, setTotal] = useState(0); //数据总量
   const [curTab, setCurTab] = useState('CGXM'); //当前tab
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -52,17 +53,26 @@ export default function TableTabs(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     const { current = 1, pageSize = 10 } = pagination;
-    getTableData(current, pageSize, curTab);
+    if (sorter.order !== undefined) {
+      if (sorter.order === 'ascend') {
+        getTableData(current, pageSize, curTab, sorter.field + ' ASC,XMID DESC');
+      } else {
+        getTableData(current, pageSize, curTab, sorter.field + ' DESC,XMID DESC');
+      }
+    } else {
+      getTableData(current, pageSize, curTab);
+    }
+
     return;
   };
 
-  const getTableData = (current = 1, pageSize = 10, queryType = 'CGXM') => {
+  const getTableData = (current = 1, pageSize = 10, queryType = 'CGXM', sort = 'XMID DESC') => {
     QuerySupplierDetailInfo({
       current,
       pageSize,
       paging: 1,
       queryType,
-      sort: 'string',
+      sort,
       supplierId: splId,
       total: -1,
     })
@@ -93,7 +103,7 @@ export default function TableTabs(props) {
       width: '7%',
       key: 'NF',
       ellipsis: true,
-      sorter: (a, b) => Number(a.NF) - Number(b.NF),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{txt}</span>,
     },
@@ -159,7 +169,7 @@ export default function TableTabs(props) {
       align: 'right',
       key: 'XMYS',
       ellipsis: true,
-      sorter: (a, b) => Number(a.ZF) - Number(b.ZF),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
         <span style={{ marginRight: 20 }}>
@@ -174,7 +184,7 @@ export default function TableTabs(props) {
       align: 'right',
       key: 'YZFJE',
       ellipsis: true,
-      sorter: (a, b) => Number(a.YZFJE || 0) - Number(b.YZFJE || 0),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
         <span style={{ marginRight: 20 }}>
@@ -304,7 +314,7 @@ export default function TableTabs(props) {
       width: '7%',
       key: 'NF',
       ellipsis: true,
-      sorter: (a, b) => Number(a.NF) - Number(b.NF),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{txt}</span>,
     },
@@ -335,7 +345,7 @@ export default function TableTabs(props) {
       align: 'right',
       key: 'ZF',
       ellipsis: true,
-      sorter: (a, b) => Number(a.ZF) - Number(b.ZF),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{txt}</span>,
     },

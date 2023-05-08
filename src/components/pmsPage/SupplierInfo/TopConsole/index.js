@@ -51,7 +51,7 @@ export default forwardRef(function TopConsole(props, ref) {
   );
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 10) => {
+  const handleSearch = (current = 1, pageSize = 10, sort = 'ID ASC') => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -59,7 +59,7 @@ export default forwardRef(function TopConsole(props, ref) {
       current,
       pageSize,
       paging: 1,
-      sort: 'string',
+      sort,
       total: -1,
       queryType: 'ALL',
     };

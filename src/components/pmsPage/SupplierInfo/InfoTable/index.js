@@ -27,7 +27,15 @@ export default function InfoTable(props) {
     // console.log('handleTableChange', pagination, filters, sorter, extra);
     const { current = 1, pageSize = 10 } = pagination;
     // getTableData({ current, pageSize });
-    handleSearch(current, pageSize);
+    if (sorter.order !== undefined) {
+      if (sorter.order === 'ascend') {
+        handleSearch(current, pageSize, sorter.field + ' ASC,ID ASC');
+      } else {
+        handleSearch(current, pageSize, sorter.field + ' DESC,ID DESC');
+      }
+    } else {
+      handleSearch(current, pageSize);
+    }
     return;
   };
 
@@ -104,7 +112,7 @@ export default function InfoTable(props) {
       align: 'right',
       key: 'XMJE',
       ellipsis: true,
-      sorter: (a, b) => Number(a.XMJE) - Number(b.XMJE),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
     },
@@ -115,7 +123,7 @@ export default function InfoTable(props) {
       key: 'XMSL',
       ellipsis: true,
       align: 'right',
-      sorter: (a, b) => Number(a.XMSL) - Number(b.XMSL),
+      sorter: true,
       sortDirections: ['descend', 'ascend'],
       render: text => <span style={{ marginRight: 20 }}>{text}</span>,
     },
