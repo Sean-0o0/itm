@@ -163,7 +163,7 @@ class StaffTable extends Component {
             ellipsis: true,
             render: (text, row, index) => {
                 const { XMID = '' } = row;
-                return text&&text!==-1?<div title={text}>
+                return text&&text!=-1?<div title={text}>
                     <Link
                         className='opr-btn'
                         to={{
@@ -189,7 +189,7 @@ class StaffTable extends Component {
             key: 'XMJD',
             ellipsis: true,
             render: (value, row, index) => {
-                return value&&value!==-1?<div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>:'暂无'
+                return value&&value!=-1?<div className='opr-btn-box' title={value + '%'}>{value + '%'}</div>:'暂无'
             },
         }, {
             title: '岗位',
@@ -198,7 +198,7 @@ class StaffTable extends Component {
             key: 'GW',
             ellipsis: true,
             render: (text, row, index) => {
-                return text&&text!==-1?text : '暂无'
+                return text&&text!=-1?text : '暂无'
             }
         }, {
             title: '工时(人天)',
@@ -208,7 +208,7 @@ class StaffTable extends Component {
             align: 'right',
             ellipsis: true,
             render: (text, row, index) => {
-                return text&&text!==-1?text : '暂无'
+                return text&&text!=-1?text : '暂无'
             }
         },
         {
@@ -219,7 +219,7 @@ class StaffTable extends Component {
             align: 'center',
             ellipsis: true,
             render: (text, row, index) => {
-                return text&&text!==-1?text : '暂无'
+                return text&&text!=-1?text : '暂无'
             }
         }
         ]
