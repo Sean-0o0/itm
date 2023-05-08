@@ -362,6 +362,9 @@ class MainPageLayout extends React.PureComponent {
       if (text === '报告管理') {
         icon = 'icon-read';
       }
+      if (text === '供应商管理') {
+        icon = 'icon-shop';
+      }
       menuTree1.push({
         url: code,
         title: text,

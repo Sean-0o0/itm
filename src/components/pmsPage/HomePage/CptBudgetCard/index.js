@@ -5,7 +5,7 @@ import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 
 export default function CptBudgetCard(props) {
-  const { isVertical = false, userRole, budgetData, time } = props;
+  const { isVertical = false, userRole, budgetData= {}, time } = props;
   const location = useLocation();
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -45,16 +45,26 @@ export default function CptBudgetCard(props) {
           className="normal-process"
         />
         <div className="item-bottom">
-          <Tooltip title={getAmountFormat(target) + '万元'}>
-            <span style={{ cursor: 'default' }}>目标值：{getAmountFormat(target)}万元</span>
+          <Tooltip title={getAmountFormat(target)}>
+            <span style={{ cursor: 'default' }}>目标：{getAmountFormat(target)}</span>
           </Tooltip>
-          <Tooltip title={getAmountFormat(remain) + '万元'}>
-            <span style={{ cursor: 'default' }}>剩余值：{getAmountFormat(remain)}万元</span>
+          <Tooltip title={getAmountFormat(remain)}>
+            <span style={{ cursor: 'default' }}>剩余：{getAmountFormat(remain)}</span>
           </Tooltip>
         </div>
       </div>
     );
   };
+  //数据处理
+  let zyswcz = Number.parseFloat(budgetData.ZBRJZYS) - Number.parseFloat(budgetData.ZBRJSYZ);
+  let zyswcl = (Number.parseFloat(zyswcz) * 100) / Number.parseFloat(budgetData.ZBRJZYS);
+  zyswcz = !isNaN(zyswcz) ? zyswcz.toFixed(2) : 0;
+  zyswcl = !isNaN(zyswcl) ? zyswcl.toFixed(2) : 0;
+
+  let kzxsyz = Number.parseFloat(budgetData.ZBRJKZX) - Number.parseFloat(budgetData.ZBRJWCZ);
+  let kzxwcl = (Number.parseFloat(budgetData.ZBRJWCZ) * 100) / Number.parseFloat(budgetData.ZBRJKZX);
+  kzxsyz = !isNaN(kzxsyz) ? kzxsyz.toFixed(2) : 0;
+  kzxwcl = !isNaN(kzxwcl) ? kzxwcl.toFixed(2) : 0;
   return (
     <div className="cptbudget-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>
@@ -85,18 +95,18 @@ export default function CptBudgetCard(props) {
         }
       >
         {getBudgetItem({
-          title: '已执行软件预算(万元)',
-          amount: Number(budgetData?.ZBRJWCZ).toFixed(2),
-          rate: budgetData?.ZBRJWCL,
-          target: Number(budgetData?.ZBRJMBZ).toFixed(2),
-          remain: Number(budgetData?.ZBRJSYZ).toFixed(2),
+          title: '总预算(万元)',
+          amount: zyswcz,
+          rate: zyswcl,
+          target: Number(budgetData.ZBRJZYS).toFixed(2),
+          remain: Number(budgetData.ZBRJSYZ).toFixed(2),
         })}
         {getBudgetItem({
-          title: '已执行硬件预算(万元)',
-          amount: Number(budgetData?.ZBYJWCZ).toFixed(2),
-          rate: budgetData?.ZBYJWCL,
-          target: Number(budgetData?.ZBYJMBZ).toFixed(2),
-          remain: Number(budgetData?.ZBYJSYZ).toFixed(2),
+          title: '可执行总预算(万元)',
+          amount: Number(budgetData.ZBRJWCZ).toFixed(2),
+          rate: kzxwcl,
+          target: Number(budgetData.ZBRJKZX).toFixed(2),
+          remain: kzxsyz,
           img: 'hardware',
         })}
       </div>
