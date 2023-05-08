@@ -18,6 +18,7 @@ class InfoTable extends Component {
     }
 
     handleChange = (current, pageSize) => {
+        console.log('pageSize',pageSize)
         const { handleSearch } = this.props;
         if (handleSearch) {
             handleSearch({
@@ -318,12 +319,13 @@ class InfoTable extends Component {
                 <div className='page-individual'>
                     <Pagination
                         onChange={this.handleChange}
+                        onShowSizeChange={this.handleChange}
                         pageSize={pageParams.pageSize}
                         current={pageParams.current}
                         total={pageParams.total}
                         pageSizeOptions={['10', '20', '30', '40']}
                         showSizeChanger={true}
-                        hideOnSinglePage={true}
+                        // hideOnSinglePage={true}
                         showQuickJumper={true}
                         showTotal={total => `共 ${total} 条数据`}
                     />
