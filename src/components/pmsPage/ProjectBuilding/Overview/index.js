@@ -107,8 +107,8 @@ class Overview extends Component {
                     {order === 5 && <img src={ktxm} className='statistics-img' alt='' />}
                     <div className='header-name'>
                         {name}
-                        <div className='more' onClick={() => { this.fetchData(name) }}>
-                            <Popover placement="bottomLeft" trigger="click" overlayClassName="main-tooltip" content={content} >
+                        <div className='more' onMouseEnter ={() => { this.fetchData(name) }}>
+                            <Popover placement="bottomLeft" overlayClassName="main-tooltip" content={content} >
                                 ···
                             </Popover>
                         </div>
