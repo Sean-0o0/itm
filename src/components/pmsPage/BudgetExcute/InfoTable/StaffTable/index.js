@@ -98,7 +98,6 @@ class StaffTable extends Component {
     }
 
     expandedRowRender = (record, index, indent, expanded) => {
-        console.log('record', record)
         const { YSID } = record;
         const { routes } = this.props;
         const { subTabData = {}, loading = {} } = this.state;
@@ -237,7 +236,7 @@ class StaffTable extends Component {
                 return value?value:0
             },
         }, {
-            title: '预计执行率',
+            title: '预算执行率',
             dataIndex: 'YJZXL',
             width: '17%',
             key: 'YJZXL',
