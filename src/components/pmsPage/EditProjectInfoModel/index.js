@@ -682,7 +682,7 @@ class EditProjectInfoModel extends React.Component {
       isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
       xmid: this.state.subItemFlag && this.state.subItemFinish ? '-1' : this.state.basicInfo.projectId,
       biddingMethod: 1,
-      budget: this.state.subItemFlag && this.state.subItemFinish ? (this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget))) : 0,
+      budget: this.state.subItemFlag && this.state.subItemFinish ? (String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget))) : 0,
       label: this.state.basicInfo.labelTxt,
       queryType: "ALL",
       //项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
@@ -836,7 +836,8 @@ class EditProjectInfoModel extends React.Component {
                   });
                 }
               }
-            }if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && this.state.basicInfo.haveHard == '1') {
+            }
+            if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && String(this.state.basicInfo.haveHard) === "1") {
               if (Number(this.state.budgetInfo.frameBudget) > 0) {
                 if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
                   milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
@@ -874,14 +875,15 @@ class EditProjectInfoModel extends React.Component {
               }
               //软件金额为0 去掉项目招采里程碑
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
-            }if (Number(this.state.budgetInfo.singleBudget) !== 0 && this.state.basicInfo.haveHard == '1') {
+            }
+            if (Number(this.state.budgetInfo.singleBudget) !== 0 && String(this.state.basicInfo.haveHard) === "1") {
               //单独采购有值的时候，都要有招采
-              if(milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0){
+              if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
                 milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
                 milePostInfo.sort((a, b) => {
                   return (a.xh - b.xh)
                 })
-              }else{
+              } else {
                 for (let i = 0; i < data.length; i++) {
                   if (data[i].lcbmc === "项目立项") {
                     milePostInfo.map(item => {
@@ -914,7 +916,7 @@ class EditProjectInfoModel extends React.Component {
               && Number(this.state.budgetInfo.singleBudget) > 0
               && Number(this.state.budgetInfo.frameBudget) === 0
               && Number(this.state.budgetInfo.softBudget) === 0
-              && this.state.basicInfo.haveHard == '1') {
+              && String(this.state.basicInfo.haveHard) === "1") {
               for (let i = 0; i < data.length; i++) {
                 if (data[i].lcbmc === '项目实施') {
                   milePostInfo.map(item => {
@@ -1397,15 +1399,15 @@ class EditProjectInfoModel extends React.Component {
           // console.log("newOrgnewOrgnewOrg", newOrg)
           // console.log("labellabel", result.projectLabel === '' ? [] : result.projectLabel.split(','))
           // console.log("softwaresoftware", result.softwareId === '' ? [] : result.softwareId.split(','))
-          const flag = projectTypeZY.filter(item => item.ID == result?.projectType).length > 0;
-          const RYJFlag = result?.projectType == '1';
+          const flag = projectTypeZY.filter(item => String(item.ID) === String(result?.projectType)).length > 0;
+          const RYJFlag = String(result?.projectType) === "1";
           //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
           let haveType = 1;
-          if (result.haveHard == '2') {
+          if (String(result.haveHard) === "2") {
             haveType = 1
-          } else if (result.haveHard == '1' && Number(result.softBudget) === 0) {
+          } else if (String(result.haveHard) === "1" && Number(result.softBudget) === 0) {
             haveType = 2
-          } else if (result.haveHard == '1' && Number(result.softBudget) > 0) {
+          } else if (String(result.haveHard) === "1" && Number(result.softBudget) > 0) {
             haveType = 3
           }
           this.setState({
@@ -1598,7 +1600,7 @@ class EditProjectInfoModel extends React.Component {
             projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
           });
           const projectTypeZY = this.state.projectTypeList[0]?.children.filter(
-            item => item.NAME == '自研项目',
+            item => String(item.NAME) === "自研项目",
           )[0]?.children;
           // console.log('projectTypeZY', projectTypeZY);
           this.setState({
@@ -1647,7 +1649,7 @@ class EditProjectInfoModel extends React.Component {
   searchStaff = (val, type) => {
     if (val.length !== 0) {
       let searchStaffList = [];
-      let isExist = this.state.staffList.filter(item => item.id == this.state.loginUser.id);
+      let isExist = this.state.staffList.filter(item => String(item.id) == String(this.state.loginUser.id));
       if (type === 'manage' && isExist.length === 0) {
         searchStaffList.push(this.state.loginUser);
       }
@@ -1916,12 +1918,12 @@ class EditProjectInfoModel extends React.Component {
     ) {
       if (
         budgetInfo.budgetProjectId !== '' &&
-        budgetInfo.budgetProjectId !== '0' &&
+        Number(budgetInfo.budgetProjectId) !== 0 &&
         budgetInfo.projectBudget !== '' &&
         budgetInfo.projectBudget !== null
       ) {
         basicflag = true;
-      } else if (budgetInfo.budgetProjectId === '0') {
+      } else if (Number(budgetInfo.budgetProjectId) === 0) {
         basicflag = true;
       } else {
         basicflag = false;
@@ -1937,7 +1939,7 @@ class EditProjectInfoModel extends React.Component {
       if (
         !(
           basicInfo.biddingMethod !== '' &&
-          basicInfo.biddingMethod != 0 &&
+          Number(basicInfo.biddingMethod) !== 0 &&
           basicInfo.biddingMethod !== null
         )
       ) {
@@ -1949,7 +1951,7 @@ class EditProjectInfoModel extends React.Component {
     }
     //软硬件项目需要校验是否包含硬件 是否包含硬件选是后要校验三个新增的金额
     if (projectTypeRYJFlag) {
-      if (!(basicInfo.haveHard != '-1' && basicInfo.haveHard != null && basicInfo.haveHard !== '')) {
+      if (!(String(basicInfo.haveHard) !== "-1" && basicInfo.haveHard != null && basicInfo.haveHard !== '')) {
         if (type === 1) {
           message.warn('项目预算信息-是否包含硬件未填写完整！');
           return;
@@ -1983,7 +1985,7 @@ class EditProjectInfoModel extends React.Component {
     //校验子项目信息
     let subItemflag = true;
     //校验子项目信息
-    if (subItem == "1") {
+    if (String(subItem) === "1") {
       console.log("-----------开始校验子项目表格信息-----------")
       subItemflag = subItemRecord.length !== 0;
       //子项目总金额之和
@@ -1995,7 +1997,7 @@ class EditProjectInfoModel extends React.Component {
       //子项目单独采购金额之和
       let subSingleBudget = 0;
       subItemRecord.map(item => {
-        let ZYflag = this.state.projectTypeZY.filter(i => i.ID == item.XMLX).length > 0
+        let ZYflag = this.state.projectTypeZY.filter(i => String(i.ID) === String(item.XMLX)).length > 0
         //硬件项目校验是否包含硬件
         if (item.XMLX === '5') {
           if (item.SFBHYJ === '' || item.SFBHYJ == null) {
@@ -2073,7 +2075,7 @@ class EditProjectInfoModel extends React.Component {
         return;
       }
       //软件预算金额/单独采购金额/框架金额变化时要校验是否超过父项目金额
-      if (this.state.basicInfo.haveHard == '1') {
+      if (String(this.state.basicInfo.haveHard) === "1") {
         //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
         if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
           message.warn("子项目软件预算金额不能超过父项目,请修改！")
@@ -2191,7 +2193,7 @@ class EditProjectInfoModel extends React.Component {
     });
     const staffJobParams = staffJobParam.filter(item => item.rymc !== '');
     // 获取项目经理
-    const projectManager = staffJobParams.filter(item => item.gw == 10) || [];
+    const projectManager = staffJobParams.filter(item => Number(item.gw) === 10) || [];
     //去过人员信息tab页面 需要判断项目经理不能为空 没点击过
     if (projectManager.length === 0) {
       message.warn('项目经理不能为空！');
@@ -2227,7 +2229,7 @@ class EditProjectInfoModel extends React.Component {
       biddingMethod: basicInfo.projectType === 2 ? 0 : Number(basicInfo.biddingMethod),
       year: Number(this.state.budgetInfo.year.format('YYYY')),
       budgetProject: budgetInfo.budgetProjectId === '' ? -1 : Number(budgetInfo.budgetProjectId),
-      projectBudget: this.state.basicInfo.haveHard == '1' ? Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget) + Number(this.state.budgetInfo.frameBudget) : Number(budgetInfo.projectBudget),
+      projectBudget: String(this.state.basicInfo.haveHard) === "1" ? Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget) + Number(this.state.budgetInfo.frameBudget) : Number(budgetInfo.projectBudget),
     };
     const _this = this;
     const timeList = milePostInfo.filter(
@@ -2342,11 +2344,11 @@ class EditProjectInfoModel extends React.Component {
     params.budgetType = this.state.budgetInfo.budgetType;
     params.isShortListed = Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
       // 软件预算
-      params.softBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.softBudget : 0;
+      params.softBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.softBudget : 0;
     // 框架预算
-    params.frameBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.frameBudget : 0;
+    params.frameBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.frameBudget : 0;
     // 单独采购金额
-    params.singleBudget = this.state.basicInfo.haveHard == '1' ? this.state.budgetInfo.singleBudget : 0;
+    params.singleBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.singleBudget : 0;
     // 是否包含硬件
     params.haveHard = this.state.basicInfo.haveHard;
     this.operateCreatProject(params, type);
@@ -2554,22 +2556,13 @@ class EditProjectInfoModel extends React.Component {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
           //保存子项目信息
-          if (subItem == "1") {
+          if (String(subItem) === "1") {
             this.operateInsertSubProjects(params, projectId);
-          }else{
+          } else {
             if (this.state.type) {
               window.parent && window.parent.postMessage({operate: 'success'}, '*');
             } else {
               this.props.submitOperate();
-              if (this.state.subItemFlag && this.state.subItemFinish) {
-                message.success("子项目完善成功！")
-              } else {
-                message.success("项目编辑成功！")
-              }
-              //子项目-完善项目成功后跳转到项目信息页面
-              if (this.state.subItemFlag && this.state.subItemFinish) {
-                window.location.href = '/#/pms/manage/ProjectInfo';
-              }
             }
           }
         } else {
@@ -3627,15 +3620,6 @@ class EditProjectInfoModel extends React.Component {
           window.parent && window.parent.postMessage({operate: 'success'}, '*');
         } else {
           this.props.submitOperate();
-          if (this.state.subItemFlag && this.state.subItemFinish) {
-            message.success("子项目完善成功！")
-          } else {
-            message.success("项目编辑成功！")
-          }
-          //子项目-完善项目成功后跳转到项目信息页面
-          if (this.state.subItemFlag && this.state.subItemFinish) {
-            window.location.href = '/#/pms/manage/ProjectInfo';
-          }
         }
       }
     }).catch((error) => {
@@ -4130,8 +4114,8 @@ class EditProjectInfoModel extends React.Component {
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
                                   console.log('eeeeee', e);
-                                  const flag = projectTypeZY.filter(item => item.ID == e).length > 0;
-                                  const RYJFlag = e == '1';
+                                  const flag = projectTypeZY.filter(item => String(item.ID) === String(e)).length > 0;
+                                  const RYJFlag = String(e) === "1";
                                   this.setState({
                                     basicInfo: {...basicInfo, haveHard: 2, projectType: e, SFYJRW: 1},
                                     projectTypeZYFlag: flag,
@@ -4157,7 +4141,7 @@ class EditProjectInfoModel extends React.Component {
                                     singleBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                    budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: basicInfo.labelTxt,
                                     queryType: 'ALL',
                                   });
@@ -4227,7 +4211,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                      budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -4342,7 +4326,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: e,
-                                      budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                      budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ALL',
                                     });
@@ -4701,7 +4685,7 @@ class EditProjectInfoModel extends React.Component {
                                       singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                      budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
                                       queryType: 'ONLYLX',
                                     });
@@ -4715,7 +4699,7 @@ class EditProjectInfoModel extends React.Component {
                                   }
                                   this.setState({
                                     projectBudgetChangeFlag,
-                                    budgetInfo: {...budgetInfo, projectBudget: e},
+                                    budgetInfo: {...budgetInfo, projectBudget: Number(e)},
                                   });
                                 }}
                                 precision={0}
@@ -4927,19 +4911,20 @@ class EditProjectInfoModel extends React.Component {
                                                    singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                                   budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
                                                }
                                              }} style={{width: '100%'}} onChange={e => {
+                                  console.log("eeeee", e)
                                   let softBudgetChangeFlag = false
                                   if (e !== this.state.budgetInfo.softBudget) {
                                     softBudgetChangeFlag = true;
                                   }
                                   this.setState({
                                     softBudgetChangeFlag,
-                                    budgetInfo: {...budgetInfo, softBudget: e}
+                                    budgetInfo: {...budgetInfo, softBudget: Number(e),}
                                   });
                                 }} precision={0}/>
                               )}
@@ -5016,7 +5001,7 @@ class EditProjectInfoModel extends React.Component {
                                                    singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                                   budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -5028,7 +5013,7 @@ class EditProjectInfoModel extends React.Component {
                                   }
                                   this.setState({
                                     frameBudgetChangeFlag,
-                                    budgetInfo: {...budgetInfo, frameBudget: e}
+                                    budgetInfo: {...budgetInfo, frameBudget: Number(e)}
                                   });
                                 }} precision={0}/>
                               )}
@@ -5102,7 +5087,7 @@ class EditProjectInfoModel extends React.Component {
                                                    singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
                                                    xmid: this.state.basicInfo.projectId,
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
-                                                   budget: this.state.basicInfo.haveHard == '2' ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                                   budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
                                                    queryType: "ONLYLX"
                                                  });
@@ -5114,7 +5099,7 @@ class EditProjectInfoModel extends React.Component {
                                   }
                                   this.setState({
                                     singleBudgetChangeFlag,
-                                    budgetInfo: {...budgetInfo, singleBudget: e}
+                                    budgetInfo: {...budgetInfo, singleBudget: Number(e)}
                                   });
                                 }} precision={0}/>
                               )}
@@ -5143,7 +5128,7 @@ class EditProjectInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: this.state.subItem == '1' ? '' : 'none'}}>
+                      <Row gutter={24} style={{display: String(this.state.subItem) === "1" ? '' : 'none'}}>
                         {/*子项目信息*/}
                         <SubItemInfo
                           //自研项目数据
@@ -7147,6 +7132,7 @@ class EditProjectInfoModel extends React.Component {
                     <Button
                       style={{marginLeft: '12px', backgroundColor: '#3361FF'}}
                       type="primary"
+                      className="saveButton"
                       onClick={e => this.handleFormValidate(e, 1)}
                     >
                       保存

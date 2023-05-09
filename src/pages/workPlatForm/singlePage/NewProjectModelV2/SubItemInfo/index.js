@@ -766,7 +766,7 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={true}
                          style={{width: '100%'}}
-                         value={record['SUBZYS' + record.ID]} style={{width: '100%'}}
+                         value={record['SUBZYS' + record.ID]}
                          precision={0}/>)
         }
       },
@@ -786,7 +786,7 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={true}
                          style={{width: '100%'}}
-                         value={record['SUBKZXYS' + record.ID]} style={{width: '100%'}}
+                         value={record['SUBKZXYS' + record.ID]}
                          precision={0}/>)
         }
       },
@@ -806,7 +806,7 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={true}
                          style={{width: '100%'}}
-                         value={record['SUBSYYS' + record.ID]} style={{width: '100%'}}
+                         value={record['SUBSYYS' + record.ID]}
                          precision={0}/>)
         }
       },
@@ -826,8 +826,8 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "1"}
                          style={{width: '100%'}}
-                         value={record['SUBYSJE' + record.ID]} style={{width: '100%'}}
-                         onChange={(e) => _this.itemChange(e, record, index, 'SUBYSJE')}
+                         value={record['SUBYSJE' + record.ID]}
+                         onChange={(e) => _this.itemChange(Number(e), record, index, 'SUBYSJE')}
                          precision={0}/>)
         }
       },
@@ -891,7 +891,7 @@ class SubItemInfo extends Component {
             <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
                          style={{width: '100%'}}
                          value={record['SUBRJYSJE' + record.ID]} style={{width: '100%'}}
-                         onChange={(e) => _this.itemChange(e, record, index, 'SUBRJYSJE')}
+                         onChange={(e) => _this.itemChange(Number(e), record, index, 'SUBRJYSJE')}
                          precision={0}/>)
         }
       },
@@ -911,7 +911,7 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
                          value={record['SUBKJCGJE' + record.ID]} style={{width: '100%'}}
-                         onChange={(e) => _this.itemChange(e, record, index, 'SUBKJCGJE')}
+                         onChange={(e) => _this.itemChange(Number(e), record, index, 'SUBKJCGJE')}
                          precision={0}/>)
         }
       },
@@ -931,7 +931,7 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
                          value={record['SUBDDCGJE' + record.ID]} style={{width: '100%'}}
-                         onChange={(e) => _this.itemChange(e, record, index, 'SUBDDCGJE')}
+                         onChange={(e) => _this.itemChange(Number(e), record, index, 'SUBDDCGJE')}
                          precision={0}/>)
         }
       },
