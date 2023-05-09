@@ -13,7 +13,7 @@ export default function SupplierInfo(props) {
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
-  const [curPageSize, setCurPageSize] = useState(10); //每页数量
+  const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {}, dictionary = {} } = props;
   // console.log('🚀 ~ file: index.js:14 ~ SupplierInfo ~ dictionary:', dictionary);
   const { supplierId = -2 } = params;
@@ -34,7 +34,7 @@ export default function SupplierInfo(props) {
   }, [props]);
 
   //获取表格数据
-  const getTableData = ({ current = 1, pageSize = 10, queryType = 'ALL', sort = 'ID ASC' }) => {
+  const getTableData = ({ current = 1, pageSize = 20, queryType = 'ALL', sort = 'ID ASC' }) => {
     setTableLoading(true);
     QuerySupplierList({
       current,
@@ -102,6 +102,8 @@ export default function SupplierInfo(props) {
         ref={topConsoleRef}
         setCurPage={setCurPage}
         setCurPageSize={setCurPageSize}
+        curPage={curPage}
+        curPageSize={curPageSize}
       />
       <InfoTable
         tableData={tableData}

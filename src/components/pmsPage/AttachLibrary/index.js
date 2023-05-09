@@ -9,7 +9,7 @@ class AttachLibrary extends Component {
         attachList: [],
         pageParams: {
             current: 1,
-            pageSize: 10,
+            pageSize: 20,
             paging: 1,
             total: -1,
             sort: '',

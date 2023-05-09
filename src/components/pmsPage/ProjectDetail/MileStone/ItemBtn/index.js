@@ -95,9 +95,9 @@ class ItemBtn extends React.Component {
       });
       //刷新数据
       this.props.refresh();
-      this.debounce(() => {
-        message.success(this.state.lbModalTitle + '成功', 1);
-      });
+      // this.debounce(() => {
+      //   message.success(this.state.lbModalTitle + '成功', 1);
+      // });
     }
   };
 

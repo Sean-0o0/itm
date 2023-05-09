@@ -77,7 +77,7 @@ function VisitedRoutes(props) {
   }, [projectName]);
 
   const closePage = url => {
-    const newUrls = [...urls];
+    const newUrls = handleUrls(urls);
     const index = newUrls.indexOf(url);
     newUrls.splice(index, 1);
     if (url === newPathname) {
@@ -144,8 +144,10 @@ function VisitedRoutes(props) {
         arr = arr.filter(x => x !== m);
       }
     });
+    // console.log("🚀 ~ file: VisitedRoutes.js:149 ~ handleUrls ~ arr:", arr)
     return arr;
   };
+    
 
   let tabCount = 0;
 

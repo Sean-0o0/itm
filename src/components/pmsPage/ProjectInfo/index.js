@@ -10,7 +10,7 @@ export default function ProjectInfo(props) {
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
-  const [curPageSize, setCurPageSize] = useState(10); //每页数量
+  const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {} } = props;
   const { prjManager = -2, cxlx = 'ALL' } = params;
   const topConsoleRef = useRef(null);
@@ -27,7 +27,7 @@ export default function ProjectInfo(props) {
   }, [prjManager, cxlx]);
 
   //获取表格数据
-  const getTableData = ({ current = 1, pageSize = 10, projectManager = -1, cxlx = 'ALL', sort = 'XH DESC,ID DESC' }) => {
+  const getTableData = ({ current = 1, pageSize = 20, projectManager = -1, cxlx = 'ALL', sort = 'XH DESC,ID DESC' }) => {
     setTableLoading(true);
     QueryProjectListInfo({
       projectManager,
@@ -64,6 +64,8 @@ export default function ProjectInfo(props) {
         ref={topConsoleRef}
         setCurPage={setCurPage}
         setCurPageSize={setCurPageSize}
+        curPage={curPage}
+        curPageSize={curPageSize}
       />
       <InfoTable
         tableData={tableData}

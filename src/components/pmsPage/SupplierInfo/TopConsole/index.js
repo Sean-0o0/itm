@@ -38,6 +38,8 @@ export default forwardRef(function TopConsole(props, ref) {
     setTotal,
     setCurPage,
     setCurPageSize,
+    curPage,
+    curPageSize,
   } = props;
 
   useImperativeHandle(
@@ -51,7 +53,7 @@ export default forwardRef(function TopConsole(props, ref) {
   );
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 10, sort = 'ID ASC') => {
+  const handleSearch = (current = 1, pageSize = 20, sort = 'ID ASC') => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -319,7 +321,7 @@ export default forwardRef(function TopConsole(props, ref) {
             ))}
           </Select>
         </div>
-        <Button className="btn-search" type="primary" onClick={() => handleSearch()}>
+        <Button className="btn-search" type="primary" onClick={() => handleSearch(curPage, curPageSize)}>
           查询
         </Button>
         <Button className="btn-reset" onClick={handleReset}>

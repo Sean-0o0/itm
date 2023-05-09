@@ -84,8 +84,7 @@ export default function InfoDisplay(props) {
   // };
 
   //评标报告预览下载
-  const handleFile = (id, fileName) => {
-    console.log(id, fileName);
+  const handleFile = (id, fileName, entryno) => {
     axios({
       method: 'POST',
       url: queryFileStream,
@@ -93,9 +92,9 @@ export default function InfoDisplay(props) {
       data: {
         objectName: 'TXMXX_ZBXX',
         columnName: 'PBBG',
-        id: id,
+        id,
         title: fileName,
-        extr: '',
+        extr: entryno,
         type: '',
       },
     })
@@ -367,7 +366,7 @@ export default function InfoDisplay(props) {
             </div>
           )}
           {getInfoItem('是否包含硬件：', prjBasic.SFBHYJ === '1' ? '是' : '否')}
-          {getInfoItem('是否在硬件入围内：', prjBasic.SFYJRW === '1' ? '是' : '否')}
+          {/* {getInfoItem('是否在硬件入围内：', prjBasic.SFYJRW === '1' ? '是' : '否')} */}
           {isMember() && (
             <div className="info-item" key="文档库：">
               <span>文档库：</span>
@@ -708,9 +707,15 @@ export default function InfoDisplay(props) {
                     <span>评标报告：</span>
                     <a
                       style={{ color: '#3361ff' }}
-                      onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                      onClick={() =>
+                        handleFile(
+                          bidding.ID,
+                          JSON.parse(bidding.PBBG)?.items[0][1],
+                          JSON.parse(bidding.PBBG)?.items[0][0],
+                        )
+                      }
                     >
-                      {bidding.PBBG}
+                      {JSON.parse(bidding.PBBG)?.items[0][1]}
                     </a>
                   </div>
                 )}
@@ -750,9 +755,15 @@ export default function InfoDisplay(props) {
                     <span>评标报告：</span>
                     <a
                       style={{ color: '#3361ff' }}
-                      onClick={() => handleFile(bidding.ID, bidding.PBBG)}
+                      onClick={() =>
+                        handleFile(
+                          bidding.ID,
+                          JSON.parse(bidding.PBBG)?.items[0][1],
+                          JSON.parse(bidding.PBBG)?.items[0][0],
+                        )
+                      }
                     >
-                      {bidding.PBBG}
+                      {JSON.parse(bidding.PBBG)?.items[0][1]}
                     </a>
                   </div>
                 )}

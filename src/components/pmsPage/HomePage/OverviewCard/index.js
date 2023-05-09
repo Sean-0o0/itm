@@ -97,8 +97,8 @@ export default function OverviewCard(props) {
         <div className="title">
           <span>{getGreeting()}</span>
           <div className="desc">
-            {overviewInfo?.gw}
-            {overviewInfo?.gw && '，'}这是你在浙商证券的第
+            {overviewInfo?.sm}
+            {overviewInfo?.sm && '，'}这是你在浙商证券的第
             {moment().diff(moment(overviewInfo?.rzsj), 'days')}天
           </div>
         </div>

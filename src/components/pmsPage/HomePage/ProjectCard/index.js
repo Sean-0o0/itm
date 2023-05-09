@@ -178,7 +178,7 @@ export default function ProjectCard(props) {
   };
 
   const closeFileAddModal = () => {
-    getPrjInfo(userRole);
+    // getPrjInfo(userRole);
     setFileAddVisible(false);
   };
 
@@ -194,6 +194,43 @@ export default function ProjectCard(props) {
     isDraft = false,
     xmid = -1,
   }) => {
+    if (isDraft)
+      return (
+        <div
+          className="project-item"
+          style={{
+            width: itemWidth,
+            background: '#fbfbfb',
+            cursor: 'pointer',
+          }}
+          key={key}
+        >
+          <div className="item-top" onClick={() => handleDraftModify(xmid)}>
+            <span>{title}</span>
+            <div className="tag" style={{ backgroundColor: fontColor }}>
+              草稿
+            </div>
+          </div>
+          <div className="item-middle" onClick={() => handleDraftModify(xmid)}>
+            <img src={require('../../../../assets/homePage/img_no data@2x.png')} alt="" />
+          </div>
+          <div className="item-bottom-operate">
+            <div className="btn-edit" onClick={() => handleDraftModify(xmid)}>
+              <div className="btn-edit-wrapper">
+                <i className="iconfont edit" />
+                编辑
+              </div>
+            </div>
+            <div className="divider"></div>
+            <Popconfirm title="确定要删除吗？" onConfirm={() => handleDraftDelete(xmid)}>
+              <div className="btn-delete">
+                <i className="iconfont delete" />
+                删除
+              </div>
+            </Popconfirm>
+          </div>
+        </div>
+      );
     let bgImg =
       'background: linear-gradient(270deg,rgba(51, 97, 255, 0) 0%,rgba(51, 97, 255, 0.1) 100%)';
     let fontColor = '#3361FF';
@@ -285,14 +322,6 @@ export default function ProjectCard(props) {
           ))}
         </div>
       );
-    };
-    const jumpToDetail = id => {
-      window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
-        JSON.stringify({
-          routes: [{ name: '首页', pathname: location.pathname }],
-          xmid: id,
-        }),
-      )}`;
     };
     return (
       <div

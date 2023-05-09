@@ -341,7 +341,7 @@ export default function HomePage(props) {
     })
       .then(res => {
         if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
+          console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
           setToDoData(p => [...res.record]);
           setTotal(p => {
             return {

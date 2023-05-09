@@ -73,7 +73,6 @@ export default function ShortcutCard(props) {
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       closeFileAddModal();
       getPrjInfo(userRole); //刷新数据
-      // window.location.href = '/#/pms/manage/ProjectInfo';
       // message.success('保存成功');
     }
   };
@@ -113,6 +112,7 @@ export default function ShortcutCard(props) {
         setVisible={setVisible}
         setFileAddVisible={setFileAddVisible}
         setSrc_fileAdd={setSrc_fileAdd}
+        fromHome={true} //来自首页
       />
       {getShortcutBox()}
     </div>

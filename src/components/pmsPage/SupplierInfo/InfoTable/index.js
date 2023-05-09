@@ -25,7 +25,7 @@ export default function InfoTable(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     // console.log('handleTableChange', pagination, filters, sorter, extra);
-    const { current = 1, pageSize = 10 } = pagination;
+    const { current = 1, pageSize = 20 } = pagination;
     // getTableData({ current, pageSize });
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
@@ -201,7 +201,7 @@ export default function InfoTable(props) {
             current: curPage,
             pageSize: curPageSize,
             defaultCurrent: 1,
-            pageSizeOptions: ['10', '20', '30', '40'],
+            pageSizeOptions: ['20', '40', '50', '100'],
             showSizeChanger: true,
             hideOnSinglePage: false,
             showQuickJumper: true,

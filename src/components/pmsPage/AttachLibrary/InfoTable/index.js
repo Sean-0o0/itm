@@ -323,7 +323,7 @@ class InfoTable extends Component {
                         pageSize={pageParams.pageSize}
                         current={pageParams.current}
                         total={pageParams.total}
-                        pageSizeOptions={['10', '20', '30', '40']}
+                        pageSizeOptions={['20', '40', '50', '100']}
                         showSizeChanger={true}
                         // hideOnSinglePage={true}
                         showQuickJumper={true}

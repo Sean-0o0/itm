@@ -50,8 +50,7 @@ export default function InfoTable(props) {
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       closeFileAddModal();
-      getPrjInfo(userRole); //刷新数据
-      // message.success('保存成功');
+      getTableData({});
     }
   };
 
@@ -94,7 +93,7 @@ export default function InfoTable(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     console.log('handleTableChange', pagination, filters, sorter, extra);
-    const { current = 1, pageSize = 10 } = pagination;
+    const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
         handleSearch(current, pageSize, 'YSJE ASC,XH DESC,ID DESC');
@@ -349,7 +348,7 @@ export default function InfoTable(props) {
             current: curPage,
             pageSize: curPageSize,
             defaultCurrent: 1,
-            pageSizeOptions: ['10', '20', '30', '40'],
+            pageSizeOptions: ['20', '40', '50', '100'],
             showSizeChanger: true,
             hideOnSinglePage: false,
             showQuickJumper: true,

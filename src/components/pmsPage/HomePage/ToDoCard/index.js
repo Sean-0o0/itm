@@ -9,9 +9,18 @@ import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { EncryptBase64 } from '../../../Common/Encrypt';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [], total } = props;
+  const {
+    itemWidth,
+    getAfterItem,
+    getToDoData,
+    toDoData = [],
+    xmbhData = [],
+    total,
+  } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -25,6 +34,7 @@ export default function ToDoCard(props) {
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const [allToDo, setAllToDo] = useState([]); //全部待办
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
+  const location = useLocation();
 
   const ryxztxModalProps = {
     isAllWindow: 1,
@@ -38,7 +48,7 @@ export default function ToDoCard(props) {
 
   useLayoutEffect(() => {
     if (toDoData.length !== 0) {
-      setDataList(p => [...toDoData?.slice(0, 2)]);
+      setDataList(p => [...toDoData]);
       setIsUnfold(false);
     }
     return () => {};
@@ -55,7 +65,7 @@ export default function ToDoCard(props) {
   const handleIframePostMessage = event => {
     if (typeof event.data !== 'string' && event.data.operate === 'close') {
       setFileAddVisible(false);
-      console.log(event);
+      // console.log(event);
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       setFileAddVisible(false);
@@ -80,6 +90,16 @@ export default function ToDoCard(props) {
       return;
     }
     window.location.href = `/#/UIProcessor?Table=${tableName}&hideTitlebar=true`;
+  };
+
+  //跳转项目详情
+  const jumpToProjectDetail = item => {
+    window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
+      JSON.stringify({
+        routes: [{ name: '首页', pathname: location.pathname }],
+        xmid: item.xmid,
+      }),
+    )}`;
   };
 
   //付款流程
@@ -193,6 +213,8 @@ export default function ToDoCard(props) {
         return handleXwhhyjg(item);
       case '项目信息完善':
         return jumpToEditProjectInfo(item);
+      case '预算使用超限':
+        return jumpToProjectDetail(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -201,8 +223,7 @@ export default function ToDoCard(props) {
         return jumpToLBPage('');
       case '里程碑逾期':
         return jumpToLBPage('');
-      case '预算使用超限':
-        return jumpToLBPage('');
+
       default:
         console.error(`🚀 ~ 该待办事项名称【${item.sxmc}】未配置`);
         return;
@@ -324,12 +345,15 @@ export default function ToDoCard(props) {
         className="todo-item"
         style={{
           borderColor: borderColor,
-          // width: itemWidth,
+          cursor: Number(item.xxlx) === 2 ? 'default' : 'pointer',
+        }}
+        onClick={() => {
+          if (Number(item.xxlx) !== 2) handleToDo(item);
         }}
         key={key}
       >
         {/* {isDueSoon && <div className="status-tag-2">即将到期</div>}
-        {isLate && <div className="status-tag-3">逾期{lateDay}天</div>} */}
+    {isLate && <div className="status-tag-3">逾期{lateDay}天</div>} */}
         <div className="item-title">
           <div className="title-top">
             <span className="top-left">
@@ -411,7 +435,7 @@ export default function ToDoCard(props) {
       )}
       <div className="home-card-title-box">我的待办</div>
       <div className="todo-row">
-        {dataList?.map((item, index) =>
+        {dataList?.map(item =>
           getToDoItem({
             title: item.xmmc,
             content: item.txnr,
@@ -421,7 +445,7 @@ export default function ToDoCard(props) {
             isDueSoon:
               Number(moment(item.jzrq).diff(moment(new moment()), 'days')) <= 3 &&
               Number(moment(item.jzrq).diff(moment(new moment()), 'days')) > 0,
-            key: index,
+            key: item.xxid,
             lateDay: item.wdsl,
             item,
           }),

@@ -5,7 +5,7 @@ import { EncryptBase64 } from '../../../../Common/Encrypt';
 import { FetchQueryProjectLabel } from '../../../../../services/projectManage';
 
 export default function PrjTypeModal(props) {
-  const { visible, setVisible, setFileAddVisible, setSrc_fileAdd } = props;
+  const { visible, setVisible, setFileAddVisible, setSrc_fileAdd, fromHome=false } = props;
   const [typeData, setTypeData] = useState([]); //项目类型
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   useEffect(() => {
@@ -30,7 +30,7 @@ export default function PrjTypeModal(props) {
   const newProject = projectType => {
     setSrc_fileAdd(
       `/#/single/pms/SaveProject/${EncryptBase64(
-        JSON.stringify({ xmid: -1, type: true, projectType }),
+        JSON.stringify({ xmid: -1, type: fromHome, projectType }),
       )}`,
     );
     setVisible(false);
