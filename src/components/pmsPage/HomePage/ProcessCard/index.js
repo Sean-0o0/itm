@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react';
 import {
   CreateOperateHyperLink,
+  FetchQueryOwnerWorkflow,
   GetApplyListProvisionalAuth,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { Empty, message, Tooltip } from 'antd';
+import { Empty, message, Tooltip, Icon } from 'antd';
 
 export default function ProcessCard(props) {
-  const { processData } = props;
+  const { processData, total } = props;
   const [processDataList, setProcessDataList] = useState([]); //流程情况 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [xwhyaModalVisible, setXwhyaModalVisible] = useState(false); //信委会议案弹窗显隐
   const [lbModalUrl, setLbModalUrl] = useState('#'); //弹窗链接
   const [lbModalTitle, setLbModaolTitle] = useState('操作'); //弹窗标题
+  const [allPrc, setAllPrc] = useState([]); //全部流程
+  const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
   const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
   useEffect(() => {
@@ -122,9 +125,36 @@ export default function ProcessCard(props) {
   };
   //展开、收起
   const handleUnfold = bool => {
-    setIsUnfold(bool);
-    if (bool) setProcessDataList(p => [...processData]);
-    else setProcessDataList(p => [...processData?.slice(0, 3)]);
+    if (bool) {
+      if (allPrc.length === 0) {
+        setIsLoading(true);
+        FetchQueryOwnerWorkflow({
+          paging: -1,
+          current: 1,
+          pageSize: 9999,
+          total: -1,
+          sort: '',
+        })
+          .then(res => {
+            if (res?.success) {
+              setProcessDataList(p => [...res?.record]);
+              setAllPrc(p => [...res?.record]);
+              setIsLoading(false);
+              setIsUnfold(bool);
+            }
+          })
+          .catch(e => {
+            console.error('FetchQueryOwnerWorkflow', e);
+            message.error('流程情况信息查询失败', 1);
+          });
+      } else {
+        setProcessDataList(p => [...allPrc]);
+        setIsUnfold(bool);
+      }
+    } else {
+      setProcessDataList(p => [...processData?.slice(0, 3)]);
+      setIsUnfold(bool);
+    }
   };
   //信委会立案流程查看
   const xwhyaModalProps = {
@@ -159,14 +189,14 @@ export default function ProcessCard(props) {
             url: item.url,
           }),
         )}
-        {processDataList?.length === 0 && (
+        {total === 0 && (
           <Empty
             description="暂无流程"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             style={{ width: '100%' }}
           />
         )}
-        {processData?.length > 3 &&
+        {total > 3 &&
           (isUnfold ? (
             <div className="more-item" onClick={() => handleUnfold(false)}>
               收起
@@ -175,7 +205,7 @@ export default function ProcessCard(props) {
           ) : (
             <div className="more-item" onClick={() => handleUnfold(true)}>
               更多
-              <i className="iconfont icon-down" />
+              {isLoading ? <Icon type="loading" /> : <i className="iconfont icon-down" />}
             </div>
           ))}
       </div>

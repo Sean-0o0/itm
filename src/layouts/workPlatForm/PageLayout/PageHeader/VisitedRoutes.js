@@ -159,12 +159,6 @@ function VisitedRoutes(props) {
         }}
         activeKey={newPathname}
       >
-        {/* <div className={`cur-tabs ${styles.tagview} ${newPathname === homePage && styles.isActive}`}>
-        <Link to={homePage}>
-          <i className="iconfont icon-home" style={{ display: 'inline-block', height: '3.286rem' }} />
-          <span style={{ margin: '0 1rem' }}>首页</span>
-        </Link>
-      </div> */}
         {/* <div key={homePage} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
           <div
             className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
@@ -175,9 +169,6 @@ function VisitedRoutes(props) {
           <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
         </div> */}
         <TabPane
-          // className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
-          //   styles.isActive}`}
-          className='sssss'
           tab={<Link to="/pms/manage/HomePage">个人工作台</Link>}
           closable={false}
           key="/pms/manage/HomePage"
@@ -201,7 +192,7 @@ function VisitedRoutes(props) {
               url = item;
               title = '标签详情';
             }
-            if (item.includes('/pms/manage/attachLibrary/')) {
+            if (item.includes('/pms/manage/attachLibrary')) {
               url = item;
               title = '文档列表';
             }

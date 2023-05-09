@@ -42,6 +42,11 @@ export default function HomePage(props) {
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [processData, setProcessData] = useState([]); //流程情况
+  const [total, setTotal] = useState({
+    todo: 0,
+    project: 0,
+    process: 0,
+  }); //数据总数
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const htmlContent = document.getElementById('htmlContent'); //页面跳转后滚至顶部
 
@@ -162,6 +167,7 @@ export default function HomePage(props) {
       })
       .catch(e => {
         console.error('QueryUserRole', e);
+        message.error('用户角色信息查询失败', 1);
       });
   };
 
@@ -181,6 +187,7 @@ export default function HomePage(props) {
       })
       .catch(e => {
         console.error('QueryBudgetOverviewInfo', e);
+        message.error('预算执行情况查询失败', 1);
       });
   };
 
@@ -198,6 +205,7 @@ export default function HomePage(props) {
       })
       .catch(e => {
         console.error('QueryStagingOverviewInfo', e);
+        message.error('项目概览信息查询失败', 1);
       });
   };
 
@@ -207,9 +215,9 @@ export default function HomePage(props) {
       queryType: 'SY',
       role,
       org: Number(LOGIN_USER_INFO.org),
-      paging: -1,
+      paging: 1,
       current: 1,
-      pageSize: 9999,
+      pageSize: 9,
       total: -1,
       sort: '',
     })
@@ -233,11 +241,18 @@ export default function HomePage(props) {
             item.participantData = [...participantArr];
           });
           setPrjInfo(p => [...arr]);
+          setTotal(p => {
+            return {
+              ...p,
+              project: res.totalrows,
+            };
+          });
           setIsSpinning(false);
         }
       })
       .catch(e => {
         console.error('QueryProjectGeneralInfo', e);
+        message.error('项目信息查询失败', 1);
       });
   };
 
@@ -268,6 +283,7 @@ export default function HomePage(props) {
       })
       .catch(e => {
         console.error('QueryMemberOverviewInfo', e);
+        message.error('队伍建设信息查询失败', 1);
       });
   };
 
@@ -308,6 +324,7 @@ export default function HomePage(props) {
       })
       .catch(e => {
         console.error('QuerySupplierOverviewInfo', e);
+        message.error('供应商情况信息查询失败', 1);
       });
   };
 
@@ -316,21 +333,28 @@ export default function HomePage(props) {
     FetchQueryOwnerMessage({
       cxlx: 'ALL',
       date: Number(new moment().format('YYYYMMDD')),
-      paging: -1,
+      paging: 1,
       current: 1,
-      pageSize: 9999,
-      total: 1,
+      pageSize: 2,
+      total: -1,
       sort: '',
     })
       .then(res => {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
           setToDoData(p => [...res.record]);
+          setTotal(p => {
+            return {
+              ...p,
+              todo: res.totalrows,
+            };
+          });
           getXmbhData();
         }
       })
       .catch(e => {
         console.error('FetchQueryOwnerMessage', e);
+        message.error('待办信息查询失败', 1);
       });
   };
 
@@ -352,15 +376,16 @@ export default function HomePage(props) {
       })
       .catch(e => {
         console.error('FetchQueryOwnerProjectList', e);
+        message.error('项目编号信息查询失败', 1);
       });
   };
 
   //获取流程情况
   const getProcessData = () => {
     FetchQueryOwnerWorkflow({
-      paging: -1,
+      paging: 1,
       current: 1,
-      pageSize: 9999,
+      pageSize: 3,
       total: -1,
       sort: '',
     })
@@ -368,11 +393,18 @@ export default function HomePage(props) {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
           setProcessData(p => [...res?.record]);
+          setTotal(p => {
+            return {
+              ...p,
+              process: res.totalrows,
+            };
+          });
           getToDoData();
         }
       })
       .catch(e => {
         console.error('FetchQueryOwnerWorkflow', e);
+        message.error('流程情况信息查询失败', 1);
       });
   };
 
@@ -399,6 +431,7 @@ export default function HomePage(props) {
                 toDoData={toDoData}
                 xmbhData={xmbhData}
                 getToDoData={getToDoData}
+                total={total.todo}
               />
             ) : (
               <CptBudgetCard
@@ -413,6 +446,7 @@ export default function HomePage(props) {
               userRole={userRole}
               prjInfo={prjInfo}
               getPrjInfo={getPrjInfo}
+              total={total.project}
             />
           </div>
           <div className="col-right">
@@ -429,7 +463,7 @@ export default function HomePage(props) {
               <TeamCard teamData={teamData} />
             )}
             {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <ProcessCard processData={processData} />
+              <ProcessCard processData={processData} total={total.process} />
             ) : (
               <SupplierCard
                 supplierData={supplierData}

@@ -1,18 +1,21 @@
-import { Progress, Popover, Empty, Popconfirm, message } from 'antd';
+import { Progress, Popover, Empty, Popconfirm, message, Icon } from 'antd';
 import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
 import { OperateCreatProject } from '../../../../services/projectManage';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
+import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 
 export default function ProjectCard(props) {
-  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo } = props;
+  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [allPrj, setAllPrj] = useState([]); //全部项目
+  const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
   const location = useLocation();
 
   useEffect(() => {
@@ -63,9 +66,56 @@ export default function ProjectCard(props) {
 
   //展开、收起
   const handleUnfold = bool => {
-    setIsUnfold(bool);
-    if (bool) setInfoList(p => [...prjInfo]);
-    else setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
+    if (bool) {
+      if (allPrj.length === 0) {
+        setIsLoading(true);
+        QueryProjectGeneralInfo({
+          queryType: 'SY',
+          role: userRole,
+          org: Number(LOGIN_USER_INFO.org),
+          paging: -1,
+          current: 1,
+          pageSize: 9999,
+          total: -1,
+          sort: '',
+        })
+          .then(res => {
+            if (res?.success) {
+              let arr = JSON.parse(res?.xmxx); //项目信息
+              arr?.forEach(item => {
+                let riskArr = []; //风险信息
+                let participantArr = []; //人员信息
+                JSON.parse(res?.fxxx).forEach(x => {
+                  if (x.XMID === item.XMID) {
+                    riskArr.push(x);
+                  }
+                });
+                JSON.parse(res?.ryxx).forEach(x => {
+                  if (x.XMID === item.XMID) {
+                    participantArr.push(x);
+                  }
+                });
+                item.riskData = [...riskArr];
+                item.participantData = [...participantArr];
+              });
+              setAllPrj(p => [...arr]);
+              setInfoList(p => [...arr]);
+              setIsLoading(false);
+              setIsUnfold(bool);
+            }
+          })
+          .catch(e => {
+            console.error('QueryProjectGeneralInfo', e);
+            message.error('项目信息查询失败', 1);
+          });
+      } else {
+        setInfoList(p => [...allPrj]);
+        setIsUnfold(bool);
+      }
+    } else {
+      setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
+      setIsUnfold(bool);
+    }
   };
 
   //草稿编辑
@@ -448,14 +498,14 @@ export default function ProjectCard(props) {
             xmid: item.XMID,
           });
         })}
-        {prjInfo?.length === 0 && (
+        {total === 0 && (
           <div style={{ width: '100%', margin: '0 auto' }}>
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           </div>
         )}
         {getAfterItem(itemWidth)}
       </div>
-      {prjInfo?.length > getColNum(itemWidth) * 3 &&
+      {total > getColNum(itemWidth) * 3 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>
             收起
@@ -464,7 +514,7 @@ export default function ProjectCard(props) {
         ) : (
           <div className="more-item" onClick={() => handleUnfold(true)}>
             更多
-            <i className="iconfont icon-down" />
+            {isLoading ? <Icon type="loading" /> : <i className="iconfont icon-down" />}
           </div>
         ))}
     </div>

@@ -1,13 +1,17 @@
-import { Button, Empty, message, Tooltip } from 'antd';
+import { Button, Empty, message, Tooltip, Icon } from 'antd';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services/pmsServices';
+import {
+  CreateOperateHyperLink,
+  FetchQueryOwnerMessage,
+  UpdateMessageState,
+} from '../../../../services/pmsServices';
 import moment from 'moment';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [] } = props;
+  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [], total } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -19,6 +23,8 @@ export default function ToDoCard(props) {
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [allToDo, setAllToDo] = useState([]); //全部待办
+  const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
 
   const ryxztxModalProps = {
     isAllWindow: 1,
@@ -248,9 +254,38 @@ export default function ToDoCard(props) {
 
   //展开、收起
   const handleUnfold = bool => {
-    setIsUnfold(bool);
-    if (bool) setDataList(p => [...toDoData]);
-    else setDataList(p => [...toDoData?.slice(0, 2)]);
+    if (bool) {
+      if (allToDo.length === 0) {
+        setIsLoading(true);
+        FetchQueryOwnerMessage({
+          cxlx: 'ALL',
+          date: Number(new moment().format('YYYYMMDD')),
+          paging: -1,
+          current: 1,
+          pageSize: 99999,
+          total: -1,
+          sort: '',
+        })
+          .then(res => {
+            if (res?.success) {
+              setDataList(p => [...res.record]);
+              setAllToDo(p => [...res.record]);
+              setIsLoading(false);
+              setIsUnfold(bool);
+            }
+          })
+          .catch(e => {
+            console.error('FetchQueryOwnerMessage', e);
+            message.error('待办信息查询失败', 1);
+          });
+      } else {
+        setDataList(p => [...allToDo]);
+        setIsUnfold(bool);
+      }
+    } else {
+      setIsUnfold(bool);
+      setDataList(p => [...toDoData]);
+    }
   };
 
   const fileAddModalProps = {
@@ -400,7 +435,7 @@ export default function ToDoCard(props) {
           style={{ width: '100%' }}
         />
       )} */}
-      {toDoData?.length > 2 &&
+      {total > 2 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>
             收起
@@ -409,7 +444,7 @@ export default function ToDoCard(props) {
         ) : (
           <div className="more-item" onClick={() => handleUnfold(true)}>
             更多
-            <i className="iconfont icon-down" />
+            {isLoading ? <Icon type="loading" /> : <i className="iconfont icon-down" />}
           </div>
         ))}
     </div>

@@ -175,7 +175,7 @@ class BudgetExcute extends Component {
                     <div className='title'>资本性预算</div>
                     <div style={{display: 'flex'}}>
                         <BudgetType title='总预算(万元)' wcz={!isNaN(zyswcz)?zyswcz:0} wcl={zyswcl} mbz={ZBRJZYS} syz={ZBRJSYZ} type='left'/>
-                        <BudgetType title='可执行总预算(万元)' wcz={ZBRJWCZ} wcl={kzxwcl} mbz={ZBRJKZX} syz={kzxsyz} type='left'/>
+                        <BudgetType title='可执行总预算(万元)' wcz={ZBRJWCZ} wcl={kzxwcl} mbz={ZBRJKZX} syz={kzxsyz} type='left' remainLabel='未付款'/>
                     </div>
                 </div>
                 <div className='cont-block staff-overview' style={{ width: 'calc(25% - 12px)', marginRight: '24px' }}>

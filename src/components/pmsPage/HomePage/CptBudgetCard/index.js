@@ -5,7 +5,7 @@ import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 
 export default function CptBudgetCard(props) {
-  const { isVertical = false, userRole, budgetData= {}, time } = props;
+  const { isVertical = false, userRole, budgetData = {}, time } = props;
   const location = useLocation();
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -16,6 +16,7 @@ export default function CptBudgetCard(props) {
     target = '--',
     remain = '--',
     img = 'software',
+    remainLabel = '未立项',
   }) => {
     return (
       <div
@@ -38,7 +39,7 @@ export default function CptBudgetCard(props) {
           showInfo={false}
           percent={Number(rate)}
           strokeColor={{
-            from: '9EC4FE',
+            from: '#9EC4FE',
             to: '#3361FF',
           }}
           strokeWidth={10}
@@ -46,10 +47,12 @@ export default function CptBudgetCard(props) {
         />
         <div className="item-bottom">
           <Tooltip title={getAmountFormat(target)}>
-            <span style={{ cursor: 'default' }}>目标：{getAmountFormat(target)}</span>
+            <span style={{ cursor: 'default' }}>总数：{getAmountFormat(target)}</span>
           </Tooltip>
           <Tooltip title={getAmountFormat(remain)}>
-            <span style={{ cursor: 'default' }}>剩余：{getAmountFormat(remain)}</span>
+            <span style={{ cursor: 'default' }}>
+              {remainLabel}：{getAmountFormat(remain)}
+            </span>
           </Tooltip>
         </div>
       </div>
@@ -62,7 +65,8 @@ export default function CptBudgetCard(props) {
   zyswcl = !isNaN(zyswcl) ? zyswcl.toFixed(2) : 0;
 
   let kzxsyz = Number.parseFloat(budgetData.ZBRJKZX) - Number.parseFloat(budgetData.ZBRJWCZ);
-  let kzxwcl = (Number.parseFloat(budgetData.ZBRJWCZ) * 100) / Number.parseFloat(budgetData.ZBRJKZX);
+  let kzxwcl =
+    (Number.parseFloat(budgetData.ZBRJWCZ) * 100) / Number.parseFloat(budgetData.ZBRJKZX);
   kzxsyz = !isNaN(kzxsyz) ? kzxsyz.toFixed(2) : 0;
   kzxwcl = !isNaN(kzxwcl) ? kzxwcl.toFixed(2) : 0;
   return (
@@ -94,17 +98,19 @@ export default function CptBudgetCard(props) {
           isVertical ? { flexDirection: 'column', marginBottom: '-16px' } : { marginRight: '-16px' }
         }
       >
-        {getBudgetItem({
-          title: '总预算(万元)',
-          amount: zyswcz,
-          rate: zyswcl,
-          target: Number(budgetData.ZBRJZYS).toFixed(2),
-          remain: Number(budgetData.ZBRJSYZ).toFixed(2),
-        })}
+        {userRole !== '普通人员' &&
+          getBudgetItem({
+            title: '总预算(万元)',
+            amount: zyswcz,
+            rate: zyswcl,
+            target: Number(budgetData.ZBRJZYS).toFixed(2),
+            remain: Number(budgetData.ZBRJSYZ).toFixed(2),
+          })}
         {getBudgetItem({
           title: '可执行总预算(万元)',
           amount: Number(budgetData.ZBRJWCZ).toFixed(2),
           rate: kzxwcl,
+          remainLabel: '未付款',
           target: Number(budgetData.ZBRJKZX).toFixed(2),
           remain: kzxsyz,
           img: 'hardware',
