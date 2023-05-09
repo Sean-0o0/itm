@@ -43,8 +43,9 @@ class BudgetExcute extends Component {
                         orgid: JSON.parse(sessionStorage.getItem("user"))?.org,
                     }, () => {
                         const { pageParam = {} } = this.state;
+                        console.log('pageParam',pageParam)
                         this.queryHeaderInfo('MX')
-                        this.queryBudgetOverviewInfo('MX_ZB', undefined, pageParam)
+                        this.queryBudgetOverviewInfo('MX_ZB', pageParam)
                     })
                 }
             }).catch(err => {

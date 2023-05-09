@@ -6,34 +6,42 @@ import 'moment/locale/zh-cn';
 import { EncryptBase64 } from "../../../../Common/Encrypt";
 class StaffTable extends Component {
     state = {
-
+        current: 1,
+        pageSize: 10
     }
 
-    handleChange = (current, pageSize) => {
-        const { fetchData, queryType, gwbm, pageParam } = this.props;
-        if (fetchData) {
-            fetchData(queryType, gwbm, {
-                ...pageParam,
-                current: current,
-                pageSize: pageSize,
-                total: -1,
-            })
-        }
+    handleChange = (pagination) => {
+        // const { fetchData, queryType, gwbm, pageParam } = this.props;
+        const { current, pageSize } = pagination
+        this.setState({
+            current: current,
+            pageSize: pageSize
+        })
+        // if (fetchData) {
+        //     fetchData(queryType, gwbm, {
+        //         ...pageParam,
+        //         current: current,
+        //         pageSize: pageSize,
+        //         total: -1,
+        //     })
+        // }
     }
 
     //计算合并
     rowspan = (userData) => {
         let spanArr = [];
         let position = 0;
-        let order = 1
-        userData.forEach((item, index) => {
+        let order = 1;
+        const { current = 1, pageSize = 10 } = this.state;
+        const data = userData.slice((current-1)*pageSize, current*pageSize);
+        data.forEach((item, index) => {
             let obj = {}
             if (index === 0) {
                 obj.num = 1;
                 position = 0;
             } else {
                 //需要合并的地方判断
-                if (userData[index].RYID === userData[index - 1].RYID) {
+                if (data[index].RYID === data[index - 1].RYID) {
                     spanArr[position].num += 1;
                     obj.num = 0;
 
@@ -66,7 +74,7 @@ class StaffTable extends Component {
 
     render() {
         const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
-        const { current = 1, pageSize = 10 } = pageParam;
+        const { current = 1, pageSize = 10 } = this.state;
         const rowspan = this.rowspan(tableData);
         const columns = [{
             title: '序号',
@@ -231,8 +239,10 @@ class StaffTable extends Component {
                     columns={columns}
                     rowKey={'id'}
                     dataSource={tableData}
-                    onChange={this.handleTableChange}
+                    onChange={this.handleChange}
                     pagination={{
+                        current: current,
+                        pageSize: pageSize,
                         pageSizeOptions:  ['10', '20', '30', '40'],
                         showSizeChanger:  true,
                         showQuickJumper:  true,
