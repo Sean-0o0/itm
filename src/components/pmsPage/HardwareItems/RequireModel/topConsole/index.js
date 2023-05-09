@@ -19,9 +19,10 @@ export default function TopConsole(props) {
 
   //重置按钮
   const handleReset = v => {
-    setDemand('')
-    setDrafter('')
-    callBackParams({...params, demand:'',drafter:'', current: 1})
+    setDemand("")
+    setDrafter(undefined)
+    console.log('重置重置');
+    callBackParams({...params, demand: '', drafter: '', current: 1})
   };
 
   // onChange-start
@@ -54,6 +55,7 @@ export default function TopConsole(props) {
             placeholder="发起人"
             showSearch
             allowClear
+            value={drafter}
             onChange={handleFQRNameChange}
             filterOption={(input, option) =>
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
