@@ -820,9 +820,9 @@ class EditProjectInfoModel extends React.Component {
                   if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
                     milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
                   }
-                  milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
-                  milePostInfo.sort((a,b)=>{
-                    return( a.xh - b.xh)
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                  milePostInfo.sort((a, b) => {
+                    return (a.xh - b.xh)
                   })
                   this.setState({
                     pureHardwareFlag:false,
@@ -837,20 +837,39 @@ class EditProjectInfoModel extends React.Component {
                 }
               }
             }if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && this.state.basicInfo.haveHard == '1') {
-              for (let i = 0; i < data.length; i++) {
-                if (data[i].lcbmc === "项目立项") {
-                  milePostInfo.map(item => {
-                    if (item.lcbmc === "项目立项") {
-                      item.matterInfos = data[i].matterInfos
-                    }
+              if (Number(this.state.budgetInfo.frameBudget) > 0) {
+                if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                  milePostInfo.sort((a, b) => {
+                    return (a.xh - b.xh)
                   })
-                }
-                if (data[i].lcbmc === '项目实施') {
-                  milePostInfo.map(item => {
-                    if (item.lcbmc === '项目实施') {
-                      item.matterInfos = data[i].matterInfos;
+                } else {
+                  for (let i = 0; i < data.length; i++) {
+                    if (data[i].lcbmc === "项目立项") {
+                      milePostInfo.map(item => {
+                        if (item.lcbmc === "项目立项") {
+                          item.matterInfos = data[i].matterInfos
+                        }
+                      })
                     }
-                  });
+                  }
+                }
+              } else {
+                for (let i = 0; i < data.length; i++) {
+                  if (data[i].lcbmc === "项目立项") {
+                    milePostInfo.map(item => {
+                      if (item.lcbmc === "项目立项") {
+                        item.matterInfos = data[i].matterInfos
+                      }
+                    })
+                  }
+                  if (data[i].lcbmc === '项目实施') {
+                    milePostInfo.map(item => {
+                      if (item.lcbmc === '项目实施') {
+                        item.matterInfos = data[i].matterInfos;
+                      }
+                    });
+                  }
                 }
               }
               //软件金额为0 去掉项目招采里程碑
@@ -858,9 +877,9 @@ class EditProjectInfoModel extends React.Component {
             }if (Number(this.state.budgetInfo.singleBudget) !== 0 && this.state.basicInfo.haveHard == '1') {
               //单独采购有值的时候，都要有招采
               if(milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0){
-                milePostInfo.splice(arr.filter(item => item.lcbmc === '项目立项')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目立项')[0])
-                milePostInfo.sort((a,b)=>{
-                  return( a.xh - b.xh)
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                milePostInfo.sort((a, b) => {
+                  return (a.xh - b.xh)
                 })
               }else{
                 for (let i = 0; i < data.length; i++) {
@@ -886,12 +905,16 @@ class EditProjectInfoModel extends React.Component {
               if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
               }
-              milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
               milePostInfo.sort((a, b) => {
                 return (a.xh - b.xh)
               })
             }
-            if (500000 > Number(this.state.budgetInfo.singleBudget) && Number(this.state.budgetInfo.singleBudget) > 0 && Number(this.state.budgetInfo.frameBudget) === 0 && Number(this.state.budgetInfo.softBudget) === 0 && this.state.basicInfo.haveHard == '1') {
+            if (500000 > Number(this.state.budgetInfo.singleBudget)
+              && Number(this.state.budgetInfo.singleBudget) > 0
+              && Number(this.state.budgetInfo.frameBudget) === 0
+              && Number(this.state.budgetInfo.softBudget) === 0
+              && this.state.basicInfo.haveHard == '1') {
               for (let i = 0; i < data.length; i++) {
                 if (data[i].lcbmc === '项目实施') {
                   milePostInfo.map(item => {
@@ -909,9 +932,9 @@ class EditProjectInfoModel extends React.Component {
               if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
               }
-              milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
-              milePostInfo.sort((a,b)=>{
-                return( a.xh - b.xh)
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+              milePostInfo.sort((a, b) => {
+                return (a.xh - b.xh)
               })
             }else {
               for (let i = 0; i < data.length; i++) {
@@ -1484,15 +1507,17 @@ class EditProjectInfoModel extends React.Component {
         const { code = -1, record = [] } = result;
         if (code > 0) {
           const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+          const loginext = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
           loginUser.id = String(loginUser.id);
+          loginUser.orgName = String(loginext[0].extAttr.orgname);
           // 深拷贝
           const arr = [];
           record.forEach(e => {
             // 获取登录用户的部门名称
-            if (String(e.orgId) === String(loginUser.org)) {
-              loginUser.orgName = e.orgName;
-            }
-            arr.push({ ...e });
+            // if (String(e.orgId) === String(loginUser.org)) {
+            //   loginUser.orgName = e.orgName;
+            // }
+            arr.push({...e});
           });
           this.setState({
             loginUser: loginUser,
@@ -4038,24 +4063,28 @@ class EditProjectInfoModel extends React.Component {
                       <Row gutter={24}>
                         <Col span={12} style={{ paddingRight: '24px' }}>
                           <Form.Item label="项目名称" className="formItem">
-                            {getFieldDecorator('projectName', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: '请输入项目名称',
-                                },
-                              ],
-                              initialValue: basicInfo.projectName,
-                            })(
-                              <Input
-                                disabled={subItemFlag}
-                                placeholder="请输入项目名称"
-                                onChange={e => {
-                                  this.setState({
-                                    basicInfo: { ...basicInfo, projectName: e.target.value },
-                                  });
-                                }}
-                              />,
+                            {
+                              //   getFieldDecorator('projectName', {
+                              //   rules: [
+                              //     {
+                              //       required: true,
+                              //       message: '请输入项目名称',
+                              //     },
+                              //   ],
+                              //   initialValue: basicInfo.projectName,
+                              // })
+                              (
+                                <Input
+                                  disabled={subItemFlag}
+                                  placeholder="请输入项目名称"
+                                  value={basicInfo.projectName}
+                                  onChange={e => {
+                                    console.log("e.target.value", e.target.value)
+                                    this.setState({
+                                      basicInfo: {...basicInfo, projectName: e.target.value},
+                                    });
+                                  }}
+                                />
                             )}
                           </Form.Item>
                         </Col>
@@ -4233,6 +4262,7 @@ class EditProjectInfoModel extends React.Component {
                                     basicInfo: {...basicInfo, software: e,}
                                   });
                                 }}
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
                                 filterOption={(input, option) =>
                                   option.props.children
                                     .toLowerCase()
@@ -4292,7 +4322,7 @@ class EditProjectInfoModel extends React.Component {
                                   placeholder="请选择采购方式"
                                   // treeCheckable
                                   treeDefaultExpandAll
-                                  // getPopupContainer={triggerNode => triggerNode.parentNode}
+                                  getPopupContainer={triggerNode => triggerNode.parentNode}
                                   // treeDefaultExpandedKeys={orgExpendKeys}
                                   onChange={e => {
                                     //console.log("请选择采购方式", e)
@@ -4377,7 +4407,7 @@ class EditProjectInfoModel extends React.Component {
                                   placeholder="请选择应用部门"
                                   // treeCheckable
                                   // treeDefaultExpandAll
-                                  // getPopupContainer={triggerNode => triggerNode.parentNode}
+                                  getPopupContainer={triggerNode => triggerNode.parentNode}
                                   treeDefaultExpandedKeys={orgExpendKeys}
                                   onChange={e => {
                                     this.setState({
@@ -4423,6 +4453,7 @@ class EditProjectInfoModel extends React.Component {
                               value={budgetInfo.year}
                               allowClear={false}
                               ref={picker => (this.picker = picker)}
+                              getCalendarContainer={triggerNode => triggerNode.parentNode}
                               onChange={v => {
                                 const _this = this;
                                 this.setState(
@@ -4497,6 +4528,7 @@ class EditProjectInfoModel extends React.Component {
                                 dropdownClassName="newproject-treeselect"
                                 dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
                                 treeData={budgetProjectList}
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
                                 placeholder="请选择关联预算项目"
                                 // treeDefaultExpandAll
                                 onChange={e => {
@@ -6829,7 +6861,7 @@ class EditProjectInfoModel extends React.Component {
                       <Row gutter={24} style={{ display: zbxxVisiable === false ? 'none' : '' }}>
                         <Col span={12} style={{ paddingRight: '24px' }}>
                           <Form.Item label={<span> 投标保证金（元）</span>} className="formItem">
-                            {getFieldDecorator('projectName', {
+                            {getFieldDecorator('bidCautionMoney', {
                               // rules: [{
                               //   required: true,
                               //   message: '请输入合同金额'

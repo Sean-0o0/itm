@@ -570,8 +570,8 @@ class NewProjectModelV2 extends React.Component {
               }
             })
           });
-          console.log("arr-2222", this.state.mileItemInfo)
-          console.log("arr-cccc", arr)
+          // console.log("arr-2222", this.state.mileItemInfo)
+          // console.log("arr-cccc", arr)
           // //console.log("this.state.mileInfo", this.state.mileInfo)
           this.setState({milePostInfo: arr, mileInfo: {...this.state.mileInfo, milePostInfo: arr}});
         } else if (params.queryType === "ONLYLX") {
@@ -591,9 +591,9 @@ class NewProjectModelV2 extends React.Component {
                 if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
                   milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
                 }
-                milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
                 this.setState({
-                  pureHardwareFlag:false,
+                  pureHardwareFlag: false,
                 })
                 milePostInfo.sort((a,b)=>{
                   return( a.xh - b.xh)
@@ -608,29 +608,48 @@ class NewProjectModelV2 extends React.Component {
               }
             }
           }if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && this.state.basicInfo.haveHard == '1') {
-            for (let i = 0; i < data.length; i++) {
-              if (data[i].lcbmc === "项目立项") {
-                milePostInfo.map(item => {
-                  if (item.lcbmc === "项目立项") {
-                    item.matterInfos = data[i].matterInfos
-                  }
+            if (Number(this.state.budgetInfo.frameBudget) > 0) {
+              if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                milePostInfo.sort((a, b) => {
+                  return (a.xh - b.xh)
                 })
-              }
-              if (data[i].lcbmc === '项目实施') {
-                milePostInfo.map(item => {
-                  if (item.lcbmc === '项目实施') {
-                    item.matterInfos = data[i].matterInfos;
+              } else {
+                for (let i = 0; i < data.length; i++) {
+                  if (data[i].lcbmc === "项目立项") {
+                    milePostInfo.map(item => {
+                      if (item.lcbmc === "项目立项") {
+                        item.matterInfos = data[i].matterInfos
+                      }
+                    })
                   }
-                });
+                }
+              }
+            } else {
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].lcbmc === "项目立项") {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === "项目立项") {
+                      item.matterInfos = data[i].matterInfos
+                    }
+                  })
+                }
+                if (data[i].lcbmc === '项目实施') {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === '项目实施') {
+                      item.matterInfos = data[i].matterInfos;
+                    }
+                  });
+                }
               }
             }
             //软件金额为0 去掉项目招采里程碑
             milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
           }if (Number(this.state.budgetInfo.singleBudget) !== 0 && this.state.basicInfo.haveHard == '1') {
             if(milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0){
-              milePostInfo.splice(arr.filter(item => item.lcbmc === '项目立项')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目立项')[0])
-              milePostInfo.sort((a,b)=>{
-                return( a.xh - b.xh)
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+              milePostInfo.sort((a, b) => {
+                return (a.xh - b.xh)
               })
             }else{
               for (let i = 0; i < data.length; i++) {
@@ -656,7 +675,7 @@ class NewProjectModelV2 extends React.Component {
             if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             }
-            milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
+            milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
             milePostInfo.sort((a, b) => {
               return (a.xh - b.xh)
             })
@@ -679,9 +698,9 @@ class NewProjectModelV2 extends React.Component {
             if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             }
-            milePostInfo.splice(arr.filter(item => item.lcbmc === '项目招采')[0].xh - 1, 0, arr.filter(item => item.lcbmc === '项目招采')[0])
-            milePostInfo.sort((a,b)=>{
-              return( a.xh - b.xh)
+            milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            milePostInfo.sort((a, b) => {
+              return (a.xh - b.xh)
             })
           } else {
             for (let i = 0; i < data.length; i++) {
@@ -1239,15 +1258,17 @@ class NewProjectModelV2 extends React.Component {
       const { code = -1, record = [] } = result;
       if (code > 0) {
         const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+        const loginext = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
         loginUser.id = String(loginUser.id);
+        loginUser.orgName = String(loginext[0].extAttr.orgname);
         // 深拷贝
         const arr = [];
         record.forEach(e => {
-          // 获取登录用户的部门名称
-          if (String(e.orgId) === String(loginUser.org)) {
-            loginUser.orgName = e.orgName;
-          }
-          arr.push({ ...e })
+          // // 获取登录用户的部门名称
+          // if (String(e.orgId) === String(loginUser.org)) {
+          //   loginUser.orgName = e.orgName;
+          // }
+          arr.push({...e})
         });
         this.setState({
           loginUser: loginUser, organizationList: record,
@@ -3111,7 +3132,7 @@ class NewProjectModelV2 extends React.Component {
                                 placeholder="请选择应用部门"
                                 // treeCheckable
                                 // treeDefaultExpandAll
-                                // getPopupContainer={triggerNode => triggerNode.parentNode}
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onDropdownVisibleChange={(open) => this.onOrgDropdown(open)}
                                 treeDefaultExpandedKeys={orgExpendKeys}
                                 onChange={e => {
@@ -3145,6 +3166,7 @@ class NewProjectModelV2 extends React.Component {
                               maxTagPlaceholder={extraArr => {
                                 return `等${extraArr.length + 1}个`;
                               }}
+                              getPopupContainer={triggerNode => triggerNode.parentNode}
                               onChange={e => {
                                 console.log("3eeeeee", e)
                                 this.setState({
@@ -3206,7 +3228,7 @@ class NewProjectModelV2 extends React.Component {
                                   placeholder="请选择采购方式"
                                   // treeCheckable
                                   // treeDefaultExpandAll
-                                  // getPopupContainer={triggerNode => triggerNode.parentNode}
+                                  getPopupContainer={triggerNode => triggerNode.parentNode}
                                   // treeDefaultExpandedKeys={orgExpendKeys}
                                   onChange={e => {
                                     console.log("请选择采购方式", e)
@@ -3263,43 +3285,45 @@ class NewProjectModelV2 extends React.Component {
                           {/*{getFieldDecorator('year', {*/}
                           {/*  initialValue: budgetInfo.year*/}
                           {/*})(*/}
-                          <DatePicker style={{ width: '100%' }} value={budgetInfo.year} allowClear={false} ref={picker => this.picker = picker}
-                            onChange={v => {
-                              const _this = this;
-                              this.setState({
-                                budgetInfo: {
-                                  ...this.state.budgetInfo,
-                                  budgetProjectId: '',
-                                  totalBudget: 0,
-                                  relativeBudget: 0,
-                                  year: v == null ? moment(new Date()) : v
-                                }
-                              }, function () {
-                                _this.props.form.resetFields(['projectBudget']);
-                                _this.props.form.validateFields(['projectBudget']);
-                                _this.fetchQueryBudgetProjects({
-                                  type: 'NF',
-                                  year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))
-                                });
-                              })
-                            }}
-                            onPanelChange={(v) => {
-                              this.picker.picker.state.open = false;
-                              const _this = this;
-                              this.setState({
-                                budgetInfo: {
-                                  ...this.state.budgetInfo,
-                                  budgetProjectId: '',
-                                  totalBudget: 0,
-                                  relativeBudget: 0,
-                                  year: v
-                                }
-                              }, function () {
-                                _this.props.form.resetFields(['projectBudget']);
-                                _this.props.form.validateFields(['projectBudget']);
-                                _this.fetchQueryBudgetProjects({type: 'NF', year: Number(v.format("YYYY"))});
-                              })
-                            }}
+                          <DatePicker style={{width: '100%'}} value={budgetInfo.year} allowClear={false}
+                                      ref={picker => this.picker = picker}
+                                      getCalendarContainer={triggerNode => triggerNode.parentNode}
+                                      onChange={v => {
+                                        const _this = this;
+                                        this.setState({
+                                          budgetInfo: {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: '',
+                                            totalBudget: 0,
+                                            relativeBudget: 0,
+                                            year: v == null ? moment(new Date()) : v
+                                          }
+                                        }, function () {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                          _this.fetchQueryBudgetProjects({
+                                            type: 'NF',
+                                            year: Number(v == null ? moment(new Date()).format("YYYY") : v.format("YYYY"))
+                                          });
+                                        })
+                                      }}
+                                      onPanelChange={(v) => {
+                                        this.picker.picker.state.open = false;
+                                        const _this = this;
+                                        this.setState({
+                                          budgetInfo: {
+                                            ...this.state.budgetInfo,
+                                            budgetProjectId: '',
+                                            totalBudget: 0,
+                                            relativeBudget: 0,
+                                            year: v
+                                          }
+                                        }, function () {
+                                          _this.props.form.resetFields(['projectBudget']);
+                                          _this.props.form.validateFields(['projectBudget']);
+                                          _this.fetchQueryBudgetProjects({type: 'NF', year: Number(v.format("YYYY"))});
+                                        })
+                                      }}
                                       format="YYYY" mode="year"/>
                           {/*)}*/}
                         </Form.Item>
@@ -3326,6 +3350,7 @@ class NewProjectModelV2 extends React.Component {
                               dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
                               treeData={budgetProjectList}
                               placeholder="请选择关联预算项目"
+                              getPopupContainer={triggerNode => triggerNode.parentNode}
                               // treeDefaultExpandAll
                               onChange={e => {
                                 budgetProjectList.forEach(item => {
