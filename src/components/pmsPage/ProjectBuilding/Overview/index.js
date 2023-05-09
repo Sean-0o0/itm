@@ -97,7 +97,8 @@ class Overview extends Component {
         </div >
 
         return (
-            <div className='cont-block staff-overview' >
+            <Popover placement="rightTop" overlayClassName="main-tooltip" content={content} >
+            <div className='cont-block staff-overview' onMouseEnter ={() => { this.fetchData(name) }}>
                 <div className='basic-info'>
                     {order === 0 && <img src={zyxm} className='statistics-img' alt='' />}
                     {order === 1 && <img src={wcxm} className='statistics-img' alt='' />}
@@ -107,10 +108,10 @@ class Overview extends Component {
                     {order === 5 && <img src={ktxm} className='statistics-img' alt='' />}
                     <div className='header-name'>
                         {name}
-                        <div className='more' onMouseEnter ={() => { this.fetchData(name) }}>
-                            <Popover placement="bottomLeft" overlayClassName="main-tooltip" content={content} >
+                        <div className='more' >
+                            
                                 ···
-                            </Popover>
+                           
                         </div>
                     </div>
                 </div>
@@ -119,6 +120,7 @@ class Overview extends Component {
                     今日新增<span style={{ color: '#D70E19' }}> {add} </span>项
                 </div>
             </div>
+            </Popover>
         );
     }
 }

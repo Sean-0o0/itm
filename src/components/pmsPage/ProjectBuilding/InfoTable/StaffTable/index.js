@@ -50,7 +50,7 @@ class StaffTable extends Component {
         }, {
             title: '项目名称',
             dataIndex: 'XMMC',
-            width: '20%',
+            width: '19%',
             key: 'XMMC',
             ellipsis: true,
             render: (value, row, index) => {
@@ -76,7 +76,7 @@ class StaffTable extends Component {
         }, {
             title: '项目经理',
             dataIndex: 'XMJL',
-            width: '10%',
+            width: '8%',
             key: 'XMJL',
             ellipsis: true,
             render: (value, row, index) => {
@@ -128,9 +128,9 @@ class StaffTable extends Component {
         }, {
             title: '当前里程碑',
             dataIndex: 'DQLCB',
-            width: '10%',
+            width: '13%',
             key: 'DQLCB',
-            align: 'right',
+            // align: 'right',
             ellipsis: true,
         }, {
             title: '项目标签',
