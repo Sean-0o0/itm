@@ -1509,16 +1509,16 @@ class EditProjectInfoModel extends React.Component {
         const { code = -1, record = [] } = result;
         if (code > 0) {
           const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
-          const loginext = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
+          // const loginext = JSON.parse(window.sessionStorage.getItem('userBasicInfo'));
           loginUser.id = String(loginUser.id);
-          loginUser.orgName = String(loginext[0].extAttr.orgname);
+          // loginUser.orgName = String(loginext[0].extAttr.orgname);
           // 深拷贝
           const arr = [];
           record.forEach(e => {
             // 获取登录用户的部门名称
-            // if (String(e.orgId) === String(loginUser.org)) {
-            //   loginUser.orgName = e.orgName;
-            // }
+            if (String(e.orgId) === String(loginUser.org)) {
+              loginUser.orgName = e.orgName;
+            }
             arr.push({...e});
           });
           this.setState({
