@@ -7,7 +7,7 @@ import { QueryProjectGeneralInfo, QueryUserRole } from '../../../services/pmsSer
 
 class ProjectBuilding extends Component {
     state = {
-        role: '',
+        role: '普通人员',
         orgid: '',
         fxxx: [],
         jrxz: [],
