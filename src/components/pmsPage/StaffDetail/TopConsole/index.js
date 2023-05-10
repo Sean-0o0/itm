@@ -52,7 +52,7 @@ class ToConsole extends Component {
                                 <span className='staff-experience'>&nbsp;已加入浙商证券{jrts}天</span>
                             </div>
                             <div className='staff-line flex1 flex-r'>
-                                <span className='staff-label'>营业部：</span>
+                                <span className='staff-label'>部门：</span>
                                 <span className='staff-value'>{bm}</span>
                             </div>
                             <div className='staff-line flex1 flex-r'>
