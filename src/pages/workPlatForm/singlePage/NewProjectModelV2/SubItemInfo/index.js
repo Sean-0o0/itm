@@ -376,7 +376,7 @@ class SubItemInfo extends Component {
             ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX ? data[i].XMLX : "",
             // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
             ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';') ? data[i]?.BM?.split(';') : null,
-            ['SUBCGFS' + data[i]?.ID]: data[i].ZBFS ? data[i].ZBFS : "",
+            ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS ? data[i]?.ZBFS : "",
             ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
             ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
             ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
