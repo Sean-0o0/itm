@@ -168,31 +168,31 @@ class NewProjectModelV2 extends React.Component {
 
   componentDidMount = async () => {
     const _this = this;
-    const params = this.getUrlParams();
-    if (params.xmid && params.xmid !== -1) {
+    const {xmid, projectType, type} = _this.props
+    console.log("propsprops", xmid, projectType)
+    // const params = this.getUrlParams();
+    if (xmid && xmid !== -1) {
       // //console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
-        // operateType: 'MOD',
-        projectStatus: params.projectStatus,
+        // projectStatus: params.projectStatus,
         basicInfo: {
           ...this.state.basicInfo,
-          projectId: Number(params.xmid)
+          projectId: Number(xmid)
         }
       })
     }
-    if (params.projectType) {
-      console.log("params.projectType", params.projectType)
-      const RYJFlag = String(params.projectType) === "1";
+    if (projectType) {
+      const RYJFlag = String(projectType) === "1";
       this.setState({
         projectTypeRYJFlag: RYJFlag,
         basicInfo: {
-          ...this.state.basicInfo, projectType: params.projectType,
+          ...this.state.basicInfo, projectType: projectType,
         }
       });
     }
     // 判断是否是首页跳转过来的
-    if (params.type) {
+    if (type) {
       this.setState({type: true});
     }
     setTimeout(function () {
@@ -1383,11 +1383,7 @@ class NewProjectModelV2 extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        if (_this.state.type) {
-          window.parent && window.parent.postMessage({ operate: 'close' }, '*');
-        } else {
-          _this.props.closeDialog();
-        }
+        _this.props.closeModel()
       },
       onCancel() {
       },
@@ -1842,7 +1838,7 @@ class NewProjectModelV2 extends React.Component {
         flag = false;
       }
     });
-    if (!flag && this.state.type === 1) {
+    if (!flag) {
       message.warn("存在里程碑信息开始时间大于结束时间！");
       return;
     }
@@ -2038,12 +2034,21 @@ class NewProjectModelV2 extends React.Component {
         sessionStorage.setItem("handleType", type);
         //保存子项目信息
         if (String(subItem) === "1") {
-          this.operateInsertSubProjects(params, projectId);
+          this.operateInsertSubProjects(params, projectId, type);
         } else {
-          if (this.state.type) {
-            window.parent && window.parent.postMessage({operate: 'success'}, '*');
+          //type:0 草稿 type:1 完成
+          let content;
+          if (type === 0) {
+            content = "暂存草稿项目成功！";
           } else {
-            this.props.submitOperate();
+            content = "新建项目成功";
+          }
+          this.props.closeModel();
+          message.success(content)
+          //从首页进来的还需要跳转到项目信息页面
+          if (this.state.type && type === 1) {
+            //新建项目成功后跳转到项目信息页面
+            window.location.href = '/#/pms/manage/ProjectInfo';
           }
         }
       } else {
@@ -2699,7 +2704,7 @@ class NewProjectModelV2 extends React.Component {
   };
   //子项目信息保存接口
   // 查询其他项目信息
-  operateInsertSubProjects = (param, projectId) => {
+  operateInsertSubProjects = (param, projectId, type) => {
     console.log("-----------开始保存子项目信息-----------")
     const {subItemRecord, budgetInfo = {}} = this.state;
     const params = {
@@ -2715,10 +2720,19 @@ class NewProjectModelV2 extends React.Component {
     InsertSubProjects({...params}).then((result) => {
       const {code = -1,} = result;
       if (code > 0) {
-        if (this.state.type) {
-          window.parent && window.parent.postMessage({operate: 'success'}, '*');
+        //type:0 草稿 type:1 完成
+        let content;
+        if (type === 0) {
+          content = "暂存项目草稿成功！";
         } else {
-          this.props.submitOperate();
+          content = "新建项目成功";
+        }
+        this.props.closeModel();
+        message.success(content)
+        //从首页进来的还需要跳转到项目信息页面
+        if (this.state.type && type === 1) {
+          //新建项目成功后跳转到项目信息页面
+          window.location.href = '/#/pms/manage/ProjectInfo';
         }
       }
     }).catch((error) => {
@@ -2888,9 +2902,9 @@ class NewProjectModelV2 extends React.Component {
 
     return (
       <Fragment>
-        <div className="newProject" style={{ overflow: 'hidden', height: "100%" }}>
-          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{ height: "100%" }}>
-            <div style={{ overflow: 'hidden', height: "100%" }}>
+        <div className="newProject" style={{overflowY: 'auto', height: "700px"}}>
+          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
+            <div style={{overflow: 'hidden', height: "100%"}}>
               <div style={{margin: '0 120px 0 120px', height: "75px"}}>
                 <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
@@ -4938,7 +4952,7 @@ class NewProjectModelV2 extends React.Component {
                   </div>
                 </React.Fragment></div>
               }
-              {/*<div className="steps-content">{steps[current].content}</div>*/}
+              <div className="steps-content">{steps[current].content}</div>
               <div className="footer">
                 <Divider/>
                 <div style={{padding: '10px 16px'}}>

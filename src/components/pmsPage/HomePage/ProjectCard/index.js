@@ -1,14 +1,15 @@
-import { Progress, Popover, Empty, Popconfirm, message, Icon } from 'antd';
-import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
-import { OperateCreatProject } from '../../../../services/projectManage';
-import { EncryptBase64 } from '../../../Common/Encrypt';
+import {Progress, Popover, Empty, Popconfirm, message, Icon, Modal} from 'antd';
+import React, {useEffect, useState, useRef, useLayoutEffect} from 'react';
+import {OperateCreatProject} from '../../../../services/projectManage';
+import {EncryptBase64} from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
-import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
+import {useLocation} from 'react-router';
+import {Link} from 'react-router-dom';
+import {QueryProjectGeneralInfo} from '../../../../services/pmsServices';
+import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
 
 export default function ProjectCard(props) {
-  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total } = props;
+  const {itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total} = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
@@ -122,9 +123,10 @@ export default function ProjectCard(props) {
   const handleDraftModify = xmid => {
     setFileAddVisible(true);
     setSrc_fileAdd(
-      `/#/single/pms/SaveProject/${EncryptBase64(
-        JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
-      )}`,
+      // `/#/single/pms/SaveProject/${EncryptBase64(
+      //   JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
+      // )}`,
+      {xmid: xmid, type: true, projectStatus: 'SAVE'}
     );
   };
 
@@ -481,13 +483,53 @@ export default function ProjectCard(props) {
   return (
     <div className="project-card-box">
       {/* 修改项目弹窗 */}
+      {/*{fileAddVisible && (*/}
+      {/*  <BridgeModel*/}
+      {/*    isSpining="customize"*/}
+      {/*    modalProps={fileAddModalProps}*/}
+      {/*    onCancel={closeFileAddModal}*/}
+      {/*    src={src_fileAdd}*/}
+      {/*  />*/}
+      {/*)}*/}
       {fileAddVisible && (
-        <BridgeModel
-          isSpining="customize"
-          modalProps={fileAddModalProps}
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'1000px'}
+          // height={'700px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
+          style={{top: '10px'}}
+          visible={fileAddVisible}
+          okText="保存"
+          bodyStyle={{
+            padding: 0,
+          }}
           onCancel={closeFileAddModal}
-          src={src_fileAdd}
-        />
+          title={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#3361FF',
+                color: 'white',
+                borderRadius: '8px 8px 0 0',
+                fontSize: '16px',
+              }}
+            >
+              <strong>编辑草稿</strong>
+            </div>
+          }
+          footer={null}
+        >
+          <NewProjectModelV2
+            closeModel={closeFileAddModal}
+            xmid={src_fileAdd.xmid}
+            type={src_fileAdd.type}
+            projectStatus={src_fileAdd.projectStatus}
+          />
+        </Modal>
       )}
       {userRole === '普通人员' ? (
         <div className="home-card-title-box">

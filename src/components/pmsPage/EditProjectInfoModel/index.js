@@ -3616,11 +3616,7 @@ class EditProjectInfoModel extends React.Component {
     InsertSubProjects({...params}).then((result) => {
       const {code = -1,} = result;
       if (code > 0) {
-        if (this.state.type) {
-          window.parent && window.parent.postMessage({operate: 'success'}, '*');
-        } else {
-          this.props.submitOperate();
-        }
+        window.parent && window.parent.postMessage({operate: 'success'}, '*');
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
