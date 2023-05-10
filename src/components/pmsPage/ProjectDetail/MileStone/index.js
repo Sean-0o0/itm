@@ -31,6 +31,7 @@ export default function MileStone(props) {
   const [riskTxt, setRiskTxt] = useState(''); //风险弹窗
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
+  // const [noCurStep, setNoCurStep] = useState(true); //不跳转当前里程碑
 
   //防抖定时器
   let timer = null;
@@ -66,7 +67,7 @@ export default function MileStone(props) {
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};
-  }, [xmid, prjBasic]);
+  }, [xmid, JSON.stringify(prjBasic)]);
 
   //展开、收起
   const handleUnfold = bool => {
@@ -152,12 +153,10 @@ export default function MileStone(props) {
                             setStartIndex(currentIndex - 1);
                             setInitIndex(currentIndex - 1);
                             setEndIndex(currentIndex + 2); //不包含
-                            // setCurrentStep(2);
                           } else if (currentIndex < 1) {
                             setStartIndex(0);
                             setInitIndex(0);
                             setEndIndex(3);
-                            // setCurrentStep(currentIndex);
                           } else {
                             setInitIndex(data.length - 3);
                             setStartIndex(data.length - 3);
@@ -313,7 +312,7 @@ export default function MileStone(props) {
 
   //刷新数据
   const refresh = () => {
-    getMileStoneData();
+    getMileStoneData(true);
     getPrjDtlData();
   };
 
@@ -342,7 +341,6 @@ export default function MileStone(props) {
                 xmmc={prjBasic?.XMMC || ''}
                 xmbh={prjBasic?.XMBM || ''}
                 xwhid={prjBasic?.XWHID || -1}
-                // getMileStoneData={getMileStoneData}
                 setIsSpinning={setIsSpinning}
                 refresh={refresh}
                 isHwPrj={isHwPrj}
@@ -404,11 +402,52 @@ export default function MileStone(props) {
     setEndIndex(ed);
   };
 
-  //步骤条切换 - 自动触发
+  //步骤条切换 - 自动触发 - 选中尽量居中
   const handleStepChange = v => {
-    // console.log('handleStepChange', v);
     setCurrentStep(v);
     setIsUnfold(true);
+    let data = [...mileStoneData];
+    let currentIndex = v;
+    if (data.length >= 3) {
+      if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {
+        setStartIndex(currentIndex - 1);
+        setInitIndex(currentIndex - 1);
+        setEndIndex(currentIndex + 2); //不包含
+      } else if (currentIndex < 1) {
+        setStartIndex(0);
+        setInitIndex(0);
+        setEndIndex(3);
+      } else {
+        setInitIndex(data.length - 3);
+        setStartIndex(data.length - 3);
+        setEndIndex(data.length);
+      }
+    } else {
+      setInitIndex(0);
+      setStartIndex(0);
+      setEndIndex(data.length);
+    }
+    if (data.length > 3) {
+      if (currentIndex - 1 >= 0 && currentIndex < data.length - 1) {
+        setLastBtnVisible(true);
+        setNextBtnVisible(true);
+      } else if (currentIndex < 1) {
+        setLastBtnVisible(false);
+        setNextBtnVisible(true);
+      } else {
+        setNextBtnVisible(false);
+        setLastBtnVisible(true);
+      }
+    } else {
+      setLastBtnVisible(false);
+      setNextBtnVisible(false);
+    }
+    if (currentIndex - 1 === 0) {
+      setLastBtnVisible(false);
+    }
+    if (currentIndex >= data.length - 2) {
+      setNextBtnVisible(false);
+    }
   };
 
   //高亮的里程碑数据

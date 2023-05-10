@@ -136,9 +136,9 @@ const TableBox = props => {
   };
   //保存按钮
   const handleSubmit = () => {
-    setTableLoading(true);
     form.validateFields(err => {
       if (!err) {
+        setTableLoading(true);
         let editIdArr = [];
         editData.forEach(x => {
           editIdArr.push(x.id);
@@ -322,39 +322,32 @@ const TableBox = props => {
   };
   //跳过本周
   const handleSkipCurWeek = () => {
-    Modal.confirm({
-      // title: '跳过本周',
-      className: 'skip-current-week',
-      content: '确定要跳过本周吗？',
-      onOk: () => {
-        let curWeek = getCurrentWeek(new Date());
-        let skipCurWeekData = {
-          jsoninfo: JSON.stringify([
-            {
-              V_KSSJ: curWeek[0].format('YYYYMMDD'),
-              V_JSSJ: curWeek[1].format('YYYYMMDD'),
-            },
-            {},
-          ]),
-          infocount: 1,
-          type: 'SKIP',
-        };
-        OperateHjgWeeklyReport({ ...skipCurWeekData })
-          .then(res => {
-            if (res.success) {
-              message.success('操作成功', 1);
-              queryTableData(
-                Number(dateRange[0].format('YYYYMMDD')),
-                Number(dateRange[1].format('YYYYMMDD')),
-                Number(currentXmid),
-              );
-            }
-          })
-          .catch(e => {
-            message.error('操作失败', 1);
-          });
-      },
-    });
+    let curWeek = getCurrentWeek(new Date());
+    let skipCurWeekData = {
+      jsoninfo: JSON.stringify([
+        {
+          V_KSSJ: curWeek[0].format('YYYYMMDD'),
+          V_JSSJ: curWeek[1].format('YYYYMMDD'),
+        },
+        {},
+      ]),
+      infocount: 1,
+      type: 'SKIP',
+    };
+    OperateHjgWeeklyReport({ ...skipCurWeekData })
+      .then(res => {
+        if (res.success) {
+          message.success('操作成功', 1);
+          queryTableData(
+            Number(dateRange[0].format('YYYYMMDD')),
+            Number(dateRange[1].format('YYYYMMDD')),
+            Number(currentXmid),
+          );
+        }
+      })
+      .catch(e => {
+        message.error('操作失败', 1);
+      });
   };
   //导出
   const handleExport = () => {
@@ -622,6 +615,7 @@ const TableBox = props => {
                   onConfirm={() => {
                     if (!dltData.includes(row.id)) {
                       setDltData(p => [...p, row.id]);
+                      setEdited(true);
                     }
                   }}
                 >
@@ -857,9 +851,7 @@ const TableBox = props => {
                   取消
                 </Button>
                 <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-                  <Button disabled={!edited}>
-                    保存
-                  </Button>
+                  <Button disabled={!edited}>保存</Button>
                 </Popconfirm>
               </>
             ) : (

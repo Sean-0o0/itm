@@ -1,15 +1,15 @@
-import {Progress, Popover, Empty, Popconfirm, message, Icon, Modal} from 'antd';
-import React, {useEffect, useState, useRef, useLayoutEffect} from 'react';
-import {OperateCreatProject} from '../../../../services/projectManage';
-import {EncryptBase64} from '../../../Common/Encrypt';
+import { Progress, Popover, Empty, Popconfirm, message, Icon, Modal } from 'antd';
+import React, { useEffect, useState, useRef, useLayoutEffect } from 'react';
+import { OperateCreatProject } from '../../../../services/projectManage';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import {useLocation} from 'react-router';
-import {Link} from 'react-router-dom';
-import {QueryProjectGeneralInfo} from '../../../../services/pmsServices';
-import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
+import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
+import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 
 export default function ProjectCard(props) {
-  const {itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total} = props;
+  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total, cacheLifecycles } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
@@ -17,6 +17,7 @@ export default function ProjectCard(props) {
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const [allPrj, setAllPrj] = useState([]); //全部项目
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
+  const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
   const location = useLocation();
 
   useEffect(() => {
@@ -25,9 +26,19 @@ export default function ProjectCard(props) {
       window.removeEventListener('message', handleIframePostMessage);
     };
   }, []);
+
+  cacheLifecycles.didCache(() => {
+    setPlacement(undefined);
+  });
+
+  cacheLifecycles.didRecover(() => {
+    setPlacement('rightTop');
+  });
+
   useEffect(() => {
     if (prjInfo.length !== 0) {
       setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
+
       setIsUnfold(false);
     }
     return () => {};
@@ -126,7 +137,7 @@ export default function ProjectCard(props) {
       // `/#/single/pms/SaveProject/${EncryptBase64(
       //   JSON.stringify({ xmid, type: true, projectStatus: 'SAVE' }),
       // )}`,
-      {xmid: xmid, type: true, projectStatus: 'SAVE'}
+      { xmid: xmid, type: true, projectStatus: 'SAVE' },
     );
   };
 
@@ -170,7 +181,7 @@ export default function ProjectCard(props) {
       .then(res => {
         if (res.code === 1) {
           getPrjInfo(userRole);
-          // console.log('触发删除');
+          message.success('草稿删除成功', 1);
         }
       })
       .catch(error => {
@@ -180,8 +191,13 @@ export default function ProjectCard(props) {
   };
 
   const closeFileAddModal = () => {
-    // getPrjInfo(userRole);
     setFileAddVisible(false);
+  };
+
+  //新建项目成功后，刷新数据
+  const handleFileAddSuccess = () => {
+    closeFileAddModal();
+    getPrjInfo(userRole); //刷新数据
   };
 
   //获取项目块
@@ -262,6 +278,7 @@ export default function ProjectCard(props) {
                   },
                 }}
                 key={x.USERID}
+                onClick={() => setPlacement(undefined)}
               >
                 <div className="item">
                   <div className="img-box">
@@ -436,7 +453,8 @@ export default function ProjectCard(props) {
         ) : (
           <Popover
             title={null}
-            placement="rightTop"
+            placement={placement}
+            autoAdjustOverflow={true}
             content={participantContent(participantData)}
             overlayClassName="participant-content-popover"
           >
@@ -498,8 +516,8 @@ export default function ProjectCard(props) {
           // height={'700px'}
           maskClosable={false}
           zIndex={100}
-          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
-          style={{top: '10px'}}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
           visible={fileAddVisible}
           okText="保存"
           bodyStyle={{
@@ -525,7 +543,7 @@ export default function ProjectCard(props) {
         >
           <NewProjectModelV2
             closeModel={closeFileAddModal}
-            successCallBack={closeFileAddModal}
+            successCallBack={handleFileAddSuccess}
             xmid={src_fileAdd.xmid}
             type={src_fileAdd.type}
             projectStatus={src_fileAdd.projectStatus}

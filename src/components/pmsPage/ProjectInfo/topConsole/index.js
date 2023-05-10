@@ -565,6 +565,7 @@ export default forwardRef(function TopConsole(props, ref) {
                     value={minAmount}
                     onChange={handleMinAmountChange}
                     placeholder="下限"
+                    type='number'
                   />
                   <Input className="input-to" placeholder="-" disabled />
                   <Input
@@ -572,6 +573,7 @@ export default forwardRef(function TopConsole(props, ref) {
                     value={maxAmount}
                     onChange={handleMaxAmountChange}
                     placeholder="上限"
+                    type='number'
                   />
                 </div>
               )}
@@ -581,6 +583,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={gtAmount}
                   onChange={handleGtAmountChange}
                   placeholder="请输入"
+                  type='number'
                 />
               )}
               {amountSelector === '3' && (
@@ -589,6 +592,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={ltAmount}
                   onChange={handleLtAmountChange}
                   placeholder="请输入"
+                  type='number'
                 />
               )}
             </div>

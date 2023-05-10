@@ -138,9 +138,9 @@ const TableBox = props => {
     setTableData(preState => [...newData]);
   };
   const handleSubmit = () => {
-    setTableLoading(true);
     form.validateFields(err => {
       if (!err) {
+        setTableLoading(true);
         let editIdArr = [];
         editData.forEach(x => {
           editIdArr.push(x.id);
@@ -315,13 +315,13 @@ const TableBox = props => {
     if (direction === 'right') {
       tableNode.scrollLeft = Math.floor(tableNode.scrollWidth - tableNode.clientWidth);
     }
-    console.log(
-      '🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode',
-      tableNode,
-      tableNode.scrollLeft,
-      tableNode.scrollWidth,
-      tableNode.clientWidth,
-    );
+    // console.log(
+    //   '🚀 ~ file: index.js ~ line 210 ~ handleTableScroll ~ tableNode',
+    //   tableNode,
+    //   tableNode.scrollLeft,
+    //   tableNode.scrollWidth,
+    //   tableNode.clientWidth,
+    // );
   };
   const tableColumns = [
     {
@@ -483,6 +483,7 @@ const TableBox = props => {
                   onConfirm={() => {
                     if (!dltData.includes(row.id)) {
                       setDltData(p => [...p, row.id]);
+                      setEdited(true);
                     }
                   }}
                 >
@@ -687,9 +688,7 @@ const TableBox = props => {
                   取消
                 </Button>
                 <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-                  <Button disabled={!edited}>
-                    保存
-                  </Button>
+                  <Button disabled={!edited}>保存</Button>
                 </Popconfirm>
               </>
             ) : (

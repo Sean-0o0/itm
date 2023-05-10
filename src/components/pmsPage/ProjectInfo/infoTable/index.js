@@ -1,13 +1,13 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip, Modal} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip, Modal } from 'antd';
 import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
-import {EncryptBase64} from '../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import PrjTypeModal from '../../HomePage/ShortcutCard/PrjTypeModal';
-import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
-import EditProjectInfoModel from "../../EditProjectInfoModel";
+import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
+import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
@@ -33,7 +33,7 @@ export default function InfoTable(props) {
     title: '新建项目',
     width: '1000px',
     height: '700px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: true,
     footer: null,
   };
@@ -114,6 +114,11 @@ export default function InfoTable(props) {
   };
   const closeFileAddModal = () => {
     setFileAddVisible(false);
+  };
+  //新建项目成功后，刷新数据
+  const handleFileAddSuccess = () => {
+    closeFileAddModal();
+    getTableData({}); //刷新数据
   };
 
   //列配置
@@ -334,8 +339,8 @@ export default function InfoTable(props) {
           // height={'700px'}
           maskClosable={false}
           zIndex={100}
-          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
-          style={{top: '10px'}}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
           visible={fileAddVisible}
           okText="保存"
           bodyStyle={{
@@ -361,7 +366,7 @@ export default function InfoTable(props) {
         >
           <NewProjectModelV2
             closeModel={closeFileAddModal}
-            successCallBack={closeFileAddModal}
+            successCallBack={handleFileAddSuccess}
             xmid={src_fileAdd.xmid}
             projectType={src_fileAdd.projectType}
           />

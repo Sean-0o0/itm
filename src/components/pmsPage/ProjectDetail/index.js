@@ -9,6 +9,7 @@ import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsService
 import { message, Spin } from 'antd';
 import moment from 'moment';
 import DemandInitiationModal from '../DemandInitiationModal';
+import { FetchQueryProjectLabel } from '../../../services/projectManage';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
@@ -19,70 +20,13 @@ export default function ProjectDetail(props) {
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const [isHwSltPrj, setIsHwSltPrj] = useState(false); //是否为硬件入围类型
-  const XMLX = [
-    {
-      ibm: '-3',
-      note: '自研项目',
-    },
-    {
-      ibm: '-2',
-      note: '外采项目',
-    },
-    {
-      ibm: '-1',
-      note: '全部项目',
-    },
-    {
-      ibm: '1',
-      note: '软硬件项目',
-    },
-    {
-      ibm: '2',
-      note: '普通项目',
-    },
-    {
-      ibm: '4',
-      note: '软件入围项目',
-    },
-    {
-      ibm: '5',
-      note: '软硬件项目',
-    },
-    {
-      ibm: '6',
-      note: '硬件入围项目',
-    },
-    {
-      ibm: '7',
-      note: '集合类项目',
-    },
-    {
-      ibm: '8',
-      note: '工程类项目',
-    },
-    {
-      ibm: '9',
-      note: '咨询服务项目',
-    },
-    {
-      ibm: '10',
-      note: '普通人力服务项目',
-    },
-    {
-      ibm: '11',
-      note: '人力服务入围项目',
-    },
-    {
-      ibm: '13',
-      note: '集合项目',
-    },
-  ];
+  const [XMLX, setXMLX] = useState([]); //项目类型
 
   useEffect(() => {
     if (xmid !== -1) {
       setIsSpinning(true);
-      getPrjDtlData();
       getIsLeader();
+
       const htmlContent = document.getElementById('htmlContent');
       // console.log('🚀 ~ file: index.js ~ line 26 ~ useEffect ~ htmlContent', htmlContent);
       htmlContent.scrollTop = 0; //页面跳转后滚至顶部
@@ -98,15 +42,36 @@ export default function ProjectDetail(props) {
       .then(res => {
         // console.log('res.role', res.role);
         setIsLeader(res.role !== '普通人员');
+        getXMLX();
       })
       .catch(e => {
         message.error('用户信息查询失败', 1);
         console.error('QueryIsLeader', e);
       });
   };
+  const getXMLX = () => {
+    FetchQueryProjectLabel({})
+      .then(res => {
+        if (res?.success) {
+          let data = JSON.parse(res.xmlxRecord).map(x => {
+            return {
+              ibm: x.ID,
+              note: x.NAME,
+            };
+          });
+          // console.log('🚀 ~ file: index.js:62 ~ data ~ data:', data);
+          setXMLX(p => [...data]);
+          getPrjDtlData(data);
+        }
+      })
+      .catch(e => {
+        console.error('FetchQueryProjectLabel', e);
+        message.error('项目类型查询失败', 1);
+      });
+  };
 
   //获取项目详情数据
-  const getPrjDtlData = () => {
+  const getPrjDtlData = xmlxArr => {
     QueryProjectInfoAll({
       current: 1,
       cxlx: 'ALL',
@@ -129,7 +94,7 @@ export default function ProjectDetail(props) {
             item.GW = RYGW?.filter(x => x.ibm === item.GW)[0]?.note;
           });
           let prjBasic = p(res.xmjbxxRecord, false);
-          // console.log('🚀 ~ file: index.js:130 ~ getPrjDtlData ~ prjBasic:', prjBasic);
+          // console.log('🚀 ~ file: index.js:130 ~ getPrjDtlData ~ prjBasic:', p(res.xmjbxxRecord, false), CGFS);
           setIsHwSltPrj(prjBasic.XMLX === '6');
           setIsHwPrj(prjBasic.SFBHYJ === '1');
           //字典处理
@@ -141,7 +106,11 @@ export default function ProjectDetail(props) {
               item.HJSJ = item.HJSJ.slice(0, 10);
             });
           prjBasic.ZBFS = CGFS?.filter(x => x.ibm === prjBasic.ZBFS)[0]?.note;
-          prjBasic.XMLX = XMLX?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
+          if (xmlxArr) {
+            prjBasic.XMLX = xmlxArr?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
+          } else {
+            prjBasic.XMLX = XMLX?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
+          }
           let obj = {
             prjBasic,
             member,

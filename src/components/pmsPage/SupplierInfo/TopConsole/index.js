@@ -47,6 +47,7 @@ export default forwardRef(function TopConsole(props, ref) {
     () => {
       return {
         handleSearch,
+        handleReset,
       };
     },
     [gysmc, gyslx, lxrmc, gyszt, gtAmount, ltAmount, minAmount, maxAmount, xmNum],
@@ -156,7 +157,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //重置按钮
-  const handleReset = v => {
+  const handleReset = () => {
     setGysmc(undefined);
     setGyslx([]);
     setGyslxmc([]);
@@ -321,7 +322,11 @@ export default forwardRef(function TopConsole(props, ref) {
             ))}
           </Select>
         </div>
-        <Button className="btn-search" type="primary" onClick={() => handleSearch(curPage, curPageSize)}>
+        <Button
+          className="btn-search"
+          type="primary"
+          onClick={() => handleSearch(curPage, curPageSize)}
+        >
           查询
         </Button>
         <Button className="btn-reset" onClick={handleReset}>
@@ -365,6 +370,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={minAmount}
                   onChange={handleMinAmountChange}
                   placeholder="下限"
+                  type="number"
                   // allowClear
                 />
                 <Input className="input-to" placeholder="-" disabled />
@@ -373,6 +379,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={maxAmount}
                   onChange={handleMaxAmountChange}
                   placeholder="上限"
+                  type="number"
                   // allowClear
                 />
               </div>
@@ -383,6 +390,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={gtAmount}
                 onChange={handleGtAmountChange}
                 placeholder="请输入"
+                type="number"
                 allowClear
               />
             )}
@@ -392,6 +400,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={ltAmount}
                 onChange={handleLtAmountChange}
                 placeholder="请输入"
+                type="number"
                 allowClear
               />
             )}
@@ -417,6 +426,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={xmNum.min}
                   onChange={handleMinXmNumChange}
                   placeholder="下限"
+                  type="number"
                   // allowClear
                 />
                 <Input className="input-to" placeholder="-" disabled />
@@ -425,6 +435,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={xmNum.max}
                   onChange={handleMaxXmNumChange}
                   placeholder="上限"
+                  type="number"
                   // allowClear
                 />
               </div>
@@ -435,6 +446,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={xmNum.gt}
                 onChange={handleGtXmNumChange}
                 placeholder="请输入"
+                type="number"
                 allowClear
               />
             )}
@@ -444,6 +456,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 value={xmNum.lt}
                 onChange={handleLtXmNumChange}
                 placeholder="请输入"
+                type="number"
                 allowClear
               />
             )}
