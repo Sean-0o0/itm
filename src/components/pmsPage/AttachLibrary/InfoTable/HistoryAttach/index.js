@@ -110,8 +110,8 @@ class HistoryAttach extends Component {
 
     handleReset = () => {
         this.setState({
-            startDate: moment(new Date()),
-            endDate: moment(new Date()).add(1, 'days'),
+            startDate: undefined,
+            endDate: undefined,
             scr: undefined,
         })
     }
