@@ -13,7 +13,7 @@ export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
   const {
     tableData,
@@ -361,6 +361,7 @@ export default function InfoTable(props) {
         >
           <NewProjectModelV2
             closeModel={closeFileAddModal}
+            successCallBack={closeFileAddModal}
             xmid={src_fileAdd.xmid}
             projectType={src_fileAdd.projectType}
           />

@@ -525,6 +525,7 @@ export default function ProjectCard(props) {
         >
           <NewProjectModelV2
             closeModel={closeFileAddModal}
+            successCallBack={closeFileAddModal}
             xmid={src_fileAdd.xmid}
             type={src_fileAdd.type}
             projectStatus={src_fileAdd.projectStatus}

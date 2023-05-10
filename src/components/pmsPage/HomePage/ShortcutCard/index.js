@@ -6,9 +6,9 @@ import PrjTypeModal from './PrjTypeModal';
 import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
 
 export default function ShortcutCard(props) {
-  const { userRole, getPrjInfo } = props;
+  const {userRole, getPrjInfo} = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
 
   useEffect(() => {
@@ -142,6 +142,7 @@ export default function ShortcutCard(props) {
         >
           <NewProjectModelV2
             closeModel={closeFileAddModal}
+            successCallBack={closeFileAddModal}
             xmid={src_fileAdd.xmid}
             type={src_fileAdd.type}
             projectType={src_fileAdd.projectType}

@@ -593,15 +593,17 @@ class NewProjectModelV2 extends React.Component {
                 })
               }
               if (data[i].lcbmc === '项目招采') {
-                if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+                if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
                   milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
                 }
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                }
                 this.setState({
                   pureHardwareFlag: false,
                 })
-                milePostInfo.sort((a,b)=>{
-                  return( a.xh - b.xh)
+                milePostInfo.sort((a, b) => {
+                  return (a.xh - b.xh)
                 })
               }
               if (data[i].lcbmc === '项目实施') {
@@ -616,7 +618,9 @@ class NewProjectModelV2 extends React.Component {
           if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && String(this.state.basicInfo.haveHard) === "1") {
             if (Number(this.state.budgetInfo.frameBudget) > 0) {
               if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                }
                 milePostInfo.sort((a, b) => {
                   return (a.xh - b.xh)
                 })
@@ -653,8 +657,13 @@ class NewProjectModelV2 extends React.Component {
             milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
           }
           if (Number(this.state.budgetInfo.singleBudget) !== 0 && String(this.state.basicInfo.haveHard) === "1") {
+            console.log("arrarrarr", arr)
+            console.log("datadata", data)
+            console.log("milePostInfo", milePostInfo)
             if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
-              milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+              if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+              }
               milePostInfo.sort((a, b) => {
                 return (a.xh - b.xh)
               })
@@ -682,7 +691,9 @@ class NewProjectModelV2 extends React.Component {
             if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             }
-            milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            }
             milePostInfo.sort((a, b) => {
               return (a.xh - b.xh)
             })
@@ -698,14 +709,16 @@ class NewProjectModelV2 extends React.Component {
               }
             }
             //单独采购小于500000大于0时，隐藏项目立项
-            if(milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0){
+            if (milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目立项')
             }
             //单独采购有值的时候，都要有招采
-            if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+            if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             }
-            milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            }
             milePostInfo.sort((a, b) => {
               return (a.xh - b.xh)
             })
@@ -1144,7 +1157,7 @@ class NewProjectModelV2 extends React.Component {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 ite.children.forEach(i => {
-                  if (i.key === result.budgetProject) {
+                  if (i.key === result.budgetProject && i.ysLX === result.budgetType) {
                     budgetProjectName = i.title
                     totalBudget = Number(i.ysZJE);
                     relativeBudget = Number(i.ysKGL);
@@ -1172,6 +1185,7 @@ class NewProjectModelV2 extends React.Component {
           }
           this.setState({
             haveType,
+            subItem: result.haveChild,
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
@@ -1713,8 +1727,8 @@ class NewProjectModelV2 extends React.Component {
     }
     //校验子项目信息
     let subItemflag = true;
-    //校验子项目信息
-    if (String(subItem) === "1") {
+    //新建项目校验子项目信息
+    if (String(subItem) === "1" && type === 1) {
       console.log("-----------开始校验子项目表格信息-----------")
       subItemflag = subItemRecord.length !== 0;
       //子项目总金额之和
@@ -1798,7 +1812,8 @@ class NewProjectModelV2 extends React.Component {
           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
         }
       })
-      if (!subItemflag && type === 1) {
+      //新建项目全校验
+      if (!subItemflag) {
         message.warn('项目基本信息-子项目信息未填写完整！');
         return;
       }
@@ -1828,6 +1843,21 @@ class NewProjectModelV2 extends React.Component {
           message.warn("子项目总金额不能超过父项目,请修改！")
           return;
         }
+      }
+    }
+    //暂存草稿校验子项目信息
+    //暂存草稿只需要校验项目名称
+    if (String(subItem) === "1" && type === 0) {
+      subItemRecord.map(item => {
+        if ((item.XMMC === '' || item.XMMC == null)
+        ) {
+          subItemflag = false;
+        }
+      })
+      //暂存草稿只需要校验项目名称
+      if (!subItemflag) {
+        message.warn('项目基本信息-子项目信息-项目名称未填写！');
+        return;
       }
     }
     //校验里程碑信息
@@ -2043,7 +2073,7 @@ class NewProjectModelV2 extends React.Component {
           } else {
             content = "新建项目成功";
           }
-          this.props.closeModel();
+          this.props.successCallBack();
           message.success(content)
           //从首页进来的还需要跳转到项目信息页面
           if (this.state.type && type === 1) {
@@ -2727,7 +2757,7 @@ class NewProjectModelV2 extends React.Component {
         } else {
           content = "新建项目成功";
         }
-        this.props.closeModel();
+        this.props.successCallBack();
         message.success(content)
         //从首页进来的还需要跳转到项目信息页面
         if (this.state.type && type === 1) {
@@ -2902,7 +2932,7 @@ class NewProjectModelV2 extends React.Component {
 
     return (
       <Fragment>
-        <div className="newProject" style={{overflowY: 'auto', height: "700px"}}>
+        <div className="newProject" style={{overflowY: 'auto', height: "638px"}}>
           <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
             <div style={{overflow: 'hidden', height: "100%"}}>
               <div style={{margin: '0 120px 0 120px', height: "75px"}}>
