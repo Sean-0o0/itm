@@ -29,9 +29,10 @@ export default function PrjTypeModal(props) {
 
   const newProject = projectType => {
     setSrc_fileAdd(
-      `/#/single/pms/SaveProject/${EncryptBase64(
-        JSON.stringify({ xmid: -1, type: fromHome, projectType }),
-      )}`,
+      // `/#/single/pms/SaveProject/${EncryptBase64(
+      //   JSON.stringify({ xmid: -1, projectType }),
+      // )}`,
+      {xmid: -1, type: fromHome, projectType}
     );
     setVisible(false);
     setFileAddVisible(true);

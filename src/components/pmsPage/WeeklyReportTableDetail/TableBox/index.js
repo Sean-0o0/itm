@@ -204,9 +204,9 @@ const TableBox = props => {
   };
 
   const handleSubmit = () => {
-    setTableLoading(true);
     form.validateFields(err => {
       if (!err) {
+        setTableLoading(true);
         let editDataDelFilter = [];
         editData.forEach(x => {
           if (!dltData.includes(x.id)) {
@@ -378,6 +378,7 @@ const TableBox = props => {
   const handleDelete = id => {
     if (!dltData.includes(id)) {
       setDltData(p => [...p, id]);
+      setEdited(true);
     }
   };
   const handleSkipCurWeek = () => {

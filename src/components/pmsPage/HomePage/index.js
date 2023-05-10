@@ -54,12 +54,12 @@ export default function HomePage(props) {
   let timer = null;
 
   //页面恢复，跳转回首页时触发
-  props.cacheLifecycles.didRecover(() => {
-    // console.log('跳转回首页时触发');
-    if (htmlContent) htmlContent.scrollTop = 0; //页面跳转后滚至顶部
-    // setIsSpinning(true);
-    // getUserRole();
-  });
+  // props.cacheLifecycles.didRecover(() => {
+  //   // console.log('跳转回首页时触发');
+  //   if (htmlContent) htmlContent.scrollTop = 0; //页面跳转后滚至顶部
+  //   // setIsSpinning(true);
+  //   // getUserRole();
+  // });
 
   useEffect(() => {
     setIsSpinning(true);
@@ -422,7 +422,7 @@ export default function HomePage(props) {
               width={leftWidth}
               overviewInfo={overviewInfo}
               userRole={userRole}
-              toDoDataNum={toDoData.length}
+              toDoDataNum={total.todo}
             />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <ToDoCard
@@ -447,6 +447,7 @@ export default function HomePage(props) {
               prjInfo={prjInfo}
               getPrjInfo={getPrjInfo}
               total={total.project}
+              cacheLifecycles={props.cacheLifecycles}
             />
           </div>
           <div className="col-right">

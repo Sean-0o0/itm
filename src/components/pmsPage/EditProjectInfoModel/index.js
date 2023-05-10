@@ -609,29 +609,30 @@ class EditProjectInfoModel extends React.Component {
 
   componentDidMount = async () => {
     const _this = this;
-    const params = this.getUrlParams();
-    if (params.xmid && params.xmid !== -1) {
+    const {xmid, projectStatus, type, subItemFlag, subItemFinish} = _this.props
+    // const params = this.getUrlParams();
+    if (xmid && xmid !== -1) {
       // ////console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
         // operateType: 'MOD',
-        projectStatus: params.projectStatus,
+        projectStatus: projectStatus,
         basicInfo: {
           ...this.state.basicInfo,
-          projectId: Number(params.xmid),
+          projectId: Number(xmid),
         },
       });
     }
     // 判断是否是首页跳转过来的
-    if (params.type) {
+    if (type) {
       this.setState({type: true});
     }
     // 判断是否是没有里程碑的子项目
-    if (params.subItemFlag) {
+    if (subItemFlag) {
       this.setState({subItemFlag: true});
     }
-    // 判断是否是没有里程碑的子项目
-    if (params.subItemFinish) {
+    //子项目完善
+    if (subItemFinish) {
       this.setState({subItemFinish: true});
     }
     setTimeout(function () {
@@ -817,15 +818,17 @@ class EditProjectInfoModel extends React.Component {
                   })
                 }
                 if (data[i].lcbmc === '项目招采') {
-                  if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+                  if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
                     milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
                   }
-                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                  if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+                    milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                  }
                   milePostInfo.sort((a, b) => {
                     return (a.xh - b.xh)
                   })
                   this.setState({
-                    pureHardwareFlag:false,
+                    pureHardwareFlag: false,
                   })
                 }
                 if (data[i].lcbmc === '项目实施') {
@@ -840,7 +843,9 @@ class EditProjectInfoModel extends React.Component {
             if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && String(this.state.basicInfo.haveHard) === "1") {
               if (Number(this.state.budgetInfo.frameBudget) > 0) {
                 if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
-                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                  if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
+                    milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                  }
                   milePostInfo.sort((a, b) => {
                     return (a.xh - b.xh)
                   })
@@ -879,7 +884,9 @@ class EditProjectInfoModel extends React.Component {
             if (Number(this.state.budgetInfo.singleBudget) !== 0 && String(this.state.basicInfo.haveHard) === "1") {
               //单独采购有值的时候，都要有招采
               if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                }
                 milePostInfo.sort((a, b) => {
                   return (a.xh - b.xh)
                 })
@@ -907,7 +914,9 @@ class EditProjectInfoModel extends React.Component {
               if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
               }
-              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+              if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+              }
               milePostInfo.sort((a, b) => {
                 return (a.xh - b.xh)
               })
@@ -927,14 +936,16 @@ class EditProjectInfoModel extends React.Component {
                 }
               }
               //单独采购小于500000大于0时，隐藏项目立项
-              if(milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0){
+              if (milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0) {
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目立项')
               }
               //单独采购有值的时候，都要有招采
-              if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+              if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
                 milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
               }
-              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+              if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+              }
               milePostInfo.sort((a, b) => {
                 return (a.xh - b.xh)
               })
@@ -1381,7 +1392,7 @@ class EditProjectInfoModel extends React.Component {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 ite.children.forEach(i => {
-                  if (i.key === result.budgetProject) {
+                  if (i.key === result.budgetProject && i.ysLX === result.budgetType) {
                     budgetProjectName = i.title;
                     totalBudget = Number(i.ysZJE);
                     relativeBudget = Number(i.ysKGL);
@@ -1636,7 +1647,7 @@ class EditProjectInfoModel extends React.Component {
       content: '确定要取消操作？',
       onOk() {
         if (_this.state.type) {
-          window.parent && window.parent.postMessage({ operate: 'close' }, '*');
+          _this.props.closeModel();
         } else {
           _this.props.closeDialog();
         }
@@ -2559,10 +2570,17 @@ class EditProjectInfoModel extends React.Component {
           if (String(subItem) === "1") {
             this.operateInsertSubProjects(params, projectId);
           } else {
-            if (this.state.type) {
-              window.parent && window.parent.postMessage({operate: 'success'}, '*');
+            this.props.successCallBack();
+            //子项目完善
+            if (this.state.subItemFinish) {
+              message.success("子项目完善成功！")
             } else {
-              this.props.submitOperate();
+              message.success("编辑项目成功！")
+            }
+            //从首页进来的还需要跳转到项目信息页面
+            if (this.state.type && type === 1) {
+              //新建项目成功后跳转到项目信息页面
+              window.location.href = '/#/pms/manage/ProjectInfo';
             }
           }
         } else {
@@ -3616,10 +3634,12 @@ class EditProjectInfoModel extends React.Component {
     InsertSubProjects({...params}).then((result) => {
       const {code = -1,} = result;
       if (code > 0) {
+        this.props.successCallBack();
+        message.success("编辑项目成功！")
+        //从首页进来的还需要跳转到项目信息页面
         if (this.state.type) {
-          window.parent && window.parent.postMessage({operate: 'success'}, '*');
-        } else {
-          this.props.submitOperate();
+          //新建项目成功后跳转到项目信息页面
+          window.location.href = '/#/pms/manage/ProjectInfo';
         }
       }
     }).catch((error) => {
@@ -4000,16 +4020,16 @@ class EditProjectInfoModel extends React.Component {
     };
     return (
       <Fragment>
-        <div className="editProject" style={{ overflow: 'hidden', height: '100%' }}>
+        <div className="editProject" style={{overflowY: 'auto', height: '638px'}}>
           <Spin
             spinning={loading}
             wrapperClassName="spin"
             tip="正在努力的加载中..."
             size="large"
-            style={{ height: '100%' }}
+            style={{height: '100%'}}
           >
-            <div style={{ overflow: 'hidden', height: '100%' }}>
-              <div style={{ height: '7%' }}>
+            <div style={{overflow: 'hidden', height: '100%'}}>
+              <div style={{height: '7%'}}>
                 <Tabs className='tabs' style={{height: '100%'}} defaultActiveKey="0" onChange={this.tabsCallback}>
                   {htxxVisiable || zbxxVisiable
                     ? tabs.map(item => {

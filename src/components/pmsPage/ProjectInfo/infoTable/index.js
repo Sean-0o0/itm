@@ -1,17 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip } from 'antd';
+import { Button, Table, Popover, message, Tooltip, Modal } from 'antd';
 import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import PrjTypeModal from '../../HomePage/ShortcutCard/PrjTypeModal';
+import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
+import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
   const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
   const {
     tableData,
@@ -36,23 +38,24 @@ export default function InfoTable(props) {
     footer: null,
   };
 
-  useEffect(() => {
-    window.addEventListener('message', handleIframePostMessage);
-    return () => {
-      window.removeEventListener('message', handleIframePostMessage);
-    };
-  }, []);
+  // useEffect(() => {
+  //   window.addEventListener('message', handleIframePostMessage);
+  //   return () => {
+  //     window.removeEventListener('message', handleIframePostMessage);
+  //   };
+  // }, []);
 
   //监听新建项目弹窗状态-按钮
-  const handleIframePostMessage = event => {
-    if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      closeFileAddModal();
-    }
-    if (typeof event.data !== 'string' && event.data.operate === 'success') {
-      closeFileAddModal();
-      getTableData({});
-    }
-  };
+  // const handleIframePostMessage = event => {
+  //   if (typeof event.data !== 'string' && event.data.operate === 'close') {
+  //     closeFileAddModal();
+  //   }
+  //   if (typeof event.data !== 'string' && event.data.operate === 'success') {
+  //     closeFileAddModal();
+  //     message.success(event.data.message)
+  //     getTableData({});
+  //   }
+  // };
 
   //金额格式化
   const getAmountFormat = (value = 0) => {
@@ -111,6 +114,11 @@ export default function InfoTable(props) {
   };
   const closeFileAddModal = () => {
     setFileAddVisible(false);
+  };
+  //新建项目成功后，刷新数据
+  const handleFileAddSuccess = () => {
+    closeFileAddModal();
+    getTableData({}); //刷新数据
   };
 
   //列配置
@@ -312,17 +320,57 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
+      {/*{fileAddVisible && (*/}
+      {/*  <BridgeModel*/}
+      {/*    isSpining="customize"*/}
+      {/*    modalProps={fileAddModalProps}*/}
+      {/*    onSucess={() => {*/}
+      {/*      closeFileAddModal();*/}
+      {/*      message.success('保存成功', 1);*/}
+      {/*    }}*/}
+      {/*    onCancel={closeFileAddModal}*/}
+      {/*    src={src_fileAdd}*/}
+      {/*  />*/}
+      {/*)}*/}
       {fileAddVisible && (
-        <BridgeModel
-          isSpining="customize"
-          modalProps={fileAddModalProps}
-          onSucess={() => {
-            closeFileAddModal();
-            message.success('保存成功', 1);
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'1000px'}
+          // height={'700px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
+          visible={fileAddVisible}
+          okText="保存"
+          bodyStyle={{
+            padding: 0,
           }}
           onCancel={closeFileAddModal}
-          src={src_fileAdd}
-        />
+          title={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#3361FF',
+                color: 'white',
+                borderRadius: '8px 8px 0 0',
+                fontSize: '16px',
+              }}
+            >
+              <strong>新建项目</strong>
+            </div>
+          }
+          footer={null}
+        >
+          <NewProjectModelV2
+            closeModel={closeFileAddModal}
+            successCallBack={handleFileAddSuccess}
+            xmid={src_fileAdd.xmid}
+            projectType={src_fileAdd.projectType}
+          />
+        </Modal>
       )}
       <PrjTypeModal
         visible={visible}

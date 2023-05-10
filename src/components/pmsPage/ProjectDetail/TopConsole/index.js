@@ -1,21 +1,23 @@
-import { Breadcrumb, Button, message, Popover } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import {Breadcrumb, Button, message, Modal, Popover} from 'antd';
+import React, {useEffect, useState} from 'react';
+import {Link} from 'react-router-dom';
 import moment from 'moment';
-import { EncryptBase64 } from '../../../Common/Encrypt';
+import {EncryptBase64} from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { CreateOperateHyperLink } from '../../../../services/pmsServices';
+import {CreateOperateHyperLink} from '../../../../services/pmsServices';
+import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
+import EditProjectInfoModel from "../../EditProjectInfoModel";
 
-const { Item } = Breadcrumb;
+const {Item} = Breadcrumb;
 
 export default function TopConsole(props) {
-  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader } = props;
+  const {routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader} = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
-  const { prjBasic = {}, member = [] } = prjData;
+  const {prjBasic = {}, member = []} = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
@@ -148,9 +150,12 @@ export default function TopConsole(props) {
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
     setFileAddVisible(true);
-    let p = { xmid, type: true, projectStatus: 'SAVE' };
+    let p = {xmid, type: true, projectStatus: 'SAVE'};
     prjBasic.FXMMC && (p.subItemFlag = true);
-    setSrc_fileAdd(`/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`);
+    setSrc_fileAdd(
+      p
+      // `/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`
+    );
   };
 
   //申请餐券/权限弹窗
@@ -225,15 +230,56 @@ export default function TopConsole(props) {
   return (
     <div className="top-console-box">
       {/* 编辑项目弹窗 */}
+      {/*{fileAddVisible && (*/}
+      {/*  <BridgeModel*/}
+      {/*    isSpining="customize"*/}
+      {/*    modalProps={fileAddModalProps}*/}
+      {/*    src={src_fileAdd}*/}
+      {/*    onCancel={() => {*/}
+      {/*      closeFileAddModal();*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*)}*/}
       {fileAddVisible && (
-        <BridgeModel
-          isSpining="customize"
-          modalProps={fileAddModalProps}
-          src={src_fileAdd}
-          onCancel={() => {
-            closeFileAddModal();
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'1000px'}
+          // height={'700px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
+          style={{top: '10px'}}
+          visible={fileAddVisible}
+          okText="保存"
+          bodyStyle={{
+            padding: 0,
           }}
-        />
+          onCancel={closeFileAddModal}
+          title={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#3361FF',
+                color: 'white',
+                borderRadius: '8px 8px 0 0',
+                fontSize: '16px',
+              }}
+            >
+              <strong>编辑项目</strong>
+            </div>
+          }
+          footer={null}
+        >
+          <EditProjectInfoModel
+            closeModel={closeFileAddModal}
+            successCallBack={closeFileAddModal}
+            xmid={src_fileAdd.xmid}
+            type={src_fileAdd.type}
+            projectStatus={src_fileAdd.projectStatus}
+          />
+        </Modal>
       )}
       {/*申请餐券/权限弹窗*/}
       {sqModalVisible && (

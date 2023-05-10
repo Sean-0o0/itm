@@ -168,31 +168,31 @@ class NewProjectModelV2 extends React.Component {
 
   componentDidMount = async () => {
     const _this = this;
-    const params = this.getUrlParams();
-    if (params.xmid && params.xmid !== -1) {
+    const {xmid, projectType, type} = _this.props
+    console.log("propsprops", xmid, projectType)
+    // const params = this.getUrlParams();
+    if (xmid && xmid !== -1) {
       // //console.log("paramsparams", params)
       // 修改项目操作
       this.setState({
-        // operateType: 'MOD',
-        projectStatus: params.projectStatus,
+        // projectStatus: params.projectStatus,
         basicInfo: {
           ...this.state.basicInfo,
-          projectId: Number(params.xmid)
+          projectId: Number(xmid)
         }
       })
     }
-    if (params.projectType) {
-      console.log("params.projectType", params.projectType)
-      const RYJFlag = String(params.projectType) === "1";
+    if (projectType) {
+      const RYJFlag = String(projectType) === "1";
       this.setState({
         projectTypeRYJFlag: RYJFlag,
         basicInfo: {
-          ...this.state.basicInfo, projectType: params.projectType,
+          ...this.state.basicInfo, projectType: projectType,
         }
       });
     }
     // 判断是否是首页跳转过来的
-    if (params.type) {
+    if (type) {
       this.setState({type: true});
     }
     setTimeout(function () {
@@ -593,15 +593,17 @@ class NewProjectModelV2 extends React.Component {
                 })
               }
               if (data[i].lcbmc === '项目招采') {
-                if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+                if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
                   milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
                 }
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                }
                 this.setState({
                   pureHardwareFlag: false,
                 })
-                milePostInfo.sort((a,b)=>{
-                  return( a.xh - b.xh)
+                milePostInfo.sort((a, b) => {
+                  return (a.xh - b.xh)
                 })
               }
               if (data[i].lcbmc === '项目实施') {
@@ -616,7 +618,9 @@ class NewProjectModelV2 extends React.Component {
           if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && String(this.state.basicInfo.haveHard) === "1") {
             if (Number(this.state.budgetInfo.frameBudget) > 0) {
               if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                }
                 milePostInfo.sort((a, b) => {
                   return (a.xh - b.xh)
                 })
@@ -653,8 +657,13 @@ class NewProjectModelV2 extends React.Component {
             milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
           }
           if (Number(this.state.budgetInfo.singleBudget) !== 0 && String(this.state.basicInfo.haveHard) === "1") {
+            console.log("arrarrarr", arr)
+            console.log("datadata", data)
+            console.log("milePostInfo", milePostInfo)
             if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
-              milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+              if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+              }
               milePostInfo.sort((a, b) => {
                 return (a.xh - b.xh)
               })
@@ -682,7 +691,9 @@ class NewProjectModelV2 extends React.Component {
             if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             }
-            milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            }
             milePostInfo.sort((a, b) => {
               return (a.xh - b.xh)
             })
@@ -698,14 +709,16 @@ class NewProjectModelV2 extends React.Component {
               }
             }
             //单独采购小于500000大于0时，隐藏项目立项
-            if(milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0){
+            if (milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目立项')
             }
             //单独采购有值的时候，都要有招采
-            if(milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0){
+            if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
               milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
             }
-            milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+              milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+            }
             milePostInfo.sort((a, b) => {
               return (a.xh - b.xh)
             })
@@ -1144,7 +1157,7 @@ class NewProjectModelV2 extends React.Component {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 ite.children.forEach(i => {
-                  if (i.key === result.budgetProject) {
+                  if (i.key === result.budgetProject && i.ysLX === result.budgetType) {
                     budgetProjectName = i.title
                     totalBudget = Number(i.ysZJE);
                     relativeBudget = Number(i.ysKGL);
@@ -1172,6 +1185,7 @@ class NewProjectModelV2 extends React.Component {
           }
           this.setState({
             haveType,
+            subItem: result.haveChild,
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
@@ -1383,11 +1397,7 @@ class NewProjectModelV2 extends React.Component {
       title: '提示',
       content: '确定要取消操作？',
       onOk() {
-        if (_this.state.type) {
-          window.parent && window.parent.postMessage({ operate: 'close' }, '*');
-        } else {
-          _this.props.closeDialog();
-        }
+        _this.props.closeModel()
       },
       onCancel() {
       },
@@ -1717,8 +1727,8 @@ class NewProjectModelV2 extends React.Component {
     }
     //校验子项目信息
     let subItemflag = true;
-    //校验子项目信息
-    if (String(subItem) === "1") {
+    //新建项目校验子项目信息
+    if (String(subItem) === "1" && type === 1) {
       console.log("-----------开始校验子项目表格信息-----------")
       subItemflag = subItemRecord.length !== 0;
       //子项目总金额之和
@@ -1802,7 +1812,8 @@ class NewProjectModelV2 extends React.Component {
           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
         }
       })
-      if (!subItemflag && type === 1) {
+      //新建项目全校验
+      if (!subItemflag) {
         message.warn('项目基本信息-子项目信息未填写完整！');
         return;
       }
@@ -1834,6 +1845,21 @@ class NewProjectModelV2 extends React.Component {
         }
       }
     }
+    //暂存草稿校验子项目信息
+    //暂存草稿只需要校验项目名称
+    if (String(subItem) === "1" && type === 0) {
+      subItemRecord.map(item => {
+        if ((item.XMMC === '' || item.XMMC == null)
+        ) {
+          subItemflag = false;
+        }
+      })
+      //暂存草稿只需要校验项目名称
+      if (!subItemflag) {
+        message.warn('项目基本信息-子项目信息-项目名称未填写！');
+        return;
+      }
+    }
     //校验里程碑信息
     let flag = true; // 日期选择是否符合开始时间小于结束时间
     milePostInfo.forEach(item => {
@@ -1842,7 +1868,7 @@ class NewProjectModelV2 extends React.Component {
         flag = false;
       }
     });
-    if (!flag && this.state.type === 1) {
+    if (!flag) {
       message.warn("存在里程碑信息开始时间大于结束时间！");
       return;
     }
@@ -2038,12 +2064,21 @@ class NewProjectModelV2 extends React.Component {
         sessionStorage.setItem("handleType", type);
         //保存子项目信息
         if (String(subItem) === "1") {
-          this.operateInsertSubProjects(params, projectId);
+          this.operateInsertSubProjects(params, projectId, type);
         } else {
-          if (this.state.type) {
-            window.parent && window.parent.postMessage({operate: 'success'}, '*');
+          //type:0 草稿 type:1 完成
+          let content;
+          if (type === 0) {
+            content = "暂存草稿项目成功！";
           } else {
-            this.props.submitOperate();
+            content = "新建项目成功";
+          }
+          this.props.successCallBack();
+          message.success(content)
+          //从首页进来的还需要跳转到项目信息页面
+          if (this.state.type && type === 1) {
+            //新建项目成功后跳转到项目信息页面
+            window.location.href = '/#/pms/manage/ProjectInfo';
           }
         }
       } else {
@@ -2699,7 +2734,7 @@ class NewProjectModelV2 extends React.Component {
   };
   //子项目信息保存接口
   // 查询其他项目信息
-  operateInsertSubProjects = (param, projectId) => {
+  operateInsertSubProjects = (param, projectId, type) => {
     console.log("-----------开始保存子项目信息-----------")
     const {subItemRecord, budgetInfo = {}} = this.state;
     const params = {
@@ -2715,10 +2750,19 @@ class NewProjectModelV2 extends React.Component {
     InsertSubProjects({...params}).then((result) => {
       const {code = -1,} = result;
       if (code > 0) {
-        if (this.state.type) {
-          window.parent && window.parent.postMessage({operate: 'success'}, '*');
+        //type:0 草稿 type:1 完成
+        let content;
+        if (type === 0) {
+          content = "暂存项目草稿成功！";
         } else {
-          this.props.submitOperate();
+          content = "新建项目成功";
+        }
+        this.props.successCallBack();
+        message.success(content)
+        //从首页进来的还需要跳转到项目信息页面
+        if (this.state.type && type === 1) {
+          //新建项目成功后跳转到项目信息页面
+          window.location.href = '/#/pms/manage/ProjectInfo';
         }
       }
     }).catch((error) => {
@@ -2888,9 +2932,9 @@ class NewProjectModelV2 extends React.Component {
 
     return (
       <Fragment>
-        <div className="newProject" style={{ overflow: 'hidden', height: "100%" }}>
-          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{ height: "100%" }}>
-            <div style={{ overflow: 'hidden', height: "100%" }}>
+        <div className="newProject" style={{overflowY: 'auto', height: "638px"}}>
+          <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large" style={{height: "100%"}}>
+            <div style={{overflow: 'hidden', height: "100%"}}>
               <div style={{margin: '0 120px 0 120px', height: "75px"}}>
                 <Steps current={current} onChange={this.onChange0} type="navigation" style={{height: "100%"}}>
                   {steps.map((item, index) => (
@@ -4938,7 +4982,7 @@ class NewProjectModelV2 extends React.Component {
                   </div>
                 </React.Fragment></div>
               }
-              {/*<div className="steps-content">{steps[current].content}</div>*/}
+              <div className="steps-content">{steps[current].content}</div>
               <div className="footer">
                 <Divider/>
                 <div style={{padding: '10px 16px'}}>

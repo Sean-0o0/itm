@@ -1,5 +1,5 @@
-import { Button, Empty, message, Tooltip, Icon } from 'antd';
-import React, { useEffect, useState, useLayoutEffect } from 'react';
+import {Button, Empty, message, Tooltip, Icon, Modal} from 'antd';
+import React, {useEffect, useState, useLayoutEffect} from 'react';
 import {
   CreateOperateHyperLink,
   FetchQueryOwnerMessage,
@@ -10,7 +10,8 @@ import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import EditProjectInfoModel from "../../EditProjectInfoModel";
 
 export default function ToDoCard(props) {
   const {
@@ -31,7 +32,7 @@ export default function ToDoCard(props) {
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [allToDo, setAllToDo] = useState([]); //全部待办
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
   const location = useLocation();
@@ -41,7 +42,7 @@ export default function ToDoCard(props) {
     width: '720px',
     height: '300px',
     title: '人员新增提醒',
-    style: { top: '60px' },
+    style: {top: '60px'},
     visible: ryxztxModalVisible,
     footer: null,
   };
@@ -233,15 +234,22 @@ export default function ToDoCard(props) {
   const jumpToEditProjectInfo = item => {
     setFileAddVisible(true);
     setSrc_fileAdd(
-      `/#/single/pms/EditProject/${EncryptBase64(
-        JSON.stringify({
-          xmid: item.xmid,
-          type: true,
-          subItemFlag: true,
-          subItemFinish: true,
-          projectStatus: 'SAVE',
-        }),
-      )}`,
+      // `/#/single/pms/EditProject/${EncryptBase64(
+      //   JSON.stringify({
+      //     xmid: item.xmid,
+      //     type: true,
+      //     subItemFlag: true,
+      //     subItemFinish: true,
+      //     projectStatus: 'SAVE',
+      //   }),
+      // )}`,
+      {
+        xmid: item.xmid,
+        type: true,
+        subItemFlag: true,
+        subItemFinish: true,
+        projectStatus: 'SAVE',
+      }
     );
   };
 
@@ -315,20 +323,24 @@ export default function ToDoCard(props) {
     title: '编辑项目',
     width: '1000px',
     height: '700px',
-    style: { top: '10px' },
+    style: {top: '10px'},
     visible: fileAddVisible,
     footer: null,
   };
 
+  const closeFileAddModal = () => {
+    setFileAddVisible(false);
+  };
+
   //待办块
   const getToDoItem = ({
-    title = '--',
-    content = '--',
-    btnTxt = '--',
-    isLate = false,
-    isDueSoon = false,
-    lateDay = '--',
-    key,
+                         title = '--',
+                         content = '--',
+                         btnTxt = '--',
+                         isLate = false,
+                         isDueSoon = false,
+                         lateDay = '--',
+                         key,
     item = {},
   }) => {
     let borderColor = '#3361ff';
@@ -423,15 +435,58 @@ export default function ToDoCard(props) {
         />
       )}
       {/* 编辑项目弹窗 */}
+      {/*{fileAddVisible && (*/}
+      {/*  <BridgeModel*/}
+      {/*    isSpining="customize"*/}
+      {/*    modalProps={fileAddModalProps}*/}
+      {/*    src={src_fileAdd}*/}
+      {/*    onCancel={() => {*/}
+      {/*      setFileAddVisible(false);*/}
+      {/*    }}*/}
+      {/*  />*/}
+      {/*)}*/}
       {fileAddVisible && (
-        <BridgeModel
-          isSpining="customize"
-          modalProps={fileAddModalProps}
-          src={src_fileAdd}
-          onCancel={() => {
-            setFileAddVisible(false);
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'1000px'}
+          // height={'700px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
+          style={{top: '10px'}}
+          visible={fileAddVisible}
+          okText="保存"
+          bodyStyle={{
+            padding: 0,
           }}
-        />
+          onCancel={closeFileAddModal}
+          title={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#3361FF',
+                color: 'white',
+                borderRadius: '8px 8px 0 0',
+                fontSize: '16px',
+              }}
+            >
+              <strong>完善子项目</strong>
+            </div>
+          }
+          footer={null}
+        >
+          <EditProjectInfoModel
+            closeModel={closeFileAddModal}
+            successCallBack={closeFileAddModal}
+            xmid={src_fileAdd.xmid}
+            type={src_fileAdd.type}
+            subItemFlag={src_fileAdd.subItemFlag}
+            subItemFinish={src_fileAdd.subItemFinish}
+            projectStatus={src_fileAdd.projectStatus}
+          />
+        </Modal>
       )}
       <div className="home-card-title-box">我的待办</div>
       <div className="todo-row">

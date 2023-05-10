@@ -2397,6 +2397,7 @@
 
 .newProject {
   height: 100%;
+  border-radius: 0 0 8px 8px;
 
   .label-selector-arrow {
     position: absolute;
@@ -3024,9 +3025,9 @@
 
   .footer {
     height: 53px;
-    width: 100%;
+    //width: 100%;
     text-align: right;
-    position: fixed;
+    //position: fixed;
     bottom: 0%;
     //background-color: #f6f6f9;
     //padding: 8px 12px;
@@ -3052,6 +3053,7 @@
 
 .editProject {
   height: 100%;
+  border-radius: 0 0 8px 8px;
 
   .label-selector-arrow {
     position: absolute;
@@ -3744,9 +3746,9 @@
 
   .footer {
     height: 53px;
-    width: 100%;
+    //width: 100%;
     text-align: right;
-    position: fixed;
+    //position: fixed;
     bottom: 0%;
     //background-color: #f6f6f9;
     //padding: 8px 12px;
@@ -6885,6 +6887,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .supplier-info-box {
   & > .top-console {
     & > .item-box {
+
+      .ant-input-affix-wrapper .ant-input {
+        padding-right: 10px;
+      }
+
       .console-item {
         .item-label {
           width: 70px;
@@ -9036,6 +9043,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           justify-content: space-between;
           flex-wrap: wrap;
           margin-bottom: -16px;
+          min-height: 404px;
 
           & > .project-item {
             // width: 32%;
@@ -10733,7 +10741,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .ant-modal-header {
+    height: 42px;
     padding: 9px 12px;
+    border-radius: 8px 8px 0 0;
   }
 
   .ant-modal-title {

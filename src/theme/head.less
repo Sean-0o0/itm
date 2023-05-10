@@ -464,9 +464,9 @@
 .top-tabs-box {
   width: 100%;
   align-items: flex-end;
-  .ant-tabs-tab-prev.ant-tabs-tab-arrow-show, .ant-tabs-tab-next.ant-tabs-tab-arrow-show{
-    height: 26px;
-  }
+  // .ant-tabs-tab-prev.ant-tabs-tab-arrow-show, .ant-tabs-tab-next.ant-tabs-tab-arrow-show{
+  //   height: 26px;
+  // }
   .ant-tabs.ant-tabs-card .ant-tabs-card-bar .ant-tabs-tab .ant-tabs-close-x{
     width: 16px;
     height: 16px;
@@ -474,6 +474,7 @@
     text-align: center;
     border-radius: 4px;
     margin-left: 8px;
+    margin-top: 2px;
     color: #ABAFB4;
     &:hover {
       background: #E5E6E9;
@@ -487,11 +488,40 @@
     border-right: 0;
     background-color: #fff;
     border-radius: 10px 10px 0 0;
+    transition: color 0.3s;
+    margin-right: 18px;//0
+
+    // &:before {
+    //   content: "";
+    //   position: absolute;
+    //   left: 0px;
+    //   bottom: 8px;
+    //   width: 0.5px;
+    //   height: 18px;
+    //   background: #9f9e9eba;
+    // }
+
+    &:after {
+      content: "";
+      position: absolute;
+      right: -10px;//0
+      bottom: 8px;
+      width: 2px;
+      height: 18px;
+      background: #c9c9c9ba;
+    }
+
+    &:last-child {
+      &:after {
+        content: none;
+      }
+    }
+    
     & > div {
       display: flex;
       flex-direction: row;
       align-items: center;
-      height: 26px;
+      height: 40px;
     }
     &:hover {
       background: #F9FBFC;
@@ -505,6 +535,15 @@
     border: 1px solid #eeeff1;
     border-bottom: 0;
     background-color: #f7f8fa;
+
+    // &:before {
+    //   content: none;
+    // }
+
+    // &:after {
+    //   content: none;
+    // }
+
     &:hover {
       background: #f7f8fa;
       color: #606266;
@@ -517,15 +556,15 @@
     width: 100%;
     .ant-tabs-bar {
       width: 100%;
-      margin: 9.5px 0 0 0;
+      margin: 5.5px 0 0 0;
       border-bottom: 1px solid #eeeff1;
 
       .ant-tabs-nav-container{
-        height: 36px !important;
+        height: 40px !important;
       }
 
       .ant-tabs-tab{
-        height: 36px !important;
+        height: 40px !important;
         
       }
     }

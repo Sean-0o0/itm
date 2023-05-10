@@ -1,13 +1,14 @@
 import React, { useEffect, useState } from 'react';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { message } from 'antd';
+import { message, Modal } from 'antd';
 import PrjTypeModal from './PrjTypeModal';
+import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 
 export default function ShortcutCard(props) {
   const { userRole, getPrjInfo } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
 
   useEffect(() => {
@@ -80,7 +81,11 @@ export default function ShortcutCard(props) {
   //关闭新建项目弹窗
   const closeFileAddModal = () => {
     setFileAddVisible(false);
-    // window.location.href ='/#/pms/manage/ProjectInfo';
+  };
+  //新建项目成功后，刷新数据
+  const handleFileAddSuccess = () => {
+    closeFileAddModal();
+    getPrjInfo(userRole); //刷新数据
   };
 
   //新建项目弹窗参数
@@ -99,13 +104,54 @@ export default function ShortcutCard(props) {
     <div className="shortcut-card-box">
       <div className="home-card-title-box">快捷入口</div>
 
+      {/*{fileAddVisible && (*/}
+      {/*  <BridgeModel*/}
+      {/*    isSpining="customize"*/}
+      {/*    modalProps={fileAddModalProps}*/}
+      {/*    onCancel={closeFileAddModal}*/}
+      {/*    src={src_fileAdd}*/}
+      {/*  />*/}
+      {/*)}*/}
       {fileAddVisible && (
-        <BridgeModel
-          isSpining="customize"
-          modalProps={fileAddModalProps}
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'1000px'}
+          // height={'700px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
+          visible={fileAddVisible}
+          okText="保存"
+          bodyStyle={{
+            padding: 0,
+          }}
           onCancel={closeFileAddModal}
-          src={src_fileAdd}
-        />
+          title={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#3361FF',
+                color: 'white',
+                borderRadius: '8px 8px 0 0',
+                fontSize: '16px',
+              }}
+            >
+              <strong>新建项目</strong>
+            </div>
+          }
+          footer={null}
+        >
+          <NewProjectModelV2
+            closeModel={closeFileAddModal}
+            successCallBack={handleFileAddSuccess}
+            xmid={src_fileAdd.xmid}
+            type={src_fileAdd.type}
+            projectType={src_fileAdd.projectType}
+          />
+        </Modal>
       )}
       <PrjTypeModal
         visible={visible}

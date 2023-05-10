@@ -295,18 +295,18 @@ class SubItemInfo extends Component {
       let obj = {
         XMID,
         XMMC: item['SUBXMMC' + item.ID],
-        XMJL: item['SUBXMJL' + item.ID],
-        XMLX: String(item['SUBXMLX' + item.ID]),
+        XMJL: item['SUBXMJL' + item.ID] === "" ? '-1' : item['SUBXMJL' + item.ID],
+        XMLX: String(item['SUBXMLX' + item.ID] === "" ? '-1' : item['SUBXMLX' + item.ID]),
         // SUBGLRJ: item['SUBGLRJ' + item.ID],
-        YYBM: String(item['SUBYYBM' + item.ID]),
-        CGFS: String(item['SUBCGFS' + item.ID]),
-        GLYS: item['SUBGLYS' + item.ID],
-        GLYSLX: item['GLYSLX' + item.ID],
+        YYBM: String(item['SUBYYBM' + item.ID] === [] ? '无' : item['SUBYYBM' + item.ID]),
+        CGFS: String(item['SUBCGFS' + item.ID] === "" ? '-1' : item['SUBCGFS' + item.ID]),
+        GLYS: item['SUBGLYS' + item.ID] === "" ? '-99' : item['SUBGLYS' + item.ID],
+        GLYSLX: item['GLYSLX' + item.ID] === "" ? '无' : item['GLYSLX' + item.ID],
         //项目预算金额/三个金额之和
-        XMYS: item['SUBSFBHYJ' + item.ID] == '2' ? String(item['SUBYSJE' + item.ID]) : String(item['SUBYSJE-TOTAL' + item.ID]),
+        XMYS: String(item['SUBSFBHYJ' + item.ID]) === "2" ? String(item['SUBYSJE' + item.ID] === "" ? '0' : item['SUBYSJE' + item.ID]) : String(item['SUBYSJE-TOTAL' + item.ID]),
         RJYS: String(item['SUBRJYSJE' + item.ID]),
         SFBHYJ: item['SUBSFBHYJ' + item.ID],
-        SFWYJRWNXQ: item['SUBSFYJRW' + item.ID],
+        SFWYJRWNXQ: Number(item['SUBKJCGJE' + item.ID]) > 0 ? '1' : '2',
         KJCGJE: String(item['SUBKJCGJE' + item.ID]),
         DDCGJE: String(item['SUBDDCGJE' + item.ID]),
         CZLX,
@@ -344,6 +344,7 @@ class SubItemInfo extends Component {
       const {code = -1, xmxx} = result;
       if (code > 0) {
         let data = JSON.parse(xmxx);
+        console.log("datadata", data)
         let arr = [];
         for (let i = 0; i < data.length; i++) {
           let SUBGLYSTXT = '';
@@ -371,11 +372,11 @@ class SubItemInfo extends Component {
           arr.push({
             ID: String(data[i]?.ID),
             ['SUBXMMC' + data[i]?.ID]: data[i]?.XMMC,
-            ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL),
-            ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX,
+            ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL) === "-1" ? null : String(data[i]?.XMJL),
+            ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX ? data[i].XMLX : "",
             // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
-            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM.split(';'),
-            ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS,
+            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';') ? data[i]?.BM?.split(';') : null,
+            ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS ? data[i]?.ZBFS : "",
             ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
             ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
             ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
@@ -644,7 +645,7 @@ class SubItemInfo extends Component {
               placeholder="请选择项目类型"
               treeDefaultExpandAll
               // treeDefaultExpandedKeys={orgExpendKeys}
-              getPopupContainer={triggerNode => triggerNode.parentNode}
+              // getPopupContainer={triggerNode => triggerNode.parentNode}
               onChange={(e) => _this.itemChange(e, record, index, 'SUBXMLX')}
             />
           )

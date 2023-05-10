@@ -25,10 +25,7 @@ export default function SupplierInfo(props) {
     if (supplierId === -2) {
       //无参数
       getTableData({});
-    } else {
-      //有参数
-      // console.log('supplierId, cxlx', supplierId, cxlx);
-      // getTableData({ projectManager: supplierId});
+      topConsoleRef?.current?.handleReset();
     }
     return () => {};
   }, [props]);

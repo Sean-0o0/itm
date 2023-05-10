@@ -594,7 +594,7 @@ class MainPageLayout extends React.PureComponent {
                         cacheKey={key || path}
                         path={path}
                         unmount={false}
-                        saveScrollPosition
+                        // saveScrollPosition
                         render={p => <HomePage {...p}></HomePage>}
                       />
                     );
