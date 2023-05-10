@@ -631,7 +631,7 @@ class EditProjectInfoModel extends React.Component {
     if (subItemFlag) {
       this.setState({subItemFlag: true});
     }
-    // 判断是否是没有里程碑的子项目
+    //子项目完善
     if (subItemFinish) {
       this.setState({subItemFinish: true});
     }
@@ -2571,7 +2571,12 @@ class EditProjectInfoModel extends React.Component {
             this.operateInsertSubProjects(params, projectId);
           } else {
             this.props.successCallBack();
-            message.success("编辑项目成功！")
+            //子项目完善
+            if (this.state.subItemFinish) {
+              message.success("子项目完善成功！")
+            } else {
+              message.success("编辑项目成功！")
+            }
             //从首页进来的还需要跳转到项目信息页面
             if (this.state.type && type === 1) {
               //新建项目成功后跳转到项目信息页面
@@ -3630,7 +3635,7 @@ class EditProjectInfoModel extends React.Component {
       const {code = -1,} = result;
       if (code > 0) {
         this.props.successCallBack();
-        message.success("子项目完善成功！")
+        message.success("编辑项目成功！")
         //从首页进来的还需要跳转到项目信息页面
         if (this.state.type) {
           //新建项目成功后跳转到项目信息页面

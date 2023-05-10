@@ -371,10 +371,10 @@ class SubItemInfo extends Component {
           arr.push({
             ID: String(data[i]?.ID),
             ['SUBXMMC' + data[i]?.ID]: data[i]?.XMMC,
-            ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL),
+            ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL) === "-1" ? null : String(data[i]?.XMJL),
             ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX,
             // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
-            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM.split(';'),
+            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';'),
             ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS,
             ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
             ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
