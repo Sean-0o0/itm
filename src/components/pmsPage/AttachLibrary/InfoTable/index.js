@@ -6,19 +6,21 @@ import config from '../../../../utils/config';
 import moment from 'moment';
 import { EncryptBase64 } from "../../../Common/Encrypt";
 import { Link } from 'react-router-dom';
+import { QueryAttachLibraryList } from '../../../../services/pmsServices'
 const { api } = config;
 const { pmsServices: { queryFileStream, zipLivebosFilesRowsPost } } = api;
+
 
 
 class InfoTable extends Component {
     state = {
         modalVisible: false,
         record: {},
-        selectedRows: []
+        selectedRows: [],
+        selectedRowKeys: []
     }
 
     handleChange = (current, pageSize) => {
-        console.log('pageSize',pageSize)
         const { handleSearch } = this.props;
         if (handleSearch) {
             handleSearch({
@@ -150,20 +152,68 @@ class InfoTable extends Component {
         }
     }
 
+    onSelectHandle = (record, selected, selectedRow) => {
+        const {selectedRowKeys, selectedRows} = this.state;
+        let arr = [];
+        let list = [];
+        if (selected) {
+            arr = Array.from(new Set([...selectedRowKeys, record.wdid]));
+            list = Array.from(new Set([...selectedRows, record]));
+        } else {
+            arr = selectedRowKeys.filter(item => {
+                return item !== record.wdid
+            });
+            list = selectedRows.filter(item => item.wdid !== record.wdid)
+        }
+        this.setState({selectedRowKeys: arr, selectedRows: list});
+    }
+
+    handleSearch = () => {
+        const { pageParams = {}, cxlx } = this.props
+        QueryAttachLibraryList({
+            ...pageParams,
+            paging: -1,
+            cxlx
+        })
+            .then((res = {}) => {
+                const { code, record = []} = res;
+                if (code > 0) {
+                    this.setState({
+                        selectedRows: record,
+                        selectedRowKeys: record.map(item=>item.wdid)
+                    })
+                }
+            }).catch((e) => {
+                message.error(!e.success ? e.message : e.note);
+            });
+    }
+
+    onSelectAll = (selected, selectedRow, changeRows) => {
+        if (selected) {
+            this.handleSearch()
+        } else {
+            this.setState({
+                selectedRows: [],
+                selectedRowKeys: []
+            })
+        }
+    }
+
     render() {
         const { tableLoading = false, tableData = [], pageParams = {}, pathname = '' } = this.props;
-        const { modalVisible = false, record, } = this.state;
+        const { selectedRowKeys = [], modalVisible = false, record, } = this.state;
 
         const rowSelection = {
-            onChange: (selectedRowKeys, selectedRows) => {
-                this.setState({
-                    selectedRows: selectedRows
-                })
-            },
+            selectedRowKeys: selectedRowKeys,
             getCheckboxProps: (record) => ({
-                disabled: record.name === 'Disabled User',
                 name: record.name,
             }),
+            onSelect: (record, selected) => {
+                this.onSelectHandle(record, selected)
+            },
+            onSelectAll: (selected, selectedRows, changeRows) => {
+                this.onSelectAll(selected, selectedRows, changeRows);
+            }
         };
 
         const columns = [
@@ -306,7 +356,7 @@ class InfoTable extends Component {
                     <Table
                         loading={tableLoading}
                         columns={columns}
-                        rowKey={'projectId'}
+                        rowKey={'wdid'}
                         dataSource={tableData}
                         onChange={this.handleTableChange}
                         rowSelection={{

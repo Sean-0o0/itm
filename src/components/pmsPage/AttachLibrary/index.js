@@ -36,11 +36,12 @@ class AttachLibrary extends Component {
         }
     }
 
-    UNSAFE_componentWillReceiveProps() {
+    UNSAFE_componentWillReceiveProps(nextprops) {
+        const { xmid } = nextprops
         this.setState({
             pageParams: {
                 ...this.state.pageParams,
-                xmid: this.props.xmid
+                xmid: xmid
             }
         }, () => {
             this.handleSearch()
@@ -95,7 +96,7 @@ class AttachLibrary extends Component {
         const { dictionary, pathname } = this.props;
         return (<div className="attach-library-box">
             <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid} />
-            <InfoTable pathname={pathname} tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
+            <InfoTable cxlx={cxlx} pathname={pathname} tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
         </div>);
     }
 }

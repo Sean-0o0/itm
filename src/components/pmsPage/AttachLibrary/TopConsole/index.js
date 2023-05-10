@@ -40,7 +40,7 @@ class ToConsole extends Component {
   UNSAFE_componentWillReceiveProps(nextprops) {
     const { xmid: newid, cxlx } = nextprops;
     const { cxlx: newCxlx } = this.props;
-    const { xmid } = this.state;
+    const { params: {xmid} } = this.state;
     if (xmid !== newid) {
       this.setState({
         params: {
