@@ -2574,14 +2574,15 @@ class EditProjectInfoModel extends React.Component {
             //子项目完善
             if (this.state.subItemFinish) {
               message.success("子项目完善成功！")
+              window.location.href = '/#/pms/manage/ProjectInfo';
             } else {
               message.success("编辑项目成功！")
             }
             //从首页进来的还需要跳转到项目信息页面
-            if (this.state.type && type === 1) {
-              //新建项目成功后跳转到项目信息页面
-              window.location.href = '/#/pms/manage/ProjectInfo';
-            }
+            // if (this.state.type && type === 1) {
+            //   //新建项目成功后跳转到项目信息页面
+            //   window.location.href = '/#/pms/manage/ProjectInfo';
+            // }
           }
         } else {
           message.error(note);
@@ -3637,10 +3638,10 @@ class EditProjectInfoModel extends React.Component {
         this.props.successCallBack();
         message.success("编辑项目成功！")
         //从首页进来的还需要跳转到项目信息页面
-        if (this.state.type) {
-          //新建项目成功后跳转到项目信息页面
-          window.location.href = '/#/pms/manage/ProjectInfo';
-        }
+        // if (this.state.type) {
+        //   //新建项目成功后跳转到项目信息页面
+        //   window.location.href = '/#/pms/manage/ProjectInfo';
+        // }
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
