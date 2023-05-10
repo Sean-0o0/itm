@@ -344,6 +344,7 @@ class SubItemInfo extends Component {
       const {code = -1, xmxx} = result;
       if (code > 0) {
         let data = JSON.parse(xmxx);
+        console.log("datadata", data)
         let arr = [];
         for (let i = 0; i < data.length; i++) {
           let SUBGLYSTXT = '';
@@ -372,10 +373,10 @@ class SubItemInfo extends Component {
             ID: String(data[i]?.ID),
             ['SUBXMMC' + data[i]?.ID]: data[i]?.XMMC,
             ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL) === "-1" ? null : String(data[i]?.XMJL),
-            ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX,
+            ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX ? data[i].XMLX : "",
             // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
-            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';'),
-            ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS,
+            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';') ? data[i]?.BM?.split(';') : null,
+            ['SUBCGFS' + data[i]?.ID]: data[i].ZBFS ? data[i].ZBFS : "",
             ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
             ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
             ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
