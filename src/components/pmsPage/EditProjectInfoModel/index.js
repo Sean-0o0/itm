@@ -1976,10 +1976,7 @@ class EditProjectInfoModel extends React.Component {
         basicflag = false;
       }
     } else {
-      if (type === 1) {
-        message.warn('项目预算信息-预算金额未填写完整！');
-        return;
-      }
+      basicflag = false;
     }
     //非自研项目还需要校验采购方式
     if (!projectTypeZYFlag) {
@@ -2300,7 +2297,16 @@ class EditProjectInfoModel extends React.Component {
         title: '提示',
         content: '超过当前预算项目的预算，是否确认？',
         onOk() {
-          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '确认完成？',
+            onOk() {
+              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+            },
+            onCancel() {},
+          });
         },
         onCancel() {
         },
@@ -2314,7 +2320,16 @@ class EditProjectInfoModel extends React.Component {
         title: '提示',
         content: '超过当前预算项目的预算，是否确认？',
         onOk() {
-          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '确认完成？',
+            onOk() {
+              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+            },
+            onCancel() {},
+          });
         },
         onCancel() {
         },
@@ -2328,7 +2343,16 @@ class EditProjectInfoModel extends React.Component {
         title: '提示',
         content: '超过当前预算项目的预算，是否确认？',
         onOk() {
-          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '确认完成？',
+            onOk() {
+              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+            },
+            onCancel() {},
+          });
         },
         onCancel() {
         },
@@ -2342,21 +2366,19 @@ class EditProjectInfoModel extends React.Component {
         title: '提示',
         content: '超过当前预算项目的预算，是否确认？',
         onOk() {
-          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '确认完成？',
+            onOk() {
+              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+            },
+            onCancel() {},
+          });
         },
         onCancel() {
         },
-      });
-    } else {
-      confirm({
-        okText: '确认',
-        cancelText: '取消',
-        title: '提示',
-        content: '确认完成？',
-        onOk() {
-          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-        },
-        onCancel() {},
       });
     }
   };
@@ -2443,9 +2465,9 @@ class EditProjectInfoModel extends React.Component {
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
     params.budgetType = this.state.budgetInfo.budgetType;
-    params.isShortListed = Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+    params.isShortListed = Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2';
       // 软件预算
-      params.softBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.softBudget : 0;
+    params.softBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.softBudget : 0;
     // 框架预算
     params.frameBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.frameBudget : 0;
     // 单独采购金额
@@ -3713,6 +3735,7 @@ class EditProjectInfoModel extends React.Component {
   // 查询其他项目信息
   operateInsertSubProjects = (param, projectId) => {
     console.log("-----------开始保存子项目信息-----------")
+    const {subItemRecord, budgetInfo = {}} = this.state;
     const params = {
       parentId: projectId,
       parentBudget: budgetInfo.budgetProjectId === '' ? -99 : Number(budgetInfo.budgetProjectId),
