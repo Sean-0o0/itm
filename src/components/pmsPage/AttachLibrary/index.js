@@ -51,16 +51,15 @@ class AttachLibrary extends Component {
 
     UNSAFE_componentWillReceiveProps(nextprops) {
         const { xmid } = nextprops
-        const { xmid: oldXmid } = this.props;
         this.setState({
             pageParams: {
                 ...this.state.pageParams,
                 xmid: xmid
             }
         }, () => {
-            if(xmid!==oldXmid){
+            // if(xmid!==oldXmid){
                 this.handleSearch()
-            }
+            // }
         })
 
     }
