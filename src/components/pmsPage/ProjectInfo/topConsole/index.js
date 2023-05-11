@@ -23,7 +23,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
   const [label, setLabel] = useState([]); //项目标签
   const [prjName, setPrjName] = useState(undefined); //项目名称
-  const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
+  // const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [org, setOrg] = useState([]); //应用部门
   const [prjType, setPrjType] = useState(undefined); //项目类型
   const [gtAmount, setGtAmount] = useState(undefined); //项目金额，大于
@@ -44,6 +44,8 @@ export default forwardRef(function TopConsole(props, ref) {
     curPageSize,
     queryType,
     setQueryType,
+    prjMnger,
+    setPrjMnger,
   } = props;
 
   useEffect(() => {
@@ -207,9 +209,9 @@ export default forwardRef(function TopConsole(props, ref) {
           })[0].children[0];
           setOrgData(p => [...[orgTree]]);
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
-          if (projectManager) {
-            setPrjMnger(String(projectManager));
-          }
+          // if (projectManager) {
+          //   setPrjMnger(String(projectManager));
+          // }
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
           let xmlx = TreeUtils.toTreeData(JSON.parse(res.projectTypeRecord), {
             keyName: 'ID',

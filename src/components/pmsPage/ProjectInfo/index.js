@@ -13,32 +13,25 @@ export default function ProjectInfo(props) {
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {} } = props;
   const { prjManager, cxlx } = params;
-  // const [cxlx, setCxlx] = useState('ALL'); //
   const topConsoleRef = useRef(null);
   const [queryType, setQueryType] = useState('ALL'); //
+  const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
+  const [isComplete, setIsComplete] = useState(false); //
 
-  //页面恢复，跳转回首页时触发
-  // props.cacheLifecycles.didRecover(() => {
-  //   // console.log('跳转回首页时触发');
-
-  // });
+  useEffect(() => {
+    getTableData({});
+    return () => {};
+  }, []);
 
   useEffect(() => {
     // console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);
-    setCurPage(1);
-    setTotal(0);
-    if (prjManager === undefined) {
-      //无参数
-      getTableData({});
-    } else {
-      setTimeout(() => {
-      //有参数
+    if (prjManager !== undefined && isComplete) {
       getTableData({ projectManager: prjManager, cxlx });
-      setQueryType(cxlx)
-      }, 20);
+      setQueryType(cxlx);
+      setPrjMnger(String(prjManager));
     }
     return () => {};
-  }, [JSON.stringify(params)]);
+  }, [isComplete, prjManager, cxlx]);
 
   //获取表格数据
   const getTableData = async ({
@@ -64,6 +57,7 @@ export default function ProjectInfo(props) {
         console.log(res.totalrows);
         setTotal(res.totalrows);
         setTableLoading(false);
+        setIsComplete(true);
       }
     } catch (error) {
       message.error('表格数据查询失败', 1);
@@ -86,6 +80,8 @@ export default function ProjectInfo(props) {
         curPageSize={curPageSize}
         queryType={queryType}
         setQueryType={setQueryType}
+        prjMnger={prjMnger}
+        setPrjMnger={setPrjMnger}
       />
       <InfoTable
         tableData={tableData}
@@ -98,6 +94,7 @@ export default function ProjectInfo(props) {
         curPage={curPage}
         curPageSize={curPageSize}
         queryType={queryType}
+        prjMnger={prjMnger}
       />
     </div>
   );

@@ -19,12 +19,13 @@ export default function InfoTable(props) {
     tableData,
     tableLoading,
     getTableData,
-    projectManager = -1,
+    // projectManager = -1,
     queryType = 'ALL',
     total,
     handleSearch,
     curPage,
     curPageSize,
+    prjMnger,
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
@@ -100,12 +101,12 @@ export default function InfoTable(props) {
     const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, projectManager, queryType, 'YSJE ASC,XH DESC,ID DESC');
+        handleSearch(current, pageSize,  prjMnger, queryType, 'YSJE ASC,XH DESC,ID DESC');
       } else {
-        handleSearch(current, pageSize, projectManager, queryType, 'YSJE DESC,XH DESC,ID DESC');
+        handleSearch(current, pageSize, prjMnger, queryType, 'YSJE DESC,XH DESC,ID DESC');
       }
     } else {
-      handleSearch(current, pageSize, projectManager, queryType);
+      handleSearch(current, pageSize, prjMnger, queryType);
     }
     return;
   };
