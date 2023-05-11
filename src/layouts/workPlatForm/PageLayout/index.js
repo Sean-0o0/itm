@@ -92,9 +92,9 @@ class MainPageLayout extends React.PureComponent {
     //判断菜单是否已经加载过了?
     // let flag = !menuTreeLoaded && hasAuthed;
     let flag = hasAuthed;
-    console.log("menuTreeLoaded", menuTreeLoaded)
-    console.log("hasAuthed", hasAuthed)
-    console.log("菜单菜单菜单", flag)
+    // console.log("menuTreeLoaded", menuTreeLoaded)
+    // console.log("hasAuthed", hasAuthed)
+    // console.log("菜单菜单菜单", flag)
     if (prePathname === '/' || pathname === '/') {
       flag = true;
     }

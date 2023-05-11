@@ -12,28 +12,31 @@ export default function ProjectInfo(props) {
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {} } = props;
-  const { prjManager = -2, cxlx = 'ALL' } = params;
+  const { prjManager, cxlx = 'ALL' } = params;
   const topConsoleRef = useRef(null);
 
   useEffect(() => {
-    console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    // console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);
     setCurPage(1);
     setTotal(0);
-    if (prjManager === -2) {
+    if (prjManager === undefined) {
       //无参数
       getTableData({});
     } else {
-      setTimeout(() => {
-        //有参数
-        getTableData({ projectManager: prjManager, cxlx });
-      });
+      // setTimeout(() => {
+      //有参数
+      getTableData({ projectManager: prjManager, cxlx });
+      // });
     }
-
     return () => {};
   }, [prjManager, cxlx]);
 
   //获取表格数据
-  const getTableData = ({
+  const getTableData = async ({
     current = 1,
     pageSize = 20,
     projectManager = -1,
@@ -41,29 +44,27 @@ export default function ProjectInfo(props) {
     sort = 'XH DESC,ID DESC',
   }) => {
     setTableLoading(true);
-    QueryProjectListInfo({
-      projectManager,
-      current,
-      pageSize,
-      paging: 1,
-      sort,
-      total: -1,
-      queryType: cxlx,
-    })
-      .then(res => {
-        if (res?.success) {
-          setTableData(p => [...JSON.parse(res.record)]);
-          console.log(res.totalrows);
-          setTotal(res.totalrows);
-          setTableLoading(false);
-        }
-        // console.log('🚀 ~ file: index.js ~ line 29 ~ getTableData ~ res', JSON.parse(res.record));
-      })
-      .catch(e => {
-        // console.error('getTableData', e);
-        message.error('表格数据查询失败', 1);
-        setTableLoading(false);
+    try {
+      const res = await QueryProjectListInfo({
+        projectManager,
+        current,
+        pageSize,
+        paging: 1,
+        sort,
+        total: -1,
+        queryType: cxlx,
       });
+      console.log("🚀 ~ file: index.js:57 ~ ProjectInfo ~ res:", res)
+      if (res?.success) {
+        setTableData(p => [...JSON.parse(res.record)]);
+        // console.log(res.totalrows);
+        setTotal(res.totalrows);
+        setTableLoading(false);
+      }
+    } catch (error) {
+      message.error('表格数据查询失败', 1);
+      setTableLoading(false);
+    }
   };
 
   return (
