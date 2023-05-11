@@ -59,7 +59,7 @@ class DepartmentOverview extends Component {
             orgStation: gwbm,
             queryType: queryType,
             role: role,
-            ...param
+            // ...param
         }).then(res => {
             const { code = 0, bmry, wbry, gwfb, bgxx, note, total } = res
             if (code > 0) {

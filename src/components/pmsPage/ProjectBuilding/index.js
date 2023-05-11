@@ -2,12 +2,12 @@ import React, { Component } from 'react'
 import TopConsole from './TopConsole'
 import Overview from './Overview'
 import InfoTable from './InfoTable'
-import { message } from 'antd'
+import { message, Spin } from 'antd'
 import { QueryProjectGeneralInfo, QueryUserRole } from '../../../services/pmsServices'
 
 class ProjectBuilding extends Component {
     state = {
-        role: '普通人员',
+        role: '',
         orgid: '',
         fxxx: [],
         jrxz: [],
@@ -39,6 +39,7 @@ class ProjectBuilding extends Component {
             add: 0
         }],
         tableLoading: false,
+        loading: false,
         pageParam: {
             current: 1,
             pageSize: 10,
@@ -54,6 +55,9 @@ class ProjectBuilding extends Component {
 
     fetchRole = () => {
         const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
+        this.setState({
+            loading: true
+        })
         if (LOGIN_USERID !== undefined) {
             QueryUserRole({
                 userId: Number(LOGIN_USERID),
@@ -70,6 +74,9 @@ class ProjectBuilding extends Component {
                 }
             }).catch(err => {
                 message.error("查询人员角色失败")
+                this.setState({
+                    loading: false
+                })
             })
         }
     }
@@ -92,6 +99,7 @@ class ProjectBuilding extends Component {
                 if (queryType === 'MX_ALL_ONE') {
                     this.handleData(fxxx, ryxx, jrxz)
                     this.setState({
+                        loading: false,
                         xmxx: JSON.parse(xmxx),
                         tableLoading: false,
                         pageParam: {
@@ -102,6 +110,7 @@ class ProjectBuilding extends Component {
                     })
                 } else {
                     this.setState({
+                        loading: false,
                         xmxx: JSON.parse(xmxx),
                         tableLoading: false,
                         pageParam: {
@@ -115,6 +124,7 @@ class ProjectBuilding extends Component {
             } else {
                 message.error(note)
                 this.setState({
+                    loading: false,
                     tableLoading: false,
                 })
             }
@@ -229,11 +239,12 @@ class ProjectBuilding extends Component {
             tableLoading,
             pageParam,
             data,
-            xmxx = []
+            xmxx = [],
+            loading
         } = this.state
 
 
-        return (<div className="project-build-box cont-box">
+        return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large"><div className="project-build-box cont-box">
             <TopConsole routes={routes} />
             <div className="overview-box">
                 {data.map((item, index) => {
@@ -242,7 +253,7 @@ class ProjectBuilding extends Component {
                 }
             </div>
             <InfoTable xmxx={xmxx} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} fetchData={this.queryProjectGeneralInfo} />
-        </div>);
+        </div></Spin>);
     }
 }
 
