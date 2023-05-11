@@ -166,6 +166,8 @@ export default function ProcessCard(props) {
     visible: xwhyaModalVisible,
     footer: null,
   };
+
+  if (total === 0) return null;
   return (
     <div className="process-card-box">
       {/* 信委会立案流程查看 */}
@@ -189,13 +191,13 @@ export default function ProcessCard(props) {
             url: item.url,
           }),
         )}
-        {total === 0 && (
+        {/* {total === 0 && (
           <Empty
             description="暂无流程"
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             style={{ width: '100%' }}
           />
-        )}
+        )} */}
         {total > 3 &&
           (isUnfold ? (
             <div className="more-item" onClick={() => handleUnfold(false)}>

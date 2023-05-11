@@ -4,6 +4,8 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
+import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
+import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
 
 export default function OverviewCard(props) {
   const { width = '70%', overviewInfo = [], userRole = '', toDoDataNum = 0 } = props;
@@ -92,7 +94,7 @@ export default function OverviewCard(props) {
     <div className="overview-card-box">
       <div className="avatar-card-box">
         <div className="avatar">
-          <img src={require('../../../../assets/homePage/img_avatar_male.png')} alt="" />
+          <img src={overviewInfo?.xb === '男' ? avatarMale : avatarFemale} alt="" />
         </div>
         <div className="title">
           <span>{getGreeting()}</span>

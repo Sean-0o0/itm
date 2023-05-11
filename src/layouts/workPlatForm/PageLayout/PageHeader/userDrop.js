@@ -19,6 +19,9 @@ import { fetchUserBasicInfo } from '../../../../services/commonbase/userBasicInf
 // import VersionInfoList from './versionInfoList';
 import OtherUser from './OtherUser';
 import { FetchAes } from '../../../../services/tool';
+import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
+import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
+import {  QueryUserRole } from '../../../../services/pmsServices/index';
 
 const { confirm } = Modal;
 
@@ -49,6 +52,7 @@ export default class UserDrop extends React.Component {
       loading: false, // 切换用户弹窗
       userId: '',
       avatorShowPic: showPic,
+      gender: '',
     };
   }
 
@@ -57,6 +61,7 @@ export default class UserDrop extends React.Component {
     const { loading } = userBasicInfo;
     if (loading === false && Object.keys(userBasicInfo).length > 1) {
       this.getAES();
+      this.getUserRole();
     }
   }
   componentWillReceiveProps(nextProps) {
@@ -76,10 +81,31 @@ export default class UserDrop extends React.Component {
     // IsEnd|newIsEnd true 表示数据加载完毕
     if (!IsEnd && newIsEnd) {
       this.getAES();
+      this.getUserRole();
     }
 
     this.forceRender();
   }
+
+  //获取用户性别
+  getUserRole = () => {
+    QueryUserRole({
+      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          this.setState({
+            gender: res.gender,
+          });
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('用户角色信息查询失败', 1);
+      });
+  };
+      
+
   getAES = () => {
     // const userId = localStorage.getItem('firstUserID') || '';
     const { authUserInfo = {} } = this.props;
@@ -91,7 +117,7 @@ export default class UserDrop extends React.Component {
     FetchAes({
       optType: 'encode',
       content: userId,
-    }).then((ret) => {
+    }).then(ret => {
       const { code = 0, note = '', data = '' } = ret;
       if (code > 0) {
         // this.setState({ userId: data }, () => this.getOtherUsers({}));
@@ -99,7 +125,7 @@ export default class UserDrop extends React.Component {
         message.error(note);
       }
     });
-  }
+  };
   // getOtherUsers = ({ userInfo = '', current = 1 }) => {
   //   this.setState({ loading: true });
   //   const { userId } = this.state;
@@ -210,23 +236,37 @@ export default class UserDrop extends React.Component {
   // }
   getDropdownBoxTitle = (authUserInfo, userBasicInfo, showPic) => {
     const { name = '' } = authUserInfo || {};
+    const { gender } = this.state;
     return (
-      <a href="#" onClick={(e) => { e.preventDefault(); }} style={{ display: 'inline-block', width: '100%', height: '100%' }}>
-        {/* <img className="m-avatar" style={{width: '3rem', height: '3rem'}} src={showPic} title="头像" alt="avator" onError={this.showDefaultImgError} /> */}
+      <a
+        href="#"
+        onClick={e => {
+          e.preventDefault();
+        }}
+        style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center' }}
+      >
+          <img
+            style={{  width: 24,
+              height: 24,
+              borderRadius: '50%',
+              overflow: 'hidden', }}
+            src={gender === '' ? avatorPng : gender === '男' ? avatarMale : avatarFemale}
+            alt=""
+          />
         <span style={{ paddingLeft: '8px' }}>
           <span className="name">{name}</span>
-          <i className="iconfont icon-fill-down"/>
+          <i className="iconfont icon-fill-down" />
         </span>
       </a>
     );
-  }
+  };
   getDropbox = (dispatch, userBasicInfo, otherusers = [], showPic) => {
     // 注意 这里的userBasicInfo是this.props.authUserInfo
     // loginName 为当前登陆人
     const { name = '', loginName = '' } = userBasicInfo || {};
     const { allotherusers = [] } = this.state;
     let arr = [];
-    otherusers.every((it) => {
+    otherusers.every(it => {
       if (it.loginName === loginName) {
         arr = it.roleName;
         return false;
@@ -247,45 +287,54 @@ export default class UserDrop extends React.Component {
       span = 12;
     }
     return (
-      <Card
-        className="m-card m-user"
-      >
+      <Card className="m-card m-user">
         <Row>
-          <Col span={24} style={{ paddingLeft: '2rem' }}>
+          <Col span={24}>
             {/* <div className="m-panel-img" style={{ paddingLeft: '0.583rem', paddingRight: '0.583rem' }}>
               <Avator dispatch={dispatch} avatorShowPic={showPic} userBasicInfo={userBasicInfo} forceRender={this.forceRender} />
             </div> */}
-            <div className="m-panel-introduce" style={{ float: 'unset' }}>
+            <div className="m-panel-introduce">
               <div className="m-panel-name">{name}</div>
-              <div className="m-panel-id">上次登录时间
+              <div className="m-panel-id">
+                上次登录时间
                 <div>{lastlogin.replace(/-/g, '.')}</div>
               </div>
-              {
-                loginmethod !== '1' &&
-                (
-                  <React.Fragment>
-                    <Button className="m-btn m-btn-small m-btn-headColor" onClick={() => { return this.cpForm && this.cpForm.showModal(); }}>
-                      <span>修改密码</span>
-                    </Button>
-                    <ChangePwd ref={(node) => { this.cpForm = node; }} userBasicInfo={this.props.userBasicInfo} />
-                  </React.Fragment>
-                )
-              }
+              {loginmethod !== '1' && (
+                <React.Fragment>
+                  <Button
+                    className="m-btn m-btn-small m-btn-headColor"
+                    onClick={() => {
+                      return this.cpForm && this.cpForm.showModal();
+                    }}
+                  >
+                    <span>修改密码</span>
+                  </Button>
+                  <ChangePwd
+                    ref={node => {
+                      this.cpForm = node;
+                    }}
+                    userBasicInfo={this.props.userBasicInfo}
+                  />
+                </React.Fragment>
+              )}
             </div>
           </Col>
         </Row>
-        {
-          arr.length > 0 && (
-            <div className="clearfix" style={{ padding: '0.833rem 1rem', borderTop: '1px solid #ecedee' }}>
-              <span style={{ float: 'left' }}>当前角色：</span>
-              {
-                arr.map((it, index) => {
-                  return <Tag style={{ float: 'left', marginBottom: '0.2rem' }} key={index} color="blue">{it}</Tag>;
-                })
-              }
-            </div>
-          )
-        }
+        {arr.length > 0 && (
+          <div
+            className="clearfix"
+            style={{ padding: '0.833rem 1rem', borderTop: '1px solid #ecedee' }}
+          >
+            <span style={{ float: 'left' }}>当前角色：</span>
+            {arr.map((it, index) => {
+              return (
+                <Tag style={{ float: 'left', marginBottom: '0.2rem' }} key={index} color="blue">
+                  {it}
+                </Tag>
+              );
+            })}
+          </div>
+        )}
         {/* <List
           className="m-list-icon-small"
           itemLayout="horizontal"
@@ -302,14 +351,14 @@ export default class UserDrop extends React.Component {
             </List.Item>
           )}
         /> */}
-        <List
+        {/* <List
           className="m-list-icon-small"
           itemLayout="horizontal"
           style={{ padding: '0.833rem 0', marginTop: '0.833rem' }}
           dataSource={this.state.logoutData}
           renderItem={item => (
-            <Row>
-              {/* {
+            <Row> */}
+        {/* {
                 allotherusers.length > 0 && (
                   <Col span={span}>
                     <List.Item
@@ -324,7 +373,7 @@ export default class UserDrop extends React.Component {
                   </Col>
                 )
               } */}
-              {/* {
+        {/* {
                 (userId && loginName !== userId) && (
                   <Col span={span}>
                     <List.Item
@@ -339,7 +388,7 @@ export default class UserDrop extends React.Component {
                   </Col>
                 )
               } */}
-              {/* <Col span={24}>
+        {/* <Col span={24}>
                 <Link to={`/UIProcessor?Table=V_XMBQ_GRBQ&hideTitlebar=true`}>
                   <List.Item
                     style={{ borderBottom: 'none' }}
@@ -352,7 +401,7 @@ export default class UserDrop extends React.Component {
                   </List.Item>
                 </Link>
               </Col> */}
-              {/* <Col span={12}>
+        {/* <Col span={12}>
                 <List.Item
                   style={{ borderBottom: 'none' }}
                 >
@@ -364,21 +413,21 @@ export default class UserDrop extends React.Component {
                   />
                 </List.Item>
               </Col> */}
-            </Row>
+        {/* </Row>
           )}
-        />
+        /> */}
       </Card>
     );
-  }
-  showDefaultImgError = (e) => {
+  };
+  showDefaultImgError = e => {
     e.target.src = avatorPng;
-  }
-  handleLogout = (dispatch) => {
-    dispatch({type: 'login/fetOperationLogOut'});
-    dispatch({type: 'global/logout'});
+  };
+  handleLogout = dispatch => {
+    dispatch({ type: 'login/fetOperationLogOut' });
+    dispatch({ type: 'global/logout' });
     //登出调用单点登录的登出
     window.location.href = '/api/cas/logout';
-  }
+  };
 
   showRoleModal = () => {
     const { allotherusers = [], allTotal = 0 } = this.state;
@@ -387,46 +436,53 @@ export default class UserDrop extends React.Component {
       otherusers: allotherusers,
       total: allTotal,
     });
-  }
+  };
 
   closeRoleModal = () => {
     this.setState({
       roleVisible: false,
     });
-  }
+  };
 
   showModal = () => {
     this.setState({
       visible: true,
     });
-  }
+  };
   closeModal = () => {
     this.setState({
       visible: false,
     });
-  }
+  };
 
   // 强制重新渲染
   forceRender = () => {
-    fetchUserBasicInfo({
-    }).then((ret = {}) => {
-      const { code = 0, records = [] } = ret;
-      if (code > 0) {
-        const photo = records[0].extAttr.profileBase64;
-        const showPic = photo ? `data:image/png;base64,${photo}` : avatorPng;
-        let userInfoAvatorImg = document.getElementById('userInfoAvatorImg');
-        if (userInfoAvatorImg) {
-          userInfoAvatorImg.setAttribute('src', showPic); // userInfo的头像
+    fetchUserBasicInfo({})
+      .then((ret = {}) => {
+        const { code = 0, records = [] } = ret;
+        if (code > 0) {
+          const photo = records[0].extAttr.profileBase64;
+          const showPic = photo ? `data:image/png;base64,${photo}` : avatorPng;
+          let userInfoAvatorImg = document.getElementById('userInfoAvatorImg');
+          if (userInfoAvatorImg) {
+            userInfoAvatorImg.setAttribute('src', showPic); // userInfo的头像
+          }
+          this.setState({ avatorShowPic: showPic });
         }
-        this.setState({ avatorShowPic: showPic });
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   render() {
-    const { otherusers = [], loading = false, total = 0, avatorShowPic: showPic = '' } = this.state;
+    const {
+      otherusers = [],
+      loading = false,
+      total = 0,
+      avatorShowPic: showPic = '',
+      gender,
+    } = this.state;
     const { authUserInfo, userBasicInfo = {}, dispatch } = this.props;
     // const { sysVersionNum = {} } = this.state;
     // const { bbh = '', xqqx = '' } = sysVersionNum;
@@ -468,7 +524,11 @@ export default class UserDrop extends React.Component {
           <BasicModal
             visible={this.state.visible}
             onCancel={this.closeModal}
-            style={{ /* height: '20rem' */ }}
+            style={
+              {
+                /* height: '20rem' */
+              }
+            }
             footer={null}
             width="403px"
             title="版本信息"
