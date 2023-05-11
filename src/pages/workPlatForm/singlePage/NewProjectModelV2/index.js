@@ -421,6 +421,8 @@ class NewProjectModelV2 extends React.Component {
       frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
       //单独采购预算
       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+      //是否包含子项目
+      haveChild: Number(this.state.subItem),
     });
     // 查询组织机构信息 --- 位置不要变就放在这儿
     await this.fetchQueryOrganizationInfo();
@@ -1478,20 +1480,26 @@ class NewProjectModelV2 extends React.Component {
       let jobStaffNameArr = jobStaffName[Number(focusJob) - 1] ? jobStaffName[Number(focusJob) - 1] : [];
       //console.log("jobStaffNameArr", jobStaffNameArr);
       checkedStaffKey.forEach(item => {
+        const gw = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.gw
         const id = item.substring(1, item.length)
-        if(!arr.includes(id)){
-          arr.push(id);
-        }else{
-          message.warn("已存在该成员,请勿重复添加！")
+        if (!gw.includes("总经理助理")) {
+          message.warn("请选择总经理助理以上人员！")
           return;
-        }
-        const itemname = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name + '(' + this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName + ')'
-        console.log("itemname", itemname);
-        if(!jobStaffNameArr.includes(itemname)){
-          jobStaffNameArr.push(itemname)
-        }else{
-          message.warn("已存在该成员,请勿重复添加！")
-          return;
+        } else {
+          if (!arr.includes(id)) {
+            arr.push(id);
+          } else {
+            message.warn("已存在该成员,请勿重复添加！")
+            return;
+          }
+          const itemname = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name + '(' + this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName + ')'
+          console.log("itemname", itemname);
+          if (!jobStaffNameArr.includes(itemname)) {
+            jobStaffNameArr.push(itemname)
+          } else {
+            message.warn("已存在该成员,请勿重复添加！")
+            return;
+          }
         }
         // 存到对应下拉数据中
         this.state.staffList.forEach(e => {
@@ -1848,12 +1856,17 @@ class NewProjectModelV2 extends React.Component {
     //暂存草稿校验子项目信息
     //暂存草稿只需要校验项目名称
     if (String(subItem) === "1" && type === 0) {
-      subItemRecord.map(item => {
-        if ((item.XMMC === '' || item.XMMC == null)
-        ) {
-          subItemflag = false;
-        }
-      })
+      //subItemRecord.length === 0 有条默认数据没填
+      if (subItemRecord.length === 0) {
+        subItemflag = false;
+      } else {
+        subItemRecord.map(item => {
+          if ((item.XMMC === '' || item.XMMC == null)
+          ) {
+            subItemflag = false;
+          }
+        })
+      }
       //暂存草稿只需要校验项目名称
       if (!subItemflag) {
         message.warn('项目基本信息-子项目信息-项目名称未填写！');
@@ -2050,6 +2063,8 @@ class NewProjectModelV2 extends React.Component {
     params.singleBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.singleBudget : 0;
     // 是否包含硬件
     params.haveHard = this.state.basicInfo.haveHard;
+    //是否包含子项目
+    params.haveChild = this.state.subItem;
     this.operateCreatProject(params, type);
   };
 
@@ -3056,6 +3071,8 @@ class NewProjectModelV2 extends React.Component {
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                   label: basicInfo.labelTxt,
+                                  //是否包含子项目
+                                  haveChild: Number(this.state.subItem),
                                   queryType: "ALL"
                                 })
                               }}
@@ -3127,6 +3144,8 @@ class NewProjectModelV2 extends React.Component {
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(this.state.subItem),
                                     queryType: "ALL"
                                   });
                                 }}
@@ -3293,6 +3312,8 @@ class NewProjectModelV2 extends React.Component {
                                       biddingMethod: e,
                                       budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
+                                      //是否包含子项目
+                                      haveChild: Number(this.state.subItem),
                                       queryType: "ALL"
                                     });
                                   }}
@@ -3525,6 +3546,8 @@ class NewProjectModelV2 extends React.Component {
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: basicInfo.labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(this.state.subItem),
                                     queryType: "ONLYLX"
                                   });
                                 }
@@ -3593,6 +3616,8 @@ class NewProjectModelV2 extends React.Component {
                                   biddingMethod: basicInfo.biddingMethod,
                                   budget: 0,
                                   label: basicInfo.labelTxt,
+                                  //是否包含子项目
+                                  haveChild: Number(this.state.subItem),
                                   queryType: "ALL"
                                 });
                               }}>
@@ -3737,6 +3762,8 @@ class NewProjectModelV2 extends React.Component {
                                     biddingMethod: this.state.basicInfo.biddingMethod,
                                     budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: this.state.basicInfo.labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(this.state.subItem),
                                     queryType: "ONLYLX"
                                   });
                                 }
@@ -3825,6 +3852,8 @@ class NewProjectModelV2 extends React.Component {
                                     biddingMethod: this.state.basicInfo.biddingMethod,
                                     budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: this.state.basicInfo.labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(this.state.subItem),
                                     queryType: "ONLYLX"
                                   });
                                 }
@@ -3910,6 +3939,8 @@ class NewProjectModelV2 extends React.Component {
                                     biddingMethod: this.state.basicInfo.biddingMethod,
                                     budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: this.state.basicInfo.labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(this.state.subItem),
                                     queryType: "ONLYLX"
                                   });
                                 }
@@ -4191,22 +4222,25 @@ class NewProjectModelV2 extends React.Component {
                                               {e.swlxmc === "new" && (
                                                 <div style={{ width: '100%' }}>
                                                   <Select showSearch
-                                                    ref={this[`${index}inputRef${i}`]}
-                                                    filterOption={(input, option) =>
-                                                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                    }
+                                                          ref={this[`${index}inputRef${i}`]}
+                                                          filterOption={(input, option) =>
+                                                            option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                          }
                                                     // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                    onChange={(e) => {
-                                                      // //console.log("eeee-cc",e)
-                                                      this.setState({ inputValue: e })
-                                                    }}
+                                                    // onChange={(e) => {
+                                                    //   // //console.log("eeee-cc",e)
+                                                    //   this.setState({ inputValue: e })
+                                                    // }}
                                                     //milePostInfo[index].matterInfos[i].length
-                                                    onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                    style={{
-                                                      width: '120px',
-                                                      marginTop: '6px',
-                                                      marginLeft: '6px'
-                                                    }}>
+                                                          onChange={e => {
+                                                            this.setState({inputValue: e})
+                                                            this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)
+                                                          }}
+                                                          style={{
+                                                            width: '120px',
+                                                            marginTop: '6px',
+                                                            marginLeft: '6px'
+                                                          }}>
                                                     {
                                                       swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
                                                         // if (mi.swlx === e.swlxmc) {
@@ -4271,8 +4305,8 @@ class NewProjectModelV2 extends React.Component {
                                                               {
                                                                 <span
                                                                   onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                                  {/* <Icon type="close" className="icon" /> */}
-                                                                  <i className='icon-font icon-close' style={{ fontSize: 14, color: 'fafafb', marginLeft: 6 }}/>
+                                                                   <Icon type="close" className="icon"/>
+                                                                  {/*<i className='icon-font icon-close' style={{ fontSize: 14, color: 'fafafb', marginLeft: 6 }}/>*/}
                                                                 </span>
                                                               }
                                                             </React.Fragment>
@@ -4546,22 +4580,25 @@ class NewProjectModelV2 extends React.Component {
                                                 e.swlxmc === "new" && (
                                                   <div style={{ width: '100%' }}>
                                                     <Select showSearch
-                                                      ref={this[`${index}inputRef${i}`]}
-                                                      filterOption={(input, option) =>
-                                                        option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                                                      }
+                                                            ref={this[`${index}inputRef${i}`]}
+                                                            filterOption={(input, option) =>
+                                                              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                                                            }
                                                       // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                      onChange={(e) => {
-                                                        // //console.log("eeee-cc",e)
-                                                        this.setState({ inputValue: e })
-                                                      }}
+                                                      // onChange={(e) => {
+                                                      //   // //console.log("eeee-cc",e)
+                                                      //   this.setState({ inputValue: e })
+                                                      // }}
                                                       //milePostInfo[index].matterInfos[i].length
-                                                      onBlur={e => this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)}
-                                                      style={{
-                                                        width: '120px',
-                                                        marginTop: '6px',
-                                                        marginLeft: '6px'
-                                                      }}>
+                                                            onChange={e => {
+                                                              this.setState({inputValue: e})
+                                                              this.addSwlxMx(e, index, i, `${milePostInfo[index].matterInfos[i].sxlb.length}`)
+                                                            }}
+                                                            style={{
+                                                              width: '120px',
+                                                              marginTop: '6px',
+                                                              marginLeft: '6px'
+                                                            }}>
                                                       {
                                                         swlxarr.length > 0 && swlxarr.map((mi, mi_index) => {
                                                           // if (mi.swlx === e.swlxmc) {
@@ -4626,8 +4663,8 @@ class NewProjectModelV2 extends React.Component {
                                                               {
                                                                 <span
                                                                   onClick={() => this.removeMilePostInfoItem(index, i, sx_index)}>
-                                                                  {/* <Icon type="close" className="icon" /> */}
-                                                                  <i className='iconfont icon-close' style={{ fontSize: 12, color: 'fafafb', marginLeft: 6 }}/>
+                                                                   {/*<Icon type="close" className="icon" />*/}
+                                                                  <i className='icon iconfont icon-close'/>
                                                                 </span>
                                                               }
                                                             </React.Fragment>
@@ -4793,6 +4830,7 @@ class NewProjectModelV2 extends React.Component {
                     </div>
                     <div className="job" style={{margin: '0 0 0 16px'}}>
                       {
+                        //项目经理
                         staffJobList.length > 0 && staffJobList.map((item, index) => {
                           //console.log("staffJobList", staffJobList)
                           if (item.ibm === '10') {
@@ -4891,25 +4929,33 @@ class NewProjectModelV2 extends React.Component {
                                       let jobStaffName = this.state.staffInfo.jobStaffName;
                                       let newJobStaffName = [];
                                       let newJobStaff = []
-                                      //console.log("eeeee", e)
                                       e.map(i => {
                                         if (!isNaN(Number(i))) {
                                           const name = this.state.staffList.filter(item => item.id === i)[0]?.name + '(' + this.state.staffList.filter(item => item.id === i)[0]?.orgName + ')'
-                                          if(!newJobStaffName.includes(name)){
-                                            newJobStaffName.push(name);
-                                          }else{
-                                            message.warn("已存在该成员,请勿重复添加！")
-                                            return;
+                                          const gw = this.state.staffList.filter(item => item.id === i)[0]?.gw
+                                          if (!gw.includes("总经理助理")) {
+                                            message.warn("请选择总经理助理以上人员！")
+                                          } else {
+                                            if (!newJobStaffName.includes(name)) {
+                                              newJobStaffName.push(name);
+                                            } else {
+                                              message.warn("已存在该成员,请勿重复添加！")
+                                              return;
+                                            }
+                                            newJobStaff.push(i)
                                           }
-                                          newJobStaff.push(i)
                                         } else {
                                           newJobStaffName.push(i)
                                           const id = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.id
-                                          if(!newJobStaff.includes(id)){
-                                            newJobStaff.push(id);
-                                          }else{
-                                            message.warn("已存在该成员,请勿重复添加！")
-                                            return;
+                                          const gw = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.gw
+                                          if (!gw.includes("总经理助理")) {
+                                            message.warn("请选择总经理助理以上人员！")
+                                          } else {
+                                            if (!newJobStaff.includes(id)) {
+                                              newJobStaff.push(id);
+                                            } else {
+                                              message.warn("已存在该成员,请勿重复添加！")
+                                            }
                                           }
                                         }
                                       })
@@ -4924,9 +4970,9 @@ class NewProjectModelV2 extends React.Component {
                                         }
                                       });
                                     }}
-                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
+                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
                                     mode="multiple"
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
                                   >
                                     {
                                       searchStaffList.map((item, index) => {

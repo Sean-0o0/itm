@@ -344,53 +344,76 @@ class SubItemInfo extends Component {
       const {code = -1, xmxx} = result;
       if (code > 0) {
         let data = JSON.parse(xmxx);
-        console.log("datadata", data)
         let arr = [];
-        for (let i = 0; i < data.length; i++) {
-          let SUBGLYSTXT = '';
-          let SUBZYS = 0;
-          let SUBKZXYS = 0;
-          let SUBSYYS = 0;
-          this.props.budgetProjectList.forEach(item => {
-            item?.children?.forEach(ite => {
-              if (String(data[i]?.GLYSXM) === 0) {
-                SUBGLYSTXT = '备用预算'
-                SUBZYS = 0;
-                SUBKZXYS = ite.ysKZX;
-                SUBSYYS = 0;
-              }
-              ite?.children?.forEach(ie => {
-                if (String(data[i]?.GLYSXM) === ie.ysID) {
-                  SUBGLYSTXT = ie.ysName;
-                  SUBZYS = Number(ie.ysZJE);
-                  SUBKZXYS = Number(ie.ysKZX);
-                  SUBSYYS = Number(ie.ysKGL);
+        if (data.length > 0) {
+          for (let i = 0; i < data.length; i++) {
+            let SUBGLYSTXT = '';
+            let SUBZYS = 0;
+            let SUBKZXYS = 0;
+            let SUBSYYS = 0;
+            this.props.budgetProjectList.forEach(item => {
+              item?.children?.forEach(ite => {
+                if (String(data[i]?.GLYSXM) === 0) {
+                  SUBGLYSTXT = '备用预算'
+                  SUBZYS = 0;
+                  SUBKZXYS = ite.ysKZX;
+                  SUBSYYS = 0;
                 }
+                ite?.children?.forEach(ie => {
+                  if (String(data[i]?.GLYSXM) === ie.ysID) {
+                    SUBGLYSTXT = ie.ysName;
+                    SUBZYS = Number(ie.ysZJE);
+                    SUBKZXYS = Number(ie.ysKZX);
+                    SUBSYYS = Number(ie.ysKGL);
+                  }
+                })
               })
             })
-          })
+            arr.push({
+              ID: String(data[i]?.ID),
+              ['SUBXMMC' + data[i]?.ID]: data[i]?.XMMC,
+              ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL) === "-1" ? null : String(data[i]?.XMJL),
+              ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX ? data[i].XMLX : "",
+              // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
+              ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';') ? data[i]?.BM?.split(';') : null,
+              ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS ? data[i]?.ZBFS : "",
+              ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
+              ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
+              ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
+              ['SUBYSJE' + data[i]?.ID]: data[i]?.YSJE ? data[i]?.YSJE : 0,
+              ['SUBRJYSJE' + data[i]?.ID]: data[i]?.RJYSJE ? data[i]?.RJYSJE : 0,
+              ['SUBSFBHYJ' + data[i]?.ID]: String(data[i]?.SFBHYJ ? data[i]?.SFBHYJ : '2'),
+              ['SUBSFYJRW' + data[i]?.ID]: String(data[i]?.SFYJRW ? data[i]?.SFYJRW : '1'),
+              ['SUBKJCGJE' + data[i]?.ID]: data[i]?.KJCGJE ? data[i]?.KJCGJE : 0,
+              ['SUBDDCGJE' + data[i]?.ID]: data[i]?.DDCGJE ? data[i]?.DDCGJE : 0,
+              ['SUBZYS' + data[i]?.ID]: SUBZYS,
+              ['SUBKZXYS' + data[i]?.ID]: SUBKZXYS,
+              ['SUBSYYS' + data[i]?.ID]: SUBSYYS,
+              ['SUBYSJE-TOTAL' + data[i]?.ID]: Number(data[i]?.RJYSJE) + Number(data[i]?.KJCGJE) + Number(data[i]?.DDCGJE)
+            });
+          }
+        } else {
           arr.push({
-            ID: String(data[i]?.ID),
-            ['SUBXMMC' + data[i]?.ID]: data[i]?.XMMC,
-            ['SUBXMJL' + data[i]?.ID]: String(data[i]?.XMJL) === "-1" ? null : String(data[i]?.XMJL),
-            ['SUBXMLX' + data[i]?.ID]: data[i]?.XMLX ? data[i].XMLX : "",
-            // ['SUBGLRJ' + data[i]?.ID]: data[i]?.JXMC,
-            ['SUBYYBM' + data[i]?.ID]: data[i]?.BM?.split(';') ? data[i]?.BM?.split(';') : null,
-            ['SUBCGFS' + data[i]?.ID]: data[i]?.ZBFS ? data[i]?.ZBFS : "",
-            ['SUBGLYS' + data[i]?.ID]: String(data[i]?.GLYSXM),
-            ['SUBGLYSTXT' + data[i]?.ID]: SUBGLYSTXT,
-            ['GLYSLX' + data[i]?.ID]: data[i]?.YSLX,
-            ['SUBYSJE' + data[i]?.ID]: data[i]?.YSJE ? data[i]?.YSJE : 0,
-            ['SUBRJYSJE' + data[i]?.ID]: data[i]?.RJYSJE ? data[i]?.RJYSJE : 0,
-            ['SUBSFBHYJ' + data[i]?.ID]: String(data[i]?.SFBHYJ ? data[i]?.SFBHYJ : '2'),
-            ['SUBSFYJRW' + data[i]?.ID]: String(data[i]?.SFYJRW ? data[i]?.SFYJRW : '1'),
-            ['SUBKJCGJE' + data[i]?.ID]: data[i]?.KJCGJE ? data[i]?.KJCGJE : 0,
-            ['SUBDDCGJE' + data[i]?.ID]: data[i]?.DDCGJE ? data[i]?.DDCGJE : 0,
-            ['SUBZYS' + data[i]?.ID]: SUBZYS,
-            ['SUBKZXYS' + data[i]?.ID]: SUBKZXYS,
-            ['SUBSYYS' + data[i]?.ID]: SUBSYYS,
-            ['SUBYSJE-TOTAL' + data[i]?.ID]: Number(data[i]?.RJYSJE) + Number(data[i]?.KJCGJE) + Number(data[i]?.DDCGJE)
-          });
+            ID: Date.now(),
+            ['SUBXMMC' + Date.now()]: '',
+            ['SUBXMJL' + Date.now()]: '',
+            ['SUBXMLX' + Date.now()]: '',
+            // ['SUBGLRJ' + Date.now()]: '',
+            ['SUBYYBM' + Date.now()]: [],
+            ['SUBCGFS' + Date.now()]: '',
+            ['SUBGLYS' + Date.now()]: '',
+            ['GLYSLX' + Date.now()]: '',
+            ['SUBYSJE' + Date.now()]: '',
+            ['SUBYSJE-TOTAL' + Date.now()]: '0',
+            ['SUBRJYSJE' + Date.now()]: '0',
+            ['SUBSFBHYJ' + Date.now()]: '2',
+            ['SUBSFYJRW' + Date.now()]: '1',
+            ['SUBKJCGJE' + Date.now()]: '0',
+            ['SUBDDCGJE' + Date.now()]: '0',
+            ['SUBZYS' + Date.now()]: '0',
+            ['SUBKZXYS' + Date.now()]: '0',
+            ['SUBSYYS' + Date.now()]: '0',
+          })
         }
         this.setState({
           tableData: arr,

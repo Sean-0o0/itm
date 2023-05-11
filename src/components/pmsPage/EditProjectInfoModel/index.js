@@ -426,18 +426,26 @@ class EditProjectInfoModel extends React.Component {
     budgetInfo: {
       //项目软件预算
       softBudget: 0,
-      //项目预算初始值
+      //项目软件预算初始值
       softBudgetinit: 0,
       //框架预算
       frameBudget: 0,
       //单独采购预算
       singleBudget: 0,
+      //单独采购预算初始值
+      singleBudgetinit: 0,
       year: moment(new Date()), // 年份
       budgetProjectId: '', // 预算项目id
       budgetProjectName: '', // 预算项目名称
       totalBudget: 0, // 总预算(元)
       relativeBudget: 0, // 可关联总预算(元)
       projectBudget: 0, // 本项目预算
+      //编辑页面进来的初始预算项目
+      budgetProjectIdinit: '',
+      //编辑页面进来的初始剩余预算
+      relativeBudgetinit: 0,
+      //编辑页面进来的初始项目预算
+      projectBudgetinit: 0,
       budgetType: '',
     },
     staffList: [], // 人员信息列表
@@ -463,6 +471,8 @@ class EditProjectInfoModel extends React.Component {
     },
     //是否包含子项目信息
     subItem: 2,
+    //是否包含子项目信息初始值
+    subIteminit: 0,
     subItemRecord: [],
     //招采信息
     purchaseInfo: {
@@ -694,6 +704,8 @@ class EditProjectInfoModel extends React.Component {
       frameBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.frameBudget : 0,
       //单独采购预算
       singleBudget: this.state.projectTypeRYJFlag ? this.state.budgetInfo.singleBudget : 0,
+      //是否包含子项目
+      haveChild: Number(this.state.subItem),
     });
     //招采信息
     // await this.firstTimeQueryPaymentAccountList();
@@ -1424,6 +1436,7 @@ class EditProjectInfoModel extends React.Component {
           this.setState({
             haveType,
             subItem: result.haveChild,
+            subIteminit: result.haveChild,
             ysKZX: ysKZX,
             searchStaffList: searchStaffList,
             projectTypeZYFlag: flag,
@@ -1447,12 +1460,19 @@ class EditProjectInfoModel extends React.Component {
               frameBudget: Number(result.frameBudget),
               //单独采购预算
               singleBudget: Number(result.singleBudget),
+              singleBudgetinit: Number(result.singleBudget),
               year: moment(moment(result.year, 'YYYY').format()),
               budgetProjectId: result.budgetProject,
+              //编辑页面进来的初始预算项目
+              budgetProjectIdinit: result.budgetProject,
               budgetProjectName,
               totalBudget: totalBudget,
               relativeBudget: relativeBudget,
+              //编辑页面进来的初始剩余预算
+              relativeBudgetinit: relativeBudget,
               projectBudget: Number(result.projectBudget),
+              //编辑页面进来的初始项目预算
+              projectBudgetinit: Number(result.projectBudget),
               budgetType: result.budgetType,
             },
             staffInfo: {
@@ -1724,24 +1744,30 @@ class EditProjectInfoModel extends React.Component {
         ? jobStaffName[Number(focusJob) - 1]
         : [];
       checkedStaffKey.forEach(item => {
+        const gw = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.gw
         const id = item.substring(1, item.length);
-        if (!arr.includes(id)) {
-          arr.push(id);
-        } else {
-          message.warn('已存在该成员,请勿重复添加！');
+        if (!gw.includes("总经理助理")) {
+          message.warn("请选择总经理助理以上人员！")
           return;
-        }
-        const itemname =
-          this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name +
-          '(' +
-          this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName +
-          ')';
-        console.log('itemname', itemname);
-        if (!jobStaffNameArr.includes(itemname)) {
-          jobStaffNameArr.push(itemname);
         } else {
-          message.warn('已存在该成员,请勿重复添加！');
-          return;
+          if (!arr.includes(id)) {
+            arr.push(id);
+          } else {
+            message.warn('已存在该成员,请勿重复添加！');
+            return;
+          }
+          const itemname =
+            this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name +
+            '(' +
+            this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName +
+            ')';
+          console.log('itemname', itemname);
+          if (!jobStaffNameArr.includes(itemname)) {
+            jobStaffNameArr.push(itemname);
+          } else {
+            message.warn('已存在该成员,请勿重复添加！');
+            return;
+          }
         }
         // 存到对应下拉数据中
         this.state.staffList.forEach(e => {
@@ -2246,7 +2272,18 @@ class EditProjectInfoModel extends React.Component {
     const timeList = milePostInfo.filter(
       item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime,
     );
-    if (budgetInfo.projectBudget > budgetInfo.relativeBudget) {
+    //编辑页面进来的初始预算项目
+    //budgetProjectIdinit: '',
+    //编辑页面进来的初始剩余预算
+    //relativeBudgetinit: 0,
+    //编辑页面进来的初始项目预算
+    //projectBudgetinit: 0,
+    //编辑页面进来  剩余预算是减掉编辑页面进来的初始项目预算金额的 所以判断的时候需要加上初始项目预算金额
+    //budgetInfo.projectBudget > budgetInfo.relativeBudget + budgetInfo.projectBudgetinit
+    //如果更换了预算项目 计算公式就是 budgetInfo.projectBudget > budgetInfo.relativeBudget
+    if (Number(budgetInfo.projectBudget) > Number(budgetInfo.relativeBudget)
+      && Number(budgetInfo.budgetProjectId) !== Number(budgetInfo.budgetProjectIdinit)
+      && String(this.state.basicInfo.haveHard) === "2") {
       confirm({
         okText: '确认',
         cancelText: '取消',
@@ -2255,7 +2292,50 @@ class EditProjectInfoModel extends React.Component {
         onOk() {
           _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
         },
-        onCancel() {},
+        onCancel() {
+        },
+      });
+    } else if (Number(budgetInfo.projectBudget) > Number(budgetInfo.relativeBudget) + Number(budgetInfo.projectBudgetinit)
+      && Number(budgetInfo.budgetProjectId) === Number(budgetInfo.budgetProjectIdinit)
+      && String(this.state.basicInfo.haveHard) === "2") {
+      confirm({
+        okText: '确认',
+        cancelText: '取消',
+        title: '提示',
+        content: '超过当前预算项目的预算，是否确认？',
+        onOk() {
+          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+        },
+        onCancel() {
+        },
+      });
+    } else if (Number(budgetInfo.softBudget) + Number(budgetInfo.singleBudget) > Number(budgetInfo.relativeBudget) + Number(budgetInfo.softBudgetinit) + Number(budgetInfo.singleBudgetinit)
+      && Number(budgetInfo.budgetProjectId) !== Number(budgetInfo.budgetProjectIdinit)
+      && String(this.state.basicInfo.haveHard) === "1") {
+      confirm({
+        okText: '确认',
+        cancelText: '取消',
+        title: '提示',
+        content: '超过当前预算项目的预算，是否确认？',
+        onOk() {
+          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+        },
+        onCancel() {
+        },
+      });
+    } else if (Number(budgetInfo.softBudget) + Number(budgetInfo.singleBudget) > Number(budgetInfo.relativeBudget) + Number(budgetInfo.softBudgetinit) + Number(budgetInfo.singleBudgetinit)
+      && Number(budgetInfo.budgetProjectId) === Number(budgetInfo.budgetProjectIdinit)
+      && String(this.state.basicInfo.haveHard) === "1") {
+      confirm({
+        okText: '确认',
+        cancelText: '取消',
+        title: '提示',
+        content: '超过当前预算项目的预算，是否确认？',
+        onOk() {
+          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+        },
+        onCancel() {
+        },
       });
     } else {
       confirm({
@@ -2362,6 +2442,8 @@ class EditProjectInfoModel extends React.Component {
     params.singleBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.singleBudget : 0;
     // 是否包含硬件
     params.haveHard = this.state.basicInfo.haveHard;
+    //是否包含子项目
+    params.haveChild = this.state.subItem;
     this.operateCreatProject(params, type);
   };
 
@@ -3620,7 +3702,6 @@ class EditProjectInfoModel extends React.Component {
   //子项目信息保存接口
   // 查询其他项目信息
   operateInsertSubProjects = (param, projectId) => {
-    const {subItemRecord, budgetInfo = {}} = this.state;
     console.log("-----------开始保存子项目信息-----------")
     const params = {
       parentId: projectId,
@@ -3731,6 +3812,8 @@ class EditProjectInfoModel extends React.Component {
       isDownLabel = false,
       //是否包含子项目信息
       subItem = 2,
+      //是否包含子项目信息初始值
+      subIteminit = 0,
       //子项目信息
       subItemRecord = [],
       //是否是从完善页面进来的子项目
@@ -4164,6 +4247,8 @@ class EditProjectInfoModel extends React.Component {
                                     biddingMethod: basicInfo.biddingMethod,
                                     budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                     label: basicInfo.labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(this.state.subItem),
                                     queryType: 'ALL',
                                   });
                                 }}
@@ -4234,6 +4319,8 @@ class EditProjectInfoModel extends React.Component {
                                       biddingMethod: basicInfo.biddingMethod,
                                       budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: labelTxt,
+                                      //是否包含子项目
+                                      haveChild: Number(this.state.subItem),
                                       queryType: 'ALL',
                                     });
                                   }}
@@ -4349,6 +4436,8 @@ class EditProjectInfoModel extends React.Component {
                                       biddingMethod: e,
                                       budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
+                                      //是否包含子项目
+                                      haveChild: Number(this.state.subItem),
                                       queryType: 'ALL',
                                     });
                                   }}
@@ -4708,6 +4797,8 @@ class EditProjectInfoModel extends React.Component {
                                       biddingMethod: basicInfo.biddingMethod,
                                       budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: basicInfo.labelTxt,
+                                      //是否包含子项目
+                                      haveChild: Number(this.state.subItem),
                                       queryType: 'ONLYLX',
                                     });
                                   }
@@ -4785,6 +4876,8 @@ class EditProjectInfoModel extends React.Component {
                                                  biddingMethod: basicInfo.biddingMethod,
                                                  budget: 0,
                                                  label: basicInfo.labelTxt,
+                                                 //是否包含子项目
+                                                 haveChild: Number(this.state.subItem),
                                                  queryType: "ALL"
                                                });
                                              }}>
@@ -4934,6 +5027,8 @@ class EditProjectInfoModel extends React.Component {
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
                                                    budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
+                                                   //是否包含子项目
+                                                   haveChild: Number(this.state.subItem),
                                                    queryType: "ONLYLX"
                                                  });
                                                }
@@ -5024,6 +5119,8 @@ class EditProjectInfoModel extends React.Component {
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
                                                    budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
+                                                   //是否包含子项目
+                                                   haveChild: Number(this.state.subItem),
                                                    queryType: "ONLYLX"
                                                  });
                                                }
@@ -5110,6 +5207,8 @@ class EditProjectInfoModel extends React.Component {
                                                    biddingMethod: this.state.basicInfo.biddingMethod,
                                                    budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                                    label: this.state.basicInfo.labelTxt,
+                                                   //是否包含子项目
+                                                   haveChild: Number(this.state.subItem),
                                                    queryType: "ONLYLX"
                                                  });
                                                }
@@ -5138,10 +5237,11 @@ class EditProjectInfoModel extends React.Component {
                             {getFieldDecorator('subItem', {
                               initialValue: Number(subItem)
                             })(
-                              <Radio.Group defaultValue={Number(subItem)} onChange={e => {
-                                console.log("eeeee", e.target.value);
-                                this.setState({subItem: String(e.target.value)});
-                              }}>
+                              <Radio.Group defaultValue={Number(subItem)} disabled={Number(subIteminit) === 1}
+                                           onChange={e => {
+                                             console.log("eeeee", e.target.value);
+                                             this.setState({subItem: String(e.target.value)});
+                                           }}>
                                 <Radio value={1}>是</Radio>
                                 <Radio value={2}>否</Radio>
                               </Radio.Group>
@@ -5452,18 +5552,21 @@ class EditProjectInfoModel extends React.Component {
                                                       .indexOf(input.toLowerCase()) >= 0
                                                   }
                                                   // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                  onChange={e => {
-                                                    // ////console.log("eeee-cc",e)
-                                                    this.setState({ inputValue: e });
-                                                  }}
+                                                  // onChange={e => {
+                                                  //   // ////console.log("eeee-cc",e)
+                                                  //   this.setState({ inputValue: e });
+                                                  // }}
                                                   //milePostInfo[index].matterInfos[i].length
-                                                  onBlur={e =>
+                                                  onChange={e => {
+                                                    this.setState({inputValue: e});
                                                     this.addSwlxMx(
                                                       e,
                                                       index,
                                                       i,
                                                       `${milePostInfo[index].matterInfos[i].sxlb.length}`,
                                                     )
+                                                  }
+
                                                   }
                                                   style={{
                                                     width: '120px',
@@ -5964,19 +6067,20 @@ class EditProjectInfoModel extends React.Component {
                                                       .indexOf(input.toLowerCase()) >= 0
                                                   }
                                                   // onChange={e => this.selectMilePostInfoItem(e, index, i, sx_index)}
-                                                  onChange={e => {
-                                                    // ////console.log("eeee-cc",e)
-                                                    this.setState({ inputValue: e });
-                                                  }}
+                                                  // onChange={e => {
+                                                  //   // ////console.log("eeee-cc",e)
+                                                  //   this.setState({ inputValue: e });
+                                                  // }}
                                                   //milePostInfo[index].matterInfos[i].length
-                                                  onBlur={e =>
+                                                  onChange={e => {
+                                                    this.setState({inputValue: e});
                                                     this.addSwlxMx(
                                                       e,
                                                       index,
                                                       i,
                                                       `${milePostInfo[index].matterInfos[i].sxlb.length}`,
                                                     )
-                                                  }
+                                                  }}
                                                   style={{
                                                     width: '120px',
                                                     marginTop: '6px',
@@ -6393,11 +6497,11 @@ class EditProjectInfoModel extends React.Component {
                                   <Icon
                                     onClick={this.removeJob.bind(this, item.ibm)}
                                     type="close"
-                                    style={{ paddingRight: '1rem', cursor: 'pointer' }}
+                                    style={{paddingRight: '1rem', cursor: 'pointer'}}
                                   />
                                   <span>{item.note}：</span>
                                 </div>
-                                <div style={{ width: '65%' }}>
+                                <div style={{width: '65%'}}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={
@@ -6405,7 +6509,7 @@ class EditProjectInfoModel extends React.Component {
                                         ? jobStaffName[Number(item.ibm) - 1]
                                         : []
                                     }
-                                    onBlur={() => this.setState({ height: 0 })}
+                                    onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() =>
                                       this.setState({
@@ -6422,7 +6526,7 @@ class EditProjectInfoModel extends React.Component {
                                       let jobStaffName = this.state.staffInfo.jobStaffName;
                                       let newJobStaffName = [];
                                       let newJobStaff = [];
-                                      console.log('eeeee', e);
+                                      // console.log('eeeee', e);
                                       e.map(i => {
                                         if (!isNaN(Number(i))) {
                                           const name =
@@ -6432,27 +6536,37 @@ class EditProjectInfoModel extends React.Component {
                                             this.state.staffList.filter(item => item.id === i)[0]
                                               ?.orgName +
                                             ')';
-                                          if (!newJobStaffName.includes(name)) {
-                                            newJobStaffName.push(name);
+                                          const gw = this.state.staffList.filter(item => item.id === i)[0]?.gw
+                                          if (!gw.includes("总经理助理")) {
+                                            message.warn("请选择总经理助理以上人员！")
                                           } else {
-                                            message.warn('已存在该成员,请勿重复添加！');
-                                            return;
+                                            if (!newJobStaffName.includes(name)) {
+                                              newJobStaffName.push(name);
+                                            } else {
+                                              message.warn('已存在该成员,请勿重复添加！');
+                                              return;
+                                            }
+                                            newJobStaff.push(i);
                                           }
-                                          newJobStaff.push(i);
                                         } else {
                                           newJobStaffName.push(i);
                                           const id = this.state.staffList.filter(
                                             item => item.name === i.split('(')[0],
                                           )[0]?.id;
-                                          if (!newJobStaff.includes(id)) {
-                                            newJobStaff.push(id);
+                                          const gw = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.gw
+                                          if (!gw.includes("总经理助理")) {
+                                            message.warn("请选择总经理助理以上人员！")
                                           } else {
-                                            message.warn('已存在该成员,请勿重复添加！');
-                                            return;
+                                            if (!newJobStaff.includes(id)) {
+                                              newJobStaff.push(id);
+                                            } else {
+                                              message.warn('已存在该成员,请勿重复添加！');
+                                              return;
+                                            }
                                           }
                                         }
                                       });
-                                      console.log('newJobStaffName', newJobStaffName);
+                                      // console.log('newJobStaffName', newJobStaffName);
                                       jobStaffList[Number(item.ibm) - 1] = newJobStaff;
                                       jobStaffName[Number(item.ibm) - 1] = newJobStaffName;
                                       this.setState({
@@ -6464,9 +6578,9 @@ class EditProjectInfoModel extends React.Component {
                                         },
                                       });
                                     }}
-                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
+                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
                                     mode="multiple"
-                                    style={{ width: '100%' }}
+                                    style={{width: '100%'}}
                                   >
                                     {searchStaffList.map((item, index) => {
                                       ////console.log("searchStaffList", searchStaffList)
