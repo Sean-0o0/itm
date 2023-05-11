@@ -95,7 +95,7 @@ export default function OverviewCard(props) {
     <div className="overview-card-box">
       <div className="avatar-card-box">
         <div className="avatar">
-          <img src={overviewInfo?.xb === '男' ? avatarMale : avatarFemale} alt="" />
+          <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
         </div>
         <div className="title">
           <span>{getGreeting()}</span>

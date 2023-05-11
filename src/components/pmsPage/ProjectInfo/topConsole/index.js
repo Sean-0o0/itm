@@ -42,6 +42,8 @@ export default forwardRef(function TopConsole(props, ref) {
     setCurPageSize,
     curPage,
     curPageSize,
+    queryType,
+    setQueryType,
   } = props;
 
   useEffect(() => {
@@ -236,6 +238,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
+    setQueryType('ALL');
     let params = {
       current,
       pageSize,
@@ -458,7 +461,7 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(curPage, curPageSize, prjMnger)}
+          onClick={() => handleSearch(curPage, curPageSize, prjMnger, queryType)}
         >
           查询
         </Button>

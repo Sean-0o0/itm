@@ -28,11 +28,12 @@ export default function TopConsole(props) {
 
   //是否为项目成员或领导
   const isMember = () => {
-    const arr = [];
-    member.forEach(x => {
-      arr.push(x.RYID);
-    });
-    return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
+    // const arr = [];
+    // console.log(prjBasic);
+    // member.forEach(x => {
+    //   arr.push(x.RYID);
+    // });
+    return prjBasic.XMJLID === String(LOGIN_USER_INFO.id) || isLeader;
   };
 
   //监听新建项目弹窗状态

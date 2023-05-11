@@ -12,8 +12,10 @@ export default function ProjectInfo(props) {
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {} } = props;
-  const { prjManager, cxlx = 'ALL' } = params;
+  const { prjManager, cxlx } = params;
+  // const [cxlx, setCxlx] = useState('ALL'); //
   const topConsoleRef = useRef(null);
+  const [queryType, setQueryType] = useState('ALL'); //
 
   //页面恢复，跳转回首页时触发
   // props.cacheLifecycles.didRecover(() => {
@@ -29,13 +31,14 @@ export default function ProjectInfo(props) {
       //无参数
       getTableData({});
     } else {
-      // setTimeout(() => {
+      setTimeout(() => {
       //有参数
       getTableData({ projectManager: prjManager, cxlx });
-      // });
+      setQueryType(cxlx)
+      }, 20);
     }
     return () => {};
-  }, [prjManager, cxlx]);
+  }, [JSON.stringify(params)]);
 
   //获取表格数据
   const getTableData = async ({
@@ -56,10 +59,9 @@ export default function ProjectInfo(props) {
         total: -1,
         queryType: cxlx,
       });
-      console.log("🚀 ~ file: index.js:57 ~ ProjectInfo ~ res:", res)
       if (res?.success) {
         setTableData(p => [...JSON.parse(res.record)]);
-        // console.log(res.totalrows);
+        console.log(res.totalrows);
         setTotal(res.totalrows);
         setTableLoading(false);
       }
@@ -82,6 +84,8 @@ export default function ProjectInfo(props) {
         setCurPageSize={setCurPageSize}
         curPage={curPage}
         curPageSize={curPageSize}
+        queryType={queryType}
+        setQueryType={setQueryType}
       />
       <InfoTable
         tableData={tableData}
@@ -93,6 +97,7 @@ export default function ProjectInfo(props) {
         handleSearch={topConsoleRef?.current?.handleSearch}
         curPage={curPage}
         curPageSize={curPageSize}
+        queryType={queryType}
       />
     </div>
   );
