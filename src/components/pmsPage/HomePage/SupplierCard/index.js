@@ -16,7 +16,10 @@ export default function SupplierCard(props) {
       // console.log('🚀 ~ file: index.js ~ line 11 ~ useEffect ~ supplierData', supplierData);
       const radarChartOption = {
         legend: {
-          data: ['采购金额(万元)', '采购数量'],
+          data: [
+            '采购金额(万元)',
+            // , '采购数量'
+          ],
           bottom: 0,
           icon: 'circle',
           itemWidth: 8,
@@ -25,6 +28,17 @@ export default function SupplierCard(props) {
         tooltip: {
           // trigger: 'axis',
           confine: true,
+          formatter: () => {
+            let txt = '<div>采购金额(万元)</div>';
+            supplierData.item.forEach(x => {
+              txt += `<div>${x.GYSMC}：${x.CGJE}</div>`;
+            });
+            txt += '<br/><div>采购数量</div>';
+            supplierData.item.forEach(x => {
+              txt += `<div>${x.GYSMC}：${x.CGSL}</div>`;
+            });
+            return txt;
+          },
         },
         zlevel: 100,
 
@@ -73,10 +87,10 @@ export default function SupplierCard(props) {
                 value: supplierData?.cgje,
                 name: '采购金额(万元)',
               },
-              {
-                value: supplierData?.cgsl,
-                name: '采购数量',
-              },
+              // {
+              //   value: supplierData?.cgsl,
+              //   name: '采购数量',
+              // },
             ],
           },
         ],

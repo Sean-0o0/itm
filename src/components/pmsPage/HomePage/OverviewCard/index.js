@@ -6,6 +6,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
+import { message } from 'antd';
 
 export default function OverviewCard(props) {
   const { width = '70%', overviewInfo = [], userRole = '', toDoDataNum = 0 } = props;
@@ -129,12 +130,16 @@ export default function OverviewCard(props) {
             img: 'fqxm',
             amount: getAmountFormat(overviewInfo?.fqxm),
             fn: () => {
-              window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
-                JSON.stringify({
-                  prjManager: Number(LOGIN_USER_INFO.id),
-                  cxlx: 'PERSON',
-                }),
-              )}`;
+              if (Number(overviewInfo?.fqxm) === 0) {
+                message.info('暂无发起项目', 1);
+              } else {
+                window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                  JSON.stringify({
+                    prjManager: Number(LOGIN_USER_INFO.id),
+                    cxlx: 'PERSON',
+                  }),
+                )}`;
+              }
             },
           })}
           {getOverviewItem({
@@ -142,12 +147,16 @@ export default function OverviewCard(props) {
             img: 'cyxm',
             amount: getAmountFormat(overviewInfo?.cyxm),
             fn: () => {
-              window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
-                JSON.stringify({
-                  prjManager: Number(LOGIN_USER_INFO.id),
-                  cxlx: 'PARTICIPATE',
-                }),
-              )}`;
+              if (Number(overviewInfo?.cyxm) === 0) {
+                message.info('暂无参与项目', 1);
+              } else {
+                window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                  JSON.stringify({
+                    prjManager: Number(LOGIN_USER_INFO.id),
+                    cxlx: 'PARTICIPATE',
+                  }),
+                )}`;
+              }
             },
           })}
         </div>

@@ -64,6 +64,7 @@ export default function MileStone(props) {
   useEffect(() => {
     if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
       getMileStoneData(false);
+      console.log('里程碑更新了');
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};

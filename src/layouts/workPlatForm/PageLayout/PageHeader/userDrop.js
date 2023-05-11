@@ -21,7 +21,7 @@ import OtherUser from './OtherUser';
 import { FetchAes } from '../../../../services/tool';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import {  QueryUserRole } from '../../../../services/pmsServices/index';
+import { QueryUserRole } from '../../../../services/pmsServices/index';
 
 const { confirm } = Modal;
 
@@ -89,22 +89,22 @@ export default class UserDrop extends React.Component {
 
   //获取用户性别
   getUserRole = () => {
-    QueryUserRole({
-      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
-    })
-      .then(res => {
-        if (res?.code === 1) {
-          this.setState({
-            gender: res.gender,
-          });
-        }
+    JSON.parse(sessionStorage.getItem('user')).id &&
+      QueryUserRole({
+        userId: String(JSON.parse(sessionStorage.getItem('user')).id),
       })
-      .catch(e => {
-        console.error('QueryUserRole', e);
-        message.error('用户角色信息查询失败', 1);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            this.setState({
+              gender: res.gender,
+            });
+          }
+        })
+        .catch(e => {
+          console.error('UserDrop-QueryUserRole', e);
+          message.error('用户角色信息查询失败', 1);
+        });
   };
-      
 
   getAES = () => {
     // const userId = localStorage.getItem('firstUserID') || '';
@@ -245,14 +245,11 @@ export default class UserDrop extends React.Component {
         }}
         style={{ display: 'flex', width: '100%', height: '100%', alignItems: 'center' }}
       >
-          <img
-            style={{  width: 24,
-              height: 24,
-              borderRadius: '50%',
-              overflow: 'hidden', }}
-            src={gender === '' ? avatorPng : gender === '男' ? avatarMale : avatarFemale}
-            alt=""
-          />
+        <img
+          style={{ width: 24, height: 24, borderRadius: '50%', overflow: 'hidden' }}
+          src={gender === '' ? avatorPng : gender === '男' ? avatarMale : avatarFemale}
+          alt=""
+        />
         <span style={{ paddingLeft: '8px' }}>
           <span className="name">{name}</span>
           <i className="iconfont icon-fill-down" />

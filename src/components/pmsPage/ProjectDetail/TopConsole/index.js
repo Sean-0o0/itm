@@ -1,23 +1,23 @@
-import {Breadcrumb, Button, message, Modal, Popover} from 'antd';
-import React, {useEffect, useState} from 'react';
-import {Link} from 'react-router-dom';
+import { Breadcrumb, Button, message, Modal, Popover } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
-import {EncryptBase64} from '../../../Common/Encrypt';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import {CreateOperateHyperLink} from '../../../../services/pmsServices';
-import NewProjectModelV2 from "../../../../pages/workPlatForm/singlePage/NewProjectModelV2";
-import EditProjectInfoModel from "../../EditProjectInfoModel";
+import { CreateOperateHyperLink } from '../../../../services/pmsServices';
+import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
+import EditProjectInfoModel from '../../EditProjectInfoModel';
 
-const {Item} = Breadcrumb;
+const { Item } = Breadcrumb;
 
 export default function TopConsole(props) {
-  const {routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader} = props;
+  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
-  const {prjBasic = {}, member = []} = prjData;
+  const { prjBasic = {}, member = [] } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
@@ -42,14 +42,20 @@ export default function TopConsole(props) {
     }
     if (typeof event.data !== 'string' && event.data.operate === 'success') {
       closeFileAddModal();
-      //刷新数据
-      getPrjDtlData();
+
       // message.success('保存成功');
     }
   };
 
   const closeFileAddModal = () => {
     setFileAddVisible(false);
+  };
+
+  //新建项目成功后，刷新数据
+  const handleFileAddSuccess = () => {
+    closeFileAddModal();
+    //刷新数据
+    getPrjDtlData();
   };
 
   //获取项目标签
@@ -150,10 +156,10 @@ export default function TopConsole(props) {
   //编辑项目弹窗
   const handleEditPrjInfo = () => {
     setFileAddVisible(true);
-    let p = {xmid, type: true, projectStatus: 'SAVE'};
+    let p = { xmid, type: true, projectStatus: 'SAVE' };
     prjBasic.FXMMC && (p.subItemFlag = true);
     setSrc_fileAdd(
-      p
+      p,
       // `/#/single/pms/EditProject/${EncryptBase64(JSON.stringify(p))}`
     );
   };
@@ -247,8 +253,8 @@ export default function TopConsole(props) {
           // height={'700px'}
           maskClosable={false}
           zIndex={100}
-          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
-          style={{top: '10px'}}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
           visible={fileAddVisible}
           okText="保存"
           bodyStyle={{
@@ -274,7 +280,7 @@ export default function TopConsole(props) {
         >
           <EditProjectInfoModel
             closeModel={closeFileAddModal}
-            successCallBack={closeFileAddModal}
+            successCallBack={handleFileAddSuccess}
             xmid={src_fileAdd.xmid}
             type={src_fileAdd.type}
             projectStatus={src_fileAdd.projectStatus}

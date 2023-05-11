@@ -23,8 +23,10 @@ export default function ProjectInfo(props) {
       //无参数
       getTableData({});
     } else {
-      //有参数
-      getTableData({ projectManager: prjManager, cxlx });
+      setTimeout(() => {
+        //有参数
+        getTableData({ projectManager: prjManager, cxlx });
+      });
     }
 
     return () => {};
@@ -51,6 +53,7 @@ export default function ProjectInfo(props) {
       .then(res => {
         if (res?.success) {
           setTableData(p => [...JSON.parse(res.record)]);
+          console.log(res.totalrows);
           setTotal(res.totalrows);
           setTableLoading(false);
         }
