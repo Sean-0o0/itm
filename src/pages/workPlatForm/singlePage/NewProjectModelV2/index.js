@@ -1696,10 +1696,7 @@ class NewProjectModelV2 extends React.Component {
         basicflag = false;
       }
     } else {
-      if (type === 1) {
-        message.warn('项目预算信息-预算金额未填写完整！');
-        return;
-      }
+      basicflag = false;
     }
     //非自研项目还需要校验采购方式
     if (!projectTypeZYFlag) {
@@ -1956,19 +1953,17 @@ class NewProjectModelV2 extends React.Component {
           title: '提示',
           content: '超过当前预算项目的预算，是否确认？',
           onOk() {
-            _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-          },
-          onCancel() {
-          },
-        });
-      } else {
-        confirm({
-          okText: '确认',
-          cancelText: '取消',
-          title: '提示',
-          content: '确认完成？',
-          onOk() {
-            _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+            confirm({
+              okText: '确认',
+              cancelText: '取消',
+              title: '提示',
+              content: '确认完成？',
+              onOk() {
+                _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+              },
+              onCancel() {
+              },
+            });
           },
           onCancel() {
           },
