@@ -1745,29 +1745,39 @@ class EditProjectInfoModel extends React.Component {
         : [];
       checkedStaffKey.forEach(item => {
         const gw = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.gw
+        const namedefault =  this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name
         const id = item.substring(1, item.length);
-        if (!gw.includes("总经理助理")) {
-          message.warn("请选择总经理助理以上人员！")
-          return;
-        } else {
-          if (!arr.includes(id)) {
+        if (!arr.includes(id)) {
+          if(namedefault === '黄玉锋' && focusJob === '1'){
             arr.push(id);
-          } else {
-            message.warn('已存在该成员,请勿重复添加！');
+          }else if (!gw.includes("总经理助理") && focusJob === '1') {
+            message.warn("请选择总经理助理以上人员！")
             return;
+          }else {
+            arr.push(id);
           }
-          const itemname =
-            this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name +
-            '(' +
-            this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName +
-            ')';
-          console.log('itemname', itemname);
-          if (!jobStaffNameArr.includes(itemname)) {
+        } else {
+          message.warn('已存在该成员,请勿重复添加！');
+          return;
+        }
+        const itemname =
+          this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name +
+          '(' +
+          this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName +
+          ')';
+        console.log('itemname', itemname);
+        if (!jobStaffNameArr.includes(itemname)) {
+          if(namedefault === '黄玉锋' && focusJob === '1'){
             jobStaffNameArr.push(itemname);
-          } else {
-            message.warn('已存在该成员,请勿重复添加！');
+          }else if (!gw.includes("总经理助理") && focusJob === '1') {
+            message.warn("请选择总经理助理以上人员！")
             return;
+          }else{
+            jobStaffNameArr.push(itemname);
           }
+        } else {
+          message.warn('已存在该成员,请勿重复添加！');
+          return;
         }
         // 存到对应下拉数据中
         this.state.staffList.forEach(e => {
@@ -6537,32 +6547,40 @@ class EditProjectInfoModel extends React.Component {
                                               ?.orgName +
                                             ')';
                                           const gw = this.state.staffList.filter(item => item.id === i)[0]?.gw
-                                          if (!gw.includes("总经理助理")) {
-                                            message.warn("请选择总经理助理以上人员！")
-                                          } else {
+                                          const namedefault = this.state.staffList.filter(item => item.id === i)[0]?.name
                                             if (!newJobStaffName.includes(name)) {
-                                              newJobStaffName.push(name);
+                                              if(String(item.ibm) === '1' && namedefault === '黄玉锋'){
+                                                newJobStaffName.push(name);
+                                              }else if (!gw.includes("总经理助理") && String(item.ibm) === '1') {
+                                                message.warn("请选择总经理助理以上人员！")
+                                                return;
+                                              }else{
+                                                newJobStaffName.push(name);
+                                              }
                                             } else {
                                               message.warn('已存在该成员,请勿重复添加！');
                                               return;
                                             }
                                             newJobStaff.push(i);
-                                          }
                                         } else {
                                           newJobStaffName.push(i);
                                           const id = this.state.staffList.filter(
                                             item => item.name === i.split('(')[0],
                                           )[0]?.id;
                                           const gw = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.gw
-                                          if (!gw.includes("总经理助理")) {
-                                            message.warn("请选择总经理助理以上人员！")
-                                          } else {
-                                            if (!newJobStaff.includes(id)) {
+                                          const namedefault = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.name
+                                          if (!newJobStaff.includes(id)) {
+                                            if(String(item.ibm) === '1' && namedefault === '黄玉锋'){
                                               newJobStaff.push(id);
-                                            } else {
-                                              message.warn('已存在该成员,请勿重复添加！');
+                                            }else if (!gw.includes("总经理助理") && String(item.ibm) === '1') {
+                                              message.warn("请选择总经理助理以上人员！")
                                               return;
+                                            }else {
+                                              newJobStaff.push(id);
                                             }
+                                          } else {
+                                            message.warn('已存在该成员,请勿重复添加！');
+                                            return;
                                           }
                                         }
                                       });

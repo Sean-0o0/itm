@@ -1,4 +1,4 @@
-import { Spin } from 'antd';
+import { message, Spin } from 'antd';
 import React, { useEffect, useState } from 'react';
 import {
   QueryBudgetOverviewInfo,
@@ -149,26 +149,27 @@ export default function HomePage(props) {
 
   //获取用户角色
   const getUserRole = () => {
-    QueryUserRole({
-      userId: String(LOGIN_USER_INFO.id),
-    })
-      .then(res => {
-        if (res?.code === 1) {
-          const { role = '' } = res;
-          setUserRole(role);
-          getBudgetData(role);
-          if (['二级部门领导', '普通人员'].includes(role)) {
-            getProcessData();
-          } else {
-            getTeamData(role);
-          }
-          getOverviewInfo(role);
-        }
+    LOGIN_USER_INFO.id &&
+      QueryUserRole({
+        userId: String(LOGIN_USER_INFO.id),
       })
-      .catch(e => {
-        console.error('QueryUserRole', e);
-        message.error('用户角色信息查询失败', 1);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '' } = res;
+            setUserRole(role);
+            getBudgetData(role);
+            if (['二级部门领导', '普通人员'].includes(role)) {
+              getProcessData();
+            } else {
+              getTeamData(role);
+            }
+            getOverviewInfo(role);
+          }
+        })
+        .catch(e => {
+          console.error('HomePage-QueryUserRole', e);
+          message.error('用户角色信息查询失败', 1);
+        });
   };
 
   //获取预算执行情况
@@ -306,13 +307,20 @@ export default function HomePage(props) {
             cgje: [],
             cgsl: [],
             gysmc: [],
+            item: [],
           };
+          let maxJe = 100;
           JSON.parse(res?.gysxx)?.forEach(item => {
             obj.cgje.push(Number(item.CGJE));
             obj.cgsl.push(Number(item.CGSL));
+            obj.item.push(item);
+          });
+          maxJe = Math.max(...obj.cgje);
+          // console.log("🚀 ~ file: index.js:316 ~ getSupplierData ~ maxJe:", maxJe)
+          JSON.parse(res?.gysxx)?.forEach(item => {
             obj.gysmc.push({
               name: item.GYSMC,
-              max: Number(item.CGJE) === 0 ? 10 : Number(item.CGJE) * 1.5,
+              max: maxJe * 1.1,
             });
           });
           // console.log(

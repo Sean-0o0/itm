@@ -34,19 +34,20 @@ export default function SupplierDetail(props) {
 
   //获取用户角色
   const getUserRole = () => {
-    QueryUserRole({
-      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
-    })
-      .then(res => {
-        if (res?.code === 1) {
-          const { role = '' } = res;
-          setIsLeader(role !== '普通人员');
-        }
+    JSON.parse(sessionStorage.getItem('user')).id &&
+      QueryUserRole({
+        userId: String(JSON.parse(sessionStorage.getItem('user')).id),
       })
-      .catch(e => {
-        console.error('QueryUserRole', e);
-        message.error('用户角色信息查询失败', 1);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '' } = res;
+            setIsLeader(role !== '普通人员');
+          }
+        })
+        .catch(e => {
+          console.error('SupplierDetail-QueryUserRole', e);
+          message.error('用户角色信息查询失败', 1);
+        });
   };
 
   const getDetailData = (supplierId = -1) => {
@@ -86,7 +87,7 @@ export default function SupplierDetail(props) {
           splId={splId}
         />
         <BasicInfo detailData={detailData} splId={splId} />
-        <TableTabs detailData={detailData} WBRYGW={WBRYGW} splId={splId} isLeader={isLeader}/>
+        <TableTabs detailData={detailData} WBRYGW={WBRYGW} splId={splId} isLeader={isLeader} />
       </Spin>
     </div>
   );
