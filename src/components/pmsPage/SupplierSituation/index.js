@@ -71,6 +71,7 @@ export default function SupplierSituation(props) {
   //获取报表格数据
   const getTableData = ({ role, queryType = 'MX_ALL', current = 1, pageSize = 10 }) => {
     setTableLoading(true);
+    
     QuerySupplierOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType,

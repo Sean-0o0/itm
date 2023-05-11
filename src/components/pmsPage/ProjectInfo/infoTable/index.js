@@ -20,6 +20,7 @@ export default function InfoTable(props) {
     tableLoading,
     getTableData,
     projectManager = -1,
+    cxlx = 'ALL',
     total,
     handleSearch,
     curPage,
@@ -99,12 +100,12 @@ export default function InfoTable(props) {
     const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, 'YSJE ASC,XH DESC,ID DESC');
+        handleSearch(current, pageSize, projectManager, cxlx, 'YSJE ASC,XH DESC,ID DESC');
       } else {
-        handleSearch(current, pageSize, 'YSJE DESC,XH DESC,ID DESC');
+        handleSearch(current, pageSize, projectManager, cxlx, 'YSJE DESC,XH DESC,ID DESC');
       }
     } else {
-      handleSearch(current, pageSize);
+      handleSearch(current, pageSize, projectManager, cxlx);
     }
     return;
   };

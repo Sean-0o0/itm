@@ -226,7 +226,13 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //查询按钮
-  const handleSearch = (current = 1, pageSize = 20, sort = 'XH DESC,ID DESC') => {
+  const handleSearch = (
+    current = 1,
+    pageSize = 20,
+    prjMnger = undefined,
+    queryType = 'ALL',
+    sort = 'XH DESC,ID DESC',
+  ) => {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
@@ -236,7 +242,7 @@ export default forwardRef(function TopConsole(props, ref) {
       paging: 1,
       sort,
       total: -1,
-      queryType: 'ALL',
+      queryType,
     };
     if (budget !== undefined && budget !== '') {
       params.budgetProject = Number(budget);
@@ -449,7 +455,11 @@ export default forwardRef(function TopConsole(props, ref) {
             treeDefaultExpandAll
           />
         </div>
-        <Button className="btn-search" type="primary" onClick={() => handleSearch(curPage, curPageSize)}>
+        <Button
+          className="btn-search"
+          type="primary"
+          onClick={() => handleSearch(curPage, curPageSize)}
+        >
           查询
         </Button>
         <Button className="btn-reset" onClick={handleReset}>
@@ -565,7 +575,7 @@ export default forwardRef(function TopConsole(props, ref) {
                     value={minAmount}
                     onChange={handleMinAmountChange}
                     placeholder="下限"
-                    type='number'
+                    type="number"
                   />
                   <Input className="input-to" placeholder="-" disabled />
                   <Input
@@ -573,7 +583,7 @@ export default forwardRef(function TopConsole(props, ref) {
                     value={maxAmount}
                     onChange={handleMaxAmountChange}
                     placeholder="上限"
-                    type='number'
+                    type="number"
                   />
                 </div>
               )}
@@ -583,7 +593,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={gtAmount}
                   onChange={handleGtAmountChange}
                   placeholder="请输入"
-                  type='number'
+                  type="number"
                 />
               )}
               {amountSelector === '3' && (
@@ -592,7 +602,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   value={ltAmount}
                   onChange={handleLtAmountChange}
                   placeholder="请输入"
-                  type='number'
+                  type="number"
                 />
               )}
             </div>
