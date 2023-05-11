@@ -8,7 +8,7 @@ import { QuerySupplierDetailInfo } from '../../../../services/pmsServices';
 const { TabPane } = Tabs;
 
 export default function TableTabs(props) {
-  const { WBRYGW = [], splId = -2 } = props;
+  const { WBRYGW = [], splId = -2, isLeader } = props;
   const [prjPurchase, setPrjPurchase] = useState([]); //采购项目
   const [HROutsource, setHROutsource] = useState([]); //人力外包
   const [splEvaluation, setSplEvaluation] = useState([]); //供应商评价
@@ -173,7 +173,9 @@ export default function TableTabs(props) {
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
         <span style={{ marginRight: 20 }}>
-          {String(LOGIN_USER_INFO.id) === String(row.FZRID) ? getAmountFormat(txt) : '***'}
+          {String(LOGIN_USER_INFO.id) === String(row.FZRID) || isLeader
+            ? getAmountFormat(txt)
+            : '***'}
         </span>
       ),
     },
@@ -188,7 +190,9 @@ export default function TableTabs(props) {
       sortDirections: ['descend', 'ascend'],
       render: (txt, row) => (
         <span style={{ marginRight: 20 }}>
-          {String(LOGIN_USER_INFO.id) === String(row.FZRID) ? getAmountFormat(txt) : '***'}
+          {String(LOGIN_USER_INFO.id) === String(row.FZRID) || isLeader
+            ? getAmountFormat(txt)
+            : '***'}
         </span>
       ),
     },

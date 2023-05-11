@@ -2,7 +2,11 @@ import React, { useEffect, useState } from 'react';
 import TopConsole from './TopConsole';
 import BasicInfo from './BasicInfo';
 import TableTabs from './TableTabs';
-import { QuerySupplierDetailInfo, QuerySupplierList } from '../../../services/pmsServices';
+import {
+  QuerySupplierDetailInfo,
+  QuerySupplierList,
+  QueryUserRole,
+} from '../../../services/pmsServices';
 import { Spin, message } from 'antd';
 
 export default function SupplierDetail(props) {
@@ -17,22 +21,33 @@ export default function SupplierDetail(props) {
     HROutsource: [], //人力外包
     splEvaluation: [], //供应商评价
   }); //需求数据
-  const {
-    splInfo = {},
-    overviewInfo = {},
-    contactInfo = [],
-    prjPurchase = [],
-    HROutsource = [],
-    splEvaluation = [],
-  } = detailData;
+  const [isLeader, setIsLeader] = useState(false); //是否为领导
 
   useEffect(() => {
     if (splId !== -2) {
       getDetailData(splId);
+      getUserRole();
     }
     // console.log('🚀 ~ file: index.js:31 ~ SupplierDetail ~ splId:', splId);
     return () => {};
   }, [splId]);
+
+  //获取用户角色
+  const getUserRole = () => {
+    QueryUserRole({
+      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          const { role = '' } = res;
+          setIsLeader(role !== '普通人员');
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('用户角色信息查询失败', 1);
+      });
+  };
 
   const getDetailData = (supplierId = -1) => {
     setIsSpinning(true);
@@ -70,8 +85,8 @@ export default function SupplierDetail(props) {
           getDetailData={getDetailData}
           splId={splId}
         />
-        <BasicInfo detailData={detailData} splId={splId}/>
-        <TableTabs detailData={detailData} WBRYGW={WBRYGW} splId={splId}/>
+        <BasicInfo detailData={detailData} splId={splId} />
+        <TableTabs detailData={detailData} WBRYGW={WBRYGW} splId={splId} isLeader={isLeader}/>
       </Spin>
     </div>
   );

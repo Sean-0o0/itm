@@ -31,6 +31,8 @@ export default function TableTabs(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     const { current = 1, pageSize = 10 } = pagination;
+    setCurPage(current);
+    setCurPageSize(pageSize);
     getData({ current, pageSize, role, queryType: curTab });
     return;
   };
@@ -167,7 +169,7 @@ export default function TableTabs(props) {
       title: '当前里程碑',
       dataIndex: 'DQLCB',
       key: 'DQLCB',
-      width: '10%',
+      width: '15%',
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">

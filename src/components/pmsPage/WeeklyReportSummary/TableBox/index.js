@@ -322,12 +322,11 @@ const TableBox = props => {
   };
   //跳过本周
   const handleSkipCurWeek = () => {
-    let curWeek = getCurrentWeek(new Date());
     let skipCurWeekData = {
       jsoninfo: JSON.stringify([
         {
-          V_KSSJ: curWeek[0].format('YYYYMMDD'),
-          V_JSSJ: curWeek[1].format('YYYYMMDD'),
+          V_KSSJ: Number(dateRange[0].format('YYYYMMDD')),
+          V_JSSJ: Number(dateRange[1].format('YYYYMMDD')),
         },
         {},
       ]),

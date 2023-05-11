@@ -16,6 +16,9 @@ export default function ProjectInfo(props) {
   const topConsoleRef = useRef(null);
 
   useEffect(() => {
+    console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);
+    setCurPage(1);
+    setTotal(0);
     if (prjManager === -2) {
       //无参数
       getTableData({});
@@ -23,11 +26,18 @@ export default function ProjectInfo(props) {
       //有参数
       getTableData({ projectManager: prjManager, cxlx });
     }
+
     return () => {};
   }, [prjManager, cxlx]);
 
   //获取表格数据
-  const getTableData = ({ current = 1, pageSize = 20, projectManager = -1, cxlx = 'ALL', sort = 'XH DESC,ID DESC' }) => {
+  const getTableData = ({
+    current = 1,
+    pageSize = 20,
+    projectManager = -1,
+    cxlx = 'ALL',
+    sort = 'XH DESC,ID DESC',
+  }) => {
     setTableLoading(true);
     QueryProjectListInfo({
       projectManager,
@@ -72,6 +82,7 @@ export default function ProjectInfo(props) {
         tableLoading={tableLoading}
         getTableData={getTableData}
         projectManager={params?.prjManager}
+        cxlx={params?.cxlx}
         total={total}
         handleSearch={topConsoleRef?.current?.handleSearch}
         curPage={curPage}

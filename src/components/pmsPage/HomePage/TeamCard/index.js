@@ -125,7 +125,7 @@ export default function TeamCard(props) {
             to={{
               pathname: `/pms/manage/departmentOverview`,
               state: {
-                routes: [{ name: '首页', pathname: location.pathname }],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
               },
             }}
           >

@@ -5,11 +5,12 @@ import {
   FetchQueryOwnerProjectList,
   QueryUserInfo,
   QueryMonthlyList,
+  QueryUserRole,
 } from '../../../services/pmsServices';
 import moment from 'moment';
 import { setTextRange } from 'typescript';
 export default function MonthlyReportTable() {
-  const [monthData, setMonthData] = useState(new moment());
+  const [monthData, setMonthData] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [tableLoading, setTableLoading] = useState(false);
   const [projectData, setProjectData] = useState([]);
@@ -18,21 +19,59 @@ export default function MonthlyReportTable() {
   const [txrData, setTxrData] = useState([]);
   const [originData, setOriginData] = useState([]); //编辑前table数据
   const [txrTableData, setTxrTableData] = useState([]); //表格数据，里边是填写人文本
+  const [stillLastMonth, setStillLastMonth] = useState(false); //是否仍是上个月->每月的前5个工作日为上一月
 
   useEffect(() => {
-    // queryProjectData();
-    getTxrData();
+    QueryUserRole({
+      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          if (Number(res.weekday || 0) < 6) {
+            //是否仍是上个月->每月的前5个工作日为上一月
+            setMonthData(moment().subtract(1, 'month'));
+            setStillLastMonth(true);
+          } else {
+            setMonthData(moment());
+          }
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('工作日信息查询失败', 1);
+      });
+    getUserRole();
   }, []);
 
+  //获取是否仍是上个月
+  const getUserRole = () => {
+    QueryUserRole({
+      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          getTxrData(Number(res.weekday || 0) < 6);
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('工作日信息查询失败', 1);
+      });
+  };
+
   //填写人下拉框数据
-  const getTxrData = () => {
+  const getTxrData = (stillLastMonth = false) => {
     QueryUserInfo({
       type: '信息技术事业部',
     })
       .then(res => {
         if (res.success) {
           setTxrData(p => [...res.record]);
-          queryTableData(monthData.format('YYYYMM'), currentXmid, [...res.record]);
+          let defaultMoment = moment();
+          if (stillLastMonth) {
+            defaultMoment = moment().subtract(1, 'month');
+          }
+          queryTableData(defaultMoment.format('YYYYMM'), currentXmid, [...res.record]);
         }
       })
       .catch(e => {
@@ -150,6 +189,7 @@ export default function MonthlyReportTable() {
         originData={originData}
         txrTableData={txrTableData}
         setTxrTableData={setTxrTableData}
+        stillLastMonth={stillLastMonth}
       ></TableBox>
     </div>
   );
