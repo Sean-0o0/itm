@@ -1748,10 +1748,10 @@ class EditProjectInfoModel extends React.Component {
         const namedefault =  this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name
         const id = item.substring(1, item.length);
         if (!arr.includes(id)) {
-          if(namedefault === '黄玉锋' && focusJob === '1'){
+          if((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1'){
             arr.push(id);
-          }else if (!gw.includes("总经理助理") && focusJob === '1') {
-            message.warn("请选择总经理助理以上人员！")
+          }else if (!gw.includes("总经理") && focusJob === '1') {
+            message.warn("请选择总经理以上人员！")
             return;
           }else {
             arr.push(id);
@@ -1767,10 +1767,10 @@ class EditProjectInfoModel extends React.Component {
           ')';
         console.log('itemname', itemname);
         if (!jobStaffNameArr.includes(itemname)) {
-          if(namedefault === '黄玉锋' && focusJob === '1'){
+          if((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1'){
             jobStaffNameArr.push(itemname);
-          }else if (!gw.includes("总经理助理") && focusJob === '1') {
-            message.warn("请选择总经理助理以上人员！")
+          }else if (!gw.includes("总经理") && focusJob === '1') {
+            message.warn("请选择总经理以上人员！")
             return;
           }else{
             jobStaffNameArr.push(itemname);
@@ -2379,6 +2379,17 @@ class EditProjectInfoModel extends React.Component {
         },
         onCancel() {
         },
+      });
+    }else{
+      confirm({
+        okText: '确认',
+        cancelText: '取消',
+        title: '提示',
+        content: '确认完成？',
+        onOk() {
+          _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+        },
+        onCancel() {},
       });
     }
   };
@@ -6572,10 +6583,10 @@ class EditProjectInfoModel extends React.Component {
                                           const gw = this.state.staffList.filter(item => item.id === i)[0]?.gw
                                           const namedefault = this.state.staffList.filter(item => item.id === i)[0]?.name
                                             if (!newJobStaffName.includes(name)) {
-                                              if(String(item.ibm) === '1' && namedefault === '黄玉锋'){
+                                              if(String(item.ibm) === '1' && (namedefault === '黄玉锋' || namedefault === '胡凡')){
                                                 newJobStaffName.push(name);
-                                              }else if (!gw.includes("总经理助理") && String(item.ibm) === '1') {
-                                                message.warn("请选择总经理助理以上人员！")
+                                              }else if (!gw.includes("总经理") && String(item.ibm) === '1') {
+                                                message.warn("请选择总经理以上人员！")
                                                 return;
                                               }else{
                                                 newJobStaffName.push(name);
@@ -6593,10 +6604,10 @@ class EditProjectInfoModel extends React.Component {
                                           const gw = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.gw
                                           const namedefault = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.name
                                           if (!newJobStaff.includes(id)) {
-                                            if(String(item.ibm) === '1' && namedefault === '黄玉锋'){
+                                            if(String(item.ibm) === '1' && namedefault === '黄玉锋' || namedefault === '胡凡'){
                                               newJobStaff.push(id);
-                                            }else if (!gw.includes("总经理助理") && String(item.ibm) === '1') {
-                                              message.warn("请选择总经理助理以上人员！")
+                                            }else if (!gw.includes("总经理") && String(item.ibm) === '1') {
+                                              message.warn("请选择总经理以上人员！")
                                               return;
                                             }else {
                                               newJobStaff.push(id);
