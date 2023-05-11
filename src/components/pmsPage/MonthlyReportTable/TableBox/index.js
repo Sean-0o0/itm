@@ -38,6 +38,7 @@ const TableBox = props => {
     originData,
     txrTableData,
     setTxrTableData,
+    stillLastMonth,
   } = props;
   const [lcbqkModalUrl, setLcbqkModalUrl] = useState('');
   const [lcbqkModalVisible, setLcbqkModalVisible] = useState('');
@@ -572,7 +573,7 @@ const TableBox = props => {
       time = monthData.add(1, 'month');
     } else if (txt === 'current') {
       //当前
-      time = new moment();
+      time = stillLastMonth ? moment().subtract(1, 'month') : moment();
     } else {
       return;
     }

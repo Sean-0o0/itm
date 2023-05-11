@@ -44,6 +44,7 @@ const TableBox = props => {
     fzrTableData,
     setFzrTableData,
     managerData,
+    stillLastMonth,
   } = props;
   const [isSaved, setIsSaved] = useState(false);
   const [summaryModalUrl, setSummaryModalUrl] = useState('');
@@ -85,6 +86,11 @@ const TableBox = props => {
       clearTimeout(timer);
     };
   }, []);
+
+  useEffect(() => {
+    console.log('mmm', monthData);
+    return () => {};
+  }, [JSON.stringify(monthData)]);
 
   //防抖
   const debounce = (fn, waits) => {
@@ -728,7 +734,7 @@ const TableBox = props => {
       time = monthData.add(1, 'month');
     } else if (txt === 'current') {
       //当前
-      time = new moment();
+      time = stillLastMonth ? moment().subtract(1, 'month') : moment();
     } else {
       return;
     }
@@ -816,10 +822,7 @@ const TableBox = props => {
       <div className="table-box">
         <div className="table-console">
           <div className="console-date"></div>
-          <Button
-            onClick={handleWeekChange.bind(this, 'current')}
-            style={{ marginRight: '2.3808rem' }}
-          >
+          <Button onClick={handleWeekChange.bind(this, 'current')} style={{ marginRight: '16px' }}>
             本月
           </Button>
           <div className="month-slt-btn">
@@ -833,55 +836,9 @@ const TableBox = props => {
           <MonthPicker
             value={monthData}
             onChange={handleDateChange}
-            style={{ margin: '0 1.488rem', width: '16.368rem', marginRight: 'auto' }}
+            style={{ margin: '0 10px', width: '110px', marginRight: 'auto' }}
           />
-          {/* <Select
-            style={{
-              width: '228px',
-              borderRadius: '8px !important',
-              marginLeft: '2.3808rem',
-              marginRight: 'auto',
-            }}
-            showSearch
-            allowClear
-            placeholder="请选择项目名称"
-            optionFilterProp="children"
-            onChange={handleProjectChange}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            open={open}
-            onDropdownVisibleChange={visible => {
-              setOpen(visible);
-            }}
-          >
-            {projectData?.map((item = {}, ind) => {
-              return (
-                <Option key={ind} value={item.xmid}>
-                  {item.xmmc}
-                </Option>
-              );
-            })}
-          </Select> */}
           <div className="console-btn-submit">
-            {/* <Button
-              style={{ marginLeft: 'auto' }}
-              disabled={!toLeft}
-              onClick={() => handleTableScroll('left')}
-            >
-              <Icon type="left" />
-              上一列
-            </Button>
-            <Button
-              disabled={!toRight}
-              style={{ margin: '0 8px' }}
-              onClick={() => handleTableScroll('right')}
-            >
-              下一列
-              <Icon type="right" />
-            </Button> */}
-            {/* <Button style={{ marginRight: '8px'}} onClick={handleSummary}>手动汇总</Button> */}
-
             {editing ? (
               <>
                 <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
@@ -910,19 +867,6 @@ const TableBox = props => {
               return {
                 onClick: () => {
                   if (editing) {
-                    // 编辑态的数据需要处理;
-                    // let arr = tableData.map((item, index) => {
-                    //   if (item.id === record.id)
-                    //     return {
-                    //       ...item,
-                    //       ['manager' + item.id]: item.fzrid,
-                    //       // ['orgName' + item.id]:
-                    //       //   orgArr.filter(z => z.orgId === item['orgName' + item.id])[0]?.orgName ||
-                    //       //   '',
-                    //     };
-                    //   return fzrTableData[index];
-                    // });
-                    // setTableData(p => [...arr]);
                     setEditingIndex(record.id);
                   }
                 },

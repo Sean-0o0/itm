@@ -176,7 +176,7 @@ class InfoTable extends Component {
       {
         title: '项目阶段',
         dataIndex: 'dqlcb',
-        width: '8%',
+        width: '14%',
         key: 'xmpd',
         ellipsis: true,
       },

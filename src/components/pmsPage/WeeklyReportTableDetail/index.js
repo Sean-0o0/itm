@@ -7,6 +7,7 @@ import {
   FetchQueryOwnerProjectList,
   QueryDigitalSpecialClassWeeklyReport,
   QueryUserInfo,
+  QueryUserRole,
 } from '../../../services/pmsServices';
 import moment from 'moment';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
@@ -22,34 +23,55 @@ export default function WeeklyReportTableDetail() {
   const [projectData, setProjectData] = useState([]);
   const [currentXmid, setCurrentXmid] = useState(-1);
   const [edited, setEdited] = useState(false);
-  const [monthData, setMonthData] = useState(new moment());
+  const [monthData, setMonthData] = useState(null);
   const [activeKey, setActiveKey] = useState('1');
   const [originData, setOriginData] = useState([]); //编辑前table数据
   const [fzrTableData, setFzrTableData] = useState([]); //表格数据，里边是负责人文本
   const [orgData, setOrgData] = useState([]); //部门数据
   const [orgArr, setOrgArr] = useState([]); //部门数据-非树结构
   const [managerData, setManagerData] = useState([]); //负责人下拉框数据
+  const [stillLastMonth, setStillLastMonth] = useState(false); //是否仍是上个月->每月的前5个工作日为上一月
 
   useEffect(() => {
-    // queryProjectData();
-    getManagerData();
-    // setDateRange(p => [...getCurrentWeek(new Date())]);
+    QueryUserRole({
+      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          if (Number(res.weekday || 0) < 6) {
+            //是否仍是上个月->每月的前5个工作日为上一月
+            setMonthData(moment().subtract(1, 'month'));
+            setStillLastMonth(true);
+          } else {
+            setMonthData(moment());
+          }
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('工作日信息查询失败', 1);
+      });
+    getUserRole();
   }, []);
 
-  const queryProjectData = () => {
-    FetchQueryOwnerProjectList({
-      paging: -1,
-      total: -1,
-      sort: '',
-      cxlx: 'ALL',
-    }).then(res => {
-      if (res.code === 1) {
-        setProjectData(p => [...res.record]);
-      }
-    });
+  //获取是否仍是上个月
+  const getUserRole = () => {
+    QueryUserRole({
+      userId: String(JSON.parse(sessionStorage.getItem('user')).id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          getManagerData(Number(res.weekday || 0) < 6);
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('工作日信息查询失败', 1);
+      });
   };
+
   //负责人下拉框数据
-  const getManagerData = () => {
+  const getManagerData = (stillLastMonth = false) => {
     QueryUserInfo({
       type: '信息技术事业部',
     })
@@ -57,15 +79,16 @@ export default function WeeklyReportTableDetail() {
         if (res.success) {
           setManagerData(p => [...res.record]);
           // console.log(res);
-          getOrgData();
+          getOrgData(stillLastMonth);
         }
       })
       .catch(e => {
         message.error('负责人信息查询失败', 1);
       });
   };
+
   //部门数据
-  const getOrgData = () => {
+  const getOrgData = (stillLastMonth = false) => {
     FetchQueryOrganizationInfo({
       type: 'XXJS',
     })
@@ -81,8 +104,12 @@ export default function WeeklyReportTableDetail() {
           setOrgData(data);
           // console.log('🚀 ~ file: index.js:83 ~ getOrgData ~ data:', data);
           setOrgArr([...res.record]);
-          let defaultSTime = Number(monthData.startOf('month').format('YYYYMMDD'));
-          let defaultETime = Number(monthData.endOf('month').format('YYYYMMDD'));
+          let defaultMoment = moment();
+          if (stillLastMonth) {
+            defaultMoment = moment().subtract(1, 'month');
+          }
+          let defaultSTime = Number(defaultMoment.startOf('month').format('YYYYMMDD'));
+          let defaultETime = Number(defaultMoment.endOf('month').format('YYYYMMDD'));
           queryTableData(defaultSTime, defaultETime, currentXmid, [...res.record]);
         }
       })
@@ -99,7 +126,7 @@ export default function WeeklyReportTableDetail() {
     })
       .then(res => {
         if (res.code === 1) {
-          console.log('🚀 ~ file: index.js:50 ~ queryTableData ~ res:', res);
+          // console.log('🚀 ~ file: index.js:50 ~ queryTableData ~ res:', res);
           const getStatus = num => {
             switch (num) {
               case '1':
@@ -152,18 +179,6 @@ export default function WeeklyReportTableDetail() {
           let groupObj = newArr.reduce((pre, current, index) => {
             pre[current.module] = pre[current.module] || [];
             pre[current.module].push({
-              // id: current.id,
-              // sysBuilding: current.sysBuilding,
-              // ['manager' + current.id]: current['manager' + current.id],
-              // ['annualPlan' + current.id]: current['annualPlan' + current.id],
-              // ['cplTime' + current.id]: current['cplTime' + current.id],
-              // ['curProgress' + current.id]: current['curProgress' + current.id],
-              // ['curRate' + current.id]: current['curRate' + current.id],
-              // ['curStatus' + current.id]: current['curStatus' + current.id],
-              // ['riskDesc' + current.id]: current['riskDesc' + current.id],
-              // ['peopleNumber' + current.id]: current['peopleNumber' + current.id],
-              // ['orgName' + current.id]: current['orgName' + current.id],
-              // ['status']: current['status'],
               ...current,
             });
             return pre;
@@ -178,16 +193,9 @@ export default function WeeklyReportTableDetail() {
               finalArr.push({ module: item, ...x });
             });
           }
-
           setOriginData(preState => [...newArr]);
           setFzrTableData(preState => [...newArr]);
-          // let finalArr2 = finalArr.map(x=>{
-          //   return {
-          //     ...x,
-          //   }
-          // })
           setTableData(preState => [...newArr]);
-          // console.log('🚀 ~ file: index.js ~ line 136 ~ queryTableData ~ finalArr]', finalArr);
           setTableLoading(false);
         }
       })
@@ -210,6 +218,7 @@ export default function WeeklyReportTableDetail() {
     }
     return [moment(monday), moment(sunday)];
   };
+
   const handleTabsChange = key => {
     setActiveKey(key);
     if (key === '1') getManagerData();
@@ -248,6 +257,7 @@ export default function WeeklyReportTableDetail() {
           orgData={orgData}
           orgArr={orgArr}
           managerData={managerData}
+          stillLastMonth={stillLastMonth}
         />
       )}
       {activeKey === '2' && <MonthlyReportTable />}

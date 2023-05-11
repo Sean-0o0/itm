@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import TableBox from './TableBox';
 import {
   FetchQueryOwnerProjectList,
-  QueryUserInfo,
   QueryHjgWeeklyInfo,
 } from '../../../services/pmsServices';
 import moment from 'moment';
@@ -40,6 +39,7 @@ export default function WeeklyReportSummary() {
       }
     });
   };
+
   const queryTableData = (startTime, endTime, xmid) => {
     QueryHjgWeeklyInfo({
       kssj: startTime,
