@@ -1,7 +1,7 @@
 import React, { Component } from 'react'
 import TopConsole from './TopConsole'
 import InfoTable from './InfoTable'
-import { message } from 'antd'
+import { message, Spin } from 'antd'
 import { QueryAttachLibraryList, QueryUserRole } from '../../../services/pmsServices'
 
 class AttachLibrary extends Component {
@@ -14,12 +14,16 @@ class AttachLibrary extends Component {
             total: -1,
             sort: '',
         },
-        cxlx: 'FQCY',
+        cxlx: '',
+        loading: false,
         tableLoading: false
     }
 
     componentDidMount() {
         const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
+        this.setState({
+            loading: true
+        })
         if (LOGIN_USERID !== undefined) {
             QueryUserRole({
                 userId: Number(LOGIN_USERID),
@@ -31,20 +35,32 @@ class AttachLibrary extends Component {
                     }, () => {
                         this.handleSearch()
                     })
+                }else{
+                    this.setState({
+                        loading: false
+                    })
                 }
+            }).catch(err => {
+                message.error("查询人员角色失败")
+                this.setState({
+                    loading: false
+                })
             })
         }
     }
 
     UNSAFE_componentWillReceiveProps(nextprops) {
         const { xmid } = nextprops
+        const { xmid: oldXmid } = this.props;
         this.setState({
             pageParams: {
                 ...this.state.pageParams,
                 xmid: xmid
             }
         }, () => {
-            this.handleSearch()
+            if(xmid!==oldXmid){
+                this.handleSearch()
+            }
         })
 
     }
@@ -69,6 +85,7 @@ class AttachLibrary extends Component {
                 const { code, record = [], total = 0 } = res;
                 if (code > 0) {
                     this.setState({
+                        loading: false,
                         attachList: record,
                         tableLoading: false,
                         pageParams: {
@@ -79,11 +96,13 @@ class AttachLibrary extends Component {
                     })
                 } else {
                     this.setState({
+                        loading: false,
                         tableLoading: false,
                     })
                 }
             }).catch((e) => {
                 this.setState({
+                    loading: false,
                     tableLoading: false,
                 })
                 message.error(!e.success ? e.message : e.note);
@@ -91,13 +110,13 @@ class AttachLibrary extends Component {
     }
 
     render() {
-        const { tableLoading = false, attachList = [], pageParams, cxlx } = this.state
+        const { tableLoading = false, attachList = [], pageParams, cxlx, loading } = this.state
         const { xmid } = pageParams
         const { dictionary, pathname } = this.props;
-        return (<div className="attach-library-box">
-            <TopConsole dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid} />
+        return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large"><div className="attach-library-box">
+            <TopConsole  dictionary={dictionary} handleSearch={this.handleSearch} cxlx={cxlx} xmid={xmid} setSpin={(loading)=>{this.setState({loading})}}/>
             <InfoTable cxlx={cxlx} pathname={pathname} tableData={attachList} tableLoading={tableLoading} pageParams={pageParams} handleSearch={this.handleSearch} />
-        </div>);
+        </div></Spin>);
     }
 }
 

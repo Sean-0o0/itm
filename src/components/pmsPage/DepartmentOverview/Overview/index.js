@@ -23,7 +23,7 @@ class Overview extends Component {
         });
         const option = {
             color: ['#3361FF', '#86E0FF', '#FDC041', '#FF8D84',
-                '#F2A1C3', '#DA6D5D', '#F49B5A', '#5B6BB9', '#00ACFF', '#BA00FF'],
+                '#F2A1C3', '#DA6D5D', '#F49B5A', '#5B6BB9', '#00ACFF', '#BA00FF','rgba(218, 109, 93, 0.5)','rgba(255, 141, 132, 0.5)'],
             tooltip: {
                 trigger: 'item',
                 formatter: '{b}: {c}&nbsp;&nbsp;&nbsp;{d}%'
@@ -67,7 +67,7 @@ class Overview extends Component {
                     }
                 },
                 icon: "circle",
-                itemGap: 15,
+                itemGap: 12,
                 itemHeight: 8,
                 itemWidth: 8,
             }, {

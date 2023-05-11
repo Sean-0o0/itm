@@ -71,6 +71,10 @@ class ProjectBuilding extends Component {
                         const { pageParam = {} } = this.state;
                         this.queryProjectGeneralInfo('MX_ALL_ONE', '', pageParam)
                     })
+                }else{
+                    this.setState({
+                        loading: false
+                    })
                 }
             }).catch(err => {
                 message.error("查询人员角色失败")

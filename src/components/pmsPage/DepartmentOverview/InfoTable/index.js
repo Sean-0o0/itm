@@ -6,7 +6,7 @@ const { TabPane } = Tabs;
 
 class InfoTable extends Component {
   state = {
-    activeKey: '1',
+    activeKey: '0',
     queryType: 'MX_ALL',
     gwbm: ''
   }
@@ -14,7 +14,7 @@ class InfoTable extends Component {
   handleTab = id => {
     let queryType = '';
     let gwbm = '';
-    if (id === '1') {
+    if (id === '0') {
       queryType = 'MX_ALL';
       gwbm = ''
     } else {
@@ -47,7 +47,7 @@ class InfoTable extends Component {
           type="card"
           activeKey={activeKey}
         >
-          <TabPane tab='全部' key='1'>
+          <TabPane tab='全部' key='0'>
             <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
           </TabPane>
           {gwfb.map(item => {

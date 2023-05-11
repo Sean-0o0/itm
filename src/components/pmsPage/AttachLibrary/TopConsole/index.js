@@ -34,7 +34,10 @@ class ToConsole extends Component {
   };
 
   componentDidMount() {
-    this.getFilterData(this.props);
+    const { cxlx } = this.props;
+    if(cxlx){
+      this.getFilterData(this.props);
+    }
   }
 
   UNSAFE_componentWillReceiveProps(nextprops) {
@@ -56,13 +59,15 @@ class ToConsole extends Component {
 
   //顶部下拉框查询数据
   getFilterData = (props) => {
-    const { cxlx = 'FQCY' } = props;
+    const { cxlx } = props;
+    this.props.setSpin(true)
     QueryProjectListPara({
       paging: -1,
       cxlx: cxlx === 'FQCY' ? 'WDLBPT' : 'WDLBLD',
     })
       .then(res => {
         const { code = 0 } = res;
+        this.props.setSpin(false)
         if (code > 0) {
           const wdlx = JSON.parse(res.fileTypeRecord);
           const label = JSON.parse(res.labelRecord);
@@ -95,7 +100,6 @@ class ToConsole extends Component {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           });
-          console.log([...this.toItemTree(JSON.parse(res.budgetProjectRecord))]);
           this.setState({
             glysList: [...this.toItemTree(JSON.parse(res.budgetProjectRecord))],
             xmlist: [...JSON.parse(res.projectRecord)],
@@ -107,6 +111,7 @@ class ToConsole extends Component {
         }
       })
       .catch(error => {
+        this.props.setSpin(false)
         message.error(!error.success ? error.message : error.note);
       });
   };
