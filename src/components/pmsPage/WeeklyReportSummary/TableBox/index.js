@@ -325,8 +325,8 @@ const TableBox = props => {
     let skipCurWeekData = {
       jsoninfo: JSON.stringify([
         {
-          V_KSSJ: Number(dateRange[0].format('YYYYMMDD')),
-          V_JSSJ: Number(dateRange[1].format('YYYYMMDD')),
+          V_KSSJ: String(dateRange[0].format('YYYYMMDD')),
+          V_JSSJ: String(dateRange[1].format('YYYYMMDD')),
         },
         {},
       ]),
