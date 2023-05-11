@@ -15,9 +15,11 @@ export default function ProjectInfo(props) {
   const { prjManager, cxlx = 'ALL' } = params;
   const topConsoleRef = useRef(null);
 
-  useEffect(() => {
-    return () => {};
-  }, []);
+  //页面恢复，跳转回首页时触发
+  // props.cacheLifecycles.didRecover(() => {
+  //   // console.log('跳转回首页时触发');
+
+  // });
 
   useEffect(() => {
     // console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);

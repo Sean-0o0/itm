@@ -64,7 +64,7 @@ export default function MileStone(props) {
   useEffect(() => {
     if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
       getMileStoneData(false);
-      console.log('里程碑更新了');
+      // console.log('里程碑更新了');
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};
@@ -147,7 +147,11 @@ export default function MileStone(props) {
                         //初次刷新，自动选择当前里程碑
                         setCurrentStep(currentIndex);
                         if (prjBasic.SFBHZXM && prjBasic.SFBHZXM !== '0') {
-                          setCurrentStep(1);
+                          let xmlxIndex = 0;
+                          data.forEach((y, i) => {
+                            if (y.lcbmc === '项目立项') xmlxIndex = i;
+                          });
+                          setCurrentStep(xmlxIndex);
                         }
                         if (data.length >= 3) {
                           if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {

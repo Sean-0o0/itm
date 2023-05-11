@@ -81,13 +81,13 @@ class MainPageLayout extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const {menuTree = [], menuTreeLoaded} = this.state;
+    const { menuTree = [], menuTreeLoaded } = this.state;
     const {
       hasAuthed,
-      location: {pathname, search},
+      location: { pathname, search },
     } = nextProps;
     const {
-      location: {pathname: prePathname, search: preSearch},
+      location: { pathname: prePathname, search: preSearch },
     } = this.props;
     //判断菜单是否已经加载过了?
     // let flag = !menuTreeLoaded && hasAuthed;
@@ -573,7 +573,23 @@ class MainPageLayout extends React.PureComponent {
                 <CacheSwitch>
                   {// 路由
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
-                    if (path && !path.includes('/index')) {
+                    if (path && path.includes('/pms/manage/ProjectInfo')) {
+                      return (
+                        path && (
+                          <Route
+                            key={index}
+                            when={() => {
+                              return keepAlive;
+                            }}
+                            cacheKey={key || path}
+                            path={path}
+                            unmount={false}
+                            saveScrollPosition
+                            component={component}
+                          />
+                        )
+                      );
+                    } else if (path && !path.includes('/index')) {
                       return (
                         path && (
                           <CacheRoute

@@ -18,7 +18,7 @@ const ProjectInfo = props => {
   }, [props]);
   return (
     <Fragment>
-      <ProjectInfoTab dictionary={props.dictionary} params={params}></ProjectInfoTab>
+      <ProjectInfoTab dictionary={props.dictionary} params={params} {...props}></ProjectInfoTab>
     </Fragment>
   );
 };
