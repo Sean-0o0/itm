@@ -121,7 +121,7 @@ export default function SupplierCard(props) {
             to={{
               pathname: `/pms/manage/SupplierSituation`,
               state: {
-                routes: [{ name: '首页', pathname: location.pathname }],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
               },
             }}
           >

@@ -1,5 +1,5 @@
-import {Button, Empty, message, Tooltip, Icon, Modal} from 'antd';
-import React, {useEffect, useState, useLayoutEffect} from 'react';
+import { Button, Empty, message, Tooltip, Icon, Modal } from 'antd';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
 import {
   CreateOperateHyperLink,
   FetchQueryOwnerMessage,
@@ -10,18 +10,11 @@ import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router';
-import {Link} from 'react-router-dom';
-import EditProjectInfoModel from "../../EditProjectInfoModel";
+import { Link } from 'react-router-dom';
+import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function ToDoCard(props) {
-  const {
-    itemWidth,
-    getAfterItem,
-    getToDoData,
-    toDoData = [],
-    xmbhData = [],
-    total,
-  } = props;
+  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [], total } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -42,7 +35,7 @@ export default function ToDoCard(props) {
     width: '720px',
     height: '300px',
     title: '人员新增提醒',
-    style: {top: '60px'},
+    style: { top: '60px' },
     visible: ryxztxModalVisible,
     footer: null,
   };
@@ -97,7 +90,7 @@ export default function ToDoCard(props) {
   const jumpToProjectDetail = item => {
     window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
       JSON.stringify({
-        routes: [{ name: '首页', pathname: location.pathname }],
+        routes: [{ name: '个人工作台', pathname: location.pathname }],
         xmid: item.xmid,
       }),
     )}`;
@@ -249,7 +242,7 @@ export default function ToDoCard(props) {
         subItemFlag: true,
         subItemFinish: true,
         projectStatus: 'SAVE',
-      }
+      },
     );
   };
 
@@ -323,7 +316,7 @@ export default function ToDoCard(props) {
     title: '编辑项目',
     width: '1000px',
     height: '700px',
-    style: {top: '10px'},
+    style: { top: '10px' },
     visible: fileAddVisible,
     footer: null,
   };
@@ -334,13 +327,13 @@ export default function ToDoCard(props) {
 
   //待办块
   const getToDoItem = ({
-                         title = '--',
-                         content = '--',
-                         btnTxt = '--',
-                         isLate = false,
-                         isDueSoon = false,
-                         lateDay = '--',
-                         key,
+    title = '--',
+    content = '--',
+    btnTxt = '--',
+    isLate = false,
+    isDueSoon = false,
+    lateDay = '--',
+    key,
     item = {},
   }) => {
     let borderColor = '#3361ff';
@@ -452,8 +445,8 @@ export default function ToDoCard(props) {
           // height={'700px'}
           maskClosable={false}
           zIndex={100}
-          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
-          style={{top: '10px'}}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
           visible={fileAddVisible}
           okText="保存"
           bodyStyle={{

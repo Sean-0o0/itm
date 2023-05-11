@@ -1,12 +1,11 @@
-import React, {Component} from 'react'
-import {Table, Popover, Pagination} from 'antd'
+import React, { Component } from 'react';
+import { Table, Popover, Pagination } from 'antd';
 import moment from 'moment';
-import {EncryptBase64} from "../../../Common/Encrypt";
-import {Link} from 'react-router-dom';
-
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
 
 class InfoTable extends Component {
-  state = {}
+  state = {};
 
   //获取标签数据
   getTagData = tag => {
@@ -22,24 +21,30 @@ class InfoTable extends Component {
   };
 
   handleChange = (current, pageSize) => {
-    const {handleSearch, bqid} = this.props;
+    const { handleSearch, bqid } = this.props;
     if (handleSearch) {
-      handleSearch({
-        current: current,
-        pageSize: pageSize,
-        total: -1,
-      }, bqid)
+      handleSearch(
+        {
+          current: current,
+          pageSize: pageSize,
+          total: -1,
+        },
+        bqid,
+      );
     }
-  }
+  };
 
   handleTableChange = (pagination, filters, sorter) => {
-    const {handleSearch, bqid} = this.props;
-    const {order = '', field = ''} = sorter;
+    const { handleSearch, bqid } = this.props;
+    const { order = '', field = '' } = sorter;
     if (handleSearch) {
-      handleSearch({
-        total: -1,
-        sort: order ? `${field} ${order.slice(0, -3)}` : ''
-      }, bqid)
+      handleSearch(
+        {
+          total: -1,
+          sort: order ? `${field} ${order.slice(0, -3)}` : '',
+        },
+        bqid,
+      );
     }
   };
 
@@ -47,14 +52,14 @@ class InfoTable extends Component {
     // console.log("cccc-jjjj")
     window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
       JSON.stringify({
-        routes: [{name: '首页', pathname: location.pathname}],
+        routes: [{ name: '个人工作台', pathname: location.pathname }],
         xmid: id,
       }),
     )}`;
   };
 
   render() {
-    const {tableLoading = false, tableData = [], pageParams = {}, routes = []} = this.props;
+    const { tableLoading = false, tableData = [], pageParams = {}, routes = [] } = this.props;
     const columns = [
       {
         title: '年份',
@@ -72,9 +77,13 @@ class InfoTable extends Component {
         key: 'XMMC',
         ellipsis: true,
         render: (text, row, index) => {
-          const {XMID = ''} = row;
-          return <div className='opr-btn' onClick={() => this.jumpToDetail(XMID)}>{text}</div>
-        }
+          const { XMID = '' } = row;
+          return (
+            <div className="opr-btn" onClick={() => this.jumpToDetail(XMID)}>
+              {text}
+            </div>
+          );
+        },
       },
       {
         title: '项目标签',
@@ -84,14 +93,14 @@ class InfoTable extends Component {
         ellipsis: true,
         render: (text, row, index) => {
           // console.log("rowrow",row)
-          const {XMBQID = ''} = row;
+          const { XMBQID = '' } = row;
           const ids = this.getTagData(XMBQID);
           const data = this.getTagData(text);
-          return <div className="prj-tags">
-            {data.length !== 0 && (
-              <>
-                {data?.slice(0, 4)
-                  .map((x, i) => (
+          return (
+            <div className="prj-tags">
+              {data.length !== 0 && (
+                <>
+                  {data?.slice(0, 4).map((x, i) => (
                     <div key={i} className="tag-item">
                       <Link
                         to={{
@@ -111,13 +120,12 @@ class InfoTable extends Component {
                       </Link>
                     </div>
                   ))}
-                {data?.length > 4 && (
-                  <Popover
-                    overlayClassName="tag-more-popover"
-                    content={
-                      <div className="tag-more">
-                        {data?.slice(4)
-                          .map((x, i) => (
+                  {data?.length > 4 && (
+                    <Popover
+                      overlayClassName="tag-more-popover"
+                      content={
+                        <div className="tag-more">
+                          {data?.slice(4).map((x, i) => (
                             <div key={i} className="tag-item">
                               <Link
                                 to={{
@@ -137,17 +145,18 @@ class InfoTable extends Component {
                               </Link>
                             </div>
                           ))}
-                      </div>
-                    }
-                    title={null}
-                  >
-                    <div className="tag-item">...</div>
-                  </Popover>
-                )}
-              </>
-            )}
-          </div>
-        }
+                        </div>
+                      }
+                      title={null}
+                    >
+                      <div className="tag-item">...</div>
+                    </Popover>
+                  )}
+                </>
+              )}
+            </div>
+          );
+        },
       },
       {
         title: '项目进度',
@@ -159,10 +168,8 @@ class InfoTable extends Component {
         align: 'right',
         sortDirections: ['descend', 'ascend'],
         render: (text, row, index) => {
-          return <div style={{paddingRight: '20px'}}>
-            {text}%
-          </div>
-        }
+          return <div style={{ paddingRight: '20px' }}>{text}%</div>;
+        },
       },
       {
         title: '项目阶段',
@@ -178,8 +185,8 @@ class InfoTable extends Component {
         key: 'XMZT',
         ellipsis: true,
         sorter: (a, b) => a.XMZT.localeCompare(b.XMZT),
-        sortDirections: ['descend', 'ascend']
-      }
+        sortDirections: ['descend', 'ascend'],
+      },
     ];
     // console.log("tableDatatableData", tableData)
     return (
@@ -194,7 +201,7 @@ class InfoTable extends Component {
             pagination={false}
           />
         </div>
-        <div className='page-individual'>
+        <div className="page-individual">
           <Pagination
             onChange={this.handleChange}
             pageSize={pageParams.pageSize}
@@ -205,7 +212,6 @@ class InfoTable extends Component {
             showQuickJumper={true}
             showTotal={total => `共 ${total} 条数据`}
           />
-
         </div>
       </div>
     );

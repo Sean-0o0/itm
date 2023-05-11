@@ -82,7 +82,7 @@ export default function OverviewCard(props) {
             {unit}
           </div>
         ) : (
-          ''// <div className="item-bottom"></div>
+          '' // <div className="item-bottom"></div>
         )}
       </div>
     );
@@ -161,7 +161,7 @@ export default function OverviewCard(props) {
             linkTo: {
               pathname: `/pms/manage/projectBuilding`,
               state: {
-                routes: [{ name: '首页', pathname: location.pathname }],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
               },
             },
           })}
@@ -175,7 +175,7 @@ export default function OverviewCard(props) {
             linkTo: {
               pathname: `/pms/manage/departmentOverview`,
               state: {
-                routes: [{ name: '首页', pathname: location.pathname }],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
               },
             },
           })}
@@ -190,7 +190,7 @@ export default function OverviewCard(props) {
             linkTo: {
               pathname: `/pms/manage/BudgetExcute`,
               state: {
-                routes: [{ name: '首页', pathname: location.pathname }],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
               },
             },
           })}
@@ -204,7 +204,7 @@ export default function OverviewCard(props) {
             linkTo: {
               pathname: `/pms/manage/SupplierSituation`,
               state: {
-                routes: [{ name: '首页', pathname: location.pathname }],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
               },
             },
           })}

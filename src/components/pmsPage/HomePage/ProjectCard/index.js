@@ -274,7 +274,7 @@ export default function ProjectCard(props) {
                       }),
                     ),
                   state: {
-                    routes: [{ name: '首页', pathname: location.pathname }],
+                    routes: [{ name: '个人工作台', pathname: location.pathname }],
                   },
                 }}
                 key={x.USERID}
@@ -363,7 +363,7 @@ export default function ProjectCard(props) {
               }),
             )}`,
             state: {
-              routes: [{ name: '首页', pathname: location.pathname }],
+              routes: [{ name: '个人工作台', pathname: location.pathname }],
             },
           }}
         >
