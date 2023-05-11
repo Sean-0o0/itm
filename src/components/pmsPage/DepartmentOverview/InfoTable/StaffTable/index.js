@@ -57,21 +57,6 @@ class StaffTable extends Component {
         return spanArr
     }
 
-    // renderContent = (value, row, index) => {
-    //     const obj = {
-    //         children: value,
-    //         attrs: {}
-    //     };
-    //     const _row = spanArr[index];
-    //     const _col = _row > 0 ? 1 : 0;
-    //     obj.attrs = {
-    //         rowSpan: _row,
-    //         colSpan: _col
-    //     };
-
-    //     return obj;
-    // };
-
     render() {
         const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
         const { current = 1, pageSize = 10 } = this.state;
@@ -237,7 +222,7 @@ class StaffTable extends Component {
                 <Table
                     loading={tableLoading}
                     columns={columns}
-                    rowKey={'id'}
+                    rowKey={'ID'}
                     dataSource={tableData}
                     onChange={this.handleChange}
                     pagination={{
@@ -246,7 +231,7 @@ class StaffTable extends Component {
                         pageSizeOptions:  ['10', '20', '30', '40'],
                         showSizeChanger:  true,
                         showQuickJumper:  true,
-                        showTotal: total => `共 ${tableData.length} 条数据`
+                        showTotal: total => `共 ${total} 条数据`
                     }}
                 />
             </div>
