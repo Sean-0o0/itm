@@ -34,16 +34,16 @@ import {
 import ContractInfoUpdate from './ContractInfoUpdate';
 import BidInfoUpdate from './BidInfoUpdate';
 
-import WPSFrame from '../../../js/wps_general';
-import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
-import { PluginsUrl } from '../../../utils/config';
+// import WPSFrame from '../../../js/wps_general';
+// import { WpsInvoke, WpsClientOpen } from '../../../js/wpsjsrpcsdk';
+import {PluginsUrl} from '../../../utils/config';
 import PaymentProcess from './PaymentProcess';
 import moment from 'moment';
-import { DecryptBase64 } from '../../Common/Encrypt';
+import {DecryptBase64} from '../../Common/Encrypt';
 import ContractSigning from './ContractSigning';
 import AssociatedFile from './AssociatedFile';
 
-const { TabPane } = Tabs;
+const {TabPane} = Tabs;
 
 const PASE_SIZE = 10;
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
@@ -588,43 +588,43 @@ class LifeCycleManagementTabs extends React.Component {
   };
 
   compare = property => {
-    return function(a, b) {
+    return function (a, b) {
       var value1 = Number(a[property]);
       var value2 = Number(b[property]);
       return value1 - value2;
     };
   };
 
-  fetchQueryWpsWDXX = item => {
-    FetchQueryWpsWDXX({
-      lcb: item.lcbid,
-      sxid: item.sxid,
-      xmmc: this.state.xmid,
-    })
-      .then((ret = {}) => {
-        const { code = 0, record = [] } = ret;
-        // console.log("WpsWDXXData", record);
-        if (code === 1) {
-          if (record.url.includes('[')) {
-            let obj = JSON.parse(record.url);
-            obj.push([item.sxmc]);
-            this.setState({
-              fileList: obj,
-              fileListVisible: true,
-            });
-          } else {
-            this._WpsInvoke({
-              Index: 'OpenFile',
-              // AppType:'wps',
-              filepath: record.url,
-            });
-          }
-        }
-      })
-      .catch(error => {
-        message.error(!error.success ? error.message : error.note);
-      });
-  };
+  // fetchQueryWpsWDXX = item => {
+  //   FetchQueryWpsWDXX({
+  //     lcb: item.lcbid,
+  //     sxid: item.sxid,
+  //     xmmc: this.state.xmid,
+  //   })
+  //     .then((ret = {}) => {
+  //       const { code = 0, record = [] } = ret;
+  //       // console.log("WpsWDXXData", record);
+  //       if (code === 1) {
+  //         if (record.url.includes('[')) {
+  //           let obj = JSON.parse(record.url);
+  //           obj.push([item.sxmc]);
+  //           this.setState({
+  //             fileList: obj,
+  //             fileListVisible: true,
+  //           });
+  //         } else {
+  //           this._WpsInvoke({
+  //             Index: 'OpenFile',
+  //             // AppType:'wps',
+  //             filepath: record.url,
+  //           });
+  //         }
+  //       }
+  //     })
+  //     .catch(error => {
+  //       message.error(!error.success ? error.message : error.note);
+  //     });
+  // };
 
   fetchQueryLifecycleStuff = e => {
     FetchQueryLifecycleStuff({
@@ -632,7 +632,7 @@ class LifeCycleManagementTabs extends React.Component {
       xmmc: e ? e : this.state.xmid,
     })
       .then((ret = {}) => {
-        const { code = 0, record = [] } = ret;
+        const {code = 0, record = []} = ret;
         // console.log("detailData",record);
         if (code === 1) {
           this.setState({
@@ -1009,7 +1009,7 @@ class LifeCycleManagementTabs extends React.Component {
   //文件wps预览-勿删
   handleClick = item => {
     // console.log(item);
-    this.fetchQueryWpsWDXX(item);
+    // this.fetchQueryWpsWDXX(item);
   };
 
   //文件wps预览-勿删

@@ -20,7 +20,7 @@ import {
 } from "../../../../services/pmsServices";
 import Points from "../../LifeCycleManagement/Points";
 import moment from 'moment';
-import { WpsInvoke, WpsClientOpen } from '../../../../js/wpsjsrpcsdk';
+// import { WpsInvoke, WpsClientOpen } from '../../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from "../../../../utils/config";
 import ContractInfoUpdate from '../../LifeCycleManagement/ContractInfoUpdate';
 import BidInfoUpdate from '../../LifeCycleManagement/BidInfoUpdate';
@@ -379,41 +379,41 @@ class ProjectSchedule extends React.Component {
     }
   }
 
-  fetchQueryWpsWDXX = (item) => {
-    FetchQueryWpsWDXX({
-      lcb: item.lcbid,
-      sxid: item.sxid,
-      xmmc: item.xmid
-    }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
-      // console.log("WpsWDXXData", record);
-      if (code === 1) {
-        if (record.url.includes("[")) {
-          let obj = JSON.parse(record.url);
-          obj.push([item.sxmc])
-          this.setState({
-            fileList: obj,
-            fileListVisible: true,
-          })
-        } else {
-          this._WpsInvoke({
-            Index: 'OpenFile',
-            // AppType:'wps',
-            filepath: record.url,
-          })
-        }
-      }
-    }).catch((error) => {
-      console.error(!error.success ? error.message : error.note);
-    });
-  }
+  // fetchQueryWpsWDXX = (item) => {
+  //   FetchQueryWpsWDXX({
+  //     lcb: item.lcbid,
+  //     sxid: item.sxid,
+  //     xmmc: item.xmid
+  //   }).then((ret = {}) => {
+  //     const { code = 0, record = [] } = ret;
+  //     // console.log("WpsWDXXData", record);
+  //     if (code === 1) {
+  //       if (record.url.includes("[")) {
+  //         let obj = JSON.parse(record.url);
+  //         obj.push([item.sxmc])
+  //         this.setState({
+  //           fileList: obj,
+  //           fileListVisible: true,
+  //         })
+  //       } else {
+  //         this._WpsInvoke({
+  //           Index: 'OpenFile',
+  //           // AppType:'wps',
+  //           filepath: record.url,
+  //         })
+  //       }
+  //     }
+  //   }).catch((error) => {
+  //     console.error(!error.success ? error.message : error.note);
+  //   });
+  // }
 
   fetchQueryLifecycleStuff = (e) => {
     FetchQueryLifecycleStuff({
       cxlx: 'ALL',
       xmmc: e ? e : this.state.xmid,
     }).then((ret = {}) => {
-      const { code = 0, record = [] } = ret;
+      const {code = 0, record = []} = ret;
       // console.log("detailData",record);
       if (code === 1) {
         this.setState({
@@ -769,7 +769,7 @@ class ProjectSchedule extends React.Component {
   //文件wps预览-勿删
   handleClick = (item) => {
     console.log(item);
-    this.fetchQueryWpsWDXX(item);
+    // this.fetchQueryWpsWDXX(item);
   }
 
   //文件wps预览-勿删

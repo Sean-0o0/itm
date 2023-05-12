@@ -19,7 +19,7 @@ import {
   CreateOperateHyperLink,
   QueryPaymentFlowDetailFile,
 } from '../../../../../services/pmsServices';
-import { WpsInvoke, WpsClientOpen } from '../../../../../js/wpsjsrpcsdk';
+// import { WpsInvoke, WpsClientOpen } from '../../../../../js/wpsjsrpcsdk';
 import { PluginsUrl } from '../../../../../utils/config';
 import moment from 'moment';
 import AddExpense from './AddExpense';

@@ -81,17 +81,17 @@ class MainPageLayout extends React.PureComponent {
   }
 
   UNSAFE_componentWillReceiveProps(nextProps) {
-    const { menuTree = [], menuTreeLoaded } = this.state;
+    const {menuTree = [], menuTreeLoaded} = this.state;
     const {
       hasAuthed,
-      location: { pathname, search },
+      location: {pathname, search},
     } = nextProps;
     const {
-      location: { pathname: prePathname, search: preSearch },
+      location: {pathname: prePathname, search: preSearch},
     } = this.props;
     //判断菜单是否已经加载过了?
-    // let flag = !menuTreeLoaded && hasAuthed;
-    let flag = hasAuthed;
+    let flag = !menuTreeLoaded && hasAuthed;
+    // let flag = hasAuthed;
     // console.log("menuTreeLoaded", menuTreeLoaded)
     // console.log("hasAuthed", hasAuthed)
     // console.log("菜单菜单菜单", flag)
