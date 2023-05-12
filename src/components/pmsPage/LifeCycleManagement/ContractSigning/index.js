@@ -158,6 +158,10 @@ class ContractSigning extends React.Component {
           message.warn('请选择紧急程度！');
           return;
         }
+        if (errs.includes('issend')) {
+          message.warn('请选择是否直接送审！');
+          return;
+        }
         if (errs.includes('HTMBLX')) {
           message.warn('请选择合同模版类型！');
           return;
@@ -241,7 +245,7 @@ class ContractSigning extends React.Component {
       },
       //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
       filerela: arr,
-      issend: 1, //是否直接送审，固定传1
+      issend: Number(values.issend), //是否直接送审
       je: values.je, //金额
       loginname: loginUser.loginName, //登录用户userid
       title: values.title, //标题
@@ -511,11 +515,29 @@ class ContractSigning extends React.Component {
                                 // </Select>
                                 <Radio.Group>
                                   {LCJJCD.length > 0 &&
-                                    LCJJCD.map((item, index) => {
-                                      return <Radio value={item.ibm}>{item.note}</Radio>;
-                                    })}
+                                  LCJJCD.map((item, index) => {
+                                    return <Radio value={item.ibm}>{item.note}</Radio>;
+                                  })}
                                 </Radio.Group>,
                               )}
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={24}>
+                          <Col span={12}>
+                            <Form.Item label="是否直接送审">
+                              {getFieldDecorator('issend', {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: '是否直接送审不允许空值',
+                                  },
+                                ],
+                                initialValue: '',
+                              })(<Radio.Group>
+                                <Radio value={1}>直接送审</Radio>
+                                <Radio value={2}>发送至OA草稿箱</Radio>
+                              </Radio.Group>)}
                             </Form.Item>
                           </Col>
                         </Row>
