@@ -4,6 +4,7 @@ import {
   FetchQueryOAUrl,
   FetchQueryOwnerWorkflow,
   GetApplyListProvisionalAuth,
+  RemindSubProjectFinish,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
 import { message, Popover, Modal } from 'antd';
@@ -22,6 +23,7 @@ import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
 const { api } = config;
+const { confirm } = Modal;
 const {
   pmsServices: { getStreamByLiveBos },
 } = api;
@@ -325,7 +327,7 @@ class ItemBtn extends React.Component {
   };
 
   //员工评价开启
-  getygpjkq = (done, item) => {
+  getCz = (done, item) => {
     const ygpj = item => {
       let params = this.getParams('View_XMRYPF', 'View_XMRYPF_OPENCOMMENT', [
         {
@@ -338,16 +340,42 @@ class ItemBtn extends React.Component {
       });
       this.getLink(params, 'lbModalUrl');
     };
-    // if (done)
-    //   return (
-    //     <div className="opr-more">
-    //       <div className="reopr-btn" onClick={() => ygpj(item)}>
-    //         修改
-    //       </div>
-    //     </div>
-    //   );
+    const txzxmwsxx = item => {
+      confirm({
+        okText: '确认',
+        cancelText: '取消',
+        title: '提示',
+        content: '将提醒未补充完整信息的子项目进行信息补充，请确认是否进行提醒',
+        onOk() {
+          RemindSubProjectFinish({
+            parentId: Number(item.xmid),
+          })
+            .then(res => {
+              if (res?.success) {
+                // console.log('🚀 ~ RemindSubProjectFinish ~ res', res);
+                message.success('操作成功', 1);
+              }
+            })
+            .catch(e => {
+              console.error('RemindSubProjectFinish', e);
+              message.error('操作失败', 1);
+            });
+        },
+        onCancel() {},
+      });
+    };
+    const cz = item => {
+      if (item.sxmc === '员工评价开启') {
+        ygpj(item);
+        return;
+      }
+      if (item.sxmc === '提醒子项目完善信息') {
+        txzxmwsxx(item);
+        return;
+      }
+    };
     return (
-      <div className="opr-btn" onClick={() => ygpj(item)}>
+      <div className="opr-btn" onClick={() => cz(item)}>
         操作
       </div>
     );
@@ -575,8 +603,8 @@ class ItemBtn extends React.Component {
         content: `将批量打印pdf和图片附件，word文件暂不支持批量打印，麻烦您自行打印！`,
         okText: '打印',
         cancelText: '取消',
-        onOk:async()=> {
-          setIsSpinning(true)
+        onOk: async () => {
+          setIsSpinning(true);
           await axios({
             method: 'GET',
             url: getStreamByLiveBos,
@@ -588,7 +616,7 @@ class ItemBtn extends React.Component {
             .then(res => {
               let blob = new Blob([res.data], { type: 'application/pdf' });
               const src = URL.createObjectURL(blob);
-              setIsSpinning(false)
+              setIsSpinning(false);
               this.setState(
                 {
                   src,
@@ -602,10 +630,10 @@ class ItemBtn extends React.Component {
               );
             })
             .catch(err => {
-              setIsSpinning(false)
+              setIsSpinning(false);
               message.error('流程打印失败', 1);
             });
-        }
+        },
       });
     };
     const reoprMoreCotent = (
@@ -704,9 +732,10 @@ class ItemBtn extends React.Component {
       case '硬件合同':
         return this.getWdscxg(done, item);
 
-      //其他
+      //操作
       case '员工评价开启':
-        return this.getygpjkq(done, item);
+      case '提醒子项目完善信息':
+        return this.getCz(done, item);
 
       default:
         console.error(`🚀 ~ 该事项名称【${name}】未配置`);
@@ -833,7 +862,12 @@ class ItemBtn extends React.Component {
       footer: null,
     };
 
-    // console.log("🚀 ~ file: index.js ~ line 511 ~ ItemBtn ~ render ~ item, xmmc, xmbh", item, xmmc, xmbh)
+    // console.log(
+    //   '🚀 ~ file: index.js ~ line 511 ~ ItemBtn ~ render ~ item, xmmc, xmbh',
+    //   item,
+    //   xmmc,
+    //   xmbh,
+    // );
     return (
       <>
         {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}

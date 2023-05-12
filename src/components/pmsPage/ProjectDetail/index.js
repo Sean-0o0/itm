@@ -26,10 +26,10 @@ export default function ProjectDetail(props) {
     if (xmid !== -1) {
       setIsSpinning(true);
       getIsLeader();
-
-      const htmlContent = document.getElementById('htmlContent');
-      // console.log('🚀 ~ file: index.js ~ line 26 ~ useEffect ~ htmlContent', htmlContent);
-      htmlContent.scrollTop = 0; //页面跳转后滚至顶部
+      // console.log('🚀 ~ ProjectDetail');
+      // const htmlContent = document.getElementById('htmlContent');
+      // // console.log('🚀 ~ file: index.js ~ line 26 ~ useEffect ~ htmlContent', htmlContent);
+      // htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     }
     return () => {};
   }, [HJRYDJ, ZSCQLX, RYGW, CGFS, xmid]);

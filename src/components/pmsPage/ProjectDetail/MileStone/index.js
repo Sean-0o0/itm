@@ -31,7 +31,7 @@ export default function MileStone(props) {
   const [riskTxt, setRiskTxt] = useState(''); //风险弹窗
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
-  // const [noCurStep, setNoCurStep] = useState(true); //不跳转当前里程碑
+  const [noCurStep, setNoCurStep] = useState(false); //初次加载跳，后续操作不跳当前里程碑
 
   //防抖定时器
   let timer = null;
@@ -52,6 +52,7 @@ export default function MileStone(props) {
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
+    console.log('里程碑更新了', xmid, prjBasic);
     return () => {
       // 组件销毁时移除监听事件
       window.removeEventListener('resize', resizeUpdate);
@@ -62,9 +63,9 @@ export default function MileStone(props) {
   }, []);
 
   useEffect(() => {
+    // console.log('里程碑更新了', xmid, prjBasic);
     if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
       getMileStoneData(false);
-      // console.log('里程碑更新了');
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};
@@ -76,7 +77,7 @@ export default function MileStone(props) {
   };
 
   //获取里程碑数据
-  const getMileStoneData = (noNewCurStep = true) => {
+  const getMileStoneData = () => {
     //所有里程碑
     FetchQueryLiftcycleMilestone({
       xmmc: Number(xmid),
@@ -85,7 +86,7 @@ export default function MileStone(props) {
       .then(res => {
         if (res?.success) {
           let data = [...res.record];
-          if (prjBasic.SFBHZXM && prjBasic.SFBHZXM !== '0') {
+          if (prjBasic.SFBHZXM && Number(prjBasic.SFBHZXM) > 0) {
             data = [...res.record].filter(
               x => x.lcbmc === '项目立项' || x.lcbmc === '市场及需求分析',
             );
@@ -143,10 +144,11 @@ export default function MileStone(props) {
                       });
                       // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
                       setMileStoneData(p => [...data]);
-                      if (!noNewCurStep) {
+                      if (!noCurStep) {
+                        setNoCurStep(true);
                         //初次刷新，自动选择当前里程碑
                         setCurrentStep(currentIndex);
-                        if (prjBasic.SFBHZXM && prjBasic.SFBHZXM !== '0') {
+                        if (prjBasic.SFBHZXM && Number(prjBasic.SFBHZXM) > 0) {
                           let xmlxIndex = 0;
                           data.forEach((y, i) => {
                             if (y.lcbmc === '项目立项') xmlxIndex = i;
@@ -343,9 +345,9 @@ export default function MileStone(props) {
               </Tooltip>
               <ItemBtn
                 item={x}
-                xmmc={prjBasic?.XMMC || ''}
-                xmbh={prjBasic?.XMBM || ''}
-                xwhid={prjBasic?.XWHID || -1}
+                xmmc={prjBasic.XMMC || ''}
+                xmbh={prjBasic.XMBM || ''}
+                xwhid={prjBasic.XWHID || -1}
                 setIsSpinning={setIsSpinning}
                 refresh={refresh}
                 isHwPrj={isHwPrj}

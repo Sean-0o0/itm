@@ -349,4 +349,10 @@ export default [
     url: '/projectManage/queryMemberInfo',
     dis: '查询人员信息',
   },
+  {
+    code: '',
+    key: 'remindSubProjectFinish',
+    url: '/projectManage/remindSubProjectFinish',
+    dis: '提醒子项目完善信息',
+  },
 ];

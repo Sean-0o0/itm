@@ -66,6 +66,7 @@ const {
     operateSupplierInfo,
     querySupplierDetailInfo,
     queryMemberInfo,
+    remindSubProjectFinish,
   },
 } = api;
 
@@ -617,7 +618,6 @@ export async function UpdateProjectOtherInfo(payload) {
   return request(option);
 }
 
-
 // 查询项目留言
 export async function QueryProjectMessages(payload) {
   const option = {
@@ -682,6 +682,16 @@ export async function OperateSupplierInfo(payload) {
 export async function QueryMemberInfo(payload) {
   const option = {
     url: queryMemberInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 提醒子项目完善信息
+export async function RemindSubProjectFinish(payload) {
+  const option = {
+    url: remindSubProjectFinish,
     method: 'post',
     data: payload,
   };

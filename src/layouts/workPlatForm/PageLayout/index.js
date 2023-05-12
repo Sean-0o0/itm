@@ -574,7 +574,10 @@ class MainPageLayout extends React.PureComponent {
                 <CacheSwitch>
                   {// 路由
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
-                    if (path && path.includes('/pms/manage/ProjectInfo')) {
+                    if (
+                      (path && path.includes('/pms/manage/ProjectInfo')) ||
+                      (path && path.includes('/pms/manage/ProjectDetail'))
+                    ) {
                       return (
                         path && (
                           <Route
@@ -585,7 +588,6 @@ class MainPageLayout extends React.PureComponent {
                             cacheKey={key || path}
                             path={path}
                             unmount={false}
-                            saveScrollPosition
                             component={component}
                           />
                         )
