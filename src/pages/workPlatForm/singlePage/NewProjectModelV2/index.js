@@ -4062,6 +4062,25 @@ class NewProjectModelV2 extends React.Component {
                             <Radio.Group defaultValue={Number(subItem)} onChange={e => {
                               console.log("eeeee", e.target.value);
                               this.setState({subItem: String(e.target.value)});
+                              this.fetchQueryMilepostInfo({
+                                type: this.state.basicInfo.projectType,
+                                isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                //项目预算类型
+                                haveType: this.state.haveType,
+                                //项目软件预算
+                                softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
+                                //框架预算
+                                frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
+                                //单独采购预算
+                                singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
+                                xmid: basicInfo.projectId,
+                                biddingMethod: basicInfo.biddingMethod,
+                                budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                label: basicInfo.labelTxt,
+                                //是否包含子项目
+                                haveChild: Number(e.target.value),
+                                queryType: "ALL"
+                              });
                             }}>
                               <Radio value={1}>是</Radio>
                               <Radio value={2}>否</Radio>
