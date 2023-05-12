@@ -11,7 +11,7 @@ class AttachLibrary extends Component {
             current: 1,
             pageSize: 20,
             paging: 1,
-            total: 0,
+            total: -1,
             sort: '',
         },
         cxlx: '',

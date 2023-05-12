@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Button, Table, Popover, Empty, message, Pagination } from 'antd'
+import { Button, Table, Popover, Empty, message, Pagination, Tooltip } from 'antd'
 import HistoryAttach from './HistoryAttach'
 import axios from 'axios';
 import config from '../../../../utils/config';
@@ -226,6 +226,7 @@ class InfoTable extends Component {
                 render: (text, row, index) => {
                     const { xmid = '' } = row;
                     return <div >
+                        <Tooltip title={text} placement="topLeft">
                         <Link
                             className='opr-btn'
                             to={{
@@ -241,7 +242,9 @@ class InfoTable extends Component {
 
                         >
                             {text}
-                        </Link></div>
+                        </Link>
+                        </Tooltip>
+                        </div>
                 }
             },
             {
@@ -367,7 +370,7 @@ class InfoTable extends Component {
                     />
                 </div>
                 <div className='page-individual'>
-                    {tableData.length!==0&&<Pagination
+                    {(pageParams.total!==-1&&pageParams.total!==0)&&<Pagination
                         onChange={this.handleChange}
                         onShowSizeChange={this.handleChange}
                         pageSize={pageParams.pageSize}

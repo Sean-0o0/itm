@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, Pagination, Popover } from 'antd'
+import { Table, Pagination, Popover, Tooltip } from 'antd'
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import 'moment/locale/zh-cn';
@@ -82,6 +82,7 @@ class StaffTable extends Component {
             render: (value, row, index) => {
                 const { RYID = '' } = row;
                 return <div title={value}>
+                    <Tooltip title={value} placement="topLeft">
                     <Link
                         className='opr-btn'
                         to={{
@@ -97,7 +98,7 @@ class StaffTable extends Component {
 
                     >
                         {value}
-                    </Link></div>
+                    </Link></Tooltip></div>
             },
         }, {
             title: '立项时间',

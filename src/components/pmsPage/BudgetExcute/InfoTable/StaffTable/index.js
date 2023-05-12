@@ -1,11 +1,10 @@
 import React, { Component } from 'react'
-import { Table, Pagination, message } from 'antd'
+import { Table, Pagination, message, Tooltip } from 'antd'
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import 'moment/locale/zh-cn';
 import { EncryptBase64 } from "../../../../Common/Encrypt";
 import { QueryBudgetOverviewInfo } from '../../../../../services/pmsServices'
-import { isNumber } from 'lodash';
 
 class StaffTable extends Component {
     state = {
@@ -84,7 +83,6 @@ class StaffTable extends Component {
         if (expanded === false) {
             // 因为如果不断的添加键值对，会造成数据过于庞大，浪费资源，
             // 因此在每次合并的时候讲相应键值下的数据清空
-            console.log("合并！");
             this.setState({
                 subTabData: {
                     ...this.state.subTabData,
@@ -92,7 +90,6 @@ class StaffTable extends Component {
                 }
             });
         } else {
-            console.log("展开！");
             this.queryBudgetOverviewInfo(YSID)
         }
     }
@@ -121,6 +118,7 @@ class StaffTable extends Component {
                 render: (text, row, index) => {
                     const { XMID = '' } = row;
                     return <div title={text}>
+                        <Tooltip title={text} placement="topLeft">
                         <Link
                             className='opr-btn'
                             to={{
@@ -136,7 +134,9 @@ class StaffTable extends Component {
 
                         >
                             {text}
-                        </Link></div>
+                        </Link>
+                        </Tooltip>
+                        </div>
                 }
             }, {
                 title: '总预算(万元)',

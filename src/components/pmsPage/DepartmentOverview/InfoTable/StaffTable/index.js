@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, Pagination } from 'antd'
+import { Table, Pagination, Tooltip } from 'antd'
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import 'moment/locale/zh-cn';
@@ -157,6 +157,7 @@ class StaffTable extends Component {
             render: (text, row, index) => {
                 const { XMID = '' } = row;
                 return text&&text!=-1?<div title={text}>
+                    <Tooltip title={text} placement="topLeft">
                     <Link
                         className='opr-btn'
                         to={{
@@ -172,7 +173,8 @@ class StaffTable extends Component {
 
                     >
                         {text}
-                    </Link></div>:'暂无'
+                    </Link>
+                    </Tooltip></div>:'暂无'
             }
         },
         {

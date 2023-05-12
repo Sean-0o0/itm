@@ -1,5 +1,5 @@
 import React, { Component } from 'react'
-import { Table, message, Popover, Pagination } from 'antd'
+import { Table, message, Popover, Pagination, Tooltip } from 'antd'
 import moment from 'moment';
 import { EncryptBase64 } from "../../../Common/Encrypt";
 import { Link } from 'react-router-dom';
@@ -45,7 +45,6 @@ class InfoTable extends Component {
 
   render() {
     const { tableLoading = false, tableData = [], pageParams = {}, routes = [] } = this.props;
-    console.log('routes', routes)
 
     const columns = [
       {
@@ -66,6 +65,7 @@ class InfoTable extends Component {
         render: (text, row, index) => {
           const { xmid = '' } = row;
           return <div >
+            <Tooltip title={text} placement="topLeft">
             <Link
               className='opr-btn'
               to={{
@@ -81,7 +81,8 @@ class InfoTable extends Component {
 
             >
               {text}
-            </Link></div>
+            </Link>
+            </Tooltip></div>
         }
       },
       {
@@ -216,7 +217,7 @@ class InfoTable extends Component {
           // }}
           />
         </div>
-        <div className='page-individual'>
+        {(pageParams.total!==-1&&pageParams.total!==0)&&<div className='page-individual'>
           {tableData.length!==0 && <Pagination
             onChange={this.handleChange}
             onShowSizeChange={this.handleChange}
@@ -229,7 +230,7 @@ class InfoTable extends Component {
             showTotal={total => `共 ${total} 条数据`}
           />}
 
-        </div>
+        </div>}
       </div>
     );
   }
