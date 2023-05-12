@@ -21,7 +21,7 @@ class StaffDetail extends Component {
         tableLoading: false,
         pageParams: {
             current: 1,
-            pageSize: 10,
+            pageSize: 20,
             paging: 1,
             total: -1,
             sort: '',
@@ -49,7 +49,7 @@ class StaffDetail extends Component {
             zbxm: '-',//专班项目
             pageParams: {
                 current: 1,
-                pageSize: 10,
+                pageSize: 20,
                 paging: 1,
                 total: -1,
                 sort: '',

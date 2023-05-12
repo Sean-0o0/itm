@@ -367,7 +367,7 @@ class InfoTable extends Component {
                     />
                 </div>
                 <div className='page-individual'>
-                    <Pagination
+                    {tableData.length!==0&&<Pagination
                         onChange={this.handleChange}
                         onShowSizeChange={this.handleChange}
                         pageSize={pageParams.pageSize}
@@ -378,7 +378,7 @@ class InfoTable extends Component {
                         // hideOnSinglePage={true}
                         showQuickJumper={true}
                         showTotal={total => `共 ${total} 条数据`}
-                    />
+                    />}
 
                 </div>
             </div>
