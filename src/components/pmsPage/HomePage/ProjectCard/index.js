@@ -589,7 +589,7 @@ export default function ProjectCard(props) {
           });
         })}
         {total === 0 && (
-          <div style={{ width: '100%', margin: '0 auto' }}>
+          <div style={{ width: '100%', margin: '122px auto' }}>
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           </div>
         )}

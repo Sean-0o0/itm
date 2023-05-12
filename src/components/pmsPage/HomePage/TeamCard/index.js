@@ -11,7 +11,57 @@ export default function TeamCard(props) {
   useEffect(() => {
     const pieChart = echarts.init(pieChartRef.current);
     if (teamData?.length !== 0) {
-      const dataCake = [...teamData];
+      // const dataCake = [...teamData];
+      const dataCake = [
+        {
+          value: 74,
+          name: '信息技术运保部',
+        },
+        {
+          value: 101,
+          name: '信息技术开发部',
+        },
+        {
+          value: 11,
+          name: '外包团队22121',
+        },
+        {
+          value: 74,
+          name: '信息技术运保1224部',
+        },
+        {
+          value: 101,
+          name: '信息技术开43123发部',
+        },
+        {
+          value: 11,
+          name: '外包团453241队',
+        },
+        {
+          value: 74,
+          name: '信息技运33321保部',
+        },
+        {
+          value: 101,
+          name: '信息技1145术开发部',
+        },
+        {
+          value: 11,
+          name: '外包团6563队',
+        },
+        {
+          value: 74,
+          name: '信息技术lll运保部',
+        },
+        {
+          value: 101,
+          name: '信息技术开000发部',
+        },
+        {
+          value: 11,
+          name: '外包团7676队',
+        },
+      ];
       const getValue = name => dataCake?.filter(x => x.name === name)[0].value;
       const pieChartOption = {
         legend: {
@@ -23,6 +73,8 @@ export default function TeamCard(props) {
           right: '0%', //图例距离左的距离
           y: 'center', //图例上下居中
           itemGap: 15,
+          type: 'scroll',
+          pageIconColor: '#3361ff',
           formatter: name => {
             const nameStr = name.length > 8 ? name.substr(0, 8) + '...' : name;
             return `{a|${nameStr}}{b|${getValue(name)}}`;
@@ -57,7 +109,7 @@ export default function TeamCard(props) {
               show: false,
               position: 'center',
               formatter: params => {
-                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;
+                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;ff
               },
               color: 'black',
               fontFamily: 'PingFangSC-Regular, PingFang SC',

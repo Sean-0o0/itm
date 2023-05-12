@@ -140,7 +140,19 @@ export default function StaffInfo(props) {
               });
               parentArr = arr.sort((a, b) => a.orderNum - b.orderNum);
             }
+
             item.members = parentArr;
+            if (item.value === '11168') {
+              item.members?.unshift({
+                gw: '总经理',
+                id: '1852',
+                name: '黄玉锋',
+                orgId: '11168',
+                orgName: '信息技术开发部',
+                xb: '男',
+                xh: '1',
+              });
+            }
             item.children?.forEach(x => {
               let childArr = [];
               memberArr.forEach(y => {
