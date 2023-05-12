@@ -1745,7 +1745,11 @@ class NewProjectModelV2 extends React.Component {
     //新建项目校验子项目信息
     if (String(subItem) === "1" && type === 1) {
       console.log("-----------开始校验子项目表格信息-----------")
-      subItemflag = subItemRecord.length !== 0;
+      subItemflag = subItemRecord.filter(item => item.CZLX !== 'DELETE').length !== 0;
+      if (!subItemflag) {
+        message.warn('项目基本信息-子项目信息至少填写一条数据！');
+        return;
+      }
       //子项目总金额之和
       let subProjectBudget = 0;
       //子项目软件金额之和
@@ -1946,42 +1950,90 @@ class NewProjectModelV2 extends React.Component {
       };
       const _this = this;
       const timeList = milePostInfo.filter(item => item.jssj === this.state.tomorrowTime && item.kssj === this.state.nowTime);
-      if (budgetInfo.projectBudget > budgetInfo.relativeBudget) {
+      if (budgetInfo.projectBudget > budgetInfo.relativeBudget && type === 1) {
         confirm({
           okText: '确认',
           cancelText: '取消',
           title: '提示',
           content: '超过当前预算项目的预算，是否确认？',
           onOk() {
-            confirm({
-              okText: '确认',
-              cancelText: '取消',
-              title: '提示',
-              content: '确认完成？',
-              onOk() {
-                _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-              },
-              onCancel() {
-              },
-            });
+            if (Number(budgetInfo.projectBudget) < 5000) {
+              confirm({
+                okText: '确认',
+                cancelText: '取消',
+                title: '提示',
+                content: '请注意当前的本项目预算单位是元，是否确认？',
+                onOk() {
+                  confirm({
+                    okText: '确认',
+                    cancelText: '取消',
+                    title: '提示',
+                    content: '确认完成？',
+                    onOk() {
+                      _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                    },
+                    onCancel() {
+                    },
+                  });
+                },
+                onCancel() {
+                },
+              });
+            } else {
+              confirm({
+                okText: '确认',
+                cancelText: '取消',
+                title: '提示',
+                content: '确认完成？',
+                onOk() {
+                  _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                },
+                onCancel() {
+                },
+              });
+            }
           },
           onCancel() {
           },
         });
-      }else if(type === 0) {
+      }else if (type === 0) {
         _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-      }else{
-        confirm({
-          okText: '确认',
-          cancelText: '取消',
-          title: '提示',
-          content: '确认完成？',
-          onOk() {
-            _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-          },
-          onCancel() {
-          },
-        });
+      } else if (type === 1) {
+        if (Number(budgetInfo.projectBudget) < 5000) {
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '请注意当前的本项目预算单位是元，是否确认？',
+            onOk() {
+              confirm({
+                okText: '确认',
+                cancelText: '取消',
+                title: '提示',
+                content: '确认完成？',
+                onOk() {
+                  _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                },
+                onCancel() {
+                },
+              });
+            },
+            onCancel() {
+            },
+          });
+        } else {
+          confirm({
+            okText: '确认',
+            cancelText: '取消',
+            title: '提示',
+            content: '确认完成？',
+            onOk() {
+              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+            },
+            onCancel() {
+            },
+          });
+        }
       }
     }
   };
@@ -3763,7 +3815,11 @@ class NewProjectModelV2 extends React.Component {
                                   this.setState({
                                     pureHardwareFlag,
                                     haveType,
-                                    budgetInfo: {...budgetInfo, softBudgetinit: this.state.budgetInfo.softBudget},
+                                    budgetInfo: {
+                                      ...budgetInfo,
+                                      softBudget: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
+                                      softBudgetinit: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget
+                                    },
                                   })
                                   this.fetchQueryMilepostInfo({
                                     type: basicInfo.projectType,

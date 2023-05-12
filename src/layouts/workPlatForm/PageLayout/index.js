@@ -28,7 +28,7 @@ class MainPageLayout extends React.PureComponent {
   constructor(props) {
     super(props);
     // this.menuTreeLoaded = false; // 菜单是否加载
-    this.fetchMenuDatas = debounce(this.fetchMenuDatas, 200);
+    // this.fetchMenuDatas = debounce(this.fetchMenuDatas, 200);
     // 获取菜单默认展开状态，0：不展开，1：展开
     const menuExpansion = localStorage.getItem('menuExpansion');
     // 超时时间判断
@@ -80,7 +80,7 @@ class MainPageLayout extends React.PureComponent {
     clearInterval(this.staticTimer);
   }
 
-  UNSAFE_componentWillReceiveProps(nextProps) {
+  componentWillReceiveProps(nextProps, nextContext) {
     const {menuTree = [], menuTreeLoaded} = this.state;
     const {
       hasAuthed,
@@ -168,6 +168,7 @@ class MainPageLayout extends React.PureComponent {
 
   // 获取权限菜单树
   fetchMenuDatas = async (name = '', isChangeTheme = false, purl = '') => {
+    console.log("获取权限菜单树", name)
     if (name === '') {
       this.setState({
         menuTreeLoaded: true,

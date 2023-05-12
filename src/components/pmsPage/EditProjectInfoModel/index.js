@@ -2031,7 +2031,11 @@ class EditProjectInfoModel extends React.Component {
     //校验子项目信息
     if (String(subItem) === "1") {
       console.log("-----------开始校验子项目表格信息-----------")
-      subItemflag = subItemRecord.length !== 0;
+      subItemflag = subItemRecord.filter(item => item.CZLX !== 'DELETE').length !== 0;
+      if (!subItemflag) {
+        message.warn('项目基本信息-子项目信息至少填写一条数据！');
+        return;
+      }
       //子项目总金额之和
       let subProjectBudget = 0;
       //子项目软件金额之和
@@ -2297,16 +2301,41 @@ class EditProjectInfoModel extends React.Component {
         title: '提示',
         content: '超过当前预算项目的预算，是否确认？',
         onOk() {
-          confirm({
-            okText: '确认',
-            cancelText: '取消',
-            title: '提示',
-            content: '确认完成？',
-            onOk() {
-              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-            },
-            onCancel() {},
-          });
+          if (Number(budgetInfo.projectBudget) < 5000 && type === 1) {
+            confirm({
+              okText: '确认',
+              cancelText: '取消',
+              title: '提示',
+              content: '请注意当前的本项目预算单位是元，是否确认？',
+              onOk() {
+                confirm({
+                  okText: '确认',
+                  cancelText: '取消',
+                  title: '提示',
+                  content: '确认完成？',
+                  onOk() {
+                    _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                  },
+                  onCancel() {
+                  },
+                });
+              },
+              onCancel() {
+              },
+            });
+          } else {
+            confirm({
+              okText: '确认',
+              cancelText: '取消',
+              title: '提示',
+              content: '确认完成？',
+              onOk() {
+                _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+              },
+              onCancel() {
+              },
+            });
+          }
         },
         onCancel() {
         },
@@ -2320,16 +2349,41 @@ class EditProjectInfoModel extends React.Component {
         title: '提示',
         content: '超过当前预算项目的预算，是否确认？',
         onOk() {
-          confirm({
-            okText: '确认',
-            cancelText: '取消',
-            title: '提示',
-            content: '确认完成？',
-            onOk() {
-              _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
-            },
-            onCancel() {},
-          });
+          if (Number(budgetInfo.projectBudget) < 5000 && type === 1) {
+            confirm({
+              okText: '确认',
+              cancelText: '取消',
+              title: '提示',
+              content: '请注意当前的本项目预算单位是元，是否确认？',
+              onOk() {
+                confirm({
+                  okText: '确认',
+                  cancelText: '取消',
+                  title: '提示',
+                  content: '确认完成？',
+                  onOk() {
+                    _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                  },
+                  onCancel() {
+                  },
+                });
+              },
+              onCancel() {
+              },
+            });
+          } else {
+            confirm({
+              okText: '确认',
+              cancelText: '取消',
+              title: '提示',
+              content: '确认完成？',
+              onOk() {
+                _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+              },
+              onCancel() {
+              },
+            });
+          }
         },
         onCancel() {
         },
@@ -4791,27 +4845,31 @@ class EditProjectInfoModel extends React.Component {
                             }
                             className="formItem"
                           >
-                            {getFieldDecorator('projectBudget', {
+                            {
+                              // getFieldDecorator('projectBudget', {
                               // rules: [{
                               //   required: true,
                               //   message: '请输入本项目预算(元)'
                               // }, {
                               //   validator: this.handleValidatorProjectBudget
                               // }],
-                              initialValue: budgetInfo.projectBudget,
-                            })(
-                              <InputNumber
-                                disabled={subItemFlag}
-                                onBlur={e => {
-                                  if (projectBudgetChangeFlag) {
-                                    //子项目总金额之和
-                                    let subProjectBudget = 0;
-                                    //子项目软件金额之和
-                                    let subSoftBudget = 0;
-                                    //子项目框架金额之和
-                                    let subFrameBudget = 0;
-                                    //子项目单独采购金额之和
-                                    let subSingleBudget = 0;
+                              // initialValue: budgetInfo.projectBudget,
+                              // }
+                              // )
+                              (
+                                <InputNumber
+                                  disabled={subItemFlag}
+                                  value={Number(this.state.budgetInfo.projectBudget)}
+                                  onBlur={e => {
+                                    if (projectBudgetChangeFlag) {
+                                      //子项目总金额之和
+                                      let subProjectBudget = 0;
+                                      //子项目软件金额之和
+                                      let subSoftBudget = 0;
+                                      //子项目框架金额之和
+                                      let subFrameBudget = 0;
+                                      //子项目单独采购金额之和
+                                      let subSingleBudget = 0;
                                     subItemRecord.map(item => {
                                       if (item.CZLX !== 'DELETE') {
                                         let total = 0;
@@ -4859,7 +4917,7 @@ class EditProjectInfoModel extends React.Component {
                                   });
                                 }}
                                 precision={0}
-                              />,
+                                />
                             )}
                           </Form.Item>
                         </Col>
@@ -5053,7 +5111,8 @@ class EditProjectInfoModel extends React.Component {
                                                    haveType,
                                                    budgetInfo: {
                                                      ...budgetInfo,
-                                                     softBudgetinit: this.state.budgetInfo.softBudget
+                                                     softBudget: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
+                                                     softBudgetinit: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
                                                    },
                                                  })
                                                  this.fetchQueryMilepostInfo({
@@ -5077,7 +5136,7 @@ class EditProjectInfoModel extends React.Component {
                                                  });
                                                }
                                              }} style={{width: '100%'}} onChange={e => {
-                                  console.log("eeeee", e)
+                                  // console.log("eeeee", e)
                                   let softBudgetChangeFlag = false
                                   if (e !== this.state.budgetInfo.softBudget) {
                                     softBudgetChangeFlag = true;
