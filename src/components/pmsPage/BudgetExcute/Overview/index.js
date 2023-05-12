@@ -101,7 +101,6 @@ class Overview extends Component {
                 {
                     name: '资本性预算执行(万元)',
                     type: 'line',
-                    stack: 'Total',
                     symbolSize: 1,
                     data: data.map(item=> item['资本性预算执行']||0),
                     areaStyle: {
@@ -126,7 +125,6 @@ class Overview extends Component {
                 {
                     name: '非资本性预算(万元)',
                     type: 'line',
-                    stack: 'Total',
                     symbolSize: 1,
                     data: data.map(item=> item['非资本性预算执行']||0),
                     areaStyle: {
@@ -151,7 +149,6 @@ class Overview extends Component {
                 {
                     name: '自主研发投入(万元)',
                     type: 'line',
-                    stack: 'Total',
                     symbolSize: 1,
                     data: data.map(item=> item['科研预算执行']||0),
                     areaStyle: {
