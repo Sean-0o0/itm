@@ -463,7 +463,7 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(curPage, curPageSize, prjMnger, queryType)}
+          onClick={() => handleSearch(curPage, curPageSize, prjMnger, 'ALL')}
         >
           查询
         </Button>
