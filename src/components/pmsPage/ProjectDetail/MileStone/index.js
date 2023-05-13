@@ -273,7 +273,7 @@ export default function MileStone(props) {
     const riskPopoverContent = data => {
       const getItem = (label, content) => {
         return (
-          <div className="content">
+          <div className="content" kry={label}>
             <span className="label">{label}：</span>
             <span>{content}</span>
           </div>
@@ -586,7 +586,7 @@ export default function MileStone(props) {
               {risk
                 .filter(x => x.GLLCBID === hLMileStone.lcbid)
                 ?.map(x => (
-                  <div>
+                  <div key={x.ID}>
                     <Tooltip title={x.FXBT} placement="topLeft">
                       <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
                         {x.FXBT}

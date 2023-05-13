@@ -249,7 +249,7 @@ export default function InfoDisplay(props) {
     return (
       <div className="list">
         {arr.map(x => (
-          <div className="item" key={x.LXRXXID}>
+          <div className="item" key={x.LXR + x.DH}>
             <div className="top">
               <div>{x.LXR}</div>
               <div className="position-tag">{x.ZW}</div>
@@ -297,25 +297,24 @@ export default function InfoDisplay(props) {
           </Link>
         </div>
         {getInfoItem('供应商类型：', item.GYSLX)}
-        {!['', ' ', undefined, null].includes(item.LXRDATA[0].LXR) && (
+        {!['', ' ', undefined, null].includes(item.LXRDATA && item.LXRDATA[0]?.LXR) && (
           <div
             className="info-item"
             key="供应商联系人："
             style={{ display: 'flex', height: 'unset' }}
           >
             <div className="payment-label" style={{ width: 98 }}>
-            供应商联系人：
+              供应商联系人：
             </div>
             <div className="lxr-info">
-                <Popover
-                  title={null}
-                  content={getLxrinfContent(item.LXRDATA)}
-                  placement="bottomRight"
-                  overlayClassName="lxr-info-popover"
-                >
-                  <span>查看详情</span>
-                </Popover>
-              
+              <Popover
+                title={null}
+                content={getLxrinfContent(item.LXRDATA)}
+                placement="bottomRight"
+                overlayClassName="lxr-info-popover"
+              >
+                <span>查看详情</span>
+              </Popover>
             </div>
           </div>
         )}

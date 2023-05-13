@@ -122,7 +122,7 @@ export default function TopConsole(props) {
                     {getTagData(text, idtxt)
                       ?.slice(4)
                       .map((x, i) => (
-                        <div className="tag-item">
+                        <div className="tag-item" key={x.id}>
                           <Link
                             to={{
                               pathname:
@@ -145,7 +145,7 @@ export default function TopConsole(props) {
                 }
                 title={null}
               >
-                <div className="tag-item">...</div>
+                <div className="tag-item" key='...'>...</div>
               </Popover>
             )}
           </>
