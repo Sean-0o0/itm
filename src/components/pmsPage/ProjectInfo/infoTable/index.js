@@ -101,7 +101,7 @@ export default function InfoTable(props) {
     const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize,  prjMnger, queryType, 'YSJE ASC,XH DESC,ID DESC');
+        handleSearch(current, pageSize, prjMnger, queryType, 'YSJE ASC,XH DESC,ID DESC');
       } else {
         handleSearch(current, pageSize, prjMnger, queryType, 'YSJE DESC,XH DESC,ID DESC');
       }
@@ -224,7 +224,9 @@ export default function InfoTable(props) {
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      render: text => (
+        <span style={{ marginRight: 20 }}>{text === '-1' ? '***' : getAmountFormat(text)}</span>
+      ),
     },
     {
       title: '应用部门',

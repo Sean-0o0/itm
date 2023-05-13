@@ -277,33 +277,33 @@ export default function ToDoCard(props) {
   //展开、收起
   const handleUnfold = bool => {
     if (bool) {
-      if (allToDo.length === 0) {
-        setIsLoading(true);
-        FetchQueryOwnerMessage({
-          cxlx: 'ALL',
-          date: Number(new moment().format('YYYYMMDD')),
-          paging: -1,
-          current: 1,
-          pageSize: 99999,
-          total: -1,
-          sort: '',
+      // if (allToDo.length === 0) {
+      setIsLoading(true);
+      FetchQueryOwnerMessage({
+        cxlx: 'ALL',
+        date: Number(new moment().format('YYYYMMDD')),
+        paging: -1,
+        current: 1,
+        pageSize: 99999,
+        total: -1,
+        sort: '',
+      })
+        .then(res => {
+          if (res?.success) {
+            setDataList(p => [...res.record]);
+            setAllToDo(p => [...res.record]);
+            setIsLoading(false);
+            setIsUnfold(bool);
+          }
         })
-          .then(res => {
-            if (res?.success) {
-              setDataList(p => [...res.record]);
-              setAllToDo(p => [...res.record]);
-              setIsLoading(false);
-              setIsUnfold(bool);
-            }
-          })
-          .catch(e => {
-            console.error('FetchQueryOwnerMessage', e);
-            message.error('待办信息查询失败', 1);
-          });
-      } else {
-        setDataList(p => [...allToDo]);
-        setIsUnfold(bool);
-      }
+        .catch(e => {
+          console.error('FetchQueryOwnerMessage', e);
+          message.error('待办信息查询失败', 1);
+        });
+      // } else {
+      //   setDataList(p => [...allToDo]);
+      //   setIsUnfold(bool);
+      // }
     } else {
       setIsUnfold(bool);
       setDataList(p => [...toDoData]);

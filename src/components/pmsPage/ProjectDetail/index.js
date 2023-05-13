@@ -111,6 +111,19 @@ export default function ProjectDetail(props) {
           } else {
             prjBasic.XMLX = XMLX?.filter(x => x.ibm === prjBasic.XMLX)[0]?.note;
           }
+          //供应商信息处理
+          function uniqueFunc(arr, uniId) {
+            const res = new Map();
+            return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+          }
+          let supplierArr = uniqueFunc(p(res.gysxxRecord), 'GYSID');
+          supplierArr.forEach(x => {
+            let lxrdata = [];
+            p(res.gysxxRecord).forEach(y => {
+              if (y.GYSID === x.GYSID) lxrdata.push(y);
+            });
+            x.LXRDATA = [...lxrdata];
+          });
           let obj = {
             prjBasic,
             member,
@@ -122,9 +135,9 @@ export default function ProjectDetail(props) {
             award,
             topic: p(res.ktxxRecord),
             payment: p(res.fkxxRecord),
-            supplier: p(res.gysxxRecord),
+            supplier: supplierArr,
           };
-          // console.log('🚀 ~ getPrjDtlData', obj);
+          console.log('🚀 ~ getPrjDtlData', obj);
           setPrjData(obj);
         }
       })

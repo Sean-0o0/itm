@@ -264,6 +264,69 @@ export default function InfoDisplay(props) {
     );
   };
 
+  const getSupplierInfoRow = () => {
+    if (supplier.length === 0)
+      return (
+        <Empty
+          description="暂无信息"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{ width: '100%', margin: 0 }}
+        />
+      );
+    return supplier.map(item => (
+      <div className="info-row" key={item.GYSID}>
+        <div className="info-item" key="供应商名称：" style={{ display: 'flex', height: 'unset' }}>
+          <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
+          <Link
+            to={{
+              pathname:
+                '/pms/manage/SupplierDetail/' +
+                EncryptBase64(
+                  JSON.stringify({
+                    splId: item?.GYSID,
+                  }),
+                ),
+              state: { routes },
+            }}
+            style={{
+              whiteSpace: 'break-spaces',
+              color: '#3361ff',
+            }}
+          >
+            {item.GYSMC}
+          </Link>
+        </div>
+        {getInfoItem('供应商类型：', item.GYSLX)}
+        {!['', ' ', undefined, null].includes(item.LXRDATA[0].LXR) && (
+          <div
+            className="info-item"
+            key="供应商联系人："
+            style={{ display: 'flex', height: 'unset' }}
+          >
+            <div className="payment-label" style={{ width: 98 }}>
+              联系人：
+            </div>
+            <div className="lxr-info">
+              <div className="lxr-txt">
+                {item.LXR}({item.ZW}){item.DH}
+              </div>
+              {item.LXRDATA.length > 1 && (
+                <Popover
+                  title={null}
+                  content={getLxrinfContent(item.LXRDATA.slice(1))}
+                  placement="bottomRight"
+                  overlayClassName="lxr-info-popover"
+                >
+                  <span>更多</span>
+                </Popover>
+              )}
+            </div>
+          </div>
+        )}
+      </div>
+    ));
+  };
+
   return (
     <div className="info-display-box">
       {/* 需求列表 */}
@@ -606,71 +669,7 @@ export default function InfoDisplay(props) {
       {!isHwSltPrj && (
         <div className="info-box" key="gysxx">
           <div className="top-title">供应商信息</div>
-          {isNullArr([supplier[0]?.GYSMC, supplier[0]?.GYSLX, supplier[0]?.LXR]) ? (
-            <Empty
-              description="暂无信息"
-              image={Empty.PRESENTED_IMAGE_SIMPLE}
-              style={{ width: '100%', margin: 0 }}
-            />
-          ) : (
-            <div className="info-row">
-              {notNull(supplier[0]?.GYSMC) !== '暂无数据' && (
-                <div
-                  className="info-item"
-                  key="供应商名称："
-                  style={{ display: 'flex', height: 'unset' }}
-                >
-                  <div style={{ flexShrink: 0, color: '#909399' }}>供应商名称：</div>
-                  <Link
-                    to={{
-                      pathname:
-                        '/pms/manage/SupplierDetail/' +
-                        EncryptBase64(
-                          JSON.stringify({
-                            splId: supplier[0]?.GYSID,
-                          }),
-                        ),
-                      state: { routes },
-                    }}
-                    style={{
-                      whiteSpace: 'break-spaces',
-                      color: '#3361ff',
-                    }}
-                  >
-                    {supplier[0]?.GYSMC}
-                  </Link>
-                </div>
-              )}
-              {notNull(supplier[0]?.GYSLX) !== '暂无数据' &&
-                getInfoItem('供应商类型：', supplier[0]?.GYSLX)}
-              {supplier[0]?.LXR && (
-                <div
-                  className="info-item"
-                  key="供应商联系人："
-                  style={{ display: 'flex', height: 'unset' }}
-                >
-                  <div className="payment-label" style={{ width: 98 }}>
-                    供应商联系人：
-                  </div>
-                  <div className="lxr-info">
-                    <div className="lxr-txt">
-                      {supplier[0]?.LXR}({supplier[0]?.ZW}){supplier[0]?.DH}
-                    </div>
-                    {supplier.length > 1 && (
-                      <Popover
-                        title={null}
-                        content={getLxrinfContent(supplier.slice(1))}
-                        placement="bottomRight"
-                        overlayClassName="lxr-info-popover"
-                      >
-                        <span>更多</span>
-                      </Popover>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-          )}
+          {getSupplierInfoRow()}
         </div>
       )}
       {/* 招采信息 */}

@@ -638,8 +638,8 @@ class ItemBtn extends React.Component {
     };
     const reoprMoreCotent = (
       <div className="list">
-        <div className="item" onClick={() => lcfq(item)} key="重新发起">
-          重新发起
+        <div className="item" onClick={() => lcfq(item)} key="再次发起">
+          再次发起
         </div>
         {isFklc && (
           <div className="item" onClick={() => lcdy(item)} key="打印流程附件">
