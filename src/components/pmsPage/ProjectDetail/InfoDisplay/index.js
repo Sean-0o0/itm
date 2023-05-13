@@ -304,22 +304,18 @@ export default function InfoDisplay(props) {
             style={{ display: 'flex', height: 'unset' }}
           >
             <div className="payment-label" style={{ width: 98 }}>
-              联系人：
+            供应商联系人：
             </div>
             <div className="lxr-info">
-              <div className="lxr-txt">
-                {item.LXR}({item.ZW}){item.DH}
-              </div>
-              {item.LXRDATA.length > 1 && (
                 <Popover
                   title={null}
-                  content={getLxrinfContent(item.LXRDATA.slice(1))}
+                  content={getLxrinfContent(item.LXRDATA)}
                   placement="bottomRight"
                   overlayClassName="lxr-info-popover"
                 >
-                  <span>更多</span>
+                  <span>查看详情</span>
                 </Popover>
-              )}
+              
             </div>
           </div>
         )}
