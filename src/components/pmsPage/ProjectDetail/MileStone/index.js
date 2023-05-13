@@ -17,7 +17,7 @@ const { Step } = Steps;
 
 export default function MileStone(props) {
   const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwPrj } = props;
-  const { risk = [], member = [], prjBasic = {} } = prjData;
+  const { risk = [], member = [], prjBasic = {},xmjbxxRecord=[] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
@@ -347,6 +347,7 @@ export default function MileStone(props) {
                 <span>{x.sxmc}</span>
               </Tooltip>
               <ItemBtn
+                xmjbxxRecord={xmjbxxRecord}
                 item={x}
                 xmmc={prjBasic.XMMC || ''}
                 xmbh={prjBasic.XMBM || ''}

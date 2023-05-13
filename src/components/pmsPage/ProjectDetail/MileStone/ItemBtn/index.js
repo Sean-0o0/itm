@@ -1031,6 +1031,7 @@ class ItemBtn extends React.Component {
         {/*合同签署流程弹窗*/}
         {contractSigningVisible && (
           <ContractSigning
+            xmjbxxRecord={this.props.xmjbxxRecord}
             currentXmid={Number(item.xmid)}
             currentXmmc={xmmc}
             contractSigningVisible={contractSigningVisible}

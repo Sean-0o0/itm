@@ -139,7 +139,7 @@ class ContractSigning extends React.Component {
   // 保存数据操作
   handleFormValidate = e => {
     e.preventDefault();
-    const { currentXmid, currentXmmc } = this.props;
+    const { currentXmid, currentXmmc,xmjbxxRecord } = this.props;
     console.log('currentXmid', currentXmid);
     console.log('currentXmmc', currentXmmc);
     const _this = this;
@@ -183,10 +183,23 @@ class ContractSigning extends React.Component {
           return;
         }
       } else {
+        console.log("Number(xmjbxxRecord[0]?.lxlcje)",Number(xmjbxxRecord[0]?.LXLCJE))
+        console.log("xmjbxxRecordxmjbxxRecord",xmjbxxRecord)
+        console.log("Number(xmjbxxRecord[0]?.ysje)",Number(xmjbxxRecord[0]?.YSJE))
         if (_this.state.pbbgTurnRed) {
           message.warn('请上传合同附件！');
           return;
-        } else {
+        } if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE)> 0) {
+          if(Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)){
+            message.warn('合同金额不能超过立项流程金额('+Number(xmjbxxRecord[0]?.LXLCJE)+')！');
+            return;
+          }
+        }if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
+          if(Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)){
+            message.warn('合同金额不能超过预算金额('+Number(xmjbxxRecord[0]?.YSJE)+')！');
+            return;
+          }
+        }else {
           _this.setState({
             isSpinning: true
           })
@@ -380,6 +393,7 @@ class ContractSigning extends React.Component {
           }}
           // onOk={e => this.handleFormValidate(e)}
           onCancel={this.props.closeContractModal}
+          maskClosable={false}
           footer={<div className="modal-footer">
             <Button className="btn-default" onClick={this.props.closeContractModal}>
               取消
@@ -533,7 +547,7 @@ class ContractSigning extends React.Component {
                                     message: '是否直接送审不允许空值',
                                   },
                                 ],
-                                initialValue: '',
+                                initialValue: 1,
                               })(<Radio.Group>
                                 <Radio value={1}>直接送审</Radio>
                                 <Radio value={2}>发送至OA草稿箱</Radio>

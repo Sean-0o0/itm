@@ -70,6 +70,7 @@ export default function DemandListModal(props) {
       visible={visible}
       footer={null}
       onCancel={() => setVisible(false)}
+      maskClosable={false}
     >
       <div className="body-title-box">
         <strong>需求发起</strong>

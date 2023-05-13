@@ -135,9 +135,10 @@ export default function ProjectDetail(props) {
             award,
             topic: p(res.ktxxRecord),
             payment: p(res.fkxxRecord),
-            supplier: supplierArr,
+            supplier: p(res.gysxxRecord),
+            xmjbxxRecord: p(res.xmjbxxRecord),
           };
-          console.log('🚀 ~ getPrjDtlData', obj);
+          // console.log('🚀 ~ getPrjDtlData', obj);
           setPrjData(obj);
         }
       })

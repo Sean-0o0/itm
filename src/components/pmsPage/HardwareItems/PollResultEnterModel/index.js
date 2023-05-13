@@ -301,6 +301,7 @@ class PollResultEnterModel extends React.Component {
             height: '260px',
           }}
           onCancel={this.props.closeModal}
+          maskClosable={false}
           footer={
             <div className="modal-footer">
               <Button className="btn-default" onClick={closeModal}>
