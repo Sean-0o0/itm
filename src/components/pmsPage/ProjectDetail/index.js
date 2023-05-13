@@ -124,6 +124,7 @@ export default function ProjectDetail(props) {
             });
             x.LXRDATA = [...lxrdata];
           });
+          // console.log("🚀 ~ file: index.js:127 ~ getPrjDtlData ~ supplierArr:", supplierArr)
           let obj = {
             prjBasic,
             member,
@@ -135,7 +136,7 @@ export default function ProjectDetail(props) {
             award,
             topic: p(res.ktxxRecord),
             payment: p(res.fkxxRecord),
-            supplier: p(res.gysxxRecord),
+            supplier: supplierArr,
             xmjbxxRecord: p(res.xmjbxxRecord),
           };
           // console.log('🚀 ~ getPrjDtlData', obj);
