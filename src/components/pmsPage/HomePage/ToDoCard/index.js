@@ -14,13 +14,14 @@ import { Link } from 'react-router-dom';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData = [], xmbhData = [], total } = props;
+  const { itemWidth, getAfterItem, getToDoData, toDoData = [], total, xmbhData = [] } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
   const [ryxztxModalVisible, setRyxztxModalVisible] = useState(false); //人员新增提醒发起弹窗
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
   const [currentXmid, setCurrentXmid] = useState(-1); //当前项目id
+  const [currentXmmc, setCurrentXmmc] = useState(''); //当前项目名称
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -98,11 +99,13 @@ export default function ToDoCard(props) {
 
   //付款流程
   const handlePaymentProcess = item => {
-    console.log('handlePaymentProcess', item);
+    // console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
+    // setProjectCode(item.xmbh);
     setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
     setIsHwPrj(item.sfbhyj === '1'); //1是2否
     setCurrentXmid(item.xmid);
+    setCurrentXmmc(item.xmmc);
   };
 
   //人员新增提醒
@@ -277,33 +280,33 @@ export default function ToDoCard(props) {
   //展开、收起
   const handleUnfold = bool => {
     if (bool) {
-      if (allToDo.length === 0) {
-        setIsLoading(true);
-        FetchQueryOwnerMessage({
-          cxlx: 'ALL',
-          date: Number(new moment().format('YYYYMMDD')),
-          paging: -1,
-          current: 1,
-          pageSize: 99999,
-          total: -1,
-          sort: '',
+      // if (allToDo.length === 0) {
+      setIsLoading(true);
+      FetchQueryOwnerMessage({
+        cxlx: 'ALL',
+        date: Number(new moment().format('YYYYMMDD')),
+        paging: -1,
+        current: 1,
+        pageSize: 99999,
+        total: -1,
+        sort: '',
+      })
+        .then(res => {
+          if (res?.success) {
+            setDataList(p => [...res.record]);
+            setAllToDo(p => [...res.record]);
+            setIsLoading(false);
+            setIsUnfold(bool);
+          }
         })
-          .then(res => {
-            if (res?.success) {
-              setDataList(p => [...res.record]);
-              setAllToDo(p => [...res.record]);
-              setIsLoading(false);
-              setIsUnfold(bool);
-            }
-          })
-          .catch(e => {
-            console.error('FetchQueryOwnerMessage', e);
-            message.error('待办信息查询失败', 1);
-          });
-      } else {
-        setDataList(p => [...allToDo]);
-        setIsUnfold(bool);
-      }
+        .catch(e => {
+          console.error('FetchQueryOwnerMessage', e);
+          message.error('待办信息查询失败', 1);
+        });
+      // } else {
+      //   setDataList(p => [...allToDo]);
+      //   setIsUnfold(bool);
+      // }
     } else {
       setIsUnfold(bool);
       setDataList(p => [...toDoData]);
@@ -406,6 +409,7 @@ export default function ToDoCard(props) {
           paymentModalVisible={paymentModalVisible}
           fetchQueryLifecycleStuff={() => {}}
           currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
           projectCode={projectCode}
           closePaymentProcessModal={() => setPaymentModalVisible(false)}
           onSuccess={() => {

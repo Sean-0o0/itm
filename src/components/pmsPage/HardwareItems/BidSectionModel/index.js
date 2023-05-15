@@ -112,6 +112,7 @@ export default function BidSectionModel(props) {
           height: '650px',
         }}
         onCancel={closeModal}
+        maskClosable={false}
         //   footer={
         //     <div className="modal-footer">
         //       <Button className="btn-default" onClick={closeModal}>

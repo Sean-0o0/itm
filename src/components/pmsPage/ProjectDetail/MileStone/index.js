@@ -17,7 +17,7 @@ const { Step } = Steps;
 
 export default function MileStone(props) {
   const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwPrj } = props;
-  const { risk = [], member = [], prjBasic = {} } = prjData;
+  const { risk = [], member = [], prjBasic = {},xmjbxxRecord=[] } = prjData;
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
@@ -195,6 +195,9 @@ export default function MileStone(props) {
                         if (currentIndex === data.length - 1) {
                           setNextBtnVisible(false);
                         }
+                        if (currentIndex >= data.length - 2) {
+                          setNextBtnVisible(false);
+                        }
                       }
                       setIsSpinning(false);
                       // console.log('我被调用了');
@@ -270,7 +273,7 @@ export default function MileStone(props) {
     const riskPopoverContent = data => {
       const getItem = (label, content) => {
         return (
-          <div className="content">
+          <div className="content" kry={label}>
             <span className="label">{label}：</span>
             <span>{content}</span>
           </div>
@@ -344,6 +347,7 @@ export default function MileStone(props) {
                 <span>{x.sxmc}</span>
               </Tooltip>
               <ItemBtn
+                xmjbxxRecord={xmjbxxRecord}
                 item={x}
                 xmmc={prjBasic.XMMC || ''}
                 xmbh={prjBasic.XMBM || ''}
@@ -582,7 +586,7 @@ export default function MileStone(props) {
               {risk
                 .filter(x => x.GLLCBID === hLMileStone.lcbid)
                 ?.map(x => (
-                  <div>
+                  <div key={x.ID}>
                     <Tooltip title={x.FXBT} placement="topLeft">
                       <div className="risk-tag" key={x.ID} onClick={() => handleRisk(x, 'MOD')}>
                         {x.FXBT}

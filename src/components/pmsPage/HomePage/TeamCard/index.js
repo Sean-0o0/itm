@@ -23,6 +23,8 @@ export default function TeamCard(props) {
           right: '0%', //图例距离左的距离
           y: 'center', //图例上下居中
           itemGap: 15,
+          type: 'scroll',
+          pageIconColor: '#3361ff',
           formatter: name => {
             const nameStr = name.length > 8 ? name.substr(0, 8) + '...' : name;
             return `{a|${nameStr}}{b|${getValue(name)}}`;
@@ -57,7 +59,7 @@ export default function TeamCard(props) {
               show: false,
               position: 'center',
               formatter: params => {
-                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;
+                return `{a|${params.name}}\n{b|${getValue(params.name)}}`;ff
               },
               color: 'black',
               fontFamily: 'PingFangSC-Regular, PingFang SC',

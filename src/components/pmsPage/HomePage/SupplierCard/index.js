@@ -125,7 +125,6 @@ export default function SupplierCard(props) {
       fn(...arguments);
     }, waits);
   };
-
   return (
     <div className="supplier-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>

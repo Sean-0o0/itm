@@ -139,11 +139,11 @@ class ContractSigning extends React.Component {
   // 保存数据操作
   handleFormValidate = e => {
     e.preventDefault();
-    const { currentXmid, currentXmmc } = this.props;
+    const { currentXmid, currentXmmc,xmjbxxRecord } = this.props;
     console.log('currentXmid', currentXmid);
     console.log('currentXmmc', currentXmmc);
     const _this = this;
-    this.props.form.validateFields((err, values) => {
+    _this.props.form.validateFields((err, values) => {
       if (err) {
         const errs = Object.keys(err);
         if (errs.includes('BGRQ')) {
@@ -156,6 +156,10 @@ class ContractSigning extends React.Component {
         }
         if (errs.includes('urgent')) {
           message.warn('请选择紧急程度！');
+          return;
+        }
+        if (errs.includes('issend')) {
+          message.warn('请选择是否直接送审！');
           return;
         }
         if (errs.includes('HTMBLX')) {
@@ -179,9 +183,33 @@ class ContractSigning extends React.Component {
           return;
         }
       } else {
+        console.log("Number(xmjbxxRecord[0]?.lxlcje)",Number(xmjbxxRecord[0]?.LXLCJE))
+        console.log("xmjbxxRecordxmjbxxRecord",xmjbxxRecord)
+        console.log("Number(xmjbxxRecord[0]?.ysje)",Number(xmjbxxRecord[0]?.YSJE))
         if (_this.state.pbbgTurnRed) {
           message.warn('请上传合同附件！');
           return;
+        } if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE)> 0) {
+          if (Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)) {
+            message.warn('合同金额不能超过立项流程金额(' + Number(xmjbxxRecord[0]?.LXLCJE) + ')！');
+            return;
+          } else {
+            _this.setState({
+              isSpinning: true
+            })
+            _this.individuationGetOAResult(values);
+          }
+        }
+        if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
+          if (Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)) {
+            message.warn('合同金额不能超过预算金额(' + Number(xmjbxxRecord[0]?.YSJE) + ')！');
+            return;
+          } else {
+            _this.setState({
+              isSpinning: true
+            })
+            _this.individuationGetOAResult(values);
+          }
         } else {
           _this.setState({
             isSpinning: true
@@ -241,7 +269,7 @@ class ContractSigning extends React.Component {
       },
       //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
       filerela: arr,
-      issend: 1, //是否直接送审，固定传1
+      issend: Number(values.issend), //是否直接送审
       je: values.je, //金额
       loginname: loginUser.loginName, //登录用户userid
       title: values.title, //标题
@@ -376,6 +404,7 @@ class ContractSigning extends React.Component {
           }}
           // onOk={e => this.handleFormValidate(e)}
           onCancel={this.props.closeContractModal}
+          maskClosable={false}
           footer={<div className="modal-footer">
             <Button className="btn-default" onClick={this.props.closeContractModal}>
               取消
@@ -511,11 +540,29 @@ class ContractSigning extends React.Component {
                                 // </Select>
                                 <Radio.Group>
                                   {LCJJCD.length > 0 &&
-                                    LCJJCD.map((item, index) => {
-                                      return <Radio value={item.ibm}>{item.note}</Radio>;
-                                    })}
+                                  LCJJCD.map((item, index) => {
+                                    return <Radio value={item.ibm}>{item.note}</Radio>;
+                                  })}
                                 </Radio.Group>,
                               )}
+                            </Form.Item>
+                          </Col>
+                        </Row>
+                        <Row gutter={24}>
+                          <Col span={12}>
+                            <Form.Item label="是否直接送审">
+                              {getFieldDecorator('issend', {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: '是否直接送审不允许空值',
+                                  },
+                                ],
+                                initialValue: 1,
+                              })(<Radio.Group>
+                                <Radio value={1}>直接送审</Radio>
+                                <Radio value={2}>发送至OA草稿箱</Radio>
+                              </Radio.Group>)}
                             </Form.Item>
                           </Col>
                         </Row>

@@ -3,7 +3,7 @@ import { connect } from 'dva';
 import { Layout } from 'antd';
 import classnames from 'classnames';
 import LoginForm from '../../components/WorkPlatForm/LoginPage';
-import mapLogo from '../../assets/apex-logo-login1.png';
+import mapLogo from '../../assets/apex-logo-zszq-left.png';
 import mapImg from '../../assets/map.png';
 import TrackCanvas from './TrackCanvas';
 // import testImg from '../../../../src/assets/dev_app_qrcode.png';
@@ -85,16 +85,20 @@ class LoginPageLayout extends React.PureComponent {
         <Header className="m-header-login">
           <div className="m-header-login-content">
             <div className="m-logo">
-              {
+              <div style={{color: '#fff', fontSize: '20px', width: '200px'}}>
+              <img src={mapLogo} alt="" />
+                浙商证券
+                </div>
+              {/* {
                 logo && (
                   <a href="#" className="m-logo-link"><img src={logo} alt="" /></a>
                 )
-              }
-              {
+              } */}
+              {/* {
                 !logo && (
                   <a href="#" className="m-logo-link"><img src={mapLogo} alt="" /></a>
                 )
-              }
+              } */}
             </div>
             {/* <div className="m-cellphone">
               <Popover placement="bottom" title={<div>APP二维码</div>} content={<div><img src={require('../../../assets/app_qrcode.png')} alt="app下载二维码" onError={this.showDefaultImgError} /></div>}>

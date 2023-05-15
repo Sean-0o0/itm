@@ -1,5 +1,18 @@
 import React, { useState, useEffect } from 'react';
-import { Row, Col, Form, Input, DatePicker, Upload, Select, Radio, InputNumber, Spin, message } from 'antd';
+import {
+  Row,
+  Col,
+  Form,
+  Input,
+  DatePicker,
+  Upload,
+  Select,
+  Radio,
+  InputNumber,
+  Spin,
+  message,
+  Tooltip,
+} from 'antd';
 import moment from 'moment';
 import {
   QueryCreatePaymentInfo,
@@ -88,7 +101,7 @@ export default function FormOperate(props) {
   };
   //收款账户变化
   const handleSkzhChange = v => {
-    const obj = skzh?.filter(x => x.khmc === v)[0];
+    const obj = skzh?.filter(x => x.yhkh === v)[0];
     setskzhId(obj?.id);
     setYkbSkzhId(obj?.ykbid);
     setCurrentPage(1);
@@ -108,6 +121,7 @@ export default function FormOperate(props) {
       .then(res => {
         if (res.success) {
           let rec = res.record;
+          console.log('🚀 ~ file: index.js:111 ~ firstTimeQueryPaymentAccountList ~ rec:', rec);
           setCurrentPage(1);
           setSkzh(p => [...rec]);
           setIsNoMoreData(false);
@@ -294,6 +308,7 @@ export default function FormOperate(props) {
                 style={{ width: '100%', borderRadius: '8px !important' }}
                 className="skzh-box"
                 showSearch
+                allowClear
                 placeholder="请选择收款账户"
                 onChange={handleSkzhChange}
                 dropdownClassName="payment-account-select"
@@ -306,12 +321,25 @@ export default function FormOperate(props) {
               >
                 {skzh?.map((item = {}, ind) => {
                   return (
-                    <Select.Option key={item.id} value={item.khmc}>
-                      <i
-                        className="iconfont icon-bank"
-                        style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
-                      />
-                      {item.khmc} - {item.yhkh} - {item.wdmc}
+                    <Select.Option key={item.yhkh} value={item.yhkh}>
+                      <Tooltip
+                        title={
+                          <div>
+                            开户行：{item.khmc}
+                            <div>账号：{item.yhkh}</div>
+                            网点：{item.wdmc}
+                          </div>
+                        }
+                      >
+                        <i
+                          className="iconfont icon-bank"
+                          style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
+                        />
+                        {item.khmc} - {item.yhkh} - {item.wdmc}
+                      </Tooltip>
+                      <div style={{ fontSize: '12px', marginLeft: '18px', color: '#bfbfbf' }}>
+                        所属者：{item.ssr}
+                      </div>
                     </Select.Option>
                   );
                 })}

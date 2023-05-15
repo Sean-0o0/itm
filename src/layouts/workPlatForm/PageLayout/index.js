@@ -123,7 +123,9 @@ class MainPageLayout extends React.PureComponent {
         // }
         // if (name !== this.state.name) {
         // 获取权限菜单树
-        this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
+        //this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
+        // // 获取权限菜单树--菜单空白问题处理-暂时写死菜单方案
+        this.fetchMenuDatas("PMSNOYS", false, pathname.concat(search));
         // }
       })
       .catch(error => {

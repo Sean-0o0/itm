@@ -250,6 +250,7 @@ export default function HomePage(props) {
           });
           setIsSpinning(false);
         }
+
       })
       .catch(e => {
         console.error('QueryProjectGeneralInfo', e);
@@ -280,7 +281,9 @@ export default function HomePage(props) {
           });
           setTeamData(p => [...arr]);
           getSupplierData(role);
+          // console.log("🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:", [...arr])
         }
+          
       })
       .catch(e => {
         console.error('QueryMemberOverviewInfo', e);
@@ -473,12 +476,12 @@ export default function HomePage(props) {
             )}
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <ProcessCard processData={processData} total={total.process} />
-            ) : (
+            ) : supplierData.item?.length > 1 ? (
               <SupplierCard
                 supplierData={supplierData}
                 time={moment(overviewInfo?.gysgxsj).format('YYYY-MM-DD')}
               />
-            )}
+            ) : null}
           </div>
         </div>
       </div>

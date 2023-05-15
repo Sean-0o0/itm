@@ -1867,9 +1867,12 @@
     .ant-select-arrow {
       right: 50px;
     }
+    .ant-select-selection__clear {
+      right: 70px;
+    }
 
     .ant-select-selection--single .ant-select-selection__rendered {
-      margin-right: 66px;
+      margin-right: 82px;
     }
   }
 
@@ -6470,7 +6473,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             span {
               flex-shrink: 0;
               color: #3361ff !important;
-              margin-left: 8px;
               cursor: pointer;
             }
           }
@@ -9988,8 +9990,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
 
             .staff-line {
-              align-items: center;
+              align-items: flex-start;
               font-size: 14px;
+              line-height: 24px;
 
               .staff-label {
                 background: #ffffff;
@@ -10003,6 +10006,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
               .staff-value {
                 color: #303133;
+                width: 152px;
+                overflow: hidden; //溢出内容隐藏
+                text-overflow: ellipsis; //文本溢出部分用省略号表示
+                display: -webkit-box; //特别显示模式
+                -webkit-line-clamp: 2; //行数
+                line-clamp: 2;
                 // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
               }
             }

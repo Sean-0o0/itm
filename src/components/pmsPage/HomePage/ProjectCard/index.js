@@ -79,51 +79,52 @@ export default function ProjectCard(props) {
   //展开、收起
   const handleUnfold = bool => {
     if (bool) {
-      if (allPrj.length === 0) {
-        setIsLoading(true);
-        QueryProjectGeneralInfo({
-          queryType: 'SY',
-          role: userRole,
-          org: Number(LOGIN_USER_INFO.org),
-          paging: -1,
-          current: 1,
-          pageSize: 9999,
-          total: -1,
-          sort: '',
-        })
-          .then(res => {
-            if (res?.success) {
-              let arr = JSON.parse(res?.xmxx); //项目信息
-              arr?.forEach(item => {
-                let riskArr = []; //风险信息
-                let participantArr = []; //人员信息
-                JSON.parse(res?.fxxx).forEach(x => {
-                  if (x.XMID === item.XMID) {
-                    riskArr.push(x);
-                  }
-                });
-                JSON.parse(res?.ryxx).forEach(x => {
-                  if (x.XMID === item.XMID) {
-                    participantArr.push(x);
-                  }
-                });
-                item.riskData = [...riskArr];
-                item.participantData = [...participantArr];
+      // if (allPrj.length === 0) {
+      setIsLoading(true);
+      QueryProjectGeneralInfo({
+        queryType: 'SY',
+        role: userRole,
+        org: Number(LOGIN_USER_INFO.org),
+        paging: -1,
+        current: 1,
+        pageSize: 9999,
+        total: -1,
+        sort: '',
+      })
+        .then(res => {
+          if (res?.success) {
+            let arr = JSON.parse(res?.xmxx); //项目信息
+            arr?.forEach(item => {
+              let riskArr = []; //风险信息
+              let participantArr = []; //人员信息
+              JSON.parse(res?.fxxx).forEach(x => {
+                if (x.XMID === item.XMID) {
+                  riskArr.push(x);
+                }
               });
-              setAllPrj(p => [...arr]);
-              setInfoList(p => [...arr]);
-              setIsLoading(false);
-              setIsUnfold(bool);
-            }
-          })
-          .catch(e => {
-            console.error('QueryProjectGeneralInfo', e);
-            message.error('项目信息查询失败', 1);
-          });
-      } else {
-        setInfoList(p => [...allPrj]);
-        setIsUnfold(bool);
-      }
+              JSON.parse(res?.ryxx).forEach(x => {
+                if (x.XMID === item.XMID) {
+                  participantArr.push(x);
+                }
+              });
+              item.riskData = [...riskArr];
+              item.participantData = [...participantArr];
+            });
+            setAllPrj(p => [...arr]);
+            setInfoList(p => [...arr]);
+            setIsLoading(false);
+            setIsUnfold(bool);
+          }
+            
+        })
+        .catch(e => {
+          console.error('QueryProjectGeneralInfo', e);
+          message.error('项目信息查询失败', 1);
+        });
+      // } else {
+      //   setInfoList(p => [...allPrj]);
+      //   setIsUnfold(bool);
+      // }
     } else {
       setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
       setIsUnfold(bool);
@@ -589,7 +590,7 @@ export default function ProjectCard(props) {
           });
         })}
         {total === 0 && (
-          <div style={{ width: '100%', margin: '0 auto' }}>
+          <div style={{ width: '100%', margin: '122px auto' }}>
             <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
           </div>
         )}

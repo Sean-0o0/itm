@@ -126,31 +126,31 @@ export default function ProcessCard(props) {
   //展开、收起
   const handleUnfold = bool => {
     if (bool) {
-      if (allPrc.length === 0) {
-        setIsLoading(true);
-        FetchQueryOwnerWorkflow({
-          paging: -1,
-          current: 1,
-          pageSize: 9999,
-          total: -1,
-          sort: '',
+      // if (allPrc.length === 0) {
+      setIsLoading(true);
+      FetchQueryOwnerWorkflow({
+        paging: -1,
+        current: 1,
+        pageSize: 9999,
+        total: -1,
+        sort: '',
+      })
+        .then(res => {
+          if (res?.success) {
+            setProcessDataList(p => [...res?.record]);
+            setAllPrc(p => [...res?.record]);
+            setIsLoading(false);
+            setIsUnfold(bool);
+          }
         })
-          .then(res => {
-            if (res?.success) {
-              setProcessDataList(p => [...res?.record]);
-              setAllPrc(p => [...res?.record]);
-              setIsLoading(false);
-              setIsUnfold(bool);
-            }
-          })
-          .catch(e => {
-            console.error('FetchQueryOwnerWorkflow', e);
-            message.error('流程情况信息查询失败', 1);
-          });
-      } else {
-        setProcessDataList(p => [...allPrc]);
-        setIsUnfold(bool);
-      }
+        .catch(e => {
+          console.error('FetchQueryOwnerWorkflow', e);
+          message.error('流程情况信息查询失败', 1);
+        });
+      // } else {
+      //   setProcessDataList(p => [...allPrc]);
+      //   setIsUnfold(bool);
+      // }
     } else {
       setProcessDataList(p => [...processData?.slice(0, 3)]);
       setIsUnfold(bool);

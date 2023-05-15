@@ -770,6 +770,7 @@ class EnterBidInfoModel extends React.Component {
             overflow: 'hidden',
           }}
           onCancel={this.props.closeModal}
+          maskClosable={false}
           footer={
             <div className="modal-footer">
               <Button className="btn-default" onClick={this.props.closeModal}>

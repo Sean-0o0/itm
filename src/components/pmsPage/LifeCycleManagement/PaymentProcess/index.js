@@ -203,7 +203,9 @@ const PaymentProcess = props => {
             expenseDepartment: String(orgykbid),
             expenseDate: String(moment(sqrq).format('YYYYMMDD')),
             payeeId: String(ykbSkzhId),
-            description: String(getFieldValue('ms')),
+            description:
+              String(getFieldValue('ms')) +
+              `\n由项目信息技术综合管理平台发起 项目名称：${String(currentXmmc)}`,
             details,
             haveContract: String(sfyht),
             contractAmount: String(getFieldValue('htje')),

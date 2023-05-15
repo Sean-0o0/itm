@@ -186,12 +186,18 @@ class AgreementEnterModel extends React.Component {
   }
 
   handleSaveHtxx = () => {
-    const {contractInfo = []} = this.state;
+    const {contractInfo = [], lcxx} = this.state;
     const {xmid, operateType} = this.props;
     console.log("contractInfocontractInfo", contractInfo)
     if (contractInfo.amount == '' || contractInfo.date == '' || contractInfo.supplierId == '' || contractInfo.flow == '') {
       message.warn("合同信息未填写完整！", 1);
       return;
+    }
+    if (lcxx[0]?.LCHTJE) {
+      if (Number(contractInfo.amount) > Number(lcxx[0]?.LCHTJE)) {
+        message.warn("合同金额超过流程合同金额(" + Number(lcxx[0]?.LCHTJE) + ")！", 1);
+        return;
+      }
     }
     this.setState({
       isSpinning: true,
@@ -289,6 +295,7 @@ class AgreementEnterModel extends React.Component {
             height: '428px',
           }}
           onCancel={this.props.closeModal}
+          maskClosable={false}
           footer={<div className="modal-footer">
             <Button className="btn-default" onClick={this.props.closeModal}>
               取消
