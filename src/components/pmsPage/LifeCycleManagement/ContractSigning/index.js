@@ -143,7 +143,7 @@ class ContractSigning extends React.Component {
     console.log('currentXmid', currentXmid);
     console.log('currentXmmc', currentXmmc);
     const _this = this;
-    this.props.form.validateFields((err, values) => {
+    _this.props.form.validateFields((err, values) => {
       if (err) {
         const errs = Object.keys(err);
         if (errs.includes('BGRQ')) {
@@ -190,20 +190,25 @@ class ContractSigning extends React.Component {
           message.warn('请上传合同附件！');
           return;
         } if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE)> 0) {
-          if(Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)){
-            message.warn('合同金额不能超过立项流程金额('+Number(xmjbxxRecord[0]?.LXLCJE)+')！');
+          if (Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)) {
+            message.warn('合同金额不能超过立项流程金额(' + Number(xmjbxxRecord[0]?.LXLCJE) + ')！');
             return;
+          } else {
+            _this.setState({
+              isSpinning: true
+            })
+            _this.individuationGetOAResult(values);
           }
         }if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
-          if(Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)){
-            message.warn('合同金额不能超过预算金额('+Number(xmjbxxRecord[0]?.YSJE)+')！');
+          if (Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)) {
+            message.warn('合同金额不能超过预算金额(' + Number(xmjbxxRecord[0]?.YSJE) + ')！');
             return;
+          } else {
+            _this.setState({
+              isSpinning: true
+            })
+            _this.individuationGetOAResult(values);
           }
-        }else {
-          _this.setState({
-            isSpinning: true
-          })
-          _this.individuationGetOAResult(values);
         }
       }
     });

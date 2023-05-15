@@ -48,7 +48,6 @@ class AgreementEnterModel extends React.Component {
       flow: '',
       payDate: '-1',
     },
-    lcxxJson:[],
     glgys: [],
     lcxx: [],
     addGysModalVisible: false,
@@ -108,12 +107,10 @@ class AgreementEnterModel extends React.Component {
       flowType: operateType,
     }).then(res => {
       if (res.success) {
-        const {htxx,lcxx} = res;
+        const {htxx} = res;
         const htxxJson = JSON.parse(htxx);
-        const lcxxJson = JSON.parse(lcxx);
         console.log("htxxJson", htxxJson)
         this.setState({
-          lcxxJson:lcxxJson,
           contractInfo: {
             ...contractInfo,
             amount: htxxJson[0].HTJE,
@@ -189,16 +186,16 @@ class AgreementEnterModel extends React.Component {
   }
 
   handleSaveHtxx = () => {
-    const {contractInfo = [],lcxxJson} = this.state;
+    const {contractInfo = [], lcxx} = this.state;
     const {xmid, operateType} = this.props;
     console.log("contractInfocontractInfo", contractInfo)
     if (contractInfo.amount == '' || contractInfo.date == '' || contractInfo.supplierId == '' || contractInfo.flow == '') {
       message.warn("合同信息未填写完整！", 1);
       return;
     }
-    if(lcxxJson[0]?.LCHTJE){
-      if(Number(contractInfo.amount)>Number(lcxxJson[0]?.LCHTJE)){
-        message.warn("合同金额超过流程合同金额("+Number(lcxxJson[0]?.LCHTJE)+")！", 1);
+    if (lcxx[0]?.LCHTJE) {
+      if (Number(contractInfo.amount) > Number(lcxx[0]?.LCHTJE)) {
+        message.warn("合同金额超过流程合同金额(" + Number(lcxx[0]?.LCHTJE) + ")！", 1);
         return;
       }
     }
