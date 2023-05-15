@@ -11,57 +11,7 @@ export default function TeamCard(props) {
   useEffect(() => {
     const pieChart = echarts.init(pieChartRef.current);
     if (teamData?.length !== 0) {
-      // const dataCake = [...teamData];
-      const dataCake = [
-        {
-          value: 74,
-          name: '信息技术运保部',
-        },
-        {
-          value: 101,
-          name: '信息技术开发部',
-        },
-        {
-          value: 11,
-          name: '外包团队22121',
-        },
-        {
-          value: 74,
-          name: '信息技术运保1224部',
-        },
-        {
-          value: 101,
-          name: '信息技术开43123发部',
-        },
-        {
-          value: 11,
-          name: '外包团453241队',
-        },
-        {
-          value: 74,
-          name: '信息技运33321保部',
-        },
-        {
-          value: 101,
-          name: '信息技1145术开发部',
-        },
-        {
-          value: 11,
-          name: '外包团6563队',
-        },
-        {
-          value: 74,
-          name: '信息技术lll运保部',
-        },
-        {
-          value: 101,
-          name: '信息技术开000发部',
-        },
-        {
-          value: 11,
-          name: '外包团7676队',
-        },
-      ];
+      const dataCake = [...teamData];
       const getValue = name => dataCake?.filter(x => x.name === name)[0].value;
       const pieChartOption = {
         legend: {

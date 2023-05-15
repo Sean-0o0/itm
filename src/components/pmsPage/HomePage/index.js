@@ -9,7 +9,6 @@ import {
   QueryUserRole,
   FetchQueryOwnerMessage,
   FetchQueryOwnerWorkflow,
-  FetchQueryOwnerProjectList,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -40,7 +39,6 @@ export default function HomePage(props) {
   const [teamData, setTeamData] = useState([]); //队伍建设
   const [supplierData, setSupplierData] = useState({}); //供应商情况
   const [toDoData, setToDoData] = useState([]); //待办数据
-  const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [processData, setProcessData] = useState([]); //流程情况
   const [total, setTotal] = useState({
     todo: 0,
@@ -241,6 +239,7 @@ export default function HomePage(props) {
             item.riskData = [...riskArr];
             item.participantData = [...participantArr];
           });
+          // console.log('🚀 ~ file: index.js:253 ~ getPrjInfo ~ [...arr]:', [...arr]);
           setPrjInfo(p => [...arr]);
           setTotal(p => {
             return {
@@ -279,9 +278,9 @@ export default function HomePage(props) {
             };
           });
           setTeamData(p => [...arr]);
-          getSupplierData(role);console.log("🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:", [...arr])
+          getSupplierData(role);
+          console.log('🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:', [...arr]);
         }
-          
       })
       .catch(e => {
         console.error('QueryMemberOverviewInfo', e);
@@ -324,10 +323,10 @@ export default function HomePage(props) {
               max: maxJe * 1.1,
             });
           });
-          // console.log(
-          //   '🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj',
-          //   obj,
-          // );
+          console.log(
+            '🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj',
+            obj,
+          );
           setSupplierData(obj);
         }
       })
@@ -358,34 +357,11 @@ export default function HomePage(props) {
               todo: res.totalrows,
             };
           });
-          getXmbhData();
         }
       })
       .catch(e => {
         console.error('FetchQueryOwnerMessage', e);
         message.error('待办信息查询失败', 1);
-      });
-  };
-
-  //获取项目编号
-  const getXmbhData = () => {
-    FetchQueryOwnerProjectList({
-      current: 1,
-      cxlx: 'USER',
-      pageSize: 9999,
-      paging: -1,
-      sort: '',
-      total: -1,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerProjectList ~ res', res.record);
-          setXmbhData(p => [...res.record]);
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerProjectList', e);
-        message.error('项目编号信息查询失败', 1);
       });
   };
 
@@ -438,7 +414,6 @@ export default function HomePage(props) {
                 itemWidth={itemWidth}
                 getAfterItem={getAfterItem}
                 toDoData={toDoData}
-                xmbhData={xmbhData}
                 getToDoData={getToDoData}
                 total={total.todo}
               />

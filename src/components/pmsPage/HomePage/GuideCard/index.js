@@ -1,8 +1,8 @@
 import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
-import guidePicture from '../../../../assets/homePage/guide.png';
-import PhotoAvatar from '../../../Common/PhotoAvatar';
+// import guidePicture from '../../../../assets/homePage/guide.png';
 
+const guidePicture = 'http://192.168.4.159:6011/fileurl/home/ftq/data-pms/picture/index-zcyd.png';
 export default function GuideCard(props) {
   const {} = props;
   useEffect(() => {
@@ -12,10 +12,10 @@ export default function GuideCard(props) {
   const handlePictureView = () => {
     let newTab = window.open(guidePicture, '_blank');
     // 在新标签页打开时等待片刻，确保页面完全加载
-    setTimeout(function() {
-      // 设置新标签页的缩放级别
-      window.zoomLevel = 5;
-    }, 1000);
+    // setTimeout(function() {
+    //   // 设置新标签页的缩放级别
+    //   window.zoomLevel = 5;
+    // }, 1000);
   };
   return (
     <div className="guide-card-box">

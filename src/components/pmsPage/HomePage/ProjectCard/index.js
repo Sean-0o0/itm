@@ -115,6 +115,7 @@ export default function ProjectCard(props) {
             setIsLoading(false);
             setIsUnfold(bool);
           }
+            
         })
         .catch(e => {
           console.error('QueryProjectGeneralInfo', e);
