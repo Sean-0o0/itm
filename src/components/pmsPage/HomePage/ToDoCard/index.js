@@ -21,6 +21,7 @@ export default function ToDoCard(props) {
   const [ryxztxModalVisible, setRyxztxModalVisible] = useState(false); //人员新增提醒发起弹窗
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
   const [currentXmid, setCurrentXmid] = useState(-1); //当前项目id
+  const [currentXmmc, setCurrentXmmc] = useState(''); //当前项目名称
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -98,11 +99,12 @@ export default function ToDoCard(props) {
 
   //付款流程
   const handlePaymentProcess = item => {
-    console.log('handlePaymentProcess', item);
+    // console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
     setProjectCode(item.xmbh);
     setIsHwPrj(item.sfbhyj === '1'); //1是2否
     setCurrentXmid(item.xmid);
+    setCurrentXmmc(item.xmmc);
   };
 
   //人员新增提醒
@@ -406,6 +408,7 @@ export default function ToDoCard(props) {
           paymentModalVisible={paymentModalVisible}
           fetchQueryLifecycleStuff={() => {}}
           currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
           projectCode={projectCode}
           closePaymentProcessModal={() => setPaymentModalVisible(false)}
           onSuccess={() => {

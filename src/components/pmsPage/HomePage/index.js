@@ -279,7 +279,7 @@ export default function HomePage(props) {
           });
           setTeamData(p => [...arr]);
           getSupplierData(role);
-          console.log('🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:', [...arr]);
+          // console.log('🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:', [...arr]);
         }
       })
       .catch(e => {
@@ -323,10 +323,10 @@ export default function HomePage(props) {
               max: maxJe * 1.1,
             });
           });
-          console.log(
-            '🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj',
-            obj,
-          );
+          // console.log(
+          //   '🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj',
+          //   obj,
+          // );
           setSupplierData(obj);
         }
       })
