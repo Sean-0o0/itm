@@ -28,7 +28,7 @@ class InfoTable extends Component {
     }, () => {
       this.props.fetchData(queryType, gwbm, {
         current: 1,
-        pageSize: 10,
+        pageSize: 20,
         paging: 1,
         sort: "",
         total: -1
