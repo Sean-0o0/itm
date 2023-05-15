@@ -199,7 +199,8 @@ class ContractSigning extends React.Component {
             })
             _this.individuationGetOAResult(values);
           }
-        }if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
+        }
+        if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
           if (Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)) {
             message.warn('合同金额不能超过预算金额(' + Number(xmjbxxRecord[0]?.YSJE) + ')！');
             return;
@@ -209,6 +210,11 @@ class ContractSigning extends React.Component {
             })
             _this.individuationGetOAResult(values);
           }
+        } else {
+          _this.setState({
+            isSpinning: true
+          })
+          _this.individuationGetOAResult(values);
         }
       }
     });
