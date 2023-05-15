@@ -3916,7 +3916,8 @@ class NewProjectModelV2 extends React.Component {
                                 color: '#f5222d',
                                 marginRight: '4px',
                                 lineHeight: 1
-                              }}>*</span>关联预算项目</span>}>
+                              }}>*</span>关联预算项目<span
+                                style={{fontSize: '12px', fontWeight: 400, color: '#999'}}>(集合项目无需填写)</span></span>}>
                                 {getFieldDecorator('budgetProjectId', {
                                   // rules: [{
                                   //   required: true,
