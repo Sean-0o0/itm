@@ -10,7 +10,7 @@ const { TabPane } = Tabs;
 export default function TableTabs(props) {
   const { data = [], getData, total = 0, loading = false, role } = props;
   const [curPage, setCurPage] = useState(0); //当前页码
-  const [curPageSize, setCurPageSize] = useState(10); //数据长度
+  const [curPageSize, setCurPageSize] = useState(20); //数据长度
   const [curTab, setCurTab] = useState('MX_ALL'); //当前tab
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
