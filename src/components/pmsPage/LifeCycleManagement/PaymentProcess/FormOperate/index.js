@@ -11,6 +11,7 @@ import {
   InputNumber,
   Spin,
   message,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import {
@@ -321,11 +322,24 @@ export default function FormOperate(props) {
                 {skzh?.map((item = {}, ind) => {
                   return (
                     <Select.Option key={item.yhkh} value={item.yhkh}>
-                      <i
-                        className="iconfont icon-bank"
-                        style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
-                      />
-                      {item.khmc} - {item.yhkh} - {item.wdmc}
+                      <Tooltip
+                        title={
+                          <div>
+                            开户行：{item.khmc}
+                            <div>账号：{item.yhkh}</div>
+                            网点：{item.wdmc}
+                          </div>
+                        }
+                      >
+                        <i
+                          className="iconfont icon-bank"
+                          style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
+                        />
+                        {item.khmc} - {item.yhkh} - {item.wdmc}
+                      </Tooltip>
+                      <div style={{ fontSize: '12px', marginLeft: '18px', color: '#bfbfbf' }}>
+                        所属者：{item.ssr}
+                      </div>
                     </Select.Option>
                   );
                 })}

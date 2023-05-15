@@ -173,9 +173,17 @@ export default function StaffInfo(props) {
   };
 
   //成员块
-  const getMemberItem = ({ gender = '男', name = '--', key = '' }) => {
+  const getMemberItem = ({ gender = '男', name = '--', key = '', post = '--' }) => {
     return (
-      <div className="member-item" key={key}>
+      <div
+        className="member-item"
+        key={key}
+        style={
+          post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
+            ? { border: '1px solid #3361ff', borderRadius: '16px' }
+            : {}
+        }
+      >
         <Link
           to={{
             pathname:
@@ -219,7 +227,12 @@ export default function StaffInfo(props) {
                       <span>{m.gw || '--'}</span>
                     </div>
                   </Tooltip>
-                  {getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id })}
+                  {getMemberItem({
+                    gender: m.xb || '--',
+                    name: m.name || '--',
+                    key: m.id,
+                    post: m.gw,
+                  })}
                 </div>
               ))}
             </div>
@@ -233,7 +246,12 @@ export default function StaffInfo(props) {
                 <Panel header={x.title} key={x.value}>
                   <div className="panel-content">
                     {x.members.map(m =>
-                      getMemberItem({ gender: m.xb || '--', name: m.name || '--', key: m.id }),
+                      getMemberItem({
+                        gender: m.xb || '--',
+                        name: m.name || '--',
+                        key: m.id,
+                        post: m.gw,
+                      }),
                     )}
                     {x.members.length === 0 && (
                       <Empty

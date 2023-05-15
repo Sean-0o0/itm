@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData = [], total } = props;
+  const { itemWidth, getAfterItem, getToDoData, toDoData = [], total, xmbhData = [] } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -101,7 +101,8 @@ export default function ToDoCard(props) {
   const handlePaymentProcess = item => {
     // console.log('handlePaymentProcess', item);
     setPaymentModalVisible(true);
-    setProjectCode(item.xmbh);
+    // setProjectCode(item.xmbh);
+    setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
     setIsHwPrj(item.sfbhyj === '1'); //1是2否
     setCurrentXmid(item.xmid);
     setCurrentXmmc(item.xmmc);
