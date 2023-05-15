@@ -5,7 +5,7 @@ import { EncryptBase64 } from '../../../../Common/Encrypt';
 import { FetchQueryProjectLabel } from '../../../../../services/projectManage';
 
 export default function PrjTypeModal(props) {
-  const { visible, setVisible, setFileAddVisible, setSrc_fileAdd, fromHome=false } = props;
+  const { visible, setVisible, setFileAddVisible, setSrc_fileAdd, fromHome = false } = props;
   const [typeData, setTypeData] = useState([]); //项目类型
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   useEffect(() => {
@@ -32,10 +32,20 @@ export default function PrjTypeModal(props) {
       // `/#/single/pms/SaveProject/${EncryptBase64(
       //   JSON.stringify({ xmid: -1, projectType }),
       // )}`,
-      {xmid: -1, type: fromHome, projectType}
+      { xmid: -1, type: fromHome, projectType },
     );
     setVisible(false);
     setFileAddVisible(true);
+  };
+
+  //flex列表尾部占位置的空标签，处理justify-content对齐问题
+  const getAfterItem = width => {
+    let arr = [];
+    for (let i = 0; i < 4; i++) {
+      //每行最多n=4个
+      arr.push('');
+    }
+    return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
   return (
@@ -78,6 +88,7 @@ export default function PrjTypeModal(props) {
             <div className="footer-btn">新建项目</div>
           </div>
         ))}
+        {getAfterItem('23.5%')}
       </Spin>
     </Modal>
   );

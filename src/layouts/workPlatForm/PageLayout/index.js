@@ -605,7 +605,7 @@ class MainPageLayout extends React.PureComponent {
                             cacheKey={key || path}
                             path={path}
                             unmount={false}
-                            saveScrollPosition
+                            // saveScrollPosition
                             component={component}
                           />
                         )
