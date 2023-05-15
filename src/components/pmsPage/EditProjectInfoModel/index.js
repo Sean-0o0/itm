@@ -4794,12 +4794,11 @@ class EditProjectInfoModel extends React.Component {
                                         onChange={e => {
                                           let projectBudgetChangeFlag = false;
                                           if (e !== this.state.budgetInfo.projectBudget) {
-                                            projectBudgetChangeFlag = true;
+                                            this.setState({
+                                              projectBudgetChangeFlag: true,
+                                              budgetInfo: {...budgetInfo, projectBudget: Number(e)},
+                                            });
                                           }
-                                          this.setState({
-                                            projectBudgetChangeFlag,
-                                            budgetInfo: {...budgetInfo, projectBudget: Number(e)},
-                                          });
                                         }}
                                         precision={0}
                                       />
@@ -4909,12 +4908,11 @@ class EditProjectInfoModel extends React.Component {
                                         // console.log("eeeee", e)
                                         let softBudgetChangeFlag = false
                                         if (e !== this.state.budgetInfo.softBudget) {
-                                          softBudgetChangeFlag = true;
+                                          this.setState({
+                                            softBudgetChangeFlag: true,
+                                            budgetInfo: {...budgetInfo, softBudget: Number(e),}
+                                          });
                                         }
-                                        this.setState({
-                                          softBudgetChangeFlag,
-                                          budgetInfo: {...budgetInfo, softBudget: Number(e),}
-                                        });
                                       }} precision={0}/>
                                     )}
                                 </Form.Item>
@@ -4997,12 +4995,11 @@ class EditProjectInfoModel extends React.Component {
                                                    }} style={{width: '100%'}} onChange={e => {
                                         let frameBudgetChangeFlag = false
                                         if (e !== this.state.budgetInfo.frameBudget) {
-                                          frameBudgetChangeFlag = true;
+                                          this.setState({
+                                            frameBudgetChangeFlag: true,
+                                            budgetInfo: {...budgetInfo, frameBudget: Number(e)}
+                                          });
                                         }
-                                        this.setState({
-                                          frameBudgetChangeFlag,
-                                          budgetInfo: {...budgetInfo, frameBudget: Number(e)}
-                                        });
                                       }} precision={0}/>
                                     )}
                                 </Form.Item>
@@ -5087,12 +5084,11 @@ class EditProjectInfoModel extends React.Component {
                                                    }} style={{width: '100%'}} onChange={e => {
                                         let singleBudgetChangeFlag = false
                                         if (e !== this.state.budgetInfo.singleBudget) {
-                                          singleBudgetChangeFlag = true;
+                                          this.setState({
+                                            singleBudgetChangeFlag: true,
+                                            budgetInfo: {...budgetInfo, singleBudget: Number(e)}
+                                          });
                                         }
-                                        this.setState({
-                                          singleBudgetChangeFlag,
-                                          budgetInfo: {...budgetInfo, singleBudget: Number(e)}
-                                        });
                                       }} precision={0}/>
                                     )}
                                 </Form.Item>
@@ -5380,12 +5376,11 @@ class EditProjectInfoModel extends React.Component {
                                         onChange={e => {
                                           let projectBudgetChangeFlag = false;
                                           if (e !== this.state.budgetInfo.projectBudget) {
-                                            projectBudgetChangeFlag = true;
+                                            this.setState({
+                                              projectBudgetChangeFlag: true,
+                                              budgetInfo: {...budgetInfo, projectBudget: Number(e)},
+                                            });
                                           }
-                                          this.setState({
-                                            projectBudgetChangeFlag,
-                                            budgetInfo: {...budgetInfo, projectBudget: Number(e)},
-                                          });
                                         }}
                                         precision={0}
                                       />
@@ -5561,12 +5556,11 @@ class EditProjectInfoModel extends React.Component {
                                         // console.log("eeeee", e)
                                         let softBudgetChangeFlag = false
                                         if (e !== this.state.budgetInfo.softBudget) {
-                                          softBudgetChangeFlag = true;
+                                          this.setState({
+                                            softBudgetChangeFlag: true,
+                                            budgetInfo: {...budgetInfo, softBudget: Number(e),}
+                                          });
                                         }
-                                        this.setState({
-                                          softBudgetChangeFlag,
-                                          budgetInfo: {...budgetInfo, softBudget: Number(e),}
-                                        });
                                       }} precision={0}/>
                                     )}
                                 </Form.Item>
@@ -5651,12 +5645,11 @@ class EditProjectInfoModel extends React.Component {
                                                    }} style={{width: '100%'}} onChange={e => {
                                         let frameBudgetChangeFlag = false
                                         if (e !== this.state.budgetInfo.frameBudget) {
-                                          frameBudgetChangeFlag = true;
+                                          this.setState({
+                                            frameBudgetChangeFlag: true,
+                                            budgetInfo: {...budgetInfo, frameBudget: Number(e)}
+                                          });
                                         }
-                                        this.setState({
-                                          frameBudgetChangeFlag,
-                                          budgetInfo: {...budgetInfo, frameBudget: Number(e)}
-                                        });
                                       }} precision={0}/>
                                     )}
                                 </Form.Item>
@@ -5739,12 +5732,11 @@ class EditProjectInfoModel extends React.Component {
                                                    }} style={{width: '100%'}} onChange={e => {
                                         let singleBudgetChangeFlag = false
                                         if (e !== this.state.budgetInfo.singleBudget) {
-                                          singleBudgetChangeFlag = true;
+                                          this.setState({
+                                            singleBudgetChangeFlag: true,
+                                            budgetInfo: {...budgetInfo, singleBudget: Number(e)}
+                                          });
                                         }
-                                        this.setState({
-                                          singleBudgetChangeFlag,
-                                          budgetInfo: {...budgetInfo, singleBudget: Number(e)}
-                                        });
                                       }} precision={0}/>
                                     )}
                                 </Form.Item>
