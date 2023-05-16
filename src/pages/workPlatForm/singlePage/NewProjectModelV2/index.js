@@ -1488,12 +1488,12 @@ class NewProjectModelV2 extends React.Component {
         const namedefault =  this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name
         const id = item.substring(1, item.length)
           if (!arr.includes(id)) {
-            if( (namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1'){
+            if ((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1') {
               arr.push(id);
-            }else if (!gw.includes("总经理") && focusJob === '1') {
+            } else if (gw !== null && !gw.includes("总经理") && focusJob === '1') {
               message.warn("请选择总经理以上人员！")
               return;
-            } else{
+            } else {
               arr.push(id);
             }
           } else {
@@ -1503,12 +1503,12 @@ class NewProjectModelV2 extends React.Component {
           const itemname = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name + '(' + this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.orgName + ')'
           console.log("itemname", itemname);
           if (!jobStaffNameArr.includes(itemname)) {
-            if((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1'){
+            if ((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1') {
               jobStaffNameArr.push(itemname);
-            }else if(!gw.includes("总经理") && focusJob === '1') {
+            } else if (gw !== null && !gw.includes("总经理") && focusJob === '1') {
               message.warn("请选择总经理以上人员！")
               return;
-            }else {
+            } else {
               jobStaffNameArr.push(itemname)
             }
           } else {
@@ -2771,10 +2771,10 @@ class NewProjectModelV2 extends React.Component {
     })
   }
 
-  onRygwSelectConfirm = () => {
-    const { staffJobList, rygwDictionary, onRygwSelectValue, rygwSelectDictionary, } = this.state;
-    if (onRygwSelectValue !== '') {
-      const filter = rygwDictionary.filter(item => item.ibm === onRygwSelectValue)
+  onRygwSelectConfirm = (e) => {
+    const {staffJobList, rygwDictionary, staffInfo, onRygwSelectValue, rygwSelectDictionary,} = this.state;
+    if (e !== '') {
+      const filter = rygwDictionary.filter(item => item.ibm === e)
       staffJobList.push(filter[0]);
       // //console.log("staffJobList",staffJobList)
       // //console.log("rygwSelectDictionary",rygwSelectDictionary)
@@ -2788,8 +2788,9 @@ class NewProjectModelV2 extends React.Component {
         rygwSelectDictionary: newArray,
         rygwSelect: false,
         onRygwSelectValue: '',
-        staffJobList: staffJobList
+        staffJobList: staffJobList,
         // staffJobList: this.sortByKey(staffJobList, 'ibm', true)
+        staffInfo: {...staffInfo, focusJob: e}
       })
 
     }
@@ -5455,6 +5456,7 @@ class NewProjectModelV2 extends React.Component {
                                     value={jobStaffName.length > 0 ? jobStaffName[Number(item.ibm) - 1] : []}
                                     onBlur={() => this.setState({height: 0})}
                                     onSearch={e => this.searchStaff(e, 'staff')}
+                                    autoFocus={true}
                                     onFocus={() => this.setState({
                                       staffInfo: {
                                         ...this.state.staffInfo,
@@ -5474,12 +5476,12 @@ class NewProjectModelV2 extends React.Component {
                                           const gw = this.state.staffList.filter(item => item.id === i)[0]?.gw
                                           const namedefault = this.state.staffList.filter(item => item.id === i)[0]?.name
                                             if (!newJobStaffName.includes(name)) {
-                                              if(String(item.ibm) === '1' && (namedefault === '黄玉锋' || namedefault === '胡凡')){
+                                              if (String(item.ibm) === '1' && (namedefault === '黄玉锋' || namedefault === '胡凡')) {
                                                 newJobStaffName.push(name);
-                                              }else if (!gw.includes("总经理") && String(item.ibm) === '1') {
+                                              } else if (gw !== null && !gw.includes("总经理") && String(item.ibm) === '1') {
                                                 message.warn("请选择总经理以上人员！")
                                                 return;
-                                              }else {
+                                              } else {
                                                 newJobStaffName.push(name);
                                               }
                                             } else {
@@ -5493,9 +5495,9 @@ class NewProjectModelV2 extends React.Component {
                                           const gw = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.gw
                                           const namedefault = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.name
                                           if (!newJobStaff.includes(id)) {
-                                            if(String(item.ibm) === '1' && (namedefault === '黄玉锋' || namedefault === '胡凡')){
+                                            if (String(item.ibm) === '1' && (namedefault === '黄玉锋' || namedefault === '胡凡')) {
                                               newJobStaff.push(id);
-                                            }else if (!gw.includes("总经理") && String(item.ibm) === '1') {
+                                            } else if (gw !== null && !gw.includes("总经理") && String(item.ibm) === '1') {
                                               message.warn("请选择总经理以上人员！")
                                             } else {
                                               newJobStaff.push(id);
@@ -5555,9 +5557,12 @@ class NewProjectModelV2 extends React.Component {
                                 showArrow={true}
                           // mode="multiple"
                                 placeholder="请选择岗位"
-                                onChange={e => this.onRygwSelectChange(e)}
+                                onChange={
+                                  // e => this.onRygwSelectChange(e)
+                                  e => this.onRygwSelectConfirm(e)
+                                }
                                 style={{padding: '9px 0 0 12px', width: '25rem'}}
-                                onBlur={this.onRygwSelectConfirm}
+                          // onBlur={this.onRygwSelectConfirm}
                                 filterOption={(input, option) =>
                                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }>

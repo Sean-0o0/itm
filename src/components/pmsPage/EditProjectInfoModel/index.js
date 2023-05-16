@@ -3342,13 +3342,13 @@ class EditProjectInfoModel extends React.Component {
     });
   };
 
-  onRygwSelectConfirm = () => {
-    const { staffJobList, rygwDictionary, onRygwSelectValue, rygwSelectDictionary } = this.state;
-    if (onRygwSelectValue !== '') {
-      const filter = rygwDictionary.filter(item => item.ibm === onRygwSelectValue);
+  onRygwSelectConfirm = (e) => {
+    const {staffJobList, rygwDictionary, staffInfo, onRygwSelectValue, rygwSelectDictionary} = this.state;
+    if (e !== '') {
+      const filter = rygwDictionary.filter(item => item.ibm === e);
       staffJobList.push(filter[0]);
       let newArr = staffJobList.concat();
-      let newArray = rygwDictionary.filter(function(item) {
+      let newArray = rygwDictionary.filter(function (item) {
         return newArr.indexOf(item) === -1;
       });
       this.setState({
@@ -3356,6 +3356,7 @@ class EditProjectInfoModel extends React.Component {
         rygwSelect: false,
         onRygwSelectValue: '',
         staffJobList: staffJobList,
+        staffInfo: {...staffInfo, focusJob: e}
       });
     }
   };
@@ -6954,6 +6955,7 @@ class EditProjectInfoModel extends React.Component {
                                       value={jobStaffName.length > 0 ? jobStaffName[9] : []}
                                       onBlur={() => this.setState({ height: 0 })}
                                       onSearch={e => this.searchStaff(e, 'manage')}
+                                      autoFocus={true}
                                       onFocus={() =>
                                         this.setState({
                                           staffInfo: {
@@ -7162,17 +7164,20 @@ class EditProjectInfoModel extends React.Component {
                             showArrow={true}
                             // mode="multiple"
                             placeholder="请选择岗位"
-                            onChange={e => this.onRygwSelectChange(e)}
-                            style={{ padding: '9px 0 0 12px', width: '25rem' }}
-                            onBlur={this.onRygwSelectConfirm}
+                            onChange={
+                              // e => this.onRygwSelectChange(e)
+                              e => this.onRygwSelectConfirm(e)
+                            }
+                            style={{padding: '9px 0 0 12px', width: '25rem'}}
+                            // onBlur={this.onRygwSelectConfirm}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                           >
                             {rygwSelectDictionary.length > 0 &&
-                              rygwSelectDictionary.map((item, index) => {
-                                return (
-                                  <Option key={item.ibm} value={item.ibm}>
+                            rygwSelectDictionary.map((item, index) => {
+                              return (
+                                <Option key={item.ibm} value={item.ibm}>
                                     {item.note}
                                   </Option>
                                 );
