@@ -200,7 +200,7 @@ class SubItemInfo extends Component {
         ['SUBCGFS' + Date.now()]: '',
         ['SUBGLYS' + Date.now()]: '',
         ['GLYSLX' + Date.now()]: '',
-        ['SUBYSJE' + Date.now()]: '',
+        ['SUBYSJE' + Date.now()]: '0',
         ['SUBYSJE-TOTAL' + Date.now()]: '0',
         ['SUBRJYSJE' + Date.now()]: '0',
         ['SUBSFBHYJ' + Date.now()]: '2',
@@ -345,6 +345,8 @@ class SubItemInfo extends Component {
       if (code > 0) {
         let data = JSON.parse(xmxx);
         let arr = [];
+        console.log("datadatadata", data)
+        console.log("this.props.budgetProjectList", this.props.budgetProjectList)
         if (data.length > 0) {
           for (let i = 0; i < data.length; i++) {
             let SUBGLYSTXT = '';
@@ -353,14 +355,16 @@ class SubItemInfo extends Component {
             let SUBSYYS = 0;
             this.props.budgetProjectList.forEach(item => {
               item?.children?.forEach(ite => {
-                if (String(data[i]?.GLYSXM) === 0) {
-                  SUBGLYSTXT = '备用预算'
-                  SUBZYS = 0;
-                  SUBKZXYS = ite.ysKZX;
-                  SUBSYYS = 0;
+                if (String(data[i]?.GLYSXM) === "0" || String(data[i]?.GLYSXM) === "-12") {
+                  if (String(ite.key) === String(data[i]?.GLYSXM)) {
+                    SUBGLYSTXT = ite.title
+                    SUBZYS = 0;
+                    SUBKZXYS = ite.ysKZX;
+                    SUBSYYS = 0;
+                  }
                 }
                 ite?.children?.forEach(ie => {
-                  if (String(data[i]?.GLYSXM) === ie.ysID) {
+                  if (String(data[i]?.GLYSXM) === ie.ysID && ie.ysLX === data[i]?.YSLX) {
                     SUBGLYSTXT = ie.ysName;
                     SUBZYS = Number(ie.ysZJE);
                     SUBKZXYS = Number(ie.ysKZX);
@@ -403,7 +407,7 @@ class SubItemInfo extends Component {
             ['SUBCGFS' + Date.now()]: '',
             ['SUBGLYS' + Date.now()]: '',
             ['GLYSLX' + Date.now()]: '',
-            ['SUBYSJE' + Date.now()]: '',
+            ['SUBYSJE' + Date.now()]: '0',
             ['SUBYSJE-TOTAL' + Date.now()]: '0',
             ['SUBRJYSJE' + Date.now()]: '0',
             ['SUBSFBHYJ' + Date.now()]: '2',
@@ -440,13 +444,15 @@ class SubItemInfo extends Component {
       let SUBSYYS = 0;
       this.props.budgetProjectList.forEach(item => {
         item?.children?.forEach(ite => {
-          if (e === '0备用预算') {
-            ysID = ite.ysID
-            ysName = "备用预算"
-            ysLX = "资本性预算"
-            SUBZYS = 0;
-            SUBKZXYS = ite.ysKZX;
-            SUBSYYS = 0;
+          if (e === '0备用预算' || e === '-12自研项目无预算') {
+            if (ite.value === e) {
+              ysID = ite.ysID
+              ysName = ite.ysName,
+                ysLX = "资本性预算"
+              SUBZYS = 0;
+              SUBKZXYS = ite.ysKZX;
+              SUBSYYS = 0;
+            }
           }
           ite?.children?.forEach(i => {
             if (i.value === e) {
@@ -1035,7 +1041,7 @@ class SubItemInfo extends Component {
                 ['SUBCGFS' + Date.now()]: '',
                 ['SUBGLYS' + Date.now()]: '',
                 ['GLYSLX' + Date.now()]: '',
-                ['SUBYSJE' + Date.now()]: '',
+                ['SUBYSJE' + Date.now()]: '0',
                 ['SUBYSJE-TOTAL' + Date.now()]: '0',
                 ['SUBRJYSJE' + Date.now()]: '0',
                 ['SUBSFBHYJ' + Date.now()]: '2',
