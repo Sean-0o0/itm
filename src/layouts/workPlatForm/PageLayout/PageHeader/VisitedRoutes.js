@@ -108,46 +108,29 @@ function VisitedRoutes(props) {
   }
   const handleUrls = (urls = []) => {
     let arr = [...urls];
-    const matches1 = arr.filter(x => /^\/pms\/manage\/ProjectInfo/.test(x));
-    matches1.forEach((m, i) => {
-      if (i !== matches1.length - 1) {
-        arr = arr.filter(x => x !== m);
-      }
+    const matchFilter = regExp => {
+      const matches = arr.filter(x => regExp.test(x));
+      matches.forEach((m, i) => {
+        if (i !== matches.length - 1) {
+          arr = arr.filter(x => x !== m);
+        }
+      });
+    };
+    let regExpArr = [
+      /^\/pms\/manage\/ProjectInfo/,
+      /^\/pms\/manage\/ProjectDetail/,
+      /^\/pms\/manage\/staffDetail/,
+      /^\/pms\/manage\/labelDetail/,
+      /^\/pms\/manage\/attachLibrary/,
+      /^\/pms\/manage\/SupplierDetail/,
+      /^\/pms\/manage\/DemandDetail/,
+    ];
+    regExpArr.forEach(regExp => {
+      matchFilter(regExp);
     });
-    const matches2 = arr.filter(x => /^\/pms\/manage\/ProjectDetail/.test(x));
-    matches2.forEach((m, i) => {
-      if (i !== matches2.length - 1) {
-        arr = arr.filter(x => x !== m);
-      }
-    });
-    const matches3 = arr.filter(x => /^\/pms\/manage\/staffDetail/.test(x));
-    matches3.forEach((m, i) => {
-      if (i !== matches3.length - 1) {
-        arr = arr.filter(x => x !== m);
-      }
-    });
-    const matches4 = arr.filter(x => /^\/pms\/manage\/labelDetail/.test(x));
-    matches4.forEach((m, i) => {
-      if (i !== matches4.length - 1) {
-        arr = arr.filter(x => x !== m);
-      }
-    });
-    const matches5 = arr.filter(x => /^\/pms\/manage\/attachLibrary/.test(x));
-    matches5.forEach((m, i) => {
-      if (i !== matches5.length - 1) {
-        arr = arr.filter(x => x !== m);
-      }
-    });
-    const matches6 = arr.filter(x => /^\/pms\/manage\/SupplierDetail/.test(x));
-    matches6.forEach((m, i) => {
-      if (i !== matches6.length - 1) {
-        arr = arr.filter(x => x !== m);
-      }
-    });
-    // console.log("🚀 ~ file: VisitedRoutes.js:149 ~ handleUrls ~ arr:", arr)
+    // // console.log("🚀 ~ file: VisitedRoutes.js:149 ~ handleUrls ~ arr:", arr)
     return arr;
   };
-    
 
   let tabCount = 0;
 
@@ -161,15 +144,6 @@ function VisitedRoutes(props) {
         }}
         activeKey={newPathname}
       >
-        {/* <div key={homePage} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
-          <div
-            className={`${styles.curTabsBak} ${newPathname === '/pms/manage/HomePage' &&
-              styles.isActive}`}
-          >
-            <Link to={'/pms/manage/HomePage'}>个人工作台</Link>
-          </div>
-          <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
-        </div> */}
         <TabPane
           tab={<Link to="/pms/manage/HomePage">个人工作台</Link>}
           closable={false}
@@ -178,46 +152,58 @@ function VisitedRoutes(props) {
         {handleUrls(urls).length > 0 &&
           handleUrls(urls).map(item => {
             let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
-            if (item.includes('/pms/manage/ProjectDetail/')) {
-              url = item;
-              title = '项目详情';
-            }
-            if (item.includes('/pms/manage/ProjectInfo/')) {
-              url = item;
-              title = '项目列表';
-            }
-            if (item.includes('/pms/manage/staffDetail/')) {
-              url = item;
-              title = '人员详情';
-            }
-            if (item.includes('/pms/manage/labelDetail/')) {
-              url = item;
-              title = '标签详情';
-            }
-            if (item.includes('/pms/manage/attachLibrary')) {
-              url = item;
-              title = '文档列表';
-            }
-            if (item.includes('/pms/manage/SupplierDetail/')) {
-              url = item;
-              title = '供应商详情';
-            }
-            if (item.includes('/pms/manage/projectBuilding')) {
-              url = item;
-              title = '项目建设情况';
-            }
-            if (item.includes('/pms/manage/departmentOverview')) {
-              url = item;
-              title = '部门人员情况';
-            }
-            if (item.includes('/pms/manage/BudgetExcute')) {
-              url = item;
-              title = '预算执行情况';
-            }
-            if (item.includes('/pms/manage/SupplierSituation')) {
-              url = item;
-              title = '供应商情况';
-            }
+            let urlEndArr = [
+              {
+                title: '项目详情',
+                urlEnd: 'ProjectDetail',
+              },
+              {
+                title: '项目列表',
+                urlEnd: 'ProjectInfo',
+              },
+              {
+                title: '人员详情',
+                urlEnd: 'staffDetail',
+              },
+              {
+                title: '标签详情',
+                urlEnd: 'labelDetail',
+              },
+              {
+                title: '文档列表',
+                urlEnd: 'attachLibrary',
+              },
+              {
+                title: '供应商详情',
+                urlEnd: 'SupplierDetail',
+              },
+              {
+                title: '项目建设情况',
+                urlEnd: 'projectBuilding',
+              },
+              {
+                title: '部门人员情况',
+                urlEnd: 'departmentOverview',
+              },
+              {
+                title: '预算执行情况',
+                urlEnd: 'BudgetExcute',
+              },
+              {
+                title: '供应商情况',
+                urlEnd: 'SupplierSituation',
+              },
+              {
+                title: '需求详情',
+                urlEnd: 'DemandDetail',
+              },
+            ];
+            urlEndArr.forEach(x => {
+              if (item.includes('/pms/manage/' + x.urlEnd)) {
+                url = item;
+                title = x.title;
+              }
+            });
             if (item.includes('/pms/manage/HomePage')) {
               return null;
             }
@@ -233,21 +219,6 @@ function VisitedRoutes(props) {
             }
             tabCount++;
             return (
-              // <div key={url} className={`cur-tabs ${styles.tagview} `} style={{ height: 36 }}>
-              //   <div className={`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}>
-              //   <Link to={url}>{title}</Link>
-              //   <div>
-              //     <i
-              //       className="iconfont icon-close"
-              //       style={{ margin: 0 }}
-              //       onClick={() => {
-              //         closePage(url);
-              //       }}
-              //     />
-              //   </div>
-              // </div>
-              //   <Divider type="vertical" style={{ color: '#9f9e9eba' }} />
-              // </div>
               <TabPane
                 className={`${styles.curTabsBak} ${newPathname === url && styles.isActive}`}
                 tab={<Link to={url}>{title}</Link>}
