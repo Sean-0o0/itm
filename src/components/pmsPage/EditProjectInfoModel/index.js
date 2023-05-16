@@ -1220,7 +1220,7 @@ class EditProjectInfoModel extends React.Component {
             pre[current.zdbm].push({
               key: current.ysID,
               title: current.ysName,
-              value: current.ysID + current.ysName,
+              value: current.ysID,
               ysID: current.ysID,
               ysKGL: Number(current.ysKGL),
               ysLB: current.ysLB,
@@ -1242,7 +1242,7 @@ class EditProjectInfoModel extends React.Component {
                   b[item.zdbm].map(i => {
                     let treeDataby = {}
                     treeDataby.key = i.ysID
-                    treeDataby.value = i.ysID + i.ysName
+                    treeDataby.value = i.ysID
                     treeDataby.title = i.ysName
                     treeDataby.ysID = i.ysID
                     treeDataby.ysKGL = Number(i.ysKGL)
@@ -1389,14 +1389,15 @@ class EditProjectInfoModel extends React.Component {
           });
           // ////console.log("rygwSelectDictionary",newArray)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
-          this.setState({ rygwSelectDictionary: newArray, staffJobList: newStaffJobList });
+          this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList});
           // ////console.log("arr",arr)
           // ////console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
           let relativeBudget = 0;
           let ysKZX = 0;
           let budgetProjectName = '';
-          if (result.budgetProject === '0' || result.budgetProject === '-12') {
+          //其他里面的预算id，都是小于等于0
+          if (Number(result.budgetProject) <= 0) {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 if (ite.key === result.budgetProject) {
@@ -1404,7 +1405,7 @@ class EditProjectInfoModel extends React.Component {
                 }
               })
             })
-          }else {
+          } else {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
                 ite.children?.forEach(i => {
@@ -5205,9 +5206,9 @@ class EditProjectInfoModel extends React.Component {
                                       // treeDefaultExpandAll
                                       onChange={e => {
                                         budgetProjectList.forEach(item => {
-                                          item?.children?.forEach(ite => {
-                                            if (e === '0备用预算' || e === '-12自研项目无预算') {
-                                              if(ite.value === e) {
+                                          if (Number(e) <= 0) {
+                                            item?.children?.forEach(ite => {
+                                              if (ite.value === e) {
                                                 // ////console.log("iteiteiteite",ite)
                                                 const _this = this;
                                                 this.setState(
@@ -5218,7 +5219,7 @@ class EditProjectInfoModel extends React.Component {
                                                       totalBudget: 0,
                                                       relativeBudget: 0,
                                                       // projectBudget: 0,
-                                                      budgetProjectName: ite.ysName,
+                                                      // budgetProjectName: ite.ysName,
                                                       budgetType: '资本性预算',
                                                     },
                                                     ysKZX: ite.ysKZX,
@@ -5229,31 +5230,34 @@ class EditProjectInfoModel extends React.Component {
                                                   },
                                                 );
                                               }
-                                            }
-                                            ite?.children?.forEach(i => {
-                                              if (i.value === e) {
-                                                // ////console.log("iiiiii",i)
-                                                const _this = this;
-                                                this.setState(
-                                                  {
-                                                    budgetInfo: {
-                                                      ...this.state.budgetInfo,
-                                                      budgetProjectId: i.ysID,
-                                                      budgetProjectName: i.value,
-                                                      totalBudget: Number(i.ysZJE),
-                                                      relativeBudget: Number(i.ysKGL),
-                                                      budgetType: i.ysLX,
-                                                    },
-                                                    ysKZX: i.ysKZX,
-                                                  },
-                                                  function() {
-                                                    _this.props.form.resetFields(['projectBudget']);
-                                                    _this.props.form.validateFields(['projectBudget']);
-                                                  },
-                                                );
-                                              }
                                             });
-                                          });
+                                          } else {
+                                            item?.children?.forEach(ite => {
+                                              ite?.children?.forEach(i => {
+                                                if (i.value === e) {
+                                                  // ////console.log("iiiiii",i)
+                                                  const _this = this;
+                                                  this.setState(
+                                                    {
+                                                      budgetInfo: {
+                                                        ...this.state.budgetInfo,
+                                                        budgetProjectId: i.ysID,
+                                                        // budgetProjectName: i.value,
+                                                        totalBudget: Number(i.ysZJE),
+                                                        relativeBudget: Number(i.ysKGL),
+                                                        budgetType: i.ysLX,
+                                                      },
+                                                      ysKZX: i.ysKZX,
+                                                    },
+                                                    function () {
+                                                      _this.props.form.resetFields(['projectBudget']);
+                                                      _this.props.form.validateFields(['projectBudget']);
+                                                    },
+                                                  );
+                                                }
+                                              });
+                                            });
+                                          }
                                         });
                                       }}
                                     />,

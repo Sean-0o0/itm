@@ -354,24 +354,29 @@ class SubItemInfo extends Component {
             let SUBKZXYS = 0;
             let SUBSYYS = 0;
             this.props.budgetProjectList.forEach(item => {
-              item?.children?.forEach(ite => {
-                if (String(data[i]?.GLYSXM) === "0" || String(data[i]?.GLYSXM) === "-12") {
-                  if (String(ite.key) === String(data[i]?.GLYSXM)) {
-                    SUBGLYSTXT = ite.title
-                    SUBZYS = 0;
-                    SUBKZXYS = ite.ysKZX;
-                    SUBSYYS = 0;
-                  }
-                }
-                ite?.children?.forEach(ie => {
-                  if (String(data[i]?.GLYSXM) === ie.ysID && ie.ysLX === data[i]?.YSLX) {
-                    SUBGLYSTXT = ie.ysName;
-                    SUBZYS = Number(ie.ysZJE);
-                    SUBKZXYS = Number(ie.ysKZX);
-                    SUBSYYS = Number(ie.ysKGL);
+              if (Number(data[i]?.GLYSXM) <= 0) {
+                item?.children?.forEach(ite => {
+                  if (Number(data[i]?.GLYSXM) <= 0) {
+                    if (String(ite.key) === String(data[i]?.GLYSXM)) {
+                      SUBGLYSTXT = ite.title
+                      SUBZYS = 0;
+                      SUBKZXYS = ite.ysKZX;
+                      SUBSYYS = 0;
+                    }
                   }
                 })
-              })
+              } else {
+                item?.children?.forEach(ite => {
+                  ite?.children?.forEach(ie => {
+                    if (String(data[i]?.GLYSXM) === ie.ysID && ie.ysLX === data[i]?.YSLX) {
+                      SUBGLYSTXT = ie.ysName;
+                      SUBZYS = Number(ie.ysZJE);
+                      SUBKZXYS = Number(ie.ysKZX);
+                      SUBSYYS = Number(ie.ysKGL);
+                    }
+                  })
+                })
+              }
             })
             arr.push({
               ID: String(data[i]?.ID),
@@ -443,8 +448,8 @@ class SubItemInfo extends Component {
       let SUBKZXYS = 0;
       let SUBSYYS = 0;
       this.props.budgetProjectList.forEach(item => {
-        item?.children?.forEach(ite => {
-          if (e === '0备用预算' || e === '-12自研项目无预算') {
+        if (Number(e) <= 0) {
+          item?.children?.forEach(ite => {
             if (ite.value === e) {
               ysID = ite.ysID
               ysName = ite.ysName,
@@ -453,18 +458,21 @@ class SubItemInfo extends Component {
               SUBKZXYS = ite.ysKZX;
               SUBSYYS = 0;
             }
-          }
-          ite?.children?.forEach(i => {
-            if (i.value === e) {
-              ysID = i.ysID
-              ysName = i.ysName
-              ysLX = i.ysLX
-              SUBZYS = Number(i.ysZJE);
-              SUBKZXYS = Number(i.ysKZX);
-              SUBSYYS = Number(i.ysKGL);
-            }
           })
-        })
+        } else {
+          item?.children?.forEach(ite => {
+            ite?.children?.forEach(i => {
+              if (i.value === e) {
+                ysID = i.ysID
+                ysName = i.ysName
+                ysLX = i.ysLX
+                SUBZYS = Number(i.ysZJE);
+                SUBKZXYS = Number(i.ysKZX);
+                SUBSYYS = Number(i.ysKGL);
+              }
+            })
+          })
+        }
       })
       tableData.map(item => {
         if (item.ID === record.ID) {
