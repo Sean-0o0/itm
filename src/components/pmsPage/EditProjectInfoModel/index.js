@@ -4412,7 +4412,7 @@ class EditProjectInfoModel extends React.Component {
                                   dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
                                   treeData={projectLabelList}
                                   treeCheckable
-                                  placeholder="请选择项目标签"
+                                  // placeholder="请选择项目标签"
                                   // treeDefaultExpandAll
                                   treeDefaultExpandedKeys={['1']}
                                   getPopupContainer={triggerNode => triggerNode.parentNode}
