@@ -2,12 +2,15 @@ import React, { useEffect, useState } from 'react';
 import TopConsole from './TopConsole';
 import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
-import PrjItems from './PrjItems';
+import ProjectItems from './ProjectItems';
+import DemandTable from './DemandTable';
+import ResumeInfo from './ResumeInfo';
+import EvaluationTable from './EvaluationTable';
+import EmploymentInfo from './EmploymentInfo';
 // import { FetchQueryProjectLabel } from '../../../services/projectManage';
 
 export default function DemandDetail(props) {
   const { routes, xmid, dictionary } = props;
-  console.log("🚀 ~ file: index.js:10 ~ DemandDetail ~ dictionary:", dictionary)
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [dtlData, setDtlData] = useState({
     XMXX: {
@@ -22,18 +25,12 @@ export default function DemandDetail(props) {
       {
         XQMC: 'xqmc',
         XQID: '1',
+        XQFQR: '111'
       },
       {
         XQMC: 'xqmc',
         XQID: '2',
-      },
-      {
-        XQMC: 'xqmc',
-        XQID: '3',
-      },
-      {
-        XQMC: 'xqmc',
-        XQID: '4',
+        XQFQR: '222'
       },
     ],
     XQXQ: [
@@ -46,7 +43,7 @@ export default function DemandDetail(props) {
             ZXZT: '1',
           },
           {
-            SXMC: '发送确认邮件',
+            SXMC: '简历分发',
             ZXZT: '1',
           },
         ],
@@ -94,48 +91,190 @@ export default function DemandDetail(props) {
         ],
       },
     ],
-    ZXNR: [
+    XQNR: [
       {
-        KFSRQ: '123',
-        CSRQ: '123',
-        PCRQ: '123',
-        SYRQ: '123',
+        XQNRID: '1',
+        KFSRQ: '20230115',
+        CSRQ: '20230501',
+        PCRQ: '20230406',
+        SYRQ: '20230614',
         RYXQ: '123',
         RYSL: '123',
         RYSC: '123',
-        RYXQNR: '123',
+        RYXQNR: '1、精通前端开发的基础技术（HTML、CSS、HTML5、CSS3等）。2、 精通原理深刻',
+        YGYS: '123',
+      },
+      {
+        XQNRID: '2',
+        KFSRQ: '20230115',
+        CSRQ: '20230501',
+        PCRQ: '20230406',
+        SYRQ: '20230614',
+        RYXQ: '123',
+        RYSL: '123',
+        RYSC: '123',
+        RYXQNR: '1、精通前端开发的基础技术（HTML、CSS、HTML5、CSS3等）。2、 精通原理深刻',
+        YGYS: '123',
+      },
+      {
+        XQNRID: '3',
+        KFSRQ: '20230115',
+        CSRQ: '20230501',
+        PCRQ: '20230406',
+        SYRQ: '20230614',
+        RYXQ: '123',
+        RYSL: '123',
+        RYSC: '123',
+        RYXQNR: '1、精通前端开发的基础技术（HTML、CSS、HTML5、CSS3等）。2、 精通原理深刻',
         YGYS: '123',
       },
     ],
     JLXX: [
       {
-        GYSMC: '123',
-        JLFS: '123',
-        JLMC: '123',
+        GYSMC: '福建顶点软件股份有限公司：',
+        JLFS: '3',
+        JLDATA: [
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+        ],
+      },
+      {
+        GYSMC: '福建顶点软件股份有限公司：',
+        JLFS: '3',
+        JLDATA: [
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+        ],
+      },
+      {
+        GYSMC: '福建顶点软件股份有限公司：',
+        JLFS: '3',
+        JLDATA: [
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+        ],
+      },
+      {
+        GYSMC: '福建顶点软件股份有限公司：',
+        JLFS: '3',
+        JLDATA: [
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+        ],
+      },
+      {
+        GYSMC: '福建顶点软件股份有限公司：',
+        JLFS: '3',
+        JLDATA: [
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+          {
+            JLMC: '123',
+            JLID: '1',
+          },
+        ],
       },
     ],
     ZHPC: [
       {
+        ZHPCID: '1',
         RYXQ: '123',
-        GYSMC: '123',
+        GYSID: '1',
+        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
+        RYMC: '123',
+        RYID: '123',
+        PCRY: '123',
+        ZHPCSJ: '20230114 1500',
+        ZHPCFS: '123',
+        DFZT: '2',
+        LYZT: '3',
+        LYSM: '123',
+      },
+      {
+        ZHPCID: '2',
+        RYXQ: '123',
+        GYSID: '1',
+        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
         RYMC: '123',
         RYID: '123',
         PCRY: '123',
         ZHPCSJ: '123',
         ZHPCFS: '123',
-        DFZT: '123',
-        LYZT: '123',
+        DFZT: '3',
+        LYZT: '1',
+        LYSM: '123',
+      },
+      {
+        ZHPCID: '3',
+        RYXQ: '123',
+        GYSID: '1',
+        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
+        RYMC: '123',
+        RYID: '123',
+        PCRY: '123',
+        ZHPCSJ: '123',
+        ZHPCFS: '123',
+        DFZT: '1',
+        LYZT: '2',
         LYSM: '123',
       },
     ],
     LYSQ: {
-      LYBZ: '123',
+      LYBZ:
+        '这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注',
       MSWJ: '123',
     },
     FKTX: {
-      TXNR: '123',
+      TXNR: '1-3月的费用已计算完成',
     },
   }); //详情信息
+  const [example, setexample] = useState(example); //example
   // const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -172,7 +311,11 @@ export default function DemandDetail(props) {
     >
       <div className="demand-detail-box">
         <TopConsole xmid={xmid} routes={routes} dtlData={dtlData} isLeader={isLeader} />
-        <PrjItems dtlData={dtlData}/>
+        <ProjectItems dtlData={dtlData} />
+        <DemandTable dtlData={dtlData} />
+        <ResumeInfo dtlData={dtlData} />
+        <EvaluationTable dtlData={dtlData} dictionary={dictionary} />
+        <EmploymentInfo dtlData={dtlData} />
       </div>
     </Spin>
   );

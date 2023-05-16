@@ -6780,11 +6780,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-// 项目详情 popover-start
+// 项目详情、需求详情 popover-start
 .tc-btn-more-content-popover,
 .msg-edit-content-popover,
 .btn-more-content-popover,
-.other-supplier-content-popover {
+.other-supplier-content-popover,
+.demand-detail-content-popover {
   .ant-popover-inner-content {
     padding: 10px 0;
   }
@@ -7876,7 +7877,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-.supplier-detail-basic-info-popover {
+.supplier-detail-basic-info-popover,
+.empolyment-remark-popover {
   .ant-popover-inner-content {
     padding: 0;
   }
@@ -12026,13 +12028,80 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     border-radius: 8px;
 
     & > .top {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      border-bottom: 1px solid #f5f6f9ff;
+
+      & > .left {
+        height: 24px;
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #303133;
+        line-height: 24px;
+        margin-left: 24px;
+      }
+
+      & > .right {
+        height: 32px;
+        background: #fafafa;
+        border-radius: 4px;
+        padding: 5px 4px 5px 8px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #333333;
+        margin-right: 10px;
+
+        i {
+          font-size: 16px;
+          color: #3361ff;
+          margin-right: 6px;
+          margin-top: 1px;
+        }
+
+        .opr-btn {
+          color: #3361ff;
+          font-size: 14px;
+          padding: 0 6px;
+          height: 24px;
+          background: rgba(51, 97, 255, 0.1);
+          border-radius: 4px;
+          line-height: 24px;
+          cursor: pointer;
+          transition: all 0.3s;
+          margin-left: 8px;
+
+          &:hover {
+            background-color: #3361ff;
+            color: #fff;
+          }
+        }
+      }
     }
     & > .bottom {
       width: 100%;
+      border: 10px solid #fff;
+      background-color: #fafafa;
+      padding: 16px 24px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      // height: 225px;
+
       & > .item {
-        width: 23%;
+        width: 21.887%;
         flex-shrink: 0;
         background-color: #fff;
+        min-height: 173px;
 
         & > .item-top {
           // width: 246px;
@@ -12124,6 +12193,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
             }
 
+            .reopr-btn {
+              // max-width: 60px;
+              padding: 0 6px;
+              height: 24px;
+              border-radius: 4px;
+              text-align: center;
+              line-height: 24px;
+              cursor: pointer;
+
+              &:hover {
+                background-color: #eaefffff;
+              }
+            }
+
             .opr-more {
               flex-shrink: 0;
               color: #3361ff;
@@ -12169,6 +12252,220 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
             }
           }
+        }
+      }
+    }
+  }
+
+  & > .info-box {
+    padding: 16px 24px;
+    background: #ffffff;
+    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border-radius: 8px;
+    margin: 0 24px 16px 24px;
+
+    &:last-child {
+      margin-bottom: 24px;
+    }
+
+    & > .title {
+      width: 100%;
+      height: 24px;
+      font-size: 16px;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #303133;
+      line-height: 24px;
+      margin-bottom: 16px;
+
+      span {
+        cursor: pointer;
+        color: #3361ff;
+        font-size: 14px;
+        font-weight: 400;
+        float: right;
+        &:hover {
+          color: #3361ffaf;
+        }
+      }
+    }
+    & > .table-box {
+      .ant-table {
+        td {
+          padding: 9.17px;
+          font-size: 14px;
+          font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+        }
+
+        th {
+          //width: 33%;
+          padding: 9.17px;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: bold;
+          color: #606266;
+        }
+
+        .ant-table-body {
+          // min-height: 560px;
+          table {
+            border: 1px solid #e8e8e8;
+          }
+        }
+
+        .ant-table-scroll .ant-table-header {
+          margin-bottom: -16.5px !important; //表格表头底部边框
+          background-color: #f5f7fa;
+        }
+
+        .ant-table-placeholder {
+          border-bottom: 0;
+
+          .ant-empty-description {
+            font-size: 14px;
+          }
+        }
+      }
+    }
+  }
+
+  & > .demand-table-box,
+  .evaluation-table-box {
+    & > .date-row {
+      width: 100%;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      padding-right: 25px;
+
+      & > .date-item {
+        height: 22px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #303133;
+        line-height: 22px;
+        span {
+          color: #909399;
+        }
+      }
+    }
+  }
+
+  & > .resume-info-box {
+    padding-bottom: 0;
+
+    & > .supplier-row-box {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      flex-wrap: wrap;
+      justify-content: space-between;
+
+      & > .supplier-item {
+        width: 33%;
+        flex-shrink: 0;
+        margin-bottom: 16px;
+        height: 22px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #303133;
+        line-height: 22px;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: start;
+
+        div {
+          flex-shrink: 0;
+        }
+
+        .label {
+          color: #909399;
+          // flex-grow: 1;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+          cursor: default;
+        }
+
+        a {
+          margin-left: 8px;
+          flex-shrink: 0;
+
+          &:hover {
+            color: #3361ffaf !important;
+          }
+        }
+      }
+    }
+  }
+
+  & > .empolyment-info-box {
+    & > .remarks {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      margin-bottom: 8px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+
+      .label {
+        height: 22px;
+        color: #909399;
+        line-height: 22px;
+        flex-shrink: 0;
+      }
+
+      .detail {
+        flex-grow: 1;
+        line-height: 22px;
+        word-wrap: break-word;
+        overflow: hidden; //溢出内容隐藏
+        text-overflow: ellipsis; //文本溢出部分用省略号表示
+        display: -webkit-box; //特别显示模式
+        -webkit-line-clamp: 2; //行数
+        line-clamp: 2;
+        overflow: hidden;
+
+        &:before {
+          content: '';
+          float: right;
+          height: 22px;
+        }
+
+        .float {
+          font-size: 12px;
+          color: #3361ff;
+          cursor: pointer;
+          float: right;
+          clear: both;
+          padding-left: 4px;
+
+          &:hover {
+            color: #3361ffa3;
+          }
+        }
+      }
+    }
+    & > .grade-script {
+      height: 22px;
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #909399;
+      line-height: 22px;
+      span {
+        cursor: pointer;
+        color: #3361ff;
+        &:hover {
+          color: #3361ffaf;
         }
       }
     }

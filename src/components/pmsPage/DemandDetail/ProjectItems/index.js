@@ -2,9 +2,9 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button, Tooltip } from 'antd';
 import moment from 'moment';
 
-export default function PrjItems(props) {
+export default function ProjectItems(props) {
   const { dtlData = {} } = props;
-  const { XQXQ = [] } = dtlData;
+  const { XQXQ = [], FKTX = {} } = dtlData;
   useEffect(() => {
     return () => {};
   }, []);
@@ -13,9 +13,9 @@ export default function PrjItems(props) {
     if (['账号新增', '综合评测打分', '发送确认邮件'].includes(SXMC) || ZXZT === '2') {
       txt = '执行';
     } else if (SXMC === '需求发起') {
-      txt = '重新发起';
+      return <div className="reopr-btn">重新发起</div>;
     } else {
-      txt = '查看';
+      return <div className="reopr-btn">查看</div>;
     }
     return <div className="opr-btn">{txt}</div>;
   };
@@ -23,11 +23,13 @@ export default function PrjItems(props) {
     <div className="prj-items-box">
       <div className="top">
         <div className="left">项目事项</div>
-        <div className="right">
-          <i className="iconfont fill-info" />
-          1-3月的费用已计算完成
-          <div className="ort-btn">发起付款</div>
-        </div>
+        {FKTX.TXNR !== undefined && (
+          <div className="right">
+            <i className="iconfont fill-info" />
+            {FKTX.TXNR}
+            <div className="opr-btn">发起付款</div>
+          </div>
+        )}
       </div>
       <div className="bottom">
         {XQXQ.map(item => (
