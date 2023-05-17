@@ -184,71 +184,60 @@ export default function TableTabs(props) {
       key: 'XMBQ',
       ellipsis: true,
       render: (text, row, index) => {
+        if (getTagData(text, row.XMBQID).length === 0) return '';
         return (
-          <div className="prj-tags">
-            {getTagData(text, row.XMBQID).length !== 0 && (
-              <>
-                {getTagData(text, row.XMBQID)
-                  ?.slice(0, 2)
-                  .map(x => (
-                    <div key={x.id} className="tag-item">
-                      <Link
-                        style={{ color: '#3361ff' }}
-                        to={{
-                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                            JSON.stringify({
-                              bqid: x.id,
-                            }),
-                          )}`,
-                          state: {
-                            routes: [{ name: '供应商情况', pathname: location.pathname }],
-                          },
-                        }}
-                        className="prj-info-table-link-strong"
-                      >
-                        {x.name}
-                      </Link>
-                    </div>
-                  ))}
-                {getTagData(text, row.XMBQID)?.length > 2 && (
-                  <Popover
-                    overlayClassName="tag-more-popover"
-                    content={
-                      <div className="tag-more">
-                        {getTagData(text, row.XMBQID)
-                          ?.slice(2)
-                          .map(x => (
-                            <div key={x.id} className="tag-item">
-                              <Link
-                                style={{ color: '#3361ff' }}
-                                to={{
-                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                    JSON.stringify({
-                                      bqid: x.id,
-                                    }),
-                                  )}`,
-                                  state: {
-                                    routes: [{ name: '供应商情况', pathname: location.pathname }],
-                                  },
-                                }}
-                                className="prj-info-table-link-strong"
-                              >
-                                {x.name}
-                              </Link>
-                            </div>
-                          ))}
-                      </div>
-                    }
-                    title={null}
-                  >
-                    <div className="tag-item" style={{ cursor: 'default' }}>
-                      ...
-                    </div>
-                  </Popover>
-                )}
-              </>
-            )}
-          </div>
+          <Popover
+            overlayClassName="tag-more-popover"
+            placement="bottomLeft"
+            content={
+              <div className="tag-more">
+                {getTagData(text, row.XMBQID).map(x => (
+                  <div key={x.id} className="tag-item">
+                    <Link
+                      style={{ color: '#3361ff' }}
+                      to={{
+                        pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                          JSON.stringify({
+                            bqid: x.id,
+                          }),
+                        )}`,
+                        state: {
+                          routes: [{ name: '供应商情况', pathname: location.pathname }],
+                        },
+                      }}
+                      className="prj-info-table-link-strong"
+                    >
+                      {x.name}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            }
+            title={null}
+          >
+            {getTagData(text, row.XMBQID).map((x, i) => (
+              <span>
+                <Link
+                  key={x.id}
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                      JSON.stringify({
+                        bqid: x.id,
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '供应商情况', pathname: location.pathname }],
+                    },
+                  }}
+                  className="prj-info-table-link-strong"
+                >
+                  {x.name}
+                </Link>
+                {i === getTagData(text, row.XMBQID).length - 1 ? '' : '、'}
+              </span>
+            ))}
+          </Popover>
         );
       },
     },

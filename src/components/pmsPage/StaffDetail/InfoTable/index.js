@@ -1,12 +1,11 @@
-import React, { Component } from 'react'
-import { Table, message, Popover, Pagination, Tooltip } from 'antd'
+import React, { Component } from 'react';
+import { Table, message, Popover, Pagination, Tooltip } from 'antd';
 import moment from 'moment';
-import { EncryptBase64 } from "../../../Common/Encrypt";
+import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 
 class InfoTable extends Component {
-  state = {
-  }
+  state = {};
 
   //获取标签数据
   getTagData = tag => {
@@ -24,22 +23,28 @@ class InfoTable extends Component {
   handleChange = (current, pageSize) => {
     const { handleSearch, ryid } = this.props;
     if (handleSearch) {
-      handleSearch({
-        current: current,
-        pageSize: pageSize,
-        total: -1,
-      }, ryid)
+      handleSearch(
+        {
+          current: current,
+          pageSize: pageSize,
+          total: -1,
+        },
+        ryid,
+      );
     }
-  }
+  };
 
   handleTableChange = (pagination, filters, sorter) => {
     const { handleSearch, ryid } = this.props;
     const { order = '', field = '' } = sorter;
     if (handleSearch) {
-      handleSearch({
-        total: -1,
-        sort: order ? `${field} ${order.slice(0, -3)}` : ''
-      }, ryid)
+      handleSearch(
+        {
+          total: -1,
+          sort: order ? `${field} ${order.slice(0, -3)}` : '',
+        },
+        ryid,
+      );
     }
   };
 
@@ -64,26 +69,28 @@ class InfoTable extends Component {
         ellipsis: true,
         render: (text, row, index) => {
           const { xmid = '' } = row;
-          return <div >
-            <Tooltip title={text} placement="topLeft">
-            <Link
-              className='opr-btn'
-              to={{
-                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                  JSON.stringify({
-                    xmid: xmid,
-                  }),
-                )}`,
-                state: {
-                  routes: routes,
-                },
-              }}
-
-            >
-              {text}
-            </Link>
-            </Tooltip></div>
-        }
+          return (
+            <div>
+              <Tooltip title={text} placement="topLeft">
+                <Link
+                  className="opr-btn"
+                  to={{
+                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                      JSON.stringify({
+                        xmid: xmid,
+                      }),
+                    )}`,
+                    state: {
+                      routes: routes,
+                    },
+                  }}
+                >
+                  {text}
+                </Link>
+              </Tooltip>
+            </div>
+          );
+        },
       },
       {
         title: '项目标签',
@@ -95,69 +102,62 @@ class InfoTable extends Component {
           const { xmbqid = '' } = row;
           const ids = this.getTagData(xmbqid);
           const data = this.getTagData(text);
-          return <div className="prj-tags">
-            {data.length !== 0 && (
-              <>
-                {data?.slice(0, 4)
-                  .map((x, i) => (
-                    <div key={i} className="tag-item" title={x}>
+          if (data.length === 0) return '';
+          return (
+            <Popover
+              overlayClassName="tag-more-popover"
+              placement="bottomLeft"
+              content={
+                <div className="tag-more">
+                  {data.map((x, i)=> (
+                    <div key={x} className="tag-item">
                       <Link
+                        style={{ color: '#3361ff' }}
                         to={{
-                          pathname:
-                            '/pms/manage/labelDetail/' +
-                            EncryptBase64(
-                              JSON.stringify({
-                                bqid: ids[i],
-                              }),
-                            ),
+                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                            JSON.stringify({
+                              bqid: ids[i],
+                            }),
+                          )}`,
                           state: {
                             routes: routes,
                           },
                         }}
-
+                        className="prj-info-table-link-strong"
                       >
                         {x}
                       </Link>
                     </div>
                   ))}
-                {data?.length > 4 && (
-                  <Popover
-                    overlayClassName="tag-more-popover"
-                    content={
-                      <div className="tag-more">
-                        {data?.slice(4)
-                          .map((x, i) => (
-                            <div className="tag-item" key={i} title={x}>
-                              <Link
-                                to={{
-                                  pathname:
-                                    '/pms/manage/labelDetail/' +
-                                    EncryptBase64(
-                                      JSON.stringify({
-                                        bqid: ids[i],
-                                      }),
-                                    ),
-                                  state: {
-                                    routes: routes,
-                                  },
-                                }}
-                              >
-
-                                {x}
-                              </Link>
-                            </div>
-                          ))}
-                      </div>
-                    }
-                    title={null}
+                </div>
+              }
+              title={null}
+            >
+              {data.map((x, i) => (
+                <span>
+                  <Link
+                    key={x}
+                    style={{ color: '#3361ff' }}
+                    to={{
+                      pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                        JSON.stringify({
+                          bqid: ids[i],
+                        }),
+                      )}`,
+                      state: {
+                        routes: routes,
+                      },
+                    }}
+                    className="prj-info-table-link-strong"
                   >
-                    <div className="tag-item">...</div>
-                  </Popover>
-                )}
-              </>
-            )}
-          </div>
-        }
+                    {x}
+                  </Link>
+                  {i === data.length - 1 ? '' : '、'}
+                </span>
+              ))}
+            </Popover>
+          );
+        },
       },
       {
         title: '项目进度',
@@ -169,10 +169,8 @@ class InfoTable extends Component {
         align: 'right',
         sortDirections: ['descend', 'ascend'],
         render: (text, row, index) => {
-          return <div style={{ paddingRight: '20px' }}>
-            {text}%
-          </div>
-        }
+          return <div style={{ paddingRight: '20px' }}>{text}%</div>;
+        },
       },
       {
         title: '项目阶段',
@@ -186,7 +184,7 @@ class InfoTable extends Component {
         dataIndex: 'cdgw',
         width: '15%',
         key: 'cdgw',
-        ellipsis: true
+        ellipsis: true,
       },
       {
         title: '项目状态',
@@ -195,8 +193,8 @@ class InfoTable extends Component {
         key: 'xmzt',
         ellipsis: true,
         sorter: (a, b) => Number(a.xmzt) - Number(b.xmzt),
-        sortDirections: ['descend', 'ascend']
-      }
+        sortDirections: ['descend', 'ascend'],
+      },
     ];
 
     return (
@@ -209,28 +207,31 @@ class InfoTable extends Component {
             dataSource={tableData}
             onChange={this.handleTableChange}
             pagination={false}
-          // pagination={{
-          //     pageSizeOptions: ['10', '20', '30', '40'],
-          //     showSizeChanger: true,
-          //     showQuickJumper: true,
-          //     showTotal: total => `共 ${tableData.length} 条数据`,
-          // }}
+            // pagination={{
+            //     pageSizeOptions: ['10', '20', '30', '40'],
+            //     showSizeChanger: true,
+            //     showQuickJumper: true,
+            //     showTotal: total => `共 ${tableData.length} 条数据`,
+            // }}
           />
         </div>
-        {(pageParams.total!==-1&&pageParams.total!==0)&&<div className='page-individual'>
-          {tableData.length!==0 && <Pagination
-            onChange={this.handleChange}
-            onShowSizeChange={this.handleChange}
-            pageSize={pageParams.pageSize}
-            current={pageParams.current}
-            total={pageParams.total}
-            pageSizeOptions={['20', '40', '50', '100']}
-            showSizeChanger={true}
-            showQuickJumper={true}
-            showTotal={total => `共 ${total} 条数据`}
-          />}
-
-        </div>}
+        {pageParams.total !== -1 && pageParams.total !== 0 && (
+          <div className="page-individual">
+            {tableData.length !== 0 && (
+              <Pagination
+                onChange={this.handleChange}
+                onShowSizeChange={this.handleChange}
+                pageSize={pageParams.pageSize}
+                current={pageParams.current}
+                total={pageParams.total}
+                pageSizeOptions={['20', '40', '50', '100']}
+                showSizeChanger={true}
+                showQuickJumper={true}
+                showTotal={total => `共 ${total} 条数据`}
+              />
+            )}
+          </div>
+        )}
       </div>
     );
   }

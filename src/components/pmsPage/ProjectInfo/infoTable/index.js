@@ -40,25 +40,6 @@ export default function InfoTable(props) {
     footer: null,
   };
 
-  // useEffect(() => {
-  //   window.addEventListener('message', handleIframePostMessage);
-  //   return () => {
-  //     window.removeEventListener('message', handleIframePostMessage);
-  //   };
-  // }, []);
-
-  //监听新建项目弹窗状态-按钮
-  // const handleIframePostMessage = event => {
-  //   if (typeof event.data !== 'string' && event.data.operate === 'close') {
-  //     closeFileAddModal();
-  //   }
-  //   if (typeof event.data !== 'string' && event.data.operate === 'success') {
-  //     closeFileAddModal();
-  //     message.success(event.data.message)
-  //     getTableData({});
-  //   }
-  // };
-
   //金额格式化
   const getAmountFormat = (value = 0) => {
     return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
@@ -247,69 +228,60 @@ export default function InfoTable(props) {
       key: 'projectLabel',
       ellipsis: true,
       render: (text, row, index) => {
+        if (getTagData(text, row.projectLabelId).length === 0) return '';
         return (
-          <div className="prj-tags">
-            {getTagData(text, row.projectLabelId).length !== 0 && (
-              <>
-                {getTagData(text, row.projectLabelId)
-                  ?.slice(0, 2)
-                  .map(x => (
-                    <div key={x.id} className="tag-item">
-                      <Link
-                        style={{ color: '#3361ff' }}
-                        to={{
-                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                            JSON.stringify({
-                              bqid: x.id,
-                            }),
-                          )}`,
-                          state: {
-                            routes: [{ name: '项目列表', pathname: location.pathname }],
-                          },
-                        }}
-                        className="prj-info-table-link-strong"
-                      >
-                        {x.name}
-                      </Link>
-                    </div>
-                  ))}
-                {getTagData(text, row.projectLabelId)?.length > 2 && (
-                  <Popover
-                    overlayClassName="tag-more-popover"
-                    content={
-                      <div className="tag-more">
-                        {getTagData(text, row.projectLabelId)
-                          ?.slice(2)
-                          .map(x => (
-                            <div key={x.id} className="tag-item">
-                              <Link
-                                style={{ color: '#3361ff' }}
-                                to={{
-                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                    JSON.stringify({
-                                      bqid: x.id,
-                                    }),
-                                  )}`,
-                                  state: {
-                                    routes: [{ name: '项目列表', pathname: location.pathname }],
-                                  },
-                                }}
-                                className="prj-info-table-link-strong"
-                              >
-                                {x.name}
-                              </Link>
-                            </div>
-                          ))}
-                      </div>
-                    }
-                    title={null}
-                  >
-                    <div className="tag-item">...</div>
-                  </Popover>
-                )}
-              </>
-            )}
-          </div>
+          <Popover
+            overlayClassName="tag-more-popover"
+            placement="bottomLeft"
+            content={
+              <div className="tag-more">
+                {getTagData(text, row.projectLabelId).map(x => (
+                  <div key={x.id} className="tag-item">
+                    <Link
+                      style={{ color: '#3361ff' }}
+                      to={{
+                        pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                          JSON.stringify({
+                            bqid: x.id,
+                          }),
+                        )}`,
+                        state: {
+                          routes: [{ name: '项目列表', pathname: location.pathname }],
+                        },
+                      }}
+                      className="prj-info-table-link-strong"
+                    >
+                      {x.name}
+                    </Link>
+                  </div>
+                ))}
+              </div>
+            }
+            title={null}
+          >
+            {getTagData(text, row.projectLabelId).map((x, i) => (
+              <span>
+                <Link
+                  key={x.id}
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                      JSON.stringify({
+                        bqid: x.id,
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '项目列表', pathname: location.pathname }],
+                    },
+                  }}
+                  className="prj-info-table-link-strong"
+                >
+                  {x.name}
+                </Link>
+                {i === getTagData(text, row.projectLabelId).length - 1 ? '' : '、'}
+              </span>
+            ))}
+          </Popover>
         );
       },
     },
@@ -324,18 +296,6 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
-      {/*{fileAddVisible && (*/}
-      {/*  <BridgeModel*/}
-      {/*    isSpining="customize"*/}
-      {/*    modalProps={fileAddModalProps}*/}
-      {/*    onSucess={() => {*/}
-      {/*      closeFileAddModal();*/}
-      {/*      message.success('保存成功', 1);*/}
-      {/*    }}*/}
-      {/*    onCancel={closeFileAddModal}*/}
-      {/*    src={src_fileAdd}*/}
-      {/*  />*/}
-      {/*)}*/}
       {fileAddVisible && (
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"

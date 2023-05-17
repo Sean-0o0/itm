@@ -96,65 +96,60 @@ class InfoTable extends Component {
           const { XMBQID = '' } = row;
           const ids = this.getTagData(XMBQID);
           const data = this.getTagData(text);
+          if (data.length === 0) return '';
           return (
-            <div className="prj-tags">
-              {data.length !== 0 && (
-                <>
-                  {data?.slice(0, 4).map((x, i) => (
-                    <div key={i} className="tag-item">
+            <Popover
+              overlayClassName="tag-more-popover"
+              placement="bottomLeft"
+              content={
+                <div className="tag-more">
+                  {data.map((x, i) => (
+                    <div key={x} className="tag-item">
                       <Link
+                        style={{ color: '#3361ff' }}
                         to={{
-                          pathname:
-                            '/pms/manage/labelDetail/' +
-                            EncryptBase64(
-                              JSON.stringify({
-                                bqid: ids[i],
-                              }),
-                            ),
+                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                            JSON.stringify({
+                              bqid: ids[i],
+                            }),
+                          )}`,
                           state: {
                             routes: routes,
                           },
                         }}
+                        className="prj-info-table-link-strong"
                       >
                         {x}
                       </Link>
                     </div>
                   ))}
-                  {data?.length > 4 && (
-                    <Popover
-                      overlayClassName="tag-more-popover"
-                      content={
-                        <div className="tag-more">
-                          {data?.slice(4).map((x, i) => (
-                            <div key={i} className="tag-item">
-                              <Link
-                                to={{
-                                  pathname:
-                                    '/pms/manage/labelDetail/' +
-                                    EncryptBase64(
-                                      JSON.stringify({
-                                        bqid: ids[i],
-                                      }),
-                                    ),
-                                  state: {
-                                    routes: routes,
-                                  },
-                                }}
-                              >
-                                {x}
-                              </Link>
-                            </div>
-                          ))}
-                        </div>
-                      }
-                      title={null}
-                    >
-                      <div className="tag-item">...</div>
-                    </Popover>
-                  )}
-                </>
-              )}
-            </div>
+                </div>
+              }
+              title={null}
+            >
+              {data.map((x, i) => (
+                <span>
+                  <Link
+                    key={x}
+                    style={{ color: '#3361ff' }}
+                    to={{
+                      pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                        JSON.stringify({
+                          bqid: ids[i],
+                        }),
+                      )}`,
+                      state: {
+                        routes: routes,
+                      },
+                    }}
+                    className="prj-info-table-link-strong"
+                  >
+                    {x}
+                  </Link>
+                  {i === data.length - 1 ? '' : '、'}
+                </span>
+              ))}
+            </Popover>
           );
         },
       },
@@ -174,7 +169,7 @@ class InfoTable extends Component {
       {
         title: '项目阶段',
         dataIndex: 'DQLCB',
-        width: '8%',
+        width: '14%',
         key: 'DQLCB',
         ellipsis: true,
       },
@@ -202,16 +197,18 @@ class InfoTable extends Component {
           />
         </div>
         <div className="page-individual">
-          {tableData.length!==0&&<Pagination
-            onChange={this.handleChange}
-            pageSize={pageParams.pageSize}
-            current={pageParams.current}
-            total={pageParams.total}
-            pageSizeOptions={['20', '40', '50', '100']}
-            showSizeChanger={true}
-            showQuickJumper={true}
-            showTotal={total => `共 ${total} 条数据`}
-          />}
+          {tableData.length !== 0 && (
+            <Pagination
+              onChange={this.handleChange}
+              pageSize={pageParams.pageSize}
+              current={pageParams.current}
+              total={pageParams.total}
+              pageSizeOptions={['20', '40', '50', '100']}
+              showSizeChanger={true}
+              showQuickJumper={true}
+              showTotal={total => `共 ${total} 条数据`}
+            />
+          )}
         </div>
       </div>
     );

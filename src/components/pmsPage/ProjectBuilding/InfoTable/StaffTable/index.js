@@ -142,66 +142,61 @@ class StaffTable extends Component {
                 const { XMBQID = '' } = row;
                 const ids = this.getTagData(XMBQID);
                 const data = this.getTagData(text);
-                return <div className="prj-tags">
-                    {data.length !== 0 && (
-                        <>
-                            {data?.slice(0, 3)
-                                .map((x, i) => (
-                                    <div key={i} className="tag-item">
-                                        <Link
-                                            to={{
-                                                pathname:
-                                                    '/pms/manage/labelDetail/' +
-                                                    EncryptBase64(
-                                                        JSON.stringify({
-                                                            bqid: ids[i],
-                                                        }),
-                                                    ),
-                                                state: {
-                                                    routes: routes,
-                                                },
-                                            }}
-                                        >
-                                            {x}
-                                        </Link>
-                                    </div>
-                                ))}
-                            {data?.length > 3 && (
-                                <Popover
-                                    overlayClassName="tag-more-popover"
-                                    content={
-                                        <div className="tag-more">
-                                            {data?.slice(3)
-                                                .map((x, i) => (
-                                                    <div key={i} className="tag-item">
-                                                        <Link
-                                                            to={{
-                                                                pathname:
-                                                                    '/pms/manage/labelDetail/' +
-                                                                    EncryptBase64(
-                                                                        JSON.stringify({
-                                                                            bqid: ids[i],
-                                                                        }),
-                                                                    ),
-                                                                state: {
-                                                                    routes: routes,
-                                                                },
-                                                            }}
-                                                        >
-                                                            {x}
-                                                        </Link>
-                                                    </div>
-                                                ))}
-                                        </div>
-                                    }
-                                    title={null}
-                                >
-                                    <div className="tag-item">...</div>
-                                </Popover>
-                            )}
-                        </>
-                    )}
-                </div>
+                if (data.length === 0) return '';
+                return (
+                  <Popover
+                    overlayClassName="tag-more-popover"
+                    placement="bottomLeft"
+                    content={
+                      <div className="tag-more">
+                        {data.map((x, i)=> (
+                          <div key={x} className="tag-item">
+                            <Link
+                              style={{ color: '#3361ff' }}
+                              to={{
+                                pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                                  JSON.stringify({
+                                    bqid: ids[i],
+                                  }),
+                                )}`,
+                                state: {
+                                  routes: routes,
+                                },
+                              }}
+                              className="prj-info-table-link-strong"
+                            >
+                              {x}
+                            </Link>
+                          </div>
+                        ))}
+                      </div>
+                    }
+                    title={null}
+                  >
+                    {data.map((x, i) => (
+                      <span>
+                        <Link
+                          key={x}
+                          style={{ color: '#3361ff' }}
+                          to={{
+                            pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                              JSON.stringify({
+                                bqid: ids[i],
+                              }),
+                            )}`,
+                            state: {
+                              routes: routes,
+                            },
+                          }}
+                          className="prj-info-table-link-strong"
+                        >
+                          {x}
+                        </Link>
+                        {i === data.length - 1 ? '' : '、'}
+                      </span>
+                    ))}
+                  </Popover>
+                );
             }
         }
         ]
