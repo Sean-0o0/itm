@@ -11531,7 +11531,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         .bottom-box {
-          padding: 16px 24px;
+          padding: 16px 18px;
           // padding-left: 0;
           height: calc(100% - 48px);
           overflow: hidden;
@@ -11572,22 +11572,44 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               flex-direction: row;
               align-items: center;
               cursor: pointer;
+              padding-right: 6px;
 
               &:hover {
                 color: #3361ff;
               }
 
               .bottom-left {
-                border-radius: 50%;
-                overflow: hidden;
                 margin-right: 8px;
                 flex-shrink: 0;
+                position: relative;
 
                 img {
+                  overflow: hidden;
                   width: 32px;
+                  border-radius: 50%;
+                }
+                .leader-tag {
+                  position: absolute;
+                  bottom: 0;
+                  right: 0;
+                  height: 14px;
+                  width: 14px;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  justify-content: center;
+                  border-radius: 50%;
+                  background-color: #3361ff;
+
+                  .leader-tag-img {
+                    width: 10px;
+                  }
                 }
               }
-
+              .leader-tag-right {
+                width: 14px;
+                margin-left: auto;
+              }
               span {
                 max-width: calc(100% - 32px);
                 text-overflow: ellipsis;
@@ -11598,20 +11620,31 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
           .leader-list {
+            padding: 0 12px;
+            display: flex;
+            flex-wrap: wrap;
+            flex-direction: row;
+            justify-content: space-between;
+            overflow: hidden;
+
             .leader-item {
-              margin-bottom: 16px;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-              font-size: 12px;
+              margin-bottom: 20px;
+              // display: flex;
+              // flex-direction: row;
+              // align-items: center;
+              // font-size: 12px;
               color: #606266ff;
               font-weight: bold;
-              height: 32px;
+              // height: 32px;
 
               .position {
                 text-overflow: ellipsis;
                 overflow: hidden;
                 white-space: nowrap;
+                font-size: 12px;
+                height: 14px;
+                line-height: 14px;
+                margin-bottom: 8px;
                 cursor: default;
 
                 i {
@@ -11621,13 +11654,42 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
 
               .member-item {
-                margin-left: 12px;
-                width: unset;
-                min-width: 104px;
+                width: 100%;
                 flex-shrink: 0;
                 .bottom {
-                  padding-right: 16px;
+                  padding-right: 6px;
                 }
+              }
+            }
+
+            .leader-item {
+              margin-bottom: 16px;
+              width: 45.37%;
+            }
+
+            @media screen and (min-width: 1441px) and (max-width: 1844px) {
+              .leader-item {
+                width: 45.37%;
+              }
+            }
+            @media screen and (min-width: 1845px) and (max-width: 2249px) {
+              .leader-item {
+                width: 29.654%;
+              }
+            }
+            @media screen and (min-width: 2250px) and (max-width: 2654px) {
+              .leader-item {
+                width: 22.034%;
+              }
+            }
+            @media screen and (min-width: 2655px) and (max-width: 3059px) {
+              .leader-item {
+                width: 17.523%;
+              }
+            }
+            @media screen and (min-width: 3060px) and (max-width: 3464px) {
+              .leader-item {
+                width: 14.549%;
               }
             }
           }
@@ -11659,7 +11721,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 & > .ant-collapse-content-box {
                   padding: 8px 0;
                   .panel-content {
-                    padding: 16px 24px;
+                    padding: 16px 20px;
                     padding-bottom: 4px;
                     border-radius: 4px;
                     border: 1px solid #ebeef5;
@@ -12480,6 +12542,175 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           color: #3361ffaf;
         }
       }
+    }
+  }
+}
+
+//需求详情 - 简历分发弹窗
+.resume-destribution-modal {
+  .ant-modal-body {
+    padding: 0;
+    overflow: hidden;
+  }
+  .splier-list {
+    padding: 24px;
+    height: 520px;
+    overflow: hidden;
+    overflow-y: auto;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      background-color: #fafafa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 5px;
+      width: 10px;
+    }
+
+    & > .splier-item {
+      border: 2px solid #f3f2f3;
+      border-radius: 8px;
+      margin-bottom: 16px;
+      padding: 16px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      color: #303133;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      & > .splier-name {
+        // height: 22px;
+        line-height: 22px;
+        font-size: 18px;
+        font-weight: bold;
+        margin-bottom: 12px;
+      }
+
+      & > .resume-list {
+        font-size: 15px;
+        display: flex;
+        flex-direction: row;
+        flex-wrap: wrap;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: -12px;
+
+        & > .resume-item {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          background-color: #f1f2f2;
+          border-radius: 8px;
+          margin-bottom: 12px;
+          width: 49%;
+          height: 40px;
+          padding: 0 10px;
+
+          span {
+            flex-grow: 1;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+          }
+
+          i {
+            flex-shrink: 0;
+            font-size: 20px;
+            margin-left: 6px;
+            color: #a5a6a5;
+            cursor: pointer;
+
+            &:hover {
+              color: #3361ff;
+            }
+          }
+          .icon-download {
+            // margin-left: auto;
+            font-size: 19px;
+          }
+        }
+      }
+    }
+  }
+}
+
+//需求详情 - 综合评测安排弹窗
+.personnel-arrangement-modal {
+  .ant-modal-body {
+    padding: 0;
+    overflow: hidden;
+    height: 468px;
+  }
+
+  .content-box {
+    padding: 0 0 0 15px;
+    margin-top: 16px;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 550px;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      background-color: #fafafa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 5px;
+      width: 10px;
+    }
+  }
+
+  .ant-table {
+    th,
+    td {
+      text-align: left;
+    }
+
+    td {
+      padding: 8px !important;
+      font-size: 14px;
+      font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #303133;
+      height: 47.67px;
+    }
+
+    th {
+      padding: 8px !important;
+      font-size: 14px;
+      background-color: #f5f7fa;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #606266;
+    }
+
+    .ant-table-body {
+      table {
+        border: 1px solid #e8e8e8;
+      }
+    }
+
+    .ant-table-scroll .ant-table-header {
+      margin-bottom: -16.5px !important; //表格表头底部边框
+      background-color: #f5f7fa;
+    }
+
+    .ant-table-placeholder {
+      // border-bottom: 0;
+
+      .ant-empty-description {
+        font-size: 14px;
+      }
+    }
+
+    .ant-table-thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
   }
 }

@@ -6,6 +6,8 @@ import { EncryptBase64 } from '../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import avatarMale from '../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../assets/homePage/img_avatar_female.png';
+import leaderTag from '../../../assets/homePage/leader-tag.png';
+import leaderTagRight from '../../../assets/homePage/leader-tag-right.png';
 import { QueryMemberInfo } from '../../../services/pmsServices';
 import { FetchQueryOrganizationInfo } from '../../../services/projectManage';
 import TreeUtils from '../../../utils/treeUtils';
@@ -97,7 +99,7 @@ export default function StaffInfo(props) {
             children: [],
           });
           setOrgData([...data]);
-          console.log('🚀 ~ FetchQueryOrganizationInfo ~ res', data);
+          // console.log('🚀 ~ FetchQueryOrganizationInfo ~ res', data);
           getStaffData(data);
         }
       })
@@ -161,7 +163,7 @@ export default function StaffInfo(props) {
               x.members = childArr;
             });
           });
-          console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
+          // console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
           setStaffData(p => [...finalData]);
           setIsSpinning(false);
         }
@@ -173,16 +175,22 @@ export default function StaffInfo(props) {
   };
 
   //成员块
-  const getMemberItem = ({ gender = '男', name = '--', key = '', post = '--' }) => {
+  const getMemberItem = ({
+    gender = '男',
+    name = '--',
+    key = '',
+    post = '--',
+    topLeader = false,
+  }) => {
     return (
       <div
         className="member-item"
         key={key}
-        style={
-          post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
-            ? { border: '1px solid #3361ff', borderRadius: '16px' }
-            : {}
-        }
+        // style={
+        //   post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
+        //     ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' }
+        //     : {}
+        // }
       >
         <Link
           to={{
@@ -196,11 +204,43 @@ export default function StaffInfo(props) {
             state: { routes: [{ name: '人员列表', pathname: location.pathname }] },
           }}
         >
-          <div className="bottom">
-            <div className="bottom-left">
+          <div
+            className="bottom"
+            style={
+              post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
+                ? {
+                    background: '#3363ff14',
+                    borderRadius: '16px',
+                  }
+                : {}
+            }
+          >
+            <div
+              className="bottom-left"
+              // style={
+              //   post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
+              //     ? { border: '2px solid #fff' }
+              //     : {}
+              // }
+            >
               <img src={gender === '男' ? avatarMale : avatarFemale} />
+              {/* {post?.includes('经理') &&
+                !post?.includes('项目经理') &&
+                !post?.includes('产品经理') && (
+                  <div
+                    className="leader-tag"
+                    style={topLeader ? { backgroundColor: '#f8d649' } : {}}
+                  >
+                    <img src={leaderTag} className="leader-tag-img" />
+                  </div>
+                )} */}
             </div>
             <span>{name}</span>
+            {post?.includes('经理') &&
+              !post?.includes('项目经理') &&
+              !post?.includes('产品经理') && (
+                <img src={leaderTagRight} className="leader-tag-right" />
+              )}
           </div>
         </Link>
       </div>
@@ -232,9 +272,11 @@ export default function StaffInfo(props) {
                     name: m.name || '--',
                     key: m.id,
                     post: m.gw,
+                    topLeader: true,
                   })}
                 </div>
               ))}
+              {getAfterItem(itemWidth)}
             </div>
             <Collapse
               // accordion
