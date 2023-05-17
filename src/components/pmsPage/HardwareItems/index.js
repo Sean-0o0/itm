@@ -5,6 +5,8 @@ import PollResultEnterModel from "./PollResultEnterModel";
 import RequireModel from "./RequireModel";
 import AgreementEnterModal from "./AgreementEnterModel";
 import BidSectionModel from "./BidSectionModel";
+import DemandInitiated from "./DemandInitiated";
+import DemandInitiationModal from "../DemandInitiationModal";
 
 //首页
 export default function HardwareItems(props) {
@@ -57,7 +59,8 @@ export default function HardwareItems(props) {
       )
       }
       {agreementEnterVisible && (
-        <AgreementEnterModal closeModal={closeAgreementEnterModal} visible={agreementEnterVisible}/>
+        <DemandInitiated xmmc={"传进来的项目名称"} xqid={23} closeModal={closeAgreementEnterModal}
+                         visible={agreementEnterVisible}/>
       )
       }
       <button onClick={() => setBidVisible(true)}>中标信息录入</button>

@@ -17,8 +17,8 @@ import { EditableCell, EditableRow } from './EditableTable';
 import dataCenter from '../../../utils/api/dataCenter';
 const { TextArea } = Input;
 function DemandInitiationModal(props) {
-  const { visible, setVisible, form } = props;
-  const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
+  const {visible, closeModal, form} = props;
+  const {validateFields, getFieldValue, resetFields, getFieldDecorator} = form;
   const [tableData, setTableData] = useState([]);
 
   useEffect(() => {
@@ -137,10 +137,10 @@ function DemandInitiationModal(props) {
   };
 
   //取消
-  const handleCancel = () => {
-    resetFields();
-    setVisible(false);
-  };
+  // const handleCancel = () => {
+  //   resetFields();
+  //   setVisible(false);
+  // };
 
   //表格数据保存
   const handleTableSave = row => {
@@ -293,7 +293,7 @@ function DemandInitiationModal(props) {
       visible={visible}
       okText="保存"
       onOk={handleOK}
-      onCancel={handleCancel}
+      onCancel={closeModal}
     >
       <div className="body-title-box">
         <strong>需求发起</strong>
@@ -352,7 +352,7 @@ function DemandInitiationModal(props) {
         </Row>
         <Row>
           {getDP({
-            label: '面试结果日期',
+            label: '意向试用日期',
             dataIndex: 'msjgrq',
           })}
           {getDP({

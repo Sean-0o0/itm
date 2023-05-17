@@ -355,4 +355,16 @@ export default [
     url: '/projectManage/remindSubProjectFinish',
     dis: '提醒子项目完善信息',
   },
+  {
+    code: '',
+    key: 'operateOutsourceRequirements',
+    url: '/projectManage/operateOutsourceRequirements',
+    dis: '需求发起',
+  },
+  {
+    code: '',
+    key: 'queryOutsourceRequirement',
+    url: '/projectManage/queryOutsourceRequirement',
+    dis: '查询需求发起结果',
+  },
 ];
