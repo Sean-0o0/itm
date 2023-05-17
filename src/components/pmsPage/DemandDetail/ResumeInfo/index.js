@@ -14,6 +14,8 @@ export default function ResumeInfo(props) {
   useEffect(() => {
     return () => {};
   }, []);
+
+  //供应商块
   const getSplierItem = (label, num, arr) => {
     const handlePDFPreview = (id, fileName, entryno) => {
       // axios({
@@ -68,12 +70,24 @@ export default function ResumeInfo(props) {
       </div>
     );
   };
+
+  //flex列表尾部占位置的空标签，处理justify-content对齐问题
+  const getAfterItem = (width, colNum) => {
+    let arr = [];
+    for (let i = 0; i < colNum; i++) {
+      //每行最多colNum个
+      arr.push('');
+    }
+    return arr.map((x, k) => <i key={k} style={{ width }} />);
+  };
+
   if (JLXX.length === 0) return null;
   return (
     <div className="resume-info-box info-box">
       <div className="title">简历信息</div>
       <div className="supplier-row-box">
         {JLXX.map(x => getSplierItem(x.GYSMC, x.JLFS, x.JLDATA))}
+        {getAfterItem('33%', 3)}
       </div>
     </div>
   );

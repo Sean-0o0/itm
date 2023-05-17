@@ -25,12 +25,12 @@ export default function DemandDetail(props) {
       {
         XQMC: 'xqmc',
         XQID: '1',
-        XQFQR: '111'
+        XQFQR: '111',
       },
       {
         XQMC: 'xqmc',
         XQID: '2',
-        XQFQR: '222'
+        XQFQR: '222',
       },
     ],
     XQXQ: [
@@ -39,12 +39,12 @@ export default function DemandDetail(props) {
         SXLX: '需求申请',
         SXDATA: [
           {
-            SXMC: '需求发起',
-            ZXZT: '1',
+            SXMC: '综合评测安排',
+            ZXZT: '2',
           },
           {
             SXMC: '简历分发',
-            ZXZT: '1',
+            ZXZT: '2',
           },
         ],
       },
@@ -273,6 +273,7 @@ export default function DemandDetail(props) {
     FKTX: {
       TXNR: '1-3月的费用已计算完成',
     },
+    RYXQ: ['G3｜前端', 'G3｜JAVA', 'G3｜UI'],
   }); //详情信息
   const [example, setexample] = useState(example); //example
   // const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
