@@ -202,7 +202,7 @@ class StaffTable extends Component {
                         routes: routes,
                       },
                     }}
-                    className="table-link-strong"
+                    className="table-link-strong-tagtxt"
                   >
                     {x}
                   </Link>

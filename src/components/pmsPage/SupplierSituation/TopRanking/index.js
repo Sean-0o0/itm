@@ -9,7 +9,8 @@ export default function TopRanking(props) {
   }, []);
 
   //金额格式化
-  const getAmountFormat = (value = 0) => {
+  const getAmountFormat = value => {
+    if ([undefined, null, '', ' ', NaN].includes(value)) return '';
     return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 

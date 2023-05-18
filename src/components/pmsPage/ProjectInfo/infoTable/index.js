@@ -41,7 +41,8 @@ export default function InfoTable(props) {
   };
 
   //金额格式化
-  const getAmountFormat = (value = 0) => {
+  const getAmountFormat = value => {
+    if ([undefined, null, '', ' ', NaN].includes(value)) return '';
     return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
@@ -274,7 +275,7 @@ export default function InfoTable(props) {
                       routes: [{ name: '项目列表', pathname: location.pathname }],
                     },
                   }}
-                  className="table-link-strong"
+                  className="table-link-strong-tagtxt"
                 >
                   {x.name}
                 </Link>
@@ -355,7 +356,6 @@ export default function InfoTable(props) {
           rowKey={'projectId'}
           dataSource={tableData}
           onChange={handleTableChange}
-          // scroll={{ y: 500 }}
           pagination={{
             current: curPage,
             pageSize: curPageSize,

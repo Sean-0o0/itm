@@ -230,7 +230,7 @@ export default function TableTabs(props) {
                       routes: [{ name: '供应商情况', pathname: location.pathname }],
                     },
                   }}
-                  className="table-link-strong"
+                  className="table-link-strong-tagtxt"
                 >
                   {x.name}
                 </Link>

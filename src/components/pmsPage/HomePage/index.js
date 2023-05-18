@@ -22,13 +22,14 @@ import TeamCard from './TeamCard';
 import ToDoCard from './ToDoCard';
 import moment from 'moment';
 
-//金额显示,
+//金额格式化
 const getAmountFormat = value => {
+  if ([undefined, null, '', ' ', NaN].includes(value)) return '';
   return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
 export { getAmountFormat };
 export default function HomePage(props) {
-  const {} = props;
+  const { cacheLifecycles } = props;
   // console.log("🚀 ~ file: index.js ~ line 32 ~ HomePage ~ props", props)
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
@@ -42,6 +43,7 @@ export default function HomePage(props) {
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [processData, setProcessData] = useState([]); //流程情况
+  const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
   const [total, setTotal] = useState({
     todo: 0,
     project: 0,
@@ -53,13 +55,16 @@ export default function HomePage(props) {
   //防抖定时器
   let timer = null;
 
-  //页面恢复，跳转回首页时触发
-  // props.cacheLifecycles.didRecover(() => {
-  //   // console.log('跳转回首页时触发');
-  //   if (htmlContent) htmlContent.scrollTop = 0; //页面跳转后滚至顶部
-  //   // setIsSpinning(true);
-  //   // getUserRole();
-  // });
+  // 页面恢复，跳转回首页时触发
+  cacheLifecycles.didRecover(() => {
+    setPlacement('rightTop');
+    console.log('跳转回首页时触发');
+  });
+
+  cacheLifecycles.didCache(() => {
+    setPlacement(undefined);
+    console.log('首页缓存时触发');
+  });
 
   useEffect(() => {
     setIsSpinning(true);
@@ -250,7 +255,6 @@ export default function HomePage(props) {
           });
           setIsSpinning(false);
         }
-
       })
       .catch(e => {
         console.error('QueryProjectGeneralInfo', e);
@@ -283,7 +287,6 @@ export default function HomePage(props) {
           getSupplierData(role);
           // console.log("🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:", [...arr])
         }
-          
       })
       .catch(e => {
         console.error('QueryMemberOverviewInfo', e);
@@ -458,7 +461,8 @@ export default function HomePage(props) {
               prjInfo={prjInfo}
               getPrjInfo={getPrjInfo}
               total={total.project}
-              cacheLifecycles={props.cacheLifecycles}
+              placement={placement}
+              setPlacement={setPlacement}
             />
           </div>
           <div className="col-right">

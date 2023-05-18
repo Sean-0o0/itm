@@ -15,22 +15,17 @@ export default forwardRef(function TopConsole(props, ref) {
   const [budgetData, setBudgetData] = useState([]); //关联预算
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [prjMngerData, setPrjMngerData] = useState([]); //项目经理
-  const { XMLX } = props.dictionary; //
-  const [prjTypeData, setPrjTypeData] = useState([]); //项目类型
+  const [dmNameData, setDmNameData] = useState([]); //需求名称
+  const [dmInitiatorData, setDmInitiatorData] = useState([]); //需求发起人
   //查询的值
   const [budget, setBudget] = useState(undefined); //关联预算
   const [budgetValue, setBudgetValue] = useState(undefined); //关联预算-为了重置
   const [budgetType, setBudgetType] = useState('1'); //关联预算类型id
   const [prjName, setPrjName] = useState(undefined); //项目名称
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
-
-  const {
-    setTableLoading,
-    setTableData,
-    setTotal,
-    setCurPage,
-    setCurPageSize,
-  } = props;
+  const [dmName, setDmName] = useState(undefined); //需求名称
+  const [dmInitiator, setDmInitiator] = useState(undefined); //需求发起人
+  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize } = props;
 
   useEffect(() => {
     getFilterData();
@@ -45,7 +40,7 @@ export default forwardRef(function TopConsole(props, ref) {
         handleReset,
       };
     },
-    [budget, budgetValue, budgetType, prjName, prjMnger],
+    [budget, budgetValue, budgetType, prjName, prjMnger, dmInitiator, dmName],
   );
 
   //转为树结构-关联项目
@@ -166,12 +161,6 @@ export default forwardRef(function TopConsole(props, ref) {
       paging: 1,
       sort,
       total: -1,
-      // xmjl: 0,
-      // xmmc: 0,
-      // xqfqr: 0,//
-      // xqmc: 0,//
-      // yslx: 0,
-      // ysxm: 0,
     };
     if (budget !== undefined && budget !== '') {
       params.ysxm = Number(budget);
@@ -182,6 +171,12 @@ export default forwardRef(function TopConsole(props, ref) {
     }
     if (prjMnger !== undefined && prjMnger !== '') {
       params.xmjl = Number(prjMnger);
+    }
+    if (dmInitiator !== undefined && dmInitiator !== '') {
+      params.xqfqr = Number(dmInitiator);
+    }
+    if (dmName !== undefined && dmName !== '') {
+      params.xqmc = Number(dmName);
     }
     QueryOutsourceRequirementList(params)
       .then(res => {
@@ -207,25 +202,34 @@ export default forwardRef(function TopConsole(props, ref) {
     setBudgetType('1'); //预算类型
     setPrjName(undefined); //项目名称
     setPrjMnger(undefined); //项目经理
+    setDmInitiator(undefined);
+    setDmName(undefined);
   };
 
   // onChange-start
   //项目经理
   const handlePrjMngerChange = v => {
     // console.log('handlePrjMngerChange', v);
-    // if (v === undefined) v = '';
     setPrjMnger(v);
   };
   //项目名称
   const handlePrjNameChange = v => {
     // console.log('handlePrjMngerChange', v);
-    // if (v === undefined) v = '';
     setPrjName(v);
+  };
+  //需求名称
+  const handleDmNameChange = v => {
+    // console.log(' handleDmNameChange', v);
+    setDmName(v);
+  };
+  //需求发起人
+  const handleDmInitiatorChange = v => {
+    // console.log('handleDmInitiatorChange', v);
+    setDmInitiator(v);
   };
   //关联预算
   const handleBudgetChange = (v, txt, node) => {
     // console.log('handleBudgetChange', v, node?.triggerNode?.props);
-    // if (v === undefined) v = '';
     setBudget(node?.triggerNode?.props?.ID);
     setBudgetValue(v);
     if (node?.triggerNode?.props?.ZDBM === '6') {
@@ -292,15 +296,15 @@ export default forwardRef(function TopConsole(props, ref) {
             }
             showSearch
             allowClear
-            onChange={handlePrjMngerChange}
-            value={prjMnger}
+            onChange={handleDmNameChange}
+            value={dmName}
             placeholder="请选择"
           >
-            {prjMngerData.map((x, i) => (
+            {/* {dmNameData.map((x, i) => (
               <Option key={i} value={x.ID}>
                 {x.USERNAME}
               </Option>
-            ))}
+            ))} */}
           </Select>
         </div>
         <Button className="btn-search" type="primary" onClick={() => handleSearch()}>
@@ -336,15 +340,15 @@ export default forwardRef(function TopConsole(props, ref) {
             }
             showSearch
             allowClear
-            onChange={handlePrjMngerChange}
-            value={prjMnger}
+            onChange={handleDmInitiatorChange}
+            value={dmInitiator}
             placeholder="请选择"
           >
-            {prjMngerData.map((x, i) => (
+            {/* {dmInitiatorData.map((x, i) => (
               <Option key={i} value={x.ID}>
                 {x.USERNAME}
               </Option>
-            ))}
+            ))} */}
           </Select>
         </div>
       </div>

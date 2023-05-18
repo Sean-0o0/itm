@@ -9,7 +9,7 @@ import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 
 export default function ProjectCard(props) {
-  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total, cacheLifecycles } = props;
+  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total, placement, setPlacement } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
@@ -17,7 +17,6 @@ export default function ProjectCard(props) {
   const [src_fileAdd, setSrc_fileAdd] = useState('#'); //项目信息修改弹窗显示
   const [allPrj, setAllPrj] = useState([]); //全部项目
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
-  const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
   const location = useLocation();
 
   useEffect(() => {
@@ -26,14 +25,6 @@ export default function ProjectCard(props) {
       window.removeEventListener('message', handleIframePostMessage);
     };
   }, []);
-
-  cacheLifecycles.didCache(() => {
-    setPlacement(undefined);
-  });
-
-  cacheLifecycles.didRecover(() => {
-    setPlacement('rightTop');
-  });
 
   useEffect(() => {
     if (prjInfo.length !== 0) {

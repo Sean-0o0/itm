@@ -12767,6 +12767,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
   & > .info-table {
     .project-info-table-box {
+      .ant-table {
+        //嵌套子表格异常解决
+        tr.ant-table-expanded-row td > .ant-table-wrapper {
+          margin: -10px;
+        }
+      }
+
       .opr-colomn {
         display: flex;
         flex-direction: row;
@@ -12793,5 +12800,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
     }
+  }
+}
+
+.tc-btn-more-content-dropdown {
+  .ant-dropdown-menu-item .ant-dropdown-menu-submenu-arrow,
+  .ant-dropdown-menu-submenu-title .ant-dropdown-menu-submenu-arrow {
+    right: 90px;
+    transform: rotate(180deg);
+  }
+  .ant-dropdown-menu-item,
+  .ant-dropdown-menu-submenu-title {
+    text-align: center;
   }
 }

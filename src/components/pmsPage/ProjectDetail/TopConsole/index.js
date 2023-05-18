@@ -1,4 +1,4 @@
-import { Breadcrumb, Button, message, Modal, Popover } from 'antd';
+import { Breadcrumb, Button, message, Modal, Popover, Menu, Dropdown, Icon } from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
@@ -9,6 +9,7 @@ import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProj
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 const { Item } = Breadcrumb;
+const { SubMenu } = Menu;
 
 export default function TopConsole(props) {
   const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader } = props;
@@ -145,7 +146,9 @@ export default function TopConsole(props) {
                 }
                 title={null}
               >
-                <div className="tag-item" key='...'>...</div>
+                <div className="tag-item" key="...">
+                  ...
+                </div>
               </Popover>
             )}
           </>
@@ -195,15 +198,35 @@ export default function TopConsole(props) {
       });
   };
 
+  // const btnMoreContent = (
+  //   <div className="list">
+  //     <div className="item" onClick={() => handleSqModal()}>
+  //       申请餐券
+  //     </div>
+  //     <div className="item" onClick={() => handleSqModal('申请权限')}>
+  //       申请权限
+  //     </div>
+  //   </div>
+  // );
+
   const btnMoreContent = (
-    <div className="list">
-      <div className="item" onClick={() => handleSqModal()}>
-        申请餐券
-      </div>
-      <div className="item" onClick={() => handleSqModal('申请权限')}>
-        申请权限
-      </div>
-    </div>
+    <Menu>
+      <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
+        <Menu.Item>项目立项流程</Menu.Item>
+        <Menu.Item>总办会流程</Menu.Item>
+        <Menu.Item>合同签署流程</Menu.Item>
+      </SubMenu>
+      <SubMenu
+        title={<span style={{ marginLeft: 20 }}>付款补录</span>}
+        arrow-icon={<Icon type="left" />}
+      >
+        <Menu.Item>项目立项流程</Menu.Item>
+        <Menu.Item>总办会流程</Menu.Item>
+        <Menu.Item>合同签署流程</Menu.Item>
+      </SubMenu>
+      <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
+      <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
+    </Menu>
   );
 
   const handlesqModalSuccess = txt => {
@@ -234,19 +257,9 @@ export default function TopConsole(props) {
     visible: sqModalVisible,
     footer: null,
   };
+
   return (
     <div className="top-console-box">
-      {/* 编辑项目弹窗 */}
-      {/*{fileAddVisible && (*/}
-      {/*  <BridgeModel*/}
-      {/*    isSpining="customize"*/}
-      {/*    modalProps={fileAddModalProps}*/}
-      {/*    src={src_fileAdd}*/}
-      {/*    onCancel={() => {*/}
-      {/*      closeFileAddModal();*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*)}*/}
       {fileAddVisible && (
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"
@@ -321,16 +334,11 @@ export default function TopConsole(props) {
               <Button className="btn-edit" onClick={handleEditPrjInfo}>
                 编辑
               </Button>
-              <Popover
-                placement="bottomRight"
-                title={null}
-                content={btnMoreContent}
-                overlayClassName="tc-btn-more-content-popover"
-              >
+              <Dropdown overlay={btnMoreContent} overlayClassName="tc-btn-more-content-dropdown">
                 <Button className="btn-more">
                   <i className="iconfont icon-more" />
                 </Button>
-              </Popover>
+              </Dropdown>
             </>
           )}
         </div>
