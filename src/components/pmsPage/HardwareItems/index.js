@@ -7,6 +7,7 @@ import AgreementEnterModal from "./AgreementEnterModel";
 import BidSectionModel from "./BidSectionModel";
 import DemandInitiated from "./DemandInitiated";
 import DemandInitiationModal from "../DemandInitiationModal";
+import SendMailModal from "../SendMailModal";
 
 //首页
 export default function HardwareItems(props) {
@@ -55,7 +56,7 @@ export default function HardwareItems(props) {
       )
       }
       {requireVisible && (
-        <BidSectionModel closeModal={closeRequireVisibleModal} visible={requireVisible}/>
+        <SendMailModal closeModal={closeRequireVisibleModal} visible={requireVisible}/>
       )
       }
       {agreementEnterVisible && (
