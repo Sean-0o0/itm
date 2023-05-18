@@ -69,6 +69,7 @@ const {
     remindSubProjectFinish,
     operateOutsourceRequirements,
     queryOutsourceRequirement,
+    queryOutsourceRequirementList,
   },
 } = api;
 
@@ -714,6 +715,16 @@ export async function OperateOutsourceRequirements(payload) {
 export async function FetchqueryOutsourceRequirement(payload) {
   const option = {
     url: queryOutsourceRequirement,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询外包需求列表
+export async function QueryOutsourceRequirementList(payload) {
+  const option = {
+    url: queryOutsourceRequirementList,
     method: 'post',
     data: payload,
   };

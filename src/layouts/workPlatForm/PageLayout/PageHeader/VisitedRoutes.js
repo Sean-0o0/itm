@@ -124,6 +124,7 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/attachLibrary/,
       /^\/pms\/manage\/SupplierDetail/,
       /^\/pms\/manage\/DemandDetail/,
+      /^\/pms\/manage\/DemandInfo/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -196,6 +197,10 @@ function VisitedRoutes(props) {
               {
                 title: '需求详情',
                 urlEnd: 'DemandDetail',
+              },
+              {
+                title: '需求列表',
+                urlEnd: 'DemandInfo',
               },
             ];
             urlEndArr.forEach(x => {

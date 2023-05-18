@@ -173,4 +173,9 @@ exports.routes = [
     path: `${prefix}/DemandDetail`,
     component: './pmsPage/DemandDetail',
   },
+  {
+    // 需求列表
+    path: `${prefix}/DemandInfo`,
+    component: './pmsPage/DemandInfo',
+  },
 ];

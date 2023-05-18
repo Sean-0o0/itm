@@ -367,4 +367,10 @@ export default [
     url: '/projectManage/queryOutsourceRequirement',
     dis: '查询需求发起结果',
   },
+  {
+    code: '',
+    key: 'queryOutsourceRequirementList',
+    url: '/projectManage/queryOutsourceRequirementList',
+    dis: '查询外包需求列表',
+  },
 ];
