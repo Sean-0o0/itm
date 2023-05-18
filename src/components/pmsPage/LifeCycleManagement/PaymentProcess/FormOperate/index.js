@@ -100,8 +100,9 @@ export default function FormOperate(props) {
     // setSkzh(p => [...finalArr]);
   };
   //收款账户变化
-  const handleSkzhChange = v => {
-    const obj = skzh?.filter(x => x.yhkh === v)[0];
+  const handleSkzhChange = id => {
+    const obj = skzh?.filter(x => x.id === id)[0];
+    // console.log('🚀 ~ file: index.js:105 ~ handleSkzhChange ~ obj:', obj);
     setskzhId(obj?.id);
     setYkbSkzhId(obj?.ykbid);
     setCurrentPage(1);
@@ -121,7 +122,7 @@ export default function FormOperate(props) {
       .then(res => {
         if (res.success) {
           let rec = res.record;
-          console.log('🚀 ~ file: index.js:111 ~ firstTimeQueryPaymentAccountList ~ rec:', rec);
+          // console.log('🚀 ~ file: index.js:111 ~ firstTimeQueryPaymentAccountList ~ rec:', rec);
           setCurrentPage(1);
           setSkzh(p => [...rec]);
           setIsNoMoreData(false);
@@ -321,7 +322,7 @@ export default function FormOperate(props) {
               >
                 {skzh?.map((item = {}, ind) => {
                   return (
-                    <Select.Option key={item.yhkh} value={item.yhkh}>
+                    <Select.Option key={item.id} value={item.id}>
                       <Tooltip
                         title={
                           <div>

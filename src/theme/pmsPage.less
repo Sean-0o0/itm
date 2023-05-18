@@ -1867,8 +1867,13 @@
     .ant-select-arrow {
       right: 50px;
     }
+
     .ant-select-selection__clear {
       right: 70px;
+    }
+
+    .ant-select-selection-selected-value {
+      max-width: calc(100% - 24px);
     }
 
     .ant-select-selection--single .ant-select-selection__rendered {
@@ -2177,13 +2182,21 @@
       right: 50px;
     }
 
+    .ant-select-selection__clear {
+      right: 70px;
+    }
+
+    .ant-select-selection-selected-value {
+      max-width: calc(100% - 24px);
+    }
+
     .ant-select-selection--single .ant-select-selection__rendered {
       margin-right: 66px;
     }
   }
 
   & .diy-style-spin {
-    max-height: 605px;
+    max-height: 621px;
     overflow: hidden;
     overflow-y: auto;
 
@@ -4937,7 +4950,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
 //项目信息列表
 .project-info-box,
-.supplier-info-box {
+.supplier-info-box,
+.demand-info-box {
   overflow: hidden;
   height: 100%;
   display: flex;
@@ -12713,4 +12727,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       z-index: 1;
     }
   }
+}
+
+.demand-info-box {
 }

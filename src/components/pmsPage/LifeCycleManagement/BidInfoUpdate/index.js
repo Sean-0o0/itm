@@ -15,6 +15,7 @@ import {
   Pagination,
   Spin,
   Radio,
+  Tooltip,
 } from 'antd';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import React from 'react';
@@ -259,7 +260,6 @@ class BidInfoUpdate extends React.Component {
       .then(res => {
         let rec = res.record;
         // console.log('🚀 ~ file: index.js:228 ~ BidInfoUpdate ~ res.record:', res.record);
-        this.firstTimeQueryPaymentAccountList(rec[0].zbgysfkzhmc);
         this.setState({
           initialSkzhMc: rec[0].zbgysfkzhmc || '',
           initialSkzhId: Number(rec[0].zbgysfkzh),
@@ -268,7 +268,7 @@ class BidInfoUpdate extends React.Component {
             zbgys: this.state.glgys.filter(x => x.id === rec[0].zbgys)[0]?.gysmc || '',
             tbbzj: Number(rec[0].tbbzj),
             lybzj: Number(rec[0].lybzj),
-            zbgysskzh: rec[0].zbgysfkzhmc || '',
+            zbgysskzh: rec[0].zbgysfkzh || '',
             pbbg: rec[0].pbbg,
           },
           uploadFileParams: {
@@ -304,8 +304,8 @@ class BidInfoUpdate extends React.Component {
         }
         this.setState({
           tableData: [...this.state.tableData, ...arr],
-          isSpinning: false,
         });
+        this.firstTimeQueryPaymentAccountList(rec[0].zbgysfkzhmc);
       })
       .catch(e => {
         message.error('中标信息查询失败', 1);
@@ -354,6 +354,7 @@ class BidInfoUpdate extends React.Component {
             currentPage: 1,
             skzhData: [...rec],
             isNoMoreData: false,
+            isSpinning: false,
           });
         }
       })
@@ -494,9 +495,9 @@ class BidInfoUpdate extends React.Component {
     }
   };
   //收款账户变化
-  handleSkzhChange = v => {
-    console.log(v);
-    const obj = this.state.skzhData?.filter(x => x.khmc === v)[0];
+  handleSkzhChange = id => {
+    const obj = this.state.skzhData?.filter(x => x.id === id)[0];
+    // console.log('🚀 ~ file: index.js:500 ~ BidInfoUpdate ~ obj:', obj);
     this.setState({
       currentPage: 1,
       isNoMoreData: false,
@@ -984,6 +985,7 @@ class BidInfoUpdate extends React.Component {
                     label="供应商收款账号"
                     labelCol={{ span: 4 }}
                     wrapperCol={{ span: 20 }}
+                    style={{ marginBottom: 12 }}
                   >
                     {getFieldDecorator('zbgysskzh', {
                       initialValue: String(bidInfo?.zbgysskzh),
@@ -1003,18 +1005,34 @@ class BidInfoUpdate extends React.Component {
                         filterOption={false}
                         onSearch={this.handleSkzhSearch}
                         onPopupScroll={this.handleSkzhScroll}
+                        allowClear
                         optionLabelProp="children"
                         className="skzh-box"
                         onBlur={() => this.initialQueryPaymentAccountList()}
                       >
                         {skzhData?.map((item = {}, ind) => {
                           return (
-                            <Select.Option key={item.id} value={item.khmc}>
-                              <i
-                                className="iconfont icon-bank"
-                                style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
-                              />
-                              {item.khmc} - {item.yhkh} - {item.wdmc}
+                            <Select.Option key={item.id} value={item.id}>
+                              <Tooltip
+                                title={
+                                  <div>
+                                    开户行：{item.khmc}
+                                    <div>账号：{item.yhkh}</div>
+                                    网点：{item.wdmc}
+                                  </div>
+                                }
+                              >
+                                <i
+                                  className="iconfont icon-bank"
+                                  style={{ fontSize: '1em', marginRight: '4px', color: '#3361ff' }}
+                                />
+                                {item.khmc} - {item.yhkh} - {item.wdmc}
+                              </Tooltip>
+                              <div
+                                style={{ fontSize: '12px', marginLeft: '18px', color: '#bfbfbf' }}
+                              >
+                                所属者：{item.ssr}
+                              </div>
                             </Select.Option>
                           );
                         })}
