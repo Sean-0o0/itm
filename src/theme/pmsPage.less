@@ -5178,15 +5178,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         border-radius: 4px;
       }
 
-      .prj-info-table-link-strong {
-        &:hover {
-          font-weight: bold;
-        }
-      }
+      .table-link-strong();
 
       .ant-table {
         td {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
           font-weight: 400;
@@ -5194,7 +5190,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         th {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
@@ -7505,6 +7501,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         border: 1px solid #dbdfe6;
         border-top: 0;
 
+        .table-link-strong();
+
         .ant-table {
           th,
           td {
@@ -7752,11 +7750,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
 
-      .prj-info-table-link-strong {
-        &:hover {
-          font-weight: bold;
-        }
-      }
+      .table-link-strong();
 
       .supplier-situation-table-elipsis {
         color: #3361ff !important;
@@ -7987,7 +7981,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       .ant-table {
         td {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
           font-weight: 400;
@@ -7995,7 +7989,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         th {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
@@ -8270,7 +8264,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       .ant-table {
         td {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
           font-weight: 400;
@@ -8278,7 +8272,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         th {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
@@ -9836,11 +9830,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     flex-direction: column;
     .function-block();
 
-    .prj-info-table-link-strong {
-      &:hover {
-        font-weight: bold;
-      }
-    }
+    .table-link-strong();
 
     & > .btn-add-prj-box {
       margin-bottom: 16px;
@@ -9888,7 +9878,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       .ant-table {
         td {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
           font-weight: 400;
@@ -9896,7 +9886,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         th {
-          padding: 9px;
+          padding: 9.17px;
           font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
@@ -10610,15 +10600,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           border-radius: 4px;
         }
 
-        .prj-info-table-link-strong {
-          &:hover {
-            font-weight: bold;
-          }
-        }
+        .table-link-strong();
 
         .ant-table {
           td {
-            padding: 9px;
+            padding: 9.17px;
             font-size: 14px;
             font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
             font-weight: 400;
@@ -10627,7 +10613,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
           th {
             //width: 33%;
-            padding: 9px;
+            padding: 9.17px;
             font-size: 14px;
             background-color: #f5f7fa;
             font-family: PingFangSC-Medium, PingFang SC;
@@ -10983,11 +10969,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   .info-table {
     margin: 20px 24px;
 
-    .prj-info-table-link-strong {
-      &:hover {
-        font-weight: bold;
-      }
-    }
+    .table-link-strong();
 
     .ant-tabs-bar {
       margin-bottom: 0;
@@ -12388,13 +12370,25 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         th {
-          //width: 33%;
           padding: 9.17px;
           font-size: 14px;
           background-color: #f5f7fa;
           font-family: PingFangSC-Medium, PingFang SC;
           font-weight: bold;
           color: #606266;
+        }
+
+        .prj-info-table-link-strong {
+          width: 100%;
+          display: inline-block;
+          color: #3361ff !important;
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
+
+          &:hover {
+            font-weight: bold;
+          }
         }
 
         .ant-table-body {
@@ -12730,4 +12724,54 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 }
 
 .demand-info-box {
+  & > .top-console {
+    & > .item-box {
+      .ant-input-affix-wrapper .ant-input {
+        padding-right: 10px;
+      }
+
+      .console-item {
+        .item-label {
+          width: 70px;
+          text-align: right;
+        }
+      }
+
+      .console-last-item {
+        .item-txt {
+          width: 70px;
+          text-align: right;
+        }
+      }
+    }
+  }
+  & > .info-table {
+    .project-info-table-box {
+      .opr-colomn {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+
+        .sj,
+        .xj,
+        i {
+          color: #3361ff;
+
+          &:hover {
+            color: #3361ffaf;
+          }
+        }
+        .xj,
+        i {
+          margin-left: 6px;
+        }
+        i {
+          cursor: pointer;
+          font-size: 18px;
+          margin-top: 2px;
+        }
+      }
+    }
+  }
 }

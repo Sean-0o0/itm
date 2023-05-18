@@ -109,7 +109,7 @@ class InfoTable extends Component {
               placement="bottomLeft"
               content={
                 <div className="tag-more">
-                  {data.map((x, i)=> (
+                  {data.map((x, i) => (
                     <div key={x} className="tag-item">
                       <Link
                         style={{ color: '#3361ff' }}
@@ -123,7 +123,7 @@ class InfoTable extends Component {
                             routes: routes,
                           },
                         }}
-                        className="prj-info-table-link-strong"
+                        className="table-link-strong"
                       >
                         {x}
                       </Link>
@@ -148,7 +148,7 @@ class InfoTable extends Component {
                         routes: routes,
                       },
                     }}
-                    className="prj-info-table-link-strong"
+                    className="table-link-strong"
                   >
                     {x}
                   </Link>

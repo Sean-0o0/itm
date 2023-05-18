@@ -117,7 +117,7 @@ class InfoTable extends Component {
                             routes: routes,
                           },
                         }}
-                        className="prj-info-table-link-strong"
+                        className="table-link-strong"
                       >
                         {x}
                       </Link>
@@ -142,7 +142,7 @@ class InfoTable extends Component {
                         routes: routes,
                       },
                     }}
-                    className="prj-info-table-link-strong"
+                    className="table-link-strong"
                   >
                     {x}
                   </Link>

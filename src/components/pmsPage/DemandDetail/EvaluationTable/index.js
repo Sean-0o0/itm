@@ -34,7 +34,6 @@ export default function EvaluationTable(props) {
         return (
           <Tooltip title={text} placement="topLeft">
             <Link
-              style={{ color: '#3361ff' }}
               to={{
                 pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
                   JSON.stringify({ splId: row.GYSID }),
@@ -43,7 +42,7 @@ export default function EvaluationTable(props) {
                   routes: [{ name: '需求详情', pathname: location.pathname }],
                 },
               }}
-              className="prj-info-table-link-strong"
+              className="table-link-strong"
             >
               {text}
             </Link>
@@ -71,7 +70,7 @@ export default function EvaluationTable(props) {
                 routes: [{ name: '需求详情', pathname: location.pathname }],
               },
             }}
-            className="prj-info-table-link-strong"
+            className="table-link-strong"
           >
             {text}
           </Link>

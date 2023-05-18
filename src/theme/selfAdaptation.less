@@ -516,14 +516,14 @@
 }
 
 //页面布局
-.cont-box{
+.cont-box {
   overflow: hidden;
   height: 100%;
   display: flex;
   flex-direction: column;
 
   //面包屑
-  .header-bread{
+  .header-bread {
     margin: 12px 24px;
   }
 
@@ -536,8 +536,23 @@
   }
 }
 
-
 .ant-tabs-nav .ant-tabs-tab:hover,
 .ant-tabs-nav .ant-tabs-tab:active {
-  color: #3361ff!important;
+  color: #3361ff !important;
+}
+
+//表格内链接移入加粗样式
+.table-link-strong() {
+  .table-link-strong {
+    width: 100%;
+    display: inline-block;
+    color: #3361ff !important;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap;
+
+    &:hover {
+      font-weight: bold;
+    }
+  }
 }

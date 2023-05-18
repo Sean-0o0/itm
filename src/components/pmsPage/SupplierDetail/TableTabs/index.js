@@ -127,7 +127,7 @@ export default function TableTabs(props) {
                   routes: [{ name: '供应商详情', pathname: location.pathname }],
                 },
               }}
-              className="prj-info-table-link-strong"
+              className="table-link-strong"
             >
               {txt}
             </Link>
@@ -155,7 +155,7 @@ export default function TableTabs(props) {
                 routes: [{ name: '供应商详情', pathname: location.pathname }],
               },
             }}
-            className="prj-info-table-link-strong"
+            className="table-link-strong"
           >
             {txt}
           </Link>
@@ -232,7 +232,7 @@ export default function TableTabs(props) {
                   routes: [{ name: '供应商详情', pathname: location.pathname }],
                 },
               }}
-              className="prj-info-table-link-strong"
+              className="table-link-strong"
             >
               {txt}
             </Link>
@@ -260,7 +260,7 @@ export default function TableTabs(props) {
                 routes: [{ name: '供应商详情', pathname: location.pathname }],
               },
             }}
-            className="prj-info-table-link-strong"
+            className="table-link-strong"
           >
             {txt}
           </Link>

@@ -85,7 +85,7 @@ export default function InfoTable(props) {
                   routes: [{ name: '供应商列表', pathname: location.pathname }],
                 },
               }}
-              className="prj-info-table-link-strong"
+              className="table-link-strong"
             >
               {text}
             </Link>

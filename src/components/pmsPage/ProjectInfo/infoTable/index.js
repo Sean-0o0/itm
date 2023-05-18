@@ -129,7 +129,7 @@ export default function InfoTable(props) {
                     routes: [{ name: '项目列表', pathname: location.pathname }],
                   },
                 }}
-                className="prj-info-table-link-strong"
+                className="table-link-strong"
               >
                 {text}
               </Link>
@@ -164,7 +164,7 @@ export default function InfoTable(props) {
                   routes: [{ name: '项目列表', pathname: location.pathname }],
                 },
               }}
-              className="prj-info-table-link-strong"
+              className="table-link-strong"
             >
               {text}
             </Link>
@@ -249,7 +249,7 @@ export default function InfoTable(props) {
                           routes: [{ name: '项目列表', pathname: location.pathname }],
                         },
                       }}
-                      className="prj-info-table-link-strong"
+                      className="table-link-strong"
                     >
                       {x.name}
                     </Link>
@@ -274,7 +274,7 @@ export default function InfoTable(props) {
                       routes: [{ name: '项目列表', pathname: location.pathname }],
                     },
                   }}
-                  className="prj-info-table-link-strong"
+                  className="table-link-strong"
                 >
                   {x.name}
                 </Link>
