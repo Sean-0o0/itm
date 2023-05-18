@@ -2778,7 +2778,7 @@ class EditProjectInfoModel extends React.Component {
             //子项目完善
             if (this.state.subItemFinish) {
               message.success("子项目完善成功！")
-              window.location.href = '/#/pms/manage/ProjectInfo';
+              // window.location.href = '/#/pms/manage/ProjectInfo';
             } else {
               message.success("编辑项目成功！")
             }
