@@ -454,7 +454,7 @@ class ItemBtn extends React.Component {
           }
         })
         .catch(error => {
-          message.error('信委会议案流程查看失败', 1);
+          message.error('流程查看失败', 1);
           console.error(!error.success ? error.message : error.note);
         });
     };
@@ -848,6 +848,7 @@ class ItemBtn extends React.Component {
         {xqfqModalVisible && (
           <DemandInitiated
             xmmc={xmmc}
+            xmid={Number(item.xmid)}
             closeModal={() =>
               this.setState({
                 xqfqModalVisible: false,
