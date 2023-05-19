@@ -177,7 +177,7 @@ class DemandInitiated extends React.Component {
           this.setState({
             isSpinning: false
           });
-          this.props.closeModal();
+          this.props.successCallBack();
           message.success(xqid === -1 ? "需求发起新增完成!" : "需求发起编辑完成!");
         }
       })
