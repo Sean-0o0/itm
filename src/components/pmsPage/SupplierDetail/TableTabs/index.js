@@ -8,7 +8,7 @@ import { QuerySupplierDetailInfo } from '../../../../services/pmsServices';
 const { TabPane } = Tabs;
 
 export default function TableTabs(props) {
-  const { WBRYGW = [], splId = -2, isLeader } = props;
+  const { WBRYGW = [], splId = -2, isLeader, routes } = props;
   const [prjPurchase, setPrjPurchase] = useState([]); //采购项目
   const [HROutsource, setHROutsource] = useState([]); //人力外包
   const [splEvaluation, setSplEvaluation] = useState([]); //供应商评价
@@ -125,7 +125,7 @@ export default function TableTabs(props) {
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '供应商详情', pathname: location.pathname }],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -153,7 +153,7 @@ export default function TableTabs(props) {
                 }),
               )}`,
               state: {
-                routes: [{ name: '供应商详情', pathname: location.pathname }],
+                routes,
               },
             }}
             className="table-link-strong"
@@ -230,7 +230,7 @@ export default function TableTabs(props) {
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '供应商详情', pathname: location.pathname }],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -258,7 +258,7 @@ export default function TableTabs(props) {
                 }),
               )}`,
               state: {
-                routes: [{ name: '供应商详情', pathname: location.pathname }],
+                routes,
               },
             }}
             className="table-link-strong"

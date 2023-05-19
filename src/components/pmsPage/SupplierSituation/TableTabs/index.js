@@ -8,7 +8,7 @@ import { QuerySupplierDetailInfo } from '../../../../services/pmsServices';
 const { TabPane } = Tabs;
 
 export default function TableTabs(props) {
-  const { data = [], getData, total = 0, loading = false, role } = props;
+  const { data = [], getData, total = 0, loading = false, role, routes = [] } = props;
   const [curPage, setCurPage] = useState(0); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //数据长度
   const [curTab, setCurTab] = useState('MX_ALL'); //当前tab
@@ -96,7 +96,7 @@ export default function TableTabs(props) {
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '供应商情况', pathname: location.pathname }],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -126,7 +126,7 @@ export default function TableTabs(props) {
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '供应商情况', pathname: location.pathname }],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -202,7 +202,7 @@ export default function TableTabs(props) {
                           }),
                         )}`,
                         state: {
-                          routes: [{ name: '供应商情况', pathname: location.pathname }],
+                          routes,
                         },
                       }}
                       className="table-link-strong"
@@ -227,7 +227,7 @@ export default function TableTabs(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{ name: '供应商情况', pathname: location.pathname }],
+                      routes,
                     },
                   }}
                   className="table-link-strong-tagtxt"

@@ -22,6 +22,7 @@ export default function InfoTable(props) {
   const [subTableData, setSubTableData] = useState({}); //子表格数据
   const [visible, setVisible] = useState(false); //需求发起弹窗显隐
   const [currentXqid, setCurrentXqid] = useState(-1); //详情id
+  const [currentXmid, setCurrentXmid] = useState(-1); //项目id
   const location = useLocation();
 
   //表格操作后更新数据
@@ -265,7 +266,7 @@ export default function InfoTable(props) {
                       onClick={() => {
                         setVisible(true);
                         setCurrentXqid(Number(row.XQID));
-                        console.log(Number(row.XQID));
+                        setCurrentXmid(Number(row.XMID));
                       }}
                     >
                       修改
@@ -285,37 +286,43 @@ export default function InfoTable(props) {
       },
     ];
 
-    return <Table columns={columns} dataSource={subTableData[record.XMID]} pagination={false} />;
+    return (
+      <Table columns={columns} dataSource={subTableData[record.XMID]} pagination={false} bordered />
+    );
+  };
+
+  const getSubTableData = (xmid = undefined) => {
+    QueryOutsourceRequirementList({
+      current: 1,
+      cxlx: 'XQ',
+      pageSize: 10,
+      paging: -1,
+      sort: '',
+      total: -1,
+      xmmc: xmid,
+    })
+      .then(res => {
+        if (res?.success) {
+          const data = JSON.parse(res.xqxx);
+          // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
+          setSubTableData(p => {
+            return {
+              ...p,
+              [xmid]: data,
+            };
+          });
+        }
+      })
+      .catch(e => {
+        message.error('子表格数据查询失败', 1);
+        setTableLoading(false);
+      });
   };
 
   const onExpand = (expanded, record) => {
     // console.log(expanded, record);
     if (expanded) {
-      QueryOutsourceRequirementList({
-        current: 1,
-        cxlx: 'XQ',
-        pageSize: 10,
-        paging: -1,
-        sort: '',
-        total: -1,
-        xmmc: record.XMID || undefined,
-      })
-        .then(res => {
-          if (res?.success) {
-            const data = JSON.parse(res.xqxx);
-            // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
-            setSubTableData(p => {
-              return {
-                ...p,
-                [record.XMID]: data,
-              };
-            });
-          }
-        })
-        .catch(e => {
-          message.error('子表格数据查询失败', 1);
-          setTableLoading(false);
-        });
+      getSubTableData(record.XMID);
     } else {
       //收起时置空
       setSubTableData(p => {
@@ -334,6 +341,10 @@ export default function InfoTable(props) {
           xqid={currentXqid}
           closeModal={() => setVisible(false)}
           visible={visible}
+          successCallBack={() => {
+            setVisible(false);
+            getSubTableData(currentXmid);
+          }}
         />
       )}
       <div className="project-info-table-box">
@@ -356,7 +367,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-          bordered
+          // bordered
         />
       </div>
     </div>

@@ -131,6 +131,7 @@ export default function SupplierSituation(props) {
           total={total}
           loading={tableLoading}
           role={uesrRole}
+          routes={routes}
         />
       </Spin>
     </div>

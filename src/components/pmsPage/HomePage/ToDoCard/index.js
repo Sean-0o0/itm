@@ -14,7 +14,7 @@ import { Link } from 'react-router-dom';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, getToDoData, toDoData = [], total, xmbhData = [] } = props;
+  const { itemWidth, getAfterItem, reflush, toDoData = [], total, xmbhData = [] } = props;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -50,31 +50,14 @@ export default function ToDoCard(props) {
   }, [props]);
 
   useEffect(() => {
-    window.addEventListener('message', handleIframePostMessage);
-    return () => {
-      window.removeEventListener('message', handleIframePostMessage);
-    };
+    return () => {};
   }, []);
-
-  //监听项目弹窗状态
-  const handleIframePostMessage = event => {
-    if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      setFileAddVisible(false);
-      // console.log(event);
-    }
-    if (typeof event.data !== 'string' && event.data.operate === 'success') {
-      setFileAddVisible(false);
-      //刷新数据
-      // handleOperateSuccess('操作成功');
-      getToDoData();
-    }
-  };
 
   //弹窗操作成功
   const handleOperateSuccess = txt => {
     txt && message.success(txt, 1);
     //刷新数据
-    getToDoData();
+    reflush();
   };
 
   //跳转livebos页面
@@ -152,7 +135,7 @@ export default function ToDoCard(props) {
         const { code = 0, note = '', record = [] } = ret;
         if (code === 1) {
           //刷新数据
-          getToDoData();
+          reflush();
           message.success('执行成功', 1);
         }
       })
@@ -229,24 +212,13 @@ export default function ToDoCard(props) {
 
   const jumpToEditProjectInfo = item => {
     setFileAddVisible(true);
-    setSrc_fileAdd(
-      // `/#/single/pms/EditProject/${EncryptBase64(
-      //   JSON.stringify({
-      //     xmid: item.xmid,
-      //     type: true,
-      //     subItemFlag: true,
-      //     subItemFinish: true,
-      //     projectStatus: 'SAVE',
-      //   }),
-      // )}`,
-      {
-        xmid: item.xmid,
-        type: true,
-        subItemFlag: true,
-        subItemFinish: true,
-        projectStatus: 'SAVE',
-      },
-    );
+    setSrc_fileAdd({
+      xmid: item.xmid,
+      type: true,
+      subItemFlag: true,
+      subItemFinish: true,
+      projectStatus: 'SAVE',
+    });
   };
 
   //获取操作按钮文本
@@ -311,17 +283,6 @@ export default function ToDoCard(props) {
       setIsUnfold(bool);
       setDataList(p => [...toDoData]);
     }
-  };
-
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    // defaultFullScreen: true,
-    title: '编辑项目',
-    width: '1000px',
-    height: '700px',
-    style: { top: '10px' },
-    visible: fileAddVisible,
-    footer: null,
   };
 
   const closeFileAddModal = () => {
@@ -431,17 +392,6 @@ export default function ToDoCard(props) {
           src={ryxztxUrl}
         />
       )}
-      {/* 编辑项目弹窗 */}
-      {/*{fileAddVisible && (*/}
-      {/*  <BridgeModel*/}
-      {/*    isSpining="customize"*/}
-      {/*    modalProps={fileAddModalProps}*/}
-      {/*    src={src_fileAdd}*/}
-      {/*    onCancel={() => {*/}
-      {/*      setFileAddVisible(false);*/}
-      {/*    }}*/}
-      {/*  />*/}
-      {/*)}*/}
       {fileAddVisible && (
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"
@@ -476,7 +426,10 @@ export default function ToDoCard(props) {
         >
           <EditProjectInfoModel
             closeModel={closeFileAddModal}
-            successCallBack={closeFileAddModal}
+            successCallBack={() => {
+              closeFileAddModal();
+              reflush();
+            }}
             xmid={src_fileAdd.xmid}
             type={src_fileAdd.type}
             subItemFlag={src_fileAdd.subItemFlag}

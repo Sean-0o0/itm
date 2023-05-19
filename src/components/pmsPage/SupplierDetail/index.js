@@ -87,7 +87,13 @@ export default function SupplierDetail(props) {
           splId={splId}
         />
         <BasicInfo detailData={detailData} splId={splId} />
-        <TableTabs detailData={detailData} WBRYGW={WBRYGW} splId={splId} isLeader={isLeader} />
+        <TableTabs
+          detailData={detailData}
+          WBRYGW={WBRYGW}
+          splId={splId}
+          isLeader={isLeader}
+          routes={routes}
+        />
       </Spin>
     </div>
   );

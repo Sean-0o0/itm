@@ -416,7 +416,7 @@ export default function InfoDisplay(props) {
                     }),
                   )}`,
                   state: {
-                    routes: [{ name: '项目详情', pathname: location.pathname }],
+                    routes,
                   },
                 }}
               >

@@ -50,20 +50,19 @@ export default function HomePage(props) {
     process: 0,
   }); //数据总数
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-  const htmlContent = document.getElementById('htmlContent'); //页面跳转后滚至顶部
 
   //防抖定时器
   let timer = null;
 
   // 页面恢复，跳转回首页时触发
   cacheLifecycles.didRecover(() => {
-    setPlacement('rightTop');
-    console.log('跳转回首页时触发');
+    setPlacement('rightTop'); //参与人popover位置
+    // console.log('跳转回首页时触发');
   });
 
   cacheLifecycles.didCache(() => {
-    setPlacement(undefined);
-    console.log('首页缓存时触发');
+    setPlacement(undefined); //参与人popover位置
+    // console.log('首页缓存时触发');
   });
 
   useEffect(() => {
@@ -153,8 +152,8 @@ export default function HomePage(props) {
   };
 
   //获取用户角色
-  const getUserRole = () => {
-    LOGIN_USER_INFO.id &&
+  const getUserRole = (reflush = false) => {
+    LOGIN_USER_INFO.id !== undefined &&
       QueryUserRole({
         userId: String(LOGIN_USER_INFO.id),
       })
@@ -164,7 +163,7 @@ export default function HomePage(props) {
             setUserRole(role);
             getBudgetData(role);
             if (['二级部门领导', '普通人员'].includes(role)) {
-              getProcessData();
+              !reflush && getProcessData(); //待办刷新时不用刷新流程数据
             } else {
               getTeamData(role);
             }
@@ -444,7 +443,7 @@ export default function HomePage(props) {
                 getAfterItem={getAfterItem}
                 toDoData={toDoData}
                 xmbhData={xmbhData}
-                getToDoData={getToDoData}
+                reflush={() => getUserRole(true)}
                 total={total.todo}
               />
             ) : (

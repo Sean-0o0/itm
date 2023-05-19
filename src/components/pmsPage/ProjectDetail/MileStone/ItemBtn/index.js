@@ -19,6 +19,7 @@ import { EncryptBase64 } from '../../../../Common/Encrypt';
 import EnterBidInfoModel from '../../../HardwareItems/EnterBidInfoModel';
 import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
+import DemandInitiated from '../../../HardwareItems/DemandInitiated';
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -60,6 +61,7 @@ class ItemBtn extends React.Component {
     hardWareBidModalVisible: false,
     hardWareContrastModalVisible: false,
     xbjglrModalVisible: false,
+    xqfqModalVisible: false, //需求发起
   };
   // timer = null;
 
@@ -473,6 +475,13 @@ class ItemBtn extends React.Component {
         });
         return;
       }
+      //需求发起
+      if (item.sxmc === '需求发起') {
+        this.setState({
+          xqfqModalVisible: true,
+        });
+        return;
+      }
       let params = this.getParams(
         'TLC_LCFQ',
         'TLC_LCFQ_LXSQLCFQ',
@@ -639,7 +648,7 @@ class ItemBtn extends React.Component {
     const reoprMoreCotent = (
       <div className="list">
         <div className="item" onClick={() => lcfq(item)} key="再次发起">
-          再次发起
+          {item.sxmc === '需求发起' ? '新增发起' : '再次发起'}
         </div>
         {isFklc && (
           <div className="item" onClick={() => lcdy(item)} key="打印流程附件">
@@ -693,6 +702,7 @@ class ItemBtn extends React.Component {
       case '框架内硬件采购流程':
       case '框架外硬件采购流程':
       case '总办会流程':
+      case '需求发起':
         return this.getLcfqck(done, item);
 
       //信息录入
@@ -767,41 +777,9 @@ class ItemBtn extends React.Component {
       hardWareBidModalVisible,
       hardWareContrastModalVisible,
       xbjglrModalVisible,
+      xqfqModalVisible,
     } = this.state;
     const { item, xmmc, xmbh, isHwPrj } = this.props;
-
-    //询比结果录入
-    const xbjglrModalProps = {
-      isAllWindow: 1,
-      title: lbModalTitle,
-      width: '1000px',
-      height: '600px',
-      style: { top: '60px' },
-      visible: true,
-      footer: null,
-    };
-
-    //硬件合同信息录入
-    const hardWareContrastModalProps = {
-      isAllWindow: 1,
-      title: lbModalTitle,
-      width: '1000px',
-      height: '600px',
-      style: { top: '20px' },
-      visible: true,
-      footer: null,
-    };
-
-    //硬件中标信息录入
-    const hardWareBidModalProps = {
-      isAllWindow: 1,
-      title: lbModalTitle,
-      width: '1000px',
-      height: '700px',
-      style: { top: '20px' },
-      visible: true,
-      footer: null,
-    };
 
     //文档上传、修改弹窗
     const uploadModalProps = {
@@ -862,15 +840,28 @@ class ItemBtn extends React.Component {
       footer: null,
     };
 
-    // console.log(
-    //   '🚀 ~ file: index.js ~ line 511 ~ ItemBtn ~ render ~ item, xmmc, xmbh',
-    //   item,
-    //   xmmc,
-    //   xmbh,
-    // );
     return (
       <>
         {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}
+
+        {/* 需求发起 */}
+        {xqfqModalVisible && (
+          <DemandInitiated
+            xmmc={item.xmmc}
+            closeModal={() =>
+              this.setState({
+                xqfqModalVisible: false,
+              })
+            }
+            visible={xqfqModalVisible}
+            successCallBack={() => {
+              this.setState({
+                xqfqModalVisible: false,
+              });
+              this.onSuccess('需求发起');
+            }}
+          />
+        )}
 
         {/* 硬件中标信息录入 */}
         {hardWareBidModalVisible && (
