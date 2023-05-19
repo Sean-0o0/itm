@@ -41,7 +41,6 @@ export default function HomePage(props) {
   const [teamData, setTeamData] = useState([]); //队伍建设
   const [supplierData, setSupplierData] = useState({}); //供应商情况
   const [toDoData, setToDoData] = useState([]); //待办数据
-  const [xmbhData, setXmbhData] = useState([]); //所有项目编号
   const [processData, setProcessData] = useState([]); //流程情况
   const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
   const [total, setTotal] = useState({
@@ -362,34 +361,11 @@ export default function HomePage(props) {
               todo: res.totalrows,
             };
           });
-          getXmbhData();
         }
       })
       .catch(e => {
         console.error('FetchQueryOwnerMessage', e);
         message.error('待办信息查询失败', 1);
-      });
-  };
-
-  //获取项目编号
-  const getXmbhData = () => {
-    FetchQueryOwnerProjectList({
-      current: 1,
-      cxlx: 'USER',
-      pageSize: 9999,
-      paging: -1,
-      sort: '',
-      total: -1,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerProjectList ~ res', res.record);
-          setXmbhData(p => [...res.record]);
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerProjectList', e);
-        message.error('项目编号信息查询失败', 1);
       });
   };
 
@@ -442,7 +418,6 @@ export default function HomePage(props) {
                 itemWidth={itemWidth}
                 getAfterItem={getAfterItem}
                 toDoData={toDoData}
-                xmbhData={xmbhData}
                 reflush={() => getUserRole(true)}
                 total={total.todo}
               />
