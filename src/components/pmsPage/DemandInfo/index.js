@@ -2,31 +2,33 @@ import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import { QueryOutsourceRequirementList } from '../../../services/pmsServices';
-import { setCommentRange } from 'typescript';
 import { message } from 'antd';
+import { set } from 'store';
 
 export default function DemandInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
-  const [gysData, setGysData] = useState([]); //供应商下拉框数据
-  const [lxrData, setLxrData] = useState([]); //联系人下拉框数据
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {}, dictionary = {} } = props;
-  const { supplierId = -2 } = params;
-  const { GYSLX } = dictionary;
+  const { xmid = -2 } = params;
+  const [subTableData, setSubTableData] = useState({}); //子表格数据
+  const [isFinish, setIsFinish] = useState(false); //
   const topConsoleRef = useRef(null);
 
   useEffect(() => {
-    if (supplierId === -2) {
+    if (xmid === -2) {
       //无参数
+      getTableData();
+      topConsoleRef?.current?.handleReset();
+    } else {
       getTableData();
       topConsoleRef?.current?.handleReset();
     }
     return () => {};
-  }, [props]);
+  }, [xmid]);
 
   //获取表格数据
   const getTableData = (current = 1, pageSize = 20) => {
@@ -39,7 +41,7 @@ export default function DemandInfo(props) {
       sort: 'XMID DESC',
       total: -1,
       // xmjl: 0,
-      // xmmc: 0,
+      xmmc: xmid,
       // xqfqr: 0,
       // xqmc: 0,
       // yslx: 0,
@@ -52,6 +54,7 @@ export default function DemandInfo(props) {
           setTableData(p => data);
           setTotal(res.totalrows);
           setTableLoading(false);
+          getSubTableData(Number(xmid));
         }
       })
       .catch(e => {
@@ -61,13 +64,39 @@ export default function DemandInfo(props) {
       });
   };
 
+  const getSubTableData = (xmid = undefined) => {
+    QueryOutsourceRequirementList({
+      current: 1,
+      cxlx: 'XQ',
+      pageSize: 10,
+      paging: -1,
+      sort: '',
+      total: -1,
+      xmmc: xmid,
+    })
+      .then(res => {
+        if (res?.success) {
+          const data = JSON.parse(res.xqxx);
+          // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
+          setSubTableData(p => {
+            return {
+              ...p,
+              [xmid]: data,
+            };
+          });
+          setIsFinish(true)
+        }
+      })
+      .catch(e => {
+        message.error('子表格数据查询失败', 1);
+        setTableLoading(false);
+      });
+  };
+
   return (
     <div className="demand-info-box">
       <TopConsole
         dictionary={dictionary}
-        gysData={gysData}
-        lxrData={lxrData}
-        gyslxData={GYSLX}
         setTableData={setTableData}
         setTableLoading={setTableLoading}
         setTotal={setTotal}
@@ -76,6 +105,7 @@ export default function DemandInfo(props) {
         setCurPageSize={setCurPageSize}
         curPage={curPage}
         curPageSize={curPageSize}
+        xmid={xmid}
       />
       <InfoTable
         tableData={tableData}
@@ -85,7 +115,11 @@ export default function DemandInfo(props) {
         handleSearch={topConsoleRef?.current?.handleSearch}
         curPage={curPage}
         curPageSize={curPageSize}
-        GYSLX={GYSLX}
+        isFinish={isFinish}
+        subTableData={subTableData}
+        getSubTableData={getSubTableData}
+        setSubTableData={setSubTableData}
+        xmid={xmid}
       />
     </div>
   );

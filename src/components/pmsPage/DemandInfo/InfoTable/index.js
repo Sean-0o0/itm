@@ -11,19 +11,27 @@ export default function InfoTable(props) {
   const {
     tableData,
     tableLoading,
-    getTableData,
-    XMJL = -1,
     total = 0,
     handleSearch,
     curPage,
     curPageSize,
-    GYSLX,
+    subTableData,
+    setSubTableData,
+    getSubTableData,
+    xmid = -2,
+    isFinish,
   } = props; //表格数据
-  const [subTableData, setSubTableData] = useState({}); //子表格数据
   const [visible, setVisible] = useState(false); //需求发起弹窗显隐
   const [currentXqid, setCurrentXqid] = useState(-1); //详情id
   const [currentXmid, setCurrentXmid] = useState(-1); //项目id
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
   const location = useLocation();
+
+  useEffect(() => {
+    if (xmid !== -2) setExpandedRowKeys(p => [...p, xmid]);
+    console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
+    return () => {};
+  }, [props]);
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
@@ -291,34 +299,6 @@ export default function InfoTable(props) {
     );
   };
 
-  const getSubTableData = (xmid = undefined) => {
-    QueryOutsourceRequirementList({
-      current: 1,
-      cxlx: 'XQ',
-      pageSize: 10,
-      paging: -1,
-      sort: '',
-      total: -1,
-      xmmc: xmid,
-    })
-      .then(res => {
-        if (res?.success) {
-          const data = JSON.parse(res.xqxx);
-          // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
-          setSubTableData(p => {
-            return {
-              ...p,
-              [xmid]: data,
-            };
-          });
-        }
-      })
-      .catch(e => {
-        message.error('子表格数据查询失败', 1);
-        setTableLoading(false);
-      });
-  };
-
   const onExpand = (expanded, record) => {
     // console.log(expanded, record);
     if (expanded) {
@@ -333,7 +313,45 @@ export default function InfoTable(props) {
       });
     }
   };
-
+  if (xmid === -2)
+    return (
+      <div className="info-table">
+        {visible && (
+          <DemandInitiated
+            xqid={currentXqid}
+            closeModal={() => setVisible(false)}
+            visible={visible}
+            successCallBack={() => {
+              setVisible(false);
+              getSubTableData(currentXmid);
+            }}
+          />
+        )}
+        <div className="project-info-table-box">
+          <Table
+            loading={tableLoading}
+            columns={columns}
+            rowKey={'XMID'}
+            dataSource={tableData}
+            onChange={handleTableChange}
+            expandedRowRender={expandedRowRender}
+            onExpand={onExpand}
+            pagination={{
+              current: curPage,
+              pageSize: curPageSize,
+              defaultCurrent: 1,
+              pageSizeOptions: ['20', '40', '50', '100'],
+              showSizeChanger: true,
+              hideOnSinglePage: false,
+              showQuickJumper: true,
+              showTotal: t => `共 ${total} 条数据`,
+              total: total,
+            }}
+            // bordered
+          />
+        </div>
+      </div>
+    );
   return (
     <div className="info-table">
       {visible && (
@@ -355,6 +373,7 @@ export default function InfoTable(props) {
           dataSource={tableData}
           onChange={handleTableChange}
           expandedRowRender={expandedRowRender}
+          defaultExpandedRowKeys={[String(xmid)]}
           onExpand={onExpand}
           pagination={{
             current: curPage,

@@ -4,9 +4,6 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { CreateOperateHyperLink } from '../../../../services/pmsServices';
-import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
-import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 const { Item } = Breadcrumb;
 const { TabPane } = Tabs;
@@ -34,17 +31,6 @@ export default function TopConsole(props) {
     //   arr.push(x.RYID);
     // });
     return XMXX.XMJLID === String(LOGIN_USER_INFO.id) || isLeader;
-  };
-
-  const closeFileAddModal = () => {
-    setFileAddVisible(false);
-  };
-
-  //新建项目成功后，刷新数据
-  const handleFileAddSuccess = () => {
-    closeFileAddModal();
-    //刷新数据
-    getPrjDtlData();
   };
 
   //获取项目标签
@@ -144,42 +130,34 @@ export default function TopConsole(props) {
     );
   };
 
-  //编辑项目弹窗
-  const handleEditPrjInfo = () => {
-    setFileAddVisible(true);
-    let p = { xmid, type: true, projectStatus: 'SAVE' };
-    XMXX.FXMMC && (p.subItemFlag = true);
-    setSrc_fileAdd(p);
-  };
-
   //申请餐券/权限弹窗
   const handleSqModal = (name = '申请餐券') => {
-    let params = {
-      attribute: 0,
-      authFlag: 0,
-      objectName: 'TLC_LCFQ',
-      operateName: name === '申请餐券' ? 'TLC_LCFQ_CQSQLC' : 'TLC_LCFQ_VPNSQ',
-      parameter: [
-        {
-          name: 'GLXM',
-          value: xmid,
-        },
-      ],
-      userId: LOGIN_USER_INFO.loginName,
-    };
-    setSqModaltxt(name);
-    setSqModalVisible(true);
-    CreateOperateHyperLink(params)
-      .then((ret = {}) => {
-        const { code, message, url } = ret;
-        if (code === 1) {
-          setSqModalUrl(url);
-        }
-      })
-      .catch(error => {
-        // message.error(!error.success ? error.message : error.note);
-        message.error(name + '失败', 1);
-      });
+    // let params = {
+    //   attribute: 0,
+    //   authFlag: 0,
+    //   objectName: 'TLC_LCFQ',
+    //   operateName: name === '申请餐券' ? 'TLC_LCFQ_CQSQLC' : 'TLC_LCFQ_VPNSQ',
+    //   parameter: [
+    //     {
+    //       name: 'GLXM',
+    //       value: xmid,
+    //     },
+    //   ],
+    //   userId: LOGIN_USER_INFO.loginName,
+    // };
+    // setSqModaltxt(name);
+    // setSqModalVisible(true);
+    // CreateOperateHyperLink(params)
+    //   .then((ret = {}) => {
+    //     const { code, message, url } = ret;
+    //     if (code === 1) {
+    //       setSqModalUrl(url);
+    //     }
+    //   })
+    //   .catch(error => {
+    //     // message.error(!error.success ? error.message : error.note);
+    //     message.error(name + '失败', 1);
+    //   });
   };
 
   const btnMoreContent = (
@@ -216,47 +194,6 @@ export default function TopConsole(props) {
   };
   return (
     <div className="top-console-box">
-      {fileAddVisible && (
-        <Modal
-          wrapClassName="editMessage-modify xbjgEditStyle"
-          width={'1000px'}
-          // height={'700px'}
-          maskClosable={false}
-          zIndex={100}
-          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-          style={{ top: '10px' }}
-          visible={fileAddVisible}
-          okText="保存"
-          bodyStyle={{
-            padding: 0,
-          }}
-          onCancel={closeFileAddModal}
-          title={
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: '#3361FF',
-                color: 'white',
-                borderRadius: '8px 8px 0 0',
-                fontSize: '16px',
-              }}
-            >
-              <strong>编辑项目</strong>
-            </div>
-          }
-          footer={null}
-        >
-          <EditProjectInfoModel
-            closeModel={closeFileAddModal}
-            successCallBack={handleFileAddSuccess}
-            xmid={src_fileAdd.xmid}
-            type={src_fileAdd.type}
-            projectStatus={src_fileAdd.projectStatus}
-          />
-        </Modal>
-      )}
       {/*申请餐券/权限弹窗*/}
       {sqModalVisible && (
         <BridgeModel

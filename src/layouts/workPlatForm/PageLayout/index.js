@@ -81,13 +81,13 @@ class MainPageLayout extends React.PureComponent {
   }
 
   componentWillReceiveProps(nextProps, nextContext) {
-    const {menuTree = [], menuTreeLoaded} = this.state;
+    const { menuTree = [], menuTreeLoaded } = this.state;
     const {
       hasAuthed,
-      location: {pathname, search},
+      location: { pathname, search },
     } = nextProps;
     const {
-      location: {pathname: prePathname, search: preSearch},
+      location: { pathname: prePathname, search: preSearch },
     } = this.props;
     //判断菜单是否已经加载过了?
     let flag = !menuTreeLoaded && hasAuthed;
@@ -125,7 +125,7 @@ class MainPageLayout extends React.PureComponent {
         // 获取权限菜单树
         //this.fetchMenuDatas(records[0]?.name, false, pathname.concat(search));
         // // 获取权限菜单树--菜单空白问题处理-暂时写死菜单方案
-        this.fetchMenuDatas("PMSNOYS", false, pathname.concat(search));
+        this.fetchMenuDatas('PMSNOYS', false, pathname.concat(search));
         // }
       })
       .catch(error => {
@@ -170,7 +170,7 @@ class MainPageLayout extends React.PureComponent {
 
   // 获取权限菜单树
   fetchMenuDatas = async (name = '', isChangeTheme = false, purl = '') => {
-    console.log("获取权限菜单树", name)
+    console.log('获取权限菜单树', name);
     if (name === '') {
       this.setState({
         menuTreeLoaded: true,
@@ -578,7 +578,8 @@ class MainPageLayout extends React.PureComponent {
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
                     if (
                       (path && path.includes('/pms/manage/ProjectInfo')) ||
-                      (path && path.includes('/pms/manage/ProjectDetail'))
+                      (path && path.includes('/pms/manage/ProjectDetail')) 
+                      // ||(path && path.includes('/pms/manage/DemandInfo'))
                     ) {
                       return (
                         path && (

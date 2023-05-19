@@ -373,4 +373,16 @@ export default [
     url: '/projectManage/queryOutsourceRequirementList',
     dis: '查询外包需求列表',
   },
+  {
+    code: '',
+    key: 'queryRequirementDetail',
+    url: '/projectManage/queryRequirementDetail',
+    dis: '查询人力外包需求详情',
+  },
+  {
+    code: '',
+    key: 'queryRequirementListPara',
+    url: '/projectManage/queryRequirementListPara',
+    dis: '外包人员列表查询条件',
+  },
 ];

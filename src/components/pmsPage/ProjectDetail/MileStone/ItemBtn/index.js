@@ -443,6 +443,18 @@ class ItemBtn extends React.Component {
         this.getLink(params, 'lbModalUrl');
         return;
       }
+      if (item.sxmc === '需求发起') {
+        // console.log(item.xmid);
+        window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
+          JSON.stringify({
+            xmid:item.xmid
+          }),
+        )}`;
+        // window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
+        //   JSON.stringify({ a:2,c: 3 })
+        // )}`;
+        return;
+      }
       FetchQueryOAUrl({
         sxid: item.sxid,
         xmmc: item.xmid,

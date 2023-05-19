@@ -4,6 +4,8 @@ import {
   QueryProjectListPara,
   QueryProjectListInfo,
   QueryOutsourceRequirementList,
+  QueryRequirementListPara,
+  QueryUserRole,
 } from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
 import { set } from 'store';
@@ -25,12 +27,13 @@ export default forwardRef(function TopConsole(props, ref) {
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [dmName, setDmName] = useState(undefined); //需求名称
   const [dmInitiator, setDmInitiator] = useState(undefined); //需求发起人
-  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize } = props;
+  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize, xmid = -2 } = props;
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
-    getFilterData();
+    if (xmid !== -2) getFilterData(xmid);
     return () => {};
-  }, []);
+  }, [xmid]);
 
   useImperativeHandle(
     ref,
@@ -145,8 +148,45 @@ export default forwardRef(function TopConsole(props, ref) {
     }
     return treeData;
   };
+
   //顶部下拉框查询数据
-  const getFilterData = () => {};
+  const getFilterData = xmid => {
+    LOGIN_USER_INFO.id !== undefined &&
+      QueryUserRole({
+        userId: String(LOGIN_USER_INFO.id),
+      })
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '' } = res;
+            QueryRequirementListPara({
+              current: 1,
+              pageSize: 10,
+              paging: -1,
+              sort: '',
+              total: -1,
+              cxlx: 'XQLB',
+              js: role,
+            })
+              .then(res => {
+                if (res?.success) {
+                  setBudgetData([...toItemTree(JSON.parse(res.ysxm))]);
+                  setPrjNameData([...JSON.parse(res.xmxx)]);
+                  setPrjMngerData([...JSON.parse(res.xmjlxx)]);
+                  setDmNameData([...JSON.parse(res.xqxx)]);
+                  setDmInitiatorData([...JSON.parse(res.xqfqr)]);
+                  setPrjName(xmid);
+                }
+              })
+              .catch(e => {
+                console.error('QueryRequirementListPara', e);
+              });
+          }
+        })
+        .catch(e => {
+          console.error('HomePage-QueryUserRole', e);
+          message.error('用户角色信息查询失败', 1);
+        });
+  };
 
   //查询按钮
   const handleSearch = (current = 1, pageSize = 20, sort = 'XMID DESC') => {
@@ -258,7 +298,7 @@ export default forwardRef(function TopConsole(props, ref) {
             placeholder="请选择"
           >
             {prjNameData.map((x, i) => (
-              <Option key={i} value={x.XMID}>
+              <Option key={i} value={x.ID}>
                 {x.XMMC}
               </Option>
             ))}
@@ -280,7 +320,7 @@ export default forwardRef(function TopConsole(props, ref) {
           >
             {prjMngerData.map((x, i) => (
               <Option key={i} value={x.ID}>
-                {x.USERNAME}
+                {x.NAME}
               </Option>
             ))}
           </Select>
@@ -300,11 +340,11 @@ export default forwardRef(function TopConsole(props, ref) {
             value={dmName}
             placeholder="请选择"
           >
-            {/* {dmNameData.map((x, i) => (
+            {dmNameData.map((x, i) => (
               <Option key={i} value={x.ID}>
-                {x.USERNAME}
+                {x.XQMC}
               </Option>
-            ))} */}
+            ))}
           </Select>
         </div>
         <Button className="btn-search" type="primary" onClick={() => handleSearch()}>
@@ -344,11 +384,11 @@ export default forwardRef(function TopConsole(props, ref) {
             value={dmInitiator}
             placeholder="请选择"
           >
-            {/* {dmInitiatorData.map((x, i) => (
-              <Option key={i} value={x.ID}>
-                {x.USERNAME}
+            {dmInitiatorData.map((x, i) => (
+              <Option key={i} value={x.FQRID}>
+                {x.FQR}
               </Option>
-            ))} */}
+            ))}
           </Select>
         </div>
       </div>

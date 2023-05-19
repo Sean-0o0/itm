@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import TopConsole from './TopConsole';
-import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
+import {
+  QueryProjectInfoAll,
+  QueryRequirementDetail,
+  QueryUserRole,
+} from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import ProjectItems from './ProjectItems';
 import DemandTable from './DemandTable';
@@ -10,7 +14,7 @@ import EmploymentInfo from './EmploymentInfo';
 // import { FetchQueryProjectLabel } from '../../../services/projectManage';
 
 export default function DemandDetail(props) {
-  const { routes, xmid, dictionary } = props;
+  const { routes, xqid, dictionary } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [dtlData, setDtlData] = useState({
     XMXX: {
@@ -36,12 +40,22 @@ export default function DemandDetail(props) {
     XQXQ: [
       {
         XQID: '123',
-        SXLX: '需求申请',
+        SXLX: '人员面试',
         SXDATA: [
           {
-            SXMC: '综合评测安排',
+            SXMC: '需求发起',
             ZXZT: '2',
           },
+          {
+            SXMC: '发送确认邮件',
+            ZXZT: '2',
+          },
+        ],
+      },
+      {
+        XQID: '123',
+        SXLX: '需求申请',
+        SXDATA: [
           {
             SXMC: '简历分发',
             ZXZT: '2',
@@ -53,40 +67,31 @@ export default function DemandDetail(props) {
         SXLX: '简历筛选',
         SXDATA: [
           {
-            SXMC: '需求发起',
-            ZXZT: '1',
+            SXMC: '综合评测安排',
+            ZXZT: '2',
           },
           {
-            SXMC: '发送确认邮件',
-            ZXZT: '1',
+            SXMC: '面试评分',
+            ZXZT: '2',
+          },
+          {
+            SXMC: '提交录用申请',
+            ZXZT: '2',
           },
         ],
       },
-      {
-        XQID: '123',
-        SXLX: '人员面试',
-        SXDATA: [
-          {
-            SXMC: '需求发起',
-            ZXZT: '1',
-          },
-          {
-            SXMC: '发送确认邮件',
-            ZXZT: '1',
-          },
-        ],
-      },
+
       {
         XQID: '123',
         SXLX: '人员录用',
         SXDATA: [
           {
-            SXMC: '需求发起',
-            ZXZT: '1',
+            SXMC: '录用确认',
+            ZXZT: '2',
           },
           {
-            SXMC: '发送确认邮件',
-            ZXZT: '1',
+            SXMC: '账号新增',
+            ZXZT: '2',
           },
         ],
       },
@@ -264,6 +269,48 @@ export default function DemandDetail(props) {
         LYZT: '2',
         LYSM: '123',
       },
+      {
+        ZHPCID: '4',
+        RYXQ: '123',
+        GYSID: '1',
+        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
+        RYMC: '123',
+        RYID: '123',
+        PCRY: '123',
+        ZHPCSJ: '123',
+        ZHPCFS: '123',
+        DFZT: '1',
+        LYZT: '2',
+        LYSM: '123',
+      },
+      {
+        ZHPCID: '5',
+        RYXQ: '123',
+        GYSID: '1',
+        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
+        RYMC: '123',
+        RYID: '123',
+        PCRY: '123',
+        ZHPCSJ: '123',
+        ZHPCFS: '123',
+        DFZT: '1',
+        LYZT: '2',
+        LYSM: '123',
+      },
+      {
+        ZHPCID: '6',
+        RYXQ: '123',
+        GYSID: '1',
+        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
+        RYMC: '123',
+        RYID: '123',
+        PCRY: '123',
+        ZHPCSJ: '123',
+        ZHPCFS: '123',
+        DFZT: '1',
+        LYZT: '2',
+        LYSM: '123',
+      },
     ],
     LYSQ: {
       LYBZ:
@@ -280,22 +327,38 @@ export default function DemandDetail(props) {
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
-  // useEffect(() => {
-  //   if (xmid !== -1) {
-  //     setIsSpinning(true);
-  //   }
-  //   return () => {};
-  // }, [HJRYDJ, ZSCQLX, RYGW, CGFS, xmid]);
+  useEffect(() => {
+    if (xqid !== -2) {
+      // setIsSpinning(true);
+      getDtldata();
+    }
+    return () => {};
+  }, [xqid]);
 
-  //判断用户是否为领导
-  const getIsLeader = () => {
+  //获取详情数据
+  const getDtldata = () => {
     QueryUserRole({
       userId: Number(LOGIN_USER_INFO.id),
     })
       .then(res => {
-        // console.log('res.role', res.role);
-        setIsLeader(res.role !== '普通人员');
-        // getXMLX();
+        QueryRequirementDetail({
+          current: 1,
+          pageSize: 10,
+          paging: -1,
+          sort: '',
+          total: -1,
+          cxlx: 'ALL',
+          js: res.role,
+          xqid,
+        })
+          .then(res => {
+            if (res?.success) {
+              console.log('🚀 ~ QueryRequirementDetail ~ res', res);
+            }
+          })
+          .catch(e => {
+            console.error('QueryRequirementDetail', e);
+          });
       })
       .catch(e => {
         message.error('用户信息查询失败', 1);
@@ -311,7 +374,7 @@ export default function DemandDetail(props) {
       wrapperClassName="diy-style-spin-prj-detail"
     >
       <div className="demand-detail-box">
-        <TopConsole xmid={xmid} routes={routes} dtlData={dtlData} isLeader={isLeader} />
+        <TopConsole xqid={xqid} routes={routes} dtlData={dtlData} isLeader={isLeader} />
         <ProjectItems dtlData={dtlData} />
         <DemandTable dtlData={dtlData} />
         <ResumeInfo dtlData={dtlData} />

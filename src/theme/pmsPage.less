@@ -12664,7 +12664,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
 //需求详情 - 综合评测安排弹窗
 .personnel-arrangement-modal,
-.interview-score-modal {
+.interview-score-modal,
+.employment-application-modal {
   .ant-modal-body {
     padding: 0;
     overflow: hidden;
@@ -12742,13 +12743,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 }
 
 //需求详情 - 面试评分弹窗
-.interview-score-modal {
+.interview-score-modal,
+.employment-application-modal {
   .ant-modal-body {
     height: unset;
   }
   .content-box {
     padding: 16px 24px;
     padding-top: 0;
+  }
+}
+
+.employment-application-modal {
+  .content-box {
+    padding: 0 24px;
   }
 }
 

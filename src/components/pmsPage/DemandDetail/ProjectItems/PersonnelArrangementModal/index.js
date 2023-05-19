@@ -191,7 +191,7 @@ function PersonnelArrangementModal(props) {
       maskClosable={false}
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-      style={{ top: '60px' }}
+      style={{ top: '10px' }}
       title={null}
       visible={visible}
       onOk={handleOk}

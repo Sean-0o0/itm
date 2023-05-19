@@ -50,7 +50,7 @@ exports.routes = [
     component: './pmsPage/StatisticAnalysis',
   },
   {
-    // 项目列表
+    // 项目列表 - 带参数的要放前边
     path: `${prefix}/ProjectInfo/:params`,
     component: './pmsPage/ProjectInfo',
   },
@@ -172,6 +172,11 @@ exports.routes = [
     // 需求详情
     path: `${prefix}/DemandDetail`,
     component: './pmsPage/DemandDetail',
+  },
+  {
+    // 需求列表 - 带参数的要放前边
+    path: `${prefix}/DemandInfo/:params`,
+    component: './pmsPage/DemandInfo',
   },
   {
     // 需求列表

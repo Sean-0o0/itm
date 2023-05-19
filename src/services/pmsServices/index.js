@@ -70,6 +70,8 @@ const {
     operateOutsourceRequirements,
     queryOutsourceRequirement,
     queryOutsourceRequirementList,
+    queryRequirementListPara,
+    queryRequirementDetail,
   },
 } = api;
 
@@ -725,6 +727,26 @@ export async function FetchqueryOutsourceRequirement(payload) {
 export async function QueryOutsourceRequirementList(payload) {
   const option = {
     url: queryOutsourceRequirementList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人力外包需求详情
+export async function QueryRequirementDetail(payload) {
+  const option = {
+    url: queryRequirementDetail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 外包人员列表查询条件
+export async function QueryRequirementListPara(payload) {
+  const option = {
+    url: queryRequirementListPara,
     method: 'post',
     data: payload,
   };
