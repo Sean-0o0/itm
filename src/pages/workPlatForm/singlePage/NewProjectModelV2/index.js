@@ -5453,7 +5453,17 @@ class NewProjectModelV2 extends React.Component {
                                 <div className="name"
                                      style={{color: item.ibm === this.state.staffInfo.focusJob ? '#3461FF' : ''}}>
                                   <Icon onClick={this.removeJob.bind(this, item.ibm)} type="close"
-                                        style={{paddingRight: '1rem', cursor: 'pointer'}}/><span>{item.note}：</span>
+                                        style={{paddingRight: '1rem', cursor: 'pointer'}}/>
+                                  <span>
+                                    {item.ibm === '1' ? (
+                                      <>{item.note}&nbsp;
+                                        <Tooltip overlayClassName='newproject-fzr-tooltip' title={
+                                          <span>
+                                    &nbsp;请选择一级部门领导（总助及以上）进行项目汇报
+                                    </span>}>
+                                          <Icon type="question-circle-o"/>
+                                        </Tooltip>：</>) : (<>{item.note}：</>)}
+                                  </span>
                                 </div>
                                 <div style={{width: '65%'}}>
                                   <Select
