@@ -847,7 +847,7 @@ class ItemBtn extends React.Component {
         {/* 需求发起 */}
         {xqfqModalVisible && (
           <DemandInitiated
-            xmmc={item.xmmc}
+            xmmc={xmmc}
             closeModal={() =>
               this.setState({
                 xqfqModalVisible: false,
@@ -858,7 +858,7 @@ class ItemBtn extends React.Component {
               this.setState({
                 xqfqModalVisible: false,
               });
-              this.onSuccess('需求发起');
+              this.props.refresh(); //刷新数据
             }}
           />
         )}
