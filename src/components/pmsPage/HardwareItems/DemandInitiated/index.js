@@ -191,8 +191,8 @@ class DemandInitiated extends React.Component {
 
   handleParams = values => {
     const {tableData, xqid} = this.state;
+    const {xmid} = this.props;
     const params = {
-      glxm: Number('625'),
       xqmc: String(values.xqmc),
       //新增传-1
       xqid: xqid,
@@ -204,6 +204,9 @@ class DemandInitiated extends React.Component {
       count: tableData.length,
       czlx: xqid === -1 ? "CREATE" : "UPDATE"
     };
+    if (xqid === -1) {
+      params.glxm = Number(xmid);
+    }
     console.log("paramsparams", params)
     return params;
   };
@@ -402,7 +405,7 @@ class DemandInitiated extends React.Component {
                               //   },
                               // ],
                               // initialValue: "外采项目"
-                            })(<a>查看说明</a>)}
+                            })(<a style={{color: '#3361ff'}}>查看说明</a>)}
                           </Form.Item>
                         </Col>
                       </Row>
