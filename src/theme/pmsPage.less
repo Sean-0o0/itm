@@ -1441,6 +1441,28 @@
     color: #303133;
   }
 
+  .footer-btn {
+    position: absolute;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    border-top: 1px solid #e9e9e9;
+    padding: 10px 16px;
+    background-color: #fff;
+    text-align: right;
+
+    .btn-cancel {
+      .antd-btn-default();
+      color: #3361ff;
+      border-color: #3361ff;
+      margin-right: 8px;
+    }
+
+    .btn-submit {
+      .antd-btn-primary();
+    }
+  }
+
   & .ant-drawer-body {
     margin-bottom: 53px;
     overflow: hidden;
@@ -12378,18 +12400,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           color: #606266;
         }
 
-        .prj-info-table-link-strong {
-          width: 100%;
-          display: inline-block;
-          color: #3361ff !important;
-          text-overflow: ellipsis;
-          overflow: hidden;
-          white-space: nowrap;
-
-          &:hover {
-            font-weight: bold;
-          }
-        }
+        .table-link-strong();
 
         .ant-table-body {
           // min-height: 560px;
@@ -12646,7 +12657,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 }
 
 //需求详情 - 综合评测安排弹窗
-.personnel-arrangement-modal {
+.personnel-arrangement-modal,
+.interview-score-modal {
   .ant-modal-body {
     padding: 0;
     overflow: hidden;
@@ -12720,6 +12732,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       top: 0;
       z-index: 1;
     }
+  }
+}
+
+//需求详情 - 面试评分弹窗
+.interview-score-modal {
+  .ant-modal-body {
+    height: unset;
+  }
+  .content-box {
+    padding: 16px 24px;
+    padding-top: 0;
   }
 }
 

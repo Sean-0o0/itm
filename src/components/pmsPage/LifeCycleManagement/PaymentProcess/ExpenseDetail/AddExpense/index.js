@@ -862,22 +862,11 @@ const AddExpense = props => {
           {getRadio('是否尾款', isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}
           {isFinalPay === 1 && getUpload(checkProps)}
         </Row>
-        <div
-          style={{
-            position: 'absolute',
-            right: 0,
-            bottom: 0,
-            width: '100%',
-            borderTop: '0.1488rem solid #e9e9e9',
-            padding: '1.488rem 2.3808rem',
-            background: '#fff',
-            textAlign: 'right',
-          }}
-        >
-          <Button onClick={handleClose} style={{ marginRight: 8 }}>
+        <div className="footer-btn">
+          <Button onClick={handleClose} className="btn-cancel">
             关闭
           </Button>
-          <Button onClick={handleSubmit} type="primary">
+          <Button onClick={handleSubmit} className="btn-submit" type="primary">
             确定
           </Button>
         </div>
