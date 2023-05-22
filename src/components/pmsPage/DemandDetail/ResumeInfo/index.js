@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button, Popover, Tooltip } from 'antd';
 import config from '../../../../utils/config';
 import axios from 'axios';
+import { includes } from 'lodash';
 
 const { api } = config;
 const {
@@ -9,46 +10,56 @@ const {
 } = api;
 
 export default function ResumeInfo(props) {
-  const { dtlData = {} } = props;
+  const { dtlData = {}, isAuth } = props;
   const { JLXX = [] } = dtlData;
   useEffect(() => {
     return () => {};
   }, []);
 
   //供应商块
-  const getSplierItem = (label, num, arr) => {
-    const handlePDFPreview = (id, fileName, entryno) => {
-      // axios({
-      //   method: 'POST',
-      //   url: queryFileStream,
-      //   responseType: 'blob',
-      //   data: {
-      //     objectName: 'TXMXX_ZBXX',
-      //     columnName: 'PBBG',
-      //     id,
-      //     title: fileName,
-      //     extr: entryno,
-      //     type: '',
-      //   },
-      // })
-      //   .then(res => {
-      //     const href = URL.createObjectURL(res.data);
-      //     const a = document.createElement('a');
-      //     a.download = fileName;
-      //     a.href = href;
-      //     a.click();
-      //     window.URL.revokeObjectURL(a.href);
-      //   })
-      //   .catch(err => {
-      //     console.error(err);
-      //     message.error('简历预览失败', 1);
-      //   });
+  const getSplierItem = (label = '--', num = '--', arr = []) => {
+    const handleFilePreview = (id, fileName, entryno) => {
+      axios({
+        method: 'POST',
+        url: queryFileStream,
+        responseType: 'blob',
+        data: {
+          objectName: 'TWBXQ_JLSC',
+          columnName: 'JL',
+          id,
+          title: fileName,
+          extr: entryno,
+          type: '',
+        },
+      })
+        .then(res => {
+          const href = URL.createObjectURL(res.data);
+          const a = document.createElement('a');
+          a.download = fileName;
+          a.href = href;
+          a.click();
+          window.URL.revokeObjectURL(a.href);
+        })
+        .catch(err => {
+          console.error(err);
+          message.error('简历预览失败', 1);
+        });
     };
     const popoverContent = data => (
       <div className="list">
         {data.map(x => (
-          <div className="item" key={x.JLID} onClick={() => handlePDFPreview()}>
-            <a style={{ color: '#3361ff' }}>{x.JLMC}</a>
+          <div
+            className="item"
+            key={x.JLID}
+            onClick={() =>
+              handleFilePreview(
+                x.JLID,
+                JSON.parse(x.JLMC)?.items[0][1],
+                JSON.parse(x.JLMC)?.items[0][0],
+              )
+            }
+          >
+            <a style={{ color: '#3361ff' }}>{JSON.parse(x.JLMC)?.items[0][1]}</a>
           </div>
         ))}
       </div>
@@ -81,12 +92,12 @@ export default function ResumeInfo(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
-  if (JLXX.length === 0) return null;
+  if (JLXX.length === 0||!isAuth) return null;
   return (
     <div className="resume-info-box info-box">
       <div className="title">简历信息</div>
       <div className="supplier-row-box">
-        {JLXX.map(x => getSplierItem(x.GYSMC, x.JLFS, x.JLDATA))}
+        {JLXX.map(x => getSplierItem(x.GYSMC, x.JLDATA?.length, x.JLDATA))}
         {getAfterItem('33%', 3)}
       </div>
     </div>

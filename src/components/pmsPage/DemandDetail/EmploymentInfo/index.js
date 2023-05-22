@@ -1,18 +1,53 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Popover } from 'antd';
-import moment from 'moment';
+import config from '../../../../utils/config';
+import axios from 'axios';
+
+const { api } = config;
+const {
+  pmsServices: { queryFileStream },
+} = api;
 
 export default function EmploymentInfo(props) {
-  const { dtlData = {} } = props;
+  const { dtlData = {}, isAuth } = props;
   const { LYSQ = {} } = dtlData;
-  const [remarkFold, setRemarkFold] = useState(true); //录用备注文本是否折叠
+  const [showDetail, setShowDetail] = useState(false); //录用备注文本是否折叠
   useEffect(() => {
     const node = document.getElementsByClassName('remarks');
     if (node.length > 0) {
-      setRemarkFold(node[0].clientHeight <= 44 && node[0].scrollHeight <= 44);
+      console.log(node[0].clientHeight, node[0].scrollHeight);
+      setShowDetail(!(node[0].clientHeight <= 44 && node[0].scrollHeight <= 44));
     }
     return () => {};
   }, [JSON.stringify(LYSQ)]);
+  const handleFilePreview = (id, fileName) => {
+    axios({
+      method: 'POST',
+      url: queryFileStream,
+      responseType: 'blob',
+      data: {
+        objectName: 'TWBMS_LYXX',
+        columnName: 'FJ',
+        id,
+        title: fileName,
+        // extr: 0,
+        type: '',
+      },
+    })
+      .then(res => {
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = fileName;
+        a.href = href;
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+      })
+      .catch(err => {
+        console.error(err);
+        message.error('面试打分底稿下载失败', 1);
+      });
+  };
+  if (!isAuth) return null;
   return (
     <div className="empolyment-info-box info-box">
       <div className="title">录用申请信息</div>
@@ -21,7 +56,7 @@ export default function EmploymentInfo(props) {
         <div
           className="detail"
           style={
-            remarkFold
+            showDetail
               ? {
                   WebkitBoxOrient: 'vertical',
                   WebkitLineClamp: '2',
@@ -29,7 +64,7 @@ export default function EmploymentInfo(props) {
               : {}
           }
         >
-          {remarkFold && (
+          {showDetail && (
             <Popover
               title={null}
               content={<div className="content">{LYSQ.LYBZ}</div>}
@@ -44,7 +79,7 @@ export default function EmploymentInfo(props) {
       </div>
       <div className="grade-script">
         面试打分底稿：
-        <span>{LYSQ.MSWJ}</span>
+        <span onClick={() => handleFilePreview(LYSQ.LYXXID, LYSQ.FJ)}>{LYSQ.FJ}</span>
       </div>
     </div>
   );

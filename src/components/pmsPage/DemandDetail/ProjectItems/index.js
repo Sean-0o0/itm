@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, message, Tooltip } from 'antd';
 import moment from 'moment';
 import ResumeDestributionModal from './ResumeDestributionModal';
 import PersonnelArrangementModal from './PersonnelArrangementModal';
@@ -7,8 +7,8 @@ import InterviewScoreModal from './InterviewScoreModal';
 import EmploymentApplicationModal from './EmploymentApplicationModal';
 
 export default function ProjectItems(props) {
-  const { dtlData = {} } = props;
-  const { XQXQ = [], FKTX = {}, JLXX = [], RYXQ = [], ZHPC = [] } = dtlData;
+  const { dtlData = {}, isAuth } = props;
+  const { XQSX = [], FKTX = {}, JLXX = [], RYXQ = [], ZHPC = [] } = dtlData;
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
     msgConfirmation: false,
@@ -24,23 +24,27 @@ export default function ProjectItems(props) {
     return () => {};
   }, []);
 
-  const handleZx = (SXMC = '--', ZXZT = '2') => {
+  const handleZx = (SWMC = '--', ZXZT = '2') => {
+    if (!isAuth) {
+      message.info('非外包项目对接人和需求发起人外，不可操作', 1);
+      return;
+    }
     let modalName = '';
-    if (SXMC === '需求发起') {
+    if (SWMC === '需求发起') {
       modalName = 'demandInitiation';
-    } else if (SXMC === '发送确认邮件') {
+    } else if (SWMC === '发送确认邮件') {
       modalName = 'msgConfirmation';
-    } else if (SXMC === '简历分发') {
+    } else if (SWMC === '简历分发') {
       modalName = 'resumeDestribution';
-    } else if (SXMC === '综合评测安排') {
+    } else if (SWMC === '综合评测安排') {
       modalName = 'personelArrangement';
-    } else if (SXMC === '面试评分') {
+    } else if (SWMC === '面试评分') {
       modalName = 'interviewScore';
-    } else if (SXMC === '提交录用申请') {
+    } else if (SWMC === '提交录用申请') {
       modalName = 'employmentApplication';
-    } else if (SXMC === '录用确认') {
+    } else if (SWMC === '录用确认') {
       modalName = 'offerConfirmation';
-    } else if (SXMC === '账号新增') {
+    } else if (SWMC === '账号新增') {
       modalName = 'newAccount';
     }
     //打开弹窗
@@ -52,14 +56,14 @@ export default function ProjectItems(props) {
     });
   };
 
-  const getItemBtn = ({ SXMC = '--', ZXZT = '2' }) => {
-    if (['账号新增', '综合评测打分', '发送确认邮件'].includes(SXMC) || ZXZT === '2') {
+  const getItemBtn = ({ SWMC = '--', ZXZT = '2' }) => {
+    if (['账号新增', '综合评测打分', '发送确认邮件'].includes(SWMC) || ZXZT === '2') {
       return (
-        <div className="opr-btn" onClick={() => handleZx(SXMC, ZXZT)}>
+        <div className="opr-btn" onClick={() => handleZx(SWMC, ZXZT)}>
           执行
         </div>
       );
-    } else if (SXMC === '需求发起') {
+    } else if (SWMC === '需求发起') {
       return <div className="reopr-btn">重新发起</div>;
     } else {
       return <div className="reopr-btn">查看</div>;
@@ -134,9 +138,9 @@ export default function ProjectItems(props) {
         )}
       </div>
       <div className="bottom">
-        {XQXQ.map(item => (
-          <div className="item" key={item.SXLX}>
-            <div className="item-top">{item.SXLX}</div>
+        {XQSX.map(item => (
+          <div className="item" key={item.SWLX}>
+            <div className="item-top">{item.SWLX}</div>
             <div className="item-bottom">
               {item.SXDATA.map((x, i) => (
                 <div
@@ -149,8 +153,8 @@ export default function ProjectItems(props) {
                   ) : (
                     <i className="iconfont circle-check" />
                   )}
-                  <Tooltip title={x.SXMC} placement="topLeft">
-                    <span>{x.SXMC}</span>
+                  <Tooltip title={x.SWMC} placement="topLeft">
+                    <span>{x.SWMC}</span>
                   </Tooltip>
                   {getItemBtn(x)}
                 </div>

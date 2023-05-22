@@ -1,10 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TopConsole from './TopConsole';
-import {
-  QueryProjectInfoAll,
-  QueryRequirementDetail,
-  QueryUserRole,
-} from '../../../services/pmsServices/index';
+import { QueryRequirementDetail, QueryUserRole } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import ProjectItems from './ProjectItems';
 import DemandTable from './DemandTable';
@@ -14,355 +10,130 @@ import EmploymentInfo from './EmploymentInfo';
 // import { FetchQueryProjectLabel } from '../../../services/projectManage';
 
 export default function DemandDetail(props) {
-  const { routes, xqid, dictionary } = props;
+  const { routes, xqid = -2, fqrid = -2, dictionary } = props;
+  const { WBSWLX = [], WBRYGW = [] } = dictionary;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-  const [dtlData, setDtlData] = useState({
-    XMXX: {
-      XMID: '123',
-      XMMC: '123',
-      XMBQ: '123',
-      XMBQID: '123',
-      XMJL: '123',
-      CJSJ: '123',
-    },
-    XQ: [
-      {
-        XQMC: 'xqmc',
-        XQID: '1',
-        XQFQR: '111',
-      },
-      {
-        XQMC: 'xqmc',
-        XQID: '2',
-        XQFQR: '222',
-      },
-    ],
-    XQXQ: [
-      {
-        XQID: '123',
-        SXLX: '人员面试',
-        SXDATA: [
-          {
-            SXMC: '需求发起',
-            ZXZT: '2',
-          },
-          {
-            SXMC: '发送确认邮件',
-            ZXZT: '2',
-          },
-        ],
-      },
-      {
-        XQID: '123',
-        SXLX: '需求申请',
-        SXDATA: [
-          {
-            SXMC: '简历分发',
-            ZXZT: '2',
-          },
-        ],
-      },
-      {
-        XQID: '123',
-        SXLX: '简历筛选',
-        SXDATA: [
-          {
-            SXMC: '综合评测安排',
-            ZXZT: '2',
-          },
-          {
-            SXMC: '面试评分',
-            ZXZT: '2',
-          },
-          {
-            SXMC: '提交录用申请',
-            ZXZT: '2',
-          },
-        ],
-      },
-
-      {
-        XQID: '123',
-        SXLX: '人员录用',
-        SXDATA: [
-          {
-            SXMC: '录用确认',
-            ZXZT: '2',
-          },
-          {
-            SXMC: '账号新增',
-            ZXZT: '2',
-          },
-        ],
-      },
-    ],
-    XQNR: [
-      {
-        XQNRID: '1',
-        KFSRQ: '20230115',
-        CSRQ: '20230501',
-        PCRQ: '20230406',
-        SYRQ: '20230614',
-        RYXQ: '123',
-        RYSL: '123',
-        RYSC: '123',
-        RYXQNR: '1、精通前端开发的基础技术（HTML、CSS、HTML5、CSS3等）。2、 精通原理深刻',
-        YGYS: '123',
-      },
-      {
-        XQNRID: '2',
-        KFSRQ: '20230115',
-        CSRQ: '20230501',
-        PCRQ: '20230406',
-        SYRQ: '20230614',
-        RYXQ: '123',
-        RYSL: '123',
-        RYSC: '123',
-        RYXQNR: '1、精通前端开发的基础技术（HTML、CSS、HTML5、CSS3等）。2、 精通原理深刻',
-        YGYS: '123',
-      },
-      {
-        XQNRID: '3',
-        KFSRQ: '20230115',
-        CSRQ: '20230501',
-        PCRQ: '20230406',
-        SYRQ: '20230614',
-        RYXQ: '123',
-        RYSL: '123',
-        RYSC: '123',
-        RYXQNR: '1、精通前端开发的基础技术（HTML、CSS、HTML5、CSS3等）。2、 精通原理深刻',
-        YGYS: '123',
-      },
-    ],
-    JLXX: [
-      {
-        GYSMC: '福建顶点软件股份有限公司：',
-        JLFS: '3',
-        JLDATA: [
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-        ],
-      },
-      {
-        GYSMC: '福建顶点软件股份有限公司：',
-        JLFS: '3',
-        JLDATA: [
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-        ],
-      },
-      {
-        GYSMC: '福建顶点软件股份有限公司：',
-        JLFS: '3',
-        JLDATA: [
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-        ],
-      },
-      {
-        GYSMC: '福建顶点软件股份有限公司：',
-        JLFS: '3',
-        JLDATA: [
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-        ],
-      },
-      {
-        GYSMC: '福建顶点软件股份有限公司：',
-        JLFS: '3',
-        JLDATA: [
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-          {
-            JLMC: '123',
-            JLID: '1',
-          },
-        ],
-      },
-    ],
-    ZHPC: [
-      {
-        ZHPCID: '1',
-        RYXQ: '123',
-        GYSID: '1',
-        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
-        RYMC: '123',
-        RYID: '123',
-        PCRY: '123',
-        ZHPCSJ: '20230114 1500',
-        ZHPCFS: '123',
-        DFZT: '2',
-        LYZT: '3',
-        LYSM: '123',
-      },
-      {
-        ZHPCID: '2',
-        RYXQ: '123',
-        GYSID: '1',
-        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
-        RYMC: '123',
-        RYID: '123',
-        PCRY: '123',
-        ZHPCSJ: '123',
-        ZHPCFS: '123',
-        DFZT: '3',
-        LYZT: '1',
-        LYSM: '123',
-      },
-      {
-        ZHPCID: '3',
-        RYXQ: '123',
-        GYSID: '1',
-        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
-        RYMC: '123',
-        RYID: '123',
-        PCRY: '123',
-        ZHPCSJ: '123',
-        ZHPCFS: '123',
-        DFZT: '1',
-        LYZT: '2',
-        LYSM: '123',
-      },
-      {
-        ZHPCID: '4',
-        RYXQ: '123',
-        GYSID: '1',
-        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
-        RYMC: '123',
-        RYID: '123',
-        PCRY: '123',
-        ZHPCSJ: '123',
-        ZHPCFS: '123',
-        DFZT: '1',
-        LYZT: '2',
-        LYSM: '123',
-      },
-      {
-        ZHPCID: '5',
-        RYXQ: '123',
-        GYSID: '1',
-        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
-        RYMC: '123',
-        RYID: '123',
-        PCRY: '123',
-        ZHPCSJ: '123',
-        ZHPCFS: '123',
-        DFZT: '1',
-        LYZT: '2',
-        LYSM: '123',
-      },
-      {
-        ZHPCID: '6',
-        RYXQ: '123',
-        GYSID: '1',
-        GYSMC: '福建顶点软件股份有限公司福建顶点软件股份有限公司',
-        RYMC: '123',
-        RYID: '123',
-        PCRY: '123',
-        ZHPCSJ: '123',
-        ZHPCFS: '123',
-        DFZT: '1',
-        LYZT: '2',
-        LYSM: '123',
-      },
-    ],
-    LYSQ: {
-      LYBZ:
-        '这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注这里是录用备注',
-      MSWJ: '123',
-    },
-    FKTX: {
-      TXNR: '1-3月的费用已计算完成',
-    },
-    RYXQ: ['G3｜前端', 'G3｜JAVA', 'G3｜UI'],
-  }); //详情信息
-  const [example, setexample] = useState(example); //example
-  // const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
-  const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const [dtlData, setDtlData] = useState({}); //详情信息
+  const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
+  const LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
+  const isAuth = isDock || LOGIN_USER_ID === fqrid; //是否为外包项目对接人或需求发起人
 
   useEffect(() => {
     if (xqid !== -2) {
       // setIsSpinning(true);
-      getDtldata();
+      console.log(
+        '🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:',
+        xqid,
+        WBSWLX,
+        fqrid,
+      );
+      getDtldata(xqid, fqrid);
     }
     return () => {};
-  }, [xqid]);
+  }, [xqid, fqrid, WBRYGW, WBSWLX]);
+  // console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid:', xqid);
 
   //获取详情数据
-  const getDtldata = () => {
+  const getDtldata = (xqid, fqrid) => {
+    setIsSpinning(true);
     QueryUserRole({
-      userId: Number(LOGIN_USER_INFO.id),
+      userId: Number(LOGIN_USER_ID),
     })
       .then(res => {
-        QueryRequirementDetail({
-          current: 1,
-          pageSize: 10,
-          paging: -1,
-          sort: '',
-          total: -1,
-          cxlx: 'ALL',
-          js: res.role,
-          xqid,
-        })
-          .then(res => {
-            if (res?.success) {
-              console.log('🚀 ~ QueryRequirementDetail ~ res', res);
-            }
+        if (res.code === 1) {
+          setIsDock(res.zyrole === '外包项目对接人');
+          QueryRequirementDetail({
+            current: 1,
+            pageSize: 10,
+            paging: -1,
+            sort: '',
+            total: -1,
+            cxlx: 'ALL',
+            js:
+              res.zyrole === '外包项目对接人'
+                ? res.zyrole
+                : String(LOGIN_USER_ID) === fqrid
+                ? '需求发起人'
+                : res.role,
+            xqid,
           })
-          .catch(e => {
-            console.error('QueryRequirementDetail', e);
-          });
+            .then(res => {
+              if (res.code === 1) {
+                const xqsx =
+                  JSON.parse(res.xqsx).length === 0
+                    ? []
+                    : JSON.parse(res.xqsx)[0].XQID === undefined
+                    ? []
+                    : Object.values(
+                        JSON.parse(res.xqsx)?.reduce((acc, curr) => {
+                          let { XQID, SWLX, SWMC, ZXZT, SWZXID, WBSWID } = curr;
+                          SWLX = WBSWLX.filter(x => x.ibm === SWLX)[0]?.note;
+                          if (!acc[SWLX]) {
+                            acc[SWLX] = { XQID, SWZXID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT }] };
+                          } else {
+                            acc[SWLX].SXDATA.push({ SWMC, ZXZT });
+                          }
+                          return acc;
+                        }, {}),
+                      );
+                const xqnr =
+                  JSON.parse(res.xqnr).length === 0
+                    ? []
+                    : JSON.parse(res.xqnr)[0].XQNRID === undefined
+                    ? []
+                    : JSON.parse(res.xqnr);
+                xqnr.forEach(x => {
+                  x.GW = WBRYGW.filter(y => y.ibm === x.GW)[0]?.note;
+                });
+                const zhpc =
+                  JSON.parse(res.zhpc).length === 0
+                    ? []
+                    : JSON.parse(res.zhpc)[0].PCID === undefined
+                    ? []
+                    : JSON.parse(res.zhpc);
+                zhpc.forEach(x => {
+                  x.GW = WBRYGW.filter(y => y.ibm === x.GW)[0]?.note;
+                });
+                const jlxx =
+                  JSON.parse(res.jlxx).length === 0
+                    ? []
+                    : JSON.parse(res.jlxx)[0].GYSID === undefined
+                    ? []
+                    : Object.values(
+                        JSON.parse(res.jlxx)?.reduce((acc, curr) => {
+                          let { GYSID, GYSMC, JLID, JLMC } = curr;
+                          if (!acc[GYSID]) {
+                            acc[GYSID] = { GYSID, GYSMC, JLDATA: [{ JLID, JLMC }] };
+                          } else {
+                            acc[GYSID].JLDATA.push({ JLID, JLMC });
+                          }
+                          return acc;
+                        }, {}),
+                      );
+                const obj = {
+                  XMXX: JSON.parse(res.xmxx)[0],
+                  XQXQ: JSON.parse(res.xqxq),
+                  XQSX: xqsx,
+                  XQNR: xqnr,
+                  JLXX: jlxx,
+                  LYSQ: JSON.parse(res.lysq)[0],
+                  ZHPC: zhpc,
+                  FKTX: JSON.parse(res.fktx)[0],
+                };
+                console.log('🚀 ~ file: index.js:379 ~ getDtldata ~ obj:', obj);
+                setDtlData({
+                  ...obj,
+                });
+                setIsSpinning(false);
+              }
+            })
+            .catch(e => {
+              message.error('详情信息获取失败', 1);
+            });
+        }
       })
       .catch(e => {
         message.error('用户信息查询失败', 1);
-        console.error('QueryIsLeader', e);
       });
   };
 
@@ -374,12 +145,18 @@ export default function DemandDetail(props) {
       wrapperClassName="diy-style-spin-prj-detail"
     >
       <div className="demand-detail-box">
-        <TopConsole xqid={xqid} routes={routes} dtlData={dtlData} isLeader={isLeader} />
-        <ProjectItems dtlData={dtlData} />
+        <TopConsole
+          xqid={xqid}
+          routes={routes}
+          dtlData={dtlData}
+          isAuth={isAuth}
+          getDtldata={getDtldata}
+        />
+        <ProjectItems dtlData={dtlData} isAuth={isAuth} />
         <DemandTable dtlData={dtlData} />
-        <ResumeInfo dtlData={dtlData} />
-        <EvaluationTable dtlData={dtlData} dictionary={dictionary} />
-        <EmploymentInfo dtlData={dtlData} />
+        <ResumeInfo dtlData={dtlData} isAuth={isAuth} />
+        <EvaluationTable dtlData={dtlData} dictionary={dictionary} isAuth={isAuth} />
+        <EmploymentInfo dtlData={dtlData} isAuth={isAuth} />
       </div>
     </Spin>
   );

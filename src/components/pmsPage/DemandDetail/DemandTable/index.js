@@ -21,11 +21,11 @@ export default function DemandTable(props) {
   const columns = [
     {
       title: '人员需求',
-      dataIndex: 'RYXQ',
+      dataIndex: 'RYDJ',
       width: '10%',
-      // align: 'center',
-      key: 'RYXQ',
+      key: 'RYDJ',
       ellipsis: true,
+      render: (txt, row) => txt + ` | ` + row.GW,
     },
     {
       title: '人员数量',
@@ -37,18 +37,16 @@ export default function DemandTable(props) {
     },
     {
       title: '人员时长(人/月)',
-      dataIndex: 'RYSC',
+      dataIndex: 'SC',
       width: '12%',
       align: 'right',
-      key: 'RYSC',
+      key: 'SC',
       ellipsis: true,
     },
     {
       title: '需求内容',
-      dataIndex: 'RYXQNR',
-      // width: '10%',
-      // align: 'center',
-      key: 'RYXQNR',
+      dataIndex: 'YQ',
+      key: 'YQ',
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">

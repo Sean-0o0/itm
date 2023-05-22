@@ -13,11 +13,13 @@ const DemandDetail = props => {
   const { state = {} } = location;
   const { routes = [] } = state;
   // console.log('🚀 ~ file: index.js ~ line 12 ~ DemandDetail ~ props', props);
-  let xmid = -1;
+  let xqid = -1;
+  let fqrid = -1;
   let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
-    xmid = obj.xmid;
+    xqid = obj.xqid;
+    fqrid = obj.fqrid;
     routes2 = [...routes].concat({
       name: '需求详情',
       pathname: props?.pathname,
@@ -45,7 +47,7 @@ const DemandDetail = props => {
 
   return (
     <Fragment>
-      <DemandDetailTab dictionary={dictionary} routes={newArr} xmid={xmid} />
+      <DemandDetailTab dictionary={dictionary} routes={newArr} xqid={xqid} fqrid={fqrid}/>
     </Fragment>
   );
 };

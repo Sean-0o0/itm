@@ -170,7 +170,7 @@ exports.routes = [
   },
   {
     // 需求详情
-    path: `${prefix}/DemandDetail`,
+    path: `${prefix}/DemandDetail/:params`,
     component: './pmsPage/DemandDetail',
   },
   {

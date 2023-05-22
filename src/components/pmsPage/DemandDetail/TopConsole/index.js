@@ -9,29 +9,20 @@ const { Item } = Breadcrumb;
 const { TabPane } = Tabs;
 
 export default function TopConsole(props) {
-  const { routes = [], dtlData = {}, xmid = -1, getDtlData, isLeader } = props;
+  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth } = props;
+  console.log('🚀 ~ file: index.js:13 ~ TopConsole ~ xqid:', xqid);
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
-  const [activeKey, setActiveKey] = useState('1'); //
-  const { XMXX = {}, XQ = [] } = dtlData;
+  const [activeKey, setActiveKey] = useState(xqid); //
+  const { XMXX = {}, XQXQ = [] } = dtlData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     return () => {};
   }, []);
-
-  //是否为项目成员或领导
-  const isMember = () => {
-    // const arr = [];
-    // console.log(XMXX);
-    // member.forEach(x => {
-    //   arr.push(x.RYID);
-    // });
-    return XMXX.XMJLID === String(LOGIN_USER_INFO.id) || isLeader;
-  };
 
   //获取项目标签
   const getTags = (text = '', idtxt = '') => {
@@ -178,6 +169,8 @@ export default function TopConsole(props) {
   };
 
   const handleTabsChange = key => {
+    setActiveKey(key);
+    getDtldata(key, XQXQ.filter(x => x.XQID === key)[0].LRRID);
     console.log('handleTabsChange', key);
   };
 
@@ -219,12 +212,12 @@ export default function TopConsole(props) {
         })}
       </Breadcrumb>
       <div className="prj-info-row">
-        <div className="prj-name">{XMXX?.XMMC}</div>
+        <div className="prj-name">{XMXX.XMMC ?? '--'}</div>
         <div className="tag-row">
           {getTags(XMXX.XMBQ, XMXX.XMBQID)}
-          {isMember() && (
+          {isAuth && (
             <>
-              <Button className="btn-edit" onClick={handleEditPrjInfo}>
+              <Button className="btn-edit" onClick={() => {}}>
                 编辑
               </Button>
               <Popover
@@ -243,14 +236,19 @@ export default function TopConsole(props) {
       </div>
       <div className="mnger-time">
         <span>项目经理：</span>
-        {XMXX.XMJL}
+        {XMXX.XMJL ?? '--'}
         <span className="create-time">创建时间：</span>
-        {XMXX.CJSJ ? moment(XMXX.CJSJ).format('YYYY-MM-DD') : null}
+        {XMXX.CJSJ ? moment(XMXX.CJSJ).format('YYYY-MM-DD') : '--'}
       </div>
       <div className="demand-tabs">
-        <Tabs defaultActiveKey="1" activeKe={activeKey} onChange={handleTabsChange} size={'large'}>
-          {XQ.map((x, index) => (
-            <TabPane tab={'人力需求' + (index + 1)} key={index + 1}></TabPane>
+        <Tabs
+          defaultActiveKey={xqid}
+          activeKey={activeKey}
+          onChange={handleTabsChange}
+          size={'large'}
+        >
+          {XQXQ.map((x, index) => (
+            <TabPane tab={'人力需求' + (index + 1)} key={x.XQID}></TabPane>
           ))}
         </Tabs>
       </div>

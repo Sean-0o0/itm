@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 
 export default function EvaluationTable(props) {
-  const { dtlData = {}, dictionary = {} } = props;
+  const { dtlData = {}, dictionary = {}, isAuth } = props;
   const { ZHPC = [] } = dtlData;
   const { DFZT, LYZT } = dictionary;
   const location = useLocation();
@@ -18,11 +18,12 @@ export default function EvaluationTable(props) {
   const columns = [
     {
       title: '人员需求',
-      dataIndex: 'RYXQ',
+      dataIndex: 'RYDJ',
       width: '10%',
       // align: 'center',
-      key: 'RYXQ',
+      key: 'RYDJ',
       ellipsis: true,
+      render: (txt, row) => txt + ` | ` + row.GW,
     },
     {
       title: '供应商名称',
@@ -79,15 +80,40 @@ export default function EvaluationTable(props) {
     },
     {
       title: '评测人员',
-      dataIndex: 'PCRY',
+      dataIndex: 'MSG',
       width: '12%',
-      key: 'PCRY',
+      key: 'MSG',
       ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
-        </Tooltip>
-      ),
+      render: (txt, row) => {
+        let nameArr = txt?.split(',');
+        let idArr = row.MSGID?.split(',');
+        if (nameArr?.length === 0) return '';
+        return (
+          <Tooltip title={nameArr?.join('、')} placement="topLeft">
+            {nameArr?.map((x, i) => (
+              <span>
+                <Link
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                      JSON.stringify({
+                        ryid: idArr[i],
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '需求详情', pathname: location.pathname }],
+                    },
+                  }}
+                  className="table-link-strong-tag"
+                >
+                  {x}
+                </Link>
+                {i === nameArr?.length - 1 ? '' : '、'}
+              </span>
+            ))}
+          </Tooltip>
+        );
+      },
     },
     {
       title: '综合评测时间',
@@ -99,10 +125,10 @@ export default function EvaluationTable(props) {
     },
     {
       title: '综合评测分数',
-      dataIndex: 'ZHPCFS',
+      dataIndex: 'ZHPCCJ',
       width: '10%',
       align: 'center',
-      key: 'ZHPCFS',
+      key: 'ZHPCCJ',
       ellipsis: true,
     },
     {
@@ -135,7 +161,7 @@ export default function EvaluationTable(props) {
     },
   ];
 
-  if (ZHPC.length === 0) return null;
+  if (ZHPC.length === 0||!isAuth) return null;
   return (
     <div className="evaluation-table-box info-box">
       <div className="title">

@@ -29,9 +29,9 @@ export default function InfoTable(props) {
 
   useEffect(() => {
     if (xmid !== -2) setExpandedRowKeys(p => [...p, xmid]);
-    console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
+    // console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
     return () => {};
-  }, [props]);
+  }, [xmid]);
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
@@ -175,6 +175,7 @@ export default function InfoTable(props) {
                   pathname: `/pms/manage/DemandDetail/${EncryptBase64(
                     JSON.stringify({
                       xqid: row.XQID,
+                      fqrid: row.FQRID,
                     }),
                   )}`,
                   state: {
