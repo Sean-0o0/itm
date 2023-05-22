@@ -2,7 +2,7 @@ import { Button } from 'antd';
 import React, { useEffect, useState } from 'react';
 // import guidePicture from '../../../../assets/homePage/guide.png';
 
-const guidePicture = '/fileurl/picture/index-zcyd.png';
+const guidePicture = '/fonturl/picture/index-zcyd.png';
 export default function GuideCard(props) {
   const {} = props;
   useEffect(() => {
