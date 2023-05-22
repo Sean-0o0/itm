@@ -186,11 +186,11 @@ export default function StaffInfo(props) {
       <div
         className="member-item"
         key={key}
-        // style={
-        //   post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
-        //     ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' }
-        //     : {}
-        // }
+        style={
+          post?.includes('经理') && !post?.includes('项目经理') && !post?.includes('产品经理')
+            ? { border: '1px solid rgba(51, 97, 255, 0.2)', borderRadius: '16px' }
+            : {}
+        }
       >
         <Link
           to={{
@@ -224,7 +224,7 @@ export default function StaffInfo(props) {
               // }
             >
               <img src={gender === '男' ? avatarMale : avatarFemale} />
-              {/* {post?.includes('经理') &&
+              {post?.includes('经理') &&
                 !post?.includes('项目经理') &&
                 !post?.includes('产品经理') && (
                   <div
@@ -233,14 +233,14 @@ export default function StaffInfo(props) {
                   >
                     <img src={leaderTag} className="leader-tag-img" />
                   </div>
-                )} */}
+                )}
             </div>
             <span>{name}</span>
-            {post?.includes('经理') &&
+            {/* {post?.includes('经理') &&
               !post?.includes('项目经理') &&
               !post?.includes('产品经理') && (
                 <img src={leaderTagRight} className="leader-tag-right" />
-              )}
+              )} */}
           </div>
         </Link>
       </div>
