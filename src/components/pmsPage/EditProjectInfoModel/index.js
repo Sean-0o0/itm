@@ -1042,6 +1042,26 @@ class EditProjectInfoModel extends React.Component {
               }
             });
             this.setState({milePostInfo, mileInfo: {...this.state.mileInfo, milePostInfo}});
+          } else if (params.queryType === "ONLYZB") {
+            if (milePostInfo.filter(item => item.lcbmc === '项目招采').length === 0) {
+              if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+              }
+              milePostInfo.sort((a, b) => {
+                return (a.xh - b.xh)
+              })
+            } else {
+              for (let i = 0; i < data.length; i++) {
+                if (data[i].lcbmc === "项目招采") {
+                  milePostInfo.map(item => {
+                    if (item.lcbmc === "项目招采") {
+                      item.matterInfos = data[i].matterInfos
+                    }
+                  })
+                }
+              }
+            }
+            this.setState({milePostInfo, mileInfo: {...this.state.mileInfo, milePostInfo}})
           }
         }
       })
@@ -4562,7 +4582,7 @@ class EditProjectInfoModel extends React.Component {
                                       label: basicInfo.labelTxt,
                                       //是否包含子项目
                                       haveChild: Number(this.state.subItem),
-                                      queryType: 'ALL',
+                                      queryType: 'ONLYZB',
                                     });
                                   }}
                                 />,
