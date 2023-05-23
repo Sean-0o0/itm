@@ -4802,6 +4802,13 @@
   max-height: calc(100vh - 62px);
 }
 
+.ant-spin-nested-loading.diy-style-spin-demand-detail > div > .ant-spin {
+  max-height: calc(100vh - 62px);
+  position: fixed;
+  top: 31px;
+  left: 95px;
+}
+
 .operationListSelectBox {
   margin: 0 3.571rem;
 
@@ -12579,7 +12586,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
   .splier-list {
     padding: 24px;
-    height: 520px;
+    max-height: 520px;
     overflow: hidden;
     overflow-y: auto;
 
@@ -12665,11 +12672,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 //需求详情 - 综合评测安排弹窗
 .personnel-arrangement-modal,
 .interview-score-modal,
-.employment-application-modal {
+.employment-application-modal,
+.evaluation-more-operation-modal {
   .ant-modal-body {
     padding: 0;
     overflow: hidden;
-    height: 468px;
+    // height: 468px;
   }
 
   .content-box {
@@ -12760,6 +12768,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
+.evaluation-more-operation-modal {
+  .top-btn {
+    margin-bottom: 16px;
+    button {
+      .antd-btn-primary();
+      margin-right: 16px;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
 .sendMail-box {
   .ant-form-item-label {
     text-align: left;
@@ -12808,6 +12829,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         //嵌套子表格异常解决
         tr.ant-table-expanded-row td > .ant-table-wrapper {
           margin: -10px;
+        }
+        .ant-table-thead {
+          z-index: 999;
         }
       }
 

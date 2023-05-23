@@ -142,7 +142,7 @@ export default function DemandDetail(props) {
       spinning={isSpinning}
       tip="加载中"
       size="large"
-      wrapperClassName="diy-style-spin-prj-detail"
+      wrapperClassName="diy-style-spin-demand-detail"
     >
       <div className="demand-detail-box">
         <TopConsole
@@ -154,9 +154,9 @@ export default function DemandDetail(props) {
         />
         <ProjectItems dtlData={dtlData} isAuth={isAuth} />
         <DemandTable dtlData={dtlData} />
-        <ResumeInfo dtlData={dtlData} isAuth={isAuth} />
+        <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
         <EvaluationTable dtlData={dtlData} dictionary={dictionary} isAuth={isAuth} />
-        <EmploymentInfo dtlData={dtlData} isAuth={isAuth} />
+        <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning}/>
       </div>
     </Spin>
   );

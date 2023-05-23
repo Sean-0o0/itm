@@ -1,7 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Modal, Form, message, Spin, Input, Row, Col, Select, Upload, Button, Icon } from 'antd';
-import { EditableCell, EditableRow } from './EditableTable';
-import moment from 'moment';
 
 const { Option } = Select;
 const { TextArea } = Input;
@@ -9,7 +7,6 @@ const { TextArea } = Input;
 function EmploymentApplicationModal(props) {
   const { visible, setVisible, form, RYXQ = [] } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
-  const [tableData, setTableData] = useState([]); //表格数据
   const [isTurnRed, setIsTurenRed] = useState(false); //上传标红
   const [fileList, setFileList] = useState([]); //文件列表
 

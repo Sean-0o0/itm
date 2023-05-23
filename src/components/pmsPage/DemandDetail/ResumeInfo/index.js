@@ -10,7 +10,7 @@ const {
 } = api;
 
 export default function ResumeInfo(props) {
-  const { dtlData = {}, isAuth } = props;
+  const { dtlData = {}, isAuth, setIsSpinning } = props;
   const { JLXX = [] } = dtlData;
   useEffect(() => {
     return () => {};
@@ -19,6 +19,7 @@ export default function ResumeInfo(props) {
   //供应商块
   const getSplierItem = (label = '--', num = '--', arr = []) => {
     const handleFilePreview = (id, fileName, entryno) => {
+      setIsSpinning(true);
       axios({
         method: 'POST',
         url: queryFileStream,
@@ -39,10 +40,11 @@ export default function ResumeInfo(props) {
           a.href = href;
           a.click();
           window.URL.revokeObjectURL(a.href);
+          setIsSpinning(false);
         })
         .catch(err => {
-          console.error(err);
-          message.error('简历预览失败', 1);
+          setIsSpinning(false);
+          message.error('简历下载失败', 1);
         });
     };
     const popoverContent = data => (
@@ -92,7 +94,7 @@ export default function ResumeInfo(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
-  if (JLXX.length === 0||!isAuth) return null;
+  if (JLXX.length === 0 || !isAuth) return null;
   return (
     <div className="resume-info-box info-box">
       <div className="title">简历信息</div>

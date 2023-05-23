@@ -27,13 +27,13 @@ export default forwardRef(function TopConsole(props, ref) {
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [dmName, setDmName] = useState(undefined); //需求名称
   const [dmInitiator, setDmInitiator] = useState(undefined); //需求发起人
-  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize, xmid = -2 } = props;
+  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize, xmid } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
-    if (xmid !== -2) getFilterData(xmid);
+    getFilterData();
     return () => {};
-  }, [xmid]);
+  }, [xmid, LOGIN_USER_INFO.id]);
 
   useImperativeHandle(
     ref,
@@ -150,7 +150,7 @@ export default forwardRef(function TopConsole(props, ref) {
   };
 
   //顶部下拉框查询数据
-  const getFilterData = xmid => {
+  const getFilterData = () => {
     LOGIN_USER_INFO.id !== undefined &&
       QueryUserRole({
         userId: String(LOGIN_USER_INFO.id),
@@ -174,7 +174,7 @@ export default forwardRef(function TopConsole(props, ref) {
                   setPrjMngerData([...JSON.parse(res.xmjlxx)]);
                   setDmNameData([...JSON.parse(res.xqxx)]);
                   setDmInitiatorData([...JSON.parse(res.xqfqr)]);
-                  setPrjName(xmid);
+                  if (xmid !== -2) setPrjName(xmid);
                 }
               })
               .catch(e => {
@@ -183,7 +183,6 @@ export default forwardRef(function TopConsole(props, ref) {
           }
         })
         .catch(e => {
-          console.error('HomePage-QueryUserRole', e);
           message.error('用户角色信息查询失败', 1);
         });
   };

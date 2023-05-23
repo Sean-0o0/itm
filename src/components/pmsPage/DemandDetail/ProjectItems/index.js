@@ -5,6 +5,7 @@ import ResumeDestributionModal from './ResumeDestributionModal';
 import PersonnelArrangementModal from './PersonnelArrangementModal';
 import InterviewScoreModal from './InterviewScoreModal';
 import EmploymentApplicationModal from './EmploymentApplicationModal';
+import NewAccountModal from './NewAccountModal';
 
 export default function ProjectItems(props) {
   const { dtlData = {}, isAuth } = props;
@@ -26,7 +27,7 @@ export default function ProjectItems(props) {
 
   const handleZx = (SWMC = '--', ZXZT = '2') => {
     if (!isAuth) {
-      message.info('非外包项目对接人和需求发起人外，不可操作', 1);
+      message.info('只有外包项目对接人和需求发起人可以操作', 1);
       return;
     }
     let modalName = '';
@@ -38,7 +39,7 @@ export default function ProjectItems(props) {
       modalName = 'resumeDestribution';
     } else if (SWMC === '综合评测安排') {
       modalName = 'personelArrangement';
-    } else if (SWMC === '面试评分') {
+    } else if (SWMC === '综合评测打分') {
       modalName = 'interviewScore';
     } else if (SWMC === '提交录用申请') {
       modalName = 'employmentApplication';
@@ -122,6 +123,19 @@ export default function ProjectItems(props) {
               return {
                 ...p,
                 employmentApplication: v,
+              };
+            });
+          }}
+        />
+      )}
+      {modalVisible.newAccount && (
+        <NewAccountModal
+          visible={modalVisible.newAccount}
+          setVisible={v => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                newAccount: v,
               };
             });
           }}

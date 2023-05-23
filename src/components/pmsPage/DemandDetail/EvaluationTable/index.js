@@ -4,9 +4,11 @@ import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
+import MoreOperationModal from './MoreOperationModal';
 
 export default function EvaluationTable(props) {
   const { dtlData = {}, dictionary = {}, isAuth } = props;
+  const [modalVisible, setModalVisible] = useState(false); //更多操作弹窗显隐
   const { ZHPC = [] } = dtlData;
   const { DFZT, LYZT } = dictionary;
   const location = useLocation();
@@ -104,7 +106,7 @@ export default function EvaluationTable(props) {
                       routes: [{ name: '需求详情', pathname: location.pathname }],
                     },
                   }}
-                  className="table-link-strong-tag"
+                  className="table-link-strong-tagtxt"
                 >
                   {x}
                 </Link>
@@ -161,12 +163,13 @@ export default function EvaluationTable(props) {
     },
   ];
 
-  if (ZHPC.length === 0||!isAuth) return null;
+  if (ZHPC.length === 0 || !isAuth) return null;
   return (
     <div className="evaluation-table-box info-box">
+      {modalVisible && <MoreOperationModal visible={modalVisible} setVisible={setModalVisible} />}
       <div className="title">
         综合评测信息
-        <span>更多操作</span>
+        <span onClick={()=>setModalVisible(true)}>更多操作</span>
       </div>
       <div className="table-box">
         <Table columns={columns} rowKey={'ZHPCID'} dataSource={ZHPC} pagination={false} bordered />

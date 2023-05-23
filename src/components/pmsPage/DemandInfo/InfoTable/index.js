@@ -28,7 +28,7 @@ export default function InfoTable(props) {
   const location = useLocation();
 
   useEffect(() => {
-    if (xmid !== -2) setExpandedRowKeys(p => [...p, xmid]);
+    if (xmid !== -2) setExpandedRowKeys([xmid]);
     // console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
     return () => {};
   }, [xmid]);
@@ -61,7 +61,7 @@ export default function InfoTable(props) {
     {
       title: '项目名称',
       dataIndex: 'XMMC',
-      width: '30%',
+      width: '29%',
       key: 'XMMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -140,7 +140,7 @@ export default function InfoTable(props) {
     {
       title: '项目金额(元)',
       dataIndex: 'XMJE',
-      width: '12%',
+      width: '13%',
       align: 'right',
       key: 'XMJE',
       ellipsis: true,
@@ -163,7 +163,7 @@ export default function InfoTable(props) {
       {
         title: '需求名称',
         dataIndex: 'XQMC',
-        width: '30%',
+        width: '29%',
         key: 'XQMC',
         ellipsis: true,
         render: (text, row, index) => {
@@ -239,7 +239,7 @@ export default function InfoTable(props) {
       {
         title: '预计综合评测日期',
         dataIndex: 'YJZHPCRQ',
-        width: '12%',
+        width: '13%',
         key: 'YJZHPCRQ',
         ellipsis: true,
         render: text => <span>{text === undefined ? '' : moment(text).format('YYYY-MM-DD')}</span>,
@@ -304,6 +304,9 @@ export default function InfoTable(props) {
     // console.log(expanded, record);
     if (expanded) {
       getSubTableData(record.XMID);
+      if (!expandedRowKeys.includes(record.XMID)) {
+        setExpandedRowKeys(p => [...p, record.XMID]);
+      }
     } else {
       //收起时置空
       setSubTableData(p => {
@@ -312,6 +315,7 @@ export default function InfoTable(props) {
           [record.XMID]: [],
         };
       });
+      setExpandedRowKeys(p => [...expandedRowKeys.filter(x => x !== record.XMID)]);
     }
   };
   if (xmid === -2)
@@ -374,7 +378,7 @@ export default function InfoTable(props) {
           dataSource={tableData}
           onChange={handleTableChange}
           expandedRowRender={expandedRowRender}
-          defaultExpandedRowKeys={[String(xmid)]}
+          expandedRowKeys={expandedRowKeys}
           onExpand={onExpand}
           pagination={{
             current: curPage,

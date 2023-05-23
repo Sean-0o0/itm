@@ -6,7 +6,6 @@ import RequireModel from "./RequireModel";
 import AgreementEnterModal from "./AgreementEnterModel";
 import BidSectionModel from "./BidSectionModel";
 import DemandInitiated from "./DemandInitiated";
-import DemandInitiationModal from "../DemandInitiationModal";
 import SendMailModal from "../SendMailModal";
 
 //首页

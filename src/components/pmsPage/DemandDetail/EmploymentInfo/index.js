@@ -9,7 +9,7 @@ const {
 } = api;
 
 export default function EmploymentInfo(props) {
-  const { dtlData = {}, isAuth } = props;
+  const { dtlData = {}, isAuth, setIsSpinning } = props;
   const { LYSQ = {} } = dtlData;
   const [showDetail, setShowDetail] = useState(false); //录用备注文本是否折叠
   useEffect(() => {
@@ -21,6 +21,7 @@ export default function EmploymentInfo(props) {
     return () => {};
   }, [JSON.stringify(LYSQ)]);
   const handleFilePreview = (id, fileName) => {
+    setIsSpinning(true);
     axios({
       method: 'POST',
       url: queryFileStream,
@@ -41,9 +42,10 @@ export default function EmploymentInfo(props) {
         a.href = href;
         a.click();
         window.URL.revokeObjectURL(a.href);
+        setIsSpinning(false);
       })
       .catch(err => {
-        console.error(err);
+        setIsSpinning(false);
         message.error('面试打分底稿下载失败', 1);
       });
   };

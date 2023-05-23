@@ -165,25 +165,6 @@ function PersonnelArrangementModal(props) {
     );
   };
 
-  //获取日期选择器
-  const getDP = ({ label = '--', dataIndex, span = [8, 14] }) => {
-    return (
-      <Col span={12}>
-        <Form.Item label={label} labelCol={{ span: span[0] }} wrapperCol={{ span: span[1] }}>
-          {getFieldDecorator(dataIndex, {
-            initialValue: null,
-            rules: [
-              {
-                required: true,
-                message: label + '不允许空值',
-              },
-            ],
-          })(<DatePicker allowClear placeholder={'请选择' + label} style={{ width: '100%' }} />)}
-        </Form.Item>
-      </Col>
-    );
-  };
-
   return (
     <Modal
       wrapClassName="editMessage-modify personnel-arrangement-modal"
@@ -234,13 +215,13 @@ function PersonnelArrangementModal(props) {
             </Form.Item>
           </Col>
           <Col span={12}>
-            <Form.Item label="面试官" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+            <Form.Item label="评测人员" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
               {getFieldDecorator('msg', {
                 initialValue: '',
                 rules: [
                   {
                     required: true,
-                    message: '面试官不允许空值',
+                    message: '评测人员不允许空值',
                   },
                 ],
               })(

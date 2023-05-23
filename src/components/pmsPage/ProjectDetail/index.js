@@ -8,7 +8,6 @@ import TopConsole from './TopConsole';
 import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import moment from 'moment';
-import DemandInitiationModal from '../DemandInitiationModal';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
 
 export default function ProjectDetail(props) {
@@ -157,7 +156,6 @@ export default function ProjectDetail(props) {
       wrapperClassName="diy-style-spin-prj-detail"
     >
       <div className="prj-detail-box">
-        {/* <DemandInitiationModal visible={true} setVisible={() => {}} dataProps={{}} /> */}
         <TopConsole
           xmid={xmid}
           routes={routes}

@@ -10,9 +10,6 @@ const { TabPane } = Tabs;
 
 export default function TopConsole(props) {
   const { routes = [], dtlData = {}, xqid, getDtldata, isAuth } = props;
-  console.log('🚀 ~ file: index.js:13 ~ TopConsole ~ xqid:', xqid);
-  const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
@@ -21,8 +18,11 @@ export default function TopConsole(props) {
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
+    if (xqid !== -2) {
+      setActiveKey(xqid);
+    }
     return () => {};
-  }, []);
+  }, [xqid]);
 
   //获取项目标签
   const getTags = (text = '', idtxt = '') => {
@@ -241,12 +241,7 @@ export default function TopConsole(props) {
         {XMXX.CJSJ ? moment(XMXX.CJSJ).format('YYYY-MM-DD') : '--'}
       </div>
       <div className="demand-tabs">
-        <Tabs
-          defaultActiveKey={xqid}
-          activeKey={activeKey}
-          onChange={handleTabsChange}
-          size={'large'}
-        >
+        <Tabs activeKey={activeKey} onChange={handleTabsChange} size={'large'}>
           {XQXQ.map((x, index) => (
             <TabPane tab={'人力需求' + (index + 1)} key={x.XQID}></TabPane>
           ))}

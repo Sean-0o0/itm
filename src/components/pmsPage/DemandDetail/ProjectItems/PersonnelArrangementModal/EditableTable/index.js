@@ -53,7 +53,7 @@ const EditableCell = props => {
               rules: [
                 {
                   required: true,
-                  message: '人员需求不允许空值',
+                  message: `${title}不能为空`,
                 },
               ],
             })(
@@ -86,7 +86,7 @@ const EditableCell = props => {
                   message: `${title}不能为空`,
                 },
               ],
-              initialValue: String(record[recIndex] || ''),
+              // initialValue: String(record[recIndex] || ''),
             })(<Input ref={inputRef} maxLength={30} onPressEnter={save} onBlur={save} />)}
           </Form.Item>
         );
@@ -98,7 +98,7 @@ const EditableCell = props => {
               rules: [
                 {
                   required: true,
-                  message: '面试时间不允许空值',
+                  message: `${title}不能为空`,
                 },
               ],
             })(
