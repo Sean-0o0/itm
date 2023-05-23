@@ -2199,11 +2199,12 @@ class NewProjectModelV2 extends React.Component {
           }
           this.props.successCallBack();
           message.success(content)
-          //从首页进来的还需要跳转到项目信息页面
-          // if (this.state.type && type === 1) {
-          //   //新建项目成功后跳转到项目信息页面
-          //   window.location.href = '/#/pms/manage/ProjectInfo';
-          // }
+          //项目列表那边新建项目的时候，也跳转首页
+          console.log("this.state.type", this.state.type)
+          if (!this.state.type && type === 1) {
+            //新建项目成功后跳转到首页
+            window.location.href = '/#/pms/manage/HomePage';
+          }
         }
       } else {
         message.error(note);
@@ -2885,10 +2886,10 @@ class NewProjectModelV2 extends React.Component {
         this.props.successCallBack();
         message.success(content)
         //从首页进来的还需要跳转到项目信息页面
-        // if (this.state.type && type === 1) {
-        //   //新建项目成功后跳转到项目信息页面
-        //   window.location.href = '/#/pms/manage/ProjectInfo';
-        // }
+        if (!this.state.type && type === 1) {
+          //新建项目成功后跳转到首页
+          window.location.href = '/#/pms/manage/HomePage';
+        }
       }
     }).catch((error) => {
       message.error(!error.success ? error.message : error.note);
