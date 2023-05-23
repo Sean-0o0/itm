@@ -28,7 +28,7 @@ import {connect} from 'dva';
 import {
   FetchQueryGysInZbxx, FetchqueryOutsourceRequirement,
   IndividuationGetOAResult,
-  OperateOutsourceRequirements
+  OperateOutsourceRequirements, QueryWeekday
 } from '../../../../services/pmsServices';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import moment from 'moment';
@@ -41,9 +41,13 @@ class DemandInitiated extends React.Component {
     xqid: -1,
     tableData: [],
     tableDataInit: [],
+    kfsrqinit: '',
+    pcrqinit: '',
+    syrqinit: '',
   };
 
   componentDidMount() {
+    this.fetchqueryWeekday();
     console.log("xqidxqid", this.props.xqid)
     if (this.props.xqid && this.props.xqid !== 'undefined') {
       this.setState({
@@ -52,6 +56,22 @@ class DemandInitiated extends React.Component {
       console.log("xqidxqid", this.props.xqid)
       this.fetchqueryOutsourceRequirement(this.props.xqid);
     }
+  }
+
+  fetchqueryWeekday = () => {
+    QueryWeekday({begin: moment(new Date()).format("YYYYMMDD"), days: '15', queryType: 'ALL'}).then((rec) => {
+      const {code = -1, result} = rec;
+      if (code > 0) {
+        const records = JSON.parse(result)
+        this.setState({
+          kfsrqinit: moment(moment(String(records[4].GZR)).format("YYYY-MM-DD"), 'YYYY-MM-DD'),
+          pcrqinit: moment(moment(String(records[7].GZR)).format("YYYY-MM-DD"), 'YYYY-MM-DD'),
+          syrqinit: moment(moment(String(records[14].GZR)).format("YYYY-MM-DD"), 'YYYY-MM-DD'),
+        })
+      }
+    }).catch((error) => {
+      message.error(!error.success ? error.message : error.note);
+    });
   }
 
   // 查询其他项目信息
@@ -204,6 +224,7 @@ class DemandInitiated extends React.Component {
       count: tableData.length,
       czlx: xqid === -1 ? "CREATE" : "UPDATE"
     };
+    //glxm新增时需要传
     if (xqid === -1) {
       params.glxm = Number(xmid);
     }
@@ -221,6 +242,9 @@ class DemandInitiated extends React.Component {
   render() {
     const {
       isSpinning = false,
+      kfsrqinit = '',
+      pcrqinit = '',
+      syrqinit = '',
     } = this.state;
     const {
       visible,
@@ -330,7 +354,7 @@ class DemandInitiated extends React.Component {
                         <Col span={12}>
                           <Form.Item label="开发商反馈期限">
                             {getFieldDecorator('kfsrq', {
-                              // initialValue: moment().format("YYYY-MM-DD"),
+                              initialValue: kfsrqinit,
                               rules: [
                                 {
                                   required: true,
@@ -345,7 +369,7 @@ class DemandInitiated extends React.Component {
                                      labelCol={{span: 10}}
                                      wrapperCol={{span: 14}}>
                             {getFieldDecorator('pcrq', {
-                              // initialValue: moment(),
+                              initialValue: pcrqinit,
                               rules: [
                                 {
                                   required: true,
@@ -360,7 +384,7 @@ class DemandInitiated extends React.Component {
                         <Col span={12}>
                           <Form.Item label="意向试用日期">
                             {getFieldDecorator('syrq', {
-                              // initialValue: moment(),
+                              initialValue: syrqinit,
                               rules: [
                                 {
                                   required: true,

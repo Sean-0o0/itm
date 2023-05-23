@@ -385,4 +385,10 @@ export default [
     url: '/projectManage/queryRequirementListPara',
     dis: '外包人员列表查询条件',
   },
+  {
+    code: '',
+    key: 'queryWeekday',
+    url: '/projectManage/queryWeekday',
+    dis: '查询工作日',
+  },
 ];

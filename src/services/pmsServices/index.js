@@ -72,6 +72,7 @@ const {
     queryOutsourceRequirementList,
     queryRequirementListPara,
     queryRequirementDetail,
+    queryWeekday,
   },
 } = api;
 
@@ -747,6 +748,16 @@ export async function QueryRequirementDetail(payload) {
 export async function QueryRequirementListPara(payload) {
   const option = {
     url: queryRequirementListPara,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 外包人员列表查询条件
+export async function QueryWeekday(payload) {
+  const option = {
+    url: queryWeekday,
     method: 'post',
     data: payload,
   };
