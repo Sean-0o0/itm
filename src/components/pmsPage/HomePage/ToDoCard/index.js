@@ -182,6 +182,9 @@ export default function ToDoCard(props) {
         return jumpToLBPage('V_FZBXYSNCLR');
       case '非资本性预算年初录入被退回':
         return jumpToLBPage('V_FZBXYSNCLR');
+        case '信委会流程待处理':
+        return jumpToLBPage('WORKFLOW_TOTASKS');
+        
 
       //特殊处理
       case '付款流程':
