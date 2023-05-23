@@ -577,7 +577,7 @@ class MainPageLayout extends React.PureComponent {
                   {// 路由
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
                     if (
-                      (path && path.includes('/pms/manage/ProjectInfo')) ||
+                      // (path && path.includes('/pms/manage/ProjectInfo')) ||
                       (path && path.includes('/pms/manage/ProjectDetail')) 
                       // ||(path && path.includes('/pms/manage/DemandInfo'))
                     ) {

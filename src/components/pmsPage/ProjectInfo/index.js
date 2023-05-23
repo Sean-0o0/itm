@@ -24,6 +24,12 @@ export default function ProjectInfo(props) {
   }, []);
 
   useEffect(() => {
+    setCurPage(1);
+    setCurPageSize(20);
+    return () => {};
+  }, [cxlx]);
+
+  useEffect(() => {
     // console.log('🚀 ~ file: index.js:20 ~ useEffect ~ prjManager:', prjManager);
     if (prjManager !== undefined && isComplete) {
       getTableData({ projectManager: prjManager, cxlx });

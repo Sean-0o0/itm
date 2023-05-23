@@ -63,14 +63,23 @@ function VisitedRoutes(props) {
   // 获取第一个菜单作为首页
   const homePage = '/index';
 
+  // useEffect(() => {
+  //   if (menuTree.length > 0) {
+  //     // if (!urls.includes(newPathname) && newPathname !== homePage) {
+  //     if (!urls.includes(newPathname)) {
+  //       setUrls([...urls, newPathname]);
+  //     }
+  //   }
+  // }, [newPathname, menuArray, urls, menuTree, homePage]);
   useEffect(() => {
     if (menuTree.length > 0) {
-      // if (!urls.includes(newPathname) && newPathname !== homePage) {
       if (!urls.includes(newPathname)) {
         setUrls([...urls, newPathname]);
+      } else {
+        setUrls([...urls.filter(x => x !== newPathname), newPathname]);
       }
     }
-  }, [newPathname, menuArray, urls, menuTree, homePage]);
+  }, [newPathname, menuTree]);
 
   useEffect(() => {
     setUrls([]);
