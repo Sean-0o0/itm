@@ -447,7 +447,7 @@ class ItemBtn extends React.Component {
         // console.log(item.xmid);
         window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
           JSON.stringify({
-            xmid:item.xmid
+            xmid: item.xmid,
           }),
         )}`;
         // window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
@@ -767,7 +767,7 @@ class ItemBtn extends React.Component {
 
   //成功回调
   onSuccess = name => {
-    message.success(name + '成功');
+    name && message.success(name + '成功');
     this.props.refresh(); //刷新数据
   };
 
@@ -1011,7 +1011,7 @@ class ItemBtn extends React.Component {
                 paymentModalVisible: false,
               })
             }
-            onSuccess={() => this.onSuccess('流程发起')}
+            onSuccess={() => this.onSuccess()}
             projectCode={xmbh}
             isHwPrj={isHwPrj}
           />

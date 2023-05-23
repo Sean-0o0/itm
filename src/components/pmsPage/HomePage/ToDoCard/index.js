@@ -374,8 +374,7 @@ export default function ToDoCard(props) {
           projectCode={projectCode}
           closePaymentProcessModal={() => setPaymentModalVisible(false)}
           onSuccess={() => {
-            handleOperateSuccess('付款流程发起');
-            setPaymentModalVisible(false);
+            handleOperateSuccess();
           }}
           isHwPrj={isHwPrj}
         />

@@ -236,18 +236,17 @@ const PaymentProcess = props => {
             content: null,
             onOk() {
               setIsSpinning(true);
+
               CreatPaymentFlow(submitData)
                 .then(res => {
                   if (res.code === 200) {
                     setIsSpinning(false);
-                    if (onSuccess === undefined) onSuccess();
-                    else
-                      message.success(
-                        `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
-                        1,
-                      );
+                    message.success(
+                      `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
+                      1,
+                    );
+                    if (onSuccess !== undefined) onSuccess(); //刷新数据
                     resetFields();
-                    fetchQueryLifecycleStuff && fetchQueryLifecycleStuff(currentXmid);
                     closePaymentProcessModal();
                   }
                 })
