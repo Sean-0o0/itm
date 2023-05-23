@@ -222,8 +222,11 @@ const PaymentProcess = props => {
           };
           isHwPrj && (submitData.yjyhtid = String(getFieldValue('glsb')));
           console.log('submitData', submitData);
-          if (Number(getFieldValue('htje')) - Number(getFieldValue('yfkje')) < fymxSum) {
-            message.error('禁止提交和存为草稿', 1);
+          if (
+            Number(getFieldValue('htje')) !== 0 &&
+            Number(getFieldValue('htje')) - Number(getFieldValue('yfkje')) < fymxSum
+          ) {
+            message.error('费用明细金额总和不能超过未付款金额', 1);
             return;
           }
           confirm({
