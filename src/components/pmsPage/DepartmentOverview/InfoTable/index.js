@@ -45,6 +45,7 @@ class InfoTable extends Component {
         <Tabs
           onChange={this.handleTab}
           type="card"
+          destroyInactiveTabPane={true}
           activeKey={activeKey}
         >
           <TabPane tab='全部' key='0'>

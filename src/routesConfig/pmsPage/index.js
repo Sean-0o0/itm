@@ -183,4 +183,9 @@ exports.routes = [
     path: `${prefix}/DemandInfo`,
     component: './pmsPage/DemandInfo',
   },
+  {
+    // 关系图谱
+    path: `${prefix}/RealtivePicture`,
+    component: './pmsPage/RealtivePicture',
+  },
 ];

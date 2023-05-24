@@ -60,7 +60,9 @@ class StaffTable extends Component {
     render() {
         const { tableLoading = false, bgxx: tableData = [], pageParam = {}, role, routes = [] } = this.props
         const { current = 1, pageSize = 10 } = this.state;
+        console.log('current',current)
         const rowspan = this.rowspan(tableData);
+        console.log('rowspan',rowspan)
         const columns = [{
             title: '序号',
             dataIndex: 'XH',
