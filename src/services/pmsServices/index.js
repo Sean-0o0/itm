@@ -73,6 +73,7 @@ const {
     queryRequirementListPara,
     queryRequirementDetail,
     queryWeekday,
+    operateEvaluation,
   },
 } = api;
 
@@ -758,6 +759,16 @@ export async function QueryRequirementListPara(payload) {
 export async function QueryWeekday(payload) {
   const option = {
     url: queryWeekday,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 综合评测信息操作
+export async function OperateEvaluation(payload) {
+  const option = {
+    url: operateEvaluation,
     method: 'post',
     data: payload,
   };

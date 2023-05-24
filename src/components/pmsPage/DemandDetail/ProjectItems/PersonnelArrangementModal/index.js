@@ -15,22 +15,144 @@ import {
 } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
 import moment from 'moment';
+import {
+  FetchQueryGysInZbxx,
+  OperateEvaluation,
+  QueryUserInfo,
+} from '../../../../../services/pmsServices';
 
 const { Option } = Select;
 
 function PersonnelArrangementModal(props) {
-  const { visible, setVisible, form, RYXQ = [] } = props;
+  const {
+    visible,
+    setVisible,
+    form,
+    XQNR = [],
+    xqid,
+    swzxid,
+    reflush,
+    update = false,
+    ZHPC = [],
+  } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
+  const [pcryData, setPcryData] = useState([]); //评测人员
+  const [gysData, setGysData] = useState([]); //供应商
+  const [updateData, setUpdateData] = useState({}); //更新回显
 
   useEffect(() => {
+    getPcryData();
     return () => {};
   }, []);
+
+  useEffect(() => {
+    if (update) {
+      const zhpc = Object.values(
+        ZHPC.reduce((acc, curr) => {
+          let { XQNRID, RYMC, GYSID, ZHPCSJ, MSGID, PCID } = curr;
+          ZHPCSJ = moment(ZHPCSJ);
+          if (!acc[XQNRID]) {
+            acc[XQNRID] = {
+              XQNRID,
+              MSGID: MSGID?.split(','),
+              TABLE: [
+                { PCID, ['RYMC' + PCID]: RYMC, ['GYSID' + PCID]: GYSID, ['MSSJ' + PCID]: ZHPCSJ },
+              ],
+            };
+          } else {
+            acc[XQNRID].TABLE.push({
+              PCID,
+              ['RYMC' + PCID]: RYMC,
+              ['GYSID' + PCID]: GYSID,
+              ['MSSJ' + PCID]: ZHPCSJ,
+            });
+          }
+          return acc;
+        }, {}),
+      );
+      console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
+      setTableData([...zhpc[0].TABLE]);
+      setUpdateData({
+        MSGID: zhpc[0].MSGID,
+        XQNRID: zhpc[0].XQNRID,
+      });
+      console.log('🚀 ~ file: index.js:80 ~ useEffect ~ [...zhpc[0].TABLE]:', [...zhpc[0].TABLE]);
+    }
+
+    return () => {};
+  }, [update, ZHPC]);
+
+  //评测人员下拉框数据
+  const getPcryData = () => {
+    QueryUserInfo({
+      type: '信息技术事业部',
+    })
+      .then(res => {
+        if (res.success) {
+          setPcryData([...res.record]);
+          fetchQueryGysInZbxx();
+        }
+      })
+      .catch(e => {
+        message.error('评测人员信息查询失败', 1);
+      });
+  };
+
+  // 查询供应商下拉列表
+  const fetchQueryGysInZbxx = () => {
+    FetchQueryGysInZbxx({
+      paging: -1,
+      sort: '',
+      current: 1,
+      pageSize: 10,
+      total: -1,
+    })
+      .then(res => {
+        if (res.success) {
+          let rec = res.record;
+          setGysData([...rec]);
+        }
+      })
+      .catch(e => {
+        message.error('供应商信息查询失败', 1);
+      });
+  };
 
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
         setVisible(false);
+        let submitTable = tableData.map(x => {
+          return {
+            PCID: '-1',
+            GYSID: x['GYSID' + x.PCID],
+            RYMC: x['RYMC' + x.PCID],
+            MSSJ: moment(x['MSSJ' + x.PCID])?.format('YYYYMMDDHHmmSS'),
+          };
+        });
+        console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
+        let submitProps = {
+          xqid: Number(xqid),
+          swzxid: Number(swzxid),
+          ryap: JSON.stringify(submitTable),
+          ryxqid: Number(getFieldValue('ryxq')),
+          msg: getFieldValue('pcry')?.join(';'),
+          czlx: update ? 'UPDATEAP' : 'AP',
+          count: submitTable.length,
+        };
+        console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
+        OperateEvaluation(submitProps)
+          .then(res => {
+            if (res?.success) {
+              message.success('操作成功', 1);
+              resetFields();
+              reflush();
+            }
+          })
+          .catch(e => {
+            message.error('信息提交失败');
+          });
       }
     });
   };
@@ -43,23 +165,11 @@ function PersonnelArrangementModal(props) {
   const handleTableSave = row => {
     // console.log('🚀 ~ file: index.js:137 ~ handleTableSave ~ row:', row);
     let newData = [...tableData];
-    const index = newData.findIndex(item => row.ID === item.ID);
+    const index = newData.findIndex(item => row.PCID === item.PCID);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item, //old row
       ...row, //rew row
-    });
-    newData = newData.map(x => {
-      return {
-        ...x,
-        // ['YWSX' + x.ID]: x['YWSX' + x.ID].trim(),
-        // ['LXR' + x.ID]: x['LXR' + x.ID].trim(),
-        // ['ZW' + x.ID]: x['ZW' + x.ID].trim(),
-        // SJ: x.SJ.trim(),
-        // ['DH' + x.ID]: x['DH' + x.ID].trim(),
-        // ['QTLXFS' + x.ID]: x['QTLXFS' + x.ID].trim(),
-        // ['BZ' + x.ID]: x['BZ' + x.ID].trim(),
-      };
     });
     setTableData(p => newData);
   };
@@ -68,9 +178,9 @@ function PersonnelArrangementModal(props) {
   const tableColumns = [
     {
       title: '供应商名称',
-      dataIndex: 'GYSMC',
+      dataIndex: 'GYSID',
       align: 'center',
-      key: 'GYSMC',
+      key: 'GYSID',
       ellipsis: true,
       editable: true,
     },
@@ -84,11 +194,11 @@ function PersonnelArrangementModal(props) {
       editable: true,
     },
     {
-      title: '面试时间',
-      dataIndex: 'ZHPCSJ',
+      title: '综合评测时间',
+      dataIndex: 'MSSJ',
       width: '25%',
       align: 'center',
-      key: 'ZHPCSJ',
+      key: 'MSSJ',
       ellipsis: true,
       editable: true,
     },
@@ -104,7 +214,7 @@ function PersonnelArrangementModal(props) {
           title="确定要删除吗?"
           onConfirm={() => {
             const dataSource = [...tableData];
-            setTableData(p => dataSource.filter(item => item.ID !== record.ID));
+            setTableData(p => dataSource.filter(item => item.PCID !== record.PCID));
           }}
         >
           <a style={{ color: '#3361ff' }}>删除</a>
@@ -112,6 +222,7 @@ function PersonnelArrangementModal(props) {
       ),
     },
   ];
+
   const columns = tableColumns.map(col => {
     if (!col.editable) {
       return col;
@@ -126,7 +237,8 @@ function PersonnelArrangementModal(props) {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          title: col?.title?.props?.children || '',
+          title: col?.title?.props?.children || col?.title,
+          gysdata: gysData,
         };
       },
     };
@@ -186,7 +298,7 @@ function PersonnelArrangementModal(props) {
           <Col span={12}>
             <Form.Item label="人员需求" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
               {getFieldDecorator('ryxq', {
-                // initialValue: '',
+                initialValue: updateData.XQNRID,
                 rules: [
                   {
                     required: true,
@@ -199,14 +311,15 @@ function PersonnelArrangementModal(props) {
                   placeholder="请选择"
                   showSearch
                   allowClear
+                  optionLabelProp="children"
                   filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {RYXQ.map(x => {
+                  {XQNR.map(x => {
                     return (
-                      <Option key={x} value={x}>
-                        {x}
+                      <Option key={x.XQNRID} value={x.XQNRID}>
+                        {x.RYDJ} | {x.GW}
                       </Option>
                     );
                   })}
@@ -216,8 +329,8 @@ function PersonnelArrangementModal(props) {
           </Col>
           <Col span={12}>
             <Form.Item label="评测人员" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
-              {getFieldDecorator('msg', {
-                initialValue: '',
+              {getFieldDecorator('pcry', {
+                initialValue: updateData.MSGID,
                 rules: [
                   {
                     required: true,
@@ -228,16 +341,17 @@ function PersonnelArrangementModal(props) {
                 <Select
                   className="item-selector"
                   placeholder="请选择"
+                  mode="multiple"
                   showSearch
                   allowClear
                   filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
                 >
-                  {RYXQ.map(x => {
+                  {pcryData.map(x => {
                     return (
-                      <Option key={x} value={x}>
-                        {x}
+                      <Option key={x.id} value={x.id}>
+                        {x.name}
                       </Option>
                     );
                   })}
@@ -246,19 +360,26 @@ function PersonnelArrangementModal(props) {
             </Form.Item>
           </Col>
         </Row>
-        <Row>{getInputDisabled('预计综合评测日期', '2023-04-07', 8, 14)}</Row>
+        <Row>
+          {getInputDisabled(
+            '预计综合评测日期',
+            XQNR.length > 0 ? moment(XQNR[0].YJZHPCRQ).format('YYYY-MM-DD') : '',
+            8,
+            14,
+          )}
+        </Row>
         <Form.Item
           label="人员需求"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 19 }}
-          required
+          // required
           style={{ marginBottom: 16, marginTop: 6 }}
         >
           <div className="ryxq-table-box">
             <Table
               columns={columns}
               components={components}
-              rowKey={'ID'}
+              rowKey={'PCID'}
               rowClassName={() => 'editable-row'}
               dataSource={tableData}
               scroll={tableData.length > 3 ? { y: 171 } : {}}
@@ -272,10 +393,10 @@ function PersonnelArrangementModal(props) {
                 let arrData = [...tableData];
                 const UUID = Date.now();
                 arrData.push({
-                  ID: UUID,
-                  ['GYSMC' + UUID]: '',
+                  PCID: UUID,
+                  ['GYSID' + UUID]: '',
                   ['RYMC' + UUID]: '',
-                  ['ZHPCSJ' + UUID]: '',
+                  ['MSSJ' + UUID]: null,
                 });
                 setTableData(p => [...arrData]);
                 setTimeout(() => {

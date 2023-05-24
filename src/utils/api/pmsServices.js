@@ -391,4 +391,10 @@ export default [
     url: '/projectManage/queryWeekday',
     dis: '查询工作日',
   },
+  {
+    code: '',
+    key: 'operateEvaluation',
+    url: '/projectManage/operateEvaluation',
+    dis: '综合评测信息操作',
+  },
 ];

@@ -229,7 +229,7 @@ export default function StaffInfo(props) {
                 !post?.includes('产品经理') && (
                   <div
                     className="leader-tag"
-                    style={topLeader ? { backgroundColor: '#f8d649' } : {}}
+                    style={topLeader ? { backgroundColor: '#FFCD00' } : {}}
                   >
                     <img src={leaderTag} className="leader-tag-img" />
                   </div>

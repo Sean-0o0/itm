@@ -12750,6 +12750,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
+.personnel-arrangement-modal {
+  .content-box {
+    min-height: 400px;
+  }
+}
+
 //需求详情 - 面试评分弹窗
 .interview-score-modal,
 .employment-application-modal {
@@ -12769,6 +12775,63 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 }
 
 .evaluation-more-operation-modal {
+  .content-box {
+    padding: 16px 24px;
+    min-height: 400px;
+    margin-top: 0;
+    .lysm-label {
+      margin-bottom: 12px;
+      font-weight: normal;
+    }
+  }
+  .ant-table {
+    th,
+    td {
+      text-align: left;
+    }
+
+    td {
+      padding: 9.17px !important;
+      font-size: 14px;
+      font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #303133;
+    }
+
+    th {
+      padding: 9.17px !important;
+      font-size: 14px;
+      background-color: #f5f7fa;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #606266;
+    }
+
+    .ant-table-body {
+      table {
+        border: 1px solid #e8e8e8;
+      }
+    }
+
+    .ant-table-scroll .ant-table-header {
+      margin-bottom: -16.5px !important; //表格表头底部边框
+      background-color: #f5f7fa;
+    }
+
+    .ant-table-placeholder {
+      // border-bottom: 0;
+
+      .ant-empty-description {
+        font-size: 14px;
+      }
+    }
+
+    .ant-table-thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+  }
   .top-btn {
     margin-bottom: 16px;
     button {
@@ -12778,6 +12841,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         margin-right: 0;
       }
     }
+  }
+  .table-link-strong();
+  .table-link-strong-tagtxt();
+  a:hover {
+    color: #3361ffaf !important;
   }
 }
 
@@ -12831,7 +12899,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           margin: -10px;
         }
         .ant-table-thead {
-          z-index: 999;
+          z-index: 99;
         }
       }
 

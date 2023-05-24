@@ -17,25 +17,27 @@ export default function DemandDetail(props) {
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
   const LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
   const isAuth = isDock || LOGIN_USER_ID === fqrid; //是否为外包项目对接人或需求发起人
+  const [curXqid, setCurXqid] = useState(xqid); //当前xqid
+  const [curFqrid, setCurFqrid] = useState(fqrid); //当前fqrid
 
   useEffect(() => {
     if (xqid !== -2) {
-      // setIsSpinning(true);
-      console.log(
-        '🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:',
-        xqid,
-        WBSWLX,
-        fqrid,
-      );
+      // console.log(
+      //   '🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:',
+      //   xqid,
+      //   WBSWLX,
+      //   fqrid,
+      // );
       getDtldata(xqid, fqrid);
     }
     return () => {};
   }, [xqid, fqrid, WBRYGW, WBSWLX]);
-  // console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid:', xqid);
 
   //获取详情数据
   const getDtldata = (xqid, fqrid) => {
     setIsSpinning(true);
+    setCurFqrid(fqrid);
+    setCurXqid(xqid);
     QueryUserRole({
       userId: Number(LOGIN_USER_ID),
     })
@@ -110,6 +112,21 @@ export default function DemandDetail(props) {
                           return acc;
                         }, {}),
                       );
+                jlxx.forEach(x => {
+                  let jldata = [];
+                  x.JLDATA.map(y => {
+                    let arr = JSON.parse(y.JLMC)?.items?.map(z => {
+                      return {
+                        JLID: y.JLID,
+                        ENTRYNO: z[0],
+                        JLMC: z[1],
+                      };
+                    });
+                    // console.log('🚀 ~ file: index.js:125 ~ arr ~ arr:', arr);
+                    jldata = jldata.concat(arr);
+                  });
+                  x.JLDATA = jldata;
+                });
                 const obj = {
                   XMXX: JSON.parse(res.xmxx)[0],
                   XQXQ: JSON.parse(res.xqxq),
@@ -152,11 +169,17 @@ export default function DemandDetail(props) {
           isAuth={isAuth}
           getDtldata={getDtldata}
         />
-        <ProjectItems dtlData={dtlData} isAuth={isAuth} />
+        <ProjectItems
+          dtlData={dtlData}
+          isAuth={isAuth}
+          xqid={curXqid}
+          fqrid={curFqrid}
+          getDtldata={getDtldata}
+        />
         <DemandTable dtlData={dtlData} />
         <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
         <EvaluationTable dtlData={dtlData} dictionary={dictionary} isAuth={isAuth} />
-        <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning}/>
+        <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
       </div>
     </Spin>
   );

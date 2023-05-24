@@ -53,15 +53,9 @@ export default function ResumeInfo(props) {
           <div
             className="item"
             key={x.JLID}
-            onClick={() =>
-              handleFilePreview(
-                x.JLID,
-                JSON.parse(x.JLMC)?.items[0][1],
-                JSON.parse(x.JLMC)?.items[0][0],
-              )
-            }
+            onClick={() => handleFilePreview(x.JLID, x.ENTRYNO, x.JLMC)}
           >
-            <a style={{ color: '#3361ff' }}>{JSON.parse(x.JLMC)?.items[0][1]}</a>
+            <a style={{ color: '#3361ff' }}>{x.JLMC}</a>
           </div>
         ))}
       </div>

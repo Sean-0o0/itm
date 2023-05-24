@@ -49,7 +49,7 @@ export default function EmploymentInfo(props) {
         message.error('面试打分底稿下载失败', 1);
       });
   };
-  if (!isAuth) return null;
+  if ((!isAuth || JSON.stringify(LYSQ) === '{}')) return null;
   return (
     <div className="empolyment-info-box info-box">
       <div className="title">录用申请信息</div>

@@ -9,7 +9,7 @@ const { Item } = Breadcrumb;
 const { TabPane } = Tabs;
 
 export default function TopConsole(props) {
-  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth } = props;
+  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth} = props;
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
@@ -170,8 +170,8 @@ export default function TopConsole(props) {
 
   const handleTabsChange = key => {
     setActiveKey(key);
-    getDtldata(key, XQXQ.filter(x => x.XQID === key)[0].LRRID);
-    console.log('handleTabsChange', key);
+    getDtldata(key, XQXQ.filter(x => x.XQID === key)[0]?.LRRID);
+    // console.log('handleTabsChange', key);
   };
 
   //申请餐券/权限弹窗

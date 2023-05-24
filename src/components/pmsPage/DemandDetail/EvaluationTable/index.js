@@ -60,6 +60,7 @@ export default function EvaluationTable(props) {
       key: 'RYMC',
       ellipsis: true,
       render: (text, row, index) => {
+        if (row.RYID === undefined) return text;
         return (
           <Link
             style={{ color: '#3361ff' }}
@@ -166,10 +167,17 @@ export default function EvaluationTable(props) {
   if (ZHPC.length === 0 || !isAuth) return null;
   return (
     <div className="evaluation-table-box info-box">
-      {modalVisible && <MoreOperationModal visible={modalVisible} setVisible={setModalVisible} />}
+      {modalVisible && (
+        <MoreOperationModal
+          visible={modalVisible}
+          setVisible={setModalVisible}
+          data={{ tableData: ZHPC, DFZT, LYZT }}
+          tableColumns={columns}
+        />
+      )}
       <div className="title">
         综合评测信息
-        <span onClick={()=>setModalVisible(true)}>更多操作</span>
+        <span onClick={() => setModalVisible(true)}>更多操作</span>
       </div>
       <div className="table-box">
         <Table columns={columns} rowKey={'ZHPCID'} dataSource={ZHPC} pagination={false} bordered />

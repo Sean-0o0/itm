@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   Modal,
   Form,
@@ -13,20 +13,28 @@ import {
   DatePicker,
   Select,
   Button,
+  Tooltip,
+  Drawer,
 } from 'antd';
 import { EditableCell, EditableFormRow } from './EditableTable';
 import moment from 'moment';
-import DataCenter from '../../../../../utils/api/dataCenter';
+
+const { TextArea } = Input;
 
 function MoreOperationModal(props) {
-  const { visible, setVisible, form } = props;
+  const { visible, setVisible, form, data = {} } = props;
+  const { tableData = [], DFZT = [], LYZT = [] } = data;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [isSaved, setIsSaved] = useState(false);
   const [edited, setEdited] = useState(false); //已编辑
   const [editing, setEditing] = useState(false); //编辑状态
   const [editingIndex, setEditingIndex] = useState(-1); //编辑
   const [editData, setEditData] = useState([]); //编辑数据
-  const [tableData, setTableData] = useState([]);
+  const [selectedRowIds, setSelectedRowIds] = useState([]); //选中行id
+  const [lysm, setLysm] = useState({
+    visible: false, //显隐
+    index: -1, //编辑行的id
+  }); //录用说明编辑弹窗数据
 
   useEffect(() => {
     return () => {};
@@ -73,25 +81,13 @@ function MoreOperationModal(props) {
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
-      width: '20%',
+      width: '18%',
       key: 'GYSMC',
       ellipsis: true,
-      render: (text, row, index) => {
+      render: txt => {
         return (
-          <Tooltip title={text} placement="topLeft">
-            <Link
-              to={{
-                pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
-                  JSON.stringify({ splId: row.GYSID }),
-                )}`,
-                state: {
-                  routes: [{ name: '需求详情', pathname: location.pathname }],
-                },
-              }}
-              className="table-link-strong"
-            >
-              {text}
-            </Link>
+          <Tooltip title={txt} placement="topLeft">
+            {txt}
           </Tooltip>
         );
       },
@@ -102,60 +98,19 @@ function MoreOperationModal(props) {
       width: '7%',
       key: 'RYMC',
       ellipsis: true,
-      render: (text, row, index) => {
-        return (
-          <Link
-            style={{ color: '#3361ff' }}
-            to={{
-              pathname: `/pms/manage/staffDetail/${EncryptBase64(
-                JSON.stringify({
-                  ryid: row.RYID,
-                }),
-              )}`,
-              state: {
-                routes: [{ name: '需求详情', pathname: location.pathname }],
-              },
-            }}
-            className="table-link-strong"
-          >
-            {text}
-          </Link>
-        );
-      },
     },
     {
       title: '评测人员',
       dataIndex: 'MSG',
-      width: '12%',
+      width: '10%',
       key: 'MSG',
       ellipsis: true,
-      render: (txt, row) => {
+      render: txt => {
         let nameArr = txt?.split(',');
-        let idArr = row.MSGID?.split(',');
         if (nameArr?.length === 0) return '';
         return (
           <Tooltip title={nameArr?.join('、')} placement="topLeft">
-            {nameArr?.map((x, i) => (
-              <span>
-                <Link
-                  style={{ color: '#3361ff' }}
-                  to={{
-                    pathname: `/pms/manage/staffDetail/${EncryptBase64(
-                      JSON.stringify({
-                        ryid: idArr[i],
-                      }),
-                    )}`,
-                    state: {
-                      routes: [{ name: '需求详情', pathname: location.pathname }],
-                    },
-                  }}
-                  className="table-link-strong-tagtxt"
-                >
-                  {x}
-                </Link>
-                {i === nameArr?.length - 1 ? '' : '、'}
-              </span>
-            ))}
+            {nameArr.join('、')}
           </Tooltip>
         );
       },
@@ -163,10 +118,10 @@ function MoreOperationModal(props) {
     {
       title: '综合评测时间',
       dataIndex: 'ZHPCSJ',
-      width: '13%',
+      width: '12%',
       key: 'ZHPCSJ',
       ellipsis: true,
-      render: (txt, row) => (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--',
+      render: txt => (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--',
     },
     {
       title: '综合评测分数',
@@ -179,29 +134,38 @@ function MoreOperationModal(props) {
     {
       title: '打分状态',
       dataIndex: 'DFZT',
-      width: '8%',
+      width: '9%',
       key: 'DFZT',
       ellipsis: true,
-      render: txt => DFZT?.filter(x => x.ibm === txt)[0]?.note,
+      render: txt => DFZT.filter(x => x.ibm === txt)[0]?.note,
     },
     {
       title: '录用状态',
       dataIndex: 'LYZT',
-      width: '7%',
       key: 'LYZT',
       ellipsis: true,
-      render: txt => LYZT?.filter(x => x.ibm === txt)[0]?.note,
+      editable: true,
     },
     {
       title: '录用说明',
       dataIndex: 'LYSM',
-      align: 'center',
       key: 'LYSM',
+      width: '7%',
       ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
-        </Tooltip>
+      render: (txt, row) => (
+        <a
+          style={{ color: '#3361ff' }}
+          onClick={() => {
+            setLysm(p => {
+              return {
+                index: row.ZHPCID,
+                visible: true,
+              };
+            });
+          }}
+        >
+          查看详情
+        </a>
       ),
     },
   ];
@@ -218,8 +182,7 @@ function MoreOperationModal(props) {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          issaved: isSaved,
-          editingindex: editingIndex,
+          title: col.title,
         };
       },
     };
@@ -236,7 +199,7 @@ function MoreOperationModal(props) {
   //修改
   const handleEdit = () => {
     setEditing(true);
-    if (tableData.length > 0) setEditingIndex(tableData[0]?.id);
+    // if (tableData.length > 0) setEditingIndex(tableData[0]?.id);
   };
 
   //取消修改
@@ -257,10 +220,21 @@ function MoreOperationModal(props) {
     setVisible(false);
   };
 
+  //行选择
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      let newSelectedRowIds = [];
+      selectedRows?.forEach(item => {
+        newSelectedRowIds.push(item.id);
+      });
+      setSelectedRowIds(newSelectedRowIds);
+    },
+  };
+
   return (
     <Modal
       wrapClassName="editMessage-modify evaluation-more-operation-modal"
-      width={'720px'}
+      width={'1200px'}
       maskClosable={false}
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
@@ -275,24 +249,56 @@ function MoreOperationModal(props) {
         <strong>综合评测信息列表</strong>
       </div>
       <div className="content-box">
+        {lysm.visible && (
+          <Modal
+            wrapClassName="editMessage-modify evaluation-more-operation-modal"
+            width={'700px'}
+            maskClosable={false}
+            zIndex={101}
+            maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+            style={{ top: '140px' }}
+            title={null}
+            visible={lysm.visible}
+            onOk={() => {
+              setLysm(p => {
+                return {
+                  ...p,
+                  visible: false,
+                };
+              });
+            }}
+            onCancel={() => {
+              setLysm(p => {
+                return {
+                  ...p,
+                  visible: false,
+                };
+              });
+            }}
+          >
+            <div className="body-title-box">
+              <strong>录用说明编辑</strong>
+            </div>
+            <div className="content-box">
+              <div className="lysm-label">录用说明：</div>
+              <TextArea
+                placeholder="请输入录用说明"
+                maxLength={1000}
+                autoSize={{ maxRows: 6, minRows: 3 }}
+              ></TextArea>
+            </div>
+          </Modal>
+        )}
         <div className="top-btn">
-          <Button  onClick={() => {}}>
-            面试通知
-          </Button>
-          <Button  onClick={() => {}}>
-            提交录用申请
-          </Button>
-          <Button  onClick={() => {}}>
-            确认录用申请
-          </Button>
-          {editing ? (
+          <Button onClick={() => {}}>面试通知</Button>
+          <Button onClick={() => {}}>提交录用申请</Button>
+          <Button onClick={() => {}}>确认录用申请</Button>
+          {/* {editing ? (
             <>
-              <Popconfirm
-                title="确定要保存吗？"
-                onConfirm={handleSubmit}
-                disabled={!edited}
-              >
-                <Button disabled={!edited} style={{ marginRight: '16px' }}>保存</Button>
+              <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit} disabled={!edited}>
+                <Button disabled={!edited} style={{ marginRight: '16px' }}>
+                  保存
+                </Button>
               </Popconfirm>
               <Button onClick={handleEditCancel}>取消</Button>
               <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
@@ -303,7 +309,7 @@ function MoreOperationModal(props) {
             <Button onClick={handleEdit} type="primary">
               修改
             </Button>
-          )}
+          )} */}
         </div>
         <Table
           onRow={record => {
@@ -315,10 +321,11 @@ function MoreOperationModal(props) {
               },
             };
           }}
+          rowSelection={rowSelection}
           loading={isSpinning}
           columns={columns}
           components={components}
-          rowKey={record => record.id}
+          rowKey={'ZHPCID'}
           rowClassName={() => 'editable-row'}
           dataSource={tableData}
           scroll={
