@@ -121,7 +121,7 @@ export default forwardRef(function TopConsole(props, ref) {
             params.rydj = Number(rydj);
           }
           if (gw !== undefined && gw !== '') {
-            params.rygw = Number(rygw);
+            params.rygw = Number(gw);
           }
           if (prjName !== undefined && prjName !== '') {
             params.xmmc = Number(prjName);
