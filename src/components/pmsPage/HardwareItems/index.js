@@ -59,7 +59,8 @@ export default function HardwareItems(props) {
       )
       }
       {agreementEnterVisible && (
-        <DemandInitiated xmmc={"传进来的项目名称"} xqid={23} closeModal={closeAgreementEnterModal}
+        <DemandInitiated xmmc={"传进来的项目名称"} xmid={10} xqid={23} operateType="relaunch"
+                         closeModal={closeAgreementEnterModal}
                          visible={agreementEnterVisible}/>
       )
       }

@@ -397,4 +397,10 @@ export default [
     url: '/projectManage/operateEvaluation',
     dis: '综合评测信息操作',
   },
+  {
+    code: '',
+    key: 'queryOutsourceMemberList',
+    url: '/projectManage/queryOutsourceMemberList',
+    dis: '查询人员信息',
+  },
 ];

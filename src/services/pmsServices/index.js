@@ -73,6 +73,7 @@ const {
     queryRequirementListPara,
     queryRequirementDetail,
     queryWeekday,
+    queryOutsourceMemberList,
     operateEvaluation,
   },
 } = api;
@@ -755,7 +756,7 @@ export async function QueryRequirementListPara(payload) {
   return request(option);
 }
 
-// 外包人员列表查询条件
+// 工作日查询
 export async function QueryWeekday(payload) {
   const option = {
     url: queryWeekday,
@@ -769,6 +770,16 @@ export async function QueryWeekday(payload) {
 export async function OperateEvaluation(payload) {
   const option = {
     url: operateEvaluation,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员信息
+export async function QueryOutsourceMemberList(payload) {
+  const option = {
+    url: queryOutsourceMemberList,
     method: 'post',
     data: payload,
   };

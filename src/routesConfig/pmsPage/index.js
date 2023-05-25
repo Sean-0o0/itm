@@ -188,4 +188,9 @@ exports.routes = [
     path: `${prefix}/RealtivePicture`,
     component: './pmsPage/RealtivePicture',
   },
+  {
+    //人员信息
+    path: `${prefix}/MemberInfo`,
+    component: './pmsPage/MemberInfo',
+  },
 ];

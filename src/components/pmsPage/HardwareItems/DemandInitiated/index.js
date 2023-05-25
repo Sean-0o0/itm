@@ -211,21 +211,21 @@ class DemandInitiated extends React.Component {
 
   handleParams = values => {
     const {tableData, xqid} = this.state;
-    const {xmid} = this.props;
+    const {xmid, operateType} = this.props;
     const params = {
       xqmc: String(values.xqmc),
-      //新增传-1
-      xqid: xqid,
+      //新增传-1 重新发起也传-1
+      xqid: operateType === "relaunch" ? -1 : xqid,
       kfsrq: Number(moment(values.kfsrq).format('YYYYMMDD')),
       pcrq: Number(moment(values.pcrq).format('YYYYMMDD')),
       syrq: Number(moment(values.syrq).format('YYYYMMDD')),
       xmjj: String(values.xmjj),
       ryxq: JSON.stringify(tableData),
       count: tableData.length,
-      czlx: xqid === -1 ? "CREATE" : "UPDATE"
+      czlx: operateType === "relaunch" ? "CREATE" : (xqid === -1 ? "CREATE" : "UPDATE")
     };
     //glxm新增时需要传
-    if (xqid === -1) {
+    if (xqid === -1 || operateType === "relaunch") {
       params.glxm = Number(xmid);
     }
     console.log("paramsparams", params)
@@ -250,6 +250,7 @@ class DemandInitiated extends React.Component {
       visible,
       closeModal,
       xmmc,
+      operateType,
     } = this.props;
     const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
     const basicFormItemLayout = {
@@ -448,7 +449,8 @@ class DemandInitiated extends React.Component {
                               //   },
                               // ],
                               // initialValue: "外采项目"
-                            })(<PersonnelNeeds tableDataInit={this.state.tableDataInit}
+                            })(<PersonnelNeeds operateType={operateType}
+                                               tableDataInit={this.state.tableDataInit}
                                                recordCallback={this.recordCallback}/>)}
                           </Form.Item>
                         </Col>

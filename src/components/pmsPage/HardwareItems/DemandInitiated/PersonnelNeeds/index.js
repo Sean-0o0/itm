@@ -167,12 +167,13 @@ class PersonnelNeeds extends Component {
 
   //表格数据变化回调方法
   callbackData = () => {
-    const {recordCallback} = this.props;
+    const {recordCallback, operateType} = this.props;
     const {tableData} = this.state;
     let newArr = [];
     tableData.map((item) => {
       let obj = {
-        XQID: typeof (item.ID) === "number" ? "-1" : item.ID,
+        //重新发起xqid === -1
+        XQID: operateType === "relaunch" ? "-1" : (typeof (item.ID) === "number" ? "-1" : item.ID),
         RYDJ: item['RYDJ' + item.ID],
         GW: item['GW' + item.ID],
         RYSL: item['RYSL' + item.ID],
