@@ -75,6 +75,7 @@ const {
     queryWeekday,
     queryOutsourceMemberList,
     operateEvaluation,
+    sendMail,
   },
 } = api;
 
@@ -780,6 +781,16 @@ export async function OperateEvaluation(payload) {
 export async function QueryOutsourceMemberList(payload) {
   const option = {
     url: queryOutsourceMemberList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询人员信息
+export async function SendMail(payload) {
+  const option = {
+    url: sendMail,
     method: 'post',
     data: payload,
   };

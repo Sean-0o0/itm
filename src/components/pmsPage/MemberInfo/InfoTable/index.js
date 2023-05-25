@@ -158,7 +158,10 @@ export default function InfoTable(props) {
       align: 'right',
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: (text, row) => <span style={{marginRight: 20}}>
+        <a style={{color: '#3361FF'}}
+           href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?EVENT_SOURCE=Download&Table=TWBRY_RYXX&ID=${row.RYID}&Column=JL&Type=View&fileid=0`}>
+        {text}</a></span>,
     },
   ];
 

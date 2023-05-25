@@ -137,18 +137,18 @@ class PersonnelNeeds extends Component {
 
 //----------------其他供应商-----------------//
 
-  //合同信息修改付款详情表格多行删除
-  handleMultiDelete = (ids) => {
-    const dataSource = [...this.state.tableData];
-    for (let j = 0; j < dataSource.length; j++) {
-      for (let i = 0; i < ids.length; i++) {
-        if (dataSource[j].ID === ids[i]) {
-          dataSource.splice(j, 1);
-        }
-      }
+  //合同信息修改付款详情表格删除
+  handleDelete = (record) => {
+    //评测状态不等于1 不能删除
+    if (String(record.PCZT) !== "1") {
+      message.warn("该需求已有评测信息，不可删除!")
+      return;
     }
-    this.setState({tableData: dataSource});
-    this.callbackData();
+    const {tableData = [],} = this.state;
+    const dataSource = [...tableData];
+    this.setState({tableData: dataSource.filter(item => item.ID !== record.ID)}, () => {
+      this.callbackData();
+    });
   };
 
   handleTableSave = row => {
@@ -291,12 +291,7 @@ class PersonnelNeeds extends Component {
         render: (text, record) => (
           <Popconfirm
             title="确定要删除吗?"
-            onConfirm={() => {
-              const dataSource = [...tableData];
-              this.setState({tableData: dataSource.filter(item => item.ID !== record.ID)}, () => {
-                this.callbackData();
-              });
-            }}
+            onConfirm={() => this.handleDelete(record)}
           >
             <a style={{color: '#3361ff'}}>删除</a>
           </Popconfirm>

@@ -54,7 +54,7 @@ class DemandInitiated extends React.Component {
         xqid: this.props.xqid,
       })
       console.log("xqidxqid", this.props.xqid)
-      this.fetchqueryOutsourceRequirement(this.props.xqid);
+      this.fetchqueryOutsourceRequirement(this.props.xqid, this.props.operateType, this.props.xmmc);
     }
   }
 
@@ -75,7 +75,7 @@ class DemandInitiated extends React.Component {
   }
 
   // 查询其他项目信息
-  fetchqueryOutsourceRequirement = (xqid) => {
+  fetchqueryOutsourceRequirement = (xqid, operateType, xmmc) => {
     FetchqueryOutsourceRequirement({xqid, cxlx: 'UPDATE'}).then((result) => {
       const {code = -1, rydjxx, ryxqxx, wbxqxx} = result;
       const rydjxxJson = JSON.parse(rydjxx);
@@ -85,7 +85,7 @@ class DemandInitiated extends React.Component {
         console.log(" moment(wbxqxxJson[0].KFSFKQX).format(\"YYYY-MM-DD\")", moment(wbxqxxJson[0].KFSFKQX).format("YYYY-MM-DD"))
         this.props.form.setFieldsValue({
           glxm: wbxqxxJson[0].XMMC,
-          xqmc: wbxqxxJson[0].XQMC,
+          xqmc: operateType === "relaunch" ? "关于" + xmmc + "的人力外包需求" : wbxqxxJson[0].XQMC,
           kfsrq: moment(moment(wbxqxxJson[0].KFSFKQX).format("YYYY-MM-DD"), 'YYYY-MM-DD'),
           pcrq: moment(moment(wbxqxxJson[0].YJZHPCRQ).format("YYYY-MM-DD"), 'YYYY-MM-DD'),
           syrq: moment(moment(wbxqxxJson[0].YJSYRQ).format("YYYY-MM-DD"), 'YYYY-MM-DD'),

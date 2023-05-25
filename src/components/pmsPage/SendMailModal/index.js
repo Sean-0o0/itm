@@ -24,13 +24,16 @@ import {
 const {Option} = Select;
 import React from 'react';
 import {connect} from 'dva';
-import {IndividuationGetOAResult} from '../../../services/pmsServices';
+import {IndividuationGetOAResult, SendMail} from '../../../services/pmsServices';
 import moment from 'moment';
 import RichTextEditor from './RichTextEditor';
 
 class SendMailModal extends React.Component {
   state = {
     isSpinning: false,
+    uploadFileParams: [],
+    mailFileList: [],
+    pbbgTurnRed: false,
   };
 
   componentDidMount() {
@@ -47,85 +50,37 @@ class SendMailModal extends React.Component {
     _this.props.form.validateFields((err, values) => {
       if (err) {
         const errs = Object.keys(err);
-        if (errs.includes('BGRQ')) {
-          message.warn('请选择报告日期！');
+        if (errs.includes('FJR')) {
+          message.warn('请输入发件人！');
           return;
         }
-        if (errs.includes('title')) {
-          message.warn('请输入标题！');
+        if (errs.includes('SJR')) {
+          message.warn('请选择邮件收件人！');
           return;
         }
-        if (errs.includes('urgent')) {
-          message.warn('请选择紧急程度！');
+        if (errs.includes('CS')) {
+          message.warn('请选择邮件抄送人！');
           return;
         }
-        if (errs.includes('issend')) {
-          message.warn('请选择是否直接送审！');
+        if (errs.includes('ZT')) {
+          message.warn('请输入邮件主题！');
           return;
         }
-        if (errs.includes('HTMBLX')) {
-          message.warn('请选择合同模版类型！');
-          return;
-        }
-        if (errs.includes('je')) {
-          message.warn('请输入合同金额！');
-          return;
-        }
-        if (errs.includes('YZLX')) {
-          message.warn('请选择印章类型！');
-          return;
-        }
-        if (errs.includes('YT')) {
-          message.warn('请输入用途！');
-          return;
-        }
-        if (errs.includes('QSBGNR')) {
-          message.warn('请输入请示报告内容！');
+        if (errs.includes('NR')) {
+          message.warn('请输入邮件内容！');
           return;
         }
       } else {
-        console.log("Number(xmjbxxRecord[0]?.lxlcje)", Number(xmjbxxRecord[0]?.LXLCJE))
-        console.log("xmjbxxRecordxmjbxxRecord", xmjbxxRecord)
-        console.log("Number(xmjbxxRecord[0]?.ysje)", Number(xmjbxxRecord[0]?.YSJE))
-        if (_this.state.pbbgTurnRed) {
-          message.warn('请上传合同附件！');
-          return;
-        }
-        if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) > 0) {
-          if (Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)) {
-            message.warn('合同金额不能超过立项流程金额(' + Number(xmjbxxRecord[0]?.LXLCJE) + ')！');
-            return;
-          } else {
-            _this.setState({
-              isSpinning: true
-            })
-            _this.individuationGetOAResult(values);
-          }
-        }
-        if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
-          if (Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)) {
-            message.warn('合同金额不能超过预算金额(' + Number(xmjbxxRecord[0]?.YSJE) + ')！');
-            return;
-          } else {
-            _this.setState({
-              isSpinning: true
-            })
-            _this.individuationGetOAResult(values);
-          }
-        } else {
-          _this.setState({
-            isSpinning: true
-          })
-          _this.individuationGetOAResult(values);
-        }
+        _this.sendMail(values);
       }
     });
   };
 
   //发起流程到oa
-  individuationGetOAResult = values => {
-    // console.log("params", this.handleParams(values))
-    return IndividuationGetOAResult(this.handleParams(values))
+  sendMail = values => {
+    console.log("params", this.handleParams(values))
+    return;
+    return SendMail(this.handleParams(values))
       .then(result => {
         const {code = -1, record = []} = result;
         if (code > 0) {
@@ -133,7 +88,6 @@ class SendMailModal extends React.Component {
             isSpinning: false
           })
           this.props.closeContractModal();
-          this.props.onSuccess('合同签署');
         }
       })
       .catch(error => {
@@ -145,62 +99,23 @@ class SendMailModal extends React.Component {
   };
 
   handleParams = values => {
-    const {uploadFileParams, processListData} = this.state;
-    const {currentXmid, currentXmmc} = this.props;
+    const {uploadFileParams} = this.state;
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
-    let arr = [];
-    arr = processListData?.map(item => {
-      return item?.id;
+    let fileInfo = [];
+    uploadFileParams.map(item => {
+      fileInfo.push({fileName: item.name, data: item.base64});
     });
     //表单数据
-    const formdata = {
-      extinfo: {
-        busdata: {
-          BGRQ: moment(values.BGRQ).format('YYYYMMDD'), // 报告日期
-          QSBGNR: values.QSBGNR, //请示报告内容
-          LB: '1', //固定传1
-          HTMBLX: values.HTMBLX, //合同模板类型id
-          YZLX: String(values.YZLX), //印章类型字典id，多个用,隔开
-          YT: values.YT, //用途
-          BM1: '', //传空
-          BM2: '', //传空
-          NGR1: '', //传空
-          NGR2: '', //传空
-        },
-      },
-      //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
-      filerela: arr,
-      issend: Number(values.issend), //是否直接送审
-      je: values.je, //金额
-      loginname: loginUser.loginName, //登录用户userid
-      title: values.title, //标题
-      urgent: Number(values.urgent), //紧急程度id
-    };
-    //附件数据
-    const attachments = [];
-    let att = {};
-    if (uploadFileParams !== {} && uploadFileParams !== undefined) {
-      att = {
-        content: uploadFileParams.documentData,
-        nrtitle: uploadFileParams.fileName,
-        nrtype: '1',
-        filetype: '合同',
-      };
-    }
-    attachments.push(att);
-    const flowdata = {
-      zt: currentXmmc + '合同签署流程', // 主题，格式为：项目名称+合同签署流程
-      xmmc: String(currentXmid), //项目的id
-      bm: String(loginUser.org), //部门id
-      gys: values.gys, //供应商的id
-    };
     const params = {
-      objectclass: '合同签署流程',
-      formdata: JSON.stringify(formdata),
-      attachments,
-      flowdata: JSON.stringify(flowdata),
+      access: values.SJR,
+      content: values.NR,
+      others: values.CS,
+      sender: values.FJR,
+      title: values.ZT,
+      fileInfo: [...fileInfo],
     };
+    console.log("邮件发送参数{}", params)
     return params;
   };
 
@@ -208,6 +123,7 @@ class SendMailModal extends React.Component {
   render() {
     const {
       isSpinning = false,
+      mailFileList = [],
     } = this.state;
     const {
       visible,
@@ -279,7 +195,7 @@ class SendMailModal extends React.Component {
                     style={{width: '98%'}}
                   >
                     <div style={{margin: '12px 0 0 0'}}>
-                      <Row gutter={24} style={{height: '40px'}}>
+                      <Row gutter={24} style={{height: '60px'}}>
                         <Col span={24} style={{height: '100%'}}>
                           <Form.Item
                             label="发件人"
@@ -299,7 +215,7 @@ class SendMailModal extends React.Component {
                         </Col>
                       </Row>
                       <Divider style={{margin: '2px 0'}}/>
-                      <Row gutter={24} style={{height: '40px'}}>
+                      <Row gutter={24} style={{height: '60px'}}>
                         <Col span={24} style={{height: '100%'}}>
                           <Form.Item
                             label="收件人"
@@ -310,7 +226,7 @@ class SendMailModal extends React.Component {
                               rules: [
                                 {
                                   required: true,
-                                  message: '请输入主题',
+                                  message: '请输入收件人',
                                 },
                               ],
                               // initialValue: "外采项目"
@@ -319,7 +235,7 @@ class SendMailModal extends React.Component {
                         </Col>
                       </Row>
                       <Divider style={{margin: '2px 0'}}/>
-                      <Row gutter={24} style={{height: '40px'}}>
+                      <Row gutter={24} style={{height: '60px'}}>
                         <Col span={24} style={{height: '100%'}}>
                           <Form.Item
                             label="抄送"
@@ -330,7 +246,7 @@ class SendMailModal extends React.Component {
                               rules: [
                                 {
                                   required: true,
-                                  message: '请输入主题',
+                                  message: '请输入抄送人',
                                 },
                               ],
                               // initialValue: "外采项目"
@@ -339,7 +255,7 @@ class SendMailModal extends React.Component {
                         </Col>
                       </Row>
                       <Divider style={{margin: '2px 0'}}/>
-                      <Row gutter={24} style={{height: '40px'}}>
+                      <Row gutter={24} style={{height: '60px'}}>
                         <Col span={24} style={{height: '100%'}}>
                           <Form.Item
                             label="主题"
@@ -368,14 +284,110 @@ class SendMailModal extends React.Component {
                             // wrapperCol={{ span: 22 }}
                           >
                             {getFieldDecorator('FJ', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: '请输入主题',
-                                },
-                              ],
+                              // rules: [
+                              //   {
+                              //     required: true,
+                              //     message: '请输入主题',
+                              //   },
+                              // ],
                               // initialValue: "外采项目"
-                            })(<Input/>)}
+                            })(<Upload
+                              className="uploadStyle"
+                              action={'/api/projectManage/queryfileOnlyByupload'}
+                              onDownload={file => {
+                                if (!file.url) {
+                                  let reader = new FileReader();
+                                  reader.readAsDataURL(file.originFileObj);
+                                  reader.onload = e => {
+                                    var link = document.createElement('a');
+                                    link.href = e.target.result;
+                                    link.download = file.name;
+                                    link.click();
+                                    window.URL.revokeObjectURL(link.href);
+                                  };
+                                } else {
+                                  // window.location.href=file.url;
+                                  var link = document.createElement('a');
+                                  link.href = file.url;
+                                  link.download = file.name;
+                                  link.click();
+                                  window.URL.revokeObjectURL(link.href);
+                                }
+                              }}
+                              showUploadList={{
+                                showDownloadIcon: true,
+                                showRemoveIcon: true,
+                                showPreviewIcon: true,
+                              }}
+                              multiple={true}
+                              onChange={info => {
+                                let fileList = [...info.fileList];
+                                this.setState({mailFileList: [...fileList]}, () => {
+                                  console.log('目前fileList', this.state.mailFileList);
+                                  let arr = [];
+                                  console.log('目前fileList2222', fileList);
+                                  fileList.forEach(item => {
+                                    let reader = new FileReader(); //实例化文件读取对象
+                                    reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                                    reader.onload = e => {
+                                      let urlArr = e.target.result.split(',');
+                                      arr.push({
+                                        name: item.name,
+                                        base64: urlArr[1],
+                                      });
+                                      console.log('arrarr', arr);
+                                      if (arr.length === fileList.length) {
+                                        this.setState({
+                                          uploadFileParams: [...arr],
+                                        });
+                                      }
+                                    };
+                                  });
+                                });
+                                if (fileList.length === 0) {
+                                  this.setState({
+                                    pbbgTurnRed: true,
+                                  });
+                                } else {
+                                  this.setState({
+                                    pbbgTurnRed: false,
+                                  });
+                                }
+                              }}
+                              beforeUpload={(file, fileList) => {
+                                let arr = [];
+                                console.log('目前fileList2222', fileList);
+                                fileList.forEach(item => {
+                                  let reader = new FileReader(); //实例化文件读取对象
+                                  reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                                  reader.onload = e => {
+                                    let urlArr = e.target.result.split(',');
+                                    arr.push({
+                                      name: item.name,
+                                      base64: urlArr[1],
+                                    });
+                                    if (arr.length === fileList.length) {
+                                      this.setState({
+                                        uploadFileParams: [...arr],
+                                      });
+                                    }
+                                  };
+                                });
+                                console.log('uploadFileParams-cccc', this.state.uploadFileParams);
+                              }}
+                              onRemove={file => {
+                                console.log('file--cc-rrr', file);
+                              }}
+                              accept={
+                                '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                              }
+                              fileList={[...mailFileList]}
+                            >
+                              <Button type="dashed">
+                                <Icon type="upload"/>
+                                点击上传
+                              </Button>
+                            </Upload>)}
                           </Form.Item>
                         </Col>
                       </Row>
@@ -387,12 +399,12 @@ class SendMailModal extends React.Component {
                             wrapperCol={{span: 24}}
                           >
                             {getFieldDecorator('NR', {
-                              // rules: [
-                              //   {
-                              //     required: true,
-                              //     message: '请输入请示报告内容',
-                              //   },
-                              // ],
+                              rules: [
+                                {
+                                  required: true,
+                                  message: '请输入内容',
+                                },
+                              ],
                               // initialValue: "外采项目"
                             })(
                               <RichTextEditor className="w-e-menu w-e-text-container w-e-toolbar"/>,

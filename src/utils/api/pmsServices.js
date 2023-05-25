@@ -403,4 +403,10 @@ export default [
     url: '/projectManage/queryOutsourceMemberList',
     dis: '查询人员信息',
   },
+  {
+    code: '',
+    key: 'sendMail',
+    url: '/projectManage/sendMail',
+    dis: '邮件发送',
+  },
 ];
