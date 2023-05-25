@@ -69,11 +69,11 @@ export default function DemandDetail(props) {
                     : Object.values(
                         JSON.parse(res.xqsx)?.reduce((acc, curr) => {
                           let { XQID, SWLX, SWMC, ZXZT, SWZXID, WBSWID } = curr;
-                          SWLX = WBSWLX.filter(x => x.ibm === SWLX)[0]?.note;
+                          SWLX = WBSWLX?.filter(x => x.ibm === SWLX)[0]?.note;
                           if (!acc[SWLX]) {
-                            acc[SWLX] = { XQID, SWZXID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT }] };
+                            acc[SWLX] = { XQID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT, SWZXID }] };
                           } else {
-                            acc[SWLX].SXDATA.push({ SWMC, ZXZT });
+                            acc[SWLX].SXDATA.push({ SWMC, ZXZT, SWZXID });
                           }
                           return acc;
                         }, {}),
@@ -85,7 +85,7 @@ export default function DemandDetail(props) {
                     ? []
                     : JSON.parse(res.xqnr);
                 xqnr.forEach(x => {
-                  x.GW = WBRYGW.filter(y => y.ibm === x.GW)[0]?.note;
+                  x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note;
                 });
                 const zhpc =
                   JSON.parse(res.zhpc).length === 0
@@ -94,7 +94,7 @@ export default function DemandDetail(props) {
                     ? []
                     : JSON.parse(res.zhpc);
                 zhpc.forEach(x => {
-                  x.GW = WBRYGW.filter(y => y.ibm === x.GW)[0]?.note;
+                  x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note;
                 });
                 const jlxx =
                   JSON.parse(res.jlxx).length === 0
@@ -105,7 +105,7 @@ export default function DemandDetail(props) {
                         JSON.parse(res.jlxx)?.reduce((acc, curr) => {
                           let { GYSID, GYSMC, JLID, JLMC } = curr;
                           if (!acc[GYSID]) {
-                            acc[GYSID] = { GYSID, GYSMC, JLDATA: [{ JLID, JLMC }] };
+                            acc[GYSID] = { GYSID, GYSMC, JLID, JLDATA: [{ JLID, JLMC }] };
                           } else {
                             acc[GYSID].JLDATA.push({ JLID, JLMC });
                           }
@@ -114,6 +114,7 @@ export default function DemandDetail(props) {
                       );
                 jlxx.forEach(x => {
                   let jldata = [];
+                  let jldata2 = [];
                   x.JLDATA.map(y => {
                     let arr = JSON.parse(y.JLMC)?.items?.map(z => {
                       return {
@@ -122,10 +123,15 @@ export default function DemandDetail(props) {
                         JLMC: z[1],
                       };
                     });
-                    // console.log('🚀 ~ file: index.js:125 ~ arr ~ arr:', arr);
+                    let arr2 = JSON.parse(y.JLMC)?.items;
+                    jldata2 = {
+                      nextId: JSON.parse(y.JLMC)?.nextId,
+                      items: jldata2.concat(arr2),
+                    };
                     jldata = jldata.concat(arr);
                   });
                   x.JLDATA = jldata;
+                  x.JLORIGINDATA = jldata2;
                 });
                 const obj = {
                   XMXX: JSON.parse(res.xmxx)[0],

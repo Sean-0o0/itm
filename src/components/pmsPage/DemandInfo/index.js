@@ -13,6 +13,7 @@ export default function DemandInfo(props) {
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const { params = {}, dictionary = {} } = props;
+  const { WBRYGW } = dictionary;
   const { xmid = -2 } = params;
   const [subTableData, setSubTableData] = useState({}); //子表格数据
   const [isFinish, setIsFinish] = useState(false); //
@@ -77,14 +78,14 @@ export default function DemandInfo(props) {
       .then(res => {
         if (res?.success) {
           const data = JSON.parse(res.xqxx);
-          // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
+          console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
           setSubTableData(p => {
             return {
               ...p,
               [xmid]: data,
             };
           });
-          setIsFinish(true)
+          setIsFinish(true);
         }
       })
       .catch(e => {
@@ -120,6 +121,7 @@ export default function DemandInfo(props) {
         getSubTableData={getSubTableData}
         setSubTableData={setSubTableData}
         xmid={xmid}
+        WBRYGW={WBRYGW}
       />
     </div>
   );

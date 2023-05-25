@@ -71,13 +71,15 @@ function PersonnelArrangementModal(props) {
           return acc;
         }, {}),
       );
-      console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
-      setTableData([...zhpc[0].TABLE]);
-      setUpdateData({
-        MSGID: zhpc[0].MSGID,
-        XQNRID: zhpc[0].XQNRID,
-      });
-      console.log('🚀 ~ file: index.js:80 ~ useEffect ~ [...zhpc[0].TABLE]:', [...zhpc[0].TABLE]);
+      // console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
+      if (zhpc.length > 0) {
+        setTableData([...zhpc[0].TABLE]);
+        setUpdateData({
+          MSGID: zhpc[0].MSGID,
+          XQNRID: zhpc[0].XQNRID,
+        });
+        // console.log('🚀 ~ file: index.js:80 ~ useEffect ~ [...zhpc[0].TABLE]:', [...zhpc[0].TABLE]);
+      }
     }
 
     return () => {};
@@ -122,16 +124,16 @@ function PersonnelArrangementModal(props) {
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
-        setVisible(false);
         let submitTable = tableData.map(x => {
           return {
             PCID: '-1',
             GYSID: x['GYSID' + x.PCID],
             RYMC: x['RYMC' + x.PCID],
-            MSSJ: moment(x['MSSJ' + x.PCID])?.format('YYYYMMDDHHmmSS'),
+            MSSJ: x['MSSJ' + x.PCID]?.format('YYYYMMDDHHmmss'),
           };
         });
-        console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
+        // console.log('🚀 ~ file: index.js:134 ~ submitTable ~ tableData:', tableData);
+        // console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
         let submitProps = {
           xqid: Number(xqid),
           swzxid: Number(swzxid),
@@ -141,10 +143,11 @@ function PersonnelArrangementModal(props) {
           czlx: update ? 'UPDATEAP' : 'AP',
           count: submitTable.length,
         };
-        console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
+        // console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
         OperateEvaluation(submitProps)
           .then(res => {
             if (res?.success) {
+              setVisible(false);
               message.success('操作成功', 1);
               resetFields();
               reflush();

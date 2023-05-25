@@ -49,30 +49,61 @@ export default function ProjectItems(props) {
     } else if (SWMC === '简历分发') {
       modalName = 'resumeDestribution';
     } else if (SWMC === '简历上传') {
-      getLink('View_JLSC', 'View_JLSC_M', [
+      getLink('View_JLSC1', 'View_JLSC1_M', [
         {
           name: 'XQMC',
           value: xqid,
+        },
+        {
+          name: 'SWZX',
+          value: SWZXID,
         },
       ]);
       modalName = 'resumeUpload';
       setLbModal(p => {
         return {
           ...p,
-          title: '简历上传',
+          title: SWMC,
         };
       });
     } else if (SWMC === '综合评测安排') {
       modalName = 'personelArrangement';
-      setSwzxid(SWZXID);
     } else if (SWMC === '综合评测打分') {
       modalName = 'interviewScore';
     } else if (SWMC === '提交录用申请') {
       modalName = 'employmentApplication';
+      getLink('V_LYXX', 'V_LYXX_M', [
+        {
+          name: 'GLXQ',
+          value: xqid,
+        },
+        {
+          name: 'SWZXID',
+          value: SWZXID,
+        },
+      ]);
+      setLbModal(p => {
+        return {
+          ...p,
+          title: SWMC,
+        };
+      });
     } else if (SWMC === '录用确认') {
       modalName = 'offerConfirmation';
     } else if (SWMC === '账号新增') {
       modalName = 'newAccount';
+      getLink('V_RYXX', 'V_RYXX_ADD', [
+        {
+          name: 'SWZXID',
+          value: SWZXID,
+        },
+      ]);
+      setLbModal(p => {
+        return {
+          ...p,
+          title: SWMC,
+        };
+      });
     }
     //打开弹窗
     setModalVisible(p => {
@@ -81,6 +112,7 @@ export default function ProjectItems(props) {
         [modalName]: true,
       };
     });
+    setSwzxid(SWZXID);
   };
 
   //查看
@@ -114,7 +146,7 @@ export default function ProjectItems(props) {
 
   const getItemBtn = ({ SWMC = '--', ZXZT = '2' }, SWZXID) => {
     //1 已执行， 2 未执行
-    if (['账号新增', '综合评测打分', '发送确认邮件'].includes(SWMC) || ZXZT === '2') {
+    if (['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发'].includes(SWMC) || ZXZT === '2') {
       return (
         <div className="opr-btn" onClick={() => handleZx(SWMC, ZXZT, SWZXID)}>
           执行
@@ -178,18 +210,67 @@ export default function ProjectItems(props) {
         console.error(!error.success ? error.message : error.note);
       });
   };
-  //简历上传
+
   const resumeUploadModalProps = {
     isAllWindow: 1,
     width: '760px',
-    height: '380px',
-    title: lbModal.title,
+    height: '305px',
+    title: '简历上传',
     style: { top: '60px' },
     visible: modalVisible.resumeUpload,
     footer: null,
   };
+
+  const employmentApplicationProps = {
+    isAllWindow: 1,
+    width: '760px',
+    height: '325px',
+    title: '提交录用申请',
+    style: { top: '60px' },
+    visible: modalVisible.employmentApplication,
+    footer: null,
+  };
+
+  const newAccountProps = {
+    isAllWindow: 1,
+    width: '760px',
+    height: '360px',
+    title: '账号新增',
+    style: { top: '60px' },
+    visible: modalVisible.newAccount,
+    footer: null,
+  };
+
   return (
     <div className="prj-items-box">
+      {/* 需求重新发起 */}
+      {modalVisible.demandInitiation && (
+        <DemandInitiated
+          xmmc={XMXX.XMMC}
+          xmid={Number(XMXX.XMID)}
+          operateType="relaunch"
+          xqid={Number(xqid)}
+          closeModal={() =>
+            setModalVisible(p => {
+              return {
+                ...p,
+                demandInitiation: false,
+              };
+            })
+          }
+          visible={modalVisible.demandInitiation}
+          successCallBack={() => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                demandInitiation: false,
+              };
+            });
+            reflush();
+          }}
+        />
+      )}
+
       {/*简历上传*/}
       {modalVisible.resumeUpload && (
         <BridgeModel
@@ -215,30 +296,7 @@ export default function ProjectItems(props) {
         />
       )}
 
-      {modalVisible.demandInitiation && (
-        <DemandInitiated
-          xmmc={XMXX.XMMC}
-          xmid={Number(XMXX.XMID)}
-          closeModal={() =>
-            setModalVisible(p => {
-              return {
-                ...p,
-                demandInitiation: false,
-              };
-            })
-          }
-          visible={modalVisible.demandInitiation}
-          successCallBack={() => {
-            setModalVisible(p => {
-              return {
-                ...p,
-                demandInitiation: false,
-              };
-            });
-            reflush();
-          }}
-        />
-      )}
+      {/* 简历分发 */}
       {modalVisible.resumeDestribution && (
         <ResumeDestributionModal
           visible={modalVisible.resumeDestribution}
@@ -251,8 +309,13 @@ export default function ProjectItems(props) {
             });
           }}
           JLXX={JLXX}
+          xqid={xqid}
+          swzxid={swzxid}
+          reflush={reflush}
         />
       )}
+
+      {/* 综合评测安排 */}
       {modalVisible.personelArrangement && (
         <PersonnelArrangementModal
           visible={modalVisible.personelArrangement}
@@ -272,6 +335,8 @@ export default function ProjectItems(props) {
           ZHPC={ZHPC}
         />
       )}
+
+      {/* 综合评测打分 */}
       {modalVisible.interviewScore && (
         <InterviewScoreModal
           visible={modalVisible.interviewScore}
@@ -286,30 +351,54 @@ export default function ProjectItems(props) {
           ZHPC={ZHPC}
         />
       )}
+
+      {/* 提交录用申请 */}
       {modalVisible.employmentApplication && (
-        <EmploymentApplicationModal
-          visible={modalVisible.employmentApplication}
-          setVisible={v => {
+        <BridgeModel
+          modalProps={employmentApplicationProps}
+          onSucess={() => {
             setModalVisible(p => {
               return {
                 ...p,
-                employmentApplication: v,
+                employmentApplication: false,
               };
             });
+            reflush();
           }}
+          onCancel={() =>
+            setModalVisible(p => {
+              return {
+                ...p,
+                employmentApplication: false,
+              };
+            })
+          }
+          src={lbModal.url}
         />
       )}
+
+      {/* 账号新增/ */}
       {modalVisible.newAccount && (
-        <NewAccountModal
-          visible={modalVisible.newAccount}
-          setVisible={v => {
+        <BridgeModel
+          modalProps={newAccountProps}
+          onSucess={() => {
             setModalVisible(p => {
               return {
                 ...p,
-                newAccount: v,
+                newAccount: false,
               };
             });
+            reflush();
           }}
+          onCancel={() =>
+            setModalVisible(p => {
+              return {
+                ...p,
+                newAccount: false,
+              };
+            })
+          }
+          src={lbModal.url}
         />
       )}
       <div className="top">
@@ -341,7 +430,7 @@ export default function ProjectItems(props) {
                   <Tooltip title={x.SWMC} placement="topLeft">
                     <span>{x.SWMC}</span>
                   </Tooltip>
-                  {getItemBtn(x, item.SWZXID)}
+                  {getItemBtn(x, x.SWZXID)}
                 </div>
               ))}
             </div>

@@ -9767,6 +9767,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-size: 14px;
         line-height: 1em;
         color: #303133ff;
+        min-width: 96px;
 
         .img-box {
           width: 32px;
@@ -12673,7 +12674,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .personnel-arrangement-modal,
 .interview-score-modal,
 .employment-application-modal,
-.evaluation-more-operation-modal {
+.evaluation-more-operation-modal,
+.demand-publish-modal {
   .ant-modal-body {
     padding: 0;
     overflow: hidden;
@@ -12774,7 +12776,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-.evaluation-more-operation-modal {
+.evaluation-more-operation-modal,
+.demand-publish-modal {
   .content-box {
     padding: 16px 24px;
     min-height: 400px;
@@ -12843,9 +12846,16 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
   }
   .table-link-strong();
-  .table-link-strong-tagtxt();
   a:hover {
     color: #3361ffaf !important;
+  }
+}
+
+.demand-publish-modal {
+  .ant-table {
+    td {
+      height: unset;
+    }
   }
 }
 
@@ -12901,6 +12911,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .ant-table-thead {
           z-index: 99;
         }
+        .sub-table-demand-info {
+          //子表格的表头处理
+          .ant-table-thead {
+            position: unset;
+          }
+        }
       }
 
       .opr-colomn {
@@ -12954,14 +12970,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     bottom: 20px;
     display: flex;
 
-    .btn-back{
+    .btn-back {
       padding: 5px;
       border-radius: 4px;
       color: #fff;
       background: rgb(81, 81, 81);
       margin-left: 8px;
     }
-    .add,.sub{
+    .add,
+    .sub {
       cursor: pointer;
     }
   }

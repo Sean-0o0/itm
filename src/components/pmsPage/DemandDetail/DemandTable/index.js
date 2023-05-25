@@ -69,10 +69,10 @@ export default function DemandTable(props) {
     <div className="demand-table-box info-box">
       <div className="title">需求信息</div>
       <div className="date-row">
-        {getDateItem('开发商反馈期限：', XQNR[0]?.KFSRQ)}
-        {getDateItem('预计初筛日期：', XQNR[0]?.CSRQ)}
-        {getDateItem('预计综合评测日期：', XQNR[0]?.PCRQ)}
-        {getDateItem('预计试用日期：', XQNR[0]?.SYRQ)}
+        {getDateItem('开发商反馈期限：', XQNR[0]?.KFSFKQX)}
+        {/* {getDateItem('预计初筛日期：', XQNR[0]?.CSRQ)} */}
+        {getDateItem('预计综合评测日期：', XQNR[0]?.YJZHPCRQ)}
+        {getDateItem('预计试用日期：', XQNR[0]?.YJSYRQ)}
       </div>
       <div className="table-box">
         <Table columns={columns} rowKey={'XQNRID'} dataSource={XQNR} pagination={false} />

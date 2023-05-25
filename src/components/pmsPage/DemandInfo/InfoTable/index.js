@@ -4,8 +4,12 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import DemandInitiated from '../../HardwareItems/DemandInitiated/index.js';
-import { QueryOutsourceRequirementList } from '../../../../services/pmsServices/index.js';
+import {
+  OperateOutsourceRequirements,
+  QueryOutsourceRequirementList,
+} from '../../../../services/pmsServices/index.js';
 import moment from 'moment';
+import DemandPublish from './DemandPublish';
 
 export default function InfoTable(props) {
   const {
@@ -19,11 +23,16 @@ export default function InfoTable(props) {
     setSubTableData,
     getSubTableData,
     xmid = -2,
-    isFinish,
+    WBRYGW,
   } = props; //表格数据
-  const [visible, setVisible] = useState(false); //需求发起弹窗显隐
+  const [visible, setVisible] = useState({
+    update: false,
+    relaunch: false,
+  }); //需求发起弹窗显隐
+  const [demandPublishVisible, setDemandPublishVisible] = useState(false); //需求上架显隐
   const [currentXqid, setCurrentXqid] = useState(-1); //详情id
   const [currentXmid, setCurrentXmid] = useState(-1); //项目id
+  const [currentXmmc, setCurrentXmmc] = useState(''); //项目名称
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
   const location = useLocation();
 
@@ -251,36 +260,80 @@ export default function InfoTable(props) {
         align: 'center',
         width: '10%',
         render: (text, row, index) => {
+          // 1|未上架;2|上架中;3|下架 SJZT
           return (
             <div className="opr-colomn">
-              <a className="sj">上架</a>
-              <Popconfirm
-                title="确定要下架吗?"
-                onConfirm={() => {
-                  // if (!dltData.includes(row.id)) {
-                  //   setDltData(p => [...p, row.id]);
-                  //   setEdited(true);
-                  // }
-                }}
-              >
-                <a className="xj">下架</a>
-              </Popconfirm>
+              {row.SJZT === '1' && (
+                <a
+                  className="sj"
+                  onClick={() => {
+                    setDemandPublishVisible(true);
+                    setCurrentXqid(Number(row.XQID));
+                    setCurrentXmid(Number(row.XMID));
+                  }}
+                >
+                  上架
+                </a>
+              )}
+              {row.SJZT === '2' && (
+                <Popconfirm
+                  title="确定要下架吗?"
+                  onConfirm={() => {
+                    OperateOutsourceRequirements({
+                      xqid: Number(row.XQID),
+                      czlx: 'XJ',
+                    })
+                      .then(res => {
+                        if (res?.success) {
+                          message.success('下架成功', 1);
+                          getSubTableData(Number(row.XMID)); //刷新
+                        }
+                      })
+                      .catch(e => {
+                        message.error('下架失败', 1);
+                      });
+                  }}
+                >
+                  <a className="xj">下架</a>
+                </Popconfirm>
+              )}
+              {row.SJZT === '3' && '已下架'}
               <Popover
                 placement="bottomRight"
                 title={null}
                 content={
                   <div className="list">
+                    {row.SJZT !== '3' && (
+                      <div
+                        className="item"
+                        onClick={() => {
+                          setVisible(p => {
+                            return {
+                              ...p,
+                              update: true,
+                            };
+                          });
+                          setCurrentXqid(Number(row.XQID));
+                          setCurrentXmid(Number(row.XMID));
+                        }}
+                      >
+                        修改
+                      </div>
+                    )}
                     <div
                       className="item"
                       onClick={() => {
-                        setVisible(true);
+                        setVisible(p => {
+                          return {
+                            ...p,
+                            relaunch: true,
+                          };
+                        });
                         setCurrentXqid(Number(row.XQID));
                         setCurrentXmid(Number(row.XMID));
+                        setCurrentXmmc(row.XMMC);
                       }}
                     >
-                      修改
-                    </div>
-                    <div className="item" onClick={() => {}}>
                       重新发起
                     </div>
                   </div>
@@ -296,7 +349,13 @@ export default function InfoTable(props) {
     ];
 
     return (
-      <Table columns={columns} dataSource={subTableData[record.XMID]} pagination={false} bordered />
+      <Table
+        className="sub-table-demand-info"
+        columns={columns}
+        dataSource={subTableData[record.XMID]}
+        pagination={false}
+        bordered
+      />
     );
   };
 
@@ -318,54 +377,65 @@ export default function InfoTable(props) {
       setExpandedRowKeys(p => [...expandedRowKeys.filter(x => x !== record.XMID)]);
     }
   };
-  if (xmid === -2)
-    return (
-      <div className="info-table">
-        {visible && (
-          <DemandInitiated
-            xqid={currentXqid}
-            closeModal={() => setVisible(false)}
-            visible={visible}
-            successCallBack={() => {
-              setVisible(false);
-              getSubTableData(currentXmid);
-            }}
-          />
-        )}
-        <div className="project-info-table-box">
-          <Table
-            loading={tableLoading}
-            columns={columns}
-            rowKey={'XMID'}
-            dataSource={tableData}
-            onChange={handleTableChange}
-            expandedRowRender={expandedRowRender}
-            onExpand={onExpand}
-            pagination={{
-              current: curPage,
-              pageSize: curPageSize,
-              defaultCurrent: 1,
-              pageSizeOptions: ['20', '40', '50', '100'],
-              showSizeChanger: true,
-              hideOnSinglePage: false,
-              showQuickJumper: true,
-              showTotal: t => `共 ${total} 条数据`,
-              total: total,
-            }}
-            // bordered
-          />
-        </div>
-      </div>
-    );
   return (
     <div className="info-table">
-      {visible && (
+      {/* 上架 */}
+      {demandPublishVisible && (
+        <DemandPublish
+          visible={demandPublishVisible}
+          setVisible={setDemandPublishVisible}
+          xqid={currentXqid}
+          WBRYGW={WBRYGW}
+          reflush={() => getSubTableData(currentXmid)}
+        />
+      )}
+      {/* 修改 */}
+      {visible.update && (
         <DemandInitiated
           xqid={currentXqid}
-          closeModal={() => setVisible(false)}
+          closeModal={() =>
+            setVisible(p => {
+              return {
+                ...p,
+                update: false,
+              };
+            })
+          }
           visible={visible}
           successCallBack={() => {
-            setVisible(false);
+            setVisible(p => {
+              return {
+                ...p,
+                update: false,
+              };
+            });
+            getSubTableData(currentXmid);
+          }}
+        />
+      )}
+      {/* 重新发起 */}
+      {visible.relaunch && (
+        <DemandInitiated
+          xmmc={currentXmmc}
+          xmid={Number(currentXmid)}
+          operateType="relaunch"
+          xqid={Number(currentXqid)}
+          closeModal={() =>
+            setVisible(p => {
+              return {
+                ...p,
+                relaunch: false,
+              };
+            })
+          }
+          visible={visible.relaunch}
+          successCallBack={() => {
+            setVisible(p => {
+              return {
+                ...p,
+                relaunch: false,
+              };
+            });
             getSubTableData(currentXmid);
           }}
         />

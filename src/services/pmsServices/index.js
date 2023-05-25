@@ -76,6 +76,7 @@ const {
     queryOutsourceMemberList,
     operateEvaluation,
     sendMail,
+    resumeDistribution,
   },
 } = api;
 
@@ -791,6 +792,16 @@ export async function QueryOutsourceMemberList(payload) {
 export async function SendMail(payload) {
   const option = {
     url: sendMail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 简历分发
+export async function ResumeDistribution(payload) {
+  const option = {
+    url: resumeDistribution,
     method: 'post',
     data: payload,
   };

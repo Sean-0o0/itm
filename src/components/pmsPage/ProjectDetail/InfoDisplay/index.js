@@ -661,13 +661,6 @@ export default function InfoDisplay(props) {
           </div>
         </div>
       )}
-      {/* 供应商信息 */}
-      {!isHwSltPrj && (
-        <div className="info-box" key="gysxx">
-          <div className="top-title">供应商信息</div>
-          {getSupplierInfoRow()}
-        </div>
-      )}
       {/* 招采信息 */}
       {!isHwSltPrj &&
         (isMember() ? (
@@ -815,6 +808,13 @@ export default function InfoDisplay(props) {
               )}
             </div>
           </div>
+        </div>
+      )}
+      {/* 供应商信息 */}
+      {!isHwSltPrj && (
+        <div className="info-box" key="gysxx">
+          <div className="top-title">供应商信息</div>
+          {getSupplierInfoRow()}
         </div>
       )}
     </div>

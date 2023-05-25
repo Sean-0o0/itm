@@ -4,16 +4,18 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import DemandInitiated from '../../HardwareItems/DemandInitiated';
 
 const { Item } = Breadcrumb;
 const { TabPane } = Tabs;
 
 export default function TopConsole(props) {
-  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth} = props;
+  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth } = props;
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
   const [activeKey, setActiveKey] = useState(xqid); //
+  const [dmInitiatedVisible, setDmInitiatedVisible] = useState(false); //
   const { XMXX = {}, XQXQ = [] } = dtlData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -187,6 +189,17 @@ export default function TopConsole(props) {
   };
   return (
     <div className="top-console-box">
+      {dmInitiatedVisible && (
+        <DemandInitiated
+          xqid={Number(activeKey)}
+          closeModal={() => setDmInitiatedVisible(false)}
+          visible={dmInitiatedVisible}
+          successCallBack={() => {
+            setDmInitiatedVisible(false);
+            getDtldata(activeKey, XQXQ.filter(x => x.XQID === activeKey)[0]?.LRRID);
+          }}
+        />
+      )}
       {/*申请餐券/权限弹窗*/}
       {sqModalVisible && (
         <BridgeModel
@@ -217,10 +230,10 @@ export default function TopConsole(props) {
           {getTags(XMXX.XMBQ, XMXX.XMBQID)}
           {isAuth && (
             <>
-              <Button className="btn-edit" onClick={() => {}}>
-                编辑
+              <Button className="btn-edit" onClick={() => setDmInitiatedVisible(true)}>
+                修改
               </Button>
-              <Popover
+              {/* <Popover
                 placement="bottomRight"
                 title={null}
                 content={btnMoreContent}
@@ -229,7 +242,7 @@ export default function TopConsole(props) {
                 <Button className="btn-more">
                   <i className="iconfont icon-more" />
                 </Button>
-              </Popover>
+              </Popover> */}
             </>
           )}
         </div>

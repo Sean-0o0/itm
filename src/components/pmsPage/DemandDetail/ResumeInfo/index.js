@@ -53,7 +53,7 @@ export default function ResumeInfo(props) {
           <div
             className="item"
             key={x.JLID}
-            onClick={() => handleFilePreview(x.JLID, x.ENTRYNO, x.JLMC)}
+            onClick={() => handleFilePreview(x.JLID, x.JLMC, x.ENTRYNO)}
           >
             <a style={{ color: '#3361ff' }}>{x.JLMC}</a>
           </div>
