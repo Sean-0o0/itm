@@ -78,11 +78,11 @@ export default function InfoTable(props) {
             <Link
               style={{color: '#3361ff'}}
               to={{
-                pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
-                  JSON.stringify({splId: row.ID}),
+                pathname: `/pms/manage/MemberDetail/${EncryptBase64(
+                  JSON.stringify({ryid: row.RYID}),
                 )}`,
                 state: {
-                  routes: [{name: '供应商列表', pathname: location.pathname}],
+                  routes: [{name: '外包人员列表', pathname: location.pathname}],
                 },
               }}
               className="table-link-strong"
@@ -185,7 +185,7 @@ export default function InfoTable(props) {
         <Table
           loading={tableLoading}
           columns={columns}
-          rowKey={'ID'}
+          rowKey={'RYID'}
           dataSource={tableData}
           onChange={handleTableChange}
           // scroll={{ y: 500 }}

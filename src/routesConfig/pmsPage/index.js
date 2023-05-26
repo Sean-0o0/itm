@@ -193,4 +193,9 @@ exports.routes = [
     path: `${prefix}/MemberInfo`,
     component: './pmsPage/MemberInfo',
   },
+  {
+    //外包人员详情
+    path: `${prefix}/MemberDetail/:params`,
+    component: './pmsPage/MemberDetail',
+  },
 ];

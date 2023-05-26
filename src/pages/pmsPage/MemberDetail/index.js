@@ -1,8 +1,9 @@
-import React, { Fragment } from 'react';
-import { connect } from 'dva';
-import SupplierDetailTab from '../../../components/pmsPage/SupplierDetail/index';
-import { DecryptBase64 } from '../../../components/Common/Encrypt';
-const SupplierDetail = props => {
+import React, {Component, Fragment} from 'react';
+import {connect} from 'dva';
+import {DecryptBase64} from '../../../components/Common/Encrypt';
+import MemberDetailPage from '../../../components/pmsPage/MemberDetailPage';
+
+const MemberDetail = props => {
   const {
     match: {
       params: {params: encryptParams = ''},
@@ -12,15 +13,15 @@ const SupplierDetail = props => {
   } = props;
   const {state = {}} = location;
   const {routes = []} = state;
-  let splId = -1;
+  let ryid = -1;
   let routes2 = [];
   console.log("props.match", props.match)
   console.log("props.match.params.params", props.match.params.params)
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
-    splId = obj.splId;
+    ryid = obj.ryid;
     routes2 = [...routes].concat({
-      name: '供应商详情',
+      name: '外包人员详情',
       pathname: props?.pathname,
     });
   }
@@ -38,10 +39,11 @@ const SupplierDetail = props => {
 
   return (
     <Fragment>
-      <SupplierDetailTab dictionary={dictionary} routes={newArr} splId={splId}></SupplierDetailTab>
+      <MemberDetailPage dictionary={dictionary} routes={newArr} ryid={ryid}/>
     </Fragment>
   );
 };
-export default connect(({ global }) => ({
+
+export default connect(({global}) => ({
   dictionary: global.dictionary,
-}))(SupplierDetail);
+}))(MemberDetail);

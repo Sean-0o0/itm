@@ -12977,9 +12977,424 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       background: rgb(81, 81, 81);
       margin-left: 8px;
     }
+
     .add,
     .sub {
       cursor: pointer;
+    }
+  }
+}
+
+//外包人员详情
+.member-detail-box {
+  overflow: hidden;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+
+  & > .top-console,
+  & > .info-table {
+    padding: 16px 24px;
+    background-color: #fff;
+    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+
+  & > .info-table {
+    margin: 16px 24px 0 24px;
+    // height: calc(100vh - 235px);
+    flex-grow: 1;
+    display: flex;
+    flex-direction: column;
+    .function-block();
+
+    .table-link-strong();
+
+    & > .top-title {
+      height: 24px;
+      .font-size-16();
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #303133;
+      line-height: 24px;
+      margin-bottom: 16px;
+      max-width: 100%;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+
+    & > .info-row-box {
+      display: flex;
+      flex-direction: row;
+      flex-wrap: wrap;
+      align-items: flex-start;
+      margin-bottom: -16px;
+
+      & > .info-item {
+        height: 22px;
+        line-height: 22px;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #303133;
+        width: 24%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap;
+        margin-right: 2%;
+        margin-bottom: 16px;
+
+        &:nth-child(3n) {
+          margin-right: 0;
+        }
+
+        .item-top,
+        .item-bottom {
+          width: 100%;
+
+          span {
+            display: inline-block;
+            width: 70px;
+            text-align: right;
+            color: #909399;
+            margin-right: 8px;
+          }
+        }
+
+        .payment-label {
+          width: 70px;
+        }
+
+        .payment-plan {
+          width: calc(100% - 70px);
+          display: inline-block;
+
+          div {
+            margin-bottom: 4px;
+            max-width: 100%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+          }
+        }
+
+        &:last-child {
+          margin-right: 0;
+        }
+
+        .payment-label,
+        span {
+          color: #909399;
+          margin-right: 8px;
+        }
+
+        a {
+          &:hover {
+            color: #3361ffb8 !important;
+          }
+        }
+      }
+    }
+
+    & > .btn-add-prj-box {
+      margin-bottom: 16px;
+
+      .btn-add-prj {
+        padding: 9px 12px 10px 12px;
+        font-size: 14px;
+        line-height: unset;
+        height: unset;
+        color: #fff !important;
+        background-color: #3361ff;
+        border-color: unset;
+        box-shadow: unset;
+
+        &:hover {
+          background-color: #3361ffaf;
+        }
+      }
+    }
+
+    .member-detail-table-box {
+      .ants-table-adaptation();
+      flex-grow: 1;
+      overflow: hidden;
+      overflow-y: auto;
+      padding-right: 4px;
+
+      .opr-btn-box {
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .opr-btn {
+        color: #3361ff;
+        cursor: pointer;
+        white-space: nowrap;
+        text-overflow: ellipsis;
+        overflow: hidden;
+      }
+
+      .opr-btn:hover {
+        opacity: 0.7;
+      }
+
+      .ant-table {
+        td {
+          padding: 9.17px;
+          font-size: 14px;
+          font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+        }
+
+        th {
+          padding: 9.17px;
+          font-size: 14px;
+          background-color: #f5f7fa;
+          font-family: PingFangSC-Medium, PingFang SC;
+          font-weight: bold;
+          color: #606266;
+        }
+
+        .ant-table-body {
+          // min-height: 560px;
+          table {
+            border: 1px solid #e8e8e8;
+          }
+        }
+
+        .ant-table-scroll .ant-table-header {
+          margin-bottom: -16.5px !important; //表格表头底部边框
+          background-color: #f5f7fa;
+        }
+
+        .ant-table-placeholder {
+          border-bottom: 0;
+
+          .ant-empty-description {
+            font-size: 14px;
+          }
+        }
+
+        .ant-table-thead {
+          position: sticky;
+          top: 0;
+        }
+
+        //项目标签
+        .prj-tags {
+          width: 100%;
+          color: #606266;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+
+          .tag-item {
+            font-size: 12px;
+            border: 1px solid rgba(51, 97, 255, 0.3);
+            border-radius: 4px;
+            background-color: #3363ff14;
+            padding: 1px 8px 2px 8px;
+            margin-right: 8px;
+            max-width: 38%;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            line-height: initial;
+            color: #3361ff;
+
+            a {
+              color: #3361ff;
+            }
+
+            &:hover {
+              color: #3361ff;
+              font-weight: bold;
+            }
+
+            &:last-child {
+              margin-right: 0;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  & > .top-console {
+    flex-shrink: 0;
+    border-radius: 0;
+    padding: 0;
+
+    .back-img {
+      padding: 16px 24px;
+      width: 100%;
+      background: url(../assets/staffDetail/bg_bianzu.png) no-repeat bottom right;
+      background-size: 60% 50%;
+
+      .member-detail-header {
+        padding: 0 12px;
+        margin: 20px 0 8px;
+
+        .header-left {
+          .staff-img {
+            height: 90px;
+          }
+
+          .member-detail-cont {
+            padding-left: 16px;
+            font-family: PingFangSC-Medium, PingFang SC;
+
+            .member-detail-line-import {
+              .member-detail-name {
+                font-size: 24px;
+                font-weight: bold;
+                color: #303133;
+                line-height: 34px;
+                // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+              }
+
+              .member-detail-experience {
+                font-size: 14px;
+                font-weight: 400;
+                color: #999999;
+                line-height: 34px;
+                // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+              }
+            }
+
+            .member-detail-line {
+              align-items: flex-start;
+              font-size: 14px;
+              line-height: 24px;
+
+              .member-detail-label {
+                background: #ffffff;
+                color: #909399;
+              }
+
+              .member-detail-label {
+                background: #ffffff;
+                color: #909399;
+              }
+
+              .member-detail-value {
+                color: #303133;
+                //width: 152px;
+                overflow: hidden; //溢出内容隐藏
+                text-overflow: ellipsis; //文本溢出部分用省略号表示
+                display: -webkit-box; //特别显示模式
+                -webkit-line-clamp: 2; //行数
+                line-clamp: 2;
+                // text-shadow: 0px 0px 8px rgba(0, 0, 0, 0.08);
+              }
+            }
+          }
+        }
+
+        .header-right {
+          justify-content: end;
+          //padding-right: 40px;
+
+          .btn-edit {
+            .antd-btn-default();
+            margin-left: auto;
+            margin-right: 8px;
+            color: #3361ff;
+            border-color: #3361ff;
+          }
+
+          .statistics-block {
+            padding-top: 11px;
+
+            .statistics-label {
+              font-size: 14px;
+
+              .statistics-img {
+                height: 32px;
+              }
+
+              .statistics-text {
+                margin-left: 8px;
+                display: inline-block;
+              }
+            }
+
+            .statistics-value {
+              font-size: 32px;
+              /* text-align: center; */
+              margin-left: 40px;
+              line-height: 1;
+              color: #303133;
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+.rq-more-popover {
+  .ant-popover-content {
+    .ant-popover-inner {
+      .ant-popover-inner-content {
+        padding: 8px 16px 0 16px;
+        max-height: 14.6rem;
+        overflow: hidden;
+        overflow-y: auto;
+
+        &::-webkit-scrollbar {
+          width: 0.8928rem;
+          background-color: #fafafa;
+          border-radius: 8px;
+        }
+
+        &::-webkit-scrollbar-thumb {
+          background-color: #c1c1c1;
+          border-radius: 8px;
+        }
+
+        & .rq-more {
+          & > .rq-item {
+            color: #3361ff;
+            .font-s12();
+            border: 1px solid #3361ff8f;
+            border-radius: 4px;
+            background-color: #3363ff14;
+            padding: 0 10px;
+            height: 22px;
+            line-height: 22px;
+            margin-bottom: 8px;
+            width: fit-content;
+            max-width: 21.1296rem;
+            text-overflow: ellipsis;
+            overflow: hidden;
+            white-space: nowrap;
+            cursor: pointer;
+
+            a {
+              color: #3361ff;
+            }
+
+            &:hover {
+              font-weight: bold;
+              color: #3361ff;
+            }
+
+            a {
+              color: #3361ff;
+            }
+          }
+        }
+      }
     }
   }
 }

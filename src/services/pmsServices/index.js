@@ -77,6 +77,7 @@ const {
     operateEvaluation,
     sendMail,
     resumeDistribution,
+    queryOutsourceMemberDetail,
   },
 } = api;
 
@@ -788,7 +789,7 @@ export async function QueryOutsourceMemberList(payload) {
   return request(option);
 }
 
-// 查询人员信息
+// 邮件发送
 export async function SendMail(payload) {
   const option = {
     url: sendMail,
@@ -802,6 +803,16 @@ export async function SendMail(payload) {
 export async function ResumeDistribution(payload) {
   const option = {
     url: resumeDistribution,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询外包人员详情
+export async function FetchQueryOutsourceMemberDetail(payload) {
+  const option = {
+    url: queryOutsourceMemberDetail,
     method: 'post',
     data: payload,
   };

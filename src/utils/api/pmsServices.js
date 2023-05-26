@@ -415,4 +415,10 @@ export default [
     url: '/projectManage/resumeDistribution',
     dis: '简历分发',
   },
+  {
+    code: '',
+    key: 'queryOutsourceMemberDetail',
+    url: '/projectManage/queryOutsourceMemberDetail',
+    dis: '外包人员详情',
+  },
 ];
