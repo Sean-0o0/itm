@@ -16,12 +16,11 @@ export default function ResumeDistributionModal(props) {
   const [emptyArr, setEmptyArr] = useState([]); //为空的数据 - 用于接口提交
 
   useEffect(() => {
-    setData(p=>[...JLXX]);
+    setData(JSON.parse(JSON.stringify(JLXX)));
     return () => {};
   }, [JSON.stringify(JLXX)]);
 
   const handleDestribute = () => {
-
     const groupedData = {};
 
     for (const item of data) {
@@ -80,8 +79,8 @@ export default function ResumeDistributionModal(props) {
   };
 
   const handleCancel = () => {
-    setVisible(false);
     setData([]);
+    setVisible(false);
   };
 
   //供应商块
