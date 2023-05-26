@@ -126,7 +126,7 @@ function PersonnelArrangementModal(props) {
       if (!err) {
         let submitTable = tableData.map(x => {
           return {
-            PCID: '-1',
+            PCID: x.NEW === true ? '-1' : x.PCID,
             GYSID: x['GYSID' + x.PCID],
             RYMC: x['RYMC' + x.PCID],
             MSSJ: x['MSSJ' + x.PCID]?.format('YYYYMMDDHHmmss'),
@@ -400,6 +400,7 @@ function PersonnelArrangementModal(props) {
                   ['GYSID' + UUID]: '',
                   ['RYMC' + UUID]: '',
                   ['MSSJ' + UUID]: null,
+                  NEW: true,
                 });
                 setTableData(p => [...arrData]);
                 setTimeout(() => {

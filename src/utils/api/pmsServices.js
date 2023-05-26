@@ -421,4 +421,16 @@ export default [
     url: '/projectManage/queryOutsourceMemberDetail',
     dis: '外包人员详情',
   },
+  {
+    code: '',
+    key: 'queryEvaluationGradeInfo',
+    url: '/projectManage/queryEvaluationGradeInfo',
+    dis: '查询综合评测打分信息',
+  },
+  {
+    code: '',
+    key: 'evaluationScoring',
+    url: '/projectManage/evaluationScoring',
+    dis: '综合评测打分',
+  },
 ];

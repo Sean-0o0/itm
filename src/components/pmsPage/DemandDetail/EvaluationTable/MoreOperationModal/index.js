@@ -18,55 +18,89 @@ import {
 } from 'antd';
 import { EditableCell, EditableFormRow } from './EditableTable';
 import moment from 'moment';
+import { CreateOperateHyperLink, OperateEvaluation } from '../../../../../services/pmsServices';
+import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
 
 const { TextArea } = Input;
 
 function MoreOperationModal(props) {
   const { visible, setVisible, form, data = {} } = props;
-  const { tableData = [], DFZT = [], LYZT = [] } = data;
+  const { tableData = [], DFZT = [], LYZT = [], xqid, swzxid, reflush } = data;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-  const [isSaved, setIsSaved] = useState(false);
   const [edited, setEdited] = useState(false); //已编辑
   const [editing, setEditing] = useState(false); //编辑状态
-  const [editingIndex, setEditingIndex] = useState(-1); //编辑
+  const [editingIndex, setEditingIndex] = useState(-1); //编辑行id
   const [editData, setEditData] = useState([]); //编辑数据
   const [selectedRowIds, setSelectedRowIds] = useState([]); //选中行id
+  const [tableArr, setTableArr] = useState([]); //表格数据
+  const [editContent, setEditContent] = useState(''); //编辑的内容
   const [lysm, setLysm] = useState({
     visible: false, //显隐
     index: -1, //编辑行的id
+    content: '',
   }); //录用说明编辑弹窗数据
+  const [modalVisible, setModalVisible] = useState({
+    employmentApplication: false,
+  }); //弹窗显隐
+  const [lbModal, setLbModal] = useState({
+    url: '#',
+    title: '',
+  }); //
 
   useEffect(() => {
+    setTableArr([...tableData]);
     return () => {};
-  }, []);
+  }, [JSON.stringify(data)]);
 
   //表格保存
   const handleTableSave = row => {
-    const newData = [...tableData];
-    const index = newData.findIndex(item => row.id === item.id);
+    const newData = [...tableArr];
+    const index = newData.findIndex(item => row.PCID === item.PCID);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item, //old row data
       ...row, //new row data
     });
-    let newEdit = [...editData];
-    let index2 = newEdit.findIndex(item => row.id === item.id);
-    if (index2 === -1) {
-      newEdit.push(row);
-    } else {
-      newEdit.splice(index2, 1, {
-        ...newEdit[index2], //old row data
-        ...row, //new row data
-      });
-    }
-    setEditData(p => [...newEdit]);
-    setEdited(true);
-    // console.log('TableData', newData);
-    setTableData(preState => [...newData]);
+    // console.log('🚀 ~ file: index.js:52 ~ handleTableSave ~ newData:', newData);
+    setTableArr(preState => [...newData]);
   };
 
   //调接口保存
-  const handleSubmit = () => {};
+  const handleSubmit = () => {
+    form.validateFieldsAndScroll(err => {
+      if (!err) {
+        let submitTable = tableArr.map(x => {
+          return {
+            ZHPCID: x.PCID,
+            LYZT: x['LYZT' + x.PCID],
+            LYSM: x.LYSM || '',
+          };
+        });
+        // console.log('🚀 ~ file: index.js:134 ~ submitTable ~ tableData:', tableData);
+        console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
+        let submitProps = {
+          xqid: Number(xqid),
+          swzxid: Number(swzxid),
+          pcxx: JSON.stringify(submitTable),
+          czlx: 'UPDATE',
+          count: submitTable.length,
+        };
+        console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
+        OperateEvaluation(submitProps)
+          .then(res => {
+            if (res?.success) {
+              setVisible(false);
+              message.success('操作成功', 1);
+              // form.resetFields();
+              reflush();
+            }
+          })
+          .catch(e => {
+            message.error('信息提交失败');
+          });
+      }
+    });
+  };
 
   const tableColumns = [
     {
@@ -152,21 +186,31 @@ function MoreOperationModal(props) {
       key: 'LYSM',
       width: '7%',
       ellipsis: true,
-      render: (txt, row) => (
-        <a
-          style={{ color: '#3361ff' }}
-          onClick={() => {
-            setLysm(p => {
-              return {
-                index: row.ZHPCID,
-                visible: true,
-              };
-            });
-          }}
-        >
-          查看详情
-        </a>
-      ),
+      render: (txt, row) => {
+        if (editing)
+          return (
+            <a
+              style={{ color: '#3361ff' }}
+              onClick={() => {
+                setLysm(p => {
+                  return {
+                    index: row.PCID,
+                    visible: true,
+                    // content: row['LYSM'] || '',
+                  };
+                });
+                setEditContent(row.LYSM || '');
+              }}
+            >
+              查看详情
+            </a>
+          );
+        return (
+          <Tooltip placement="bottomLeft" title={row['LYSM']}>
+            <a style={{ color: '#3361ff', cursor: 'default' }}>查看详情</a>
+          </Tooltip>
+        );
+      },
     },
   ];
 
@@ -183,6 +227,8 @@ function MoreOperationModal(props) {
           key: col.key,
           formdecorate: form,
           title: col.title,
+          editing,
+          lyzt: LYZT,
         };
       },
     };
@@ -199,15 +245,11 @@ function MoreOperationModal(props) {
   //修改
   const handleEdit = () => {
     setEditing(true);
-    // if (tableData.length > 0) setEditingIndex(tableData[0]?.id);
   };
 
   //取消修改
   const handleEditCancel = () => {
     setEditing(false);
-    setEditingIndex(-1);
-    setTableData(p => []);
-    setEdited(false);
   };
 
   //确认
@@ -231,6 +273,45 @@ function MoreOperationModal(props) {
     },
   };
 
+  //获取Livebos弹窗链接
+  const getLink = (objName, oprName, data) => {
+    //Livebos弹窗参数
+    let params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: objName,
+      operateName: oprName,
+      parameter: data,
+      userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+    };
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const { code, url } = ret;
+        if (code === 1) {
+          setLbModal(p => {
+            return {
+              ...p,
+              url,
+            };
+          });
+        }
+      })
+      .catch(error => {
+        message.error('livebos链接创建失败', 1);
+        console.error(!error.success ? error.message : error.note);
+      });
+  };
+
+  const employmentApplicationProps = {
+    isAllWindow: 1,
+    width: '760px',
+    height: '325px',
+    title: '提交录用申请',
+    style: { top: '60px' },
+    visible: modalVisible.employmentApplication,
+    footer: null,
+  };
+
   return (
     <Modal
       wrapClassName="editMessage-modify evaluation-more-operation-modal"
@@ -249,9 +330,33 @@ function MoreOperationModal(props) {
         <strong>综合评测信息列表</strong>
       </div>
       <div className="content-box">
+        {/* 提交录用申请 */}
+        {modalVisible.employmentApplication && (
+          <BridgeModel
+            modalProps={employmentApplicationProps}
+            onSucess={() => {
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  employmentApplication: false,
+                };
+              });
+              reflush();
+            }}
+            onCancel={() =>
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  employmentApplication: false,
+                };
+              })
+            }
+            src={lbModal.url}
+          />
+        )}
         {lysm.visible && (
           <Modal
-            wrapClassName="editMessage-modify evaluation-more-operation-modal"
+            wrapClassName="editMessage-modify lysm-edit-modal"
             width={'700px'}
             maskClosable={false}
             zIndex={101}
@@ -260,6 +365,13 @@ function MoreOperationModal(props) {
             title={null}
             visible={lysm.visible}
             onOk={() => {
+              let arr = [...tableArr];
+              arr.forEach(x => {
+                if (x.PCID === lysm.index) {
+                  x.LYSM = editContent || '';
+                }
+              });
+              setTableArr([...arr]);
               setLysm(p => {
                 return {
                   ...p,
@@ -285,31 +397,64 @@ function MoreOperationModal(props) {
                 placeholder="请输入录用说明"
                 maxLength={1000}
                 autoSize={{ maxRows: 6, minRows: 3 }}
+                defaultValue={editContent}
+                onChange={e => {
+                  e.persist();
+                  setEditContent(e.target.value);
+                  // setLysm(p => {
+                  //   return {
+                  //     ...p,
+                  //     content: e.target.value,
+                  //   };
+                  // });
+                }}
               ></TextArea>
             </div>
           </Modal>
         )}
         <div className="top-btn">
           <Button onClick={() => {}}>面试通知</Button>
-          <Button onClick={() => {}}>提交录用申请</Button>
+          <Button
+            onClick={() => {
+              getLink('V_LYXX', 'V_LYXX_M', [
+                {
+                  name: 'GLXQ',
+                  value: xqid,
+                },
+                {
+                  name: 'SWZXID',
+                  value: swzxid,
+                },
+              ]);
+              setLbModal(p => {
+                return {
+                  ...p,
+                  title: '提交录用申请',
+                };
+              });
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  employmentApplication: true,
+                };
+              });
+            }}
+          >
+            提交录用申请
+          </Button>
           <Button onClick={() => {}}>确认录用申请</Button>
-          {/* {editing ? (
+          {editing ? (
             <>
-              <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit} disabled={!edited}>
-                <Button disabled={!edited} style={{ marginRight: '16px' }}>
-                  保存
-                </Button>
+              <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
+                <Button style={{ marginRight: '16px' }}>保存</Button>
               </Popconfirm>
               <Button onClick={handleEditCancel}>取消</Button>
-              <span style={{ fontSize: '12px', fontFamily: 'PingFangSC-Regular,PingFang SC' }}>
-                （点击指定行进行编辑）
-              </span>
             </>
           ) : (
             <Button onClick={handleEdit} type="primary">
               修改
             </Button>
-          )} */}
+          )}
         </div>
         <Table
           onRow={record => {
@@ -325,7 +470,7 @@ function MoreOperationModal(props) {
           loading={isSpinning}
           columns={columns}
           components={components}
-          rowKey={'ZHPCID'}
+          rowKey={'PCID'}
           rowClassName={() => 'editable-row'}
           dataSource={tableData}
           scroll={

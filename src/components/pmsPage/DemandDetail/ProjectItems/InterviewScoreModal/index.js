@@ -16,22 +16,73 @@ import {
 } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
 import moment from 'moment';
+import { EvaluationScoring, QueryEvaluationGradeInfo } from '../../../../../services/pmsServices';
 
 const { Option } = Select;
 
 function InterviewScoreModal(props) {
-  const { visible, setVisible, form, ZHPC = [] } = props;
+  const { visible, setVisible, form, ZHPC = [], xqid = -2, swzxid, reflush, WBRYGW = [] } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
+  const [editData, setEditData] = useState([]); //提交的修改数据
 
   useEffect(() => {
+    if (xqid !== -2) {
+      getTableData(Number(xqid));
+      console.log('WBRYGW', WBRYGW);
+    }
     return () => {};
-  }, []);
+  }, [xqid, JSON.stringify(WBRYGW)]);
+
+  const getTableData = xqid => {
+    QueryEvaluationGradeInfo({
+      xqid,
+      cxlx: 'ALL',
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ QueryEvaluationGradeInfo ~ res', res);
+          let arr = JSON.parse(res.result).map(x => {
+            return {
+              ...x,
+              ['FS' + x.DFID]: x.FS,
+            };
+          });
+          setTableData([...arr]);
+        }
+      })
+      .catch(e => {
+        message.error('接口信息获取失败');
+      });
+  };
 
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
         setVisible(false);
+        let submitTable = tableData.map(x => {
+          return {
+            DFID: String(x.DFID),
+            PF: String(x['FS' + x.DFID] || 0),
+          };
+        });
+        let submitProps = {
+          dfxx: JSON.stringify(editData),
+          count: editData.length,
+          xqid: Number(xqid),
+          swzxid: Number(swzxid),
+          cxlx: 'XQ',
+        };
+        // console.log('🚀 ~ file: index.js:69 ~ handleOk ~ submitProps:', submitProps, editData);
+        EvaluationScoring(submitProps)
+          .then(res => {
+            if (res?.success) {
+              message.success('打分成功', 1);
+            }
+          })
+          .catch(e => {
+            message.error('打分失败', 1);
+          });
       }
     });
   };
@@ -42,19 +93,28 @@ function InterviewScoreModal(props) {
 
   //表格数据保存
   const handleTableSave = row => {
-    // console.log('🚀 ~ file: index.js:137 ~ handleTableSave ~ row:', row);
     let newData = [...tableData];
-    const index = newData.findIndex(item => row.ID === item.ID);
+    const index = newData.findIndex(item => row.DFID === item.DFID);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item, //old row
       ...row, //rew row
     });
-    newData = newData.map(x => {
-      return {
-        ...x,
-      };
-    });
+    let newEdit = [...editData];
+    let index2 = newEdit.findIndex(item => row.DFID === item.DFID);
+    if (index2 === -1) {
+      newEdit.push({
+        DFID: String(row.DFID),
+        PF: String(row['FS' + row.DFID] || 0),
+      });
+    } else {
+      newEdit.splice(index2, 1, {
+        ...newEdit[index2], //old row data
+        ...row, //new row data
+      });
+    }
+    setEditData(p => [...newEdit]);
+    console.log('🚀 ~ file: index.js:109 ~ handleTableSave ~ newData:', newData);
     setTableData(p => newData);
   };
 
@@ -62,10 +122,12 @@ function InterviewScoreModal(props) {
   const tableColumns = [
     {
       title: '人员需求',
-      dataIndex: 'RYXQ',
+      dataIndex: 'RYDJ',
       width: '20%',
-      key: 'RYXQ',
+      key: 'RYDJ',
       ellipsis: true,
+      render: (txt, row) =>
+        txt + ` | ` + (WBRYGW.filter(x => x.ibm === String(row.GWID))[0]?.note || '--'),
     },
     {
       title: '供应商名称',
@@ -87,10 +149,10 @@ function InterviewScoreModal(props) {
     },
     {
       title: '评分',
-      dataIndex: 'PF',
+      dataIndex: 'FS',
       width: '20%',
       align: 'center',
-      key: 'PF',
+      key: 'FS',
       ellipsis: true,
       editable: true,
     },
@@ -110,7 +172,7 @@ function InterviewScoreModal(props) {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          title: col?.title?.props?.children || '',
+          title: col?.title?.props?.children || col?.title || '',
         };
       },
     };
@@ -144,10 +206,10 @@ function InterviewScoreModal(props) {
         <Table
           columns={columns}
           components={components}
-          rowKey={'ZHPCID'}
+          rowKey={'DFID'}
           rowClassName={() => 'editable-row'}
-          dataSource={ZHPC}
-          scroll={ZHPC.length > 4 ? { y: 227 } : {}}
+          dataSource={tableData}
+          scroll={tableData.length > 4 ? { y: 227 } : {}}
           pagination={false}
           // bordered
           size="middle"

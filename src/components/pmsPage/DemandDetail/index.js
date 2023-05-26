@@ -116,7 +116,7 @@ export default function DemandDetail(props) {
                         JLID: y.JLID,
                         ENTRYNO: z[0],
                         JLMC: z[1],
-                        NEXTID: JSON.parse(y.JLMC)?.nextId
+                        NEXTID: JSON.parse(y.JLMC)?.nextId,
                       };
                     });
                     jldata = jldata.concat(arr);
@@ -133,6 +133,7 @@ export default function DemandDetail(props) {
                   LYSQ: JSON.parse(res.lysq)[JSON.parse(res.lysq).length - 1] ?? {},
                   ZHPC: zhpc,
                   FKTX: JSON.parse(res.fktx)[0],
+                  XQSX_ORIGIN: JSON.parse(res.xqsx),
                 };
                 console.log('🚀 ~ file: index.js:379 ~ getDtldata ~ obj:', obj);
                 setDtlData({
@@ -173,10 +174,18 @@ export default function DemandDetail(props) {
           xqid={curXqid}
           fqrid={curFqrid}
           getDtldata={getDtldata}
+          WBRYGW={WBRYGW}
         />
         <DemandTable dtlData={dtlData} />
         <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
-        <EvaluationTable dtlData={dtlData} dictionary={dictionary} isAuth={isAuth} />
+        <EvaluationTable
+          dtlData={dtlData}
+          dictionary={dictionary}
+          isAuth={isAuth}
+          xqid={curXqid}
+          fqrid={curFqrid}
+          getDtldata={getDtldata}
+        />
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
       </div>
     </Spin>

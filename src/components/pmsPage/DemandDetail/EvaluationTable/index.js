@@ -7,9 +7,9 @@ import { useLocation } from 'react-router';
 import MoreOperationModal from './MoreOperationModal';
 
 export default function EvaluationTable(props) {
-  const { dtlData = {}, dictionary = {}, isAuth } = props;
+  const { dtlData = {}, dictionary = {}, isAuth, xqid, getDtldata, fqrid } = props;
   const [modalVisible, setModalVisible] = useState(false); //更多操作弹窗显隐
-  const { ZHPC = [] } = dtlData;
+  const { ZHPC = [], XQSX_ORIGIN = [] } = dtlData;
   const { DFZT, LYZT } = dictionary;
   const location = useLocation();
 
@@ -171,7 +171,16 @@ export default function EvaluationTable(props) {
         <MoreOperationModal
           visible={modalVisible}
           setVisible={setModalVisible}
-          data={{ tableData: ZHPC, DFZT, LYZT }}
+          data={{
+            tableData: ZHPC,
+            DFZT,
+            LYZT,
+            xqid,
+            reflush: () => {
+              getDtldata(xqid, fqrid);
+            },
+            swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0].SWZXID,
+          }}
           tableColumns={columns}
         />
       )}

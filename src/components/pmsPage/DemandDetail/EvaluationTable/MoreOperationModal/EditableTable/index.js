@@ -22,6 +22,8 @@ const EditableCell = props => {
     handleSave,
     formdecorate,
     children,
+    editing,
+    lyzt = [],
     ...restProps
   } = props;
 
@@ -42,7 +44,7 @@ const EditableCell = props => {
   };
 
   const getDecotator = () => {
-    const recIndex = dataIndex + record['ID'];
+    const recIndex = dataIndex + record['PCID'];
     return (
       <Form.Item style={{ margin: 0 }}>
         {formdecorate.getFieldDecorator(recIndex, {
@@ -62,11 +64,26 @@ const EditableCell = props => {
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             style={{ width: '100%' }}
+            onChange={v => {
+              formdecorate.validateFields(
+                [
+                  recIndex //只校验当前编辑项
+                ],
+                (error, values) => {
+                  handleSave({ ...record, [recIndex]: v });
+                },
+              );
+            }}
+            onBlur={() => {
+              formdecorate.validateFields([
+                recIndex, //只校验当前编辑项
+              ]);
+            }}
           >
-            {[].map(x => {
+            {lyzt.map(x => {
               return (
-                <Option key={x} value={x}>
-                  {x}
+                <Option key={x.ibm} value={x.ibm}>
+                  {x.note}
                 </Option>
               );
             })}
@@ -81,7 +98,11 @@ const EditableCell = props => {
   };
   return (
     <td {...restProps}>
-      {editable ? <EditableContext.Consumer>{renderCell}</EditableContext.Consumer> : children}
+      {editable && editing ? (
+        <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
+      ) : (
+        children
+      )}
     </td>
   );
 };

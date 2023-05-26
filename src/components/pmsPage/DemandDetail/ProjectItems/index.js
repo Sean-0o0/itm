@@ -11,7 +11,7 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 
 export default function ProjectItems(props) {
-  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid} = props;
+  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid, WBRYGW} = props;
   const { XQSX = [], FKTX = {}, JLXX = [], ZHPC = [], XQNR = [], XMXX = {}} = dtlData;
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
@@ -352,6 +352,10 @@ export default function ProjectItems(props) {
             });
           }}
           ZHPC={ZHPC}
+          xqid={xqid}
+          swzxid={swzxid}
+          reflush={reflush}
+          WBRYGW={WBRYGW}
         />
       )}
 

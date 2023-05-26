@@ -78,6 +78,8 @@ const {
     sendMail,
     resumeDistribution,
     queryOutsourceMemberDetail,
+    queryEvaluationGradeInfo,
+    evaluationScoring,
   },
 } = api;
 
@@ -813,6 +815,26 @@ export async function ResumeDistribution(payload) {
 export async function FetchQueryOutsourceMemberDetail(payload) {
   const option = {
     url: queryOutsourceMemberDetail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询综合评测打分信息
+export async function QueryEvaluationGradeInfo(payload) {
+  const option = {
+    url: queryEvaluationGradeInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 简历分发
+export async function EvaluationScoring(payload) {
+  const option = {
+    url: evaluationScoring,
     method: 'post',
     data: payload,
   };

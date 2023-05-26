@@ -42,9 +42,9 @@ const EditableCell = props => {
   };
 
   const getDecotator = () => {
-    const recIndex = dataIndex + record['ZHPCID'];
+    const recIndex = dataIndex + record['DFID'];
     switch (dataIndex) {
-      case 'PF':
+      case 'FS':
         return (
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
@@ -54,7 +54,7 @@ const EditableCell = props => {
                   message: `${title}不能为空`,
                 },
               ],
-              initialValue: String(record[recIndex] || ''),
+              initialValue: Number(record[recIndex] || ''),
             })(
               <InputNumber
                 max={100}
