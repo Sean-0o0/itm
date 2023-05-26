@@ -48,11 +48,11 @@ const EditableCell = props => {
     return (
       <Form.Item style={{ margin: 0 }}>
         {formdecorate.getFieldDecorator(recIndex, {
-          // initialValue: '',
+          initialValue: record['LYZT'],
           rules: [
             {
               required: true,
-              message: `${title}不能为空`,
+              message: `录用状态不能为空`,
             },
           ],
         })(
@@ -67,7 +67,7 @@ const EditableCell = props => {
             onChange={v => {
               formdecorate.validateFields(
                 [
-                  recIndex //只校验当前编辑项
+                  recIndex, //只校验当前编辑项
                 ],
                 (error, values) => {
                   handleSave({ ...record, [recIndex]: v });
@@ -96,10 +96,13 @@ const EditableCell = props => {
   const renderCell = () => {
     return getDecotator();
   };
+  // console.log(children, record);
   return (
     <td {...restProps}>
       {editable && editing ? (
         <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
+      ) : dataIndex === 'LYZT' ? (
+        lyzt.filter(x => x.ibm === children[2])[0]?.note || '--'
       ) : (
         children
       )}

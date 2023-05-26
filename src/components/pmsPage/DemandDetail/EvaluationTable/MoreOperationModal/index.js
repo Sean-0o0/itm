@@ -48,7 +48,7 @@ function MoreOperationModal(props) {
   }); //
 
   useEffect(() => {
-    setTableArr([...tableData]);
+    setTableArr([...JSON.parse(JSON.stringify(tableData))]);
     return () => {};
   }, [JSON.stringify(data)]);
 
@@ -378,6 +378,7 @@ function MoreOperationModal(props) {
                   visible: false,
                 };
               });
+              setEditContent('');
             }}
             onCancel={() => {
               setLysm(p => {
@@ -386,6 +387,7 @@ function MoreOperationModal(props) {
                   visible: false,
                 };
               });
+              setEditContent('');
             }}
           >
             <div className="body-title-box">
@@ -401,12 +403,13 @@ function MoreOperationModal(props) {
                 onChange={e => {
                   e.persist();
                   setEditContent(e.target.value);
-                  // setLysm(p => {
-                  //   return {
-                  //     ...p,
-                  //     content: e.target.value,
-                  //   };
-                  // });
+                  let arr = [...tableArr];
+                  arr.forEach(x => {
+                    if (x.PCID === lysm.index) {
+                      x.LYSM = e.target.value || '';
+                    }
+                  });
+                  setTableArr([...arr]);
                 }}
               ></TextArea>
             </div>
