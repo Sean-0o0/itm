@@ -21,17 +21,12 @@ export default function DemandDetail(props) {
   const [curFqrid, setCurFqrid] = useState(fqrid); //当前fqrid
 
   useEffect(() => {
-    if (xqid !== -2) {
-      // console.log(
-      //   '🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:',
-      //   xqid,
-      //   WBSWLX,
-      //   fqrid,
-      // );
+    if (xqid !== -2 && WBRYGW.length !== 0 && WBSWLX.length !== 0) {
+      console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:', WBSWLX);
       getDtldata(xqid, fqrid);
     }
     return () => {};
-  }, [xqid, fqrid, WBRYGW, WBSWLX]);
+  }, [xqid, fqrid, JSON.stringify(WBRYGW), JSON.stringify(WBSWLX)]);
 
   //获取详情数据
   const getDtldata = (xqid, fqrid) => {
@@ -69,7 +64,7 @@ export default function DemandDetail(props) {
                     : Object.values(
                         JSON.parse(res.xqsx)?.reduce((acc, curr) => {
                           let { XQID, SWLX, SWMC, ZXZT, SWZXID, WBSWID } = curr;
-                          SWLX = WBSWLX?.filter(x => x.ibm === SWLX)[0]?.note;
+                          SWLX = WBSWLX?.filter(x => x.ibm === SWLX)[0]?.note ?? SWLX;
                           if (!acc[SWLX]) {
                             acc[SWLX] = { XQID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT, SWZXID }] };
                           } else {
@@ -85,7 +80,7 @@ export default function DemandDetail(props) {
                     ? []
                     : JSON.parse(res.xqnr);
                 xqnr.forEach(x => {
-                  x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note;
+                  x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note ?? '--';
                 });
                 const zhpc =
                   JSON.parse(res.zhpc).length === 0
@@ -114,32 +109,28 @@ export default function DemandDetail(props) {
                       );
                 jlxx.forEach(x => {
                   let jldata = [];
-                  let jldata2 = [];
                   x.JLDATA.map(y => {
+                    // console.log('🚀 ~ file: index.js:115 ~ getDtldata ~ y:', y);
                     let arr = JSON.parse(y.JLMC)?.items?.map(z => {
                       return {
                         JLID: y.JLID,
                         ENTRYNO: z[0],
                         JLMC: z[1],
+                        NEXTID: JSON.parse(y.JLMC)?.nextId
                       };
                     });
-                    let arr2 = JSON.parse(y.JLMC)?.items;
-                    jldata2 = {
-                      nextId: JSON.parse(y.JLMC)?.nextId,
-                      items: jldata2.concat(arr2),
-                    };
                     jldata = jldata.concat(arr);
                   });
                   x.JLDATA = jldata;
-                  x.JLORIGINDATA = jldata2;
                 });
+
                 const obj = {
                   XMXX: JSON.parse(res.xmxx)[0],
                   XQXQ: JSON.parse(res.xqxq),
                   XQSX: xqsx,
                   XQNR: xqnr,
                   JLXX: jlxx,
-                  LYSQ: JSON.parse(res.lysq)[0],
+                  LYSQ: JSON.parse(res.lysq)[JSON.parse(res.lysq).length - 1] ?? {},
                   ZHPC: zhpc,
                   FKTX: JSON.parse(res.fktx)[0],
                 };
@@ -151,6 +142,7 @@ export default function DemandDetail(props) {
               }
             })
             .catch(e => {
+              console.error(e);
               message.error('详情信息获取失败', 1);
             });
         }

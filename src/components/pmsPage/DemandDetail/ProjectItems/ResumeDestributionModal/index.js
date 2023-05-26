@@ -1,5 +1,5 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, message, Modal, Popconfirm, Spin } from 'antd';
+import React, { useEffect, useState, useLayoutEffect } from 'react';
+import { Button, Empty, message, Modal, Popconfirm, Spin } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import { ResumeDistribution } from '../../../../../services/pmsServices';
@@ -13,26 +13,58 @@ export default function ResumeDistributionModal(props) {
   const { visible, setVisible, JLXX = [], xqid, swzxid, reflush } = props;
   const [isSpinning, setIsSpinning] = useState(false);
   const [data, setData] = useState([]); //数据展示
+  const [emptyArr, setEmptyArr] = useState([]); //为空的数据 - 用于接口提交
 
   useEffect(() => {
-    setData([...JLXX]);
+    setData(p=>[...JLXX]);
     return () => {};
   }, [JSON.stringify(JLXX)]);
 
   const handleDestribute = () => {
-    let submitArr = data.map(x => {
+
+    const groupedData = {};
+
+    for (const item of data) {
+      const { GYSID } = item;
+      for (const jldata of item.JLDATA) {
+        const { JLID, JLMC, NEXTID } = jldata;
+        if (!groupedData[JLID]) {
+          groupedData[JLID] = [];
+        }
+        const groupItem = groupedData[JLID].find(group => group.GYSID === GYSID);
+        if (groupItem) {
+          // group already exists
+          groupItem.JLMC.items.push([jldata.ENTRYNO, jldata.JLMC]);
+        } else {
+          // create new group
+          groupedData[JLID].push({
+            JLID,
+            GYSID,
+            JLMC: {
+              nextId: NEXTID,
+              items: [[jldata.ENTRYNO, jldata.JLMC]],
+            },
+          });
+        }
+      }
+    }
+
+    const submitArr = Object.values(groupedData).flatMap(group => group);
+
+    let submitArr2 = submitArr.map(x => {
       return {
-        JLID: String(x.JLID),
-        GYSID: String(x.GYSID),
-        JLMC: JSON.stringify(x.JLORIGINDATA).replace(/"/g, '!'),
+        JLID: x.JLID,
+        GYSID: x.GYSID,
+        JLMC: JSON.stringify(x.JLMC).replace(/"/g, '!'),
       };
     });
-    console.log('🚀 ~ submitArr ~ submitArr:', submitArr);
+    submitArr2 = submitArr2.concat([...emptyArr]);
+    console.log('🚀 ~ submitArr ~ submitArr:', submitArr2);
     ResumeDistribution({
       xqid: Number(xqid),
       swzxid: Number(swzxid),
-      wjmc: JSON.stringify(submitArr),
-      count: submitArr.length,
+      wjmc: JSON.stringify(submitArr2),
+      count: submitArr2.length,
     })
       .then(res => {
         if (res?.success) {
@@ -83,13 +115,20 @@ export default function ResumeDistributionModal(props) {
           message.error('简历下载失败', 1);
         });
     };
-    if (JLDATA.length === 0) return '';
+    if (JLDATA.length === 0)
+      return (
+        <Empty
+          description="暂无简历"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{ width: '100%' }}
+        />
+      );
     return (
       <div className="splier-item">
         <div className="splier-name">{GYSMC}</div>
         <div className="resume-list">
           {JLDATA.map((x, i) => (
-            <div className="resume-item" key={x.ENTRYNO}>
+            <div className="resume-item" key={x.JLMC}>
               <span>{x.JLMC}</span>
               <i
                 className="iconfont icon-download"
@@ -99,11 +138,27 @@ export default function ResumeDistributionModal(props) {
                 title="确定要删除该简历吗?"
                 onConfirm={() => {
                   let arr = [...data];
-                  arr[index].JLORIGINDATA.items = arr[index]?.JLORIGINDATA?.items?.filter(
-                    j => j[0] !== x.ENTRYNO,
+                  arr[index].JLDATA = arr[index].JLDATA.filter(
+                    j => !(j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC),
                   );
-                  arr[index].JLDATA = arr[index].JLDATA.filter(j => j.ENTRYNO !== x.ENTRYNO);
-                  // console.log('🚀 ~ file: index.js:72 ~ getSplierItem ~ arr:', arr);
+                  if (
+                    arr[index].JLDATA.length == 0 ||
+                    arr[index].JLDATA.filter(jl => jl.JLID === x.JLID).length === 0
+                  ) {
+                    setEmptyArr(p => [
+                      ...p,
+                      {
+                        JLID: x.JLID,
+                        GYSID: arr[index].GYSID,
+                        JLMC: JSON.stringify({ nextId: x.NEXTID, items: [] }).replace(/"/g, '!'),
+                      },
+                    ]);
+                  }
+                  console.log(
+                    '🚀 ~ file: index.js:177 ~ getSplierItem ~ arr[index].JLDATA:',
+                    arr[index].JLDATA,
+                  );
+                  console.log('🚀 ~ file: index.js:72 ~ getSplierItem ~ arr:', arr);
                   setData([...arr]);
                   message.success('删除成功', 1);
                 }}
@@ -132,6 +187,7 @@ export default function ResumeDistributionModal(props) {
       onOk={handleDestribute}
       onCancel={handleCancel}
       confirmLoading={isSpinning}
+      destroyOnClose={true}
     >
       <div className="body-title-box">
         <strong>简历分发</strong>

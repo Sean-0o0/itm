@@ -11,8 +11,8 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 
 export default function ProjectItems(props) {
-  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid } = props;
-  const { XQSX = [], FKTX = {}, JLXX = [], ZHPC = [], XQNR = [], XMXX = {} } = dtlData;
+  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid} = props;
+  const { XQSX = [], FKTX = {}, JLXX = [], ZHPC = [], XQNR = [], XMXX = {}} = dtlData;
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
     msgConfirmation: false,
@@ -146,7 +146,10 @@ export default function ProjectItems(props) {
 
   const getItemBtn = ({ SWMC = '--', ZXZT = '2' }, SWZXID) => {
     //1 已执行， 2 未执行
-    if (['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发'].includes(SWMC) || ZXZT === '2') {
+    if (
+      ['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发', '提交录用申请'].includes(SWMC) ||
+      ZXZT === '2'
+    ) {
       return (
         <div className="opr-btn" onClick={() => handleZx(SWMC, ZXZT, SWZXID)}>
           执行
@@ -420,7 +423,7 @@ export default function ProjectItems(props) {
                 <div
                   className="bottom-row"
                   style={x.ZXZT === '2' ? {} : { color: '#3361ff' }}
-                  key={i}
+                  key={x.SWZXID}
                 >
                   {x.ZXZT === '2' ? (
                     <i className="iconfont circle-reduce" />
