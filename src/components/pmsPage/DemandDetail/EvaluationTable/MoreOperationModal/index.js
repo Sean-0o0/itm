@@ -390,6 +390,13 @@ function MoreOperationModal(props) {
                   visible: false,
                 };
               });
+              let arr = [...tableArr];
+              arr.forEach(x => {
+                if (x.PCID === lysm.index) {
+                  x['LYSM' + x.PCID] = editContent || '';
+                }
+              });
+              setTableArr(p => [...arr]);
               setEditContent('');
             }}
             onCancel={() => {
@@ -400,13 +407,13 @@ function MoreOperationModal(props) {
                 };
               });
               setEditContent('');
-              let arr = [...tableArr];
-              arr.forEach(x => {
-                if (x.PCID === lysm.index) {
-                  x['LYSM' + x.PCID] = x.LYSM || '';
-                }
-              });
-              setTableArr(p => [...arr]);
+              // let arr = [...tableArr];
+              // arr.forEach(x => {
+              //   if (x.PCID === lysm.index) {
+              //     x['LYSM' + x.PCID] = x.LYSM || '';
+              //   }
+              // });
+              // setTableArr(p => [...arr]);
             }}
           >
             <div className="body-title-box">
@@ -424,13 +431,13 @@ function MoreOperationModal(props) {
                 onChange={e => {
                   e.persist();
                   setEditContent(e.target.value);
-                  let arr = [...tableArr];
-                  arr.forEach(x => {
-                    if (x.PCID === lysm.index) {
-                      x['LYSM' + x.PCID] = e.target.value || '';
-                    }
-                  });
-                  setTableArr(p => [...arr]);
+                  // let arr = [...tableArr];
+                  // arr.forEach(x => {
+                  //   if (x.PCID === lysm.index) {
+                  //     x['LYSM' + x.PCID] = e.target.value || '';
+                  //   }
+                  // });
+                  // setTableArr(p => [...arr]);
                   // console.log('🚀 ~ file: index.js:423 ~ MoreOperationModal ~ [...arr]:', [...arr]);
                 }}
               ></TextArea>
