@@ -48,7 +48,7 @@ const EditableCell = props => {
     return (
       <Form.Item style={{ margin: 0 }}>
         {formdecorate.getFieldDecorator(recIndex, {
-          initialValue: record['LYZT'],
+          initialValue: record[recIndex],
           rules: [
             {
               required: true,

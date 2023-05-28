@@ -48,20 +48,29 @@ function MoreOperationModal(props) {
   }); //
 
   useEffect(() => {
-    setTableArr([...JSON.parse(JSON.stringify(tableData))]);
+    let arr = tableData.map(x => {
+      return {
+        ...x,
+        ['LYZT' + x.PCID]: x.LYZT || '',
+        ['LYSM' + x.PCID]: x.LYSM || '',
+      };
+    });
+    setTableArr([...JSON.parse(JSON.stringify(arr))]);
     return () => {};
   }, [JSON.stringify(data)]);
 
   //表格保存
   const handleTableSave = row => {
+    console.log('🚀 ~ file: index.js:57 ~ handleTableSave ~  row:', row);
     const newData = [...tableArr];
     const index = newData.findIndex(item => row.PCID === item.PCID);
     const item = newData[index];
+    console.log('🚀 ~ file: index.js:60 ~ handleTableSave ~ item:', item);
     newData.splice(index, 1, {
       ...item, //old row data
       ...row, //new row data
     });
-    // console.log('🚀 ~ file: index.js:52 ~ handleTableSave ~ newData:', newData);
+    console.log('🚀 ~ file: index.js:52 ~ handleTableSave ~ newData:', newData);
     setTableArr(preState => [...newData]);
   };
 
@@ -73,7 +82,7 @@ function MoreOperationModal(props) {
           return {
             ZHPCID: x.PCID,
             LYZT: x['LYZT' + x.PCID],
-            LYSM: x.LYSM || '',
+            LYSM: x['LYSM' + x.PCID] || '',
           };
         });
         // console.log('🚀 ~ file: index.js:134 ~ submitTable ~ tableData:', tableData);
@@ -199,7 +208,7 @@ function MoreOperationModal(props) {
                     // content: row['LYSM'] || '',
                   };
                 });
-                setEditContent(row.LYSM || '');
+                setEditContent(row['LYSM' + row.PCID] || '');
                 // console.log("🚀 ~ file: index.js:223 ~ MoreOperationModal ~ row.LYSM:", row.LYSM)
               }}
             >
@@ -207,7 +216,7 @@ function MoreOperationModal(props) {
             </a>
           );
         return (
-          <Tooltip placement="bottomLeft" title={row['LYSM']}>
+          <Tooltip placement="bottomLeft" title={row['LYSM' + row.PCID]}>
             <a style={{ color: '#3361ff', cursor: 'default' }}>查看详情</a>
           </Tooltip>
         );
@@ -251,6 +260,14 @@ function MoreOperationModal(props) {
   //取消修改
   const handleEditCancel = () => {
     setEditing(false);
+    let arr = tableData.map(x => {
+      return {
+        ...x,
+        ['LYZT' + x.PCID]: x.LYZT || '',
+        ['LYSM ' + x.PCID]: x.LYSM || '',
+      };
+    });
+    setTableArr([...JSON.parse(JSON.stringify(arr))]);
   };
 
   //确认
@@ -383,7 +400,13 @@ function MoreOperationModal(props) {
                 };
               });
               setEditContent('');
-              setTableArr([...JSON.parse(JSON.stringify(tableData))]);
+              let arr = [...tableArr];
+              arr.forEach(x => {
+                if (x.PCID === lysm.index) {
+                  x['LYSM' + x.PCID] = x.LYSM || '';
+                }
+              });
+              setTableArr(p => [...arr]);
             }}
           >
             <div className="body-title-box">
@@ -397,16 +420,17 @@ function MoreOperationModal(props) {
                 autoSize={{ maxRows: 6, minRows: 3 }}
                 // defaultValue={tableArr[lysm.index]?.LYSM||'JJJ'}
                 defaultValue={editContent}
+                allowClear
                 onChange={e => {
                   e.persist();
-                  setEditContent(e.target.value||lysm.index);
+                  setEditContent(e.target.value);
                   let arr = [...tableArr];
                   arr.forEach(x => {
                     if (x.PCID === lysm.index) {
-                      x.LYSM = e.target.value || '';
+                      x['LYSM' + x.PCID] = e.target.value || '';
                     }
                   });
-                  setTableArr(p=>[...arr]);
+                  setTableArr(p => [...arr]);
                   // console.log('🚀 ~ file: index.js:423 ~ MoreOperationModal ~ [...arr]:', [...arr]);
                 }}
               ></TextArea>
