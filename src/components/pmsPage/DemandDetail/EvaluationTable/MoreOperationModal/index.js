@@ -200,6 +200,7 @@ function MoreOperationModal(props) {
                   };
                 });
                 setEditContent(row.LYSM || '');
+                // console.log("🚀 ~ file: index.js:223 ~ MoreOperationModal ~ row.LYSM:", row.LYSM)
               }}
             >
               查看详情
@@ -322,7 +323,8 @@ function MoreOperationModal(props) {
       style={{ top: '60px' }}
       title={null}
       visible={visible}
-      onOk={handleOk}
+      // onOk={handleOk}
+      footer={null}
       onCancel={handleCancel}
       confirmLoading={isSpinning}
     >
@@ -365,13 +367,6 @@ function MoreOperationModal(props) {
             title={null}
             visible={lysm.visible}
             onOk={() => {
-              let arr = [...tableArr];
-              arr.forEach(x => {
-                if (x.PCID === lysm.index) {
-                  x.LYSM = editContent || '';
-                }
-              });
-              setTableArr([...arr]);
               setLysm(p => {
                 return {
                   ...p,
@@ -388,6 +383,7 @@ function MoreOperationModal(props) {
                 };
               });
               setEditContent('');
+              setTableArr([...JSON.parse(JSON.stringify(tableData))]);
             }}
           >
             <div className="body-title-box">
@@ -399,17 +395,19 @@ function MoreOperationModal(props) {
                 placeholder="请输入录用说明"
                 maxLength={1000}
                 autoSize={{ maxRows: 6, minRows: 3 }}
+                // defaultValue={tableArr[lysm.index]?.LYSM||'JJJ'}
                 defaultValue={editContent}
                 onChange={e => {
                   e.persist();
-                  setEditContent(e.target.value);
+                  setEditContent(e.target.value||lysm.index);
                   let arr = [...tableArr];
                   arr.forEach(x => {
                     if (x.PCID === lysm.index) {
                       x.LYSM = e.target.value || '';
                     }
                   });
-                  setTableArr([...arr]);
+                  setTableArr(p=>[...arr]);
+                  // console.log('🚀 ~ file: index.js:423 ~ MoreOperationModal ~ [...arr]:', [...arr]);
                 }}
               ></TextArea>
             </div>
@@ -475,7 +473,7 @@ function MoreOperationModal(props) {
           components={components}
           rowKey={'PCID'}
           rowClassName={() => 'editable-row'}
-          dataSource={tableData}
+          dataSource={tableArr}
           scroll={
             { y: true }
             // tableData?.length > (document.body.clientHeight - 278) / (editing ? 59 : 40)
