@@ -16,13 +16,13 @@ export default function DemandDetail(props) {
   const [dtlData, setDtlData] = useState({}); //详情信息
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
   const LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
-  const isAuth = isDock || LOGIN_USER_ID === fqrid; //是否为外包项目对接人或需求发起人
+  const isAuth = isDock || String(LOGIN_USER_ID) === String(fqrid); //是否为外包项目对接人或需求发起人
   const [curXqid, setCurXqid] = useState(xqid); //当前xqid
   const [curFqrid, setCurFqrid] = useState(fqrid); //当前fqrid
 
   useEffect(() => {
     if (xqid !== -2 && WBRYGW.length !== 0 && WBSWLX.length !== 0) {
-      console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:', WBSWLX);
+      // console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:', WBSWLX);
       getDtldata(xqid, fqrid);
     }
     return () => {};

@@ -11,8 +11,9 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 
 export default function ProjectItems(props) {
-  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid, WBRYGW} = props;
-  const { XQSX = [], FKTX = {}, JLXX = [], ZHPC = [], XQNR = [], XMXX = {}} = dtlData;
+  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid, WBRYGW } = props;
+  const { XQSX = [], FKTX = {}, JLXX = [], ZHPC = [], XQNR = [], XMXX = {} } = dtlData;
+  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
     msgConfirmation: false,
@@ -37,8 +38,19 @@ export default function ProjectItems(props) {
 
   //执行
   const handleZx = (SWMC = '--', ZXZT = '2', SWZXID) => {
-    if (!isAuth) {
-      message.info('只有外包项目对接人和需求发起人可以操作', 1);
+    //是否评测人员
+    const isPcry = () => {
+      let arr = [];
+      ZHPC.forEach(x => {
+        arr = arr.concat(x.MSGID.split(','));
+      });
+      let newArr = [...new Set(arr)];
+      // console.log("🚀 ~ file: index.js:51 ~ isPcry ~ isPcry:", newArr,LOGIN_USER_ID)
+      return newArr.includes(LOGIN_USER_ID);
+    };
+
+    if (!(isAuth || isPcry())) {
+      message.info('只有外包项目对接人、需求发起人和评测人员可以操作', 1);
       return;
     }
     let modalName = '';
@@ -147,7 +159,9 @@ export default function ProjectItems(props) {
   const getItemBtn = ({ SWMC = '--', ZXZT = '2' }, SWZXID) => {
     //1 已执行， 2 未执行
     if (
-      ['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发', '提交录用申请'].includes(SWMC) ||
+      ['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发', '提交录用申请'].includes(
+        SWMC,
+      ) ||
       ZXZT === '2'
     ) {
       return (
@@ -174,7 +188,7 @@ export default function ProjectItems(props) {
     } else {
       return (
         <div className="reopr-btn" onClick={() => handleCk(SWMC, SWZXID)}>
-          查看
+          {SWMC === '综合评测安排' ? '修改' : '查看'}
         </div>
       );
     }

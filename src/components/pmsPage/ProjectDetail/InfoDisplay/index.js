@@ -266,14 +266,6 @@ export default function InfoDisplay(props) {
   };
 
   const getSupplierInfoRow = () => {
-    if (supplier.length === 0)
-      return (
-        <Empty
-          description="暂无信息"
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{ width: '100%', margin: 0 }}
-        />
-      );
     return supplier.map(item => (
       <div className="info-row" key={item.GYSID}>
         <div className="info-item" key="供应商名称：" style={{ display: 'flex', height: 'unset' }}>
@@ -664,23 +656,17 @@ export default function InfoDisplay(props) {
       {/* 招采信息 */}
       {!isHwSltPrj &&
         (isMember() ? (
-          <div className="info-box" key="zcxx">
-            <div className="top-title">招采信息</div>
-            {isNullArr([
-              contrast.HTJE,
-              prjBasic.ZBFS,
-              contrast.QSRQ,
-              bidding.TBBZJ,
-              bidding.LYBZJ,
-              bidding.PBBG,
-              otrSupplier[0]?.GYSMC,
-            ]) ? (
-              <Empty
-                description="暂无信息"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{ width: '100%', margin: 0 }}
-              />
-            ) : (
+          isNullArr([
+            contrast.HTJE,
+            prjBasic.ZBFS,
+            contrast.QSRQ,
+            bidding.TBBZJ,
+            bidding.LYBZJ,
+            bidding.PBBG,
+            otrSupplier[0]?.GYSMC,
+          ]) ? null : (
+            <div className="info-box" key="zcxx">
+              <div className="top-title">招采信息</div>
               <div className="info-row-box">
                 {contrast.HTJE && getInfoItem('合同金额：', getAmountFormat(contrast.HTJE) + '元')}
                 {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
@@ -722,54 +708,51 @@ export default function InfoDisplay(props) {
                   </div>
                 )}
               </div>
-            )}
-          </div>
-        ) : (
+            </div>
+          )
+        ) : isNullArr([
+            prjBasic.ZBFS,
+            contrast.QSRQ,
+            bidding.PBBG,
+            otrSupplier[0]?.GYSMC,
+          ]) ? null : (
           <div className="info-box" key="zcxx">
             <div className="top-title">招采信息</div>
-            {isNullArr([prjBasic.ZBFS, contrast.QSRQ, bidding.PBBG, otrSupplier[0]?.GYSMC]) ? (
-              <Empty
-                description="暂无信息"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{ width: '100%', margin: 0 }}
-              />
-            ) : (
-              <div className="info-row-box">
-                {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
-                {contrast.QSRQ &&
-                  getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-                {bidding.PBBG && (
-                  <div className="info-item" key="评标报告：">
-                    <span>评标报告：</span>
-                    <a
-                      style={{ color: '#3361ff' }}
-                      onClick={() =>
-                        handleFile(
-                          bidding.ID,
-                          JSON.parse(bidding.PBBG)?.items[0][1],
-                          JSON.parse(bidding.PBBG)?.items[0][0],
-                        )
-                      }
-                    >
-                      {JSON.parse(bidding.PBBG)?.items[0][1]}
-                    </a>
-                  </div>
-                )}
-                {otrSupplier.length !== 0 && (
-                  <div className="info-item" key="zcxx-4-1">
-                    <span>其他投标供应商：</span>
-                    <Popover
-                      placement="rightTop"
-                      title={null}
-                      content={otherSupplierPopover(otrSupplier)}
-                      overlayClassName="other-supplier-content-popover"
-                    >
-                      <a style={{ color: '#3361ff' }}>查看详情</a>
-                    </Popover>
-                  </div>
-                )}
-              </div>
-            )}
+            <div className="info-row-box">
+              {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
+              {contrast.QSRQ &&
+                getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
+              {bidding.PBBG && (
+                <div className="info-item" key="评标报告：">
+                  <span>评标报告：</span>
+                  <a
+                    style={{ color: '#3361ff' }}
+                    onClick={() =>
+                      handleFile(
+                        bidding.ID,
+                        JSON.parse(bidding.PBBG)?.items[0][1],
+                        JSON.parse(bidding.PBBG)?.items[0][0],
+                      )
+                    }
+                  >
+                    {JSON.parse(bidding.PBBG)?.items[0][1]}
+                  </a>
+                </div>
+              )}
+              {otrSupplier.length !== 0 && (
+                <div className="info-item" key="zcxx-4-1">
+                  <span>其他投标供应商：</span>
+                  <Popover
+                    placement="rightTop"
+                    title={null}
+                    content={otherSupplierPopover(otrSupplier)}
+                    overlayClassName="other-supplier-content-popover"
+                  >
+                    <a style={{ color: '#3361ff' }}>查看详情</a>
+                  </Popover>
+                </div>
+              )}
+            </div>
           </div>
         ))}
       {/* 实施信息 */}
@@ -811,7 +794,7 @@ export default function InfoDisplay(props) {
         </div>
       )}
       {/* 供应商信息 */}
-      {!isHwSltPrj && (
+      {!isHwSltPrj && supplier.length !== 0 && (
         <div className="info-box" key="gysxx">
           <div className="top-title">供应商信息</div>
           {getSupplierInfoRow()}

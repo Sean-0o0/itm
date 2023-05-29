@@ -81,9 +81,47 @@ function PersonnelArrangementModal(props) {
         // console.log('🚀 ~ file: index.js:80 ~ useEffect ~ [...zhpc[0].TABLE]:', [...zhpc[0].TABLE]);
       }
     }
-
     return () => {};
   }, [update, ZHPC]);
+
+  //人员需求变化
+  const handleRyxqXhange = v => {
+    if (update) {
+      const zhpc = Object.values(
+        ZHPC.reduce((acc, curr) => {
+          let { XQNRID, RYMC, GYSID, ZHPCSJ, MSGID, PCID } = curr;
+          ZHPCSJ = moment(ZHPCSJ);
+          if (!acc[XQNRID]) {
+            acc[XQNRID] = {
+              XQNRID,
+              MSGID: MSGID?.split(','),
+              TABLE: [
+                { PCID, ['RYMC' + PCID]: RYMC, ['GYSID' + PCID]: GYSID, ['MSSJ' + PCID]: ZHPCSJ },
+              ],
+            };
+          } else {
+            acc[XQNRID].TABLE.push({
+              PCID,
+              ['RYMC' + PCID]: RYMC,
+              ['GYSID' + PCID]: GYSID,
+              ['MSSJ' + PCID]: ZHPCSJ,
+            });
+          }
+          return acc;
+        }, {}),
+      );
+      const arr = zhpc.filter(x => x.XQNRID === v);
+      let item = arr.length > 0 ? arr[0] : { TABLE: [] };
+      if (zhpc.length > 0) {
+        setTableData([...item.TABLE]);
+        setUpdateData({
+          MSGID: item.MSGID,
+          XQNRID: item.XQNRID,
+        });
+      }
+    }
+    console.log('🚀 ~ file: index.js:90 ~ handleRyxqXhange ~ v:', v, updateData);
+  };
 
   //评测人员下拉框数据
   const getPcryData = () => {
@@ -318,6 +356,7 @@ function PersonnelArrangementModal(props) {
                   filterOption={(input, option) =>
                     option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                   }
+                  onChange={handleRyxqXhange}
                 >
                   {XQNR.map(x => {
                     return (
@@ -372,7 +411,7 @@ function PersonnelArrangementModal(props) {
           )}
         </Row>
         <Form.Item
-          label="人员需求"
+          label="评测时间安排"
           labelCol={{ span: 4 }}
           wrapperCol={{ span: 19 }}
           // required

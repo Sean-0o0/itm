@@ -198,8 +198,7 @@ function MoreOperationModal(props) {
       render: (txt, row) => {
         if (editing)
           return (
-            <a
-              style={{ color: '#3361ff' }}
+            <Input
               onClick={() => {
                 setLysm(p => {
                   return {
@@ -211,13 +210,12 @@ function MoreOperationModal(props) {
                 setEditContent(row['LYSM' + row.PCID] || '');
                 // console.log("🚀 ~ file: index.js:223 ~ MoreOperationModal ~ row.LYSM:", row.LYSM)
               }}
-            >
-              查看详情
-            </a>
+              value={row['LYSM' + row.PCID]}
+            />
           );
         return (
           <Tooltip placement="bottomLeft" title={row['LYSM' + row.PCID]}>
-            <a style={{ color: '#3361ff', cursor: 'default' }}>查看详情</a>
+            <span style={{ cursor: 'default' }}>{row['LYSM' + row.PCID]}</span>
           </Tooltip>
         );
       },
