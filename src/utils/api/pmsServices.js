@@ -445,4 +445,10 @@ export default [
     url: '/projectManage/evaluationScoring',
     dis: '综合评测打分',
   },
+  {
+    code: '',
+    key: 'supplierQueryDemand',
+    url: '/projectManage/supplierQueryDemand',
+    dis: '查询供应商需求',
+  },
 ];

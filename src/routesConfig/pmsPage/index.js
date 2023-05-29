@@ -198,4 +198,9 @@ exports.routes = [
     path: `${prefix}/MemberDetail/:params`,
     component: './pmsPage/MemberDetail',
   },
+  {
+    // 供应商需求页面
+    path: `${prefix}/SupplierDmInfo`,
+    component: './pmsPage/SupplierDmInfo',
+  },
 ];

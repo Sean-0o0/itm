@@ -82,6 +82,7 @@ const {
     updateOutsourceMemberInfo,
     queryEvaluationGradeInfo,
     evaluationScoring,
+    supplierQueryDemand,
   },
 } = api;
 
@@ -853,10 +854,20 @@ export async function QueryEvaluationGradeInfo(payload) {
   return request(option);
 }
 
-// 简历分发
+// 综合评测打分
 export async function EvaluationScoring(payload) {
   const option = {
     url: evaluationScoring,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询供应商需求
+export async function QuerySupplierDemand(payload) {
+  const option = {
+    url: supplierQueryDemand,
     method: 'post',
     data: payload,
   };
