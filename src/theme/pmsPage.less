@@ -12672,6 +12672,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
 //需求详情 - 综合评测安排弹窗
 .personnel-arrangement-modal,
+  //需求发起弹窗
+.xqfq-modal,
 .interview-score-modal,
 .employment-application-modal,
 .evaluation-more-operation-modal,
@@ -12867,24 +12869,32 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-.sendMail-box {
-  .ant-form-item-label {
-    text-align: left;
-  }
-
-  .fj-box {
-    padding: 0;
-
-    .ant-row {
-      display: grid;
-    }
-  }
-}
-
 .sendMail-box-spin {
   max-height: 605px;
   overflow: hidden;
   overflow-y: auto;
+
+  .sendMail-box {
+    .ant-form-item {
+      margin-bottom: 2px;
+    }
+
+    .ant-form-item-label {
+      text-align: left;
+    }
+
+    .ant-select-selection {
+      border: none;
+    }
+
+    .fj-box {
+      padding: 0;
+
+      .ant-row {
+        display: grid;
+      }
+    }
+  }
 }
 
 .demand-info-box {
@@ -13241,6 +13251,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     flex-shrink: 0;
     border-radius: 0;
     padding: 0;
+    margin-left: 1px;
 
     .back-img {
       padding: 16px 24px;
@@ -13320,6 +13331,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             border-color: #3361ff;
           }
 
+          .btn-more {
+            .antd-btn-default();
+            color: #3361ff;
+            border-color: #3361ff;
+          }
+
           .statistics-block {
             padding-top: 11px;
 
@@ -13355,7 +13372,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     .ant-popover-inner {
       .ant-popover-inner-content {
         padding: 8px 16px 0 16px;
-        max-height: 14.6rem;
+        max-height: 158px;
         overflow: hidden;
         overflow-y: auto;
 
@@ -13386,20 +13403,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             text-overflow: ellipsis;
             overflow: hidden;
             white-space: nowrap;
-            cursor: pointer;
+            //cursor: pointer;
 
-            a {
-              color: #3361ff;
-            }
-
-            &:hover {
-              font-weight: bold;
-              color: #3361ff;
-            }
-
-            a {
-              color: #3361ff;
-            }
+            //a {
+            //  color: #3361ff;
+            //}
+            //
+            //&:hover {
+            //  font-weight: bold;
+            //  color: #3361ff;
+            //}
+            //
+            //a {
+            //  color: #3361ff;
+            //}
           }
         }
       }

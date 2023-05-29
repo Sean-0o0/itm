@@ -7,6 +7,7 @@ import AgreementEnterModal from "./AgreementEnterModel";
 import BidSectionModel from "./BidSectionModel";
 import DemandInitiated from "./DemandInitiated";
 import SendMailModal from "../SendMailModal";
+import EditMemberInfoModel from "../MemberDetailPage/EditMemberInfoModel";
 
 //首页
 export default function HardwareItems(props) {
@@ -51,7 +52,7 @@ export default function HardwareItems(props) {
       )
       }
       {pollResultEnterVisible && (
-        <PollResultEnterModel closeModal={closePollResultEnterModal} visible={pollResultEnterVisible}/>
+        <EditMemberInfoModel closeModal={closePollResultEnterModal} visible={pollResultEnterVisible}/>
       )
       }
       {requireVisible && (
@@ -59,7 +60,7 @@ export default function HardwareItems(props) {
       )
       }
       {agreementEnterVisible && (
-        <DemandInitiated xmmc={"传进来的项目名称"} xmid={10} xqid={23} operateType="relaunch"
+        <DemandInitiated xmmc={"传进来的项目名称"} xmid={10}
                          closeModal={closeAgreementEnterModal}
                          visible={agreementEnterVisible}/>
       )

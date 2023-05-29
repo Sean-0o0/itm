@@ -63,9 +63,14 @@ class MemberDetailPage extends Component {
           let ryxxData = {
             XB: ryxxdata[0]?.XB,
             GYSMC: ryxxdata[0]?.GYSMC,
+            GYSID: ryxxdata[0]?.GYSID,
             RYMC: ryxxdata[0]?.RYMC,
             RYGW: ryxxdata[0]?.RYGW,
-            DJ: ryxxdata[0]?.RYDJ
+            GWID: ryxxdata[0]?.GWID,
+            DJ: ryxxdata[0]?.RYDJ,
+            DJID: ryxxdata[0]?.DJID,
+            XMMC: ryxxdata[0]?.XMMC,
+            XMID: ryxxdata[0]?.XMID,
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,
@@ -73,6 +78,7 @@ class MemberDetailPage extends Component {
           }
           let kqxxData = {
             zc: kqxxdata.filter(item => item.LX === "正常").length,
+            zcrq: kqxxdata.filter(item => item.LX === "正常"),
             qj: kqxxdata.filter(item => item.LX === "请假").length,
             qjrq: kqxxdata.filter(item => item.LX === "请假"),
             jb: kqxxdata.filter(item => item.LX === "加班").length,
@@ -101,6 +107,11 @@ class MemberDetailPage extends Component {
     });
   }
 
+  refreshPages = () => {
+    const {ryid} = this.state;
+    this.handleSearch(ryid)
+  }
+
   render() {
     const {
       ryxxData = [],
@@ -111,16 +122,20 @@ class MemberDetailPage extends Component {
       pageParams = {},
     } = this.state
     const {routes, ryid} = this.props
-
+    let xmid = '-1'
     return (
       <Spin spinning={tableLoading}>
         <div className="member-detail-box">
           <TopConsole
             routes={routes}
             data={ryxxData}
+            ryid={ryid}
+            refreshPages={this.refreshPages}
           />
           <AttendanceInfo data={kqxxData}/>
-          <InfoTable ryid={ryid} pageParams={pageParams} tableData={ydkhData} routes={routes}/>
+          {
+            ydkhData.length > 0 && <InfoTable ryid={ryid} pageParams={pageParams} tableData={ydkhData} routes={routes}/>
+          }
           <BasicInfo ryid={ryid} data={basicData}/>
         </div>
       </Spin>

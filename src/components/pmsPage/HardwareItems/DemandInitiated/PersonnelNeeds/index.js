@@ -1,4 +1,4 @@
-import {Table, Input, Button, Popconfirm, Form, Icon, DatePicker, Select, message} from 'antd';
+import {Table, Input, Button, Popconfirm, Form, Icon, DatePicker, Select, message, Tooltip} from 'antd';
 import React, {Component} from "react";
 import moment from "moment";
 import {FetchqueryOutsourceRequirement, QueryPaymentAccountList} from "../../../../../services/pmsServices";
@@ -6,6 +6,7 @@ import {connect} from "dva";
 import {FetchQueryProjectInfoAll} from "../../../../../services/projectManage";
 
 const {Option} = Select
+const {TextArea} = Input;
 
 //-----------付款详情--------------//
 const EditableContext = React.createContext(1);
@@ -100,7 +101,16 @@ class PersonnelNeeds extends Component {
 
     this.state = {
       rydjxxJson: [],
-      tableData: [],
+      tableData: [
+        {
+          ID: Date.now(),
+          ['RYDJ' + Date.now()]: '',
+          ['GW' + Date.now()]: '',
+          ['RYSL' + Date.now()]: '',
+          ['SC' + Date.now()]: '',
+          ['YQ' + Date.now()]: '',
+        }
+      ],
       //接口查出来是否存在获奖信息的数据
       hjxxRecordFlag: false,
     };
@@ -213,7 +223,7 @@ class PersonnelNeeds extends Component {
       {
         title: '人员等级',
         dataIndex: 'RYDJ',
-        width: '15%',
+        width: 100,
         align: 'center',
         key: 'RYDJ',
         ellipsis: true,
@@ -259,7 +269,7 @@ class PersonnelNeeds extends Component {
       {
         title: '人员数量',
         dataIndex: 'RYSL',
-        width: '15%',
+        width: 100,
         align: 'center',
         key: 'RYSL',
         ellipsis: true,
@@ -279,7 +289,12 @@ class PersonnelNeeds extends Component {
         dataIndex: 'YQ',
         key: 'YQ',
         ellipsis: true,
-        editable: true,
+        // editable: true,
+        render: text => (
+          <Tooltip title={text} placement="topLeft">
+            <TextArea autoSize={{minRows: 1, maxRows: 6}} style={{cursor: 'default'}}>{text}</TextArea>
+          </Tooltip>
+        ),
       },
       {
         title: '操作',
@@ -325,7 +340,7 @@ class PersonnelNeeds extends Component {
     };
     return (
       <div>
-        <div className='tableBox4'>
+        <div className='ryxq-table-box'>
           <Table
             columns={columns}
             components={components}
@@ -337,6 +352,7 @@ class PersonnelNeeds extends Component {
             pagination={false}
             style={{paddingBottom: '12px',}}
             bordered
+            size="middle"
           ></Table>
           <div style={{
             textAlign: 'center',

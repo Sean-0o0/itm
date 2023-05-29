@@ -18,7 +18,7 @@ import {
   InputNumber,
   Upload,
   Button,
-  Icon,
+  Icon, Tooltip,
 } from 'antd';
 
 const {Option} = Select;
@@ -266,9 +266,9 @@ class DemandInitiated extends React.Component {
     return (
       <>
         <Modal
-          wrapClassName="editMessage-modify"
+          wrapClassName="editMessage-modify xqfq-modal"
           style={{top: '10px'}}
-          width={'880px'}
+          width={'1000px'}
           title={null}
           zIndex={100}
           bodyStyle={{
@@ -305,7 +305,7 @@ class DemandInitiated extends React.Component {
               fontSize: '15px',
             }}
           >
-            <strong>需求发起</strong>
+            <strong>{this.state.xqid === -1 || this.state.xqid === 'undefined' ? "需求发起" : "需求修改"}</strong>
           </div>
           <Spin spinning={isSpinning} style={{position: 'fixed'}} tip="加载中" size="large"
                 wrapperClassName="contrast-signing-modal-spin">
@@ -319,25 +319,25 @@ class DemandInitiated extends React.Component {
                   >
                     <div style={{margin: '12px 0 0 0'}}>
                       <Row gutter={24}>
-                        <Col span={12}>
-                          <Form.Item label="关联项目">
-                            {getFieldDecorator('glxm', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: '请选择关联项目',
-                                },
-                              ],
+                        {/*<Col span={12}>*/}
+                        {/*  <Form.Item label="关联项目">*/}
+                        {/*    {getFieldDecorator('glxm', {*/}
+                        {/*      rules: [*/}
+                        {/*        {*/}
+                        {/*          required: true,*/}
+                        {/*          message: '请选择关联项目',*/}
+                        {/*        },*/}
+                        {/*      ],*/}
 
-                              initialValue: xmmc
-                            })(<Input disabled={true} placeholder="请选择关联项目"/>)}
-                          </Form.Item>
-                        </Col>
-                        <Col span={12}>
+                        {/*      initialValue: xmmc*/}
+                        {/*    })(<Input disabled={true} placeholder="请选择关联项目"/>)}*/}
+                        {/*  </Form.Item>*/}
+                        {/*</Col>*/}
+                        <Col span={24}>
                           <Form.Item
                             label="需求名称"
-                            labelCol={{span: 10}}
-                            wrapperCol={{span: 14}}
+                            labelCol={{span: 4}}
+                            wrapperCol={{span: 20}}
                           >
                             {getFieldDecorator('xqmc', {
                               rules: [
@@ -347,7 +347,9 @@ class DemandInitiated extends React.Component {
                                 },
                               ],
                               initialValue: "关于" + xmmc + "的人力外包需求"
-                            })(<Input disabled={true} placeholder="请输入需求名称"/>)}
+                            })(<Tooltip overlayStyle={{width: 'auto'}} placement="bottomLeft"
+                                        title={"关于" + xmmc + "的人力外包需求"}><Input disabled={true}
+                                                                               placeholder={"关于" + xmmc + "的人力外包需求"}/></Tooltip>)}
                           </Form.Item>
                         </Col>
                       </Row>

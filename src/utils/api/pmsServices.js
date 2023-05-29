@@ -423,6 +423,18 @@ export default [
   },
   {
     code: '',
+    key: 'queryEmail',
+    url: '/projectManage/queryEmail',
+    dis: '查询邮箱发件人信息',
+  },
+  {
+    code: '',
+    key: 'updateOutsourceMemberInfo',
+    url: '/projectManage/updateOutsourceMemberInfo',
+    dis: '外包人员信息编辑',
+  },
+  {
+    code: '',
     key: 'queryEvaluationGradeInfo',
     url: '/projectManage/queryEvaluationGradeInfo',
     dis: '查询综合评测打分信息',

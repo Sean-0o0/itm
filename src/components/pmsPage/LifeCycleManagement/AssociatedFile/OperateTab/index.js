@@ -48,7 +48,7 @@ class OperateTab extends React.Component {
         <Row gutter={24}>
           <Col span={10}>
             <Form.Item label="文件类别" labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
-              <Input placeholder="请输入标题" onChange={(e) => this.onInputChange(e)} />
+              <Input placeholder="请输入文件类别" onChange={(e) => this.onInputChange(e)}/>
             </Form.Item>
           </Col>
           {/* <Col span={8}>
@@ -62,7 +62,7 @@ class OperateTab extends React.Component {
             </Form.Item>
           </Col>
         </Row>
-        <Row gutter={24}> 
+        <Row gutter={24}>
           <Col span={8}>
             <Form.Item label="流程状态" labelCol={{span: 6}} wrapperCol={{span: 18}}>
               <Input placeholder="请输入流程状态"/>

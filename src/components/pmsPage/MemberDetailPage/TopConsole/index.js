@@ -1,34 +1,73 @@
 import React, {Component} from 'react';
 import {Link} from 'dva/router';
-import {Breadcrumb, Button, Tooltip} from 'antd';
+import {Breadcrumb, Button, Dropdown, Icon, Menu, Tooltip} from 'antd';
 import boyImg from '../../../../assets/staffDetail/img_boy.png';
 import girlImg from '../../../../assets/staffDetail/img_girl.png';
 import fqImg from '../../../../assets/staffDetail/img_fq.png';
 import cyImg from '../../../../assets/staffDetail/img_cy.png';
 import zbImg from '../../../../assets/staffDetail/img_zb.png';
 import ktImg from '../../../../assets/staffDetail/img_kt.png';
+import EditMemberInfoModel from "../EditMemberInfoModel";
 
 class ToConsole extends Component {
-  state = {};
+  state = {
+    editMemberInfoVisible: false,
+  };
 
-  handleEditMemberInfo = () => {
+  handleEditMemberInfo = (type) => {
+    //type 编辑详情还是编辑试用期考核情况
     console.log("------编辑外包人员信息----")
+    this.setState({
+      editMemberInfoVisible: true,
+      operateType: type,
+    })
+  }
+
+  closeModal = () => {
+    this.setState({
+      editMemberInfoVisible: false,
+    })
+  }
+
+  successCallBack = () => {
+    const {refreshPages} = this.props;
+    this.setState({
+      editMemberInfoVisible: false,
+    })
+    //刷新页面
+    refreshPages();
   }
 
   render() {
+    const {editMemberInfoVisible = false, operateType} = this.state;
     const {
       routes = [],
+      ryid = "",
       data: {
         XB = "",
         GYSMC = "",
         RYMC = "",
         RYGW = "",
-        DJ = "G3"
+        DJ = "",
+        XMMC = "",
       },
     } = this.props;
-    console.log('routesroutes-ccc-staf', routes);
+
+    const btnMoreContent = (
+      <Menu>
+        <Menu.Item>修改密码</Menu.Item>
+        <Menu.Item onClick={() => this.handleEditMemberInfo("syqkh")}>试用期考核</Menu.Item>
+      </Menu>
+    );
+
     return (
       <div className="top-console">
+        {
+          editMemberInfoVisible &&
+          <EditMemberInfoModel visible={editMemberInfoVisible} data={this.props.data} ryid={ryid}
+                               operateType={operateType} closeModal={this.closeModal}
+                               successCallBack={this.successCallBack}/>
+        }
         <div className="back-img">
           <Breadcrumb separator=">">
             {routes.map((item, index) => {
@@ -52,20 +91,20 @@ class ToConsole extends Component {
               <img src={XB === '1' ? boyImg : XB === '2' ? girlImg : boyImg} className="staff-img"/>
               <div className="member-detail-cont flex-c">
                 <div className="member-detail-line-import">
-                  <span className="member-detail-name">{RYMC}</span>
+                  <span className="member-detail-name">{RYMC || '-'}</span>
                   {/*<span className="staff-experience">&nbsp;已加入浙商证券{jrts}天</span>*/}
                 </div>
                 <div className="member-detail-line flex1 flex-r">
                   <span className="member-detail-label">公司：</span>
-                  <span className="member-detail-value">{GYSMC}</span>
+                  <span className="member-detail-value">{GYSMC || '-'}</span>
                 </div>
                 <div className="member-detail-line flex1 flex-r">
                   <span className="member-detail-label">岗位：</span>
-                  <span className="member-detail-value">{DJ}</span>
+                  <span className="member-detail-value">{DJ || '-'}</span>
                   <span className="member-detail-label">&nbsp;</span>
                   <span style={{color: '#C0C4CC'}}>|</span>
                   <span className="member-detail-label">&nbsp;</span>
-                  <Tooltip title={RYGW}>
+                  <Tooltip title={RYGW || '-'}>
                   <span
                     className="member-detail-value"
                     style={{
@@ -77,12 +116,21 @@ class ToConsole extends Component {
                   </span>
                   </Tooltip>
                 </div>
+                <div className="member-detail-line flex1 flex-r">
+                  <span className="member-detail-label">所属项目：</span>
+                  <span className="member-detail-value">{XMMC || '-'}</span>
+                </div>
               </div>
             </div>
             <div className="header-right flex-r flex1">
-              <Button className="btn-edit" onClick={this.handleEditMemberInfo}>
+              <Button className="btn-edit" onClick={() => this.handleEditMemberInfo("bjxq")}>
                 编辑
               </Button>
+              <Dropdown overlay={btnMoreContent} overlayClassName="tc-btn-more-content-dropdown">
+                <Button className="btn-more">
+                  <i className="iconfont icon-more"/>
+                </Button>
+              </Dropdown>
             </div>
           </div>
         </div>

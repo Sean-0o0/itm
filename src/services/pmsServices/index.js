@@ -78,6 +78,8 @@ const {
     sendMail,
     resumeDistribution,
     queryOutsourceMemberDetail,
+    queryEmail,
+    updateOutsourceMemberInfo,
     queryEvaluationGradeInfo,
     evaluationScoring,
   },
@@ -815,6 +817,26 @@ export async function ResumeDistribution(payload) {
 export async function FetchQueryOutsourceMemberDetail(payload) {
   const option = {
     url: queryOutsourceMemberDetail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询邮件发送人
+export async function QueryEmail(payload) {
+  const option = {
+    url: queryEmail,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 外包人员信息编辑
+export async function UpdateOutsourceMemberInfo(payload) {
+  const option = {
+    url: updateOutsourceMemberInfo,
     method: 'post',
     data: payload,
   };

@@ -177,9 +177,9 @@ export default function InfoTable(props) {
       {/*  />*/}
       {/*)}*/}
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={() => setVisible(true)}>
-          新增
-        </Button>
+        {/*<Button type="primary" className="btn-add-prj" onClick={() => setVisible(true)}>*/}
+        {/*  新增*/}
+        {/*</Button>*/}
       </div>
       <div className="project-info-table-box">
         <Table
