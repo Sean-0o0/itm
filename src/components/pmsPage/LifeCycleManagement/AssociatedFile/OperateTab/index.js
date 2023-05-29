@@ -1,44 +1,33 @@
 /**
  * 合同签署流程发起弹窗页面
  */
-import {
-  Row,
-  Col,
-  Select,
-  Form,
-  Input,
-  DatePicker,
-  Button,
-} from 'antd';
+import { Row, Col, Select, Form, Input, DatePicker, Button } from 'antd';
 
 const { Option } = Select;
 const { RangePicker } = DatePicker;
 import React from 'react';
-import { connect } from "dva";
+import { connect } from 'dva';
 
 class OperateTab extends React.Component {
   state = {
     inputSearch: '',
     dateSearch: [],
-  }
+  };
 
-  componentDidMount() {
-
-  }
+  componentDidMount() {}
   onInputChange(e) {
     // console.log("🚀 ~ file: index.js ~ line 27 ~ OperateTab ~ onInputChange ~ e.target.value", e.target.value)
     this.setState({
       inputSearch: e.target.value,
-    })
+    });
   }
 
   onRangePickerChange(date, dateString) {
-    // console.log("🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString", date, dateString)
+    console.log("🚀 ~ file: index.js ~ line 34 ~ OperateTab ~ onRangePickerChange ~ date, dateString", date, dateString)
     this.setState({
       dateSearch: dateString[0] === '' && dateString[1] === '' ? [] : [...dateString],
     });
   }
-
 
   render() {
     const { inputSearch, dateSearch } = this.state;
@@ -75,10 +64,16 @@ class OperateTab extends React.Component {
           </Col>
           <Col span={3} style={{ paddingTop: '0.25rem' }}>
             <Form.Item>
-              <Button onClick={() => handleTableFilter({
-                fileType: inputSearch,
-                draftDate: dateSearch,
-              })}>查询
+              <Button
+                type="primary"
+                onClick={() =>
+                  handleTableFilter({
+                    fileType: inputSearch,
+                    draftDate: dateSearch,
+                  })
+                }
+              >
+                查询
               </Button>
             </Form.Item>
           </Col>
@@ -90,4 +85,4 @@ class OperateTab extends React.Component {
 
 export default connect(({ global }) => ({
   dictionary: global.dictionary,
-}))(Form.create()(OperateTab));
+}))(OperateTab);

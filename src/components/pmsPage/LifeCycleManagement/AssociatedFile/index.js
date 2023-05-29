@@ -23,23 +23,12 @@ import moment from 'moment';
 import { isArrayLike } from 'lodash';
 import { QueryOafilerela } from '../../../../services/pmsServices';
 
-// const data = [];
-// for (let i = 0; i < 21; i++) {
-//   data.push({
-//     key: i,
-//     BT: `标题${i}`,
-//     WH: i,
-//     NGRQ: '2017-02-15',
-//     WJLB: `文件类别${i}`,
-//   });
-// }
-
 class AssociatedFile extends React.Component {
   state = {
     isSpinning: false,
     selectedRowKeys: [],
-    tableData: [],
-    tbFilterData: [], //查询后数据
+    tableData: [], //初始查询数据
+    tbFilterData: [], //筛选查询后数据 - 展示
   };
 
   componentDidMount() {
@@ -48,83 +37,26 @@ class AssociatedFile extends React.Component {
 
   //查询表格数据
   getTableData() {
-    // let data = {
-    //   code: "0",
-    //   message: "",
-    //   result: [
-    //     {
-    //       objectname: "666项目立项申请流程",
-    //       createdate: "20221215",
-    //       id: 1739778,
-    //       title: "测试1"
-    //     }, {
-    //       objectname: "555项目立项申请流程",
-    //       createdate: "20221214",
-    //       id: 1739777,
-    //       title: "测试2"
-    //     }, {
-    //       objectname: "444项目立项申请流程",
-    //       createdate: "20221213",
-    //       id: 1739776,
-    //       title: "测试3"
-    //     }, {
-    //       objectname: "333项目立项申请流程",
-    //       createdate: "20221212",
-    //       id: 1739775,
-    //       title: "测试4"
-    //     }, {
-    //       objectname: "222项目立项申请流程",
-    //       createdate: "20221211",
-    //       id: 1739774,
-    //       title: "测试5"
-    //     }, {
-    //       objectname: "111项目立项申请流程",
-    //       createdate: "20221210",
-    //       id: 1739773,
-    //       title: "测试6"
-    //     },
-    //     {
-    //       objectname: "666项目立项申请流程",
-    //       createdate: "20221215",
-    //       id: 1739778,
-    //       title: "测试1"
-    //     }, {
-    //       objectname: "555项目立项申请流程",
-    //       createdate: "20221214",
-    //       id: 1739777,
-    //       title: "测试2"
-    //     }, {
-    //       objectname: "444项目立项申请流程",
-    //       createdate: "20221213",
-    //       id: 1739776,
-    //       title: "测试3"
-    //     }, {
-    //       objectname: "333项目立项申请流程",
-    //       createdate: "20221212",
-    //       id: 1739775,
-    //       title: "测试4"
-    //     }, {
-    //       objectname: "222项目立项申请流程",
-    //       createdate: "20221211",
-    //       id: 1739774,
-    //       title: "测试5"
-    //     }, {
-    //       objectname: "111项目立项申请流程",
-    //       createdate: "20221210",
-    //       id: 1739773,
-    //       title: "测试6"
-    //     },
-    //   ]
-    // };
-    // this.setState({
-    //   tableData: [...data?.result],
-    //   tbFilterData: [...data?.result],
-    // });
     QueryOafilerela({ projectCode: String(this.props.xmbh || '') }).then(res => {
-      console.log('表格数据：', res);
+      function uniqueFunc(arr, uniId) {
+        const res = new Map();
+        return arr.filter(item => !res.has(Number(item[uniId])) && res.set(Number(item[uniId]), 1));
+      }
+      let arr = uniqueFunc(JSON.parse(res?.responseBody).concat(JSON.parse(res?.flowInfo)), 'id');
+      console.log(
+        '🚀 ~ file: index.js:47 ~ AssociatedFile ~ QueryOafilerela ~ arr:',
+        JSON.parse(res?.responseBody),
+        arr,
+      );
+      arr.map(x => {
+        return {
+          ...x,
+          id: Number(x.id),
+        };
+      });
       this.setState({
-        tableData: [...JSON.parse(res?.responseBody)],
-        tbFilterData: [...JSON.parse(res?.responseBody)],
+        tableData: [...arr],
+        tbFilterData: [...arr],
       });
     });
   }
@@ -207,10 +139,7 @@ class AssociatedFile extends React.Component {
         dataIndex: 'title',
         key: 'title',
       },
-      // {
-      //   title: '文号',
-      //   dataIndex: 'WH',
-      // },
+      ,
       {
         title: '拟稿日期',
         dataIndex: 'createdate',
@@ -244,8 +173,8 @@ class AssociatedFile extends React.Component {
     return (
       <>
         <Modal
-          wrapClassName="editMessage-modify"
-          width={'120rem'}
+          wrapClassName="editMessage-modify associated-file-modal"
+          width={'810px'}
           title={null}
           zIndex={100}
           bodyStyle={{
@@ -257,22 +186,22 @@ class AssociatedFile extends React.Component {
         >
           <div
             style={{
-              height: '6.2496rem',
+              height: '42px',
               width: '100%',
               display: 'flex',
               alignItems: 'center',
               backgroundColor: '#3361FF',
               color: 'white',
-              marginBottom: '2.3808rem',
-              padding: '0 3.5712rem',
+              marginBottom: '16px',
+              padding: '024px',
               borderRadius: '8px 8px 0 0',
-              fontSize: '2.333rem',
+              fontSize: '16px',
             }}
           >
             <strong>关联文件搜索</strong>
           </div>
           <Spin spinning={isSpinning} tip="加载中" size="large" wrapperClassName="diy-style-spin">
-            <div style={{ padding: '0 3.5712rem' }}>
+            <div style={{ padding: '0 24px' }}>
               <div className="steps-content">
                 <div>
                   <OperateTab handleTableFilter={item => this.handleTableFilter(item)} />
@@ -282,6 +211,15 @@ class AssociatedFile extends React.Component {
                   columns={columns}
                   dataSource={tbFilterData}
                   rowKey={record => record.id}
+                  pagination={{
+                    pageSize: 5,
+                    defaultCurrent: 1,
+                    showSizeChanger: false,
+                    hideOnSinglePage: false,
+                    showQuickJumper: true,
+                    showTotal: t => `共 ${tbFilterData.length} 条数据`,
+                    total: tbFilterData.length,
+                  }}
                 />
               </div>
             </div>
