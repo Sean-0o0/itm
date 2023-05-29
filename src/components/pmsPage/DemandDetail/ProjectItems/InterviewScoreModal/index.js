@@ -21,7 +21,16 @@ import { EvaluationScoring, QueryEvaluationGradeInfo } from '../../../../../serv
 const { Option } = Select;
 
 function InterviewScoreModal(props) {
-  const { visible, setVisible, form, ZHPC = [], xqid = -2, swzxid, reflush, WBRYGW = [] } = props;
+  const {
+    visible,
+    setVisible,
+    form,
+    xqid = -2,
+    swzxid,
+    reflush,
+    WBRYGW = [],
+    todo = false,
+  } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
   const [editData, setEditData] = useState([]); //提交的修改数据
@@ -37,11 +46,10 @@ function InterviewScoreModal(props) {
   const getTableData = xqid => {
     QueryEvaluationGradeInfo({
       xqid,
-      cxlx: 'ALL',
+      cxlx: todo ? 'SY' : 'ALL',
     })
       .then(res => {
         if (res?.success) {
-          // console.log('🚀 ~ QueryEvaluationGradeInfo ~ res', res);
           let arr = JSON.parse(res.result).map(x => {
             return {
               ...x,
@@ -59,24 +67,25 @@ function InterviewScoreModal(props) {
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
-        setVisible(false);
-        let submitTable = tableData.map(x => {
-          return {
-            DFID: String(x.DFID),
-            PF: String(x['FS' + x.DFID] || 0),
-          };
-        });
+        // let submitTable = tableData.map(x => {
+        //   return {
+        //     DFID: String(x.DFID),
+        //     PF: String(x['FS' + x.DFID] || 0),
+        //   };
+        // });
         let submitProps = {
           dfxx: JSON.stringify(editData),
           count: editData.length,
           xqid: Number(xqid),
-          swzxid: Number(swzxid),
-          cxlx: 'XQ',
+          swzxid: todo ? undefined : Number(swzxid),
+          czlx: todo ? 'SY' : 'XQ',
         };
-        // console.log('🚀 ~ file: index.js:69 ~ handleOk ~ submitProps:', submitProps, editData);
+
         EvaluationScoring(submitProps)
           .then(res => {
             if (res?.success) {
+              setVisible(false);
+              reflush();
               message.success('打分成功', 1);
             }
           })
@@ -114,7 +123,6 @@ function InterviewScoreModal(props) {
       });
     }
     setEditData(p => [...newEdit]);
-    console.log('🚀 ~ file: index.js:109 ~ handleTableSave ~ newData:', newData);
     setTableData(p => newData);
   };
 

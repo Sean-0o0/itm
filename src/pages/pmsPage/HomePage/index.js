@@ -1,11 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import { DecryptBase64 } from '../../../components/Common/Encrypt';
+import { connect } from 'dva';
 import HomePageTab from '../../../components/pmsPage/HomePage';
 
 //首页
-export default function HomePage(props) {
+function HomePage(props) {
   useEffect(() => {
     return () => {};
   }, []);
   return <HomePageTab {...props} />;
 }
+
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+}))(HomePage);

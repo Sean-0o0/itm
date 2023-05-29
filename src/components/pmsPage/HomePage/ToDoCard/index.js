@@ -12,9 +12,11 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
+import InterviewScoreModal from '../../DemandDetail/ProjectItems/InterviewScoreModal';
 
 export default function ToDoCard(props) {
-  const { itemWidth, getAfterItem, reflush, toDoData = [], total } = props;
+  const { itemWidth, getAfterItem, reflush, toDoData = [], total, dictionary } = props;
+  const { WBRYGW } = dictionary;
   const [dataList, setDataList] = useState([]); //待办数据 - 展示
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
@@ -29,6 +31,9 @@ export default function ToDoCard(props) {
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [allToDo, setAllToDo] = useState([]); //全部待办
   const [isLoading, setIsLoading] = useState(false); //查询全部数据时加载状态
+  const [modalVisible, setModalVisible] = useState({
+    wbrymspf: false, //外包人员面试评分
+  }); //弹窗显隐
   const location = useLocation();
 
   const ryxztxModalProps = {
@@ -145,6 +150,36 @@ export default function ToDoCard(props) {
       });
   };
 
+  const jumpToEditProjectInfo = item => {
+    setFileAddVisible(true);
+    setSrc_fileAdd({
+      xmid: item.xmid,
+      type: true,
+      subItemFlag: true,
+      subItemFinish: true,
+      projectStatus: 'SAVE',
+    });
+  };
+
+  //外包人员面试评分
+  const handleWbrymspf = item => {
+    setModalVisible(p => {
+      return {
+        ...p,
+        wbrymspf: true,
+      };
+    });
+    setCurrentXmid(item.xmid);
+  };
+
+  //获取操作按钮文本
+  const getBtnTxt = (txt, sxmc) => {
+    if (sxmc === '信委会会议结果') return '确认';
+    else if (txt.includes('录入')) return '录入';
+    else if (txt.includes('填写')) return '填写';
+    else return '处理';
+  };
+
   //按钮点击
   const handleToDo = item => {
     // console.log('handleToDo', item);
@@ -182,9 +217,8 @@ export default function ToDoCard(props) {
         return jumpToLBPage('V_FZBXYSNCLR');
       case '非资本性预算年初录入被退回':
         return jumpToLBPage('V_FZBXYSNCLR');
-        case '信委会流程待处理':
+      case '信委会流程待处理':
         return jumpToLBPage('WORKFLOW_TOTASKS');
-        
 
       //特殊处理
       case '付款流程':
@@ -198,6 +232,8 @@ export default function ToDoCard(props) {
         return jumpToEditProjectInfo(item);
       case '预算使用超限':
         return jumpToProjectDetail(item);
+      case '外包人员面试评分':
+        return handleWbrymspf(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -212,45 +248,6 @@ export default function ToDoCard(props) {
         return;
     }
   };
-
-  const jumpToEditProjectInfo = item => {
-    setFileAddVisible(true);
-    setSrc_fileAdd({
-      xmid: item.xmid,
-      type: true,
-      subItemFlag: true,
-      subItemFinish: true,
-      projectStatus: 'SAVE',
-    });
-  };
-
-  //获取操作按钮文本
-  const getBtnTxt = (txt, sxmc) => {
-    if (sxmc === '信委会会议结果') return '确认';
-    else if (txt.includes('录入')) return '录入';
-    else if (txt.includes('填写')) return '填写';
-    else return '处理';
-  };
-
-  // //获取目前每行几个
-  // const getColNum = w => {
-  //   switch (w) {
-  //     case '32%':
-  //       return 3;
-  //     case '24%':
-  //       return 4;
-  //     case '19%':
-  //       return 5;
-  //     case '15.6%':
-  //       return 6;
-  //     case '13.2%':
-  //       return 7;
-  //     case '11.5%':
-  //       return 8;
-  //     default:
-  //       return 3;
-  //   }
-  // };
 
   //展开、收起
   const handleUnfold = bool => {
@@ -367,6 +364,24 @@ export default function ToDoCard(props) {
   if (dataList?.length === 0) return null;
   return (
     <div className="todo-card-box">
+      {/* 外包人员面试评分 */}
+      {modalVisible.wbrymspf && (
+        <InterviewScoreModal
+          visible={modalVisible.wbrymspf}
+          setVisible={v => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                wbrymspf: v,
+              };
+            });
+          }}
+          xqid={Number(currentXmid)}
+          reflush={reflush}
+          WBRYGW={WBRYGW}
+          todo={true}
+        />
+      )}
       {/* 付款流程发起弹窗 */}
       {paymentModalVisible && (
         <PaymentProcess

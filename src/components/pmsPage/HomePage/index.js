@@ -29,8 +29,7 @@ const getAmountFormat = value => {
 };
 export { getAmountFormat };
 export default function HomePage(props) {
-  const { cacheLifecycles } = props;
-  // console.log("🚀 ~ file: index.js ~ line 32 ~ HomePage ~ props", props)
+  const { cacheLifecycles, dictionary } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
@@ -420,6 +419,7 @@ export default function HomePage(props) {
                 toDoData={toDoData}
                 reflush={() => getUserRole(true)}
                 total={total.todo}
+                dictionary={dictionary}
               />
             ) : (
               <CptBudgetCard
