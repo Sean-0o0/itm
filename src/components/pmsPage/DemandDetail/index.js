@@ -170,7 +170,8 @@ export default function DemandDetail(props) {
         />
         <ProjectItems
           dtlData={dtlData}
-          isAuth={isAuth}
+          isDock={isDock}
+          isFqr={String(LOGIN_USER_ID) === String(fqrid)}
           xqid={curXqid}
           fqrid={curFqrid}
           getDtldata={getDtldata}

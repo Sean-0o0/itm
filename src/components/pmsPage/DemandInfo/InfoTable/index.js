@@ -7,6 +7,7 @@ import DemandInitiated from '../../HardwareItems/DemandInitiated/index.js';
 import {
   OperateOutsourceRequirements,
   QueryOutsourceRequirementList,
+  QueryUserRole,
 } from '../../../../services/pmsServices/index.js';
 import moment from 'moment';
 import DemandPublish from './DemandPublish';
@@ -34,13 +35,34 @@ export default function InfoTable(props) {
   const [currentXmid, setCurrentXmid] = useState(-1); //项目id
   const [currentXmmc, setCurrentXmmc] = useState(''); //项目名称
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
+  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
+
   const location = useLocation();
 
   useEffect(() => {
-    if (xmid !== -2) setExpandedRowKeys([xmid]);
+    if (xmid !== -2) {
+      setExpandedRowKeys([xmid]);
+      getIsDock();
+    }
     // console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
     return () => {};
   }, [xmid]);
+
+  //是否为外包项目对接人 - 权限控制
+  const getIsDock = () => {
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          setIsDock(res.zyrole === '外包项目对接人');
+        }
+      })
+      .catch(e => {
+        message.error('用户信息查询失败', 1);
+      });
+  };
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
@@ -99,7 +121,7 @@ export default function InfoTable(props) {
     {
       title: '项目经理',
       dataIndex: 'XMJL',
-      width: '7%',
+      width: '10%',
       key: 'XMJL',
       ellipsis: true,
       render: (text, row, index) => {
@@ -202,7 +224,7 @@ export default function InfoTable(props) {
       {
         title: '发起人',
         dataIndex: 'FQR',
-        width: '7%',
+        width: '10%',
         key: 'FQR',
         ellipsis: true,
         render: (text, row, index) => {
@@ -267,9 +289,13 @@ export default function InfoTable(props) {
                 <a
                   className="sj"
                   onClick={() => {
-                    setDemandPublishVisible(true);
-                    setCurrentXqid(Number(row.XQID));
-                    setCurrentXmid(Number(row.XMID));
+                    if (isDock) {
+                      setDemandPublishVisible(true);
+                      setCurrentXqid(Number(row.XQID));
+                      setCurrentXmid(Number(row.XMID));
+                    } else {
+                      message.info('只有外包项目对接人可以操作');
+                    }
                   }}
                 >
                   上架
@@ -279,19 +305,23 @@ export default function InfoTable(props) {
                 <Popconfirm
                   title="确定要下架吗?"
                   onConfirm={() => {
-                    OperateOutsourceRequirements({
-                      xqid: Number(row.XQID),
-                      czlx: 'XJ',
-                    })
-                      .then(res => {
-                        if (res?.success) {
-                          message.success('下架成功', 1);
-                          getSubTableData(Number(row.XMID)); //刷新
-                        }
+                    if (isDock) {
+                      OperateOutsourceRequirements({
+                        xqid: Number(row.XQID),
+                        czlx: 'XJ',
                       })
-                      .catch(e => {
-                        message.error('下架失败', 1);
-                      });
+                        .then(res => {
+                          if (res?.success) {
+                            message.success('下架成功', 1);
+                            getSubTableData(Number(row.XMID)); //刷新
+                          }
+                        })
+                        .catch(e => {
+                          message.error('下架失败', 1);
+                        });
+                    } else {
+                      message.info('只有外包项目对接人可以操作');
+                    }
                   }}
                 >
                   <a className="xj">下架</a>
@@ -306,16 +336,21 @@ export default function InfoTable(props) {
                     {row.SJZT !== '3' && (
                       <div
                         className="item"
+                        style={{ color: '#3361ff' }}
                         onClick={() => {
-                          setVisible(p => {
-                            return {
-                              ...p,
-                              update: true,
-                            };
-                          });
-                          setCurrentXqid(Number(row.XQID));
-                          setCurrentXmid(Number(row.XMID));
-                          setCurrentXmmc(tableData.filter(x=>x.XMID===row.XMID)[0]?.XMMC);
+                          if (LOGIN_USER_ID === Number(row.FQRID)) {
+                            setVisible(p => {
+                              return {
+                                ...p,
+                                update: true,
+                              };
+                            });
+                            setCurrentXqid(Number(row.XQID));
+                            setCurrentXmid(Number(row.XMID));
+                            setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
+                          } else {
+                            message.info('只有需求发起人可以操作');
+                          }
                         }}
                       >
                         修改
@@ -323,16 +358,21 @@ export default function InfoTable(props) {
                     )}
                     <div
                       className="item"
+                      style={{ color: '#3361ff' }}
                       onClick={() => {
-                        setVisible(p => {
-                          return {
-                            ...p,
-                            relaunch: true,
-                          };
-                        });
-                        setCurrentXqid(Number(row.XQID));
-                        setCurrentXmid(Number(row.XMID));
-                        setCurrentXmmc(tableData.filter(x=>x.XMID===row.XMID)[0]?.XMMC);
+                        if (LOGIN_USER_ID === Number(row.FQRID)) {
+                          setVisible(p => {
+                            return {
+                              ...p,
+                              relaunch: true,
+                            };
+                          });
+                          setCurrentXqid(Number(row.XQID));
+                          setCurrentXmid(Number(row.XMID));
+                          setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
+                        } else {
+                          message.info('只有需求发起人可以操作');
+                        }
                       }}
                     >
                       重新发起
@@ -353,6 +393,7 @@ export default function InfoTable(props) {
       <Table
         className="sub-table-demand-info"
         columns={columns}
+        rowKey="XQID"
         dataSource={subTableData[record.XMID]}
         pagination={false}
         bordered
@@ -393,7 +434,7 @@ export default function InfoTable(props) {
       {/* 修改 */}
       {visible.update && (
         <DemandInitiated
-        xmmc={currentXmmc}
+          xmmc={currentXmmc}
           xqid={currentXqid}
           closeModal={() =>
             setVisible(p => {

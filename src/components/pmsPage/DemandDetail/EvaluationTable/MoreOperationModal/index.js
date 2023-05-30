@@ -61,16 +61,13 @@ function MoreOperationModal(props) {
 
   //表格保存
   const handleTableSave = row => {
-    console.log('🚀 ~ file: index.js:57 ~ handleTableSave ~  row:', row);
     const newData = [...tableArr];
     const index = newData.findIndex(item => row.PCID === item.PCID);
     const item = newData[index];
-    console.log('🚀 ~ file: index.js:60 ~ handleTableSave ~ item:', item);
     newData.splice(index, 1, {
       ...item, //old row data
       ...row, //new row data
     });
-    console.log('🚀 ~ file: index.js:52 ~ handleTableSave ~ newData:', newData);
     setTableArr(preState => [...newData]);
   };
 
@@ -85,8 +82,6 @@ function MoreOperationModal(props) {
             LYSM: x['LYSM' + x.PCID] || '',
           };
         });
-        // console.log('🚀 ~ file: index.js:134 ~ submitTable ~ tableData:', tableData);
-        console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
         let submitProps = {
           xqid: Number(xqid),
           swzxid: Number(swzxid),
@@ -94,7 +89,6 @@ function MoreOperationModal(props) {
           czlx: 'UPDATE',
           count: submitTable.length,
         };
-        console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
         OperateEvaluation(submitProps)
           .then(res => {
             if (res?.success) {
@@ -130,7 +124,7 @@ function MoreOperationModal(props) {
       render: txt => {
         return (
           <Tooltip title={txt} placement="topLeft">
-            {txt}
+            <span style={{ cursor: 'default' }}>{txt}</span>
           </Tooltip>
         );
       },
@@ -153,7 +147,7 @@ function MoreOperationModal(props) {
         if (nameArr?.length === 0) return '';
         return (
           <Tooltip title={nameArr?.join('、')} placement="topLeft">
-            {nameArr.join('、')}
+            <span style={{ cursor: 'default' }}>{nameArr.join('、')}</span>
           </Tooltip>
         );
       },
@@ -164,7 +158,14 @@ function MoreOperationModal(props) {
       width: '12%',
       key: 'ZHPCSJ',
       ellipsis: true,
-      render: txt => (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--',
+      render: txt => {
+        let date = (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--';
+        return (
+          <Tooltip title={date} placement="topLeft">
+            <span style={{ cursor: 'default' }}> {date}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '综合评测分数',
@@ -208,7 +209,6 @@ function MoreOperationModal(props) {
                   };
                 });
                 setEditContent(row['LYSM' + row.PCID] || '');
-                // console.log("🚀 ~ file: index.js:223 ~ MoreOperationModal ~ row.LYSM:", row.LYSM)
               }}
               value={row['LYSM' + row.PCID]}
             />
@@ -436,7 +436,6 @@ function MoreOperationModal(props) {
                   //   }
                   // });
                   // setTableArr(p => [...arr]);
-                  // console.log('🚀 ~ file: index.js:423 ~ MoreOperationModal ~ [...arr]:', [...arr]);
                 }}
               ></TextArea>
             </div>
@@ -481,9 +480,13 @@ function MoreOperationModal(props) {
           {editing ? (
             <>
               <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-                <Button  type="primary" style={{ marginRight: '16px' }}>保存</Button>
+                <Button type="primary" style={{ marginRight: '16px' }}>
+                  保存
+                </Button>
               </Popconfirm>
-              <Button  type="primary" onClick={handleEditCancel}>取消</Button>
+              <Button type="primary" onClick={handleEditCancel}>
+                取消
+              </Button>
             </>
           ) : (
             <Button onClick={handleEdit} type="primary">
@@ -508,15 +511,9 @@ function MoreOperationModal(props) {
           rowKey={'PCID'}
           rowClassName={() => 'editable-row'}
           dataSource={tableArr}
-          scroll={
-            { y: true }
-            // tableData?.length > (document.body.clientHeight - 278) / (editing ? 59 : 40)
-            //   ? {
-            //       y: document.body.clientHeight - 278,
-            //       x: 1900,
-            //     }
-            //   : { y: false, x: 1900 }
-          }
+          scroll={{
+            y: (editing && tableArr.length > 4) || (!editing && tableArr.length > 6) ? 272 : false,
+          }}
           pagination={false}
           // bordered
         />

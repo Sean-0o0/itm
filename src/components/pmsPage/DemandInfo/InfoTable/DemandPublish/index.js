@@ -118,6 +118,7 @@ function DemandPublish(props) {
     validateFieldsAndScroll(err => {
       if (!err) {
         let submitProps = {
+          xqmc: getFieldValue('xqmc') !== '' ? getFieldValue('xqmc') : data.wbxq.XMMC,
           xqid: Number(xqid),
           jlrqsj: Number(getFieldValue('jlrqsj')?.format('YYYYMMDD')),
           pcrqsj: Number(getFieldValue('pcrqsj')?.format('YYYYMMDD')),
@@ -140,7 +141,6 @@ function DemandPublish(props) {
           });
       }
     });
-    setVisible(false);
   };
 
   //取消
@@ -177,6 +177,25 @@ function DemandPublish(props) {
     );
   };
 
+  //输入框
+  const getInput = (label, dataIndex, initialValue) => {
+    return (
+      <Col span={24}>
+        <Form.Item label={label} labelCol={{ span: 4 }} wrapperCol={{ span: 19 }}>
+          {getFieldDecorator(dataIndex, {
+            initialValue,
+            rules: [
+              {
+                required: true,
+                message: label + '不允许空值',
+              },
+            ],
+          })(<Input style={{ width: '100%' }} />)}
+        </Form.Item>
+      </Col>
+    );
+  };
+
   //日期
   const getDatePicker = (label, dataIndex, initialValue) => {
     return (
@@ -203,37 +222,37 @@ function DemandPublish(props) {
       maskClosable={false}
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-      style={{ top: '60px' }}
+      style={{ top: '10px' }}
       title={null}
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
-      okText="保存"
+      okText="上架"
       confirmLoading={isSpinning}
     >
       <div className="body-title-box">
-        <strong>综合评测信息列表</strong>
+        <strong>需求上架</strong>
       </div>
       <Spin spinning={isSpinning}>
         <Form className="content-box" style={{ paddingRight: 0, paddingLeft: 34 }}>
-          <Row>{getInputDisabled('需求名称', data.wbxq.XMMC)}</Row>
+          <Row>{getInput('需求名称', 'xqmc', data.wbxq.XMMC)}</Row>
           <Row>
             {getDatePicker(
               '简历反馈截止日期',
               'jlrqsj',
-              data.wbxq.JLFKJZRQ_SJ !== undefined ? moment(data.wbxq.JLFKJZRQ_SJ) : null,
+              data.wbxq.KFSFKQX !== undefined ? moment(data.wbxq.KFSFKQX) : null,
             )}
             {getDatePicker(
               '预计到场日期',
               'dcrqsj',
-              data.wbxq.YJDCRQ_SJ !== undefined ? moment(data.wbxq.YJDCRQ_SJ) : null,
+              data.wbxq.YJSYRQ !== undefined ? moment(data.wbxq.YJSYRQ) : null,
             )}
           </Row>
           <Row>
             {getDatePicker(
               '预计综合评测完成日期',
               'pcrqsj',
-              data.wbxq.YJZHPCWCRQ_SJ !== undefined ? moment(data.wbxq.YJZHPCWCRQ_SJ) : null,
+              data.wbxq.YJZHPCRQ !== undefined ? moment(data.wbxq.YJZHPCRQ) : null,
             )}
             {getDatePicker(
               '需求截止日期',
@@ -241,7 +260,7 @@ function DemandPublish(props) {
               data.wbxq.XQJZRQ_SJ !== undefined ? moment(data.wbxq.XQJZRQ_SJ) : null,
             )}
           </Row>
-          <Row>{getInputDisabled('需求名称', data.wbxq.XQMC, '64px', 24)}</Row>
+          <Row>{getInputDisabled('项目简介', data.wbxq.XMJJ, '64px', 24)}</Row>
           <Form.Item
             label="人员需求"
             labelCol={{ span: 4 }}

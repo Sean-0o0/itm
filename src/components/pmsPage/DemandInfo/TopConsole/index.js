@@ -221,7 +221,7 @@ export default forwardRef(function TopConsole(props, ref) {
       .then(res => {
         if (res?.success) {
           const data = JSON.parse(res.xmxx);
-          console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
+          // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
           setTableData(p => data);
           setTotal(res.totalrows);
           setTableLoading(false);

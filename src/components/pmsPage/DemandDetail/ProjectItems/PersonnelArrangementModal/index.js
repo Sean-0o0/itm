@@ -73,7 +73,20 @@ function PersonnelArrangementModal(props) {
       );
       // console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
       if (zhpc.length > 0) {
-        setTableData([...zhpc[0].TABLE]);
+        const UUID = Date.now();
+        if (zhpc[0].TABLE?.length === 0) {
+          setTableData([
+            {
+              PCID: UUID,
+              ['GYSID' + UUID]: '',
+              ['RYMC' + UUID]: '',
+              ['MSSJ' + UUID]: null,
+              NEW: true,
+            },
+          ]);
+        } else {
+          setTableData([...zhpc[0].TABLE]);
+        }
         setUpdateData({
           MSGID: zhpc[0].MSGID,
           XQNRID: zhpc[0].XQNRID,
@@ -113,7 +126,20 @@ function PersonnelArrangementModal(props) {
       const arr = zhpc.filter(x => x.XQNRID === v);
       let item = arr.length > 0 ? arr[0] : { TABLE: [] };
       if (zhpc.length > 0) {
-        setTableData([...item.TABLE]);
+        const UUID = Date.now();
+        if (item.TABLE?.length === 0) {
+          setTableData([
+            {
+              PCID: UUID,
+              ['GYSID' + UUID]: '',
+              ['RYMC' + UUID]: '',
+              ['MSSJ' + UUID]: null,
+              NEW: true,
+            },
+          ]);
+        } else {
+          setTableData([...item.TABLE]);
+        }
         setUpdateData({
           MSGID: item.MSGID,
           XQNRID: item.XQNRID,
@@ -228,7 +254,7 @@ function PersonnelArrangementModal(props) {
     {
       title: '人员名称',
       dataIndex: 'RYMC',
-      width: '20%',
+      width: '17%',
       align: 'center',
       key: 'RYMC',
       ellipsis: true,
@@ -237,7 +263,7 @@ function PersonnelArrangementModal(props) {
     {
       title: '综合评测时间',
       dataIndex: 'MSSJ',
-      width: '25%',
+      width: '28%',
       align: 'center',
       key: 'MSSJ',
       ellipsis: true,

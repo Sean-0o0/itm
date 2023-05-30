@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, message, Select, Table } from 'antd';
+import { Button, message, Pagination, Popover, Select, Spin, Table } from 'antd';
 import moment from 'moment';
 import { QuerySupplierDemand } from '../../../services/pmsServices';
 
@@ -7,24 +7,82 @@ const { Option } = Select;
 
 export default function SupplierDmInfo(props) {
   const {} = props;
-  const [splDmData, setSplDmData] = useState({}); //应商需求信息
-  const { gwxx = [], xqxx = [], xqList = [] } = splDmData;
+  const [splDmData, setSplDmData] = useState({}); //供应商需求信息
+  const { xqList = [], total = 0 } = splDmData;
+  const [sltData, setSltData] = useState({}); //选择框数据
+  const { gwxx = [], xqxx = [] } = sltData;
+  const [sltParams, setSltParams] = useState({
+    current: 1,
+    xqmc: undefined,
+    gwmc: undefined,
+  }); //查询参数
+  const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const nodeArr = document.getElementsByClassName('value xmjj');
+
   useEffect(() => {
-    getSplierDmData();
+    getSltData();
     return () => {};
   }, []);
 
-  //获取供应商需求信息
-  const getSplierDmData = () => {
+  useEffect(() => {
+    if (nodeArr.length !== 0) {
+      let data = JSON.parse(JSON.stringify([...xqList]));
+      for (let i = 0; i < nodeArr.length; i++) {
+        let x = nodeArr[i];
+        data[i].SHOWDTL = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
+      }
+      setSplDmData(p => {
+        return {
+          ...p,
+          xqList: data,
+        };
+      });
+    }
+    return () => {};
+  }, [xqList.length, JSON.stringify(xqList)]);
+
+  const getSltData = () => {
     QuerySupplierDemand({
       current: 1,
-      cxlx: 'ALL',
-      gwmc: 0,
+      pageSize: 3,
+      paging: -1,
+      sort: '',
+      total: -1,
+      cxlx: 'CXTJ',
+    })
+      .then(res => {
+        if (res?.success) {
+          const nullCheck = (str = '[]') => {
+            let arr = JSON.parse(str);
+            return arr.length <= 0 ? [] : arr[0].NOTE === '暂无数据' ? [] : arr;
+          };
+
+          const finalData = {
+            gwxx: nullCheck(res.gwxx),
+            xqxx: nullCheck(res.xqxx),
+          };
+          setSltData(finalData);
+          getSplierDmData({});
+        }
+      })
+      .catch(e => {
+        setIsSpinning(false);
+        message.error('供应商需求信息获取失败');
+      });
+  };
+
+  //获取供应商需求信息
+  const getSplierDmData = ({ current = 1, gwmc = undefined, xqmc = undefined }) => {
+    setIsSpinning(true);
+    QuerySupplierDemand({
+      current,
       pageSize: 3,
       paging: 1,
       sort: '',
       total: -1,
-      xqmc: 0,
+      cxlx: 'ALL',
+      gwmc,
+      xqmc,
     })
       .then(res => {
         if (res?.success) {
@@ -76,25 +134,64 @@ export default function SupplierDmInfo(props) {
           const xqList = xqArr.map(obj => ({
             ...obj,
             RYXQ: map2.get(obj.XQID) || [],
+            ISUNFOLD: false, //是否展开
+            SHOWDTL: false, //详情显隐
           }));
 
           const finalData = {
-            gwxx: nullCheck(res.gwxx),
-            xqxx: nullCheck(res.xqxx),
             xqList,
+            total: res.totalrows ?? 0,
           };
 
           console.log('🚀 ~ file: index.js:38 ~ getSplierDmData ~ finalData:', finalData);
           setSplDmData(finalData);
+          setIsSpinning(false);
         }
       })
       .catch(e => {
+        setIsSpinning(false);
         message.error('供应商需求信息获取失败');
       });
   };
 
   //重置
-  const handleReset = () => {};
+  const handleReset = () => {
+    setSltParams({
+      current: 1,
+      xqmc: undefined,
+      gwmc: undefined,
+    });
+    getSplierDmData({});
+  };
+
+  //展开、收起
+  const handleUnfold = (bool, xqid) => {
+    console.log('🚀 ~ file: index.js:120 ~ handleUnfold ~ bool, xqid:', bool, xqid);
+    let arr = JSON.parse(JSON.stringify(xqList));
+    arr.forEach(x => {
+      if (x.XQID === xqid) {
+        x.ISUNFOLD = bool;
+      }
+    });
+    console.log('🚀 ~ file: index.js:127 ~ handleUnfold ~ arr:', arr);
+    setSplDmData(p => {
+      return {
+        ...p,
+        xqList: arr,
+      };
+    });
+  };
+
+  //查询参数变化
+  const handleParamsChange = (paramName, v) => {
+    setSltParams(p => {
+      return {
+        ...p,
+        [paramName]: v,
+      };
+    });
+    getSplierDmData({ ...sltParams, [paramName]: v });
+  };
 
   //列配置
   const columns = [
@@ -149,11 +246,13 @@ export default function SupplierDmInfo(props) {
     LXR = '--',
     LXRDH = '--',
     XMJJ = '--',
-    JLRQ = '--',
-    PCRQ = '--',
-    DCRQ = '--',
+    JLRQ,
+    PCRQ,
+    DCRQ,
     XQXQ = [],
     RYXQ = [],
+    ISUNFOLD = false, // 展开
+    SHOWDTL = false, //显示详情
   }) => {
     //小块
     const getItem = (label, value, width = '32%') => {
@@ -170,9 +269,9 @@ export default function SupplierDmInfo(props) {
         <div className="title">{XQMC}</div>
         <div className="content">
           <div className="introduction-box">
-            {getItem('简历反馈截止日期', JLRQ)}
-            {getItem('预计综合评测完成日期', PCRQ)}
-            {getItem('预计到场日期', DCRQ)}
+            {getItem('简历反馈截止日期', JLRQ ? moment(JLRQ).format('YYYY-MM-DD') : '--')}
+            {getItem('预计综合评测完成日期', PCRQ ? moment(PCRQ).format('YYYY-MM-DD') : '--')}
+            {getItem('预计到场日期', DCRQ ? moment(DCRQ).format('YYYY-MM-DD') : '--')}
             {getItem(
               '联系人',
               <>
@@ -183,71 +282,131 @@ export default function SupplierDmInfo(props) {
             {getItem('人员需求', RYXQ.join('、'), '66%')}
             <div className="introduction">
               <div className="label">项目简介：</div>
-              <div className="value">{XMJJ}</div>
+              <div
+                className="value xmjj"
+                style={
+                  SHOWDTL
+                    ? {
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: '2',
+                      }
+                    : {}
+                }
+              >
+                {SHOWDTL && (
+                  <Popover
+                    title={null}
+                    content={<div className="content">{XMJJ}</div>}
+                    placement="bottomRight"
+                    overlayClassName="empolyment-remark-popover"
+                  >
+                    <div className="float">详情</div>
+                  </Popover>
+                )}
+                {XMJJ}
+              </div>
             </div>
           </div>
-          <div className="table-box">
-            <div className="label">需求详情：</div>
-            <Table dataSource={XQXQ} columns={columns} rowKey="RYXQID" pagination={false} />
-          </div>
+          {ISUNFOLD && (
+            <div className="table-box">
+              <div className="label">需求详情：</div>
+              <Table dataSource={XQXQ} columns={columns} rowKey="RYXQID" pagination={false} />
+            </div>
+          )}
         </div>
+        {ISUNFOLD ? (
+          <div className="more-item-unfold" onClick={() => handleUnfold(false, XQID)}>
+            收起
+            <i className="iconfont icon-up" />
+          </div>
+        ) : (
+          <div className="more-item" onClick={() => handleUnfold(true, XQID)}>
+            展开
+            <i className="iconfont icon-down" />
+          </div>
+        )}
       </div>
     );
   };
 
   return (
     <div className="splier-demand-info-box">
-      <div className="top-console">
-        <div className="title">信息技术人力外包需求</div>
-        <div className="selector-row">
-          <div className="console-item" key="xqmc">
-            <div className="item-label">需求名称</div>
-            <Select
-              className="item-selector"
-              dropdownClassName={'item-selector-dropdown'}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              showSearch
-              allowClear
-              // onChange={handlePrjNameChange}
-              // value={prjName}
-              placeholder="请选择"
-            >
-              {xqxx.map(x => (
-                <Option key={x.XQID} value={x.XQID}>
-                  {x.XQMC}
-                </Option>
-              ))}
-            </Select>
+      <Spin
+        spinning={isSpinning}
+        tip="加载中"
+        size="large"
+        wrapperClassName="diy-style-spin-prj-detail"
+      >
+        <div className="top-console">
+          <div className="title">信息技术人力外包需求</div>
+          <div className="selector-row">
+            <div className="console-item" key="xqmc">
+              <div className="item-label">需求名称</div>
+              <Select
+                className="item-selector"
+                dropdownClassName={'item-selector-dropdown'}
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                showSearch
+                allowClear
+                onChange={v => {
+                  handleParamsChange('xqmc', v);
+                }}
+                value={sltParams.xqmc}
+                placeholder="请选择"
+              >
+                {xqxx.map(x => (
+                  <Option key={x.XQID} value={x.XQID}>
+                    {x.DWXQMC}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <div className="console-item" key="gwmc">
+              <div className="item-label">岗位名称</div>
+              <Select
+                className="item-selector"
+                dropdownClassName={'item-selector-dropdown'}
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                showSearch
+                allowClear
+                onChange={v => {
+                  handleParamsChange('gwmc', v);
+                }}
+                value={sltParams.gwmc}
+                placeholder="请选择"
+              >
+                {gwxx.map(x => (
+                  <Option key={x.GWID} value={x.GWID}>
+                    {x.GWMC}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+            <Button className="btn-reset" onClick={handleReset}>
+              重置
+            </Button>
           </div>
-          <div className="console-item" key="gwmc">
-            <div className="item-label">岗位名称</div>
-            <Select
-              className="item-selector"
-              dropdownClassName={'item-selector-dropdown'}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              showSearch
-              allowClear
-              // onChange={handlePrjNameChange}
-              // value={prjName}
-              placeholder="请选择"
-            >
-              {gwxx.map(x => (
-                <Option key={x.GWID} value={x.GWID}>
-                  {x.GWMC}
-                </Option>
-              ))}
-            </Select>
-          </div>
-          <Button className="btn-reset" onClick={handleReset}>
-            重置
-          </Button>
         </div>
-      </div>
-      <div className="info-box">{xqList.map(x => getInfoItem(x))}</div>
+        <div className="info-box" style={{ paddingBottom: splDmData.total <= 3 ? 8 : 24 }}>
+          {xqList.map(x => getInfoItem(x))}
+          {splDmData.total > 3 && (
+            <Pagination
+              defaultCurrent={1}
+              current={sltParams.current}
+              pageSize={3}
+              total={splDmData.total}
+              showQuickJumper
+              onChange={v => {
+                handleParamsChange('current', v);
+              }}
+            />
+          )}
+        </div>
+      </Spin>
     </div>
   );
 }

@@ -56,7 +56,7 @@ export default function EvaluationTable(props) {
     {
       title: '人员名称',
       dataIndex: 'RYMC',
-      width: '7%',
+      width: '8%',
       key: 'RYMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -137,7 +137,7 @@ export default function EvaluationTable(props) {
     {
       title: '打分状态',
       dataIndex: 'DFZT',
-      width: '8%',
+      width: '10%',
       key: 'DFZT',
       ellipsis: true,
       render: txt => DFZT?.filter(x => x.ibm === txt)[0]?.note,
@@ -145,7 +145,7 @@ export default function EvaluationTable(props) {
     {
       title: '录用状态',
       dataIndex: 'LYZT',
-      width: '7%',
+      width: '8%',
       key: 'LYZT',
       ellipsis: true,
       render: txt => LYZT?.filter(x => x.ibm === txt)[0]?.note,
@@ -153,7 +153,6 @@ export default function EvaluationTable(props) {
     {
       title: '录用说明',
       dataIndex: 'LYSM',
-      align: 'center',
       key: 'LYSM',
       ellipsis: true,
       render: text => (
@@ -164,7 +163,7 @@ export default function EvaluationTable(props) {
     },
   ];
 
-  if (ZHPC.length === 0 || !isAuth) return null;
+  if (ZHPC.length === 0) return null;
   return (
     <div className="evaluation-table-box info-box">
       {modalVisible && (
@@ -179,7 +178,7 @@ export default function EvaluationTable(props) {
             reflush: () => {
               getDtldata(xqid, fqrid);
             },
-            swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0].SWZXID,
+            swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0]?.SWZXID,
           }}
           tableColumns={columns}
         />
@@ -189,7 +188,7 @@ export default function EvaluationTable(props) {
         <span onClick={() => setModalVisible(true)}>更多操作</span>
       </div>
       <div className="table-box">
-        <Table columns={columns} rowKey={'ZHPCID'} dataSource={ZHPC} pagination={false} bordered />
+        <Table columns={columns} rowKey={'ZHPCID'} dataSource={ZHPC} pagination={false}/>
       </div>
     </div>
   );

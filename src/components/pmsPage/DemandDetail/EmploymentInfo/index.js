@@ -49,7 +49,7 @@ export default function EmploymentInfo(props) {
         message.error('面试打分底稿下载失败', 1);
       });
   };
-  if ((!isAuth || JSON.stringify(LYSQ) === '{}')) return null;
+  if (!isAuth || JSON.stringify(LYSQ) === '{}') return null;
   return (
     <div className="empolyment-info-box info-box">
       <div className="title">录用申请信息</div>
@@ -79,10 +79,12 @@ export default function EmploymentInfo(props) {
           {LYSQ.LYBZ}
         </div>
       </div>
-      <div className="grade-script">
-        面试打分底稿：
-        <span onClick={() => handleFilePreview(LYSQ.LYXXID, LYSQ.FJ)}>{LYSQ.FJ}</span>
-      </div>
+      {LYSQ.FJ && (
+        <div className="grade-script">
+          面试打分底稿：
+          <span onClick={() => handleFilePreview(LYSQ.LYXXID, LYSQ.FJ)}>{LYSQ.FJ}</span>
+        </div>
+      )}
     </div>
   );
 }

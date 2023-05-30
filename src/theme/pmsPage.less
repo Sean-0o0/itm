@@ -4793,7 +4793,11 @@
 }
 
 .ant-spin-nested-loading.diy-style-spin-prj-detail > div > .ant-spin {
-  max-height: calc(100vh - 62px);
+  height: calc(100vh - 46px);
+  max-height: unset;
+  position: fixed;
+  top: 31px;
+  left: 95px;
 }
 
 .ant-spin-nested-loading.diy-style-spin-demand-detail > div > .ant-spin {
@@ -12193,7 +12197,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       padding: 16px 24px;
       display: flex;
       flex-direction: row;
-      align-items: center;
+      // align-items: center;
       justify-content: space-between;
       // height: 225px;
 
@@ -13508,6 +13512,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       box-shadow: inset 0px -1px 0px 0px #ebeef5;
       border-radius: 8px;
       margin-bottom: 16px;
+      overflow: hidden;
 
       & > .title {
         padding: 0 16px;
@@ -13524,6 +13529,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
       & > .content {
         padding: 16px 24px;
+        padding-bottom: 0;
 
         & > .introduction-box {
           display: flex;
@@ -13558,12 +13564,16 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               height: 22px;
               font-size: 14px;
               line-height: 22px;
+
+              span {
+                margin-left: 8px;
+                color: #909399;
+              }
             }
           }
           & > .introduction {
             display: flex;
             flex-direction: row;
-            align-items: center;
             margin-bottom: 16px;
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
@@ -13578,17 +13588,41 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
             .value {
               flex-grow: 1;
-              // text-overflow: ellipsis;
-              // overflow: hidden;
-              // white-space: nowrap;
-              // height: 22px;
               font-size: 14px;
-              // line-height: 22px;
+              line-height: 22px;
+              word-wrap: break-word;
+              overflow: hidden; //溢出内容隐藏
+              text-overflow: ellipsis; //文本溢出部分用省略号表示
+              display: -webkit-box; //特别显示模式
+              -webkit-line-clamp: 2; //行数
+              line-clamp: 2;
+              overflow: hidden;
+
+              &:before {
+                content: '';
+                float: right;
+                height: 22px;
+              }
+
+              .float {
+                font-size: 12px;
+                color: #3361ff;
+                cursor: pointer;
+                float: right;
+                clear: both;
+                padding-left: 4px;
+
+                &:hover {
+                  color: #3361ffa3;
+                }
+              }
             }
           }
         }
 
         & > .table-box {
+          margin-bottom: 16px;
+
           & > .label {
             height: 22px;
             font-size: 14px;
@@ -13635,6 +13669,81 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
         }
+      }
+      & > .more-item,
+      & > .more-item-unfold {
+        .font-size-14();
+        font-weight: normal;
+        margin-bottom: 16px;
+        text-align: center;
+        line-height: 1em;
+        cursor: pointer;
+        color: #606266;
+
+        &:hover {
+          color: #3361ff;
+
+          i {
+            color: #3361ff;
+          }
+        }
+
+        i {
+          margin-left: 4px;
+          font-size: 1em;
+          color: #909399;
+        }
+      }
+    }
+
+    .ant-pagination {
+      font-size: 14px;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      width: 100%;
+
+      .ant-select {
+        font-size: 14px !important;
+      }
+    }
+    .ant-pagination-prev {
+      margin-left: auto;
+    }
+
+    .ant-pagination-item-active {
+      background-color: #3361ff;
+
+      a {
+        color: #fff;
+      }
+    }
+
+    .ant-pagination-item {
+      border: 0;
+    }
+
+    .ant-pagination-total-text {
+      margin-right: auto;
+      color: #909399;
+    }
+
+    .ant-pagination-disabled {
+      background-color: #f5f7fa;
+
+      a {
+        background-color: #f5f7fa;
+      }
+    }
+
+    .ant-pagination-options-quick-jumper input {
+      &:hover {
+        border-color: #3361ff;
+      }
+
+      &:focus {
+        border-color: #3361ff;
+        box-shadow: 0 0 0 2px #3361ff33;
       }
     }
   }

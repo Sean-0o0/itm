@@ -11,8 +11,16 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 
 export default function ProjectItems(props) {
-  const { dtlData = {}, isAuth, xqid, getDtldata, fqrid, WBRYGW } = props;
-  const { XQSX = [], FKTX = {}, JLXX = [], ZHPC = [], XQNR = [], XMXX = {} } = dtlData;
+  const { dtlData = {}, isDock, isFqr, xqid, getDtldata, fqrid, WBRYGW } = props;
+  const {
+    XQSX = [],
+    FKTX = {},
+    JLXX = [],
+    ZHPC = [],
+    XQNR = [],
+    XMXX = {},
+    XQSX_ORIGIN = [],
+  } = dtlData;
   const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
@@ -48,74 +56,112 @@ export default function ProjectItems(props) {
       // console.log("🚀 ~ file: index.js:51 ~ isPcry ~ isPcry:", newArr,LOGIN_USER_ID)
       return newArr.includes(LOGIN_USER_ID);
     };
-
-    if (!(isAuth || isPcry())) {
-      message.info('只有外包项目对接人、需求发起人和评测人员可以操作', 1);
-      return;
-    }
     let modalName = '';
-    if (SWMC === '需求发起') {
-      // modalName = 'demandInitiation';
-    } else if (SWMC === '发送确认邮件') {
-      modalName = 'msgConfirmation';
+    if (SWMC === '发送确认邮件') {
+      if (isDock) {
+        modalName = 'msgConfirmation';
+      } else {
+        message.info('只有外包项目对接人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '简历分发') {
-      modalName = 'resumeDestribution';
+      if (isDock) {
+        modalName = 'resumeDestribution';
+      } else {
+        message.info('只有外包项目对接人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '简历上传') {
-      getLink('View_JLSC1', 'View_JLSC1_M', [
-        {
-          name: 'XQMC',
-          value: xqid,
-        },
-        {
-          name: 'SWZX',
-          value: SWZXID,
-        },
-      ]);
-      modalName = 'resumeUpload';
-      setLbModal(p => {
-        return {
-          ...p,
-          title: SWMC,
-        };
-      });
+      if (isDock) {
+        getLink('View_JLSC1', 'View_JLSC1_M', [
+          {
+            name: 'XQMC',
+            value: xqid,
+          },
+          {
+            name: 'SWZX',
+            value: SWZXID,
+          },
+        ]);
+        modalName = 'resumeUpload';
+        setLbModal(p => {
+          return {
+            ...p,
+            title: SWMC,
+          };
+        });
+      } else {
+        message.info('只有外包项目对接人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '综合评测安排') {
-      modalName = 'personelArrangement';
+      if (isDock || isFqr) {
+        modalName = 'personelArrangement';
+      } else {
+        message.info('只有外包项目对接人、需求发起人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '综合评测打分') {
-      modalName = 'interviewScore';
+      if (isPcry()) {
+        if (XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2') {
+          modalName = 'interviewScore';
+        } else {
+          message.info('已提交录用申请，不允许打分', 1);
+          return;
+        }
+      } else {
+        message.info('只有评测人员可以操作', 1);
+        return;
+      }
     } else if (SWMC === '提交录用申请') {
-      modalName = 'employmentApplication';
-      getLink('V_LYXX', 'V_LYXX_M', [
-        {
-          name: 'GLXQ',
-          value: xqid,
-        },
-        {
-          name: 'SWZXID',
-          value: SWZXID,
-        },
-      ]);
-      setLbModal(p => {
-        return {
-          ...p,
-          title: SWMC,
-        };
-      });
+      if (isFqr) {
+        modalName = 'employmentApplication';
+        getLink('V_LYXX', 'V_LYXX_M', [
+          {
+            name: 'GLXQ',
+            value: xqid,
+          },
+          {
+            name: 'SWZXID',
+            value: SWZXID,
+          },
+        ]);
+        setLbModal(p => {
+          return {
+            ...p,
+            title: SWMC,
+          };
+        });
+      } else {
+        message.info('只有需求发起人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '录用确认') {
-      modalName = 'offerConfirmation';
+      if (isDock) {
+        modalName = 'offerConfirmation';
+      } else {
+        message.info('只有外包项目对接人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '账号新增') {
-      modalName = 'newAccount';
-      getLink('V_RYXX', 'V_RYXX_ADD', [
-        {
-          name: 'SWZXID',
-          value: SWZXID,
-        },
-      ]);
-      setLbModal(p => {
-        return {
-          ...p,
-          title: SWMC,
-        };
-      });
+      if (isFqr) {
+        modalName = 'newAccount';
+        getLink('V_RYXX', 'V_RYXX_ADD', [
+          {
+            name: 'SWZXID',
+            value: SWZXID,
+          },
+        ]);
+        setLbModal(p => {
+          return {
+            ...p,
+            title: SWMC,
+          };
+        });
+      } else {
+        message.info('只有需求发起人可以操作', 1);
+        return;
+      }
     }
     //打开弹窗
     setModalVisible(p => {
@@ -129,30 +175,28 @@ export default function ProjectItems(props) {
 
   //查看
   const handleCk = (SWMC = '--', SWZXID) => {
-    if (SWMC === '需求发起') {
-      // modalName = 'demandInitiation';
-    } else if (SWMC === '发送确认邮件') {
-      // modalName = 'msgConfirmation';
-    } else if (SWMC === '简历分发') {
-      // modalName = 'resumeDestribution';
-    } else if (SWMC === '综合评测安排') {
-      //打开弹窗
-      setModalVisible(p => {
-        return {
-          ...p,
-          personelArrangement: true,
-          personelArrangementUpdate: true,
-        };
-      });
-      setSwzxid(SWZXID);
-    } else if (SWMC === '综合评测打分') {
-      // modalName = 'interviewScore';
-    } else if (SWMC === '提交录用申请') {
-      // modalName = 'employmentApplication';
+    if (SWMC === '综合评测安排') {
+      if (isDock || isFqr) {
+        //打开弹窗
+        setModalVisible(p => {
+          return {
+            ...p,
+            personelArrangement: true,
+            personelArrangementUpdate: true,
+          };
+        });
+        setSwzxid(SWZXID);
+      } else {
+        message.info('只有外包项目对接人、需求发起人可以操作', 1);
+        return;
+      }
     } else if (SWMC === '录用确认') {
-      // modalName = 'offerConfirmation';
-    } else if (SWMC === '账号新增') {
-      // modalName = 'newAccount';
+      if (isDock) {
+        // modalName = 'offerConfirmation';
+      } else {
+        message.info('只有外包项目对接人可以操作', 1);
+        return;
+      }
     }
   };
 
@@ -300,6 +344,7 @@ export default function ProjectItems(props) {
               };
             });
             reflush();
+            message.success('上传成功', 1);
           }}
           onCancel={() =>
             setModalVisible(p => {
@@ -385,6 +430,7 @@ export default function ProjectItems(props) {
               };
             });
             reflush();
+            message.success('提交成功', 1);
           }}
           onCancel={() =>
             setModalVisible(p => {
@@ -410,6 +456,7 @@ export default function ProjectItems(props) {
               };
             });
             reflush();
+            message.success('新增成功', 1);
           }}
           onCancel={() =>
             setModalVisible(p => {

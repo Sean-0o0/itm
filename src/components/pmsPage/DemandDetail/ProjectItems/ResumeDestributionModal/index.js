@@ -14,9 +14,15 @@ export default function ResumeDistributionModal(props) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [data, setData] = useState([]); //数据展示
   const [emptyArr, setEmptyArr] = useState([]); //为空的数据 - 用于接口提交
+  const [jlTotal, setJlTotal] = useState(0); //简历数量
 
   useEffect(() => {
     setData(JSON.parse(JSON.stringify(JLXX)));
+    let total = 0;
+    JLXX.forEach(x => {
+      total += x.JLDATA.length;
+    });
+    setJlTotal(total);
     return () => {};
   }, [JSON.stringify(JLXX)]);
 
@@ -58,7 +64,7 @@ export default function ResumeDistributionModal(props) {
       };
     });
     submitArr2 = submitArr2.concat([...emptyArr]);
-    console.log('🚀 ~ submitArr ~ submitArr:', submitArr2);
+    // console.log('🚀 ~ submitArr ~ submitArr:', submitArr2);
     ResumeDistribution({
       xqid: Number(xqid),
       swzxid: Number(swzxid),
@@ -114,14 +120,7 @@ export default function ResumeDistributionModal(props) {
           message.error('简历下载失败', 1);
         });
     };
-    if (JLDATA.length === 0)
-      return (
-        <Empty
-          description="暂无简历"
-          image={Empty.PRESENTED_IMAGE_SIMPLE}
-          style={{ width: '100%' }}
-        />
-      );
+    if (JLDATA.length === 0) return '';
     return (
       <div className="splier-item">
         <div className="splier-name">{GYSMC}</div>
@@ -153,11 +152,16 @@ export default function ResumeDistributionModal(props) {
                       },
                     ]);
                   }
-                  console.log(
-                    '🚀 ~ file: index.js:177 ~ getSplierItem ~ arr[index].JLDATA:',
-                    arr[index].JLDATA,
-                  );
-                  console.log('🚀 ~ file: index.js:72 ~ getSplierItem ~ arr:', arr);
+                  // console.log(
+                  //   '🚀 ~ file: index.js:177 ~ getSplierItem ~ arr[index].JLDATA:',
+                  //   arr[index].JLDATA,
+                  // );
+                  // console.log('🚀 ~ file: index.js:72 ~ getSplierItem ~ arr:', arr);
+                  let total = 0;
+                  arr.forEach(x => {
+                    total += x.JLDATA.length;
+                  });
+                  setJlTotal(total);
                   setData([...arr]);
                   message.success('删除成功', 1);
                 }}
@@ -170,7 +174,6 @@ export default function ResumeDistributionModal(props) {
       </div>
     );
   };
-
   return (
     <Modal
       wrapClassName="editMessage-modify resume-destribution-modal"
@@ -192,7 +195,16 @@ export default function ResumeDistributionModal(props) {
         <strong>简历分发</strong>
       </div>
       <Spin spinning={isSpinning}>
-        <div className="splier-list">{data.map((x, i) => getSplierItem(x, i))}</div>
+        <div className="splier-list">
+          {jlTotal === 0 && (
+            <Empty
+              description="暂无简历"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ width: '100%' }}
+            />
+          )}
+          {data.map((x, i) => getSplierItem(x, i))}
+        </div>
       </Spin>
     </Modal>
   );
