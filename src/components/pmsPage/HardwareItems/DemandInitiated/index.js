@@ -96,6 +96,7 @@ class DemandInitiated extends React.Component {
         ryxqxxJson.map(item => {
           let data = {
             ID: item.RYXQID,
+            ['PCZT' + item.RYXQID]: item.PCZT,
             ['RYDJ' + item.RYXQID]: item.RYDJID,
             ['GW' + item.RYXQID]: item.GW,
             ['RYSL' + item.RYXQID]: item.RYSL,

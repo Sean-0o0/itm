@@ -207,6 +207,7 @@ class EditMemberInfoModel extends React.Component {
     if (operateType === "bjxq") {
       params = {
         ...params,
+        xb: Number(values.xb),
         rymc: values.rymc,
         rydj: Number(values.rydj),
         gw: Number(values.gw),
@@ -261,7 +262,7 @@ class EditMemberInfoModel extends React.Component {
       <>
         <Modal
           wrapClassName="editMessage-modify xqfq-modal"
-          style={{top: '10px'}}
+          style={{top: operateType === "syqkh" ? '40px' : '10px'}}
           width={operateType === "syqkh" ? '600px' : '880px'}
           title={null}
           zIndex={100}
@@ -515,7 +516,7 @@ class EditMemberInfoModel extends React.Component {
                                   message: '请上传简历',
                                 },
                               ],
-                              // initialValue: "外采项目"
+                              initialValue: fileList
                             })(<Upload
                               className="uploadStyle"
                               action={'/api/projectManage/queryfileOnlyByupload'}

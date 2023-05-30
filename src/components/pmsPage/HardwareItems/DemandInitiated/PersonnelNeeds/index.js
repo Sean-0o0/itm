@@ -149,8 +149,9 @@ class PersonnelNeeds extends Component {
 
   //合同信息修改付款详情表格删除
   handleDelete = (record) => {
+    // console.log("String(record.PCZT)",record)
     //评测状态不等于1 不能删除
-    if (String(record.PCZT) !== "1") {
+    if (String(record['PCZT' + record.ID]) !== "1" && String(record['PCZT' + record.ID]) !== "" && String(record['PCZT' + record.ID]) !== 'undefined') {
       message.warn("该需求已有评测信息，不可删除!")
       return;
     }
