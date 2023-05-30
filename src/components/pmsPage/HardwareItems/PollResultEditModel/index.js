@@ -159,8 +159,7 @@ class PollResultEditModel extends React.Component {
                   label="询比报告"
                   required
                   // help={pbbgTurnRed ? '请上传合同附件' : ''}
-                  validateStatus={pbbgTurnRed ? 'error' : 'success'}
-                >
+                  validateStatus={pbbgTurnRed ? 'error' : 'success'}>
                   <Upload
                     className="uploadStyle"
                     action={'/api/projectManage/queryfileOnlyByupload'}

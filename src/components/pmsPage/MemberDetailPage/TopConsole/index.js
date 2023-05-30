@@ -8,6 +8,8 @@ import cyImg from '../../../../assets/staffDetail/img_cy.png';
 import zbImg from '../../../../assets/staffDetail/img_zb.png';
 import ktImg from '../../../../assets/staffDetail/img_kt.png';
 import EditMemberInfoModel from "../EditMemberInfoModel";
+import BridgeModal from "../../../Common/BasicModal/BridgeModel";
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
 
 class ToConsole extends Component {
   state = {
@@ -38,8 +40,24 @@ class ToConsole extends Component {
     refreshPages();
   }
 
+  closeImportModal = () => {
+    this.setState({
+      changePwdVisible: false,
+    });
+  };
+
+  onImportMessage = (messageObj) => { // iframe的回调事件
+    if (!messageObj) { // 取消事件，对应 LiveBOS `operateCancel`
+      this.closeImportModal();
+    } else { // 操作完成事件，对应 LiveBOS `operateCallback`
+      this.closeImportModal();
+      message.success('导入成功');
+      this.props.refresh && this.props.refresh();
+    }
+  };
+
   render() {
-    const {editMemberInfoVisible = false, operateType} = this.state;
+    const {editMemberInfoVisible = false, operateType, changePwdVisible = false} = this.state;
     const {
       routes = [],
       ryid = "",
@@ -55,13 +73,41 @@ class ToConsole extends Component {
 
     const btnMoreContent = (
       <Menu>
-        <Menu.Item>修改密码</Menu.Item>
+        {/**/}
+        <Menu.Item onClick={() => this.setState({
+          changePwdVisible: true
+        })}>修改密码</Menu.Item>
         <Menu.Item onClick={() => this.handleEditMemberInfo("syqkh")}>试用期考核</Menu.Item>
       </Menu>
     );
 
+    const editMessageModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '40%',
+      height: '250px',
+      title: '修改密码',
+      style: {top: '40px'},
+      visible: changePwdVisible,
+      footer: null,
+    };
+
+    const changePwdUrl = `${localStorage.getItem('livebos') || ''}/OperateProcessor?operate=V_RYXX_MODPASSWORD&Table=V_RYXX&RYID=${ryid}`;
+
     return (
       <div className="top-console">
+        {/*修改密码*/}
+        {
+          changePwdVisible &&
+          <BridgeModel
+            modalProps={editMessageModalProps}
+            onSucess={() => this.onSuccess('信息修改待办')}
+            onCancel={() => this.setState({
+              changePwdVisible: false
+            })}
+            src={changePwdUrl}
+          />
+        }
         {
           editMemberInfoVisible &&
           <EditMemberInfoModel visible={editMemberInfoVisible} data={this.props.data} ryid={ryid}
@@ -99,6 +145,10 @@ class ToConsole extends Component {
                   <span className="member-detail-value">{GYSMC || '-'}</span>
                 </div>
                 <div className="member-detail-line flex1 flex-r">
+                  <span className="member-detail-label">所属项目：</span>
+                  <span className="member-detail-value">{XMMC || '-'}</span>
+                </div>
+                <div className="member-detail-line flex1 flex-r">
                   <span className="member-detail-label">岗位：</span>
                   <span className="member-detail-value">{DJ || '-'}</span>
                   <span className="member-detail-label">&nbsp;</span>
@@ -112,13 +162,9 @@ class ToConsole extends Component {
                       WebkitLineClamp: '2',
                     }}
                   >
-                    {RYGW}&nbsp;&nbsp;&nbsp;
+                    {RYGW || '-'}&nbsp;&nbsp;&nbsp;
                   </span>
                   </Tooltip>
-                </div>
-                <div className="member-detail-line flex1 flex-r">
-                  <span className="member-detail-label">所属项目：</span>
-                  <span className="member-detail-value">{XMMC || '-'}</span>
                 </div>
               </div>
             </div>

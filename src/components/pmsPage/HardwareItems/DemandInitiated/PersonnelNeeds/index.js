@@ -290,11 +290,14 @@ class PersonnelNeeds extends Component {
         key: 'YQ',
         ellipsis: true,
         // editable: true,
-        render: text => (
-          <Tooltip title={text} placement="topLeft">
-            <TextArea autoSize={{minRows: 1, maxRows: 6}} style={{cursor: 'default'}}>{text}</TextArea>
-          </Tooltip>
-        ),
+        render(text, record, index) {
+          return (<Tooltip title={text} placement="topLeft">
+            <TextArea defaultValue={record['YQ' + record.ID]}
+                      autoSize={{minRows: 1, maxRows: 6}}
+                      onChange={(e) => _this.GWChange(e, record, index, 'YQ')}
+                      style={{cursor: 'default'}}>{text}</TextArea>
+          </Tooltip>)
+        },
       },
       {
         title: '操作',

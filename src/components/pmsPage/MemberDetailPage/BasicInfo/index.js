@@ -13,6 +13,7 @@ class BasicInfo extends Component {
       data: {
         XTZH = "",
         JL = "",
+        SYKH = "",
       }, ryid
     } = this.props;
 
@@ -26,7 +27,7 @@ class BasicInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>系统账号：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{XTZH}</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{XTZH || "-"}</div>
           </div>
           <div
             className="info-item"
@@ -36,7 +37,15 @@ class BasicInfo extends Component {
             <div style={{flexShrink: 0, color: '#909399'}}>简历：</div>
             <a style={{color: '#3361FF'}}
                href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?EVENT_SOURCE=Download&Table=TWBRY_RYXX&ID=${ryid}&Column=JL&Type=View&fileid=0`}>
-              {JL}</a>
+              {JL || "-"}</a>
+          </div>
+          <div
+            className="info-item"
+            key="系统账号："
+            style={{display: 'flex', height: 'unset'}}
+          >
+            <div style={{flexShrink: 0, color: '#909399'}}>试用期考核情况：</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{SYKH || "-"}</div>
           </div>
         </div>
       </div>

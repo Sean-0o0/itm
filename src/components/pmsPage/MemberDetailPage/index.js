@@ -52,12 +52,10 @@ class MemberDetailPage extends Component {
           code = 0,
           ryxx,
           kqxx,
-          ydkh
+          ydkh,
+          jldata
         } = res;
         if (code > 0) {
-          console.log("ryxxData:[...JSON.parse(ryxx)],", JSON.parse(ryxx))
-          console.log("kqxxData:[...JSON.parse(kqxx)],", JSON.parse(kqxx))
-          console.log("ydkhData:[...JSON.parse(ydkh)],", JSON.parse(ydkh))
           let ryxxdata = JSON.parse(ryxx)
           let kqxxdata = JSON.parse(kqxx)
           let ryxxData = {
@@ -71,10 +69,12 @@ class MemberDetailPage extends Component {
             DJID: ryxxdata[0]?.DJID,
             XMMC: ryxxdata[0]?.XMMC,
             XMID: ryxxdata[0]?.XMID,
+            jldata: jldata
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,
             XTZH: ryxxdata[0]?.XTZH,
+            SYKH: ryxxdata[0]?.SYKH,
           }
           let kqxxData = {
             zc: kqxxdata.filter(item => item.LX === "正常").length,
