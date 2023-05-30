@@ -65,7 +65,7 @@ export default function ResumeInfo(props) {
         <Tooltip title={label} placement="topLeft">
           <span className="label">{label}：</span>
         </Tooltip>
-        <div>{num}人</div>
+        <div>{num}份</div>
         <Popover
           placement="rightTop"
           title={null}

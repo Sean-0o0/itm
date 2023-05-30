@@ -2329,6 +2329,53 @@
     border-radius: 4px;
     padding: 4px 11px;
   }
+  .ant-table-pagination {
+    font-size: 14px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    width: 100%;
+
+    .ant-select {
+      font-size: 14px !important;
+    }
+  }
+
+  .ant-pagination-item-active {
+    background-color: #3361ff;
+
+    a {
+      color: #fff !important;
+    }
+  }
+
+  .ant-pagination-item {
+    border: 0;
+  }
+
+  .ant-pagination-total-text {
+    margin-right: auto;
+    color: #909399;
+  }
+
+  .ant-pagination-disabled {
+    background-color: #f5f7fa;
+
+    a {
+      background-color: #f5f7fa;
+    }
+  }
+
+  .ant-pagination-options-quick-jumper input {
+    &:hover {
+      border-color: #3361ff;
+    }
+
+    &:focus {
+      border-color: #3361ff;
+      box-shadow: 0 0 0 2px #3361ff33;
+    }
+  }
 }
 
 //硬件中标信息录入
@@ -12865,7 +12912,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
   .table-link-strong();
   a:hover {
-    color: #3361ffaf !important;
+    color: #3361ffaf;
   }
 }
 
