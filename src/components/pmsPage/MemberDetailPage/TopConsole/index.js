@@ -52,6 +52,7 @@ class ToConsole extends Component {
         RYGW = "",
         DJ = "",
         XMMC = "",
+        SYKHID = ""
       },
     } = this.props;
 

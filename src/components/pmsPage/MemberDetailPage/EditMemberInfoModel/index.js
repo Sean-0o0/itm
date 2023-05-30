@@ -32,6 +32,19 @@ import {
 } from '../../../../services/pmsServices';
 import moment from 'moment';
 
+const getUuid = () => {
+  var s = [];
+  var hexDigits = '0123456789abcdef';
+  for (var i = 0; i < 36; i++) {
+    s[i] = hexDigits.substr(Math.floor(Math.random() * 0x10), 1);
+  }
+  s[14] = '4'; // bits 12-15 of the time_hi_and_version field to 0010
+  s[19] = hexDigits.substr((s[19] & 0x3) | 0x8, 1); // bits 6-7 of the clock_seq_hi_and_reserved to 01
+  s[8] = s[13] = s[18] = s[23] = '-';
+
+  let uuid = s.join('');
+  return uuid;
+};
 class EditMemberInfoModel extends React.Component {
   state = {
     isSpinning: true,
@@ -39,14 +52,36 @@ class EditMemberInfoModel extends React.Component {
     rydjxxJson: [],
     glgys: [],
     uploadFileParams: [],
-    jlFileList: [],
+    fileList: [],
     pbbgTurnRed: false,
   };
 
   componentDidMount() {
     this.fetchqueryOutsourceRequirement();
     this.fetchQueryGysInZbxx();
+    const {data = {},} = this.props;
+    if (data.jldata) {
+      console.log("jldata", data.jldata)
+      let arrTemp = [];
+      let arrTemp2 = [];
+      arrTemp.push({
+        uid: getUuid(),
+        name: data.jldata.fileName,
+        status: 'done',
+        url: data.jldata.url,
+        base64: data.jldata.data,
+      });
+      arrTemp2.push({
+        base64: data.jldata.data,
+        name: data.jldata.fileName,
+      });
+      this.setState({
+        fileList: arrTemp,
+        uploadFileParams: arrTemp2,
+      })
+    }
   }
+
 
   // 查询人员等级信息
   fetchqueryOutsourceRequirement = () => {
@@ -189,7 +224,8 @@ class EditMemberInfoModel extends React.Component {
   render() {
     const {
       isSpinning = false,
-      jlFileList = [],
+      fileList = [],
+      uploadFileParams = [],
       rydjxxJson = [],
       glgys = [],
     } = this.state;
@@ -204,7 +240,7 @@ class EditMemberInfoModel extends React.Component {
         RYMC = "",
         GWID = "",
         DJID = "",
-        jldata = "",
+        SYKHID = "",
       },
       operateType = ""
     } = this.props;
@@ -441,7 +477,7 @@ class EditMemberInfoModel extends React.Component {
                               //     message: '试用期考核情况',
                               //   },
                               // ],
-                              // initialValue: ""
+                              initialValue: SYKHID
                             })(<Select
                               showSearch
                               allowClear
@@ -511,28 +547,52 @@ class EditMemberInfoModel extends React.Component {
                               // multiple={true}
                               onChange={info => {
                                 let fileList = [...info.fileList];
-                                this.setState({jlFileList: [...fileList]}, () => {
-                                  console.log('目前fileList', this.state.jlFileList);
-                                  let arr = [];
-                                  console.log('目前fileList2222', fileList);
+                                fileList = fileList.slice(-1);
+                                this.setState({fileList});
+                                console.log('fileListfileList', fileList);
+                                let newArr = [];
+                                if (fileList.filter(item => item.originFileObj !== undefined).length === 0) {
                                   fileList.forEach(item => {
-                                    let reader = new FileReader(); //实例化文件读取对象
-                                    reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
-                                    reader.onload = e => {
-                                      let urlArr = e.target.result.split(',');
-                                      arr.push({
-                                        name: item.name,
-                                        base64: urlArr[1],
-                                      });
-                                      console.log('arrarr', arr);
-                                      if (arr.length === fileList.length) {
-                                        this.setState({
-                                          uploadFileParams: [...arr],
-                                        });
-                                      }
-                                    };
+                                    newArr.push({
+                                      name: item.name,
+                                      base64: item.base64,
+                                    });
                                   });
-                                });
+                                  if (newArr.length === fileList.length) {
+                                    this.setState({
+                                      uploadFileParams: [...newArr],
+                                    })
+                                  }
+                                } else {
+                                  fileList.forEach(item => {
+                                    console.log('item.originFileObj', item.originFileObj);
+                                    if (item.originFileObj === undefined) {
+                                      newArr.push({
+                                        name: item.name,
+                                        base64: item.base64,
+                                      });
+                                    } else {
+                                      let reader = new FileReader(); //实例化文件读取对象
+                                      reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                                      reader.onload = e => {
+                                        let urlArr = e.target.result.split(',');
+                                        newArr.push({
+                                          name: item.name,
+                                          base64: urlArr[1],
+                                        });
+                                        if (newArr.length === fileList.length) {
+                                          this.setState({
+                                            uploadFileParams: [...newArr],
+                                          })
+                                        }
+                                      };
+                                    }
+                                  });
+                                }
+
+                                this.setState({
+                                  fileList,
+                                })
                                 if (fileList.length === 0) {
                                   this.setState({
                                     pbbgTurnRed: true,
@@ -545,7 +605,9 @@ class EditMemberInfoModel extends React.Component {
                               }}
                               beforeUpload={(file, fileList) => {
                                 let arr = [];
+                                console.log('目前file', file);
                                 console.log('目前fileList2222', fileList);
+                                console.log('目前fileList333', this.props.fileList);
                                 fileList.forEach(item => {
                                   let reader = new FileReader(); //实例化文件读取对象
                                   reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
@@ -556,21 +618,18 @@ class EditMemberInfoModel extends React.Component {
                                       base64: urlArr[1],
                                     });
                                     if (arr.length === fileList.length) {
+                                      // console.log('arrarrarr', arr);
                                       this.setState({
-                                        uploadFileParams: [...arr],
-                                      });
+                                        uploadFileParams: [...arr, ...uploadFileParams],
+                                      })
                                     }
                                   };
                                 });
-                                console.log('uploadFileParams-cccc', this.state.uploadFileParams);
-                              }}
-                              onRemove={file => {
-                                console.log('file--cc-rrr', file);
                               }}
                               accept={
                                 '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                               }
-                              fileList={[...jlFileList]}
+                              fileList={[...fileList]}
                             >
                               <Button type="dashed">
                                 <Icon type="upload"/>
@@ -594,7 +653,7 @@ class EditMemberInfoModel extends React.Component {
                                   message: '试用期考核情况',
                                 },
                               ],
-                              // initialValue: ""
+                              initialValue: SYKHID
                             })(<Select
                               showSearch
                               allowClear

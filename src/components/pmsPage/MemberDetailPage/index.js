@@ -23,6 +23,9 @@ class MemberDetailPage extends Component {
 
   componentDidMount() {
     const {ryid} = this.props;
+    this.setState({
+      ryid
+    })
     this.handleSearch(ryid)
   }
 
@@ -30,8 +33,6 @@ class MemberDetailPage extends Component {
     const {ryid} = nextProps
     this.setState({
       ryid
-    }, () => {
-      this.handleSearch(ryid)
     })
   }
 
@@ -69,7 +70,9 @@ class MemberDetailPage extends Component {
             DJID: ryxxdata[0]?.DJID,
             XMMC: ryxxdata[0]?.XMMC,
             XMID: ryxxdata[0]?.XMID,
-            jldata: jldata
+            SYKH: ryxxdata[0]?.SYKH,
+            SYKHID: ryxxdata[0]?.SYKHID,
+            jldata: JSON.parse(jldata)
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,
