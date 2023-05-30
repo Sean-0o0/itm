@@ -67,7 +67,7 @@ class Overview extends Component {
                     }
                 },
                 icon: "circle",
-                itemGap: 12,
+                itemGap: 10,
                 itemHeight: 8,
                 itemWidth: 8,
             }, {
