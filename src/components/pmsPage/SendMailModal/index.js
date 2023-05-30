@@ -27,6 +27,7 @@ import {connect} from 'dva';
 import {IndividuationGetOAResult, QueryEmail, SendMail} from '../../../services/pmsServices';
 import moment from 'moment';
 import RichTextEditor from './RichTextEditor';
+import BridgeModel from "../../Common/BasicModal/BridgeModel";
 
 class SendMailModal extends React.Component {
   state = {
@@ -34,7 +35,18 @@ class SendMailModal extends React.Component {
     uploadFileParams: [],
     mailFileList: [],
     pbbgTurnRed: false,
+    //所有邮箱数据
+    mailDataAll: [],
+    //收件人/抄送人邮箱数据
     mailData: [],
+    //收件人
+    sjrFocus: false,
+    //抄送人
+    csFocus: false,
+    //新增收件人弹窗
+    addMailModalVisible: false,
+    //弹窗标题
+    title: "新增收件人"
   };
 
   componentDidMount() {
@@ -51,7 +63,8 @@ class SendMailModal extends React.Component {
         if (code > 0) {
           this.setState({
             isSpinning: false,
-            mailData: [...record]
+            mailDataAll: [...record],
+            mailData: [...record.filter(item => item.emailType === "2")]
           })
         }
       })
@@ -81,10 +94,10 @@ class SendMailModal extends React.Component {
           message.warn('请选择邮件收件人！');
           return;
         }
-        if (errs.includes('CS')) {
-          message.warn('请选择邮件抄送人！');
-          return;
-        }
+        // if (errs.includes('CS')) {
+        //   message.warn('请选择邮件抄送人！');
+        //   return;
+        // }
         if (errs.includes('ZT')) {
           message.warn('请输入邮件主题！');
           return;
@@ -101,7 +114,8 @@ class SendMailModal extends React.Component {
 
   //发起流程到oa
   sendMail = values => {
-    // console.log("params", this.handleParams(values))
+    console.log("params", this.handleParams(values))
+    return;
     return SendMail(this.handleParams(values))
       .then(result => {
         const {code = -1, record = []} = result;
@@ -109,6 +123,7 @@ class SendMailModal extends React.Component {
           this.setState({
             isSpinning: false
           })
+          //关闭弹窗
           this.props.closeContractModal();
         }
       })
@@ -128,8 +143,24 @@ class SendMailModal extends React.Component {
     uploadFileParams.map(item => {
       fileInfo.push({fileName: item.name, data: item.base64});
     });
-    let access = String(values.SJR).replace(",", ";")
-    let others = String(values.CS).replace(",", ";")
+    //邮箱正则校验
+    const reg = /^([a-zA-Z\d][\w-]{2,})@(\w{2,})\.([a-z]{2,})(\.[a-z]{2,})?$/;
+    // console.log("reg.test(item)",reg.test("zhukantest@stocke.com.cn"))
+    // console.log("reg.test(item)222",reg.test("1347290373@qq.com"))
+    // console.log("reg.test(item)333",reg.test("all123@qq.com"))
+    // console.log("reg.test(item)444",reg.test("rabsy@qq.com"))
+    let access = String(values.SJR).replaceAll(",", ";")
+    const accessArr = access.split(';');
+    if (accessArr.filter(item => reg.test(item) === false).length > 0) {
+      message.warn("请输入正确格式的接收人邮箱！")
+      return;
+    }
+    let others = String(values.CS).replaceAll(",", ";")
+    const othersArr = others.split(';');
+    if (othersArr.filter(item => reg.test(item) === false).length > 0) {
+      message.warn("请输入正确格式的抄送人邮箱！")
+      return;
+    }
     //表单数据
     const params = {
       access,
@@ -149,6 +180,11 @@ class SendMailModal extends React.Component {
       isSpinning = false,
       mailFileList = [],
       mailData = [],
+      mailDataAll = [],
+      csFocus = false,
+      sjrFocus = false,
+      addMailModalVisible = false,
+      title = ""
     } = this.state;
     const {
       visible,
@@ -156,18 +192,34 @@ class SendMailModal extends React.Component {
       closeModal
     } = this.props;
     const {getFieldDecorator,} = this.props.form;
-    const basicFormItemLayout = {
-      labelCol: {
-        xs: {span: 24},
-        sm: {span: 8},
-      },
-      wrapperCol: {
-        xs: {span: 24},
-        sm: {span: 16},
-      },
+
+    const editMessageModalProps = {
+      isAllWindow: 1,
+      // defaultFullScreen: true,
+      width: '40%',
+      height: '350px',
+      title: title,
+      style: {top: '40px'},
+      visible: addMailModalVisible,
+      footer: null,
     };
+
+    const addMailModalUrl = `${localStorage.getItem('livebos') || ''}/OperateProcessor?operate=TWBGL_YXXXB_ADD&Table=TWBGL_YXXXB`;
+
     return (
       <>
+        {/*修改密码*/}
+        {
+          addMailModalVisible &&
+          <BridgeModel
+            modalProps={editMessageModalProps}
+            onSucess={() => this.onSuccess('新增收件人')}
+            onCancel={() => this.setState({
+              addMailModalVisible: false
+            })}
+            src={addMailModalUrl}
+          />
+        }
         <Modal
           wrapClassName="editMessage-modify"
           style={{top: '10px'}}
@@ -233,7 +285,7 @@ class SendMailModal extends React.Component {
                                   message: '请选择发件人',
                                 },
                               ],
-                              // initialValue: "外采项目"
+                              initialValue: "zhukantest@stocke.com.cn"
                             })(<Select
                               showSearch
                               allowClear
@@ -246,8 +298,8 @@ class SendMailModal extends React.Component {
                                   .indexOf(input.toLowerCase()) >= 0
                               }
                             >
-                              {mailData.length > 0 &&
-                              mailData.map((item, index) => {
+                              {mailDataAll.length > 0 &&
+                              mailDataAll.map((item, index) => {
                                 return (
                                   <Option key={index} value={item.email}>
                                     {item.email}
@@ -277,8 +329,20 @@ class SendMailModal extends React.Component {
                             })(<Select
                               showSearch
                               allowClear
-                              mode='multiple'
+                              mode="tags"
+                              tokenSeparators={[',']}
                               showArrow={false}
+                              className="sandmail-box-clear"
+                              onFocus={() => {
+                                this.setState({
+                                  sjrFocus: true
+                                })
+                              }}
+                              onBlur={() => {
+                                this.setState({
+                                  sjrFocus: false
+                                })
+                              }}
                               getPopupContainer={triggerNode => triggerNode.parentNode}
                               filterOption={(input, option) =>
                                 option.props.children
@@ -296,6 +360,39 @@ class SendMailModal extends React.Component {
                               })}
                             </Select>)}
                           </Form.Item>
+                          <div
+                            style={{
+                              display: sjrFocus ? '' : 'none',
+                              height: '20px',
+                              width: '1px',
+                              backgroundColor: '#c7c7c7',
+                              // marginLeft: '8px',
+                              marginTop: '11px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '39px',
+                            }}
+                          ></div>
+                          <i
+                            className="iconfont circle-add"
+                            onClick={() => {
+                              this.setState({
+                                addMailModalVisible: true,
+                                title: "新增收件人",
+                              });
+                            }}
+                            style={{
+                              display: sjrFocus ? '' : 'none',
+                              marginTop: '6px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '15px',
+                              color: '#c7c7c7',
+                              fontSize: '20px',
+                            }}
+                          />
                         </Col>
                       </Row>
                       <Divider style={{margin: '2px 0'}}/>
@@ -307,18 +404,30 @@ class SendMailModal extends React.Component {
                             wrapperCol={{span: 22}}
                           >
                             {getFieldDecorator('CS', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: '请选择抄送人',
-                                },
-                              ],
+                              // rules: [
+                              //   {
+                              //     required: true,
+                              //     message: '请选择抄送人',
+                              //   },
+                              // ],
                               // initialValue: "外采项目"
                             })(<Select
                               showSearch
                               allowClear
-                              mode='multiple'
+                              mode="tags"
+                              tokenSeparators={[',']}
                               showArrow={false}
+                              onFocus={() => {
+                                this.setState({
+                                  csFocus: true
+                                })
+                              }}
+                              onBlur={() => {
+                                this.setState({
+                                  csFocus: false
+                                })
+                              }}
+                              className="sandmail-box-clear"
                               getPopupContainer={triggerNode => triggerNode.parentNode}
                               filterOption={(input, option) =>
                                 option.props.children
@@ -336,6 +445,39 @@ class SendMailModal extends React.Component {
                               })}
                             </Select>)}
                           </Form.Item>
+                          <div
+                            style={{
+                              display: csFocus ? "" : "none",
+                              height: '20px',
+                              width: '1px',
+                              backgroundColor: '#c7c7c7',
+                              // marginLeft: '8px',
+                              marginTop: '11px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '39px',
+                            }}
+                          ></div>
+                          <i
+                            className="iconfont circle-add"
+                            onClick={() => {
+                              this.setState({
+                                addMailModalVisible: true,
+                                title: "新增抄送人",
+                              });
+                            }}
+                            style={{
+                              display: csFocus ? "" : "none",
+                              marginTop: '6px',
+                              cursor: 'pointer',
+                              position: 'absolute',
+                              top: '0',
+                              right: '15px',
+                              color: '#c7c7c7',
+                              fontSize: '20px',
+                            }}
+                          />
                         </Col>
                       </Row>
                       <Divider style={{margin: '2px 0'}}/>
@@ -362,7 +504,7 @@ class SendMailModal extends React.Component {
                       <Row gutter={24} style={{paddingTop: '6px'}}>
                         <Col span={24}>
                           <Form.Item
-                            label="增加附件:"
+                            label="附件:"
                             colon={false}
                             labelCol={{span: 2}}
                             wrapperCol={{span: 22}}

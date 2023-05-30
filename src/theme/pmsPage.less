@@ -12883,7 +12883,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .ant-form-item-label {
-      text-align: left;
+      text-align: right;
     }
 
     .ant-select-selection {
@@ -12895,6 +12895,25 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       .ant-row {
         display: grid;
+      }
+    }
+
+    //收款账户下拉箭头位置
+    .sandmail-box-clear {
+      .ant-select-arrow {
+        right: 50px;
+      }
+
+      .ant-select-selection__clear {
+        right: 34px;
+      }
+
+      .ant-select-selection-selected-value {
+        max-width: calc(100% - 120px);
+      }
+
+      .ant-select-selection--single .ant-select-selection__rendered {
+        margin-right: 82px;
       }
     }
   }
