@@ -40,22 +40,6 @@ class ToConsole extends Component {
     refreshPages();
   }
 
-  closeImportModal = () => {
-    this.setState({
-      changePwdVisible: false,
-    });
-  };
-
-  onImportMessage = (messageObj) => { // iframe的回调事件
-    if (!messageObj) { // 取消事件，对应 LiveBOS `operateCancel`
-      this.closeImportModal();
-    } else { // 操作完成事件，对应 LiveBOS `operateCallback`
-      this.closeImportModal();
-      message.success('导入成功');
-      this.props.refresh && this.props.refresh();
-    }
-  };
-
   render() {
     const {editMemberInfoVisible = false, operateType, changePwdVisible = false} = this.state;
     const {
