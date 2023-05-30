@@ -39,6 +39,8 @@ class SendMailModal extends React.Component {
     mailDataAll: [],
     //收件人/抄送人邮箱数据
     mailData: [],
+    //默认发件人
+    contactsID: "",
     //收件人
     sjrFocus: false,
     //抄送人
@@ -54,6 +56,8 @@ class SendMailModal extends React.Component {
   }
 
   queryEmail = () => {
+    const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+    loginUser.id = String(loginUser.id);
     return QueryEmail({
       queryType: "ALL",
     })
@@ -64,7 +68,8 @@ class SendMailModal extends React.Component {
           this.setState({
             isSpinning: false,
             mailDataAll: [...record],
-            mailData: [...record.filter(item => item.emailType === "2")]
+            mailData: [...record.filter(item => item.emailType === "2")],
+            contactsID: record.filter(item => String(item.contactsID) === String(loginUser.id))[0]?.email
           })
         }
       })
@@ -184,7 +189,8 @@ class SendMailModal extends React.Component {
       csFocus = false,
       sjrFocus = false,
       addMailModalVisible = false,
-      title = ""
+      title = "",
+      contactsID = "",
     } = this.state;
     const {
       visible,
@@ -285,10 +291,12 @@ class SendMailModal extends React.Component {
                                   message: '请选择发件人',
                                 },
                               ],
-                              initialValue: "zhukantest@stocke.com.cn"
+                              initialValue: contactsID || "zhukantest@stocke.com.cn"
                             })(<Select
                               showSearch
                               allowClear
+                              className="fjr-select"
+                              disabled={true}
                               // mode='multiple'
                               showArrow={false}
                               getPopupContainer={triggerNode => triggerNode.parentNode}
