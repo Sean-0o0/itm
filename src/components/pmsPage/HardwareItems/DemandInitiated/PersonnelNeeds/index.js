@@ -294,7 +294,7 @@ class PersonnelNeeds extends Component {
           return (<Tooltip title={text} placement="topLeft">
             <TextArea defaultValue={record['YQ' + record.ID]}
                       autoSize={{minRows: 1, maxRows: 6}}
-                      onChange={(e) => _this.GWChange(e, record, index, 'YQ')}
+                      onChange={(e) => _this.GWChange(e.target.value, record, index, 'YQ')}
                       style={{cursor: 'default'}}>{text}</TextArea>
           </Tooltip>)
         },
