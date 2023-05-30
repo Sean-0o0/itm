@@ -229,60 +229,71 @@ export default function InfoTable(props) {
       key: 'projectLabel',
       ellipsis: true,
       render: (text, row, index) => {
-        if (getTagData(text, row.projectLabelId).length === 0) return '';
         return (
-          <Popover
-            overlayClassName="tag-more-popover"
-            placement="bottomLeft"
-            content={
-              <div className="tag-more">
-                {getTagData(text, row.projectLabelId).map(x => (
-                  <div key={x.id} className="tag-item">
-                    <Link
-                      style={{ color: '#3361ff' }}
-                      to={{
-                        pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                          JSON.stringify({
-                            bqid: x.id,
-                          }),
-                        )}`,
-                        state: {
-                          routes: [{ name: '项目列表', pathname: location.pathname }],
-                        },
-                      }}
-                      className="table-link-strong"
-                    >
-                      {x.name}
-                    </Link>
-                  </div>
-                ))}
-              </div>
-            }
-            title={null}
-          >
-            {getTagData(text, row.projectLabelId).map((x, i) => (
-              <span>
-                <Link
-                  key={x.id}
-                  style={{ color: '#3361ff' }}
-                  to={{
-                    pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                      JSON.stringify({
-                        bqid: x.id,
-                      }),
-                    )}`,
-                    state: {
-                      routes: [{ name: '项目列表', pathname: location.pathname }],
-                    },
-                  }}
-                  className="table-link-strong-tagtxt"
-                >
-                  {x.name}
-                </Link>
-                {i === getTagData(text, row.projectLabelId).length - 1 ? '' : '、'}
-              </span>
-            ))}
-          </Popover>
+          <div className="prj-tags">
+            {getTagData(text, row.projectLabelId).length > 0 && (
+              <>
+                {getTagData(text, row.projectLabelId)
+                  ?.slice(0, 1)
+                  .map(x => (
+                    <div key={x.id} className="tag-item">
+                      <Link
+                        style={{ color: '#3361ff' }}
+                        to={{
+                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                            JSON.stringify({
+                              bqid: x.id,
+                            }),
+                          )}`,
+                          state: {
+                            routes: [{ name: '项目列表', pathname: location.pathname }],
+                          },
+                        }}
+                        className="table-link-strong"
+                      >
+                        {x.name}
+                      </Link>
+                    </div>
+                  ))}
+                {getTagData(text, row.projectLabelId)?.length > 1 && (
+                  <Popover
+                    overlayClassName="tag-more-popover"
+                    content={
+                      <div className="tag-more">
+                        {getTagData(text, row.projectLabelId)
+                          ?.slice(1)
+                          .map(x => (
+                            <div key={x.id} className="tag-item">
+                              <Link
+                                style={{ color: '#3361ff' }}
+                                to={{
+                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
+                                    JSON.stringify({
+                                      bqid: x.id,
+                                    }),
+                                  )}`,
+                                  state: {
+                                    routes: [{ name: '项目列表', pathname: location.pathname }],
+                                  },
+                                }}
+                                className="table-link-strong"
+                              >
+                                {x.name}
+                              </Link>
+                            </div>
+                          ))}
+                      </div>
+                    }
+                    title={null}
+                  >
+                    <div className="tag-item">
+                      {getTagData(text, row.projectLabelId)?.length - 1}+
+                    </div>
+                  </Popover>
+                )}
+              </>
+            )}
+          </div>
         );
       },
     },

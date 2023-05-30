@@ -50,7 +50,7 @@ class StaffTable extends Component {
       {
         title: '项目名称',
         dataIndex: 'XMMC',
-        width: '19%',
+        width: '15%',
         key: 'XMMC',
         ellipsis: true,
         render: (value, row, index) => {
@@ -156,60 +156,65 @@ class StaffTable extends Component {
           const { XMBQID = '' } = row;
           const ids = this.getTagData(XMBQID);
           const data = this.getTagData(text);
-          if (data.length === 0) return '';
           return (
-            <Popover
-              overlayClassName="tag-more-popover"
-              placement="bottomLeft"
-              content={
-                <div className="tag-more">
-                  {data.map((x, i) => (
-                    <div key={x} className="tag-item">
+            <div className="prj-tags">
+              {data.length !== 0 && (
+                <>
+                  {data?.slice(0, 3).map((x, i) => (
+                    <div key={i} className="tag-item">
                       <Link
-                        style={{ color: '#3361ff' }}
                         to={{
-                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                            JSON.stringify({
-                              bqid: ids[i],
-                            }),
-                          )}`,
+                          pathname:
+                            '/pms/manage/labelDetail/' +
+                            EncryptBase64(
+                              JSON.stringify({
+                                bqid: ids[i],
+                              }),
+                            ),
                           state: {
                             routes: routes,
                           },
                         }}
-                        className="table-link-strong"
                       >
                         {x}
                       </Link>
                     </div>
                   ))}
-                </div>
-              }
-              title={null}
-            >
-              {data.map((x, i) => (
-                <span>
-                  <Link
-                    key={x}
-                    style={{ color: '#3361ff' }}
-                    to={{
-                      pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                        JSON.stringify({
-                          bqid: ids[i],
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong-tagtxt"
-                  >
-                    {x}
-                  </Link>
-                  {i === data.length - 1 ? '' : '、'}
-                </span>
-              ))}
-            </Popover>
+                  {data?.length > 3 && (
+                    <Popover
+                      overlayClassName="tag-more-popover"
+                      content={
+                        <div className="tag-more">
+                          {data?.slice(3).map((x, i) => (
+                            <div key={i} className="tag-item">
+                              <Link
+                                to={{
+                                  pathname:
+                                    '/pms/manage/labelDetail/' +
+                                    EncryptBase64(
+                                      JSON.stringify({
+                                        bqid: ids[i],
+                                      }),
+                                    ),
+                                  state: {
+                                    routes: routes,
+                                  },
+                                }}
+                              >
+                                {x}
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      }
+                      title={null}
+                    >
+                      <div className="tag-item">{data.length - 3}+</div>
+                    </Popover>
+                  )}
+                </>
+              )}
+            </div>
           );
         },
       },

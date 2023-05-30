@@ -102,60 +102,65 @@ class InfoTable extends Component {
           const { xmbqid = '' } = row;
           const ids = this.getTagData(xmbqid);
           const data = this.getTagData(text);
-          if (data.length === 0) return '';
           return (
-            <Popover
-              overlayClassName="tag-more-popover"
-              placement="bottomLeft"
-              content={
-                <div className="tag-more">
-                  {data.map((x, i) => (
-                    <div key={x} className="tag-item">
+            <div className="prj-tags">
+              {data.length !== 0 && (
+                <>
+                  {data?.slice(0, 3).map((x, i) => (
+                    <div key={i} className="tag-item" title={x}>
                       <Link
-                        style={{ color: '#3361ff' }}
                         to={{
-                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                            JSON.stringify({
-                              bqid: ids[i],
-                            }),
-                          )}`,
+                          pathname:
+                            '/pms/manage/labelDetail/' +
+                            EncryptBase64(
+                              JSON.stringify({
+                                bqid: ids[i],
+                              }),
+                            ),
                           state: {
                             routes: routes,
                           },
                         }}
-                        className="table-link-strong"
                       >
                         {x}
                       </Link>
                     </div>
                   ))}
-                </div>
-              }
-              title={null}
-            >
-              {data.map((x, i) => (
-                <span>
-                  <Link
-                    key={x}
-                    style={{ color: '#3361ff' }}
-                    to={{
-                      pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                        JSON.stringify({
-                          bqid: ids[i],
-                        }),
-                      )}`,
-                      state: {
-                        routes: routes,
-                      },
-                    }}
-                    className="table-link-strong-tagtxt"
-                  >
-                    {x}
-                  </Link>
-                  {i === data.length - 1 ? '' : '、'}
-                </span>
-              ))}
-            </Popover>
+                  {data?.length > 3 && (
+                    <Popover
+                      overlayClassName="tag-more-popover"
+                      content={
+                        <div className="tag-more">
+                          {data?.slice(3).map((x, i) => (
+                            <div className="tag-item" key={i} title={x}>
+                              <Link
+                                to={{
+                                  pathname:
+                                    '/pms/manage/labelDetail/' +
+                                    EncryptBase64(
+                                      JSON.stringify({
+                                        bqid: ids[i],
+                                      }),
+                                    ),
+                                  state: {
+                                    routes: routes,
+                                  },
+                                }}
+                              >
+                                {x}
+                              </Link>
+                            </div>
+                          ))}
+                        </div>
+                      }
+                      title={null}
+                    >
+                      <div className="tag-item">{data.length - 3}+</div>
+                    </Popover>
+                  )}
+                </>
+              )}
+            </div>
           );
         },
       },
@@ -182,7 +187,7 @@ class InfoTable extends Component {
       {
         title: '承担岗位',
         dataIndex: 'cdgw',
-        width: '15%',
+        width: '12%',
         key: 'cdgw',
         ellipsis: true,
       },
