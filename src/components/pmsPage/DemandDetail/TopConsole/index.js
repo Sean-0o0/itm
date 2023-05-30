@@ -191,6 +191,7 @@ export default function TopConsole(props) {
     <div className="top-console-box">
       {dmInitiatedVisible && (
         <DemandInitiated
+          xmmc={XMXX.XMMC}
           xqid={Number(activeKey)}
           closeModal={() => setDmInitiatedVisible(false)}
           visible={dmInitiatedVisible}

@@ -315,6 +315,7 @@ export default function InfoTable(props) {
                           });
                           setCurrentXqid(Number(row.XQID));
                           setCurrentXmid(Number(row.XMID));
+                          setCurrentXmmc(tableData.filter(x=>x.XMID===row.XMID)[0]?.XMMC);
                         }}
                       >
                         修改
@@ -331,7 +332,7 @@ export default function InfoTable(props) {
                         });
                         setCurrentXqid(Number(row.XQID));
                         setCurrentXmid(Number(row.XMID));
-                        setCurrentXmmc(row.XMMC);
+                        setCurrentXmmc(tableData.filter(x=>x.XMID===row.XMID)[0]?.XMMC);
                       }}
                     >
                       重新发起
@@ -392,6 +393,7 @@ export default function InfoTable(props) {
       {/* 修改 */}
       {visible.update && (
         <DemandInitiated
+        xmmc={currentXmmc}
           xqid={currentXqid}
           closeModal={() =>
             setVisible(p => {

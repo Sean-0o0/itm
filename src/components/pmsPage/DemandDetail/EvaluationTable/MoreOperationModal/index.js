@@ -443,8 +443,11 @@ function MoreOperationModal(props) {
           </Modal>
         )}
         <div className="top-btn">
-          <Button onClick={() => {}}>面试通知</Button>
+          <Button type="primary" onClick={() => {}}>
+            面试通知
+          </Button>
           <Button
+            type="primary"
             onClick={() => {
               getLink('V_LYXX', 'V_LYXX_M', [
                 {
@@ -472,13 +475,15 @@ function MoreOperationModal(props) {
           >
             提交录用申请
           </Button>
-          <Button onClick={() => {}}>确认录用申请</Button>
+          <Button type="primary" onClick={() => {}}>
+            确认录用申请
+          </Button>
           {editing ? (
             <>
               <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-                <Button style={{ marginRight: '16px' }}>保存</Button>
+                <Button  type="primary" style={{ marginRight: '16px' }}>保存</Button>
               </Popconfirm>
-              <Button onClick={handleEditCancel}>取消</Button>
+              <Button  type="primary" onClick={handleEditCancel}>取消</Button>
             </>
           ) : (
             <Button onClick={handleEdit} type="primary">
