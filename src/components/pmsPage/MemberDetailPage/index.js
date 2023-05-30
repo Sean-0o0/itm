@@ -31,9 +31,13 @@ class MemberDetailPage extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {ryid} = nextProps
-    this.setState({
-      ryid
-    })
+    if (this.props.ryid !== ryid) {
+      this.setState({
+        ryid
+      }, () => {
+        this.handleSearch(ryid)
+      })
+    }
   }
 
   handleSearch = (ryid) => {
