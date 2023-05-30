@@ -101,8 +101,7 @@ class SendMailModal extends React.Component {
 
   //发起流程到oa
   sendMail = values => {
-    console.log("params", this.handleParams(values))
-    return;
+    // console.log("params", this.handleParams(values))
     return SendMail(this.handleParams(values))
       .then(result => {
         const {code = -1, record = []} = result;
