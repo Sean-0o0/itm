@@ -508,47 +508,31 @@ class EditMemberInfoModel extends React.Component {
                                 showRemoveIcon: true,
                                 showPreviewIcon: true,
                               }}
-                              multiple={true}
+                              // multiple={true}
                               onChange={info => {
                                 let fileList = [...info.fileList];
-                                console.log('fileListfileList', fileList);
-                                let newArr = [];
-                                if (fileList.filter(item => item.originFileObj !== undefined).length === 0) {
+                                this.setState({jlFileList: [...fileList]}, () => {
+                                  console.log('目前fileList', this.state.jlFileList);
+                                  let arr = [];
+                                  console.log('目前fileList2222', fileList);
                                   fileList.forEach(item => {
-                                    newArr.push({
-                                      name: item.name,
-                                      base64: item.base64,
-                                    });
-                                  });
-                                  if (newArr.length === fileList.length) {
-                                    this.handleParamsCallback([...newArr]);
-                                  }
-                                } else {
-                                  fileList.forEach(item => {
-                                    console.log('item.originFileObj', item.originFileObj);
-                                    if (item.originFileObj === undefined) {
-                                      newArr.push({
+                                    let reader = new FileReader(); //实例化文件读取对象
+                                    reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                                    reader.onload = e => {
+                                      let urlArr = e.target.result.split(',');
+                                      arr.push({
                                         name: item.name,
-                                        base64: item.base64,
+                                        base64: urlArr[1],
                                       });
-                                    } else {
-                                      let reader = new FileReader(); //实例化文件读取对象
-                                      reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
-                                      reader.onload = e => {
-                                        let urlArr = e.target.result.split(',');
-                                        newArr.push({
-                                          name: item.name,
-                                          base64: urlArr[1],
+                                      console.log('arrarr', arr);
+                                      if (arr.length === fileList.length) {
+                                        this.setState({
+                                          uploadFileParams: [...arr],
                                         });
-                                        if (newArr.length === fileList.length) {
-                                          this.handleParamsCallback([...newArr]);
-                                        }
-                                      };
-                                    }
+                                      }
+                                    };
                                   });
-                                }
-
-                                this.handleFileCallback(fileList);
+                                });
                                 if (fileList.length === 0) {
                                   this.setState({
                                     pbbgTurnRed: true,
@@ -561,9 +545,7 @@ class EditMemberInfoModel extends React.Component {
                               }}
                               beforeUpload={(file, fileList) => {
                                 let arr = [];
-                                console.log('目前file', file);
                                 console.log('目前fileList2222', fileList);
-                                console.log('目前fileList333', this.props.fileList);
                                 fileList.forEach(item => {
                                   let reader = new FileReader(); //实例化文件读取对象
                                   reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
@@ -574,16 +556,21 @@ class EditMemberInfoModel extends React.Component {
                                       base64: urlArr[1],
                                     });
                                     if (arr.length === fileList.length) {
-                                      // console.log('arrarrarr', arr);
-                                      this.handleParamsCallback([...arr, ...uploadFileParams]);
+                                      this.setState({
+                                        uploadFileParams: [...arr],
+                                      });
                                     }
                                   };
                                 });
+                                console.log('uploadFileParams-cccc', this.state.uploadFileParams);
+                              }}
+                              onRemove={file => {
+                                console.log('file--cc-rrr', file);
                               }}
                               accept={
                                 '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                               }
-                              fileList={[...fileList]}
+                              fileList={[...jlFileList]}
                             >
                               <Button type="dashed">
                                 <Icon type="upload"/>

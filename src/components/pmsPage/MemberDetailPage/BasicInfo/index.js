@@ -36,7 +36,7 @@ class BasicInfo extends Component {
           >
             <div style={{flexShrink: 0, color: '#909399'}}>简历：</div>
             <a style={{color: '#3361FF'}}
-               href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?EVENT_SOURCE=Download&Table=TWBRY_RYXX&ID=${ryid}&Column=JL&Type=View&fileid=0`}>
+               href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=JL&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${ryid}&fileid=0`}>
               {JL || "-"}</a>
           </div>
           <div
