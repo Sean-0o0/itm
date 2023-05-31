@@ -122,6 +122,7 @@ export default function DemandInfo(props) {
         setSubTableData={setSubTableData}
         xmid={xmid}
         WBRYGW={WBRYGW}
+        setTableData={setTableData}
       />
     </div>
   );

@@ -136,6 +136,7 @@ class ItemBtn extends React.Component {
 
   //文档上传修改
   getWdscxg = (done, item) => {
+    //上传、重新上传
     const scxg = (item, type = '') => {
       let params = this.getParams('TWD_XM', 'TWD_XM_INTERFACE_UPLOD', [
         {
@@ -176,12 +177,33 @@ class ItemBtn extends React.Component {
       });
       this.getLink(params, 'lbModalUrl');
     };
+    //文档预览 - 下载
+    const wdyl = ()=>{
+      
+    };
+    const reoprMoreCotent = (
+      <div className="list">
+        <div className="item" onClick={() => scxg(item, 'MOD')} key="上传新文档">
+        上传新文档
+        </div>
+      </div>
+    );
     if (done)
       return (
         <div className="opr-more">
-          <div className="reopr-btn" onClick={() => scxg(item, 'MOD')}>
-            重新上传
+          <div className="reopr-btn" onClick={() => wdyl(item)}>
+            查看
           </div>
+          <Popover
+            placement="bottom"
+            title={null}
+            content={reoprMoreCotent}
+            overlayClassName="btn-more-content-popover"
+          >
+            <div className="reopr-more">
+              <i className="iconfont icon-more2" />
+            </div>
+          </Popover>
         </div>
       );
     return (

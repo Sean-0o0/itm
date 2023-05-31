@@ -45,7 +45,7 @@ export default function ProjectItems(props) {
   }, []);
 
   //执行
-  const handleZx = (SWMC = '--', ZXZT = '2', SWZXID) => {
+  const handleZx = ({ SWMC = '--', ZXZT = '2', SWZXID }) => {
     //是否评测人员
     const isPcry = () => {
       let arr = [];
@@ -148,6 +148,10 @@ export default function ProjectItems(props) {
         modalName = 'newAccount';
         getLink('V_RYXX', 'V_RYXX_ADD', [
           {
+            name: 'SSWBXM2',
+            value: XMXX.XMID,
+          },
+          {
             name: 'SWZXID',
             value: SWZXID,
           },
@@ -200,7 +204,8 @@ export default function ProjectItems(props) {
     }
   };
 
-  const getItemBtn = ({ SWMC = '--', ZXZT = '2' }, SWZXID) => {
+  const getItemBtn = (item, SWZXID) => {
+    const { SWMC = '--', ZXZT = '2' } = item;
     //1 已执行， 2 未执行
     if (
       ['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发', '提交录用申请'].includes(
@@ -209,7 +214,7 @@ export default function ProjectItems(props) {
       ZXZT === '2'
     ) {
       return (
-        <div className="opr-btn" onClick={() => handleZx(SWMC, ZXZT, SWZXID)}>
+        <div className="opr-btn" onClick={() => handleZx(item)}>
           执行
         </div>
       );

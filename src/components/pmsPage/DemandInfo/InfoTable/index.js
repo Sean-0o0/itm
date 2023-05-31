@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip, Popconfirm, Icon } from 'antd';
+import { Button, Table, Popover, message, Tooltip, Popconfirm, Icon, Spin } from 'antd';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
@@ -25,6 +25,7 @@ export default function InfoTable(props) {
     getSubTableData,
     xmid = -2,
     WBRYGW,
+    setTableData,
   } = props; //表格数据
   const [visible, setVisible] = useState({
     update: false,
@@ -389,6 +390,7 @@ export default function InfoTable(props) {
       },
     ];
 
+    if (record.loading) return <Spin style={{ width: '100%' }} />;
     return (
       <Table
         className="sub-table-demand-info"
@@ -401,13 +403,35 @@ export default function InfoTable(props) {
     );
   };
 
-  const onExpand = (expanded, record) => {
+  const onExpand = async (expanded, record) => {
     // console.log(expanded, record);
     if (expanded) {
-      getSubTableData(record.XMID);
+      // 正在加载的行设置 loading 状态
+      record.loading = true;
       if (!expandedRowKeys.includes(record.XMID)) {
         setExpandedRowKeys(p => [...p, record.XMID]);
       }
+      let res = await QueryOutsourceRequirementList({
+        current: 1,
+        cxlx: 'XQ',
+        pageSize: 10,
+        paging: -1,
+        sort: '',
+        total: -1,
+        xmmc: Number(record.XMID),
+      });
+      const data = JSON.parse(res.xqxx);
+      setSubTableData(p => {
+        return {
+          ...p,
+          [record.XMID]: data,
+        };
+      });
+      let arr = [...tableData];
+      arr.forEach(x => {
+        if (x.XMID === record.XMID) x.loading = false;
+      });
+      setTableData(arr);
     } else {
       //收起时置空
       setSubTableData(p => {
@@ -417,6 +441,7 @@ export default function InfoTable(props) {
         };
       });
       setExpandedRowKeys(p => [...expandedRowKeys.filter(x => x !== record.XMID)]);
+      record.loading = false;
     }
   };
   return (
