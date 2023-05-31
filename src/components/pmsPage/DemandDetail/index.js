@@ -47,7 +47,7 @@ export default function DemandDetail(props) {
             total: -1,
             cxlx: 'ALL',
             js:
-              res.zyrole === '外包项目对接人'
+              res.zyrole !== '暂无'
                 ? res.zyrole
                 : String(LOGIN_USER_ID) === fqrid
                 ? '需求发起人'
@@ -130,6 +130,7 @@ export default function DemandDetail(props) {
                   XQSX: xqsx,
                   XQNR: xqnr,
                   JLXX: jlxx,
+                  JLXX_ORIGIN: JSON.parse(res.jlxx),
                   LYSQ: JSON.parse(res.lysq)[JSON.parse(res.lysq).length - 1] ?? {},
                   ZHPC: zhpc,
                   FKTX: JSON.parse(res.fktx)[0],
