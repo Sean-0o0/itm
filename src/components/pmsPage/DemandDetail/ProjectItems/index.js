@@ -9,6 +9,7 @@ import NewAccountModal from './NewAccountModal';
 import DemandInitiated from '../../HardwareItems/DemandInitiated';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
+import { EncryptBase64 } from '../../../Common/Encrypt';
 
 export default function ProjectItems(props) {
   const { dtlData = {}, isDock, isFqr, xqid, getDtldata, fqrid, WBRYGW } = props;
@@ -16,6 +17,7 @@ export default function ProjectItems(props) {
     XQSX = [],
     FKTX = {},
     JLXX = [],
+    JLXX2 = [],
     ZHPC = [],
     XQNR = [],
     XMXX = {},
@@ -57,6 +59,7 @@ export default function ProjectItems(props) {
       return newArr.includes(LOGIN_USER_ID);
     };
     let modalName = '';
+
     if (SWMC === '发送确认邮件') {
       if (isDock) {
         modalName = 'msgConfirmation';
@@ -66,11 +69,18 @@ export default function ProjectItems(props) {
       }
     } else if (SWMC === '简历分发') {
       if (isDock) {
-        modalName = 'resumeDestribution';
+        // modalName = 'resumeDestribution';
+        window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
+          JSON.stringify({
+            JLXX: JLXX2,
+            xqid,
+            swzxid: SWZXID,
+          }),
+        )}`;
       } else {
         message.info('只有外包项目对接人可以操作', 1);
-        return;
       }
+      return;
     } else if (SWMC === '简历上传') {
       if (isDock) {
         getLink('View_JLSC1', 'View_JLSC1_M', [
@@ -167,6 +177,7 @@ export default function ProjectItems(props) {
         return;
       }
     }
+    setSwzxid(SWZXID);
     //打开弹窗
     setModalVisible(p => {
       return {
@@ -174,7 +185,6 @@ export default function ProjectItems(props) {
         [modalName]: true,
       };
     });
-    setSwzxid(SWZXID);
   };
 
   //查看

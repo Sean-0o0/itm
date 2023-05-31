@@ -47,7 +47,7 @@ export default function DemandDetail(props) {
             total: -1,
             cxlx: 'ALL',
             js:
-              res.zyrole !== '暂无'
+              res.zyrole === '外包项目对接人'
                 ? res.zyrole
                 : String(LOGIN_USER_ID) === fqrid
                 ? '需求发起人'
@@ -98,9 +98,9 @@ export default function DemandDetail(props) {
                     ? []
                     : Object.values(
                         JSON.parse(res.jlxx)?.reduce((acc, curr) => {
-                          let { GYSID, GYSMC, JLID, JLMC } = curr;
+                          let { RYXQ, GYSID, GYSMC, JLID, JLMC } = curr;
                           if (!acc[GYSID]) {
-                            acc[GYSID] = { GYSID, GYSMC, JLID, JLDATA: [{ JLID, JLMC }] };
+                            acc[GYSID] = { RYXQ, GYSID, GYSMC, JLID, JLDATA: [{ JLID, JLMC }] };
                           } else {
                             acc[GYSID].JLDATA.push({ JLID, JLMC });
                           }
@@ -124,13 +124,41 @@ export default function DemandDetail(props) {
                   x.JLDATA = jldata;
                 });
 
+                const output = JSON.parse(res.jlxx).reduce((acc, cur) => {
+                  const { RYXQ,RYXQNR,  GYSID, GYSMC, JLID, JLMC } = cur;
+                  const jlData = JSON.parse(JLMC).items.map(([entryNo, jlmc]) => ({
+                    JLID,
+                    ENTRYNO: entryNo,
+                    JLMC: jlmc,
+                    NEXTID: JSON.parse(JLMC).nextId,
+                  }));
+                  acc[RYXQ] = acc[RYXQ] || { RYXQ,RYXQNR, DATA: [] };
+                  const ryData = acc[RYXQ].DATA.find(ry => ry.GYSID === GYSID);
+                  if (ryData) {
+                    ryData.JLDATA.push(...jlData);
+                  } else {
+                    acc[RYXQ].DATA.push({
+                      GYSID,
+                      GYSMC,
+                      JLDATA: jlData,
+                    });
+                  }
+                  acc[RYXQ].DATA.sort((a, b) => (a.GYSID > b.GYSID ? 1 : -1));
+                  acc[RYXQ].DATA.forEach(ry =>
+                    ry.JLDATA.sort((a, b) => (a.JLMC > b.JLMC ? 1 : -1)),
+                  );
+                  return acc;
+                }, {});
+
+                const jlxx2 = Object.values(output).sort((a, b) => (a.RYXQ > b.RYXQ ? 1 : -1));
+
                 const obj = {
                   XMXX: JSON.parse(res.xmxx)[0],
                   XQXQ: JSON.parse(res.xqxq),
                   XQSX: xqsx,
                   XQNR: xqnr,
-                  JLXX: jlxx,
-                  JLXX_ORIGIN: JSON.parse(res.jlxx),
+                  JLXX: jlxx, //简历信息展示
+                  JLXX2: jlxx2, //简历分发使用
                   LYSQ: JSON.parse(res.lysq)[JSON.parse(res.lysq).length - 1] ?? {},
                   ZHPC: zhpc,
                   FKTX: JSON.parse(res.fktx)[0],

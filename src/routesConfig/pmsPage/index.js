@@ -203,4 +203,14 @@ exports.routes = [
     path: `${prefix}/SupplierDmInfo`,
     component: './pmsPage/SupplierDmInfo',
   },
+  {
+    // 简历分发页面
+    path: `${prefix}/ResumeDistribution/:params`,
+    component: './pmsPage/ResumeDistribution',
+  },
+  {
+    // 简历分发页面
+    path: `${prefix}/ResumeDistribution`,
+    component: './pmsPage/ResumeDistribution',
+  },
 ];

@@ -42,9 +42,13 @@ export default function InfoTable(props) {
   const location = useLocation();
 
   useEffect(() => {
+    getIsDock();
+    return () => {};
+  }, []);
+  
+  useEffect(() => {
     if (xmid !== -2) {
       setExpandedRowKeys([xmid]);
-      getIsDock();
     }
     // console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
     return () => {};
@@ -58,6 +62,7 @@ export default function InfoTable(props) {
       .then(res => {
         if (res.code === 1) {
           setIsDock(res.zyrole === '外包项目对接人');
+          console.log('外包项目对接人');
         }
       })
       .catch(e => {

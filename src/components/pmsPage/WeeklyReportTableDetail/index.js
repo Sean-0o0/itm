@@ -227,7 +227,7 @@ export default function WeeklyReportTableDetail() {
   return (
     <div className="weekly-report-detail">
       <div className="top-console">
-        <Tabs defaultActiveKey="1" activeKe={activeKey} onChange={handleTabsChange} size={'large'}>
+        <Tabs defaultActiveKey="1" activeKey={activeKey} onChange={handleTabsChange} size={'large'}>
           <TabPane tab="数字化专班月报" key="1"></TabPane>
           <TabPane tab="信息技术事业部月报" key="2"></TabPane>
           <TabPane tab="汇金谷零售业务周报" key="3"></TabPane>

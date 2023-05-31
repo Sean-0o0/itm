@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { Button, Empty, message, Modal, Popconfirm, Spin } from 'antd';
+import { Button, Empty, Input, message, Modal, Popconfirm, Spin } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import { ResumeDistribution } from '../../../../../services/pmsServices';
@@ -13,12 +13,14 @@ export default function ResumeDistributionModal(props) {
   const { visible, setVisible, JLXX = [], xqid, swzxid, reflush } = props;
   const [isSpinning, setIsSpinning] = useState(false);
   const [data, setData] = useState([]); //数据展示
+  const [unSaveData, setUnsaveData] = useState([]); //数据保存前的操作数据 - 还未展示
   const [emptyArr, setEmptyArr] = useState([]); //为空的数据 - 用于接口提交
   const [jlTotal, setJlTotal] = useState(0); //简历数量
 
   useEffect(() => {
     setData(JSON.parse(JSON.stringify(JLXX)));
-    let total = 0;
+    setUnsaveData(JSON.parse(JSON.stringify(JLXX)));
+    let total = 0; 
     JLXX.forEach(x => {
       total += x.JLDATA.length;
     });
@@ -127,11 +129,35 @@ export default function ResumeDistributionModal(props) {
         <div className="resume-list">
           {JLDATA.map((x, i) => (
             <div className="resume-item" key={x.JLMC}>
-              <span>{x.JLMC}</span>
-              <i
+              <span>
+                <Input
+                  defaultValue={x.JLMC}
+                  onBlur={e => {
+                    let arr = JSON.parse(JSON.stringify([...data]));
+                    let jldata = [...arr[index].JLDATA];
+                    jldata.forEach(j => {
+                      if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
+                        // console.log('%%$',j);
+                        j.JLMC = e.target.value;
+                      }
+                    });
+                    arr[index].JLDATA = jldata;
+                    setData(JSON.parse(JSON.stringify([...arr])));
+                    console.log(
+                      '🚀 ~ file: index.js:149 ~ getSplierItem ~ [...arr]:',
+                      arr,
+                      jldata,
+                      e.target.value,
+                    );
+                  }}
+                  style={{ width: '100%' }}
+                />
+              </span>
+              {/* <i
+                    
                 className="iconfont icon-download"
                 onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
-              />
+              /> */}
               <Popconfirm
                 title="确定要删除该简历吗?"
                 onConfirm={() => {

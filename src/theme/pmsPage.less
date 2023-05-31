@@ -13816,3 +13816,170 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
   }
 }
+
+.resume-destribution-box {
+  & > .top-console {
+    height: 55px;
+    background-color: white;
+    box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
+    padding: 0 24px;
+    .font-size-16();
+    font-family: PingFangSC-Regular;
+    color: #303133;
+
+    .ant-tabs-nav .ant-tabs-tab {
+      color: #666;
+
+      &:hover {
+        color: rgba(102, 102, 102, 0.7);
+      }
+    }
+
+    .ant-tabs-nav .ant-tabs-tab-active {
+      color: #3361ff !important;
+      font-weight: bold;
+
+      &:hover {
+        color: #3363ffc7 !important;
+      }
+    }
+
+    .ant-tabs-ink-bar {
+      background-color: #3361ff;
+    }
+  }
+  .content {
+    overflow: hidden;
+    height: calc(100vh - 140px);
+    margin: 16px 24px 24px 24px;
+    padding: 16px 24px;
+    background-color: #fff;
+    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border-radius: 8px;
+
+    & > .btn-box {
+      margin-bottom: 16px;
+      .btn-opr {
+        .antd-btn-primary();
+        margin-right: 12px;
+      }
+      .btn-cancel {
+        .antd-btn-default();
+      }
+    }
+    & > .splier-list {
+      height: calc(100% - 50px);
+      overflow: hidden;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+        background-color: #fafafa;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 5px;
+        width: 10px;
+      }
+
+      & > .splier-item {
+        border: 2px solid #f3f2f3;
+        border-radius: 8px;
+        margin-bottom: 16px;
+        padding: 16px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        color: #303133;
+
+        &:last-child {
+          margin-bottom: 0;
+        }
+
+        & > .splier-name {
+          // height: 22px;
+          line-height: 22px;
+          font-size: 18px;
+          font-weight: bold;
+          margin-bottom: 12px;
+        }
+
+        & > .resume-list {
+          font-size: 15px;
+          display: flex;
+          flex-direction: row;
+          flex-wrap: wrap;
+          align-items: center;
+          margin-bottom: -12px;
+
+          & > .resume-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            background-color: #f1f2f2;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            margin-right: 1.3%;
+            width: 24%;
+            height: 40px;
+            padding: 0 10px;
+
+            &:nth-child(4n) {
+              margin-right: 0;
+            }
+
+            span {
+              flex-grow: 1;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+              height: 40px;
+              line-height: 40px;
+            }
+
+            i {
+              flex-shrink: 0;
+              font-size: 20px;
+              margin-left: 6px;
+              color: #a5a6a5;
+              cursor: pointer;
+
+              &:hover {
+                color: #3361ff;
+              }
+            }
+            .icon-download {
+              // margin-left: auto;
+              font-size: 19px;
+            }
+          }
+        }
+
+        & > .more-item,
+        & > .more-item-unfold {
+          .font-size-14();
+          font-weight: normal;
+          margin-top: 16px;
+          margin-bottom: 0;
+          text-align: center;
+          line-height: 1em;
+          cursor: pointer;
+          color: #606266;
+
+          &:hover {
+            color: #3361ff;
+
+            i {
+              color: #3361ff;
+            }
+          }
+
+          i {
+            margin-left: 4px;
+            font-size: 1em;
+            color: #909399;
+          }
+        }
+      }
+    }
+  }
+}
