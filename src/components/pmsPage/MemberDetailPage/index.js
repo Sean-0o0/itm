@@ -76,7 +76,7 @@ class MemberDetailPage extends Component {
             XMID: ryxxdata[0]?.XMID,
             SYKH: ryxxdata[0]?.SYKH,
             SYKHID: ryxxdata[0]?.SYKHID,
-            jldata: JSON.parse(jldata)
+            jldata: jldata !== "" ? JSON.parse(jldata) : ""
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,

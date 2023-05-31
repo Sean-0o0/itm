@@ -33,7 +33,7 @@ class AttendanceInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>正常天数：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{zc}天</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{zc || 0}天</div>
             {
               zcrq.length > 0 && <Popover
                 overlayClassName="rq-more-popover"
@@ -59,7 +59,7 @@ class AttendanceInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>请假天数：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{qj}天</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{qj || 0}天</div>
             {
               qjrq.length > 0 && <Popover
                 overlayClassName="rq-more-popover"
@@ -85,7 +85,7 @@ class AttendanceInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>加班天数：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{jb}天</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{jb || 0}天</div>
             {
               jbrq.length > 0 && <Popover
                 overlayClassName="rq-more-popover"
@@ -111,7 +111,7 @@ class AttendanceInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>考勤异常天数：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{yc}天</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{yc || 0}天</div>
             {
               ycrq.length > 0 && <Popover
                 overlayClassName="rq-more-popover"

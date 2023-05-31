@@ -27,7 +27,7 @@ class BasicInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>系统账号：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{XTZH || "-"}</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{XTZH || "暂无"}</div>
           </div>
           <div
             className="info-item"
@@ -37,7 +37,7 @@ class BasicInfo extends Component {
             <div style={{flexShrink: 0, color: '#909399'}}>简历：</div>
             <a style={{color: '#3361FF'}}
                href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=JL&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${ryid}&fileid=0`}>
-              {JL || "-"}</a>
+              {JL || <span style={{color: '#303133'}}>暂无</span>}</a>
           </div>
           <div
             className="info-item"
@@ -45,7 +45,7 @@ class BasicInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>试用期考核情况：</div>
-            <div style={{whiteSpace: 'break-spaces'}}>{SYKH || "-"}</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{SYKH || "暂无"}</div>
           </div>
         </div>
       </div>
