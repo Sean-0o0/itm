@@ -109,6 +109,7 @@ class PersonnelNeeds extends Component {
           ['RYSL' + Date.now()]: '',
           ['SC' + Date.now()]: '',
           ['YQ' + Date.now()]: '',
+          ['PCZT' + Date.now()]: '1',
         }
       ],
       //接口查出来是否存在获奖信息的数据
@@ -189,7 +190,8 @@ class PersonnelNeeds extends Component {
         GW: item['GW' + item.ID],
         RYSL: item['RYSL' + item.ID],
         SC: item['SC' + item.ID],
-        YQ: item['YQ' + item.ID],
+        YQ: item['YQ' + item.ID]?.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>').replace(/\s/g, ' '),
+        PCZT: item['PCZT' + item.ID]
       };
       newArr.push(obj);
     });
@@ -292,11 +294,11 @@ class PersonnelNeeds extends Component {
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
-          return (<Tooltip title={text} placement="topLeft">
-            <TextArea defaultValue={record['YQ' + record.ID]}
+          return (<Tooltip title={text?.replace(/<br>/g, '\n')} placement="topLeft">
+            <TextArea defaultValue={record['YQ' + record.ID]?.replace(/<br>/g, '\n')}
                       autoSize={{minRows: 1, maxRows: 6}}
                       onChange={(e) => _this.GWChange(e.target.value, record, index, 'YQ')}
-                      style={{cursor: 'default'}}>{text}</TextArea>
+                      style={{cursor: 'default'}}>{text?.replace(/<br>/g, '\n')}</TextArea>
           </Tooltip>)
         },
       },
@@ -373,6 +375,7 @@ class PersonnelNeeds extends Component {
               ['RYSL' + Date.now()]: '',
               ['SC' + Date.now()]: '',
               ['YQ' + Date.now()]: '',
+              ['PCZT' + Date.now()]: '1',
             });
             this.setState({tableData: arrData}, () => {
               this.callbackData();

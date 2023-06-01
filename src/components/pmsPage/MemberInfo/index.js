@@ -38,7 +38,7 @@ export default function MemberInfo(props) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = ''} = res;
+          const {role = '', zyrole = ''} = res;
           QueryOutsourceMemberList({
             current,
             pageSize,
@@ -46,7 +46,7 @@ export default function MemberInfo(props) {
             sort: "",
             total: -1,
             cxlx: queryType,
-            js: role,
+            js: zyrole === "暂无" ? role : zyrole,
             zzjg: String(LOGIN_USER_INFO.org)
           })
             .then(res => {

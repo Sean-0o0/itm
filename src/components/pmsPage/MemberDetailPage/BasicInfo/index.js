@@ -14,6 +14,7 @@ class BasicInfo extends Component {
         XTZH = "",
         JL = "",
         SYKH = "",
+        RYZT = "",
       }, ryid
     } = this.props;
 
@@ -41,11 +42,19 @@ class BasicInfo extends Component {
           </div>
           <div
             className="info-item"
-            key="系统账号："
+            key="试用期考核情况："
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>试用期考核情况：</div>
             <div style={{whiteSpace: 'break-spaces'}}>{SYKH || "暂无"}</div>
+          </div>
+          <div
+            className="info-item"
+            key="人员状态："
+            style={{display: 'flex', height: 'unset'}}
+          >
+            <div style={{flexShrink: 0, color: '#909399'}}>人员状态：</div>
+            <div style={{whiteSpace: 'break-spaces'}}>{RYZT || "暂无"}</div>
           </div>
         </div>
       </div>

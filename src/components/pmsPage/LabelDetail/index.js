@@ -27,23 +27,25 @@ class LabelDetail extends Component {
 
   componentWillReceiveProps(nextProps) {
     const {bqid} = nextProps
-    this.setState({
-      bqmc: '-', //标签名称
-      bqsm: '-',//标签说明
-      bqfz: '-',//标签分组id
-      attachList: [],
-      tableLoading: false,
-      pageParams: {
-        current: 1,
-        pageSize: 20,
-        paging: 1,
-        total: -1,
-        sort: '',
-        bqid
-      }
-    }, () => {
-      this.handleSearch({}, bqid)
-    })
+    if (this.props.bqid !== bqid) {
+      this.setState({
+        bqmc: '-', //标签名称
+        bqsm: '-',//标签说明
+        bqfz: '-',//标签分组id
+        attachList: [],
+        tableLoading: false,
+        pageParams: {
+          current: 1,
+          pageSize: 20,
+          paging: 1,
+          total: -1,
+          sort: '',
+          bqid
+        }
+      }, () => {
+        this.handleSearch({}, bqid)
+      })
+    }
   }
 
   handleSearch = (params = {}, bqid) => {

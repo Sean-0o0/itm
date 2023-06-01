@@ -215,6 +215,7 @@ class EditMemberInfoModel extends React.Component {
         ssgys: Number(values.ssgys),
         jl: uploadFileParams[0].name,
         fileData: uploadFileParams[0].base64,
+        ryzt: values.ryzt,
         czlx: "UPDATE"
       }
     }
@@ -242,6 +243,7 @@ class EditMemberInfoModel extends React.Component {
         GWID = "",
         DJID = "",
         SYKHID = "",
+        RYZT = "",
       },
       operateType = ""
     } = this.props;
@@ -355,7 +357,7 @@ class EditMemberInfoModel extends React.Component {
                             >
                               <Option key={1} value="1">男</Option>
                               <Option key={2} value="2">女</Option>
-                              <Option key={3} value="3">不详</Option>
+                              {/*<Option key={3} value="3">不详</Option>*/}
                             </Select>)}
                           </Form.Item>
                         </Col>
@@ -502,12 +504,41 @@ class EditMemberInfoModel extends React.Component {
                         </Col>
                       </Row>
                       <Row gutter={24} style={{display: operateType === "bjxq" ? '' : 'none'}}>
-                        <Col span={24}>
+                        <Col span={12}>
+                          <Form.Item
+                            label="人员状态"
+                            labelCol={{span: 8}}
+                            wrapperCol={{span: 16}}
+                          >
+                            {getFieldDecorator('ryzt', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: '请选择人员状态',
+                                },
+                              ],
+                              initialValue: RYZT
+                            })(<Select
+                              showSearch
+                              allowClear
+                              showArrow
+                              filterOption={(input, option) =>
+                                option.props.children
+                                  .toLowerCase()
+                                  .indexOf(input.toLowerCase()) >= 0
+                              }
+                            >
+                              <Option key={1} value="1">正常</Option>
+                              <Option key={2} value="4">离场</Option>
+                            </Select>)}
+                          </Form.Item>
+                        </Col>
+                        <Col span={12}>
                           <Form.Item
                             label="简历:"
                             colon={false}
-                            labelCol={{span: 4}}
-                            wrapperCol={{span: 20}}
+                            labelCol={{span: 8}}
+                            wrapperCol={{span: 16}}
                           >
                             {getFieldDecorator('jl', {
                               rules: [

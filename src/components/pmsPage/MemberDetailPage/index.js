@@ -2,13 +2,19 @@ import React, {Component} from 'react';
 import TopConsole from './TopConsole'
 import InfoTable from './InfoTable'
 import {message, Spin} from 'antd'
-import {FetchQueryOutsourceMemberDetail, QueryMemberDetailInfo} from '../../../services/pmsServices'
+import {
+  FetchQueryOutsourceMemberDetail,
+  QueryMemberDetailInfo,
+  QueryOutsourceMemberList,
+  QueryUserRole
+} from '../../../services/pmsServices'
 import BasicInfo from "./BasicInfo";
 import AttendanceInfo from "./AttendanceInfo";
 
 class MemberDetailPage extends Component {
   state = {
     ryid: -1,
+    zyrole: '',
     ryxxData: [],
     basicData: [],
     kqxxData: [],
@@ -27,6 +33,7 @@ class MemberDetailPage extends Component {
       ryid
     })
     this.handleSearch(ryid)
+    this.queryRole();
   }
 
   componentWillReceiveProps(nextProps) {
@@ -35,9 +42,30 @@ class MemberDetailPage extends Component {
       this.setState({
         ryid
       }, () => {
-        this.handleSearch(ryid)
+        this.handleSearch(ryid);
+        this.queryRole();
       })
     }
+  }
+
+  queryRole = () => {
+    //获取用户角色
+    const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+    QueryUserRole({
+      userId: String(LOGIN_USER_INFO.id),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          const {zyrole = ''} = res;
+          this.setState({
+            zyrole,
+          })
+        }
+      })
+      .catch(e => {
+        message.error('用户信息查询失败', 1);
+        console.error('QueryUserRole', e);
+      });
   }
 
   handleSearch = (ryid) => {
@@ -76,12 +104,14 @@ class MemberDetailPage extends Component {
             XMID: ryxxdata[0]?.XMID,
             SYKH: ryxxdata[0]?.SYKH,
             SYKHID: ryxxdata[0]?.SYKHID,
-            jldata: jldata !== "" ? JSON.parse(jldata) : ""
+            jldata: jldata !== "" ? JSON.parse(jldata) : "",
+            RYZT: ryxxdata[0]?.RYZTID,
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,
             XTZH: ryxxdata[0]?.XTZH,
             SYKH: ryxxdata[0]?.SYKH,
+            RYZT: ryxxdata[0]?.RYZT
           }
           let kqxxData = {
             zc: kqxxdata.filter(item => item.LX === "正常").length,
@@ -127,6 +157,7 @@ class MemberDetailPage extends Component {
       ydkhData = [],
       tableLoading = false,
       pageParams = {},
+      zyrole = "",
     } = this.state
     const {routes, ryid} = this.props
     let xmid = '-1'
@@ -137,6 +168,7 @@ class MemberDetailPage extends Component {
             routes={routes}
             data={ryxxData}
             ryid={ryid}
+            zyrole={zyrole}
             refreshPages={this.refreshPages}
           />
           <AttendanceInfo data={kqxxData}/>

@@ -17,12 +17,30 @@ class ToConsole extends Component {
   };
 
   handleEditMemberInfo = (type) => {
-    //type 编辑详情还是编辑试用期考核情况
-    console.log("------编辑外包人员信息----")
-    this.setState({
-      editMemberInfoVisible: true,
-      operateType: type,
-    })
+    const {zyrole} = this.props;
+    if (zyrole === "外包项目对接人") {
+      //type 编辑详情还是编辑试用期考核情况
+      console.log("------编辑外包人员信息----")
+      this.setState({
+        editMemberInfoVisible: true,
+        operateType: type,
+      })
+    } else {
+      message.warn("只有外包项目对接人可编辑!");
+    }
+  }
+
+  modPwd = () => {
+    const {zyrole} = this.props;
+    if (zyrole === "外包项目对接人") {
+      //type 编辑详情还是编辑试用期考核情况
+      console.log("------修改密码----")
+      this.setState({
+        changePwdVisible: true
+      })
+    } else {
+      message.warn("只有外包项目对接人可修改密码!");
+    }
   }
 
   closeModal = () => {
@@ -45,6 +63,7 @@ class ToConsole extends Component {
     const {
       routes = [],
       ryid = "",
+      zyrole = "",
       data: {
         XB = "",
         GYSMC = "",
@@ -52,16 +71,15 @@ class ToConsole extends Component {
         RYGW = "",
         DJ = "",
         XMMC = "",
-        SYKHID = ""
+        SYKHID = "",
+        RYZT = "",
       },
     } = this.props;
 
     const btnMoreContent = (
       <Menu>
         {/**/}
-        <Menu.Item onClick={() => this.setState({
-          changePwdVisible: true
-        })}>修改密码</Menu.Item>
+        <Menu.Item onClick={this.modPwd}>修改密码</Menu.Item>
         <Menu.Item onClick={() => this.handleEditMemberInfo("syqkh")}>试用期考核</Menu.Item>
       </Menu>
     );
@@ -129,10 +147,10 @@ class ToConsole extends Component {
                   <span className="member-detail-label">公司：</span>
                   <span className="member-detail-value">{GYSMC || '-'}</span>
                 </div>
-                <div className="member-detail-line flex1 flex-r">
-                  <span className="member-detail-label">所属项目：</span>
-                  <span className="member-detail-value">{XMMC || '-'}</span>
-                </div>
+                {/*<div className="member-detail-line flex1 flex-r">*/}
+                {/*  <span className="member-detail-label">所属项目：</span>*/}
+                {/*  <span className="member-detail-value">{XMMC || '-'}</span>*/}
+                {/*</div>*/}
                 <div className="member-detail-line flex1 flex-r">
                   <span className="member-detail-label">岗位：</span>
                   <span className="member-detail-value">{DJ || '-'}</span>
@@ -150,6 +168,8 @@ class ToConsole extends Component {
                     {RYGW || '-'}&nbsp;&nbsp;&nbsp;
                   </span>
                   </Tooltip>
+                  <span className="member-detail-label">所属项目：</span>
+                  <span className="member-detail-value">{XMMC || '-'}</span>
                 </div>
               </div>
             </div>

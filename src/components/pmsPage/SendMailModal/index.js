@@ -121,6 +121,9 @@ class SendMailModal extends React.Component {
   sendMail = values => {
     // console.log("params", this.handleParams(values))
     // return;
+    this.setState({
+      isSpinning: true
+    })
     return SendMail(this.handleParams(values))
       .then(result => {
         const {code = -1, record = []} = result;
@@ -150,21 +153,25 @@ class SendMailModal extends React.Component {
     });
     //邮箱正则校验
     const reg = /^([a-zA-Z\d][\w-]{2,})@(\w{2,})\.([a-z]{2,})(\.[a-z]{2,})?$/;
-    // console.log("reg.test(item)",reg.test("zhukantest@stocke.com.cn"))
-    // console.log("reg.test(item)222",reg.test("1347290373@qq.com"))
-    // console.log("reg.test(item)333",reg.test("all123@qq.com"))
-    // console.log("reg.test(item)444",reg.test("rabsy@qq.com"))
     let access = String(values.SJR).replaceAll(",", ";")
     const accessArr = access.split(';');
     if (accessArr.filter(item => reg.test(item) === false).length > 0) {
       message.warn("请输入正确格式的接收人邮箱！")
       return;
     }
-    let others = String(values.CS).replaceAll(",", ";")
-    const othersArr = others.split(';');
-    if (othersArr.filter(item => reg.test(item) === false).length > 0) {
-      message.warn("请输入正确格式的抄送人邮箱！")
-      return;
+    let others = ""
+    let othersArr;
+    // console.log("values.CS",values.CS)
+    if (values.CS !== "" && values.CS !== undefined) {
+      others = String(values.CS).replaceAll(",", ";")
+      othersArr = others.split(';');
+    }
+    // console.log("othersArr",othersArr)
+    if (othersArr.length > 0) {
+      if (othersArr.filter(item => reg.test(item) === false).length > 0) {
+        message.warn("请输入正确格式的抄送人邮箱！")
+        return;
+      }
     }
     //表单数据
     const params = {
