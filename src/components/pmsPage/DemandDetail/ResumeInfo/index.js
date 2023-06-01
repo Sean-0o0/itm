@@ -2,7 +2,6 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button, Popover, Tooltip } from 'antd';
 import config from '../../../../utils/config';
 import axios from 'axios';
-import { includes } from 'lodash';
 
 const { api } = config;
 const {

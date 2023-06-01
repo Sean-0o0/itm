@@ -1,10 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Tooltip, Table } from 'antd';
+import { Button, Tooltip, Table, Popover } from 'antd';
 import moment from 'moment';
+import config from '../../../../utils/config';
+import axios from 'axios';
+
+const { api } = config;
+const {
+  pmsServices: { queryFileStream },
+} = api;
 
 export default function DemandTable(props) {
-  const { dtlData = {} } = props;
-  const { XQNR = [] } = dtlData;
+  const { dtlData = {}, fqrid, setIsSpinning } = props;
+  const { XQNR = [], XQSX_ORIGIN = [], JLXX = [] } = dtlData;
+  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   useEffect(() => {
     return () => {};
   }, []);
@@ -49,8 +57,8 @@ export default function DemandTable(props) {
       key: 'YQ',
       ellipsis: true,
       render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
+        <Tooltip title={text.replace(/<br>/g, '')} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{'1\n\r2'}</span>
         </Tooltip>
       ),
     },
@@ -61,6 +69,73 @@ export default function DemandTable(props) {
       align: 'right',
       key: 'YGYS',
       ellipsis: true,
+    },
+    {
+      title: '简历信息',
+      dataIndex: 'JLDATA',
+      key: 'JLDATA',
+      width:
+        fqrid === LOGIN_USER_ID &&
+        XQSX_ORIGIN.filter(x => x.SWMC === '简历分发')[0]?.ZXZT === '2' &&
+        JLXX.length !== 0
+          ? '10%'
+          : 0,
+      align: 'center',
+      ellipsis: true,
+      render: arr => {
+        const handleFilePreview = (id, fileName, entryno) => {
+          setIsSpinning(true);
+          axios({
+            method: 'POST',
+            url: queryFileStream,
+            responseType: 'blob',
+            data: {
+              objectName: 'TWBXQ_JLSC',
+              columnName: 'JL',
+              id,
+              title: fileName,
+              extr: entryno,
+              type: '',
+            },
+          })
+            .then(res => {
+              const href = URL.createObjectURL(res.data);
+              const a = document.createElement('a');
+              a.download = fileName;
+              a.href = href;
+              a.click();
+              window.URL.revokeObjectURL(a.href);
+              setIsSpinning(false);
+            })
+            .catch(err => {
+              setIsSpinning(false);
+              message.error('简历下载失败', 1);
+            });
+        };
+        const popoverContent = (data = []) => (
+          <div className="list">
+            {data.map(x => (
+              <div
+                className="item"
+                key={x.ENTRYNO + x.JLMC + x.JLID}
+                onClick={() => handleFilePreview(x.JLID, x.JLMC, x.ENTRYNO)}
+              >
+                <a style={{ color: '#3361ff' }}>{x.JLMC}</a>
+              </div>
+            ))}
+          </div>
+        );
+        return (
+          <Popover
+            placement="rightTop"
+            title={null}
+            content={popoverContent(arr)}
+            overlayClassName="demand-detail-content-popover"
+          >
+            <a style={{ color: '#3361ff' }}>查看详情</a>
+          </Popover>
+        );
+      },
     },
   ];
 

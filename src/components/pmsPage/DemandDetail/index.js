@@ -82,6 +82,29 @@ export default function DemandDetail(props) {
                 xqnr.forEach(x => {
                   x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note ?? '--';
                 });
+                const xqnr2 = xqnr.map(item1 => {
+                  const jldata =
+                    JSON.parse(res.jlxx).length === 0
+                      ? []
+                      : JSON.parse(res.jlxx)[0].GYSID === undefined
+                      ? []
+                      : JSON.parse(res.jlxx)
+                          .filter(item2 => item1.XQNRID === item2.RYXQ)
+                          .map(item2 => {
+                            const items = JSON.parse(item2.JLMC).items;
+                            const jldataItem = items.map(([entryNo, fileName]) => ({
+                              GYSID: item2.GYSID,
+                              GYSMC: item2.GYSMC,
+                              JLID: item2.JLID,
+                              ENTRYNO: entryNo,
+                              JLMC: fileName,
+                              NEXTID: JSON.parse(item2.JLMC).nextId,
+                            }));
+                            return jldataItem;
+                          })
+                          .flat();
+                  return { ...item1, JLDATA: jldata };
+                });
                 const zhpc =
                   JSON.parse(res.zhpc).length === 0
                     ? []
@@ -125,14 +148,14 @@ export default function DemandDetail(props) {
                 });
 
                 const output = JSON.parse(res.jlxx).reduce((acc, cur) => {
-                  const { RYXQ,RYXQNR,  GYSID, GYSMC, JLID, JLMC } = cur;
+                  const { RYXQ, RYXQNR, GYSID, GYSMC, JLID, JLMC } = cur;
                   const jlData = JSON.parse(JLMC).items.map(([entryNo, jlmc]) => ({
                     JLID,
                     ENTRYNO: entryNo,
                     JLMC: jlmc,
                     NEXTID: JSON.parse(JLMC).nextId,
                   }));
-                  acc[RYXQ] = acc[RYXQ] || { RYXQ,RYXQNR, DATA: [] };
+                  acc[RYXQ] = acc[RYXQ] || { RYXQ, RYXQNR, DATA: [] };
                   const ryData = acc[RYXQ].DATA.find(ry => ry.GYSID === GYSID);
                   if (ryData) {
                     ryData.JLDATA.push(...jlData);
@@ -156,7 +179,7 @@ export default function DemandDetail(props) {
                   XMXX: JSON.parse(res.xmxx)[0],
                   XQXQ: JSON.parse(res.xqxq),
                   XQSX: xqsx,
-                  XQNR: xqnr,
+                  XQNR: xqnr2,
                   JLXX: jlxx, //简历信息展示
                   JLXX2: jlxx2, //简历分发使用
                   LYSQ: JSON.parse(res.lysq)[JSON.parse(res.lysq).length - 1] ?? {},
@@ -206,7 +229,7 @@ export default function DemandDetail(props) {
           getDtldata={getDtldata}
           WBRYGW={WBRYGW}
         />
-        <DemandTable dtlData={dtlData} />
+        <DemandTable dtlData={dtlData} fqrid={curFqrid} setIsSpinning={setIsSpinning} />
         <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
         <EvaluationTable
           dtlData={dtlData}

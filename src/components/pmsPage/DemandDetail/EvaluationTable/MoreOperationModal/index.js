@@ -27,10 +27,8 @@ function MoreOperationModal(props) {
   const { visible, setVisible, form, data = {} } = props;
   const { tableData = [], DFZT = [], LYZT = [], xqid, swzxid, reflush } = data;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-  const [edited, setEdited] = useState(false); //已编辑
   const [editing, setEditing] = useState(false); //编辑状态
-  const [editingIndex, setEditingIndex] = useState(-1); //编辑行id
-  const [editData, setEditData] = useState([]); //编辑数据
+  const [editData, setEditData] = useState([]); //编辑数据的id
   const [selectedRowIds, setSelectedRowIds] = useState([]); //选中行id
   const [tableArr, setTableArr] = useState([]); //表格数据
   const [editContent, setEditContent] = useState(''); //编辑的内容
@@ -68,41 +66,60 @@ function MoreOperationModal(props) {
       ...item, //old row data
       ...row, //new row data
     });
-    setTableArr(preState => [...newData]);
+    let newEdit = [...editData];
+    let index2 = newEdit.findIndex(item => String(row.PCID) === String(item));
+    if (index2 === -1) {
+      newEdit.push(row.PCID);
+    } else {
+      newEdit.splice(index2, 1, row.PCID);
+    }
+    setEditData(p => [...newEdit]);
+    setTableArr(p => [...newData]);
   };
 
   //调接口保存
   const handleSubmit = () => {
-    form.validateFieldsAndScroll(err => {
-      if (!err) {
-        let submitTable = tableArr.map(x => {
-          return {
-            ZHPCID: x.PCID,
-            LYZT: x['LYZT' + x.PCID],
-            LYSM: x['LYSM' + x.PCID] || '',
-          };
-        });
-        let submitProps = {
-          xqid: Number(xqid),
-          swzxid: Number(swzxid),
-          pcxx: JSON.stringify(submitTable),
-          czlx: 'UPDATE',
-          count: submitTable.length,
-        };
-        OperateEvaluation(submitProps)
-          .then(res => {
-            if (res?.success) {
-              setVisible(false);
-              message.success('操作成功', 1);
-              // form.resetFields();
-              reflush();
+    if (!isSpinning) {
+      form.validateFieldsAndScroll(err => {
+        if (!err) {
+          setIsSpinning(true);
+          let submitTable = [];
+          tableArr.forEach(x => {
+            if (editData.includes(x.PCID)) {
+              submitTable.push({
+                ZHPCID: x.PCID,
+                LYZT: x['LYZT' + x.PCID],
+                LYSM: x['LYSM' + x.PCID] || '',
+              });
             }
-          })
-          .catch(e => {
-            message.error('信息提交失败');
           });
-      }
-    });
+          console.log('🚀 ~ file: index.js:97 ~ submitTable ~ submitTable:', submitTable);
+          let submitProps = {
+            xqid: Number(xqid),
+            swzxid: Number(swzxid),
+            pcxx: JSON.stringify(submitTable),
+            czlx: 'UPDATE',
+            count: submitTable.length,
+          };
+          OperateEvaluation(submitProps)
+            .then(res => {
+              if (res?.success) {
+                // form.resetFields();
+                reflush();
+                setIsSpinning(false);
+                message.success('操作成功', 1);
+                // setVisible(false);
+                setEditing(false);
+                setEditData([]);
+              }
+            })
+            .catch(e => {
+              message.error('信息提交失败');
+              setIsSpinning(false);
+            });
+        }
+      });
+    }
   };
 
   const tableColumns = [
@@ -113,7 +130,13 @@ function MoreOperationModal(props) {
       // align: 'center',
       key: 'RYDJ',
       ellipsis: true,
-      render: (txt, row) => txt + ` | ` + row.GW,
+      render: (txt, row) => {
+        return (
+          <Tooltip title={txt + ` | ` + row.GW} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{txt + ` | ` + row.GW}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '供应商名称',
@@ -257,20 +280,18 @@ function MoreOperationModal(props) {
 
   //取消修改
   const handleEditCancel = () => {
-    setEditing(false);
-    let arr = tableData.map(x => {
-      return {
-        ...x,
-        ['LYZT' + x.PCID]: x.LYZT || '',
-        ['LYSM ' + x.PCID]: x.LYSM || '',
-      };
-    });
-    setTableArr([...JSON.parse(JSON.stringify(arr))]);
-  };
-
-  //确认
-  const handleOk = () => {
-    setVisible(false);
+    if (!isSpinning) {
+      setEditing(false);
+      let arr = tableData.map(x => {
+        return {
+          ...x,
+          ['LYZT' + x.PCID]: x.LYZT || '',
+          ['LYSM ' + x.PCID]: x.LYSM || '',
+        };
+      });
+      setTableArr([...JSON.parse(JSON.stringify(arr))]);
+      setEditData([]);
+    }
   };
 
   //取消
@@ -335,7 +356,7 @@ function MoreOperationModal(props) {
       maskClosable={false}
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-      style={{ top: '60px' }}
+      style={{ top: '10px' }}
       title={null}
       visible={visible}
       // onOk={handleOk}
@@ -378,7 +399,7 @@ function MoreOperationModal(props) {
             maskClosable={false}
             zIndex={101}
             maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-            style={{ top: '140px' }}
+            style={{ top: '60px' }}
             title={null}
             visible={lysm.visible}
             onOk={() => {
@@ -395,6 +416,14 @@ function MoreOperationModal(props) {
                 }
               });
               setTableArr(p => [...arr]);
+              let newEdit = [...editData];
+              let index2 = newEdit.findIndex(item => String(lysm.index) === String(item));
+              if (index2 === -1) {
+                newEdit.push(lysm.index);
+              } else {
+                newEdit.splice(index2, 1, lysm.index);
+              }
+              setEditData(p => [...newEdit]);
               setEditContent('');
             }}
             onCancel={() => {
@@ -405,13 +434,6 @@ function MoreOperationModal(props) {
                 };
               });
               setEditContent('');
-              // let arr = [...tableArr];
-              // arr.forEach(x => {
-              //   if (x.PCID === lysm.index) {
-              //     x['LYSM' + x.PCID] = x.LYSM || '';
-              //   }
-              // });
-              // setTableArr(p => [...arr]);
             }}
           >
             <div className="body-title-box">
@@ -426,16 +448,10 @@ function MoreOperationModal(props) {
                 // defaultValue={tableArr[lysm.index]?.LYSM||'JJJ'}
                 defaultValue={editContent}
                 allowClear
+                autoFocus
                 onChange={e => {
                   e.persist();
                   setEditContent(e.target.value);
-                  // let arr = [...tableArr];
-                  // arr.forEach(x => {
-                  //   if (x.PCID === lysm.index) {
-                  //     x['LYSM' + x.PCID] = e.target.value || '';
-                  //   }
-                  // });
-                  // setTableArr(p => [...arr]);
                 }}
               ></TextArea>
             </div>
@@ -448,33 +464,41 @@ function MoreOperationModal(props) {
           <Button
             type="primary"
             onClick={() => {
-              getLink('V_LYXX', 'V_LYXX_M', [
-                {
-                  name: 'GLXQ',
-                  value: xqid,
-                },
-                {
-                  name: 'SWZXID',
-                  value: swzxid,
-                },
-              ]);
-              setLbModal(p => {
-                return {
-                  ...p,
-                  title: '提交录用申请',
-                };
-              });
-              setModalVisible(p => {
-                return {
-                  ...p,
-                  employmentApplication: true,
-                };
-              });
+              if (!isSpinning) {
+                getLink('V_LYXX', 'V_LYXX_M', [
+                  {
+                    name: 'GLXQ',
+                    value: xqid,
+                  },
+                  {
+                    name: 'SWZXID',
+                    value: swzxid,
+                  },
+                ]);
+                setLbModal(p => {
+                  return {
+                    ...p,
+                    title: '提交录用申请',
+                  };
+                });
+                setModalVisible(p => {
+                  return {
+                    ...p,
+                    employmentApplication: true,
+                  };
+                });
+              }
             }}
           >
             提交录用申请
           </Button>
-          <Button type="primary" onClick={() => {}}>
+          <Button
+            type="primary"
+            onClick={() => {
+              if (!isSpinning) {
+              }
+            }}
+          >
             确认录用申请
           </Button>
           {editing ? (
@@ -495,15 +519,6 @@ function MoreOperationModal(props) {
           )}
         </div>
         <Table
-          onRow={record => {
-            return {
-              onClick: () => {
-                if (editing) {
-                  setEditingIndex(record.id);
-                }
-              },
-            };
-          }}
           rowSelection={rowSelection}
           loading={isSpinning}
           columns={columns}
@@ -511,10 +526,14 @@ function MoreOperationModal(props) {
           rowKey={'PCID'}
           rowClassName={() => 'editable-row'}
           dataSource={tableArr}
-          scroll={{
-            y: (editing && tableArr.length > 4) || (!editing && tableArr.length > 6) ? 272 : false,
+          pagination={{
+            pageSize: 10,
+            defaultCurrent: 1,
+            hideOnSinglePage: false,
+            showQuickJumper: true,
+            showTotal: t => `共 ${tableArr.length} 条数据`,
+            total: tableArr.length,
           }}
-          pagination={false}
           // bordered
         />
       </div>

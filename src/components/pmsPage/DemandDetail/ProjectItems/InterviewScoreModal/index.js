@@ -34,6 +34,7 @@ function InterviewScoreModal(props) {
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
   const [editData, setEditData] = useState([]); //提交的修改数据
+  const [isSpinning, setIsSpinning] = useState(false); //加载状态
 
   useEffect(() => {
     if (xqid !== -2) {
@@ -44,6 +45,7 @@ function InterviewScoreModal(props) {
   }, [xqid, JSON.stringify(WBRYGW)]);
 
   const getTableData = xqid => {
+    setIsSpinning(true);
     QueryEvaluationGradeInfo({
       xqid,
       cxlx: todo ? 'SY' : 'ALL',
@@ -57,40 +59,46 @@ function InterviewScoreModal(props) {
             };
           });
           setTableData([...arr]);
+          setIsSpinning(false);
         }
       })
       .catch(e => {
         message.error('接口信息获取失败');
+        setIsSpinning(false);
       });
   };
 
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
-        // let submitTable = tableData.map(x => {
-        //   return {
-        //     DFID: String(x.DFID),
-        //     PF: String(x['FS' + x.DFID] || 0),
-        //   };
-        // });
+        setIsSpinning(true);
+        let submitTable = editData.map(x => {
+          return {
+            DFID: String(x.DFID),
+            PF: String(x['FS' + x.DFID] || 0),
+          };
+        });
+        console.log('🚀 ~ file: index.js:81 ~ submitTable ~ submitTable:', submitTable);
         let submitProps = {
-          dfxx: JSON.stringify(editData),
-          count: editData.length,
+          dfxx: JSON.stringify(submitTable),
+          count: submitTable.length,
           xqid: Number(xqid),
           swzxid: todo ? undefined : Number(swzxid),
           czlx: todo ? 'SY' : 'XQ',
         };
-
+        // console.log("🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:", submitProps)
         EvaluationScoring(submitProps)
           .then(res => {
             if (res?.success) {
-              setVisible(false);
               reflush();
+              setIsSpinning(false);
               message.success('打分成功', 1);
+              setVisible(false);
             }
           })
           .catch(e => {
             message.error('打分失败', 1);
+            setIsSpinning(false);
           });
       }
     });
@@ -107,19 +115,18 @@ function InterviewScoreModal(props) {
     const item = newData[index];
     newData.splice(index, 1, {
       ...item, //old row
-      ...row, //rew row
+      ...row, //new row
     });
     let newEdit = [...editData];
-    let index2 = newEdit.findIndex(item => row.DFID === item.DFID);
+    let index2 = newEdit.findIndex(item => String(row.DFID) === String(item.DFID));
     if (index2 === -1) {
       newEdit.push({
-        DFID: String(row.DFID),
-        PF: String(row['FS' + row.DFID] || 0),
+        ...row,
       });
     } else {
       newEdit.splice(index2, 1, {
         ...newEdit[index2], //old row data
-        ...row, //new row data
+        ...row,
       });
     }
     setEditData(p => [...newEdit]);
@@ -206,6 +213,7 @@ function InterviewScoreModal(props) {
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
+      confirmLoading={isSpinning}
     >
       <div className="body-title-box">
         <strong>面试评分</strong>
@@ -220,6 +228,7 @@ function InterviewScoreModal(props) {
           scroll={tableData.length > 4 ? { y: 227 } : {}}
           pagination={false}
           // bordered
+          loading={isSpinning}
           size="middle"
         />
       </div>

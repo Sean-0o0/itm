@@ -209,8 +209,13 @@ exports.routes = [
     component: './pmsPage/ResumeDistribution',
   },
   {
-    // 简历分发页面
-    path: `${prefix}/ResumeDistribution`,
-    component: './pmsPage/ResumeDistribution',
+    // 费用列表页面
+    path: `${prefix}/ExpenseInfo`,
+    component: './pmsPage/ExpenseInfo',
+  },
+  {
+    // 费用列表页面
+    path: `${prefix}/ExpenseInfo/:params`,
+    component: './pmsPage/ExpenseInfo',
   },
 ];

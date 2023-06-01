@@ -51,6 +51,7 @@ export default function ResumeDistributionPage(props) {
     return () => {};
   }, [JSON.stringify(JLXX)]);
 
+  //分发
   const handleDestribute = () => {
     setIsSpinning(true);
     let arr = data.filter(x => x.RYXQ === activeKey)[0].DATA;
@@ -129,6 +130,7 @@ export default function ResumeDistributionPage(props) {
 
   //供应商块
   const getSplierItem = ({ GYSMC = '--', JLDATA = [], UNFOLD, GYSID, SHOWFOLD }, index) => {
+    //文件下载
     const handleFileDownload = (id, fileName, entryno) => {
       setIsSpinning(true);
       axios({
@@ -158,103 +160,104 @@ export default function ResumeDistributionPage(props) {
           message.error('简历下载失败', 1);
         });
     };
+    //单个编辑完成
+    const handleInputBlur = (e, x) => {
+      let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+      if (arr.length > 0) {
+        let jldata = [...arr[index].JLDATA];
+        jldata.forEach(j => {
+          if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
+            // console.log('%%$',j);
+            j.JLMC = e.target.value;
+          }
+        });
+        arr[index].JLDATA = jldata;
+        let dataArr = JSON.parse(JSON.stringify(data));
+        dataArr.forEach(d => {
+          if (d.RYXQ === activeKey) {
+            d.DATA = [...arr];
+          }
+        });
+        setData([...dataArr]);
+        let arrShow = JSON.parse(JSON.stringify(dataArr));
+        arrShow.forEach(x => {
+          x.DATA.forEach(y => {
+            y.UNFOLD = false;
+            y.SHOWFOLD = false;
+          });
+        });
+        setDataShow(arrShow);
+      }
+    };
+    //单个删除
+    const handleDelete = x => {
+      let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+      if (arr.length > 0) {
+        arr[index].JLDATA = arr[index].JLDATA.filter(
+          j => !(j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC),
+        );
+        if (
+          arr[index].JLDATA.length == 0 ||
+          arr[index].JLDATA.filter(jl => jl.JLID === x.JLID).length === 0
+        ) {
+          setEmptyArr(p => [
+            ...p,
+            {
+              JLID: x.JLID,
+              GYSID: arr[index].GYSID,
+              JLMC: JSON.stringify({ nextId: x.NEXTID, items: [] }).replace(/"/g, '!'),
+            },
+          ]);
+        }
+        let total = 0;
+        data.forEach(x => {
+          let total2 = 0;
+          x.DATA?.forEach(y => {
+            total2 += y.JLDATA?.length;
+          });
+          total += total2;
+        });
+        setJlTotal(total);
+        let dataArr = JSON.parse(JSON.stringify(data));
+        dataArr.forEach(d => {
+          if (d.RYXQ === activeKey) {
+            d.DATA = [...arr];
+          }
+        });
+        setData([...dataArr]);
+        let arrShow = JSON.parse(JSON.stringify(dataArr));
+        arrShow.forEach(x => {
+          x.DATA.forEach(y => {
+            y.UNFOLD = false;
+            y.SHOWFOLD = false;
+          });
+        });
+        setDataShow(arrShow);
+        message.success('删除成功', 1);
+      }
+    };
     if (JLDATA.length === 0) return '';
     return (
       <div className="splier-item">
         <div className="splier-name">{GYSMC}</div>
         <div className="resume-list">
           {JLDATA.map((x, i) => (
-            <div className="resume-item" key={x.JLMC}>
+            <div
+              className="resume-item"
+              key={x.JLMC}
+              style={editing ? { backgroundColor: '#fff' } : {}}
+            >
               {editing ? (
                 <Input
                   defaultValue={x.JLMC}
-                  onBlur={e => {
-                    let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
-                    if (arr.length > 0) {
-                      let jldata = [...arr[index].JLDATA];
-                      jldata.forEach(j => {
-                        if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
-                          // console.log('%%$',j);
-                          j.JLMC = e.target.value;
-                        }
-                      });
-                      arr[index].JLDATA = jldata;
-                      let dataArr = JSON.parse(JSON.stringify(data));
-                      dataArr.forEach(d => {
-                        if (d.RYXQ === activeKey) {
-                          d.DATA = [...arr];
-                        }
-                      });
-                      setData([...dataArr]);
-                      let arrShow = JSON.parse(JSON.stringify(dataArr));
-                      arrShow.forEach(x => {
-                        x.DATA.forEach(y => {
-                          y.UNFOLD = false;
-                          y.SHOWFOLD = false;
-                        });
-                      });
-                      setDataShow(arrShow);
-                    }
-                  }}
+                  onBlur={e => handleInputBlur(e, x)}
                   style={{ width: '100%' }}
                 />
               ) : (
                 <span>{x.JLMC}</span>
               )}
-
               {editing ? (
-                <Popconfirm
-                  title="确定要删除该简历吗?"
-                  onConfirm={() => {
-                    let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
-                    if (arr.length > 0) {
-                      arr[index].JLDATA = arr[index].JLDATA.filter(
-                        j => !(j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC),
-                      );
-                      if (
-                        arr[index].JLDATA.length == 0 ||
-                        arr[index].JLDATA.filter(jl => jl.JLID === x.JLID).length === 0
-                      ) {
-                        setEmptyArr(p => [
-                          ...p,
-                          {
-                            JLID: x.JLID,
-                            GYSID: arr[index].GYSID,
-                            JLMC: JSON.stringify({ nextId: x.NEXTID, items: [] }).replace(
-                              /"/g,
-                              '!',
-                            ),
-                          },
-                        ]);
-                      }
-                      let total = 0;
-                      data.forEach(x => {
-                        let total2 = 0;
-                        x.DATA?.forEach(y => {
-                          total2 += y.JLDATA?.length;
-                        });
-                        total += total2;
-                      });
-                      setJlTotal(total);
-                      let dataArr = JSON.parse(JSON.stringify(data));
-                      dataArr.forEach(d => {
-                        if (d.RYXQ === activeKey) {
-                          d.DATA = [...arr];
-                        }
-                      });
-                      setData([...dataArr]);
-                      let arrShow = JSON.parse(JSON.stringify(dataArr));
-                      arrShow.forEach(x => {
-                        x.DATA.forEach(y => {
-                          y.UNFOLD = false;
-                          y.SHOWFOLD = false;
-                        });
-                      });
-                      setDataShow(arrShow);
-                      message.success('删除成功', 1);
-                    }
-                  }}
-                >
+                <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
                   <i className="iconfont delete" />
                 </Popconfirm>
               ) : (
@@ -336,8 +339,16 @@ export default function ResumeDistributionPage(props) {
     });
     setDataShow(arrShow);
   };
-
   if (JLXX.length === 0) return '';
+  const getctiveKeyTotal = () => {
+    let total = 0;
+    dataShow
+      .filter(x => x.RYXQ === activeKey)[0]
+      ?.DATA?.forEach(m => {
+        total += m.JLDATA?.length;
+      });
+    return total;
+  };
   return (
     <div className="resume-destribution-box">
       <div className="top-console">
@@ -349,35 +360,37 @@ export default function ResumeDistributionPage(props) {
       </div>
       <Spin spinning={isSpinning} size="large" tip="加载中">
         <div className="content">
-          <div className="btn-box">
-            {editing ? (
-              <>
-                <Popconfirm title="确定要保存吗？" onConfirm={handleSave}>
-                  <Button className="btn-opr">保存</Button>
-                </Popconfirm>
-                <Button className="btn-cancel" onClick={handleEditCancel}>
-                  取消
-                </Button>
-              </>
-            ) : (
-              <>
-                <Button className="btn-opr" onClick={handleDestribute}>
-                  分发
-                </Button>
-                <Button className="btn-opr" onClick={handleModify}>
-                  修改
-                </Button>
-              </>
-            )}
-          </div>
+          {getctiveKeyTotal() === 0 ? (
+            <Empty
+              description="暂无简历"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ width: '100%' }}
+            />
+          ) : (
+            <div className="btn-box">
+              {editing ? (
+                <>
+                  <Popconfirm title="确定要保存吗？" onConfirm={handleSave}>
+                    <Button className="btn-opr">保存</Button>
+                  </Popconfirm>
+                  <Button className="btn-cancel" onClick={handleEditCancel}>
+                    取消
+                  </Button>
+                </>
+              ) : (
+                <>
+                  <Button className="btn-opr" onClick={handleDestribute}>
+                    分发
+                  </Button>
+                  <Button className="btn-opr" onClick={handleModify}>
+                    修改
+                  </Button>
+                </>
+              )}
+            </div>
+          )}
+
           <div className="splier-list">
-            {jlTotal === 0 && (
-              <Empty
-                description="暂无简历"
-                image={Empty.PRESENTED_IMAGE_SIMPLE}
-                style={{ width: '100%' }}
-              />
-            )}
             {dataShow
               .filter(x => x.RYXQ === activeKey)[0]
               ?.DATA?.map((item, index) => getSplierItem(item, index))}

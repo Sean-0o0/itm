@@ -188,7 +188,19 @@ export default function EvaluationTable(props) {
         <span onClick={() => setModalVisible(true)}>更多操作</span>
       </div>
       <div className="table-box">
-        <Table columns={columns} rowKey={'ZHPCID'} dataSource={ZHPC} pagination={false}/>
+        <Table
+          columns={columns}
+          rowKey={'ZHPCID'}
+          dataSource={ZHPC}
+          pagination={{
+            pageSize: 5,
+            defaultCurrent: 1,
+            hideOnSinglePage: false,
+            showQuickJumper: true,
+            showTotal: t => `共 ${ZHPC.length} 条数据`,
+            total: ZHPC.length,
+          }}
+        />
       </div>
     </div>
   );

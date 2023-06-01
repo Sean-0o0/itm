@@ -40,6 +40,7 @@ function PersonnelArrangementModal(props) {
   const [pcryData, setPcryData] = useState([]); //评测人员
   const [gysData, setGysData] = useState([]); //供应商
   const [updateData, setUpdateData] = useState({}); //更新回显
+  const [isSpinning, setIsSpinning] = useState(false);
 
   useEffect(() => {
     getPcryData();
@@ -188,6 +189,7 @@ function PersonnelArrangementModal(props) {
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
+        setIsSpinning(true);
         let submitTable = tableData.map(x => {
           return {
             PCID: x.NEW === true ? '-1' : x.PCID,
@@ -211,14 +213,16 @@ function PersonnelArrangementModal(props) {
         OperateEvaluation(submitProps)
           .then(res => {
             if (res?.success) {
-              setVisible(false);
-              message.success('操作成功', 1);
               resetFields();
               reflush();
+              setIsSpinning(false);
+              message.success('操作成功', 1);
+              setVisible(false);
             }
           })
           .catch(e => {
             message.error('信息提交失败');
+            setIsSpinning(false);
           });
       }
     });
@@ -263,7 +267,7 @@ function PersonnelArrangementModal(props) {
     {
       title: '综合评测时间',
       dataIndex: 'MSSJ',
-      width: '28%',
+      width: '30%',
       align: 'center',
       key: 'MSSJ',
       ellipsis: true,
@@ -356,132 +360,135 @@ function PersonnelArrangementModal(props) {
       visible={visible}
       onOk={handleOk}
       onCancel={handleCancel}
+      confirmLoading={isSpinning}
     >
       <div className="body-title-box">
         <strong>综合评测安排</strong>
       </div>
-      <Form className="content-box">
-        <Row>
-          <Col span={12}>
-            <Form.Item label="人员需求" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
-              {getFieldDecorator('ryxq', {
-                initialValue: updateData.XQNRID,
-                rules: [
-                  {
-                    required: true,
-                    message: '人员需求不允许空值',
-                  },
-                ],
-              })(
-                <Select
-                  className="item-selector"
-                  placeholder="请选择"
-                  showSearch
-                  allowClear
-                  optionLabelProp="children"
-                  filterOption={(input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                  onChange={handleRyxqXhange}
-                >
-                  {XQNR.map(x => {
-                    return (
-                      <Option key={x.XQNRID} value={x.XQNRID}>
-                        {x.RYDJ} | {x.GW}
-                      </Option>
-                    );
-                  })}
-                </Select>,
-              )}
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="评测人员" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
-              {getFieldDecorator('pcry', {
-                initialValue: updateData.MSGID,
-                rules: [
-                  {
-                    required: true,
-                    message: '评测人员不允许空值',
-                  },
-                ],
-              })(
-                <Select
-                  className="item-selector"
-                  placeholder="请选择"
-                  mode="multiple"
-                  showSearch
-                  allowClear
-                  filterOption={(input, option) =>
-                    option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-                  }
-                >
-                  {pcryData.map(x => {
-                    return (
-                      <Option key={x.id} value={x.id}>
-                        {x.name}
-                      </Option>
-                    );
-                  })}
-                </Select>,
-              )}
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row>
-          {getInputDisabled(
-            '预计综合评测日期',
-            XQNR.length > 0 ? moment(XQNR[0].YJZHPCRQ).format('YYYY-MM-DD') : '',
-            8,
-            14,
-          )}
-        </Row>
-        <Form.Item
-          label="评测时间安排"
-          labelCol={{ span: 4 }}
-          wrapperCol={{ span: 19 }}
-          // required
-          style={{ marginBottom: 16, marginTop: 6 }}
-        >
-          <div className="ryxq-table-box">
-            <Table
-              columns={columns}
-              components={components}
-              rowKey={'PCID'}
-              rowClassName={() => 'editable-row'}
-              dataSource={tableData}
-              scroll={tableData.length > 3 ? { y: 171 } : {}}
-              pagination={false}
-              bordered
-              size="middle"
-            />
-            <div
-              className="table-add-row"
-              onClick={() => {
-                let arrData = [...tableData];
-                const UUID = Date.now();
-                arrData.push({
-                  PCID: UUID,
-                  ['GYSID' + UUID]: '',
-                  ['RYMC' + UUID]: '',
-                  ['MSSJ' + UUID]: null,
-                  NEW: true,
-                });
-                setTableData(p => [...arrData]);
-                setTimeout(() => {
-                  const table = document.querySelectorAll(`.ryxq-table-box .ant-table-body`)[0];
-                  table.scrollTop = table.scrollHeight;
-                }, 200);
-              }}
-            >
-              <span>
-                <Icon type="plus" style={{ fontSize: '12px' }} />
-                <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增人员安排</span>
-              </span>
+      <Spin spinning={isSpinning}>
+        <Form className="content-box">
+          <Row>
+            <Col span={12}>
+              <Form.Item label="人员需求" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+                {getFieldDecorator('ryxq', {
+                  initialValue: updateData.XQNRID,
+                  rules: [
+                    {
+                      required: true,
+                      message: '人员需求不允许空值',
+                    },
+                  ],
+                })(
+                  <Select
+                    className="item-selector"
+                    placeholder="请选择"
+                    showSearch
+                    allowClear
+                    optionLabelProp="children"
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                    onChange={handleRyxqXhange}
+                  >
+                    {XQNR.map(x => {
+                      return (
+                        <Option key={x.XQNRID} value={x.XQNRID}>
+                          {x.RYDJ} | {x.GW}
+                        </Option>
+                      );
+                    })}
+                  </Select>,
+                )}
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="评测人员" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
+                {getFieldDecorator('pcry', {
+                  initialValue: updateData.MSGID,
+                  rules: [
+                    {
+                      required: true,
+                      message: '评测人员不允许空值',
+                    },
+                  ],
+                })(
+                  <Select
+                    className="item-selector"
+                    placeholder="请选择"
+                    mode="multiple"
+                    showSearch
+                    allowClear
+                    filterOption={(input, option) =>
+                      option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                    }
+                  >
+                    {pcryData.map(x => {
+                      return (
+                        <Option key={x.id} value={x.id}>
+                          {x.name}
+                        </Option>
+                      );
+                    })}
+                  </Select>,
+                )}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Row>
+            {getInputDisabled(
+              '预计综合评测日期',
+              XQNR.length > 0 ? moment(XQNR[0].YJZHPCRQ).format('YYYY-MM-DD') : '',
+              8,
+              14,
+            )}
+          </Row>
+          <Form.Item
+            label="评测时间安排"
+            labelCol={{ span: 4 }}
+            wrapperCol={{ span: 19 }}
+            required
+            style={{ marginBottom: 16, marginTop: 6 }}
+          >
+            <div className="ryxq-table-box">
+              <Table
+                columns={columns}
+                components={components}
+                rowKey={'PCID'}
+                rowClassName={() => 'editable-row'}
+                dataSource={tableData}
+                scroll={tableData.length > 3 ? { y: 171 } : {}}
+                pagination={false}
+                bordered
+                size="middle"
+              />
+              <div
+                className="table-add-row"
+                onClick={() => {
+                  let arrData = [...tableData];
+                  const UUID = Date.now();
+                  arrData.push({
+                    PCID: UUID,
+                    ['GYSID' + UUID]: '',
+                    ['RYMC' + UUID]: '',
+                    ['MSSJ' + UUID]: null,
+                    NEW: true,
+                  });
+                  setTableData(p => [...arrData]);
+                  setTimeout(() => {
+                    const table = document.querySelectorAll(`.ryxq-table-box .ant-table-body`)[0];
+                    table.scrollTop = table.scrollHeight;
+                  }, 200);
+                }}
+              >
+                <span>
+                  <Icon type="plus" style={{ fontSize: '12px' }} />
+                  <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增人员安排</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </Form.Item>
-      </Form>
+          </Form.Item>
+        </Form>
+      </Spin>
     </Modal>
   );
 }

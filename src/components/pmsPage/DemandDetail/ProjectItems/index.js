@@ -70,6 +70,10 @@ export default function ProjectItems(props) {
     } else if (SWMC === '简历分发') {
       if (isDock) {
         // modalName = 'resumeDestribution';
+        if (JLXX.length === 0) {
+          message.info('请先上传简历', 1);
+          return;
+        }
         window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
           JSON.stringify({
             JLXX: JLXX2,

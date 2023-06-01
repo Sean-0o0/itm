@@ -161,7 +161,7 @@ export default function HomePage(props) {
             setUserRole(role);
             getBudgetData(role);
             if (['二级部门领导', '普通人员'].includes(role)) {
-              !reflush && getProcessData(); //待办刷新时不用刷新流程数据
+              reflush ? getToDoData() : getProcessData(); //待办刷新时不用刷新流程数据
             } else {
               getTeamData(role);
             }

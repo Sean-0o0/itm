@@ -255,7 +255,7 @@ export default function InfoTable(props) {
         },
       },
       {
-        title: '预估金额（元）',
+        title: '预估金额(元)',
         dataIndex: 'XQYGJE',
         width: '12%',
         align: 'right',

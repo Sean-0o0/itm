@@ -451,4 +451,10 @@ export default [
     url: '/projectManage/supplierQueryDemand',
     dis: '查询供应商需求',
   },
+  {
+    code: '',
+    key: 'queryOutsourceCostList',
+    url: '/projectManage/queryOutsourceCostList',
+    dis: '查询费用列表',
+  },
 ];

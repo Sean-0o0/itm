@@ -135,11 +135,12 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/DemandDetail/,
       /^\/pms\/manage\/DemandInfo/,
       /^\/pms\/manage\/MemberInfo/,
+      /^\/pms\/manage\/ResumeDistribution/,
+      /^\/pms\/manage\/SupplierDmInfo/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
     });
-    // // console.log("🚀 ~ file: VisitedRoutes.js:149 ~ handleUrls ~ arr:", arr)
     return arr;
   };
 
@@ -215,6 +216,14 @@ function VisitedRoutes(props) {
               {
                 title: '人员列表',
                 urlEnd: 'MemberInfo',
+              },
+              {
+                title: '简历分发',
+                urlEnd: 'ResumeDistribution',
+              },
+              {
+                title: '供应商需求',
+                urlEnd: 'SupplierDmInfo',
               },
             ];
             urlEndArr.forEach(x => {
