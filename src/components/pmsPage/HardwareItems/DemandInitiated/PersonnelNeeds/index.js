@@ -152,7 +152,8 @@ class PersonnelNeeds extends Component {
   handleDelete = (record) => {
     // console.log("String(record.PCZT)",record)
     //评测状态不等于1 不能删除
-    if (String(record['PCZT' + record.ID]) !== "1" && String(record['PCZT' + record.ID]) !== "" && String(record['PCZT' + record.ID]) !== 'undefined') {
+    const {operateType} = this.props;
+    if (operateType !== "relaunch" && String(record['PCZT' + record.ID]) !== "1" && String(record['PCZT' + record.ID]) !== "" && String(record['PCZT' + record.ID]) !== 'undefined') {
       message.warn("该需求已有评测信息，不可删除!")
       return;
     }
