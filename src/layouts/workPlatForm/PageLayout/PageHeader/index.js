@@ -1,19 +1,30 @@
 import React from 'react';
-import { Divider, Badge } from 'antd';
+import {Input, Tooltip} from 'antd';
 // import SwitchTheme from './switchTheme';
 import UserDrop from './userDrop';
 import VisitedRoutes from './VisitedRoutes';
+import SearchModal from './SearchModal';
 import MessagesDrop from './messagesDrop';
 import { Scrollbars } from 'react-custom-scrollbars';
 import SwitchMenu from './SwitchMenu';
 import styles from './index.less';
 import LocalPathUtils from '../../../../utils/localPathUtils';
 
+const {Search} = Input;
 export default class PageHeader extends React.PureComponent {
+  constructor(props) {
+    super(props);
+    this.state = {
+      searchModalVisible: false,
+    }
+  }
+
   componentWillUnmount() {
     LocalPathUtils.cleanRouterList();
   }
+
   render() {
+    const {searchModalVisible} = this.state
     const {
       menuTree,
       authorities = {},
@@ -74,6 +85,7 @@ export default class PageHeader extends React.PureComponent {
             {'信息技术综合管理平台'}
           </span>
         </div>
+        {/*菜单栏*/}
         <div
           id="visited_routes_container"
           style={{ flex: 1, overflow: 'hidden', backgroundColor: 'white' }}
@@ -89,14 +101,31 @@ export default class PageHeader extends React.PureComponent {
             />
           </span>
         </div>
+        {/*搜索框*/}
+        <div>
+          {
+            searchModalVisible && <SearchModal closeModal={() => {
+              this.setState({
+                searchModalVisible: false,
+              })
+            }} visible={searchModalVisible}/>
+          }
+          <div className='pobtop'>
+            <Input type="text" suffix={<i className="iconfont icon-search-name icon-personal"/>}
+                   onFocus={() => this.setState({
+                     searchModalVisible: true,
+                   })} placeholder='请输入项目/供应商/人员'/>
+          </div>
+        </div>
+        {/*用户名*/}
         <div
           id="fma_opertion_drops"
           className="dis-fx"
-          style={{ width: 'auto', borderBottom: '1px solid #eeeff1'  }}
+          style={{width: 'auto', borderBottom: '1px solid #eeeff1'}}
         >
           {Object.keys(authorities).includes('remindBell') && (
             <div id="guideTrigger_messageDrop">
-              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
+              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch}/>
             </div>
           )}
           {

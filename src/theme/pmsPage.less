@@ -14458,11 +14458,61 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
       border-radius: 3px;
       background: #EDEEF0;
 
-      .lcb-process-percent{
+      .lcb-process-percent {
         background: linear-gradient(270deg, #1555E7 0%, rgba(21, 85, 231, 0) 88.36%);
         height: 6px;
         border-radius: 3px;
       }
     }
   }
+}
+
+.searchModal-box-spin {
+  padding: 16px;
+
+  .searchModal-input {
+    .ant-input {
+      font-size: 20px;
+      color: #C0C4CC;
+      border: none !important;
+    }
+  }
+
+  .icon-personal {
+    font-size: 20px;
+    line-height: 12px !important;
+    right: 0;
+    top: calc(50% - 5px);
+    position: absolute;
+    z-index: 1;
+    color: #909399;
+  }
+
+  .ant-divider-horizontal {
+    margin: 16px 0
+  }
+
+  .searchModal-div {
+    text-align: center;
+    padding-top: 25px;
+    height: 200px;
+
+    .searchModal-img {
+      width: 112px;
+      height: 87px;
+      text-align: center;
+    }
+
+    .searchModal-span {
+      //padding-top: 12px;
+      font-size: 14px;
+      font-weight: 400;
+      color: #999999;
+      line-height: 24px;
+    }
+  }
+}
+
+.searchModal-modify > .ant-modal > .ant-modal-content .ant-modal-close-x {
+  display: none
 }
