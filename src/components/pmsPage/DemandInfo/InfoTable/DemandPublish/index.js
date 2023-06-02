@@ -24,7 +24,7 @@ import {
 
 const { TextArea } = Input;
 
-function DemandPublish(props) {
+function ExpenseInfo(props) {
   const { visible, setVisible, form, xqid = -2, WBRYGW = [], reflush } = props;
   const {
     validateFields,
@@ -235,7 +235,7 @@ function DemandPublish(props) {
       </div>
       <Spin spinning={isSpinning}>
         <Form className="content-box" style={{ paddingRight: 0, paddingLeft: 34 }}>
-          <Row>{getInput('需求名称', 'xqmc', data.wbxq.XMMC)}</Row>
+          <Row>{getInput('需求名称', 'xqmc', data.wbxq.XQMC)}</Row>
           <Row>
             {getDatePicker(
               '简历反馈截止日期',
@@ -284,4 +284,4 @@ function DemandPublish(props) {
     </Modal>
   );
 }
-export default Form.create()(DemandPublish);
+export default Form.create()(ExpenseInfo);

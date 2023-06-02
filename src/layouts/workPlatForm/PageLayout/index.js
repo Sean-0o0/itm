@@ -170,7 +170,7 @@ class MainPageLayout extends React.PureComponent {
 
   // 获取权限菜单树
   fetchMenuDatas = async (name = '', isChangeTheme = false, purl = '') => {
-    console.log('获取权限菜单树', name);
+    // console.log('获取权限菜单树', name);
     if (name === '') {
       this.setState({
         menuTreeLoaded: true,

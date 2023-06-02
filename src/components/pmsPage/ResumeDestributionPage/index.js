@@ -287,8 +287,18 @@ export default function ResumeDistributionPage(props) {
 
   // 切换tab
   const handleTabsChange = key => {
-    setActiveKey(key);
     // if (key === '1')
+    if (editing) {
+      Modal.confirm({
+        content: '数据未保存，确定取消修改吗？',
+        onOk: () => {
+          handleEditCancel();
+          setActiveKey(key);
+        },
+      });
+    } else {
+      setActiveKey(key);
+    }
   };
 
   //修改
@@ -327,7 +337,7 @@ export default function ResumeDistributionPage(props) {
     setEditing(false);
     //初始为上一次保存的数据
     setData(JSON.parse(JSON.stringify([...unsavedData])));
-    let arrShow = JSON.parse(JSON.stringify(data));
+    let arrShow = JSON.parse(JSON.stringify([...unsavedData]));
     arrShow.forEach(x => {
       x.DATA.forEach(y => {
         y.UNFOLD = false;
@@ -379,9 +389,11 @@ export default function ResumeDistributionPage(props) {
                 </>
               ) : (
                 <>
-                  <Button className="btn-opr" onClick={handleDestribute}>
-                    分发
-                  </Button>
+                  <Popconfirm title="确认要分发吗？" onConfirm={handleSave}>
+                    <Button className="btn-opr" onClick={handleDestribute}>
+                      分发
+                    </Button>
+                  </Popconfirm>
                   <Button className="btn-opr" onClick={handleModify}>
                     修改
                   </Button>

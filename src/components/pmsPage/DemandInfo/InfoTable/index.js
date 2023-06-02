@@ -45,7 +45,7 @@ export default function InfoTable(props) {
     getIsDock();
     return () => {};
   }, []);
-  
+
   useEffect(() => {
     if (xmid !== -2) {
       setExpandedRowKeys([xmid]);
@@ -166,7 +166,7 @@ export default function InfoTable(props) {
       title: '关联预算',
       dataIndex: 'GLYSXM',
       key: 'GLYSXM',
-      width: '29%',
+      width: '27%',
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">
@@ -190,7 +190,7 @@ export default function InfoTable(props) {
       dataIndex: 'operation',
       key: 'operation',
       align: 'center',
-      width: '10%',
+      width: '12%',
     },
   ];
 
@@ -269,7 +269,7 @@ export default function InfoTable(props) {
         title: '开发商反馈期限',
         dataIndex: 'KFSFKQX',
         key: 'KFSFKQX',
-        width: '29%',
+        width: '27%',
         ellipsis: true,
         render: text => <span>{text === undefined ? '' : moment(text).format('YYYY-MM-DD')}</span>,
       },
@@ -286,7 +286,7 @@ export default function InfoTable(props) {
         dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        width: '10%',
+        width: '12%',
         render: (text, row, index) => {
           // 1|未上架;2|上架中;3|下架 SJZT
           return (
