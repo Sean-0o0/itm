@@ -58,7 +58,7 @@ export default function DemandTable(props) {
       ellipsis: true,
       render: text => (
         <Tooltip title={text.replace(/<br>/g, '')} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{'1\n\r2'}</span>
+          <span style={{ cursor: 'default' }}>{text.replace(/<br>/g, '')}</span>
         </Tooltip>
       ),
     },
@@ -125,6 +125,7 @@ export default function DemandTable(props) {
             ))}
           </div>
         );
+        if (arr.length === 0) return '暂无';
         return (
           <Popover
             placement="rightTop"
