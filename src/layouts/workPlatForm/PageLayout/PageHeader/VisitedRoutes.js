@@ -73,10 +73,13 @@ function VisitedRoutes(props) {
   // }, [newPathname, menuArray, urls, menuTree, homePage]);
   useEffect(() => {
     if (menuTree.length > 0) {
-      if (!urls.includes(newPathname)) {
-        setUrls([...urls, newPathname]);
+      let urlArr = [...urls];
+      const index = urlArr.findIndex(x => x.includes(newPathname) || newPathname.includes(x));
+      if (index !== -1) {
+        urlArr.splice(index, 1, newPathname);
+        setUrls([...urlArr]);
       } else {
-        setUrls([...urls.filter(x => x !== newPathname), newPathname]);
+        setUrls([...urls, newPathname]);
       }
     }
   }, [newPathname, menuTree]);
@@ -117,6 +120,7 @@ function VisitedRoutes(props) {
   }
   const handleUrls = (urls = []) => {
     let arr = [...urls];
+    console.log('🚀 ~ file: VisitedRoutes.js:121 ~ handleUrls ~ arr:', arr);
     const matchFilter = regExp => {
       const matches = arr.filter(x => regExp.test(x));
       matches.forEach((m, i) => {
