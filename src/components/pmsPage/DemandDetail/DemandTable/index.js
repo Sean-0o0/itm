@@ -75,8 +75,8 @@ export default function DemandTable(props) {
       dataIndex: 'JLDATA',
       key: 'JLDATA',
       width:
-        fqrid === LOGIN_USER_ID &&
-        XQSX_ORIGIN.filter(x => x.SWMC === '简历分发')[0]?.ZXZT === '2' &&
+        String(fqrid) === LOGIN_USER_ID &&
+        XQSX_ORIGIN.filter(x => x.SWMC === '简历分发')[0]?.ZXZT === '1' &&
         JLXX.length !== 0
           ? '10%'
           : 0,
