@@ -139,6 +139,7 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/DemandDetail/,
       /^\/pms\/manage\/DemandInfo/,
       /^\/pms\/manage\/MemberInfo/,
+      /^\/pms\/manage\/MemberDetail/,
       /^\/pms\/manage\/ResumeDistribution/,
       /^\/pms\/manage\/SupplierDmInfo/,
     ];
@@ -220,6 +221,10 @@ function VisitedRoutes(props) {
               {
                 title: '人员列表',
                 urlEnd: 'MemberInfo',
+              },
+              {
+                title: '人员详情',
+                urlEnd: 'MemberDetail',
               },
               {
                 title: '简历分发',

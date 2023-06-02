@@ -12,21 +12,14 @@ export default function MemberInfo(props) {
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const {params = {}, dictionary = {}} = props;
-  // console.log('🚀 ~ file: index.js:14 ~ SupplierInfo ~ dictionary:', dictionary);
-  const {supplierId = -2} = params;
   const {GYSLX} = dictionary;
-  const topConsoleRef = useRef(null);
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
-    if (supplierId === -2) {
-      //无参数
-      getTableData({});
-      topConsoleRef?.current?.handleReset();
-    }
-    return () => {
-    };
-  }, [props]);
+    console.log("1111")
+    //无参数
+    getTableData({});
+  }, []);
 
 
   //获取表格数据
@@ -78,7 +71,6 @@ export default function MemberInfo(props) {
         setTableData={setTableData}
         setTableLoading={setTableLoading}
         setTotal={setTotal}
-        ref={topConsoleRef}
         setCurPage={setCurPage}
         setCurPageSize={setCurPageSize}
         curPage={curPage}
@@ -90,7 +82,6 @@ export default function MemberInfo(props) {
         getTableData={getTableData}
         projectManager={params?.supplierId}
         total={total}
-        handleSearch={topConsoleRef?.current?.handleSearch}
         curPage={curPage}
         curPageSize={curPageSize}
         GYSLX={GYSLX}

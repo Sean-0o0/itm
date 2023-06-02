@@ -445,12 +445,12 @@ class DemandInitiated extends React.Component {
                             wrapperCol={{span: 20}}
                           >
                             {getFieldDecorator('ryxq', {
-                              // rules: [
-                              //   {
-                              //     required: true,
-                              //     message: '请输入项目简介',
-                              //   },
-                              // ],
+                              rules: [
+                                {
+                                  required: true,
+                                  message: '请完善人员需求',
+                                },
+                              ],
                               // initialValue: "外采项目"
                             })(<PersonnelNeeds operateType={operateType}
                                                tableDataInit={this.state.tableDataInit}

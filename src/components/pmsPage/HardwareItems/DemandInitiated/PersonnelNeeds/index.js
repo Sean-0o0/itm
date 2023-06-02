@@ -355,7 +355,7 @@ class PersonnelNeeds extends Component {
             rowClassName={() => 'editable-row'}
             dataSource={tableData}
             // rowSelection={rowSelection}
-            scroll={tableData.length > 3 ? {y: 195} : {}}
+            // scroll={tableData.length > 3 ? {y: 195} : {}}
             pagination={false}
             style={{paddingBottom: '12px',}}
             bordered

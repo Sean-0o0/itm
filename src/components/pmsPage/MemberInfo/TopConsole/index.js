@@ -10,7 +10,7 @@ import moment from 'moment';
 const InputGroup = Input.Group;
 const {Option} = Select;
 
-export default forwardRef(function TopConsole(props, ref) {
+export default forwardRef(function TopConsole(props) {
   //下拉框数据
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [gysData, setGysData] = useState([]); //所属供应商
@@ -44,16 +44,6 @@ export default forwardRef(function TopConsole(props, ref) {
   } = props;
   const {WBRYGW = []} = dictionary;
 
-  useImperativeHandle(
-    ref,
-    () => {
-      return {
-        handleSearch,
-        handleReset,
-      };
-    },
-    [gysmc],
-  );
 
   //顶部下拉框查询数据
   const getFilterData = () => {
