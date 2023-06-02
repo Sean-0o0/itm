@@ -18,8 +18,22 @@ export default function TopConsole(props) {
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
+  const [lbmodal, setLbModal] = useState({
+    xmlxsq: false,
+    rjhtqs: false,
+    zbh: false,
+    rjfyspyht: false,
+    rjfyspwht: false,
+    sbcgyht: false,
+    sbcgwht: false,
+    xwhfj: false,
+    qt: false,
+    title: '',
+    url: '#',
+  }); //livebos弹窗显隐
   const { prjBasic = {}, member = [] } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+
   useEffect(() => {
     window.addEventListener('message', handleIframePostMessage);
     return () => {
@@ -198,6 +212,109 @@ export default function TopConsole(props) {
       });
   };
 
+  const openLbModal = (modalName, attribute) => {
+    //Livebos弹窗参数
+    const getParams = (objName, oprName, data) => {
+      return {
+        attribute: 0,
+        authFlag: 0,
+        objectName: objName,
+        operateName: oprName,
+        parameter: data,
+        userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+      };
+    };
+
+    //获取Livebos弹窗链接
+    const getLink = params => {
+      CreateOperateHyperLink(params)
+        .then((ret = {}) => {
+          const { code, message, url } = ret;
+          if (code === 1) {
+            setLbModal(p => ({
+              ...p,
+              url,
+            }));
+          }
+        })
+        .catch(error => {
+          console.error(!error.success ? error.message : error.note);
+          message.error('链接获取失败', 1);
+        });
+    };
+    let params = {};
+    if (attribute === 'xmlxsq') {
+      params = getParams('View_BLXX', 'V_BLXX_XMLXSQ', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'rjhtqs') {
+      params = getParams('View_BLXX', 'V_BLXX_HTQSLC', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'zbh') {
+      params = getParams('View_BLXX', 'V_BLXX_ZBHLC', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'rjfyspyht') {
+      params = getParams('View_BLXX', 'V_BLXX_RJGMHT', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'rjfyspwht') {
+      params = getParams('View_BLXX', 'V_BLXX_RJGMWHT', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'sbcgyht') {
+      params = getParams('View_BLXX', 'V_BLXX_SBCGHT', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'sbcgwht') {
+      params = getParams('View_BLXX', 'V_BLXX_SBCGWHT', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'xwhfj') {
+      params = getParams('View_BLXX', 'View_BLXX_XWHLCFJ', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    } else if (attribute === 'qt') {
+      params = getParams('View_BLXX', 'V_BLXX_QTLC', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
+    }
+    getLink(params);
+    setLbModal(p => ({
+      ...p,
+      [attribute]: true,
+      title: modalName + '补录',
+    }));
+  };
+
   // const btnMoreContent = (
   //   <div className="list">
   //     <div className="item" onClick={() => handleSqModal()}>
@@ -212,18 +329,36 @@ export default function TopConsole(props) {
   const btnMoreContent = (
     <Menu>
       <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
-        <Menu.Item>项目立项流程</Menu.Item>
-        <Menu.Item>总办会流程</Menu.Item>
-        <Menu.Item>合同签署流程</Menu.Item>
+        <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
+          项目立项申请流程
+        </Menu.Item>
+        <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
+          软件合同签署流程
+        </Menu.Item>
+        <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
+        <Menu.Item onClick={() => openLbModal('软件费用审批-有合同流程', 'rjfyspyht')}>
+          软件费用审批-有合同流程
+        </Menu.Item>
+        <Menu.Item onClick={() => openLbModal('软件费用审批-无合同流程', 'rjfyspwht')}>
+          软件费用审批-无合同流程
+        </Menu.Item>
+        <Menu.Item onClick={() => openLbModal('设备采购-有合同流程', 'sbcgyht')}>
+          设备采购-有合同流程
+        </Menu.Item>
+        <Menu.Item onClick={() => openLbModal('设备采购-无合同流程', 'sbcgwht')}>
+          设备采购-无合同流程
+        </Menu.Item>
+        <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
+        <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
       </SubMenu>
-      <SubMenu
+      {/* <SubMenu
         title={<span style={{ marginLeft: 20 }}>付款补录</span>}
         arrow-icon={<Icon type="left" />}
       >
-        <Menu.Item>项目立项流程</Menu.Item>
-        <Menu.Item>总办会流程</Menu.Item>
-        <Menu.Item>合同签署流程</Menu.Item>
-      </SubMenu>
+        <Menu.Item>软件费用审批-有合同流程</Menu.Item>
+        <Menu.Item>设备采购有合同流程信息</Menu.Item>
+        <Menu.Item>设备采购无合同流程</Menu.Item>
+      </SubMenu> */}
       <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
       <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
     </Menu>
@@ -235,26 +370,96 @@ export default function TopConsole(props) {
     getPrjDtlData();
   };
 
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    // defaultFullScreen: true,
-    title: '编辑项目',
-    width: '1000px',
-    height: '700px',
-    style: { top: '10px' },
-    visible: fileAddVisible,
-    footer: null,
-  };
-
   //申请餐券/权限弹窗
   const sqModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
     title: sqModaltxt,
     width: '600px',
-    height: '400px',
+    height: '300px',
     style: { top: '60px' },
     visible: sqModalVisible,
+    footer: null,
+  };
+  const xmlxsqModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '520px',
+    style: { top: '60px' },
+    visible: lbmodal.xmlxsq,
+    footer: null,
+  };
+  const rjhtqsModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '400px',
+    style: { top: '60px' },
+    visible: lbmodal.rjhtqs,
+    footer: null,
+  };
+  const zbhModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '520px',
+    style: { top: '60px' },
+    visible: lbmodal.zbh,
+    footer: null,
+  };
+  const rjfyspyhtModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '480px',
+    style: { top: '60px' },
+    visible: lbmodal.rjfyspyht,
+    footer: null,
+  };
+  const rjfyspwhtModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '350px',
+    style: { top: '60px' },
+    visible: lbmodal.rjfyspwht,
+    footer: null,
+  };
+  const sbcgyhtModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '420px',
+    style: { top: '60px' },
+    visible: lbmodal.sbcgyht,
+    footer: null,
+  };
+  const sbcgwhtModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '360px',
+    style: { top: '60px' },
+    visible: lbmodal.sbcgwht,
+    footer: null,
+  };
+  const xwhfjModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '300px',
+    style: { top: '60px' },
+    visible: lbmodal.xwhfj,
+    footer: null,
+  };
+  const qtModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '800px',
+    height: '530px',
+    style: { top: '60px' },
+    visible: lbmodal.qt,
     footer: null,
   };
 
@@ -310,6 +515,189 @@ export default function TopConsole(props) {
           src={sqModalUrl}
         />
       )}
+
+      {lbmodal.xmlxsq && (
+        <BridgeModel
+          modalProps={xmlxsqModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              xmlxsq: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              xmlxsq: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+
+      {lbmodal.rjhtqs && (
+        <BridgeModel
+          modalProps={rjhtqsModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              rjhtqs: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              rjhtqs: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.zbh && (
+        <BridgeModel
+          modalProps={zbhModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              zbh: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              zbh: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.rjfyspyht && (
+        <BridgeModel
+          modalProps={rjfyspyhtModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              rjfyspyht: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              rjfyspyht: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.rjfyspwht && (
+        <BridgeModel
+          modalProps={rjfyspwhtModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              rjfyspwht: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              rjfyspwht: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.sbcgyht && (
+        <BridgeModel
+          modalProps={sbcgyhtModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              sbcgyht: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              sbcgyht: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.sbcgwht && (
+        <BridgeModel
+          modalProps={sbcgwhtModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              sbcgwht: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              sbcgwht: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.xwhfj && (
+        <BridgeModel
+          modalProps={xwhfjModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              xwhfj: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              xwhfj: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.qt && (
+        <BridgeModel
+          modalProps={qtModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              qt: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              qt: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+
       <Breadcrumb separator=">">
         {routes?.map((item, index) => {
           const { name = item, pathname = '' } = item;
