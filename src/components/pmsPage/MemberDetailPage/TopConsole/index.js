@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import {Link} from 'dva/router';
-import {Breadcrumb, Button, Dropdown, Icon, Menu, Tooltip} from 'antd';
+import {Breadcrumb, Button, Dropdown, message, Menu, Tooltip} from 'antd';
 import boyImg from '../../../../assets/staffDetail/img_boy.png';
 import girlImg from '../../../../assets/staffDetail/img_girl.png';
 import fqImg from '../../../../assets/staffDetail/img_fq.png';

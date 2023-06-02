@@ -161,18 +161,19 @@ class SendMailModal extends React.Component {
     }
     let others = ""
     let othersArr;
-    // console.log("values.CS",values.CS)
-    if (values.CS !== "" && values.CS !== undefined) {
+    console.log("values.CS", values.CS)
+    if (values.CS !== "" && values.CS !== undefined && values.CS.length > 0) {
       others = String(values.CS).replaceAll(",", ";")
       othersArr = others.split(';');
-    }
-    // console.log("othersArr",othersArr)
-    if (othersArr.length > 0) {
-      if (othersArr.filter(item => reg.test(item) === false).length > 0) {
-        message.warn("请输入正确格式的抄送人邮箱！")
-        return;
+      console.log("othersArr", othersArr)
+      if (othersArr.length > 0) {
+        if (othersArr.filter(item => reg.test(item) === false).length > 0) {
+          message.warn("请输入正确格式的抄送人邮箱！")
+          return;
+        }
       }
     }
+    console.log("111111")
     //表单数据
     const params = {
       access,
