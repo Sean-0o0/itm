@@ -1,42 +1,90 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip, Modal } from 'antd';
-import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
+import { Button, Table, Popover, message, Tooltip, Popconfirm, Icon, Spin } from 'antd';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
-import PrjTypeModal from '../../HomePage/ShortcutCard/PrjTypeModal';
-import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
-import EditProjectInfoModel from '../../EditProjectInfoModel';
+import DemandInitiated from '../../HardwareItems/DemandInitiated/index.js';
+import {
+  OperateOutsourceRequirements,
+  QueryOutsourceCostList,
+  QueryOutsourceRequirementList,
+  QueryUserRole,
+} from '../../../../services/pmsServices/index.js';
+import moment from 'moment';
 
 export default function InfoTable(props) {
-  const [sortedInfo, setSortedInfo] = useState({}); //金额排序
-  const [modalVisible, setModalVisible] = useState(false); //项目详情弹窗显示
-  const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
-  const [visible, setVisible] = useState(false); //类型弹窗显隐
   const {
     tableData,
     tableLoading,
-    getTableData,
-    // projectManager = -1,
-    queryType = 'ALL',
-    total,
+    total = 0,
     handleSearch,
     curPage,
     curPageSize,
-    prjMnger,
+    subTableData,
+    setSubTableData,
+    getSubTableData,
+    xmid = -2,
+    WBRYGW,
+    setTableData,
   } = props; //表格数据
-  const location = useLocation();
-  // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
+  const [visible, setVisible] = useState({
+    update: false,
+    relaunch: false,
+  }); //需求发起弹窗显隐
+  const [demandPublishVisible, setDemandPublishVisible] = useState(false); //需求上架显隐
+  const [currentXqid, setCurrentXqid] = useState(-1); //详情id
+  const [currentXmid, setCurrentXmid] = useState(-1); //项目id
+  const [currentXmmc, setCurrentXmmc] = useState(''); //项目名称
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
+  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
 
-  const fileAddModalProps = {
-    isAllWindow: 1,
-    title: '新建项目',
-    width: '1000px',
-    height: '700px',
-    style: { top: '10px' },
-    visible: true,
-    footer: null,
+  const location = useLocation();
+
+  useEffect(() => {
+    getIsDock();
+    return () => {};
+  }, []);
+
+  useEffect(() => {
+    if (xmid !== -2) {
+      setExpandedRowKeys([xmid]);
+    }
+    // console.log('🚀 ~ file: index.js:32 ~ useEffect ~ d:', xmid);
+    return () => {};
+  }, [xmid]);
+
+  //是否为外包项目对接人 - 权限控制
+  const getIsDock = () => {
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          setIsDock(res.zyrole === '外包项目对接人');
+          console.log('外包项目对接人');
+        }
+      })
+      .catch(e => {
+        message.error('用户信息查询失败', 1);
+      });
+  };
+
+  //表格操作后更新数据
+  const handleTableChange = (pagination, filters, sorter, extra) => {
+    // console.log('handleTableChange', pagination, filters, sorter, extra);
+    const { current = 1, pageSize = 20 } = pagination;
+    // getTableData({ current, pageSize });
+    if (sorter.order !== undefined) {
+      if (sorter.order === 'ascend') {
+        handleSearch(current, pageSize, sorter.field + ' ASC,XMID ASC');
+      } else {
+        handleSearch(current, pageSize, sorter.field + ' DESC,XMID DESC');
+      }
+    } else {
+      handleSearch(current, pageSize);
+    }
+    return;
   };
 
   //金额格式化
@@ -45,123 +93,157 @@ export default function InfoTable(props) {
     return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   };
 
-  //获取项目标签数据
-  const getTagData = (tag, idtxt) => {
-    // console.log("🚀 ~ file: index.js:52 ~ getTagData ~ tag, idtxt:", tag, idtxt)
-    let arr = [];
-    let arr2 = [];
-    if (
-      tag !== '' &&
-      tag !== null &&
-      tag !== undefined &&
-      idtxt !== '' &&
-      idtxt !== null &&
-      idtxt !== undefined
-    ) {
-      if (tag.includes(',')) {
-        arr = tag.split(',');
-        arr2 = idtxt.split(',');
-      } else {
-        arr.push(tag);
-        arr2.push(idtxt);
-      }
-    }
-    let arr3 = arr.map((x, i) => {
-      return {
-        name: x,
-        id: arr2[i],
-      };
-    });
-    // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
-    return arr3;
-  };
-
-  //表格操作后更新数据
-  const handleTableChange = (pagination, filters, sorter, extra) => {
-    console.log('handleTableChange', pagination, filters, sorter, extra);
-    const { current = 1, pageSize = 20 } = pagination;
-    if (sorter.order !== undefined) {
-      if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, prjMnger, queryType, 'YSJE ASC,XH DESC,ID DESC');
-      } else {
-        handleSearch(current, pageSize, prjMnger, queryType, 'YSJE DESC,XH DESC,ID DESC');
-      }
-    } else {
-      handleSearch(current, pageSize, prjMnger, queryType);
-    }
-    return;
-  };
-
-  const openVisible = () => {
-    setVisible(true);
-  };
-  const closeFileAddModal = () => {
-    setFileAddVisible(false);
-  };
-  //新建项目成功后，刷新数据
-  const handleFileAddSuccess = () => {
-    closeFileAddModal();
-    getTableData({}); //刷新数据
-  };
-
   //列配置
   const columns = [
     {
       title: '项目名称',
-      dataIndex: 'projectName',
-      // width: 200,
-      width: '15%',
-      key: 'projectName',
+      dataIndex: 'XMMC',
+      width: '19%',
+      key: 'XMMC',
       ellipsis: true,
       render: (text, row, index) => {
-        if (row.projectStatus !== '草稿')
-          return (
-            <Tooltip title={text} placement="topLeft">
-              <Link
-                style={{ color: '#3361ff' }}
-                to={{
-                  pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
-                    JSON.stringify({
-                      xmid: row.projectId,
-                    }),
-                  )}`,
-                  state: {
-                    routes: [{ name: '项目列表', pathname: location.pathname }],
-                  },
-                }}
-                className="table-link-strong"
-              >
-                {text}
-              </Link>
-            </Tooltip>
-          );
         return (
           <Tooltip title={text} placement="topLeft">
-            <span style={{ cursor: 'default' }}>{text}</span>
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                  JSON.stringify({
+                    xmid: row.XMID,
+                  }),
+                )}`,
+                state: {
+                  routes: [{ name: '费用列表', pathname: location.pathname }],
+                },
+              }}
+              className="table-link-strong"
+            >
+              {text}
+            </Link>
           </Tooltip>
         );
       },
     },
     {
       title: '项目经理',
-      dataIndex: 'projectManager',
-      // width: 90,
-      width: '7%',
-      key: 'projectManager',
+      dataIndex: 'XMJL',
+      width: '10%',
+      key: 'XMJL',
       ellipsis: true,
       render: (text, row, index) => {
-        if (row.projectStatus !== '草稿')
+        return (
+          <Link
+            style={{ color: '#3361ff' }}
+            to={{
+              pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                JSON.stringify({
+                  ryid: row.XMJLID,
+                }),
+              )}`,
+              state: {
+                routes: [{ name: '费用列表', pathname: location.pathname }],
+              },
+            }}
+            className="table-link-strong"
+          >
+            {text}
+          </Link>
+        );
+      },
+    },
+    {
+      title: '供应商名称',
+      dataIndex: 'GYSMC',
+      width: '19%',
+      key: 'GYSMC',
+      ellipsis: true,
+      render: (text, row, index) => {
+        return (
+          <Tooltip title={text} placement="topLeft">
+            <Link
+              style={{ color: '#3361ff' }}
+              to={{
+                pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
+                  JSON.stringify({
+                    splId: row.GYSID,
+                  }),
+                )}`,
+                state: {
+                  routes: [{ name: '费用列表', pathname: location.pathname }],
+                },
+              }}
+              className="table-link-strong"
+            >
+              {text}
+            </Link>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      title: '季度',
+      dataIndex: 'JD',
+      key: 'JD',
+      width: '20%',
+      ellipsis: true,
+      render: (txt, row) =>
+        `${txt}（${row.KSSJ === undefined ? '' : moment(row.KSSJ).format('YYYY.MM')}-${
+          row.JSSJ === undefined ? '' : moment(row.JSSJ).format('YYYY.MM')
+        }）`,
+    },
+    {
+      title: '总费用(元)',
+      dataIndex: 'ZFY',
+      width: '12%',
+      align: 'right',
+      key: 'ZFY',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+    },
+    {
+      title: '总工时(人天)',
+      dataIndex: 'ZGS',
+      width: '12%',
+      align: 'right',
+      key: 'ZGS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+    },
+    {
+      title: '操作',
+      dataIndex: 'operation',
+      key: 'operation',
+      align: 'center',
+      width: '8%',
+    },
+  ];
+
+  const expandedRowRender = record => {
+    //嵌套子表格，每个宽度都要设
+    const columns = [
+      {
+        title: '人员名称',
+        dataIndex: 'RYMC',
+        width: '8%',
+        key: 'RYMC',
+        ellipsis: true,
+        render: (text, row, index) => {
+          if (row.RYID === undefined) return text;
           return (
             <Link
               style={{ color: '#3361ff' }}
               to={{
                 pathname: `/pms/manage/staffDetail/${EncryptBase64(
                   JSON.stringify({
-                    ryid: row.projectManagerId,
+                    ryid: row.RYID,
                   }),
                 )}`,
                 state: {
-                  routes: [{ name: '项目列表', pathname: location.pathname }],
+                  routes: [{ name: '费用列表', pathname: location.pathname }],
                 },
               }}
               className="table-link-strong"
@@ -169,203 +251,254 @@ export default function InfoTable(props) {
               {text}
             </Link>
           );
-        return <span>{text}</span>;
+        },
       },
-    },
-    {
-      title: '项目类型',
-      dataIndex: 'projectType',
-      width: '11%',
-      key: 'projectType',
-      ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
-        </Tooltip>
-      ),
-    },
-    {
-      title: '关联预算',
-      dataIndex: 'budgetProject',
-      // width: '15%',
-      key: 'budgetProject',
-      ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
-        </Tooltip>
-      ),
-    },
-    {
-      title: '项目金额(元)',
-      dataIndex: 'projectBudget',
-      width: '12%',
-      align: 'right',
-      key: 'projectBudget',
-      ellipsis: true,
-      sorter: true,
-      sortDirections: ['descend', 'ascend'],
-      render: text => (
-        <span style={{ marginRight: 20 }}>{text === '-1' ? '***' : getAmountFormat(text)}</span>
-      ),
-    },
-    {
-      title: '应用部门',
-      dataIndex: 'orgs',
-      width: '15%',
-      key: 'orgs',
-      ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
-        </Tooltip>
-      ),
-    },
-    {
-      title: '项目标签',
-      dataIndex: 'projectLabel',
-      width: '18%',
-      key: 'projectLabel',
-      ellipsis: true,
-      render: (text, row, index) => {
-        return (
-          <div className="prj-tags">
-            {getTagData(text, row.projectLabelId).length > 0 && (
-              <>
-                {getTagData(text, row.projectLabelId)
-                  ?.slice(0, 1)
-                  .map(x => (
-                    <div key={x.id} className="tag-item">
-                      <Link
-                        style={{ color: '#3361ff' }}
-                        to={{
-                          pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                            JSON.stringify({
-                              bqid: x.id,
-                            }),
-                          )}`,
-                          state: {
-                            routes: [{ name: '项目列表', pathname: location.pathname }],
-                          },
-                        }}
-                        className="table-link-strong"
-                      >
-                        {x.name}
-                      </Link>
-                    </div>
-                  ))}
-                {getTagData(text, row.projectLabelId)?.length > 1 && (
-                  <Popover
-                    overlayClassName="tag-more-popover"
-                    content={
-                      <div className="tag-more">
-                        {getTagData(text, row.projectLabelId)
-                          ?.slice(1)
-                          .map(x => (
-                            <div key={x.id} className="tag-item">
-                              <Link
-                                style={{ color: '#3361ff' }}
-                                to={{
-                                  pathname: `/pms/manage/labelDetail/${EncryptBase64(
-                                    JSON.stringify({
-                                      bqid: x.id,
-                                    }),
-                                  )}`,
-                                  state: {
-                                    routes: [{ name: '项目列表', pathname: location.pathname }],
-                                  },
-                                }}
-                                className="table-link-strong"
-                              >
-                                {x.name}
-                              </Link>
-                            </div>
-                          ))}
-                      </div>
-                    }
-                    title={null}
-                  >
-                    <div className="tag-item">
-                      {getTagData(text, row.projectLabelId)?.length - 1}+
-                    </div>
-                  </Popover>
-                )}
-              </>
-            )}
-          </div>
-        );
+      {
+        title: '人员需求',
+        dataIndex: 'RYDJ',
+        width: '10%',
+        key: 'RYDJ',
+        ellipsis: true,
+        render: (txt, row) => {
+          return (
+            <Tooltip title={txt} placement="topLeft">
+              <span style={{ cursor: 'default' }}>{txt}</span>
+            </Tooltip>
+          );
+        },
       },
-    },
-    {
-      title: '项目状态',
-      dataIndex: 'projectStatus',
-      key: 'projectStatus',
-      width: '7%',
-      ellipsis: true,
-    },
-  ];
+      {
+        title: '工作量(人天)',
+        dataIndex: 'GZLRT',
+        width: '12%',
+        align: 'right',
+        key: 'GZLRT',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.GZLRT ?? 0) - Number(b.GZLRT ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '工作量(人月)',
+        dataIndex: 'GZLRY',
+        width: '12%',
+        align: 'right',
+        key: 'GZLRY',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.GZLRY ?? 0) - Number(b.GZLRY ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '人员单价(元)',
+        dataIndex: 'RYDJY',
+        width: '12%',
+        align: 'right',
+        key: 'RYDJY',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.RYDJY ?? 0) - Number(b.RYDJY ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '考核结果',
+        dataIndex: 'KHJG',
+        width: '10%',
+        key: 'KHJG',
+        ellipsis: true,
+      },
+      {
+        title: '小计费用(元)',
+        dataIndex: 'RYDJY',
+        width: '12%',
+        align: 'right',
+        key: 'RYDJY',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.RYDJY ?? 0) - Number(b.RYDJY ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '下季度支付(元)',
+        dataIndex: 'XJDZF',
+        width: '12%',
+        align: 'right',
+        key: 'XJDZF',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.XJDZF ?? 0) - Number(b.XJDZF ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '本季度支付(元)',
+        dataIndex: 'BJDZF',
+        width: '12%',
+        align: 'right',
+        key: 'BJDZF',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.BJDZF ?? 0) - Number(b.BJDZF ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '上季度未付(元)',
+        dataIndex: 'SJDWF',
+        width: '12%',
+        align: 'right',
+        key: 'SJDWF',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.SJDWF ?? 0) - Number(b.SJDWF ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+      {
+        title: '本季度小计应付(元)',
+        dataIndex: 'BJDXJYF',
+        width: '12%',
+        align: 'right',
+        key: 'BJDXJYF',
+        ellipsis: true,
+        sorter: (a, b) => Number(a.BJDXJYF ?? 0) - Number(b.BJDXJYF ?? 0),
+        sortDirections: ['descend', 'ascend'],
+        render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
+      },
+    ];
+
+    if (record.loading) return <Spin style={{ width: '100%' }} />;
+    return (
+      <Table
+        className="sub-table-demand-info"
+        columns={columns}
+        rowKey="XQID"
+        dataSource={subTableData[record.XMID]}
+        pagination={false}
+        bordered
+        scroll={{ x: 1600 }}
+      />
+    );
+  };
+
+  const onExpand = async (expanded, record) => {
+    // console.log(expanded, record);
+    if (expanded) {
+      // 正在加载的行设置 loading 状态
+      record.loading = true;
+      if (!expandedRowKeys.includes(record.XMID)) {
+        setExpandedRowKeys(p => [...p, record.XMID]);
+      }
+      let res = await QueryOutsourceCostList({
+        current: 1,
+        cxlx: 'XQ',
+        pageSize: 10,
+        paging: -1,
+        sort: '',
+        total: -1,
+        xmid: Number(record.XMID),
+        gysid: Number(record.GYSID),
+        jssj: Number(202306),
+        kssj: Number(record.KSSJ),
+      });
+      const data = JSON.parse(res.fyxq);
+      // console.log("🚀 ~ file: index.js:321 ~ onExpand ~ data:", data)
+      setSubTableData(p => {
+        return {
+          ...p,
+          [record.XMID]: data,
+        };
+      });
+      let arr = [...tableData];
+      arr.forEach(x => {
+        if (x.XMID === record.XMID) x.loading = false;
+      });
+      setTableData(arr);
+    } else {
+      //收起时置空
+      setSubTableData(p => {
+        return {
+          ...p,
+          [record.XMID]: [],
+        };
+      });
+      setExpandedRowKeys(p => [...expandedRowKeys.filter(x => x !== record.XMID)]);
+      record.loading = false;
+    }
+  };
+
+  const handleCompute = () => {};
+  const handleExport = () => {};
 
   return (
     <div className="info-table">
-      {fileAddVisible && (
-        <Modal
-          wrapClassName="editMessage-modify xbjgEditStyle"
-          width={'1000px'}
-          // height={'700px'}
-          maskClosable={false}
-          zIndex={100}
-          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-          style={{ top: '10px' }}
-          visible={fileAddVisible}
-          okText="保存"
-          bodyStyle={{
-            padding: 0,
-          }}
-          onCancel={closeFileAddModal}
-          title={
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: '#3361FF',
-                color: 'white',
-                borderRadius: '8px 8px 0 0',
-                fontSize: '16px',
-              }}
-            >
-              <strong>新建项目</strong>
-            </div>
+      {/* 修改 */}
+      {visible.update && (
+        <DemandInitiated
+          xmmc={currentXmmc}
+          xqid={currentXqid}
+          closeModal={() =>
+            setVisible(p => {
+              return {
+                ...p,
+                update: false,
+              };
+            })
           }
-          footer={null}
-        >
-          <NewProjectModelV2
-            closeModel={closeFileAddModal}
-            successCallBack={handleFileAddSuccess}
-            xmid={src_fileAdd.xmid}
-            projectType={src_fileAdd.projectType}
-          />
-        </Modal>
+          visible={visible}
+          successCallBack={() => {
+            setVisible(p => {
+              return {
+                ...p,
+                update: false,
+              };
+            });
+            getSubTableData(currentXmid);
+          }}
+        />
       )}
-      <PrjTypeModal
-        visible={visible}
-        setVisible={setVisible}
-        setFileAddVisible={setFileAddVisible}
-        setSrc_fileAdd={setSrc_fileAdd}
-      />
-      <InfoDetail modalVisible={modalVisible} setModalVisible={setModalVisible} />
+      {/* 重新发起 */}
+      {visible.relaunch && (
+        <DemandInitiated
+          xmmc={currentXmmc}
+          xmid={Number(currentXmid)}
+          operateType="relaunch"
+          xqid={Number(currentXqid)}
+          closeModal={() =>
+            setVisible(p => {
+              return {
+                ...p,
+                relaunch: false,
+              };
+            })
+          }
+          visible={visible.relaunch}
+          successCallBack={() => {
+            setVisible(p => {
+              return {
+                ...p,
+                relaunch: false,
+              };
+            });
+            getSubTableData(currentXmid);
+          }}
+        />
+      )}
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={openVisible}>
-          新建项目
+        <Button type="primary" className="btn-add-prj" onClick={handleCompute}>
+          费用计算
+        </Button>
+        <Button type="primary" className="btn-add-prj btn-export" onClick={handleExport}>
+          费用导出
         </Button>
       </div>
       <div className="project-info-table-box">
         <Table
           loading={tableLoading}
           columns={columns}
-          rowKey={'projectId'}
+          rowKey={'XMID'}
           dataSource={tableData}
           onChange={handleTableChange}
+          expandedRowRender={expandedRowRender}
+          expandedRowKeys={expandedRowKeys}
+          onExpand={onExpand}
           pagination={{
             current: curPage,
             pageSize: curPageSize,
@@ -377,7 +510,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-          // bordered
+          bordered
         />
       </div>
     </div>

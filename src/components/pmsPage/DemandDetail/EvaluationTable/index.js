@@ -25,7 +25,13 @@ export default function EvaluationTable(props) {
       // align: 'center',
       key: 'RYDJ',
       ellipsis: true,
-      render: (txt, row) => txt + ` | ` + row.GW,
+      render: (txt, row) => {
+        return (
+          <Tooltip title={txt + ` | ` + row.GW} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{txt + ` | ` + row.GW}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '供应商名称',

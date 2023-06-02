@@ -389,10 +389,8 @@ export default function ResumeDistributionPage(props) {
                 </>
               ) : (
                 <>
-                  <Popconfirm title="确认要分发吗？" onConfirm={handleSave}>
-                    <Button className="btn-opr" onClick={handleDestribute}>
-                      分发
-                    </Button>
+                  <Popconfirm title="确认要分发吗？" onConfirm={handleDestribute}>
+                    <Button className="btn-opr">分发</Button>
                   </Popconfirm>
                   <Button className="btn-opr" onClick={handleModify}>
                     修改

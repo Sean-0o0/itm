@@ -141,8 +141,14 @@ function InterviewScoreModal(props) {
       width: '20%',
       key: 'RYDJ',
       ellipsis: true,
-      render: (txt, row) =>
-        txt + ` | ` + (WBRYGW.filter(x => x.ibm === String(row.GWID))[0]?.note || '--'),
+      render: (txt, row) => {
+        const v = txt + ` | ` + (WBRYGW.filter(x => x.ibm === String(row.GWID))[0]?.note || '--');
+        return (
+          <Tooltip title={v} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{v}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '供应商名称',
