@@ -4,27 +4,28 @@ import { Modal, Form, message, Spin, Input, Row, Col, Select, Upload, Button, Ic
 const { Option } = Select;
 const { TextArea } = Input;
 
-function EmploymentApplicationModal(props) {
-  const { visible, setVisible, form, RYXQ = [] } = props;
-  const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
+function UploadModal(props) {
+  const { visible, setVisible, RYXQ = [] } = props;
   const [isTurnRed, setIsTurenRed] = useState(false); //上传标红
   const [fileList, setFileList] = useState([]); //文件列表
 
   useEffect(() => {
+    console.log('fileList', fileList);
     return () => {};
   }, []);
 
   const handleOk = () => {
-    form.validateFieldsAndScroll(err => {
-      if (!err) {
-        setVisible(false);
-      }
-    });
+    if (fileList.length === 0) {
+      setIsTurenRed(true);
+    } else if (!isTurnRed) {
+      setVisible(false);
+    }
   };
 
   const handleCancel = () => {
-    resetFields();
     setVisible(false);
+    setFileList([]);
+    setIsTurenRed(false);
   };
 
   return (
@@ -46,39 +47,21 @@ function EmploymentApplicationModal(props) {
       <Form className="content-box">
         <Row>
           <Col span={24}>
-            <Form.Item label="录用备注" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
-              {getFieldDecorator('lybz', {
-                initialValue: '',
-                rules: [
-                  {
-                    required: true,
-                    message: `录用备注不能为空`,
-                  },
-                ],
-              })(
-                <TextArea
-                  placeholder="请输入录用备注"
-                  maxLength={1000}
-                  autoSize={{ maxRows: 6, minRows: 3 }}
-                ></TextArea>,
-              )}
-            </Form.Item>
-          </Col>
-        </Row>
-        <Row>
-          <Col span={24}>
             <Form.Item
-              label="综合评测底稿"
+              label="简历"
+              required
               labelCol={{ span: 4 }}
               wrapperCol={{ span: 20 }}
-              help={isTurnRed ? `综合评测底稿不允许空值` : ''}
+              help={isTurnRed ? `简历不能为空` : ''}
               validateStatus={isTurnRed ? 'error' : 'success'}
+              style={{ marginBottom: 0 }}
             >
               <Upload
                 action={'/api/projectManage/queryfileOnlyByupload'}
                 showUploadList={{
                   showRemoveIcon: true,
-                  showPreviewIcon: true,
+                  // showPreviewIcon: true,
+                  // showDownloadIcon: true,
                 }}
                 multiple={true}
                 onChange={info => {
@@ -103,12 +86,6 @@ function EmploymentApplicationModal(props) {
                         base64: e.target.result,
                       });
                       if (arr.length === fileList.length) {
-                        debounce(() => {
-                          // setOaData(p => [...arr]);
-                          console.log('🚀 ~ file: index.js ~ line 407 ~ debounce ~ [...arr]', [
-                            ...arr,
-                          ]);
-                        }, 500);
                       }
                     };
                   });
@@ -118,7 +95,16 @@ function EmploymentApplicationModal(props) {
                 }
                 fileList={fileList}
               >
-                <Button type="dashed">
+                <Button
+                  type="dashed"
+                  style={
+                    isTurnRed
+                      ? {
+                          borderColor: '#f5222d',
+                        }
+                      : {}
+                  }
+                >
                   <Icon type="upload" />
                   点击上传
                 </Button>
@@ -130,4 +116,4 @@ function EmploymentApplicationModal(props) {
     </Modal>
   );
 }
-export default Form.create()(EmploymentApplicationModal);
+export default UploadModal;

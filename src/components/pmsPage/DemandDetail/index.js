@@ -121,11 +121,11 @@ export default function DemandDetail(props) {
                     ? []
                     : Object.values(
                         JSON.parse(res.jlxx)?.reduce((acc, curr) => {
-                          let { RYXQ, GYSID, GYSMC, JLID, JLMC } = curr;
+                          let { RYXQ, GYSID, GYSMC, JLID, JLMC, ZT } = curr;
                           if (!acc[GYSID]) {
-                            acc[GYSID] = { RYXQ, GYSID, GYSMC, JLID, JLDATA: [{ JLID, JLMC }] };
+                            acc[GYSID] = { RYXQ, GYSID, GYSMC, JLID, JLDATA: [{ JLID, JLMC, ZT }] };
                           } else {
-                            acc[GYSID].JLDATA.push({ JLID, JLMC });
+                            acc[GYSID].JLDATA.push({ JLID, JLMC, ZT });
                           }
                           return acc;
                         }, {}),
@@ -139,6 +139,7 @@ export default function DemandDetail(props) {
                         JLID: y.JLID,
                         ENTRYNO: z[0],
                         JLMC: z[1],
+                        ZT: y.ZT,
                         NEXTID: JSON.parse(y.JLMC)?.nextId,
                       };
                     });
@@ -238,6 +239,7 @@ export default function DemandDetail(props) {
           xqid={curXqid}
           fqrid={curFqrid}
           getDtldata={getDtldata}
+          isDock={isDock}
         />
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
       </div>

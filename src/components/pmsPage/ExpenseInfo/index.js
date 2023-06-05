@@ -4,6 +4,7 @@ import TopConsole from './TopConsole';
 import { QueryOutsourceCostList } from '../../../services/pmsServices';
 import { message } from 'antd';
 import { set } from 'store';
+import moment from 'moment';
 
 export default function DemandInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -18,6 +19,24 @@ export default function DemandInfo(props) {
   const [subTableData, setSubTableData] = useState({}); //子表格数据
   const [isFinish, setIsFinish] = useState(false); //
   const topConsoleRef = useRef(null);
+  const quarterData = [
+    {
+      title: moment().year() + '年第1季度',
+      range: [moment(moment().year() + '01'), moment(moment().year() + '03')],
+    },
+    {
+      title: moment().year() + '年第2季度',
+      range: [moment(moment().year() + '04'), moment(moment().year() + '06')],
+    },
+    {
+      title: moment().year() + '年第3季度',
+      range: [moment(moment().year() + '07'), moment(moment().year() + '09')],
+    },
+    {
+      title: moment().year() + '年第4季度',
+      range: [moment(moment().year() + '10'), moment(moment().year() + '12')],
+    },
+  ]; //季度数据
 
   useEffect(() => {
     if (xmid === -2) {
@@ -112,6 +131,7 @@ export default function DemandInfo(props) {
         curPage={curPage}
         curPageSize={curPageSize}
         xmid={xmid}
+        quarterData={quarterData}
       />
       <InfoTable
         tableData={tableData}
@@ -128,6 +148,7 @@ export default function DemandInfo(props) {
         xmid={xmid}
         WBRYGW={WBRYGW}
         setTableData={setTableData}
+        quarterData={quarterData}
       />
     </div>
   );

@@ -11,6 +11,7 @@ import {
   QueryUserRole,
 } from '../../../../services/pmsServices/index.js';
 import moment from 'moment';
+import ExpenseCalucationModal from './ExpenseCalucationModal';
 
 export default function InfoTable(props) {
   const {
@@ -26,12 +27,13 @@ export default function InfoTable(props) {
     xmid = -2,
     WBRYGW,
     setTableData,
+    quarterData,
+    getTableData,
   } = props; //表格数据
   const [visible, setVisible] = useState({
-    update: false,
-    relaunch: false,
-  }); //需求发起弹窗显隐
-  const [demandPublishVisible, setDemandPublishVisible] = useState(false); //需求上架显隐
+    calculation: false, //费用计算
+    payment: false, //付款
+  }); //弹窗显隐
   const [currentXqid, setCurrentXqid] = useState(-1); //详情id
   const [currentXmid, setCurrentXmid] = useState(-1); //项目id
   const [currentXmmc, setCurrentXmmc] = useState(''); //项目名称
@@ -62,7 +64,6 @@ export default function InfoTable(props) {
       .then(res => {
         if (res.code === 1) {
           setIsDock(res.zyrole === '外包项目对接人');
-          console.log('外包项目对接人');
         }
       })
       .catch(e => {
@@ -219,6 +220,19 @@ export default function InfoTable(props) {
       key: 'operation',
       align: 'center',
       width: '8%',
+      render: (txt, row) => (
+        <span
+          style={{ color: '#3361ff', cursor: 'pointer' }}
+          onClick={() => {
+            if (String(LOGIN_USER_ID) === row.XMJLID) {
+            } else {
+              message.info('只有项目经理可以操作', 1);
+            }
+          }}
+        >
+          付款
+        </span>
+      ),
     },
   ];
 
@@ -424,65 +438,23 @@ export default function InfoTable(props) {
     }
   };
 
-  const handleCompute = () => {};
+  const handleCalculate = () => {
+    setVisible(p => ({ ...p, calculation: true }));
+  };
   const handleExport = () => {};
 
   return (
     <div className="info-table">
-      {/* 修改 */}
-      {visible.update && (
-        <DemandInitiated
-          xmmc={currentXmmc}
-          xqid={currentXqid}
-          closeModal={() =>
-            setVisible(p => {
-              return {
-                ...p,
-                update: false,
-              };
-            })
-          }
-          visible={visible}
-          successCallBack={() => {
-            setVisible(p => {
-              return {
-                ...p,
-                update: false,
-              };
-            });
-            getSubTableData(currentXmid);
-          }}
-        />
-      )}
-      {/* 重新发起 */}
-      {visible.relaunch && (
-        <DemandInitiated
-          xmmc={currentXmmc}
-          xmid={Number(currentXmid)}
-          operateType="relaunch"
-          xqid={Number(currentXqid)}
-          closeModal={() =>
-            setVisible(p => {
-              return {
-                ...p,
-                relaunch: false,
-              };
-            })
-          }
-          visible={visible.relaunch}
-          successCallBack={() => {
-            setVisible(p => {
-              return {
-                ...p,
-                relaunch: false,
-              };
-            });
-            getSubTableData(currentXmid);
-          }}
+      {visible.calculation && (
+        <ExpenseCalucationModal
+          visible={visible.calculation}
+          setVisible={v => setVisible(p => ({ ...p, calculation: v }))}
+          quarterData={quarterData}
+          reflush={getTableData}
         />
       )}
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={handleCompute}>
+        <Button type="primary" className="btn-add-prj" onClick={handleCalculate}>
           费用计算
         </Button>
         <Button type="primary" className="btn-add-prj btn-export" onClick={handleExport}>
@@ -510,7 +482,7 @@ export default function InfoTable(props) {
             showTotal: t => `共 ${total} 条数据`,
             total: total,
           }}
-          bordered
+          // bordered
         />
       </div>
     </div>

@@ -131,12 +131,12 @@ export default function DemandTable(props) {
             ))}
           </div>
         );
-        if (arr.length === 0) return '暂无';
+        if (arr.filter(x => x.ZT === '2')?.length === 0) return '暂无';
         return (
           <Popover
             placement="rightTop"
             title={null}
-            content={popoverContent(arr)}
+            content={popoverContent(arr.filter(x => x.ZT === '2'))}
             overlayClassName="demand-detail-content-popover"
           >
             <a style={{ color: '#3361ff' }}>查看详情</a>

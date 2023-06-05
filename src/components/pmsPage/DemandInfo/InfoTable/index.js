@@ -62,7 +62,7 @@ export default function InfoTable(props) {
       .then(res => {
         if (res.code === 1) {
           setIsDock(res.zyrole === '外包项目对接人');
-          console.log('外包项目对接人');
+          console.log('外包项目对接人', res.zyrole === '外包项目对接人');
         }
       })
       .catch(e => {

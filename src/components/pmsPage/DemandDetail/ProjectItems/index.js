@@ -4,15 +4,14 @@ import moment from 'moment';
 import ResumeDestributionModal from './ResumeDestributionModal';
 import PersonnelArrangementModal from './PersonnelArrangementModal';
 import InterviewScoreModal from './InterviewScoreModal';
-import EmploymentApplicationModal from './EmploymentApplicationModal';
-import NewAccountModal from './NewAccountModal';
 import DemandInitiated from '../../HardwareItems/DemandInitiated';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 import { EncryptBase64 } from '../../../Common/Encrypt';
+import { useLocation } from 'react-router-dom';
 
 export default function ProjectItems(props) {
-  const { dtlData = {}, isDock, isFqr, xqid, getDtldata, fqrid, WBRYGW } = props;
+  const { dtlData = {}, isDock, isFqr, xqid, getDtldata, fqrid, WBRYGW, routes = [] } = props;
   const {
     XQSX = [],
     FKTX = {},
@@ -41,6 +40,7 @@ export default function ProjectItems(props) {
     title: '',
   }); //
   const [swzxid, setSwzxid] = useState(-1); //
+  const location = useLocation();
 
   useEffect(() => {
     return () => {};
@@ -79,6 +79,7 @@ export default function ProjectItems(props) {
             JLXX: JLXX2,
             xqid,
             swzxid: SWZXID,
+            routes,
           }),
         )}`;
       } else {
@@ -475,6 +476,11 @@ export default function ProjectItems(props) {
               };
             });
             reflush();
+            window.location.href = `/#/pms/manage/MemberInfo/${EncryptBase64(
+              JSON.stringify({
+                xmid: XMXX.XMID,
+              }),
+            )}`;
             message.success('新增成功', 1);
           }}
           onCancel={() =>

@@ -578,8 +578,9 @@ class MainPageLayout extends React.PureComponent {
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
                     if (
                       (path && path.includes('/pms/manage/SupplierDmInfo')) ||
-                      (path && path.includes('/pms/manage/ProjectDetail'))
-                      ||(path && path.includes('/pms/manage/DemandInfo'))
+                      (path && path.includes('/pms/manage/ProjectDetail')) ||
+                      (path && path.includes('/pms/manage/DemandInfo')) ||
+                      (path && path.includes('/pms/manage/DemandDetail'))
                     ) {
                       return (
                         path && (

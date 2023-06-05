@@ -463,4 +463,10 @@ export default [
     url: '/projectManage/globalSearch',
     dis: '全局搜索',
   },
+  {
+    code: '',
+    key: 'outsourceCostCalculation',
+    url: '/projectManage/outsourceCostCalculation',
+    dis: '费用计算',
+  },
 ];

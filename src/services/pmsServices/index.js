@@ -85,6 +85,7 @@ const {
     supplierQueryDemand,
     queryOutsourceCostList,
     globalSearch,
+    outsourceCostCalculation,
   },
 } = api;
 
@@ -890,6 +891,16 @@ export async function QueryOutsourceCostList(payload) {
 export async function GlobalSearch(payload) {
   const option = {
     url: globalSearch,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 费用计算
+export async function OutsourceCostCalculation(payload) {
+  const option = {
+    url: outsourceCostCalculation,
     method: 'post',
     data: payload,
   };

@@ -25,27 +25,16 @@ export default forwardRef(function TopConsole(props, ref) {
   const [gys, setGys] = useState(undefined); //供应商名称
   const [quarter, setQuarter] = useState(undefined); //季度
   const [dateRange, setDateRange] = useState([null, null]); //开始结束月份
-  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize, xmid } = props;
+  const {
+    setTableLoading,
+    setTableData,
+    setTotal,
+    setCurPage,
+    setCurPageSize,
+    xmid,
+    quarterData,
+  } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  const quarterData = [
-    {
-      title: moment().year() + ' - 第一季度',
-      range: [moment(moment().year() + '01'), moment(moment().year() + '03')],
-    },
-    {
-      title: moment().year() + ' - 第二季度',
-      range: [moment(moment().year() + '04'), moment(moment().year() + '06')],
-    },
-    {
-      title: moment().year() + ' - 第三季度',
-      range: [moment(moment().year() + '07'), moment(moment().year() + '09')],
-    },
-    {
-      title: moment().year() + ' - 第四季度',
-      range: [moment(moment().year() + '10'), moment(moment().year() + '12')],
-    },
-  ]; //季度数据
-  console.log('🚀 ~ file: index.js:46 ~ TopConsole ~ quarterData:', quarterData);
 
   useEffect(() => {
     // console.log(
@@ -112,7 +101,6 @@ export default forwardRef(function TopConsole(props, ref) {
       .then(res => {
         if (res.success) {
           let rec = res.record;
-          console.log('🚀 ~ file: index.js:89 ~ getFilterData ~ rec:', rec);
           setGysData([...rec]);
         }
       })
