@@ -14471,13 +14471,75 @@ li.ant-select-tree-treenode-disabled>.ant-select-tree-node-content-wrapper span 
 }
 
 .searchModal-box-spin {
-  padding: 16px;
+  padding: 24px 0 24px 24px;
 
   .searchModal-input {
+    padding-right: 24px;
+
     .ant-input {
       font-size: 20px;
-      color: #C0C4CC;
+      font-weight: 400;
+      color: #303133;
+      line-height: 22px;
       border: none !important;
+    }
+  }
+
+  .searchModal-divider {
+    width: 812px;
+    max-width: 812px;
+    min-width: 812px;
+  }
+
+  .searchRes-div {
+    max-height: 600px;
+    overflow-y: auto;
+
+    .res-title {
+      .title {
+        height: 22px;
+        font-size: 16px;
+        font-weight: 500;
+        color: #303133;
+        line-height: 22px;
+      }
+
+      .content-box {
+        //max-height: 182px;
+        //overflow-y: auto;
+        .more {
+          height: 22px;
+          line-height: 22px;
+          font-size: 14px;
+          font-weight: 400;
+          color: #606266;
+          text-align: center;
+        }
+
+        .content {
+          display: flex;
+          align-items: center;
+          height: 32px;
+          font-size: 16px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #333333;
+          //line-height: 22px;
+          .icon {
+            width: 24px;
+            height: 24px;
+            background: linear-gradient(180deg, #A4ACFF 0%, #6B74FF 100%);
+            border-radius: 2px;
+          }
+        }
+      }
+
+      .content-divider {
+        padding: 0 12px;
+        width: 812px;
+        max-width: 812px;
+        min-width: 812px;
+      }
     }
   }
 

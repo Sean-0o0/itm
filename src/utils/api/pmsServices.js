@@ -457,4 +457,10 @@ export default [
     url: '/projectManage/queryOutsourceCostList',
     dis: '查询费用列表',
   },
+  {
+    code: '',
+    key: 'globalSearch',
+    url: '/projectManage/globalSearch',
+    dis: '全局搜索',
+  },
 ];

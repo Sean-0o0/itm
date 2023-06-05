@@ -80,7 +80,6 @@ export default function MemberInfo(props) {
         tableData={tableData}
         tableLoading={tableLoading}
         getTableData={getTableData}
-        projectManager={params?.supplierId}
         total={total}
         curPage={curPage}
         curPageSize={curPageSize}
