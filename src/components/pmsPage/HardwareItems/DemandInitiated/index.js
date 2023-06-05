@@ -105,6 +105,7 @@ class DemandInitiated extends React.Component {
           }
           let data2 = {
             XQID: item.RYXQID,
+            PCZT: item.PCZT,
             RYDJ: item.RYDJID,
             GW: item.GW,
             RYSL: item.RYSL,
@@ -440,17 +441,32 @@ class DemandInitiated extends React.Component {
                       <Row gutter={24}>
                         <Col span={24}>
                           <Form.Item
-                            label="人员需求"
+                            label={
+                              <span>
+                                <span
+                                  style={{
+                                    fontFamily: 'SimSun, sans-serif',
+                                    color: '#f5222d',
+                                    marginRight: '4px',
+                                    lineHeight: 1,
+                                  }}
+                                >
+                                  *
+                                </span>
+                                人员需求
+                              </span>
+                            }
+                            // label="人员需求"
                             labelCol={{span: 4}}
                             wrapperCol={{span: 20}}
                           >
                             {getFieldDecorator('ryxq', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: '请完善人员需求',
-                                },
-                              ],
+                              // rules: [
+                              //   {
+                              //     required: true,
+                              //     message: '请完善人员需求',
+                              //   },
+                              // ],
                               // initialValue: "外采项目"
                             })(<PersonnelNeeds operateType={operateType}
                                                tableDataInit={this.state.tableDataInit}
