@@ -469,4 +469,10 @@ export default [
     url: '/projectManage/outsourceCostCalculation',
     dis: '费用计算',
   },
+  {
+    code: '',
+    key: 'uploadCurriculumVitae',
+    url: '/projectManage/uploadCurriculumVitae',
+    dis: '简历上传',
+  },
 ];

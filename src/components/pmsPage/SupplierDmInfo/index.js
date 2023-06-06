@@ -9,7 +9,7 @@ const { Option } = Select;
 export default function SupplierDmInfo(props) {
   const {} = props;
   const [splDmData, setSplDmData] = useState({}); //供应商需求信息
-  const { xqList = [], total = 0 } = splDmData;
+  const { xqList = [], total = 0, jlxx = [], gysid = -1 } = splDmData;
   const [sltData, setSltData] = useState({}); //选择框数据
   const { gwxx = [], xqxx = [] } = sltData;
   const [sltParams, setSltParams] = useState({
@@ -20,6 +20,11 @@ export default function SupplierDmInfo(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const nodeArr = document.getElementsByClassName('value xmjj');
   const [uploadModalVisible, setUploadModalVisible] = useState(false); //上传弹窗显隐
+  const [curData, setCurData] = useState({
+    xqid: '-1',
+    ryxqid: '-1',
+    jldata: [],
+  }); //当前ryxqid的数据
 
   useEffect(() => {
     getSltData();
@@ -103,6 +108,7 @@ export default function SupplierDmInfo(props) {
                 RYSL: curr.RYSL,
                 SC: curr.SC,
                 YQ: curr.YQ,
+                XQID: curr.XQID,
               });
             } else {
               acc.set(curr.XQID, [
@@ -113,6 +119,7 @@ export default function SupplierDmInfo(props) {
                   RYSL: curr.RYSL,
                   SC: curr.SC,
                   YQ: curr.YQ,
+                  XQID: curr.XQID,
                 },
               ]);
             }
@@ -143,9 +150,9 @@ export default function SupplierDmInfo(props) {
           const finalData = {
             xqList,
             total: res.totalrows ?? 0,
+            jlxx: nullCheck(res.jlxx),
+            gysid: res.gysid,
           };
-
-          console.log('🚀 ~ file: index.js:38 ~ getSplierDmData ~ finalData:', finalData);
           setSplDmData(finalData);
           setIsSpinning(false);
         }
@@ -183,7 +190,6 @@ export default function SupplierDmInfo(props) {
       };
     });
   };
-
   //查询参数变化
   const handleParamsChange = (paramName, v) => {
     setSltParams(p => {
@@ -214,6 +220,7 @@ export default function SupplierDmInfo(props) {
     {
       title: '人员数量',
       dataIndex: 'RYSL',
+      align: 'center',
       width: '15%',
       key: 'RYSL',
       ellipsis: true,
@@ -237,16 +244,35 @@ export default function SupplierDmInfo(props) {
       width: '10%',
       key: 'CZ',
       ellipsis: true,
-      render: (txt, row) => (
-        <a
-          style={{ color: '#3361ff' }}
-          onClick={() => {
-            setUploadModalVisible(true);
-          }}
-        >
-          上传简历
-        </a>
-      ),
+      render: (txt, row) => {
+        const arr = jlxx.filter(x => x.RYXQID === row.RYXQID);
+        let data = {};
+        if (arr.length > 0) {
+          data = {
+            ...arr[0],
+            JLXX: JSON.parse(arr[0].JLXX),
+          };
+        }
+        return (
+          <a
+            style={{ color: '#3361ff' }}
+            onClick={() => {
+              if (gysid === -1) {
+                message.info('只有供应商联系人可以操作', 1);
+              } else {
+                setUploadModalVisible(true);
+                setCurData({
+                  ryxqid: row.RYXQID,
+                  xqid: row.XQID,
+                  jldata: data,
+                });
+              }
+            }}
+          >
+            {arr.length === 0 ? '上传简历' : '更新简历'}
+          </a>
+        );
+      },
     },
   ];
 
@@ -343,7 +369,15 @@ export default function SupplierDmInfo(props) {
   return (
     <div className="splier-demand-info-box">
       {uploadModalVisible && (
-        <UploadModal visible={uploadModalVisible} setVisible={setUploadModalVisible} />
+        <UploadModal
+          visible={uploadModalVisible}
+          setVisible={setUploadModalVisible}
+          data={{
+            gysid,
+            ...curData,
+          }}
+          reflush={getSltData}
+        />
       )}
       <Spin
         spinning={isSpinning}

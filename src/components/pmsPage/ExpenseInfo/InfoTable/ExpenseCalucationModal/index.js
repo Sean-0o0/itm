@@ -41,7 +41,7 @@ function ExpenseCalucationModal(props) {
     ZHPC = [],
     quarterData = [],
   } = props;
-  const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
+  const { validateFields, getFieldValue, resetFields, getFieldDecorator, setFieldsValue } = form;
   const [tableData, setTableData] = useState([]); //表格数据
   const [xmmcData, setXmmcData] = useState([]); //项目名称
   const [ryData, setRyData] = useState([]); //人员
@@ -61,13 +61,19 @@ function ExpenseCalucationModal(props) {
   useEffect(() => {
     const tableRyArr = tableData.map(x => x['RYID' + x.ID]);
     setRyData(ryOriginData.filter(x => !tableRyArr.includes(x.RYID)));
-    setShowAdd(ryData.length > 0 && tableData.length < ryOriginData.length);
+    setShowAdd(
+      ryOriginData.filter(x => !tableRyArr.includes(x.RYID)).length > 0 &&
+        tableData.length < ryOriginData.length,
+    );
     return () => {};
   }, [JSON.stringify(tableData)]);
 
   //季度变化
   const handleQuarterChange = (v, node) => {
-    setDateRange([...(node?.props?.range ?? [])]);
+    const range = [...(node?.props?.range ?? [])];
+    setDateRange(range);
+    const arr = tableData.map(x => ({ ...x, ['RQ' + x.ID]: range }));
+    setTableData([...arr]);
   };
 
   //下拉框数据
@@ -265,7 +271,11 @@ function ExpenseCalucationModal(props) {
                   }));
                   setRyData(p => [...arr]);
                   setRyOriginData([...arr]);
-                  setShowAdd(arr.length > 0);
+                  setShowAdd(tableArr.length < arr.length);
+                  console.log(
+                    '🚀 ~ file: index.js:278 ~ handleXmmcChange ~ tableArr.length < arr.length:',
+                    tableArr.length, arr.length,
+                  );
                   setTableData([...tableArr]);
                   setIsSpinning(false);
                 }
@@ -395,7 +405,6 @@ function ExpenseCalucationModal(props) {
                       ['RQ' + UUID]: dateRange,
                     });
                     setTableData(p => [...arrData]);
-                    // setShowAdd(ryData.length > 0 && tableData.length < ryOriginData.length - 1);
                     setTimeout(() => {
                       const table = document.querySelectorAll(`.ryxq-table-box .ant-table-body`)[0];
                       table && (table.scrollTop = table.scrollHeight);

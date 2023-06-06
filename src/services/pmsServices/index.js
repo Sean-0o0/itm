@@ -86,6 +86,7 @@ const {
     queryOutsourceCostList,
     globalSearch,
     outsourceCostCalculation,
+    uploadCurriculumVitae,
   },
 } = api;
 
@@ -901,6 +902,16 @@ export async function GlobalSearch(payload) {
 export async function OutsourceCostCalculation(payload) {
   const option = {
     url: outsourceCostCalculation,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 简历上传
+export async function UploadCurriculumVitae(payload) {
+  const option = {
+    url: uploadCurriculumVitae,
     method: 'post',
     data: payload,
   };

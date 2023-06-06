@@ -11,7 +11,7 @@ import EmploymentInfo from './EmploymentInfo';
 
 export default function DemandDetail(props) {
   const { routes, xqid = -2, fqrid = -2, dictionary } = props;
-  const { WBSWLX = [], WBRYGW = [] } = dictionary;
+  const { WBSWLX = [], WBRYGW = [], DFZT } = dictionary;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [dtlData, setDtlData] = useState({}); //详情信息
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
@@ -98,6 +98,7 @@ export default function DemandDetail(props) {
                               JLID: item2.JLID,
                               ENTRYNO: entryNo,
                               JLMC: fileName,
+                              ZT: item2.ZT,
                               NEXTID: JSON.parse(item2.JLMC).nextId,
                             }));
                             return jldataItem;

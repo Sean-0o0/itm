@@ -6,6 +6,13 @@ import { message } from 'antd';
 import { set } from 'store';
 import moment from 'moment';
 
+function getUUID() {
+  function S4() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  }
+  return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
+}
+
 export default function DemandInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
@@ -67,8 +74,9 @@ export default function DemandInfo(props) {
     })
       .then(res => {
         if (res?.success) {
-          const data = JSON.parse(res.xmxx);
-          console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
+          let data = JSON.parse(res.xmxx);
+          // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
+          // data = data.map(x => ({ ...x, ID: getUUID() }));
           setTableData(p => data);
           setTotal(res.totalrows);
           setTableLoading(false);

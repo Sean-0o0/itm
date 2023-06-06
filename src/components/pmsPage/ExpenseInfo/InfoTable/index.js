@@ -384,7 +384,7 @@ export default function InfoTable(props) {
         className="sub-table-demand-info"
         columns={columns}
         rowKey="XQID"
-        dataSource={subTableData[record.XMID]}
+        dataSource={subTableData[record.FYID]}
         pagination={false}
         bordered
         scroll={{ x: 1600 }}
@@ -397,8 +397,8 @@ export default function InfoTable(props) {
     if (expanded) {
       // 正在加载的行设置 loading 状态
       record.loading = true;
-      if (!expandedRowKeys.includes(record.XMID)) {
-        setExpandedRowKeys(p => [...p, record.XMID]);
+      if (!expandedRowKeys.includes(record.FYID)) {
+        setExpandedRowKeys(p => [...p, record.FYID]);
       }
       let res = await QueryOutsourceCostList({
         current: 1,
@@ -417,12 +417,12 @@ export default function InfoTable(props) {
       setSubTableData(p => {
         return {
           ...p,
-          [record.XMID]: data,
+          [record.FYID]: data,
         };
       });
       let arr = [...tableData];
       arr.forEach(x => {
-        if (x.XMID === record.XMID) x.loading = false;
+        if (x.FYID === record.FYID) x.loading = false;
       });
       setTableData(arr);
     } else {
@@ -430,10 +430,10 @@ export default function InfoTable(props) {
       setSubTableData(p => {
         return {
           ...p,
-          [record.XMID]: [],
+          [record.FYID]: [],
         };
       });
-      setExpandedRowKeys(p => [...expandedRowKeys.filter(x => x !== record.XMID)]);
+      setExpandedRowKeys(p => [...expandedRowKeys.filter(x => x !== record.FYID)]);
       record.loading = false;
     }
   };
@@ -465,7 +465,7 @@ export default function InfoTable(props) {
         <Table
           loading={tableLoading}
           columns={columns}
-          rowKey={'XMID'}
+          rowKey={'FYID'}
           dataSource={tableData}
           onChange={handleTableChange}
           expandedRowRender={expandedRowRender}
