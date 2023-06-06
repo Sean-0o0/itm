@@ -143,27 +143,41 @@ class SendMailModal extends React.Component {
       });
   };
 
+  replaceAll(str, find, replace) {
+    for (let i = 0; i < str.length; i++) {
+      if (str.substring(i, i + find.length) === find) {
+        str = str.slice(0, i) + replace + str.slice(i + find.length);
+        i += replace.length - 1;
+      }
+    }
+    return str;
+  }
+
   handleParams = values => {
+    console.log("------发送邮件处理数据------")
     const {uploadFileParams} = this.state;
-    const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
+    const loginUser = JSON.parse(sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
+    console.log("------登录人id------", loginUser.id)
     let fileInfo = [];
     uploadFileParams.map(item => {
       fileInfo.push({fileName: item.name, data: item.base64});
     });
+    console.log("------文件信息------", fileInfo)
     //邮箱正则校验
+    console.log("------邮箱校验------")
     const reg = /^([a-zA-Z\d][\w-]{2,})@(\w{2,})\.([a-z]{2,})(\.[a-z]{2,})?$/;
-    let access = String(values.SJR).replaceAll(",", ";")
+    let access = this.replaceAll(String(values.SJR), ",", ";")
     const accessArr = access.split(';');
     if (accessArr.filter(item => reg.test(item) === false).length > 0) {
       message.warn("请输入正确格式的接收人邮箱！")
       return;
     }
+    console.log("------开始校验抄送人------", values.CS)
     let others = ""
     let othersArr;
-    console.log("values.CS", values.CS)
     if (values.CS !== "" && values.CS !== undefined && values.CS.length > 0) {
-      others = String(values.CS).replaceAll(",", ";")
+      others = this.replaceAll(String(values.CS), ",", ";");
       othersArr = others.split(';');
       console.log("othersArr", othersArr)
       if (othersArr.length > 0) {
@@ -173,7 +187,7 @@ class SendMailModal extends React.Component {
         }
       }
     }
-    console.log("111111")
+    console.log("----------校验完了---------")
     //表单数据
     const params = {
       access,
@@ -183,7 +197,7 @@ class SendMailModal extends React.Component {
       title: values.ZT,
       fileInfo: [...fileInfo],
     };
-    console.log("邮件发送参数{}", params)
+    console.log("-----------邮件发送参数-------", params)
     return params;
   };
 
@@ -392,7 +406,11 @@ class SendMailModal extends React.Component {
                           ></div>
                           <i
                             className="iconfont circle-add"
-                            onClick={() => {
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                            }}
+                            onClick={(e) => {
+                              console.log("-----打开新增弹窗-----")
                               this.setState({
                                 addMailModalVisible: true,
                                 title: "新增收件人",
@@ -477,6 +495,9 @@ class SendMailModal extends React.Component {
                           ></div>
                           <i
                             className="iconfont circle-add"
+                            onMouseDown={(e) => {
+                              e.preventDefault();
+                            }}
                             onClick={() => {
                               this.setState({
                                 addMailModalVisible: true,

@@ -16,7 +16,11 @@ import {
 } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
 import moment from 'moment';
-import { EvaluationScoring, QueryEvaluationGradeInfo } from '../../../../../services/pmsServices';
+import {
+  EvaluationScoring,
+  QueryEvaluationGradeInfo,
+  QueryUserRole,
+} from '../../../../../services/pmsServices';
 
 const { Option } = Select;
 
@@ -35,6 +39,8 @@ function InterviewScoreModal(props) {
   const [tableData, setTableData] = useState([]); //表格数据
   const [editData, setEditData] = useState([]); //提交的修改数据
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
+  const LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
 
   useEffect(() => {
     if (xqid !== -2) {
@@ -65,6 +71,17 @@ function InterviewScoreModal(props) {
       .catch(e => {
         message.error('接口信息获取失败');
         setIsSpinning(false);
+      });
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          setIsDock(res.zyrole === '外包项目对接人');
+        }
+      })
+      .catch(e => {
+        message.error('用户信息查询失败', 1);
       });
   };
 
@@ -141,13 +158,20 @@ function InterviewScoreModal(props) {
       width: '20%',
       key: 'RYDJ',
       ellipsis: true,
-      render: (txt, row) =>
-        txt + ` | ` + (WBRYGW.filter(x => x.ibm === String(row.GWID))[0]?.note || '--'),
+      render: (txt, row) => {
+        const v = txt + ` | ` + (WBRYGW.filter(x => x.ibm === String(row.GWID))[0]?.note || '--');
+        return (
+          <Tooltip title={v} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{v}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
       key: 'GYSMC',
+      width: isDock ? undefined : '0',
       ellipsis: true,
       render: txt => (
         <Tooltip title={txt} placement="topLeft">

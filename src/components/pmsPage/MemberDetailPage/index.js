@@ -106,6 +106,8 @@ class MemberDetailPage extends Component {
             SYKHID: ryxxdata[0]?.SYKHID,
             jldata: jldata !== "" ? JSON.parse(jldata) : "",
             RYZT: ryxxdata[0]?.RYZTID,
+            XMJLID: ryxxdata[0]?.XMJLID,
+            XMJL: ryxxdata[0]?.XMJL,
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,
@@ -160,7 +162,6 @@ class MemberDetailPage extends Component {
       zyrole = "",
     } = this.state
     const {routes, ryid} = this.props
-    let xmid = '-1'
     return (
       <Spin spinning={tableLoading}>
         <div className="member-detail-box">

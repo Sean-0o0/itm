@@ -62,7 +62,7 @@ function ExpenseInfo(props) {
           };
           setData({ ...obj });
           setIsSpinning(false);
-          // console.log('🚀 ~ file: index.js:49 ~ getData ~ obj:', obj);
+          console.log('🚀 ~ file: index.js:49 ~ getData ~ obj:', obj);
         }
       })
       .catch(e => {
@@ -118,7 +118,7 @@ function ExpenseInfo(props) {
     validateFieldsAndScroll(err => {
       if (!err) {
         let submitProps = {
-          xqmc: getFieldValue('xqmc') !== '' ? getFieldValue('xqmc') : data.wbxq.XMMC,
+          xqmc: getFieldValue('xqmc') !== '' ? getFieldValue('xqmc') : data.wbxq.XQMC,
           xqid: Number(xqid),
           jlrqsj: Number(getFieldValue('jlrqsj')?.format('YYYYMMDD')),
           pcrqsj: Number(getFieldValue('pcrqsj')?.format('YYYYMMDD')),

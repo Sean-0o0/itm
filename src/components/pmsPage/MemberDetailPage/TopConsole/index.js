@@ -17,8 +17,9 @@ class ToConsole extends Component {
   };
 
   handleEditMemberInfo = (type) => {
-    const {zyrole} = this.props;
-    if (zyrole === "外包项目对接人") {
+    const {zyrole, data: {XMJLID}} = this.props;
+    const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+    if (zyrole === "外包项目对接人" || String(LOGIN_USER_INFO.id) === XMJLID) {
       //type 编辑详情还是编辑试用期考核情况
       console.log("------编辑外包人员信息----")
       this.setState({
@@ -26,7 +27,7 @@ class ToConsole extends Component {
         operateType: type,
       })
     } else {
-      message.warn("只有外包项目对接人可编辑!");
+      message.warn("只有项目经理或外包项目对接人可编辑!");
     }
   }
 
@@ -60,6 +61,7 @@ class ToConsole extends Component {
 
   render() {
     const {editMemberInfoVisible = false, operateType, changePwdVisible = false} = this.state;
+    const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
     const {
       routes = [],
       ryid = "",
@@ -73,6 +75,7 @@ class ToConsole extends Component {
         XMMC = "",
         SYKHID = "",
         RYZT = "",
+        XMJLID = ""
       },
     } = this.props;
 
@@ -173,16 +176,24 @@ class ToConsole extends Component {
                 </div>
               </div>
             </div>
-            <div className="header-right flex-r flex1">
-              <Button className="btn-edit" onClick={() => this.handleEditMemberInfo("bjxq")}>
-                编辑
-              </Button>
-              <Dropdown overlay={btnMoreContent} overlayClassName="tc-btn-more-content-dropdown">
-                <Button className="btn-more">
-                  <i className="iconfont icon-more"/>
-                </Button>
-              </Dropdown>
-            </div>
+            {
+              //项目经理视角
+              String(LOGIN_USER_INFO.id) === XMJLID ?
+                <div className="header-right flex-r flex1">
+                  <Button className="btn-edit" onClick={() => this.handleEditMemberInfo("syqkh")}>
+                    试用期考核
+                  </Button>
+                </div> : <div className="header-right flex-r flex1">
+                  <Button className="btn-edit" onClick={() => this.handleEditMemberInfo("bjxq")}>
+                    编辑
+                  </Button>
+                  <Dropdown overlay={btnMoreContent} overlayClassName="tc-btn-more-content-dropdown">
+                    <Button className="btn-more">
+                      <i className="iconfont icon-more"/>
+                    </Button>
+                  </Dropdown>
+                </div>
+            }
           </div>
         </div>
       </div>

@@ -7,7 +7,7 @@ import { useLocation } from 'react-router';
 import MoreOperationModal from './MoreOperationModal';
 
 export default function EvaluationTable(props) {
-  const { dtlData = {}, dictionary = {}, isAuth, xqid, getDtldata, fqrid } = props;
+  const { dtlData = {}, dictionary = {}, isAuth=false, xqid, getDtldata, fqrid, isDock } = props;
   const [modalVisible, setModalVisible] = useState(false); //更多操作弹窗显隐
   const { ZHPC = [], XQSX_ORIGIN = [] } = dtlData;
   const { DFZT, LYZT } = dictionary;
@@ -25,12 +25,18 @@ export default function EvaluationTable(props) {
       // align: 'center',
       key: 'RYDJ',
       ellipsis: true,
-      render: (txt, row) => txt + ` | ` + row.GW,
+      render: (txt, row) => {
+        return (
+          <Tooltip title={txt + ` | ` + row.GW} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{txt + ` | ` + row.GW}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
-      width: '20%',
+      width: isDock ? '20%' : '0',
       key: 'GYSMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -185,7 +191,7 @@ export default function EvaluationTable(props) {
       )}
       <div className="title">
         综合评测信息
-        <span onClick={() => setModalVisible(true)}>更多操作</span>
+        {isAuth && <span onClick={() => setModalVisible(true)}>更多操作</span>}
       </div>
       <div className="table-box">
         <Table

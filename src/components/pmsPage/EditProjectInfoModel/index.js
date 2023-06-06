@@ -4459,7 +4459,8 @@ class EditProjectInfoModel extends React.Component {
                                       frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
                                       //单独采购预算
                                       singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                      xmid: basicInfo.projectId,
+                                      //子项目完善的时候，选了标签，调查里程碑的接口，不能传项目id
+                                      xmid: subItemFlag ? -1 : basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
                                       budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
                                       label: labelTxt,

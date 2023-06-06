@@ -1,17 +1,19 @@
 import React, { useEffect, useState, useLayoutEffect } from 'react';
-import { Button, Empty, Input, message, Modal, Popconfirm, Spin, Tabs } from 'antd';
+import { Button, Empty, Input, message, Modal, Popconfirm, Spin, Tabs, Breadcrumb } from 'antd';
 import config from '../../../utils/config';
 import axios from 'axios';
 import { ResumeDistribution } from '../../../services/pmsServices';
+import { Link } from 'react-router-dom';
 
 const { TabPane } = Tabs;
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
 } = api;
+const { Item } = Breadcrumb;
 
 export default function ResumeDistributionPage(props) {
-  const { params } = props;
+  const { params = {}, routes = [] } = props;
   const { JLXX = [], xqid, swzxid, reflush } = params;
   const [isSpinning, setIsSpinning] = useState(false);
   const [data, setData] = useState([]); //数据
@@ -23,6 +25,7 @@ export default function ResumeDistributionPage(props) {
   const [editing, setEditing] = useState(false); //编辑状态
 
   useEffect(() => {
+    console.log(JLXX);
     if (JLXX.length > 0) {
       setActiveKey(JLXX[0].RYXQ);
       setData(JSON.parse(JSON.stringify(JLXX)));
@@ -48,6 +51,7 @@ export default function ResumeDistributionPage(props) {
       });
       setJlTotal(total);
     }
+
     return () => {};
   }, [JSON.stringify(JLXX)]);
 
@@ -166,6 +170,7 @@ export default function ResumeDistributionPage(props) {
       if (arr.length > 0) {
         let jldata = [...arr[index].JLDATA];
         jldata.forEach(j => {
+          // console.log('j', j, x);
           if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
             // console.log('%%$',j);
             j.JLMC = e.target.value;
@@ -178,8 +183,9 @@ export default function ResumeDistributionPage(props) {
             d.DATA = [...arr];
           }
         });
+        // console.log('🚀 ~ file: index.js:186 ~ handleInputBlur ~ dataArr:', dataArr);
         setData([...dataArr]);
-        let arrShow = JSON.parse(JSON.stringify(dataArr));
+        // let arrShow = JSON.parse(JSON.stringify(dataArr));
         arrShow.forEach(x => {
           x.DATA.forEach(y => {
             y.UNFOLD = false;
@@ -244,7 +250,7 @@ export default function ResumeDistributionPage(props) {
           {JLDATA.map((x, i) => (
             <div
               className="resume-item"
-              key={x.JLMC}
+              key={`${x.JLMC}-${x.ENTRYNO}-${x.JLID}`}
               style={editing ? { backgroundColor: '#fff' } : {}}
             >
               {editing ? (
@@ -316,7 +322,6 @@ export default function ResumeDistributionPage(props) {
 
   //保存
   const handleSave = () => {
-    setEditing(false);
     //每次保存后赋值
     setUnsavedData(JSON.parse(JSON.stringify(data)));
     let arrShow = JSON.parse(JSON.stringify(data));
@@ -330,6 +335,8 @@ export default function ResumeDistributionPage(props) {
       });
     });
     setDataShow(arrShow);
+    setEditing(false);
+    message.success('保存成功', 1);
   };
 
   //取消修改
@@ -350,7 +357,7 @@ export default function ResumeDistributionPage(props) {
     setDataShow(arrShow);
   };
   if (JLXX.length === 0) return '';
-  const getctiveKeyTotal = () => {
+  const getActiveKeyTotal = () => {
     let total = 0;
     dataShow
       .filter(x => x.RYXQ === activeKey)[0]
@@ -362,6 +369,21 @@ export default function ResumeDistributionPage(props) {
   return (
     <div className="resume-destribution-box">
       <div className="top-console">
+        <Breadcrumb separator=">" style={{ marginTop: 19.4 }}>
+          {routes?.map((item, index) => {
+            const { name = item, pathname = '' } = item;
+            const historyRoutes = routes.slice(0, index + 1);
+            return (
+              <Item key={index}>
+                {index === routes.length - 1 ? (
+                  <>{name}</>
+                ) : (
+                  <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
+                )}
+              </Item>
+            );
+          })}
+        </Breadcrumb>
         <Tabs activeKey={activeKey} onChange={handleTabsChange} size={'large'}>
           {JLXX.map(x => (
             <TabPane tab={x.RYXQNR} key={x.RYXQ}></TabPane>
@@ -370,38 +392,34 @@ export default function ResumeDistributionPage(props) {
       </div>
       <Spin spinning={isSpinning} size="large" tip="加载中">
         <div className="content">
-          {getctiveKeyTotal() === 0 ? (
+          <div className="btn-box">
+            {editing ? (
+              <>
+                <Popconfirm title="确定要保存吗？" onConfirm={handleSave}>
+                  <Button className="btn-opr">保存</Button>
+                </Popconfirm>
+                <Button className="btn-cancel" onClick={handleEditCancel}>
+                  取消
+                </Button>
+              </>
+            ) : (
+              <>
+                <Popconfirm title="确认要分发吗？" onConfirm={handleDestribute}>
+                  <Button className="btn-opr">分发</Button>
+                </Popconfirm>
+                <Button className="btn-opr" onClick={handleModify}>
+                  修改
+                </Button>
+              </>
+            )}
+          </div>
+          {getActiveKeyTotal() === 0 && (
             <Empty
               description="暂无简历"
               image={Empty.PRESENTED_IMAGE_SIMPLE}
               style={{ width: '100%' }}
             />
-          ) : (
-            <div className="btn-box">
-              {editing ? (
-                <>
-                  <Popconfirm title="确定要保存吗？" onConfirm={handleSave}>
-                    <Button className="btn-opr">保存</Button>
-                  </Popconfirm>
-                  <Button className="btn-cancel" onClick={handleEditCancel}>
-                    取消
-                  </Button>
-                </>
-              ) : (
-                <>
-                  <Popconfirm title="确认要分发吗？" onConfirm={handleSave}>
-                    <Button className="btn-opr" onClick={handleDestribute}>
-                      分发
-                    </Button>
-                  </Popconfirm>
-                  <Button className="btn-opr" onClick={handleModify}>
-                    修改
-                  </Button>
-                </>
-              )}
-            </div>
           )}
-
           <div className="splier-list">
             {dataShow
               .filter(x => x.RYXQ === activeKey)[0]

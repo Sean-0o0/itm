@@ -21,22 +21,6 @@ export default function InfoTable(props) {
   const [visible, setVisible] = useState(false); //新增供应商弹窗显隐
   const location = useLocation();
 
-  //表格操作后更新数据
-  const handleTableChange = (pagination, filters, sorter, extra) => {
-    // console.log('handleTableChange', pagination, filters, sorter, extra);
-    const {current = 1, pageSize = 20} = pagination;
-    // getTableData({ current, pageSize });
-    if (sorter.order !== undefined) {
-      if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, sorter.field + ' ASC,ID ASC');
-      } else {
-        handleSearch(current, pageSize, sorter.field + ' DESC,ID DESC');
-      }
-    } else {
-      handleSearch(current, pageSize);
-    }
-    return;
-  };
 
   //金额格式化
   const getAmountFormat = value => {
@@ -198,7 +182,7 @@ export default function InfoTable(props) {
           columns={columns}
           rowKey={'RYID'}
           dataSource={tableData}
-          onChange={handleTableChange}
+          // onChange={handleTableChange}
           // scroll={{ y: 500 }}
           pagination={{
             current: curPage,

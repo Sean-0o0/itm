@@ -120,7 +120,7 @@ function VisitedRoutes(props) {
   }
   const handleUrls = (urls = []) => {
     let arr = [...urls];
-    console.log('🚀 ~ file: VisitedRoutes.js:121 ~ handleUrls ~ arr:', arr);
+    // console.log('🚀 ~ file: VisitedRoutes.js:121 ~ handleUrls ~ arr:', arr);
     const matchFilter = regExp => {
       const matches = arr.filter(x => regExp.test(x));
       matches.forEach((m, i) => {
@@ -139,8 +139,10 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/DemandDetail/,
       /^\/pms\/manage\/DemandInfo/,
       /^\/pms\/manage\/MemberInfo/,
+      /^\/pms\/manage\/MemberDetail/,
       /^\/pms\/manage\/ResumeDistribution/,
       /^\/pms\/manage\/SupplierDmInfo/,
+      /^\/pms\/manage\/ExpenseInfo/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -222,12 +224,20 @@ function VisitedRoutes(props) {
                 urlEnd: 'MemberInfo',
               },
               {
+                title: '人员详情',
+                urlEnd: 'MemberDetail',
+              },
+              {
                 title: '简历分发',
                 urlEnd: 'ResumeDistribution',
               },
               {
                 title: '供应商需求',
                 urlEnd: 'SupplierDmInfo',
+              },
+              {
+                title: '费用列表',
+                urlEnd: 'ExpenseInfo',
               },
             ];
             urlEndArr.forEach(x => {

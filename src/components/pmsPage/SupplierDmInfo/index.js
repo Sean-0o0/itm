@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import { Button, message, Pagination, Popover, Select, Spin, Table } from 'antd';
 import moment from 'moment';
 import { QuerySupplierDemand } from '../../../services/pmsServices';
+import UploadModal from './UploadModal';
 
 const { Option } = Select;
 
@@ -18,6 +19,7 @@ export default function SupplierDmInfo(props) {
   }); //查询参数
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const nodeArr = document.getElementsByClassName('value xmjj');
+  const [uploadModalVisible, setUploadModalVisible] = useState(false); //上传弹窗显隐
 
   useEffect(() => {
     getSltData();
@@ -235,7 +237,16 @@ export default function SupplierDmInfo(props) {
       width: '10%',
       key: 'CZ',
       ellipsis: true,
-      render: text => <a style={{ color: '#3361ff' }}>上传简历</a>,
+      render: (txt, row) => (
+        <a
+          style={{ color: '#3361ff' }}
+          onClick={() => {
+            setUploadModalVisible(true);
+          }}
+        >
+          上传简历
+        </a>
+      ),
     },
   ];
 
@@ -331,6 +342,9 @@ export default function SupplierDmInfo(props) {
 
   return (
     <div className="splier-demand-info-box">
+      {uploadModalVisible && (
+        <UploadModal visible={uploadModalVisible} setVisible={setUploadModalVisible} />
+      )}
       <Spin
         spinning={isSpinning}
         tip="加载中"

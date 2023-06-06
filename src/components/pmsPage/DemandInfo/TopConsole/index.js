@@ -179,6 +179,7 @@ export default forwardRef(function TopConsole(props, ref) {
               })
               .catch(e => {
                 console.error('QueryRequirementListPara', e);
+                message.error('下拉框信息查询失败', 1)
               });
           }
         })
