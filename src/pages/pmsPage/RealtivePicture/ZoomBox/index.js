@@ -5,16 +5,19 @@ class ZoomBox extends Component {
         zoom: 1
     }
 
+
+
     roamMap = (flag) => {
-        const { zoom } = this.state
-        let increaseAmplitude = 0.2 // 点击按钮每次 放大/缩小 比例
-        if (flag === 1) {
-            increaseAmplitude = -0.2
+        let zoom = this.props.getRoam();
+        if(flag===0){
+            zoom = zoom<2?zoom*1.2:zoom
+        }else{
+            zoom = zoom>0.2?zoom/1.2:zoom
         }
         this.setState({
-            zoom: (zoom + increaseAmplitude) > 0.2 && (zoom + increaseAmplitude) < 2 ? zoom + increaseAmplitude : zoom
+            zoom
         },()=>{
-            this.props.roamMap((zoom + increaseAmplitude) > 0.2 && (zoom + increaseAmplitude) < 2 ? zoom + increaseAmplitude : zoom)
+            this.props.roamMap(zoom)
         })
     }
 
