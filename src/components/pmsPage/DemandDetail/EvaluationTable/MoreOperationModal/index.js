@@ -20,6 +20,7 @@ import { EditableCell, EditableFormRow } from './EditableTable';
 import moment from 'moment';
 import { CreateOperateHyperLink, OperateEvaluation } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
+import SendMailModal from '../../../SendMailModal';
 
 const { TextArea } = Input;
 
@@ -39,11 +40,17 @@ function MoreOperationModal(props) {
   }); //录用说明编辑弹窗数据
   const [modalVisible, setModalVisible] = useState({
     employmentApplication: false,
+    msgConfirmation: false,
   }); //弹窗显隐
   const [lbModal, setLbModal] = useState({
     url: '#',
     title: '',
   }); //
+  const [status, setStatus] = useState({
+    mstz: false,
+    qrlysq: false,
+  }); //面试通知状态
+  const [gysmcArr, setGysmcArr] = useState([]); //邮件弹窗入参
 
   useEffect(() => {
     let arr = tableData.map(x => {
@@ -304,7 +311,7 @@ function MoreOperationModal(props) {
     onChange: (selectedRowKeys, selectedRows) => {
       let newSelectedRowIds = [];
       selectedRows?.forEach(item => {
-        newSelectedRowIds.push(item.id);
+        newSelectedRowIds.push(item.PCID);
       });
       setSelectedRowIds(newSelectedRowIds);
     },
@@ -368,6 +375,21 @@ function MoreOperationModal(props) {
         <strong>综合评测信息列表</strong>
       </div>
       <div className="content-box">
+        {modalVisible.msgConfirmation && (
+          <SendMailModal
+            closeModal={() =>
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  msgConfirmation: false,
+                };
+              })
+            }
+            visible={modalVisible.msgConfirmation}
+            gysmcArr={[...gysmcArr]}
+            xqid={xqid}
+          />
+        )}
         {/* 提交录用申请 */}
         {modalVisible.employmentApplication && (
           <BridgeModel
@@ -458,68 +480,134 @@ function MoreOperationModal(props) {
           </Modal>
         )}
         <div className="top-btn">
-          <Button type="primary" onClick={() => {}}>
-            面试通知
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              if (!isSpinning) {
-                getLink('V_LYXX', 'V_LYXX_M', [
-                  {
-                    name: 'GLXQ',
-                    value: xqid,
-                  },
-                  {
-                    name: 'SWZXID',
-                    value: swzxid,
-                  },
-                ]);
-                setLbModal(p => {
-                  return {
-                    ...p,
-                    title: '提交录用申请',
-                  };
-                });
-                setModalVisible(p => {
-                  return {
-                    ...p,
-                    employmentApplication: true,
-                  };
-                });
-              }
-            }}
-          >
-            提交录用申请
-          </Button>
-          <Button
-            type="primary"
-            onClick={() => {
-              if (!isSpinning) {
-              }
-            }}
-          >
-            确认录用申请
-          </Button>
-          {editing ? (
+          {status.mstz || status.qrlysq ? (
             <>
-              <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
-                <Button type="primary" style={{ marginRight: '16px' }}>
-                  保存
-                </Button>
-              </Popconfirm>
-              <Button type="primary" onClick={handleEditCancel}>
+              {/* <Popconfirm title="确定要通知吗？" onConfirm={handleSubmit}> */}
+              <Button
+                type="primary"
+                style={{ marginRight: '16px' }}
+                onClick={() => {
+                  setModalVisible(p => ({
+                    msgConfirmation: true,
+                  }));
+                  let arr = tableArr
+                    .filter(x => selectedRowIds.includes(x.PCID))
+                    ?.map(y => y.GYSMC);
+                  // console.log('🚀 ~ file: index.js:491 ~ MoreOperationModal ~ arr:', arr);
+                  setGysmcArr(arr);
+                  if (status.mstz) {
+                    setStatus(p => ({
+                      ...p,
+                      mstz: false,
+                    }));
+                  } else {
+                    setStatus(p => ({
+                      ...p,
+                      qrlysq: false,
+                    }));
+                  }
+                }}
+              >
+                确认
+              </Button>
+              {/* </Popconfirm> */}
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (status.mstz) {
+                    setStatus(p => ({
+                      ...p,
+                      mstz: false,
+                    }));
+                  } else {
+                    setStatus(p => ({
+                      ...p,
+                      qrlysq: false,
+                    }));
+                  }
+                }}
+              >
                 取消
               </Button>
             </>
           ) : (
-            <Button onClick={handleEdit} type="primary">
-              修改
-            </Button>
+            <>
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (!isSpinning) {
+                    setStatus(p => ({
+                      ...p,
+                      mstz: true,
+                    }));
+                  }
+                }}
+              >
+                面试通知
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (!isSpinning) {
+                    getLink('V_LYXX', 'V_LYXX_M', [
+                      {
+                        name: 'GLXQ',
+                        value: xqid,
+                      },
+                      {
+                        name: 'SWZXID',
+                        value: swzxid,
+                      },
+                    ]);
+                    setLbModal(p => {
+                      return {
+                        ...p,
+                        title: '提交录用申请',
+                      };
+                    });
+                    setModalVisible(p => {
+                      return {
+                        ...p,
+                        employmentApplication: true,
+                      };
+                    });
+                  }
+                }}
+              >
+                提交录用申请
+              </Button>
+              <Button
+                type="primary"
+                onClick={() => {
+                  if (!isSpinning) {
+                    setStatus(p => ({
+                      ...p,
+                      qrlysq: true,
+                    }));
+                  }
+                }}
+              >
+                确认录用申请
+              </Button>
+              {editing ? (
+                <>
+                  <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
+                    <Button type="primary" style={{ marginRight: '16px' }}>
+                      保存
+                    </Button>
+                  </Popconfirm>
+                  <Button onClick={handleEditCancel}>取消</Button>
+                </>
+              ) : (
+                <Button onClick={handleEdit} type="primary">
+                  修改
+                </Button>
+              )}
+            </>
           )}
         </div>
         <Table
-          rowSelection={rowSelection}
+          rowSelection={status.mstz || status.qrlysq ? rowSelection : false}
           loading={isSpinning}
           columns={columns}
           components={components}

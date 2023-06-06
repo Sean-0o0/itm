@@ -233,7 +233,7 @@ class SendMailModal extends React.Component {
     };
 
     const addMailModalUrl = `${localStorage.getItem('livebos') || ''}/OperateProcessor?operate=TWBGL_YXXXB_ADD&Table=TWBGL_YXXXB`;
-
+    
     return (
       <>
         {/*修改密码*/}
@@ -355,7 +355,7 @@ class SendMailModal extends React.Component {
                                   message: '请选择收件人',
                                 },
                               ],
-                              // initialValue: "外采项目"
+                              initialValue: mailData.filter(x => this.props.gysmcArr?.includes(x.supplier)).map(x=>x.email)||[],
                             })(<Select
                               showSearch
                               allowClear

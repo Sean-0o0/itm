@@ -230,6 +230,7 @@ export default function DemandDetail(props) {
           fqrid={curFqrid}
           getDtldata={getDtldata}
           WBRYGW={WBRYGW}
+          dictionary={dictionary}
         />
         <DemandTable dtlData={dtlData} fqrid={curFqrid} setIsSpinning={setIsSpinning} />
         <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />

@@ -9,9 +9,22 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router-dom';
+import SendMailModal from '../../SendMailModal';
+import MoreOperationModal from '../EvaluationTable/MoreOperationModal';
 
 export default function ProjectItems(props) {
-  const { dtlData = {}, isDock, isFqr, xqid, getDtldata, fqrid, WBRYGW, routes = [] } = props;
+  const {
+    dtlData = {},
+    isDock,
+    isFqr,
+    xqid,
+    getDtldata,
+    fqrid,
+    WBRYGW,
+    routes = [],
+    dictionary,
+  } = props;
+  const { DFZT, LYZT } = dictionary;
   const {
     XQSX = [],
     FKTX = {},
@@ -322,8 +335,197 @@ export default function ProjectItems(props) {
     footer: null,
   };
 
+  const columns = [
+    {
+      title: '人员需求',
+      dataIndex: 'RYDJ',
+      width: '10%',
+      // align: 'center',
+      key: 'RYDJ',
+      ellipsis: true,
+      render: (txt, row) => {
+        return (
+          <Tooltip title={txt + ` | ` + row.GW} placement="topLeft">
+            <span style={{ cursor: 'default' }}>{txt + ` | ` + row.GW}</span>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      title: '供应商名称',
+      dataIndex: 'GYSMC',
+      width: isDock ? '20%' : '0',
+      key: 'GYSMC',
+      ellipsis: true,
+      render: (text, row, index) => {
+        return (
+          <Tooltip title={text} placement="topLeft">
+            <Link
+              to={{
+                pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
+                  JSON.stringify({ splId: row.GYSID }),
+                )}`,
+                state: {
+                  routes: [{ name: '需求详情', pathname: location.pathname }],
+                },
+              }}
+              className="table-link-strong"
+            >
+              {text}
+            </Link>
+          </Tooltip>
+        );
+      },
+    },
+    {
+      title: '人员名称',
+      dataIndex: 'RYMC',
+      width: '8%',
+      key: 'RYMC',
+      ellipsis: true,
+      render: (text, row, index) => {
+        if (row.RYID === undefined) return text;
+        return (
+          <Link
+            style={{ color: '#3361ff' }}
+            to={{
+              pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                JSON.stringify({
+                  ryid: row.RYID,
+                }),
+              )}`,
+              state: {
+                routes: [{ name: '需求详情', pathname: location.pathname }],
+              },
+            }}
+            className="table-link-strong"
+          >
+            {text}
+          </Link>
+        );
+      },
+    },
+    {
+      title: '评测人员',
+      dataIndex: 'MSG',
+      width: '12%',
+      key: 'MSG',
+      ellipsis: true,
+      render: (txt, row) => {
+        let nameArr = txt?.split(',');
+        let idArr = row.MSGID?.split(',');
+        if (nameArr?.length === 0) return '';
+        return (
+          <Tooltip title={nameArr?.join('、')} placement="topLeft">
+            {nameArr?.map((x, i) => (
+              <span>
+                <Link
+                  style={{ color: '#3361ff' }}
+                  to={{
+                    pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                      JSON.stringify({
+                        ryid: idArr[i],
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{ name: '需求详情', pathname: location.pathname }],
+                    },
+                  }}
+                  className="table-link-strong-tagtxt"
+                >
+                  {x}
+                </Link>
+                {i === nameArr?.length - 1 ? '' : '、'}
+              </span>
+            ))}
+          </Tooltip>
+        );
+      },
+    },
+    {
+      title: '综合评测时间',
+      dataIndex: 'ZHPCSJ',
+      width: '13%',
+      key: 'ZHPCSJ',
+      ellipsis: true,
+      render: (txt, row) => (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--',
+    },
+    {
+      title: '综合评测分数',
+      dataIndex: 'ZHPCCJ',
+      width: '10%',
+      align: 'center',
+      key: 'ZHPCCJ',
+      ellipsis: true,
+    },
+    {
+      title: '打分状态',
+      dataIndex: 'DFZT',
+      width: '10%',
+      key: 'DFZT',
+      ellipsis: true,
+      render: txt => DFZT?.filter(x => x.ibm === txt)[0]?.note,
+    },
+    {
+      title: '录用状态',
+      dataIndex: 'LYZT',
+      width: '8%',
+      key: 'LYZT',
+      ellipsis: true,
+      render: txt => LYZT?.filter(x => x.ibm === txt)[0]?.note,
+    },
+    {
+      title: '录用说明',
+      dataIndex: 'LYSM',
+      key: 'LYSM',
+      ellipsis: true,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text}</span>
+        </Tooltip>
+      ),
+    },
+  ];
+
   return (
     <div className="prj-items-box">
+      {modalVisible.offerConfirmation && (
+        <MoreOperationModal
+          visible={modalVisible.offerConfirmation}
+          setVisible={v => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                offerConfirmation: v,
+              };
+            });
+          }}
+          data={{
+            tableData: ZHPC,
+            DFZT,
+            LYZT,
+            xqid,
+            reflush: () => {
+              getDtldata(xqid, fqrid);
+            },
+            swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0]?.SWZXID,
+          }}
+          tableColumns={columns}
+        />
+      )}
+      {modalVisible.msgConfirmation && (
+        <SendMailModal
+          closeModal={() =>
+            setModalVisible(p => {
+              return {
+                ...p,
+                msgConfirmation: false,
+              };
+            })
+          }
+          visible={modalVisible.msgConfirmation}
+        />
+      )}
       {/* 需求重新发起 */}
       {modalVisible.demandInitiation && (
         <DemandInitiated

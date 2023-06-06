@@ -11,6 +11,7 @@ import {
 } from '../../../../services/pmsServices/index.js';
 import moment from 'moment';
 import DemandPublish from './DemandPublish';
+import SendMailModal from '../../SendMailModal';
 
 export default function InfoTable(props) {
   const {
@@ -38,6 +39,7 @@ export default function InfoTable(props) {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
+  const [sendMailVisible, setSendMailVisible] = useState(false); //发送邮件
 
   const location = useLocation();
 
@@ -338,6 +340,7 @@ export default function InfoTable(props) {
                   className="xj"
                   onClick={() => {
                     if (isDock) {
+                      setSendMailVisible(true);
                     } else {
                       message.info('只有外包项目对接人可以操作');
                     }
@@ -463,6 +466,9 @@ export default function InfoTable(props) {
   };
   return (
     <div className="info-table">
+      {sendMailVisible && (
+        <SendMailModal closeModal={() => setSendMailVisible(false)} visible={sendMailVisible} />
+      )}
       {/* 上架 */}
       {demandPublishVisible && (
         <DemandPublish
