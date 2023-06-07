@@ -124,7 +124,12 @@ export default function ProjectItems(props) {
       }
     } else if (SWMC === '综合评测安排') {
       if (isDock || isFqr) {
-        modalName = 'personelArrangement';
+        if (XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2') {
+          modalName = 'personelArrangement';
+        } else {
+          message.info('已提交录用申请，不允许综合评测安排', 1);
+          return;
+        }
       } else {
         message.info('只有外包项目对接人、需求发起人可以操作', 1);
         return;
@@ -234,40 +239,74 @@ export default function ProjectItems(props) {
 
   const getItemBtn = (item, SWZXID) => {
     const { SWMC = '--', ZXZT = '2' } = item;
+    //是否评测人员
+    const isPcry = () => {
+      let arr = [];
+      ZHPC.forEach(x => {
+        arr = arr.concat(x.MSGID.split(','));
+      });
+      let newArr = [...new Set(arr)];
+      // console.log("🚀 ~ file: index.js:51 ~ isPcry ~ isPcry:", newArr,LOGIN_USER_ID)
+      return newArr.includes(LOGIN_USER_ID);
+    };
     //1 已执行， 2 未执行
     if (
-      ['账号新增', '综合评测打分', '发送确认邮件', '简历上传', '简历分发', '提交录用申请'].includes(
-        SWMC,
-      ) ||
-      ZXZT === '2'
+      [
+        '账号新增',
+        '综合评测打分',
+        '发送确认邮件',
+        '简历上传',
+        '简历分发',
+        '提交录用申请',
+        '录用确认',
+      ].includes(SWMC)
     ) {
-      return (
-        <div className="opr-btn" onClick={() => handleZx(item)}>
-          执行
-        </div>
-      );
+      if (
+        (['发送确认邮件', '简历上传', '简历分发', '录用确认'].includes(SWMC) && isDock) ||
+        (['账号新增', '提交录用申请'].includes(SWMC) && isFqr) ||
+        (SWMC === '综合评测打分' && isPcry())
+      )
+        return (
+          <div className="opr-btn" onClick={() => handleZx(item)}>
+            执行
+          </div>
+        );
+      return '';
     } else if (SWMC === '需求发起') {
-      return (
-        <div
-          className="reopr-btn"
-          onClick={() =>
-            setModalVisible(p => {
-              return {
-                ...p,
-                demandInitiation: true,
-              };
-            })
-          }
-        >
-          重新发起
-        </div>
-      );
+      if (isDock || isFqr)
+        return (
+          <div
+            className="reopr-btn"
+            onClick={() =>
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  demandInitiation: true,
+                };
+              })
+            }
+          >
+            重新发起
+          </div>
+        );
+      return '';
+    } else if (SWMC === '综合评测安排') {
+      if (isDock || isFqr) {
+        if (ZXZT === '1')
+          return (
+            <div className="reopr-btn" onClick={() => handleCk(SWMC, SWZXID)}>
+              查看
+            </div>
+          );
+        return (
+          <div className="opr-btn" onClick={() => handleZx(item)}>
+            执行
+          </div>
+        );
+      }
+      return '';
     } else {
-      return (
-        <div className="reopr-btn" onClick={() => handleCk(SWMC, SWZXID)}>
-          {SWMC === '综合评测安排' ? '修改' : '查看'}
-        </div>
-      );
+      return '';
     }
   };
 
@@ -509,6 +548,8 @@ export default function ProjectItems(props) {
               getDtldata(xqid, fqrid);
             },
             swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0]?.SWZXID,
+            isDock,
+            fqrid,
           }}
           tableColumns={columns}
         />
@@ -617,6 +658,7 @@ export default function ProjectItems(props) {
           reflush={reflush}
           update={modalVisible.personelArrangementUpdate}
           ZHPC={ZHPC}
+          isDock={isDock}
         />
       )}
 

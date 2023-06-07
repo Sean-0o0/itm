@@ -156,6 +156,7 @@ const AddExpense = props => {
       setFplxInfo(fplxInfo);
       setFylxInfo(fylxInfo);
       setOaData([...OAProcessFileInfo]);
+      setOtherData([...otherFileInfo]);
       let handledOAData = OAProcessFileInfo.map(x => ({
         uid: getUUID(),
         name: x.name,
@@ -862,7 +863,7 @@ const AddExpense = props => {
       <Drawer
         title="新增费用明细"
         width={720}
-        onClose={() => setVisible(false)}
+        onClose={() => handleClose()}
         visible={visible}
         className="add-expense-drawer"
         maskClosable={false}

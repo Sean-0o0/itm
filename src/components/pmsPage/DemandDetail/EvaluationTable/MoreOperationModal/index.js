@@ -26,7 +26,7 @@ const { TextArea } = Input;
 
 function MoreOperationModal(props) {
   const { visible, setVisible, form, data = {} } = props;
-  const { tableData = [], DFZT = [], LYZT = [], xqid, swzxid, reflush } = data;
+  const { tableData = [], DFZT = [], LYZT = [], xqid, swzxid, reflush, isDock, fqrid } = data;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [editing, setEditing] = useState(false); //编辑状态
   const [editData, setEditData] = useState([]); //编辑数据的id
@@ -148,7 +148,7 @@ function MoreOperationModal(props) {
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
-      width: '18%',
+      width: isDock ? '18%' : '0',
       key: 'GYSMC',
       ellipsis: true,
       render: txt => {
@@ -185,7 +185,7 @@ function MoreOperationModal(props) {
     {
       title: '综合评测时间',
       dataIndex: 'ZHPCSJ',
-      width: '12%',
+      width: '15%',
       key: 'ZHPCSJ',
       ellipsis: true,
       render: txt => {
@@ -216,6 +216,7 @@ function MoreOperationModal(props) {
     {
       title: '录用状态',
       dataIndex: 'LYZT',
+      width: '14%',
       key: 'LYZT',
       ellipsis: true,
       editable: true,
@@ -532,63 +533,6 @@ function MoreOperationModal(props) {
             </>
           ) : (
             <>
-              <Button
-                type="primary"
-                onClick={() => {
-                  if (!isSpinning) {
-                    setStatus(p => ({
-                      ...p,
-                      mstz: true,
-                    }));
-                  }
-                }}
-              >
-                面试通知
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => {
-                  if (!isSpinning) {
-                    getLink('V_LYXX', 'V_LYXX_M', [
-                      {
-                        name: 'GLXQ',
-                        value: xqid,
-                      },
-                      {
-                        name: 'SWZXID',
-                        value: swzxid,
-                      },
-                    ]);
-                    setLbModal(p => {
-                      return {
-                        ...p,
-                        title: '提交录用申请',
-                      };
-                    });
-                    setModalVisible(p => {
-                      return {
-                        ...p,
-                        employmentApplication: true,
-                      };
-                    });
-                  }
-                }}
-              >
-                提交录用申请
-              </Button>
-              <Button
-                type="primary"
-                onClick={() => {
-                  if (!isSpinning) {
-                    setStatus(p => ({
-                      ...p,
-                      qrlysq: true,
-                    }));
-                  }
-                }}
-              >
-                确认录用申请
-              </Button>
               {editing ? (
                 <>
                   <Popconfirm title="确定要保存吗？" onConfirm={handleSubmit}>
@@ -599,9 +543,74 @@ function MoreOperationModal(props) {
                   <Button onClick={handleEditCancel}>取消</Button>
                 </>
               ) : (
-                <Button onClick={handleEdit} type="primary">
-                  修改
-                </Button>
+                <>
+                  {isDock && (
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        if (!isSpinning) {
+                          setStatus(p => ({
+                            ...p,
+                            mstz: true,
+                          }));
+                        }
+                      }}
+                    >
+                      面试通知
+                    </Button>
+                  )}
+                  {String(fqrid) === String(JSON.parse(sessionStorage.getItem('user'))?.id) && (
+                    <>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          if (!isSpinning) {
+                            getLink('V_LYXX', 'V_LYXX_M', [
+                              {
+                                name: 'GLXQ',
+                                value: xqid,
+                              },
+                              {
+                                name: 'SWZXID',
+                                value: swzxid,
+                              },
+                            ]);
+                            setLbModal(p => {
+                              return {
+                                ...p,
+                                title: '提交录用申请',
+                              };
+                            });
+                            setModalVisible(p => {
+                              return {
+                                ...p,
+                                employmentApplication: true,
+                              };
+                            });
+                          }
+                        }}
+                      >
+                        提交录用申请
+                      </Button>
+                      <Button
+                        type="primary"
+                        onClick={() => {
+                          if (!isSpinning) {
+                            setStatus(p => ({
+                              ...p,
+                              qrlysq: true,
+                            }));
+                          }
+                        }}
+                      >
+                        确认录用申请
+                      </Button>
+                    </>
+                  )}
+                  <Button onClick={handleEdit} type="primary">
+                    修改
+                  </Button>
+                </>
               )}
             </>
           )}

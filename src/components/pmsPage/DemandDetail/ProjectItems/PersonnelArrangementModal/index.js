@@ -34,6 +34,7 @@ function PersonnelArrangementModal(props) {
     reflush,
     update = false,
     ZHPC = [],
+    isDock,
   } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
@@ -72,14 +73,14 @@ function PersonnelArrangementModal(props) {
           return acc;
         }, {}),
       );
-      // console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
+      console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
       if (zhpc.length > 0) {
         const UUID = Date.now();
         if (zhpc[0].TABLE?.length === 0) {
           setTableData([
             {
               PCID: UUID,
-              ['GYSID' + UUID]: '',
+              ['GYSID' + UUID]: -1,
               ['RYMC' + UUID]: '',
               ['MSSJ' + UUID]: null,
               NEW: true,
@@ -93,6 +94,19 @@ function PersonnelArrangementModal(props) {
           XQNRID: zhpc[0].XQNRID,
         });
         // console.log('🚀 ~ file: index.js:80 ~ useEffect ~ [...zhpc[0].TABLE]:', [...zhpc[0].TABLE]);
+      }
+    } else {
+      if (tableData.length === 0) {
+        const UUID = Date.now();
+        setTableData([
+          {
+            PCID: UUID,
+            ['GYSID' + UUID]: -1,
+            ['RYMC' + UUID]: '',
+            ['MSSJ' + UUID]: null,
+            NEW: true,
+          },
+        ]);
       }
     }
     return () => {};
@@ -132,7 +146,7 @@ function PersonnelArrangementModal(props) {
           setTableData([
             {
               PCID: UUID,
-              ['GYSID' + UUID]: '',
+              ['GYSID' + UUID]: -1,
               ['RYMC' + UUID]: '',
               ['MSSJ' + UUID]: null,
               NEW: true,
@@ -193,7 +207,7 @@ function PersonnelArrangementModal(props) {
         let submitTable = tableData.map(x => {
           return {
             PCID: x.NEW === true ? '-1' : x.PCID,
-            GYSID: x['GYSID' + x.PCID],
+            GYSID: String(x['GYSID' + x.PCID] ?? '-1'),
             RYMC: x['RYMC' + x.PCID],
             MSSJ: x['MSSJ' + x.PCID]?.format('YYYYMMDDHHmmss'),
           };
@@ -249,6 +263,7 @@ function PersonnelArrangementModal(props) {
   const tableColumns = [
     {
       title: '供应商名称',
+      width: isDock ? '35%' : '0',
       dataIndex: 'GYSID',
       align: 'center',
       key: 'GYSID',
@@ -258,7 +273,7 @@ function PersonnelArrangementModal(props) {
     {
       title: '人员名称',
       dataIndex: 'RYMC',
-      width: '17%',
+      width: '20%',
       align: 'center',
       key: 'RYMC',
       ellipsis: true,
@@ -267,7 +282,7 @@ function PersonnelArrangementModal(props) {
     {
       title: '综合评测时间',
       dataIndex: 'MSSJ',
-      width: '30%',
+      width: '35%',
       align: 'center',
       key: 'MSSJ',
       ellipsis: true,
@@ -468,7 +483,7 @@ function PersonnelArrangementModal(props) {
                   const UUID = Date.now();
                   arrData.push({
                     PCID: UUID,
-                    ['GYSID' + UUID]: '',
+                    ['GYSID' + UUID]: -1,
                     ['RYMC' + UUID]: '',
                     ['MSSJ' + UUID]: null,
                     NEW: true,

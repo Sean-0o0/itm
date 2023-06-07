@@ -27,7 +27,16 @@ export default forwardRef(function TopConsole(props, ref) {
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [dmName, setDmName] = useState(undefined); //需求名称
   const [dmInitiator, setDmInitiator] = useState(undefined); //需求发起人
-  const { setTableLoading, setTableData, setTotal, setCurPage, setCurPageSize, xmid } = props;
+  const {
+    setTableLoading,
+    setTableData,
+    setTotal,
+    setCurPage,
+    setCurPageSize,
+    xmid,
+    getSubTableData,
+    setExpandedRowKeys,
+  } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
@@ -179,7 +188,7 @@ export default forwardRef(function TopConsole(props, ref) {
               })
               .catch(e => {
                 console.error('QueryRequirementListPara', e);
-                message.error('下拉框信息查询失败', 1)
+                message.error('下拉框信息查询失败', 1);
               });
           }
         })
@@ -193,7 +202,7 @@ export default forwardRef(function TopConsole(props, ref) {
     setTableLoading(true);
     setCurPage(current);
     setCurPageSize(pageSize);
-
+    setExpandedRowKeys([]);
     let params = {
       current,
       cxlx: 'XM',
@@ -222,10 +231,21 @@ export default forwardRef(function TopConsole(props, ref) {
       .then(res => {
         if (res?.success) {
           const data = JSON.parse(res.xmxx);
-          // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
           setTableData(p => data);
           setTotal(res.totalrows);
           setTableLoading(false);
+          if (dmInitiator !== undefined && dmInitiator !== '') {
+            data.forEach(x => {
+              getSubTableData(x.XMID, undefined, dmInitiator);
+            });
+            setExpandedRowKeys([...data.map(x => x.XMID)]);
+          }
+          if (dmName !== undefined && dmName !== '') {
+            data.forEach(x => {
+              getSubTableData(x.XMID, dmName, undefined);
+              setExpandedRowKeys([...data.map(x => x.XMID)]);
+            });
+          }
         }
       })
       .catch(e => {

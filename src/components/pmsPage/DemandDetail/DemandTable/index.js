@@ -10,7 +10,7 @@ const {
 } = api;
 
 export default function DemandTable(props) {
-  const { dtlData = {}, fqrid, setIsSpinning } = props;
+  const { dtlData = {}, fqrid, setIsSpinning, isDock } = props;
   const { XQNR = [], XQSX_ORIGIN = [], JLXX = [] } = dtlData;
   const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   useEffect(() => {
@@ -81,9 +81,10 @@ export default function DemandTable(props) {
       dataIndex: 'JLDATA',
       key: 'JLDATA',
       width:
-        String(fqrid) === LOGIN_USER_ID &&
-        XQSX_ORIGIN.filter(x => x.SWMC === '简历分发')[0]?.ZXZT === '1' &&
-        JLXX.length !== 0
+        (String(fqrid) === LOGIN_USER_ID &&
+          XQSX_ORIGIN.filter(x => x.SWMC === '简历分发')[0]?.ZXZT === '1' &&
+          JLXX.length !== 0) ||
+        (isDock && JLXX.length !== 0)
           ? '10%'
           : 0,
       align: 'center',

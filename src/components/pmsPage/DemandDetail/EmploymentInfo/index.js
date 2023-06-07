@@ -81,7 +81,7 @@ export default function EmploymentInfo(props) {
       </div>
       {LYSQ.FJ && (
         <div className="grade-script">
-          面试打分底稿：
+          综合评测底稿：
           <span onClick={() => handleFilePreview(LYSQ.LYXXID, LYSQ.FJ)}>{LYSQ.FJ}</span>
         </div>
       )}

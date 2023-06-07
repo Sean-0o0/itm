@@ -144,7 +144,7 @@ function UploadModal(props) {
                   }}
                   onDownload={file => {
                     if (file.new) {
-                      console.log("🚀 ~ file: index.js:147 ~ UploadModal ~ file:", file)
+                      console.log('🚀 ~ file: index.js:147 ~ UploadModal ~ file:', file);
                       let reader = new FileReader();
                       reader.readAsDataURL(file.originFileObj);
                       reader.onload = e => {
@@ -236,9 +236,7 @@ function UploadModal(props) {
                       };
                     });
                   }}
-                  accept={
-                    '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
-                  }
+                  accept={['.doc', '.docx', '.pdf']}
                   fileList={fileList}
                 >
                   <Button

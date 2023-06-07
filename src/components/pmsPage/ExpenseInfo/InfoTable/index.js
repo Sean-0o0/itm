@@ -155,7 +155,7 @@ export default function InfoTable(props) {
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
-      width: '19%',
+      width: '18%',
       key: 'GYSMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -185,12 +185,12 @@ export default function InfoTable(props) {
       title: '季度',
       dataIndex: 'JD',
       key: 'JD',
-      width: '20%',
+      width: '21%',
       ellipsis: true,
       render: (txt, row) =>
-        `${txt}（${row.KSSJ === undefined ? '' : moment(row.KSSJ).format('YYYY.MM')}-${
+        `${txt}(${row.KSSJ === undefined ? '' : moment(row.KSSJ).format('YYYY.MM')}-${
           row.JSSJ === undefined ? '' : moment(row.JSSJ).format('YYYY.MM')
-        }）`,
+        })`,
     },
     {
       title: '总费用(元)',

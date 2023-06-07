@@ -10,7 +10,8 @@ const {
 
 export default function ResumeInfo(props) {
   const { dtlData = {}, isAuth, setIsSpinning } = props;
-  const { JLXX = [] } = dtlData;
+  const { JLXX = [], XMXX = {} } = dtlData;
+  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   useEffect(() => {
     return () => {};
   }, []);
@@ -87,7 +88,7 @@ export default function ResumeInfo(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
-  if (JLXX.length === 0 || !isAuth) return null;
+  if (JLXX.length === 0 || !isAuth || XMXX.XMJLID === LOGIN_USER_ID) return null;
   return (
     <div className="resume-info-box info-box">
       <div className="title">简历信息</div>

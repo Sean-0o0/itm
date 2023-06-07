@@ -190,34 +190,38 @@ const ExpenseDetail = props => {
                   <div className="receipt-title">
                     <div className="divider"></div>
                     <span>发票：</span>
-                    {item.receiptFileInfo?.length !== 0 ? (
-                      <Popover
-                        title="发票"
-                        content={popoverContent(item.receiptFileInfo)}
-                        overlayClassName="receipt-content-popover"
-                      >
-                        <div className="receipt-content">已有发票</div>
-                      </Popover>
-                    ) : (
-                      <div className="receipt-content">无</div>
-                    )}
+                    <div className="receipt-content" onClick={e => e.stopPropagation()}>
+                      {item.receiptFileInfo?.length !== 0 ? (
+                        <Popover
+                          title="发票"
+                          content={popoverContent(item.receiptFileInfo)}
+                          overlayClassName="receipt-content-popover"
+                        >
+                          <span>已有发票</span>
+                        </Popover>
+                      ) : (
+                        <span>无</span>
+                      )}
+                    </div>
                   </div>
                 </div>
                 <div className="receipt-box">
                   <div className="receipt-title">
                     <div className="divider"></div>
                     <span>附件：</span>
-                    {item.attachmentLength !== 0 ? (
-                      <Popover
-                        title="附件"
-                        content={popoverContent(item.attachmentArr)}
-                        overlayClassName="receipt-content-popover"
-                      >
-                        <div className="attachment-content">{item.attachmentLength + '个附件'}</div>
-                      </Popover>
-                    ) : (
-                      <div className="attachment-content">无</div>
-                    )}
+                    <div className="attachment-content" onClick={e => e.stopPropagation()}>
+                      {item.attachmentLength !== 0 ? (
+                        <Popover
+                          title="附件"
+                          content={popoverContent(item.attachmentArr)}
+                          overlayClassName="receipt-content-popover"
+                        >
+                          <span>{item.attachmentLength + '个附件'}</span>
+                        </Popover>
+                      ) : (
+                        <span>无</span>
+                      )}
+                    </div>
                   </div>
                 </div>
               </div>

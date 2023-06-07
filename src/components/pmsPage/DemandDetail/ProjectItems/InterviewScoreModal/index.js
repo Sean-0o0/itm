@@ -171,7 +171,7 @@ function InterviewScoreModal(props) {
       title: '供应商名称',
       dataIndex: 'GYSMC',
       key: 'GYSMC',
-      width: isDock ? undefined : '0',
+      width: isDock ? '45%' : '0',
       ellipsis: true,
       render: txt => (
         <Tooltip title={txt} placement="topLeft">

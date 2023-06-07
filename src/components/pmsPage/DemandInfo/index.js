@@ -18,6 +18,7 @@ export default function DemandInfo(props) {
   const [subTableData, setSubTableData] = useState({}); //子表格数据
   const [isFinish, setIsFinish] = useState(false); //
   const topConsoleRef = useRef(null);
+  const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
 
   useEffect(() => {
     if (xmid === -2) {
@@ -65,7 +66,7 @@ export default function DemandInfo(props) {
       });
   };
 
-  const getSubTableData = (xmid = undefined) => {
+  const getSubTableData = (xmid = undefined, xqid = undefined, xqfqr = undefined) => {
     QueryOutsourceRequirementList({
       current: 1,
       cxlx: 'XQ',
@@ -73,7 +74,9 @@ export default function DemandInfo(props) {
       paging: -1,
       sort: '',
       total: -1,
-      xmmc: xmid,
+      xmmc: Number(xmid),
+      xqmc: Number(xqid),
+      xqfqr: Number(xqfqr),
     })
       .then(res => {
         if (res?.success) {
@@ -107,6 +110,8 @@ export default function DemandInfo(props) {
         curPage={curPage}
         curPageSize={curPageSize}
         xmid={xmid}
+        getSubTableData={getSubTableData}
+        setExpandedRowKeys={setExpandedRowKeys}
       />
       <InfoTable
         tableData={tableData}
@@ -123,6 +128,8 @@ export default function DemandInfo(props) {
         xmid={xmid}
         WBRYGW={WBRYGW}
         setTableData={setTableData}
+        expandedRowKeys={expandedRowKeys}
+        setExpandedRowKeys={setExpandedRowKeys}
       />
     </div>
   );
