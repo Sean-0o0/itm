@@ -204,33 +204,33 @@ const PaymentProcess = props => {
             message.error('费用明细金额总和不能超过未付款金额', 1);
             return;
           }
-          // confirm({
-          //   title: `将提交该流程到易快报中，${
-          //     operateType === 'send' ? '直接发起流程进行审批' : '存为草稿'
-          //   }，请确认！`,
-          //   content: null,
-          //   onOk() {
-          //     setIsSpinning(true);
+          confirm({
+            title: `将提交该流程到易快报中，${
+              operateType === 'send' ? '直接发起流程进行审批' : '存为草稿'
+            }，请确认！`,
+            content: null,
+            onOk() {
+              setIsSpinning(true);
 
-          //     CreatPaymentFlow(submitData)
-          //       .then(res => {
-          //         if (res.code === 200) {
-          //           setIsSpinning(false);
-          //           message.success(
-          //             `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
-          //             1,
-          //           );
-          //           if (onSuccess !== undefined) onSuccess(); //刷新数据
-          //           resetFields();
-          //           closePaymentProcessModal();
-          //         }
-          //       })
-          //       .catch(e => {
-          //         setIsSpinning(false);
-          //         message.error(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}失败`, 1);
-          //       });
-          //   },
-          // });
+              CreatPaymentFlow(submitData)
+                .then(res => {
+                  if (res.code === 200) {
+                    setIsSpinning(false);
+                    message.success(
+                      `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
+                      1,
+                    );
+                    if (onSuccess !== undefined) onSuccess(); //刷新数据
+                    resetFields();
+                    closePaymentProcessModal();
+                  }
+                })
+                .catch(e => {
+                  setIsSpinning(false);
+                  message.error(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}失败`, 1);
+                });
+            },
+          });
         }
       }
     });
