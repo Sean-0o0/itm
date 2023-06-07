@@ -88,14 +88,14 @@ const SelectReceipt = props => {
   const getSelectReceipt = () => {
     const getRecepitItem = data => {
       return (
-        <div className="receipt-item" key={data?.key}>
+        <div className="receipt-item" key={data?.invoiceId}>
           <div className="item-title">
             <Checkbox
               onChange={e => {
                 let arr = [...receiptData];
                 let count = 0;
                 arr.forEach(x => {
-                  if (x.key === data?.key) {
+                  if (x.invoiceId === data?.invoiceId) {
                     x.checked = e.target.checked;
                   }
                   if (x.checked) {
@@ -112,9 +112,25 @@ const SelectReceipt = props => {
             </Checkbox>
           </div>
           <div
-            className={'item-info' + (isHover ? ' hover' : '')}
-            onMouseEnter={() => setIsHover(true)}
-            onMouseLeave={() => setIsHover(false)}
+            className={'item-info' + (data.selectHover ? ' hover' : '')}
+            onMouseEnter={() => {
+              let arr = [...receiptData];
+              arr.forEach(x => {
+                if (x.invoiceId === data?.invoiceId) {
+                  x.selectHover = true;
+                }
+              });
+              setReceiptData(p => [...arr]);
+            }}
+            onMouseLeave={() => {
+              let arr = [...receiptData];
+              arr.forEach(x => {
+                if (x.invoiceId === data?.invoiceId) {
+                  x.selectHover = false;
+                }
+              });
+              setReceiptData(p => [...arr]);
+            }}
           >
             <div className="info-title">
               <div className="title-left">
@@ -123,7 +139,7 @@ const SelectReceipt = props => {
                     let arr = [...receiptData];
                     let count = 0;
                     arr.forEach(x => {
-                      if (x.key === data?.key) {
+                      if (x.invoiceId === data?.invoiceId) {
                         x.checked = e.target.checked;
                       }
                       if (x.checked) {
@@ -177,7 +193,26 @@ const SelectReceipt = props => {
               全选
             </Checkbox>
             <span>
-              已选 {0} 张发票, 共¥{0}
+              已选{' '}
+              {(() => {
+                let count = 0;
+                receiptData.forEach(x => {
+                  if (x.checked) {
+                    count++;
+                  }
+                });
+                return count;
+              })()}{' '}
+              张发票, 共¥
+              {(() => {
+                let count = 0;
+                receiptData.forEach(x => {
+                  if (x.checked) {
+                    count += Number(x.zje ?? 0);
+                  }
+                });
+                return count;
+              })()}
             </span>
           </div>
           <Dropdown overlay={menu}>

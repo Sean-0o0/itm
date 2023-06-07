@@ -43,79 +43,33 @@ const ExpenseDetail = props => {
   //加载状态
   const [isExpenseSpinning, setIsExpenseSpinning] = useState(false);
   const { getFieldDecorator } = form;
+  const [updateExpense, setUpdateExpense] = useState(undefined); //费用明细编辑修改回显得数据
 
   //费用明细新增弹窗调用成功 - 获取费用明细
   const handleAddExpenseSuccess = data => {
     setAddExpenseModalVisiable(false);
     setIsXzTurnRed(false);
-    setExpenseDetail(p => [...[...expenseDetail, data]]);
-    // console.log(
-    //   '🚀 ~ file: index.js ~ line 44 ~ handleAddExpenseSuccess ~ [...expenseDetail, data]',
-    //   [...expenseDetail, data],
-    // );
+    if (expenseDetail.filter(x => x.id === data.id).length > 0) {
+      console.log('修改');
+      //已有的，进行更新
+      let arr = [...expenseDetail];
+      const index = arr.findIndex(item => data.id === item.id);
+      const item = arr[index];
+      arr.splice(index, 1, {
+        ...item, //old
+        ...data, //new
+      });
+      setExpenseDetail([...arr]);
+    } else {
+      console.log('新增');
+      setExpenseDetail(p => [...[...p, data]]);
+    }
   };
 
   //处理点击新增
   const handleAddExpense = () => {
     setAddExpenseModalVisiable(true);
   };
-
-  // //唤起WPS
-  // const WPSInvoke = param => {
-  //   let clientType = WpsInvoke.ClientType.wps;
-  //   let name = 'WpsOAAssist';
-  //   if (
-  //     param.filepath.includes('.docx') ||
-  //     param.filepath.includes('.doc') ||
-  //     param.filepath.includes('.DOCX') ||
-  //     param.filepath.includes('.DOC')
-  //   ) {
-  //     clientType = WpsInvoke.ClientType.wps;
-  //     name = 'WpsOAAssist';
-  //   }
-  //   if (param.filepath.includes('.xlsx') || param.filepath.includes('.xls')) {
-  //     clientType = WpsInvoke.ClientType.et;
-  //     name = 'EtOAAssist';
-  //   }
-  //   if (param.filepath.includes('.pdf')) {
-  //     window.open(param.filepath);
-  //     return;
-  //   }
-  //   const WpsClient = new WpsClientOpen.WpsClient(clientType);
-  //   //打包时修改config.js文件里的插件地址PluginsUrl。
-  //   WpsClient.jsPluginsXml = PluginsUrl;
-  //   WpsClient.InvokeAsHttp(
-  //     // clientType, // 组件类型
-  //     name, // 插件名，与wps客户端加载的加载的插件名对应
-  //     'InvokeFromSystemDemo', // 插件方法入口，与wps客户端加载的加载的插件代码对应，详细见插件代码
-  //     JSON.stringify(param), // 传递给插件的数据
-  //     function(result) {
-  //       // 调用回调，status为0为成功，其他是错误
-  //       // console.log("🚀 ~ file: index.js ~ line 79 ~ WPSInvoke ~ result", result)
-  //       if (result.status) {
-  //         if (result.status === 100) {
-  //           message.info('请在稍后打开的网页中，点击"高级" => "继续前往"，完成授权。');
-  //           return;
-  //         }
-  //         message.info(result.message);
-  //       } else {
-  //         message.info(result.response);
-  //       }
-  //     },
-  //     true,
-  //   );
-  // };
-
-  // //处理预览
-  // const handlePreView = (id, filename, entryno, filetype) => {
-  //   QueryPaymentFlowDetailFile({ id, filename, entryno, filetype }).then(res => {
-  //     const param = {
-  //       Index: 'OpenFile',
-  //       filepath: res.record.url,
-  //     };
-  //     WPSInvoke(param);
-  //   });
-  // };
 
   //金额显示1.00
   const getJeFormat = je => {
@@ -143,7 +97,8 @@ const ExpenseDetail = props => {
               src={require('../../../../../image/pms/LifeCycleManagement/attachment.png')}
             />
             <span
-              onClick={() => {
+              onClick={e => {
+                e.stopPropagation();
                 //文件预览
                 let ifram = "<iframe width='100%' height='100%' src='" + x.base64 + "'></iframe>";
                 let page = window.open().document;
@@ -152,7 +107,7 @@ const ExpenseDetail = props => {
                 page.close();
               }}
             >
-              {x.fileName||x.name}
+              {x.fileName || x.name}
             </span>
           </div>
         ))}
@@ -179,6 +134,8 @@ const ExpenseDetail = props => {
           userykbid={userykbid}
           currentXmid={currentXmid}
           handleAddExpenseSuccess={handleAddExpenseSuccess}
+          updateExpense={updateExpense}
+          setUpdateExpense={setUpdateExpense}
         />
         <Spin
           spinning={isExpenseSpinning}
@@ -187,7 +144,37 @@ const ExpenseDetail = props => {
           wrapperClassName="expense-detail-spin"
         >
           {expenseDetail?.map((item, index) => (
-            <div className="content-box" key={item.id}>
+            <div
+              className="content-box"
+              key={item.id}
+              onMouseEnter={() => {
+                let arr = [...expenseDetail];
+                arr.forEach(x => {
+                  if (x.id === item?.id) {
+                    x.isHover = true;
+                  }
+                });
+                setExpenseDetail(p => [...arr]);
+              }}
+              onMouseLeave={() => {
+                let arr = [...expenseDetail];
+                arr.forEach(x => {
+                  if (x.id === item?.id) {
+                    x.isHover = false;
+                  }
+                });
+                setExpenseDetail(p => [...arr]);
+              }}
+              style={item.isHover ? { backgroundColor: 'aliceblue' } : {}}
+              onClick={e => {
+                e.preventDefault();
+                setAddExpenseModalVisiable(true);
+                setUpdateExpense({
+                  ...item,
+                });
+                // console.log('🚀 ~ 修改数据回显 ~ updateExpense:', item);
+              }}
+            >
               <div className="expense-info">
                 <div className="info-icon-num">{index + 1}</div>
                 <div className="info-wrapper">
@@ -233,6 +220,18 @@ const ExpenseDetail = props => {
                     )}
                   </div>
                 </div>
+              </div>
+              <div
+                className="icon-delete"
+                style={item.isHover ? {} : { visibility: 'hidden' }}
+                onClick={e => {
+                  //confirm
+                  let arr = [...expenseDetail].filter(x => x.id !== item?.id);
+                  setExpenseDetail(p => [...arr]);
+                  e.stopPropagation();
+                }}
+              >
+                <i className="iconfont delete" />
               </div>
             </div>
           ))}

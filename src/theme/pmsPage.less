@@ -1511,6 +1511,7 @@
         background-color: hsla(0, 0%, 100%, 0.6);
         transition: all 0.3 ease;
         padding: 0 8px;
+        cursor: pointer;
 
         i {
           color: #333;
@@ -1950,6 +1951,32 @@
         // padding-bottom: 8px;
         border-radius: 8px;
         margin-bottom: 8px;
+        cursor: pointer;
+        position: relative;
+
+        .icon-delete {
+          position: absolute;
+          top: 0;
+          right: 0;
+          font-size: 1em;
+          height: 22px;
+          line-height: 22px;
+          border-radius: 0 5px 0 0;
+          -webkit-box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+          box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+          background-color: hsla(0, 0%, 100%, 0.6);
+          transition: all 0.3 ease;
+          padding: 0 8px;
+          cursor: pointer;
+
+          i {
+            color: #333;
+
+            &:hover {
+              color: rgb(250, 37, 37);
+            }
+          }
+        }
 
         & > .expense-info {
           display: flex;
@@ -2131,13 +2158,17 @@
 }
 
 .receipt-content-popover {
+  .ant-popover-inner-content {
+    padding-right: 8px;
+  }
+
   .list {
     overflow: hidden;
     overflow-y: auto;
     max-width: 200px;
     max-height: 125px;
-    padding-right: 8px;
     font-size: 12px;
+    padding-right: 8px;
 
     .item {
       margin-bottom: 8px;
@@ -13297,7 +13328,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           margin: -10px;
         }
 
-        tr.ant-table-expanded-row .ant-table-placeholder{
+        tr.ant-table-expanded-row .ant-table-placeholder {
           margin-top: -17.5px;
         }
 
@@ -14372,7 +14403,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .tooltip-content {
   .font-family-pingfangsc();
   // position: absolute;
-  background: #FCFCFC;
+  background: #fcfcfc;
   width: 303px;
   color: #292c2e;
   font-size: 14px;
@@ -14524,7 +14555,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .icon {
             width: 24px;
             height: 24px;
-            background: linear-gradient(180deg, #A4ACFF 0%, #6B74FF 100%);
+            background: linear-gradient(180deg, #a4acff 0%, #6b74ff 100%);
             border-radius: 2px;
           }
         }

@@ -26,6 +26,13 @@ import { CheckInvoice, QueryCreatePaymentInfo } from '../../../../../../services
 import TreeUtils from '../../../../../../utils/treeUtils';
 const { TextArea } = Input;
 
+function getUUID() {
+  function S4() {
+    return (((1 + Math.random()) * 0x10000) | 0).toString(16).substring(1);
+  }
+  return S4() + S4() + '-' + S4() + '-' + S4() + '-' + S4() + '-' + S4() + S4() + S4();
+}
+
 const AddExpense = props => {
   //弹窗全屏
   const [isModalFullScreen, setIsModalFullScreen] = useState(false);
@@ -44,16 +51,20 @@ const AddExpense = props => {
     receiptFileList: [],
     receiptIsTurnRed: false,
     OAProcessFileData: [],
-    OAProcessFileList: [],
+    OAProcessFileList: [], //
     OAProcessTurnRed: false,
     contractFileUrl: '',
     contractFileName: '',
-    contractFileList: [],
+    contractFileList: [], //
     contractIsTurnRed: false,
     checkFileUrl: '',
     checkFileName: '',
-    checkFileList: [],
+    checkFileList: [], //
     checkIsTurnRed: false,
+    otherFileUrl: '',
+    otherFileName: '',
+    otherFileList: [], //
+    otherIsTurnRed: false,
   });
   //是否尾款
   const [isFinalPay, setIsFinalPay] = useState(2);
@@ -93,12 +104,21 @@ const AddExpense = props => {
   //发票数据
   const [receiptData, setReceiptData] = useState([]); //发票数据 - 电子上传,手录
   const [receiptDisplay, setReceiptDisplay] = useState([]); //发票数据-展示用
-  const { visible, setVisible, form, userykbid, handleAddExpenseSuccess, currentXmid } = props;
+  const {
+    visible,
+    setVisible,
+    form,
+    userykbid,
+    handleAddExpenseSuccess,
+    currentXmid,
+    updateExpense,
+    setUpdateExpense,
+  } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [oaData, setOaData] = useState([]); //oa数据
+  const [otherData, setOtherData] = useState([]); //其他附件数据
   //防抖定时器
   let timer = null;
-
   useEffect(() => {
     getSelectorData();
     return () => {
@@ -114,6 +134,142 @@ const AddExpense = props => {
     timer = setTimeout(() => {
       fn(...arguments);
     }, waits);
+  };
+
+  useEffect(() => {
+    if (updateExpense !== undefined) {
+      console.log('updateExpense:', updateExpense);
+      const {
+        receiptFileInfo,
+        isFinalPay,
+        fylxInfo,
+        fplxInfo,
+        ysxmInfo,
+        OAProcessFileInfo,
+        contractFileInfo,
+        checkFileInfo,
+        otherFileInfo,
+      } = updateExpense;
+      setReceiptDisplay([...receiptFileInfo]);
+      setIsFinalPay(isFinalPay);
+      setYsxmInfo(ysxmInfo);
+      setFplxInfo(fplxInfo);
+      setFylxInfo(fylxInfo);
+      setOaData([...OAProcessFileInfo]);
+      let handledOAData = OAProcessFileInfo.map(x => ({
+        uid: getUUID(),
+        name: x.name,
+        status: 'done',
+        // url: x.base64,
+      }));
+      let handledOtherData = otherFileInfo.map(x => ({
+        uid: getUUID(),
+        name: x.name,
+        status: 'done',
+        // url: x.base64,
+      }));
+      setFormData(p => ({
+        ...p,
+        contractFileUrl: contractFileInfo.base64 !== '无' ? contractFileInfo.base64 : '',
+        contractFileName: contractFileInfo.name !== '无' ? contractFileInfo.name : '',
+        checkFileUrl: checkFileInfo.base64 !== '无' ? checkFileInfo.base64 : '',
+        checkFileName: checkFileInfo.name !== '无' ? checkFileInfo.name : '',
+        checkFileList:
+          checkFileInfo.base64 !== '无'
+            ? [
+                {
+                  uid: getUUID(),
+                  name: checkFileInfo.name,
+                  status: 'done',
+                  // url: checkFileInfo.base64,
+                },
+              ]
+            : [],
+        contractFileList:
+          contractFileInfo.base64 !== '无'
+            ? [
+                {
+                  uid: getUUID(),
+                  name: contractFileInfo.name,
+                  status: 'done',
+                  // url: contractFileInfo.base64,
+                },
+              ]
+            : [],
+        OAProcessFileList: [...handledOAData],
+        otherFileList: [...handledOtherData],
+      }));
+    }
+    return () => {};
+  }, [updateExpense]);
+
+  //提交数据 - 确定
+  const handleSubmit = () => {
+    console.log(selectorData?.fklcData);
+    validateFields(err => {
+      if (!err) {
+        let oaArr = oaData?.map(x => {
+          return {
+            name: x.name,
+            base64: x.base64,
+          };
+        });
+        let attachmentArr = [...oaArr];
+        formData?.contractFileUrl !== '' &&
+          attachmentArr.push({
+            base64: formData?.contractFileUrl,
+            name: formData?.contractFileName,
+          });
+        formData?.checkFileUrl !== '' &&
+          attachmentArr.push({
+            base64: formData?.checkFileUrl,
+            name: formData?.checkFileName,
+          });
+        attachmentArr = attachmentArr.concat([...otherData]);
+        let submitData = {
+          id: updateExpense?.id ?? getUUID(),
+          consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
+          date: moment().format('YYYYMMDD'),
+          taxAmount: getFieldValue('se') === '' ? 0 : getFieldValue('se'),
+          je: getFieldValue('je') === '' ? 0 : getFieldValue('je'),
+          fylxInfo,
+          fplxInfo,
+          ysxmInfo,
+          receiptFileInfo: [...receiptDisplay],
+          OAProcessFileInfo: [...oaArr],
+          contractFileInfo:
+            formData?.contractFileUrl === ''
+              ? {
+                  base64: '无',
+                  name: '无',
+                }
+              : {
+                  base64: formData?.contractFileUrl,
+                  name: formData?.contractFileName,
+                },
+          checkFileInfo:
+            formData?.checkFileUrl === ''
+              ? {
+                  base64: '无',
+                  name: '无',
+                }
+              : {
+                  base64: formData?.checkFileUrl,
+                  name: formData?.checkFileName,
+                },
+          attachmentLength: attachmentArr.length,
+          attachmentArr,
+          isFinalPay,
+          lcid: selectorData?.fklcData[0]?.ID || -1,
+          otherFileInfo: [...otherData],
+        };
+        handleAddExpenseSuccess(submitData);
+        console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
+        //
+        handleClose();
+        // console.log('确定了');
+      }
+    });
   };
 
   //下拉框数据
@@ -157,98 +313,33 @@ const AddExpense = props => {
       });
   };
 
-  //提交数据 - 确定
-  const handleSubmit = () => {
-    console.log(selectorData?.fklcData);
-    validateFields(err => {
-      if (!err) {
-        setVisible(false);
-        let oaArr = oaData?.map(x => {
-          return {
-            name: x.name,
-            base64: x.base64,
-          };
-        });
-        let receiptArr = [...receiptDisplay];
-        let attachmentArr = [...oaArr];
-        formData?.contractFileUrl !== '' &&
-          attachmentArr.push({
-            base64: formData?.contractFileUrl,
-            name: formData?.contractFileName,
-          });
-        formData?.checkFileUrl !== '' &&
-          attachmentArr.push({
-            base64: formData?.checkFileUrl,
-            name: formData?.checkFileName,
-          });
-        let submitData = {
-          consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
-          date: moment().format('YYYYMMDD'),
-          taxAmount: getFieldValue('se') === '' ? 0 : getFieldValue('se'),
-          je: getFieldValue('je') === '' ? 0 : getFieldValue('je'),
-          fylxInfo,
-          fplxInfo,
-          ysxmInfo,
-          receiptFileInfo: [...receiptDisplay],
-          OAProcessFileInfo: [...oaArr],
-          contractFileInfo:
-            formData?.contractFileUrl === ''
-              ? {
-                  base64: '无',
-                  name: '无',
-                }
-              : {
-                  base64: formData?.contractFileUrl,
-                  name: formData?.contractFileName,
-                },
-          checkFileInfo:
-            formData?.checkFileUrl === ''
-              ? {
-                  base64: '无',
-                  name: '无',
-                }
-              : {
-                  base64: formData?.checkFileUrl,
-                  name: formData?.checkFileName,
-                },
-          attachmentLength: attachmentArr.length,
-          attachmentArr,
-          isFinalPay,
-          lcid: selectorData?.fklcData[0]?.ID || -1,
-        };
-        handleAddExpenseSuccess(submitData);
-        console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
-        //
-        resetFields();
-        setReceiptData([]);
-        setReceiptDisplay([]);
-        setFormData(p => {
-          p.OAProcessFileData = [];
-          p.OAProcessFileList = [];
-          p.OAProcessTurnRed = false;
-          p.contractFileUrl = '';
-          p.contractFileName = '';
-          p.contractFileList = [];
-          p.contractIsTurnRed = false;
-          p.checkFileUrl = '';
-          p.checkFileName = '';
-          p.checkFileList = [];
-          p.checkIsTurnRed = false;
-          return {
-            ...p,
-          };
-        });
-        console.log('确定了');
-      }
-    });
-  };
-
   //关闭弹窗
   const handleClose = () => {
     setVisible(false);
     resetFields();
     setReceiptData([]);
     setReceiptDisplay([]);
+    setOaData([]);
+    setOtherData([]);
+    //费用类型数据
+    setFylxInfo({
+      ID: '-1',
+      NAME: '无',
+      FYLXDM: '',
+      MBDM: '',
+    });
+    //发票类型数据
+    setFplxInfo({
+      ID: '-1',
+      NAME: '无',
+      BM: '',
+    });
+    //预算项目数据
+    setYsxmInfo({
+      ID: '-1',
+      NAME: '无',
+      YSFYDM: '',
+    });
     setFormData(p => {
       p.OAProcessFileData = [];
       p.OAProcessFileList = [];
@@ -261,11 +352,15 @@ const AddExpense = props => {
       p.checkFileName = '';
       p.checkFileList = [];
       p.checkIsTurnRed = false;
+      p.otherFileUrl = '';
+      p.otherFileName = '';
+      p.otherFileList = [];
       return {
         ...p,
       };
     });
-    console.log('取消了');
+    setUpdateExpense(undefined);
+    console.log('关闭时清空数据');
   };
 
   const handleReceiptMenuClick = e => {
@@ -289,18 +384,9 @@ const AddExpense = props => {
   };
   const handleFplxChange = (id, node) => {
     setFplxInfo({ ID: id, NAME: node.props.children, BM: node.props.bm });
-    // console.log('🚀 ~ file: index.js ~ line 161 ~ handleFplxChange', {
-    //   ID: id,
-    //   NAME: node.props.children,
-    //   BM: node.props.bm,
-    // });
   };
   const handleYsxmChange = id => {
     setYsxmInfo(ysxmData?.filter(x => x.ID === id)[0]);
-    // console.log(
-    //   '🚀 ~ file: index.js ~ line 163 ~ handleYsxmChange ~ ysxmData?.filter(x=>x.ID===id)[0]',
-    //   ysxmData?.filter(x => x.ID === id)[0],
-    // );
   };
 
   //输入框
@@ -330,7 +416,7 @@ const AddExpense = props => {
     return (
       <Form.Item label="消费事由" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
         {getFieldDecorator('xfsy', {
-          initialValue: '',
+          initialValue: updateExpense?.consumptionReasons ?? '',
         })(
           <TextArea
             className="consumeReason-textarea"
@@ -368,8 +454,8 @@ const AddExpense = props => {
           labelCol={{ span: labelCol }}
           wrapperCol={{ span: wrapperCol }}
           // required
-          help={formData[dataIndex + 'IsTurnRed'] ? `${label}不允许空值` : ''}
-          validateStatus={formData[dataIndex + 'IsTurnRed'] ? 'error' : 'success'}
+          // help={formData[dataIndex + 'IsTurnRed'] ? `${label}不允许空值` : ''}
+          // validateStatus={formData[dataIndex + 'IsTurnRed'] ? 'error' : 'success'}
         >
           <Upload
             action={'/api/projectManage/queryfileOnlyByupload'}
@@ -426,15 +512,23 @@ const AddExpense = props => {
     );
   };
   //多附件
-  const getMultipleUpload = ({ label, formData, dataIndex, setFormData, labelCol, wrapperCol }) => {
+  const getMultipleUpload = ({
+    label,
+    formData,
+    dataIndex,
+    setFormData,
+    labelCol,
+    wrapperCol,
+    setData,
+  }) => {
     return (
       <Col span={12}>
         <Form.Item
           label={label}
           labelCol={{ span: labelCol }}
           wrapperCol={{ span: wrapperCol }}
-          help={formData[dataIndex + 'IsTurnRed'] ? `${label}不允许空值` : ''}
-          validateStatus={formData[dataIndex + 'IsTurnRed'] ? 'error' : 'success'}
+          // help={formData[dataIndex + 'IsTurnRed'] ? `${label}不允许空值` : ''}
+          // validateStatus={formData[dataIndex + 'IsTurnRed'] ? 'error' : 'success'}
         >
           <Upload
             action={'/api/projectManage/queryfileOnlyByupload'}
@@ -475,8 +569,8 @@ const AddExpense = props => {
                   });
                   if (arr.length === fileList.length) {
                     debounce(() => {
-                      setOaData(p => [...arr]);
-                      console.log('🚀 ~ file: index.js ~ line 407 ~ debounce ~ [...arr]', [...arr]);
+                      setData(p => [...p, ...arr]);
+                      // console.log('🚀 ~ file: index.js ~ line 407 ~ debounce ~ [...arr]', [...arr]);
                     }, 500);
                   }
                 };
@@ -577,7 +671,7 @@ const AddExpense = props => {
               x.isHover = true;
             }
           });
-          console.log('🚀 ~ file: index.js ~ line 571 ~ getRecepitList ~ arr', arr);
+          // console.log('🚀 ~ file: index.js ~ line 571 ~ getRecepitList ~ arr', arr);
           setReceiptDisplay(p => [...arr]);
         }}
         onMouseLeave={() => {
@@ -661,6 +755,7 @@ const AddExpense = props => {
       );
     return null;
   };
+
   const getAmountSum = () => {
     let jesum = 0;
     let sesum = 0;
@@ -673,13 +768,14 @@ const AddExpense = props => {
       sesum,
     };
   };
+
   //输入框入参
   const amountInputProps = {
     label: '金额',
     labelCol: 3,
     wrapperCol: 21,
     dataIndex: 'je',
-    initialValue: getAmountSum().jesum,
+    initialValue: updateExpense?.je ?? getAmountSum().jesum,
     rules: [
       {
         required: true,
@@ -709,7 +805,7 @@ const AddExpense = props => {
       //     message: '税额不允许空值',
       // },
     ],
-    initialValue: getAmountSum().sesum,
+    initialValue: updateExpense?.taxAmount ?? getAmountSum().sesum,
     node: (
       <InputNumber
         style={{ width: '100%' }}
@@ -730,6 +826,17 @@ const AddExpense = props => {
     setFormData,
     labelCol: 10,
     wrapperCol: 14,
+    setData: setOaData,
+  };
+  //OA流程 - 其他附件上传入参
+  const OtherProps = {
+    label: '其他附件',
+    dataIndex: 'other',
+    formData,
+    setFormData,
+    labelCol: 6,
+    wrapperCol: 18,
+    setData: setOtherData,
   };
   //合同复印件上传入参
   const contractProps = {
@@ -749,6 +856,7 @@ const AddExpense = props => {
     labelCol: 10,
     wrapperCol: 14,
   };
+
   return (
     <>
       <Drawer
@@ -791,6 +899,7 @@ const AddExpense = props => {
         />
         <Form.Item label="费用类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
           {getFieldDecorator('fylx', {
+            initialValue: fylxInfo.ID === '-1' ? undefined : fylxInfo.ID,
             rules: [
               {
                 required: true,
@@ -817,7 +926,9 @@ const AddExpense = props => {
         <Row>{getRecepitList()}</Row>
         {getInput(taxInputProps)}
         <Form.Item label="发票类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-          {getFieldDecorator('fplx')(
+          {getFieldDecorator('fplx', {
+            initialValue: fplxInfo.ID === '-1' ? undefined : fplxInfo.ID,
+          })(
             <Select
               style={{ width: '100%', borderRadius: '8px !important' }}
               showSearch
@@ -838,7 +949,9 @@ const AddExpense = props => {
         {getTextArea()}
         {isBudget && (
           <Form.Item label="预算项目" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
-            {getFieldDecorator('ysxm')(
+            {getFieldDecorator('ysxm', {
+              initialValue: ysxmInfo.ID === '-1' ? undefined : ysxmInfo.ID,
+            })(
               <TreeSelect
                 allowClear
                 style={{ width: '100%' }}
@@ -859,8 +972,10 @@ const AddExpense = props => {
           {getMultipleUpload(OAProcessProps)}
         </Row>
         <Row>
+          {getMultipleUpload(OtherProps)} {isFinalPay === 1 && getUpload(checkProps)}
+        </Row>
+        <Row>
           {getRadio('是否尾款', isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}
-          {isFinalPay === 1 && getUpload(checkProps)}
         </Row>
         <div className="footer-btn">
           <Button onClick={handleClose} className="btn-cancel">
