@@ -127,6 +127,7 @@ class EditMemberInfoModel extends React.Component {
     e.preventDefault();
     const _this = this;
     const {operateType = ""} = _this.props
+    console.log("operateType", operateType)
     _this.props.form.validateFields((err, values) => {
       if (err) {
         const errs = Object.keys(err);
@@ -146,15 +147,20 @@ class EditMemberInfoModel extends React.Component {
           message.warn('请选择所属供应商！');
           return;
         }
-        if (errs.includes('syqkh') && operateType === "syqkh") {
-          message.warn('请选择试用期考核情况！');
-          return;
-        }
+        // if (errs.includes('syqkh') && operateType === "syqkh") {
+        //   message.warn('请选择试用期考核情况！');
+        //   return;
+        // }
         if (errs.includes('jl') && operateType === "bjxq") {
           message.warn('请上传简历！');
           return;
         }
       }
+      if (operateType === "syqkh" && values.syqkh === '' || values.syqkh === undefined) {
+        message.warn('请选择试用期考核情况！');
+        return;
+      }
+      return;
       _this.setState({
         isSpinning: true
       })
@@ -180,6 +186,10 @@ class EditMemberInfoModel extends React.Component {
           isSpinning: false
         })
         message.error(!error.success ? error.message : error.note);
+      }).finally(() => {
+        this.setState({
+          isSpinning: true
+        })
       });
   };
 
@@ -674,17 +684,29 @@ class EditMemberInfoModel extends React.Component {
                       <Row gutter={24} style={{display: operateType === "syqkh" ? '' : 'none'}}>
                         <Col span={24}>
                           <Form.Item
-                            label="试用期考核情况"
+                            label={<span>
+                                <span
+                                  style={{
+                                    fontFamily: 'SimSun, sans-serif',
+                                    color: '#f5222d',
+                                    marginRight: '4px',
+                                    lineHeight: 1,
+                                  }}
+                                >
+                                  *
+                                </span>
+                                试用期考核情况
+                              </span>}
                             labelCol={{span: 6}}
                             wrapperCol={{span: 18}}
                           >
                             {getFieldDecorator('syqkh', {
-                              rules: [
-                                {
-                                  required: true,
-                                  message: '试用期考核情况',
-                                },
-                              ],
+                              // rules: [
+                              //   {
+                              //     required: true,
+                              //     message: '试用期考核情况',
+                              //   },
+                              // ],
                               initialValue: SYKHID
                             })(<Select
                               showSearch

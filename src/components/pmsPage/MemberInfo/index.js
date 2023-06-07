@@ -19,7 +19,7 @@ export default function MemberInfo(props) {
     console.log("1111")
     //无参数
     getTableData({});
-  }, []);
+  }, [params]);
 
 
   //获取表格数据
@@ -32,7 +32,7 @@ export default function MemberInfo(props) {
       .then(res => {
         if (res?.code === 1) {
           const {role = '', zyrole = ''} = res;
-          QueryOutsourceMemberList({
+          const param = {
             current,
             pageSize,
             paging: 1,
@@ -41,7 +41,12 @@ export default function MemberInfo(props) {
             cxlx: queryType,
             js: zyrole === "暂无" ? role : zyrole,
             zzjg: String(LOGIN_USER_INFO.org)
-          })
+          }
+          console.log("params.xmid", params.xmid)
+          if (String(params.xmid) !== "" || params.xmid !== "undefined") {
+            param.xmmc = Number(params.xmid);
+          }
+          QueryOutsourceMemberList({...param})
             .then(res => {
               const {code, result, totalrows} = res
               if (code > 0) {

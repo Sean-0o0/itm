@@ -36,9 +36,14 @@ class BasicInfo extends Component {
             style={{display: 'flex', height: 'unset'}}
           >
             <div style={{flexShrink: 0, color: '#909399'}}>简历：</div>
-            <a style={{color: '#3361FF'}}
-               href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=JL&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${ryid}&fileid=0`}>
-              {JL || <span style={{color: '#303133'}}>暂无</span>}</a>
+            <Tooltip title={JL || <span style={{color: '#303133'}}>暂无</span>}>
+              <a style={{color: '#3361FF'}}
+                 href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=JL&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${ryid}&fileid=0`}>
+                {JL.length > 18 ? JL.slice(0, 7) + '...' + JL.split('.')[0].slice(JL.split('.')[0].length - 7, JL.split('.')[0].length) + '.' + JL.split('.')[1] : JL ||
+                  <span style={{color: '#303133'}}>暂无</span>}
+              </a>
+              {/*{JL || <span style={{color: '#303133'}}>暂无</span>}</a>*/}
+            </Tooltip>
           </div>
           <div
             className="info-item"

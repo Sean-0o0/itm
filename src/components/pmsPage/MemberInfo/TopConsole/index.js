@@ -91,7 +91,7 @@ export default forwardRef(function TopConsole(props) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = ''} = res;
+          const {role = '', zyrole = ''} = res;
           setCurPage(current);
           setCurPageSize(pageSize);
           let params = {
@@ -101,7 +101,7 @@ export default forwardRef(function TopConsole(props) {
             sort: "",
             total: -1,
             cxlx: 'ALL',
-            js: role,
+            js: zyrole === "暂无" ? role : zyrole,
             zzjg: String(LOGIN_USER_INFO.org)
           };
           if (rymc !== undefined && rymc !== '') {

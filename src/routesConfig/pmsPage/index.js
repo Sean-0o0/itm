@@ -190,6 +190,11 @@ exports.routes = [
   },
   {
     //人员信息
+    path: `${prefix}/MemberInfo/:params`,
+    component: './pmsPage/MemberInfo',
+  },
+  {
+    //人员信息
     path: `${prefix}/MemberInfo`,
     component: './pmsPage/MemberInfo',
   },

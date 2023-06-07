@@ -13,6 +13,7 @@ const MemberInfo = props => {
   } = props;
   useEffect(() => {
     if (props.match.params.params !== undefined) {
+      console.log("JSON.parse(DecryptBase64(encryptParams))", JSON.parse(DecryptBase64(encryptParams)))
       setParams(JSON.parse(DecryptBase64(encryptParams)));
     }
     return () => {

@@ -434,7 +434,47 @@ class DemandInitiated extends React.Component {
                               //   },
                               // ],
                               // initialValue: "外采项目"
-                            })(<a style={{color: '#3361ff'}}>查看说明</a>)}
+                            })(<Tooltip overlayClassName='rysm-tooltip'
+                                        placement="right"
+                                        title={
+                                          <span>
+                                -----G1（13800元 /人月）<br/>
+                                UI/测试<br/>
+                                            &nbsp;&nbsp;&nbsp;2-3年工作经验，大专或以上学历<br/>
+                                前端、硬件维护工程师、JAVA/C/C++<br/>
+                                            &nbsp;&nbsp;&nbsp;1年工作经验，大专或以上学历<br/>
+                                -----G2（15500元 /人月）<br/>
+                                UI/测试<br/>
+                                            &nbsp;&nbsp;&nbsp;3-5年工作经验，大专或以上学历<br/>
+                                前端、JAVA/C/C++、运维工程师、网络安全管理员、IT基础架构工程师<br/>
+                                            &nbsp;&nbsp;&nbsp;2年工作经验，大专或以上学历<br/>
+                                客户端（Android/iOS）、数据库工程师、产品经理<br/>
+                                            &nbsp;&nbsp;&nbsp;1年工作经验，大专或以上学历<br/>
+                                -----G3（20000元 /人月）<br/>
+                                UI/测试：<br/>
+                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，大专或以上学历<br/>
+                                前端、JAVA/C/C++、网络安全管理员、IT基础架构工程师、运维工程师<br/>
+                                            &nbsp;&nbsp;&nbsp;3年工作经验，大专或以上学历<br/>
+                                客户端（Android/iOS）、数据库/大数据工程师、产品经理<br/>
+                                            &nbsp;&nbsp;&nbsp;2年工作经验，大专或以上学历<br/>
+                                -----G4（22800元 /人月）<br/>
+                                JAVA/C/C++	、前端、网络安全管理员、IT基础架构工程师、运维工程师<br/>
+                                            &nbsp;&nbsp;&nbsp;4年工作经验，大专或以上学历<br/>
+                                客户端（Android/iOS）、数据库/大数据工程师、产品经理<br/>
+                                            &nbsp;&nbsp;&nbsp;3年工作经验，大专或以上学历<br/>
+                                -----G5（3000元 /人月）<br/>
+                                JAVA/C/C++、前端<br/>
+                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，大专或以上学历<br/>
+                                客户端（Android/iOS）、数据库/大数据工程师、系统架构师、产品经理<br/>
+                                            &nbsp;&nbsp;&nbsp;4年以上工作经验，大专或以上学历<br/>
+                                项目经理<br/>
+                                            &nbsp;&nbsp;&nbsp;4年以上工作经验，2年项目管理经验，20人以上团队管理能力，大专或以上学历<br/>
+                                -----G6	（26500元 /人月）<br/>
+                                数据库/大数据工程师、系统架构师<br/>
+                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，大专或以上学历<br/>
+                                项目经理<br/>
+                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，3年项目管理经验，20人以上团队管理能力，大专或以上学历<br/>
+                            </span>}><a style={{color: '#3361ff'}}>查看说明</a></Tooltip>)}
                           </Form.Item>
                         </Col>
                       </Row>

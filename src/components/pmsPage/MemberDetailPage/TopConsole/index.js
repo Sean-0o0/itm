@@ -107,7 +107,12 @@ class ToConsole extends Component {
           changePwdVisible &&
           <BridgeModel
             modalProps={editMessageModalProps}
-            onSucess={() => this.onSuccess('修改密码')}
+            onSucess={() => {
+              message.info("修改密码成功！")
+              this.setState({
+                changePwdVisible: false
+              })
+            }}
             onCancel={() => this.setState({
               changePwdVisible: false
             })}

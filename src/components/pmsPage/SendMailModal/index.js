@@ -233,7 +233,7 @@ class SendMailModal extends React.Component {
     };
 
     const addMailModalUrl = `${localStorage.getItem('livebos') || ''}/OperateProcessor?operate=TWBGL_YXXXB_ADD&Table=TWBGL_YXXXB`;
-    
+
     return (
       <>
         {/*修改密码*/}
@@ -241,7 +241,12 @@ class SendMailModal extends React.Component {
           addMailModalVisible &&
           <BridgeModel
             modalProps={editMessageModalProps}
-            onSucess={() => this.onSuccess('新增收件人')}
+            onSucess={() => {
+              message.info("新增成功！")
+              this.setState({
+                addMailModalVisible: false
+              })
+            }}
             onCancel={() => this.setState({
               addMailModalVisible: false
             })}

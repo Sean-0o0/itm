@@ -102,7 +102,7 @@ export default class PageHeader extends React.PureComponent {
           </span>
         </div>
         {/*搜索框*/}
-        {/* <div>
+        <div>
           {
             searchModalVisible && <SearchModal closeModal={() => {
               this.setState({
@@ -116,7 +116,7 @@ export default class PageHeader extends React.PureComponent {
                      searchModalVisible: true,
                    })} placeholder='请输入项目/供应商/人员'/>
           </div>
-        </div> */}
+        </div>
         {/*用户名*/}
         <div
           id="fma_opertion_drops"
