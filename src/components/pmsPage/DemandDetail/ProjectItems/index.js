@@ -214,15 +214,20 @@ export default function ProjectItems(props) {
   const handleCk = (SWMC = '--', SWZXID) => {
     if (SWMC === '综合评测安排') {
       if (isDock || isFqr) {
-        //打开弹窗
-        setModalVisible(p => {
-          return {
-            ...p,
-            personelArrangement: true,
-            personelArrangementUpdate: true,
-          };
-        });
-        setSwzxid(SWZXID);
+        if (XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2') {
+          //打开弹窗
+          setModalVisible(p => {
+            return {
+              ...p,
+              personelArrangement: true,
+              personelArrangementUpdate: true,
+            };
+          });
+          setSwzxid(SWZXID);
+        } else {
+          message.info('已提交录用申请，不允许综合评测安排', 1);
+          return;
+        }
       } else {
         message.info('只有外包项目对接人、需求发起人可以操作', 1);
         return;
@@ -564,6 +569,15 @@ export default function ProjectItems(props) {
               };
             })
           }
+          successCallBack={() => {
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  msgConfirmation: false,
+                };
+              });
+              reflush();
+            }}
           visible={modalVisible.msgConfirmation}
         />
       )}

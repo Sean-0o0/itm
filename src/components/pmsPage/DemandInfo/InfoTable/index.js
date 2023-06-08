@@ -27,7 +27,8 @@ export default function InfoTable(props) {
     xmid = -2,
     WBRYGW,
     setTableData,
-    expandedRowKeys, setExpandedRowKeys
+    expandedRowKeys,
+    setExpandedRowKeys,
   } = props; //表格数据
   const [visible, setVisible] = useState({
     update: false,
@@ -341,6 +342,7 @@ export default function InfoTable(props) {
                   onClick={() => {
                     if (isDock) {
                       setSendMailVisible(true);
+                      setCurrentXmid(Number(row.XMID));
                     } else {
                       message.info('只有外包项目对接人可以操作');
                     }
@@ -467,7 +469,14 @@ export default function InfoTable(props) {
   return (
     <div className="info-table">
       {sendMailVisible && (
-        <SendMailModal closeModal={() => setSendMailVisible(false)} visible={sendMailVisible} />
+        <SendMailModal
+          closeModal={() => setSendMailVisible(false)}
+          visible={sendMailVisible}
+          successCallBack={() => {
+            setSendMailVisible(false);
+            getSubTableData(currentXmid);
+          }}
+        />
       )}
       {/* 上架 */}
       {demandPublishVisible && (

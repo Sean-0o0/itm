@@ -166,7 +166,7 @@ export default forwardRef(function TopConsole(props, ref) {
       })
         .then(res => {
           if (res?.code === 1) {
-            const { role = '' } = res;
+            const { role = '', zyrole } = res;
             QueryRequirementListPara({
               current: 1,
               pageSize: 10,
@@ -174,7 +174,9 @@ export default forwardRef(function TopConsole(props, ref) {
               sort: '',
               total: -1,
               cxlx: 'XQLB',
-              js: role,
+              js: zyrole === '外包项目对接人'
+              ? zyrole
+              : role,
             })
               .then(res => {
                 if (res?.success) {

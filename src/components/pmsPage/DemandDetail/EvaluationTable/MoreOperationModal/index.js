@@ -386,6 +386,15 @@ function MoreOperationModal(props) {
                 };
               })
             }
+            successCallBack={() => {
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  msgConfirmation: false,
+                };
+              });
+              reflush();
+            }}
             visible={modalVisible.msgConfirmation}
             gysmcArr={[...gysmcArr]}
             xqid={xqid}
@@ -545,52 +554,19 @@ function MoreOperationModal(props) {
               ) : (
                 <>
                   {isDock && (
-                    <Button
-                      type="primary"
-                      onClick={() => {
-                        if (!isSpinning) {
-                          setStatus(p => ({
-                            ...p,
-                            mstz: true,
-                          }));
-                        }
-                      }}
-                    >
-                      面试通知
-                    </Button>
-                  )}
-                  {String(fqrid) === String(JSON.parse(sessionStorage.getItem('user'))?.id) && (
                     <>
                       <Button
                         type="primary"
                         onClick={() => {
                           if (!isSpinning) {
-                            getLink('V_LYXX', 'V_LYXX_M', [
-                              {
-                                name: 'GLXQ',
-                                value: xqid,
-                              },
-                              {
-                                name: 'SWZXID',
-                                value: swzxid,
-                              },
-                            ]);
-                            setLbModal(p => {
-                              return {
-                                ...p,
-                                title: '提交录用申请',
-                              };
-                            });
-                            setModalVisible(p => {
-                              return {
-                                ...p,
-                                employmentApplication: true,
-                              };
-                            });
+                            setStatus(p => ({
+                              ...p,
+                              mstz: true,
+                            }));
                           }
                         }}
                       >
-                        提交录用申请
+                        面试通知
                       </Button>
                       <Button
                         type="primary"
@@ -606,6 +582,39 @@ function MoreOperationModal(props) {
                         确认录用申请
                       </Button>
                     </>
+                  )}
+                  {String(fqrid) === String(JSON.parse(sessionStorage.getItem('user'))?.id) && (
+                    <Button
+                      type="primary"
+                      onClick={() => {
+                        if (!isSpinning) {
+                          getLink('V_LYXX', 'V_LYXX_M', [
+                            {
+                              name: 'GLXQ',
+                              value: xqid,
+                            },
+                            {
+                              name: 'SWZXID',
+                              value: swzxid,
+                            },
+                          ]);
+                          setLbModal(p => {
+                            return {
+                              ...p,
+                              title: '提交录用申请',
+                            };
+                          });
+                          setModalVisible(p => {
+                            return {
+                              ...p,
+                              employmentApplication: true,
+                            };
+                          });
+                        }
+                      }}
+                    >
+                      提交录用申请
+                    </Button>
                   )}
                   <Button onClick={handleEdit} type="primary">
                     修改
