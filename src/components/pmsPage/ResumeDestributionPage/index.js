@@ -25,7 +25,7 @@ export default function ResumeDistributionPage(props) {
   const [editing, setEditing] = useState(false); //编辑状态
 
   useEffect(() => {
-    console.log(JLXX);
+    // console.log(JLXX);
     if (JLXX.length > 0) {
       setActiveKey(JLXX[0].RYXQ);
       setData(JSON.parse(JSON.stringify(JLXX)));

@@ -12,7 +12,7 @@ const DemandDetail = props => {
   } = props;
   const { state = {} } = location;
   const { routes = [] } = state;
-  // console.log('🚀 ~ file: index.js ~ line 12 ~ DemandDetail ~ props', props);
+  console.log('🚀 ~ file: index.js ~ line 12 ~ DemandDetail ~ props', props);
   let xqid = -1;
   let fqrid = -1;
   let routes2 = [];
@@ -22,13 +22,13 @@ const DemandDetail = props => {
     fqrid = obj.fqrid;
     routes2 = [...routes].concat({
       name: '需求详情',
-      pathname: props?.pathname,
+      pathname: props?.location?.pathname,
     });
     if (routes.length === 0) {
       obj.routes &&
         (routes2 = obj.routes?.concat({
           name: '需求详情',
-          pathname: props?.pathname,
+          pathname: props?.location?.pathname,
         }));
     }
   }
@@ -47,7 +47,7 @@ const DemandDetail = props => {
 
   return (
     <Fragment>
-      <DemandDetailTab dictionary={dictionary} routes={newArr} xqid={xqid} fqrid={fqrid}/>
+      <DemandDetailTab dictionary={dictionary} routes={newArr} xqid={xqid} fqrid={fqrid} />
     </Fragment>
   );
 };

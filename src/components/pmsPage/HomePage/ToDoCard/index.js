@@ -131,7 +131,6 @@ export default function ToDoCard(props) {
 
   //信委会会议结果
   const handleXwhhyjg = item => {
-    // console.log('handleXwhhyjg', item);
     UpdateMessageState({
       zxlx: 'EXECUTE',
       xxid: item.xxid,
@@ -170,6 +169,30 @@ export default function ToDoCard(props) {
       };
     });
     setCurrentXmid(item.xmid);
+  };
+
+  //简历分发、提交录用申请
+  const jumpToDemandDetail = item => {
+    UpdateMessageState({
+      zxlx: 'EXECUTE',
+      xxid: item.xxid,
+    })
+      .then((ret = {}) => {
+        const { code = 0, note = '', record = [] } = ret;
+        if (code === 1) {
+          // window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
+          //   JSON.stringify({
+          //     routes: [{ name: '个人工作台', pathname: location.pathname }],
+          //     xqid: item.xmid,
+          //   }),
+          // )}`;
+          reflush();
+          message.success('执行成功', 1);
+        }
+      })
+      .catch(error => {
+        message.error('操作失败', 1);
+      });
   };
 
   //获取操作按钮文本
@@ -234,6 +257,9 @@ export default function ToDoCard(props) {
         return jumpToProjectDetail(item);
       case '外包人员面试评分':
         return handleWbrymspf(item);
+      case '提交录用申请':
+      case '简历分发':
+        return jumpToDemandDetail(item);
 
       //暂不处理
       case '外包人员录用信息提交':
