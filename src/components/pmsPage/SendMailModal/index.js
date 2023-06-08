@@ -121,27 +121,27 @@ class SendMailModal extends React.Component {
   sendMail = values => {
     // console.log("params", this.handleParams(values))
     // return;
-    this.setState({
-      isSpinning: true
-    })
-    return SendMail(this.handleParams(values))
-      .then(result => {
-        const {code = -1, record = []} = result;
-        if (code > 0) {
+    const params = this.handleParams(values)
+    if (params !== -1) {
+      return SendMail({...params})
+        .then(result => {
+          const {code = -1, record = []} = result;
+          if (code > 0) {
+            this.setState({
+              isSpinning: false
+            })
+            //关闭弹窗
+            message.info("发送邮件成功！")
+            this.props.successCallBack();
+          }
+        })
+        .catch(error => {
           this.setState({
             isSpinning: false
           })
-          //关闭弹窗
-          message.info("发送邮件成功！")
-          this.props.successCallBack();
-        }
-      })
-      .catch(error => {
-        this.setState({
-          isSpinning: false
-        })
-        message.error(!error.success ? error.message : error.note);
-      });
+          message.error(!error.success ? error.message : error.note);
+        });
+    }
   };
 
   replaceAll(str, find, replace) {
@@ -172,7 +172,7 @@ class SendMailModal extends React.Component {
     const accessArr = access.split(';');
     if (accessArr.filter(item => reg.test(item) === false).length > 0) {
       message.warn("请输入正确格式的接收人邮箱！")
-      return;
+      return -1;
     }
     console.log("------开始校验抄送人------", values.CS)
     let others = ""
@@ -184,12 +184,15 @@ class SendMailModal extends React.Component {
       if (othersArr.length > 0) {
         if (othersArr.filter(item => reg.test(item) === false).length > 0) {
           message.warn("请输入正确格式的抄送人邮箱！")
-          return;
+          return -1;
         }
       }
     }
     console.log("----------校验完了---------")
     //表单数据
+    this.setState({
+      isSpinning: true
+    })
     const params = {
       access,
       content: values.NR,
