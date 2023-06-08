@@ -61,144 +61,85 @@ export default function ProjectItems(props) {
 
   //执行
   const handleZx = ({ SWMC = '--', ZXZT = '2', SWZXID }) => {
-    //是否评测人员
-    const isPcry = () => {
-      let arr = [];
-      ZHPC.forEach(x => {
-        arr = arr.concat(x.MSGID.split(','));
-      });
-      let newArr = [...new Set(arr)];
-      // console.log("🚀 ~ file: index.js:51 ~ isPcry ~ isPcry:", newArr,LOGIN_USER_ID)
-      return newArr.includes(LOGIN_USER_ID);
-    };
     let modalName = '';
 
     if (SWMC === '发送确认邮件') {
-      if (isDock) {
-        modalName = 'msgConfirmation';
-      } else {
-        message.info('只有外包项目对接人可以操作', 1);
+      modalName = 'msgConfirmation';
+    } else if (SWMC === '简历分发') {
+      // modalName = 'resumeDestribution';
+      if (JLXX.length === 0) {
+        message.info('请先上传简历', 1);
         return;
       }
-    } else if (SWMC === '简历分发') {
-      if (isDock) {
-        // modalName = 'resumeDestribution';
-        if (JLXX.length === 0) {
-          message.info('请先上传简历', 1);
-          return;
-        }
-        window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
-          JSON.stringify({
-            JLXX: JLXX2,
-            xqid,
-            swzxid: SWZXID,
-            routes,
-          }),
-        )}`;
-      } else {
-        message.info('只有外包项目对接人可以操作', 1);
-      }
+      window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
+        JSON.stringify({
+          JLXX: JLXX2,
+          xqid,
+          swzxid: SWZXID,
+          routes,
+        }),
+      )}`;
       return;
     } else if (SWMC === '简历上传') {
-      if (isDock) {
-        getLink('View_JLSC1', 'View_JLSC1_M', [
-          {
-            name: 'XQMC',
-            value: xqid,
-          },
-          {
-            name: 'SWZX',
-            value: SWZXID,
-          },
-        ]);
-        modalName = 'resumeUpload';
-        setLbModal(p => {
-          return {
-            ...p,
-            title: SWMC,
-          };
-        });
-      } else {
-        message.info('只有外包项目对接人可以操作', 1);
-        return;
-      }
+      getLink('View_JLSC1', 'View_JLSC1_M', [
+        {
+          name: 'XQMC',
+          value: xqid,
+        },
+        {
+          name: 'SWZX',
+          value: SWZXID,
+        },
+      ]);
+      modalName = 'resumeUpload';
+      setLbModal(p => {
+        return {
+          ...p,
+          title: SWMC,
+        };
+      });
     } else if (SWMC === '综合评测安排') {
-      if (isDock || isFqr) {
-        if (XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2') {
-          modalName = 'personelArrangement';
-        } else {
-          message.info('已提交录用申请，不允许综合评测安排', 1);
-          return;
-        }
-      } else {
-        message.info('只有外包项目对接人、需求发起人可以操作', 1);
-        return;
-      }
+      modalName = 'personelArrangement';
     } else if (SWMC === '综合评测打分') {
-      if (isPcry()) {
-        if (XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2') {
-          modalName = 'interviewScore';
-        } else {
-          message.info('已提交录用申请，不允许打分', 1);
-          return;
-        }
-      } else {
-        message.info('只有评测人员可以操作', 1);
-        return;
-      }
+      modalName = 'interviewScore';
     } else if (SWMC === '提交录用申请') {
-      if (isFqr) {
-        modalName = 'employmentApplication';
-        getLink('V_LYXX', 'V_LYXX_M', [
-          {
-            name: 'GLXQ',
-            value: xqid,
-          },
-          {
-            name: 'SWZXID',
-            value: SWZXID,
-          },
-        ]);
-        setLbModal(p => {
-          return {
-            ...p,
-            title: SWMC,
-          };
-        });
-      } else {
-        message.info('只有需求发起人可以操作', 1);
-        return;
-      }
+      modalName = 'employmentApplication';
+      getLink('V_LYXX', 'V_LYXX_M', [
+        {
+          name: 'GLXQ',
+          value: xqid,
+        },
+        {
+          name: 'SWZXID',
+          value: SWZXID,
+        },
+      ]);
+      setLbModal(p => {
+        return {
+          ...p,
+          title: SWMC,
+        };
+      });
     } else if (SWMC === '录用确认') {
-      if (isDock) {
-        modalName = 'offerConfirmation';
-      } else {
-        message.info('只有外包项目对接人可以操作', 1);
-        return;
-      }
+      modalName = 'offerConfirmation';
     } else if (SWMC === '账号新增') {
-      if (isFqr) {
-        modalName = 'newAccount';
-        getLink('V_RYXX', 'V_RYXX_ADD', [
-          {
-            name: 'SSWBXM2',
-            value: XMXX.XMID,
-          },
-          {
-            name: 'SWZXID',
-            value: SWZXID,
-          },
-        ]);
-        setLbModal(p => {
-          return {
-            ...p,
-            title: SWMC,
-          };
-        });
-      } else {
-        message.info('只有需求发起人可以操作', 1);
-        return;
-      }
+      modalName = 'newAccount';
+      getLink('V_RYXX', 'V_RYXX_ADD', [
+        {
+          name: 'SSWBXM2',
+          value: XMXX.XMID,
+        },
+        {
+          name: 'SWZXID',
+          value: SWZXID,
+        },
+      ]);
+      setLbModal(p => {
+        return {
+          ...p,
+          title: SWMC,
+        };
+      });
     }
     setSwzxid(SWZXID);
     //打开弹窗
@@ -269,7 +210,9 @@ export default function ProjectItems(props) {
       if (
         (['发送确认邮件', '简历上传', '简历分发', '录用确认'].includes(SWMC) && isDock) ||
         (['账号新增', '提交录用申请'].includes(SWMC) && isFqr) ||
-        (SWMC === '综合评测打分' && isPcry())
+        (SWMC === '综合评测打分' &&
+          isPcry() &&
+          XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2')
       )
         return (
           <div className="opr-btn" onClick={() => handleZx(item)}>
@@ -296,7 +239,10 @@ export default function ProjectItems(props) {
         );
       return '';
     } else if (SWMC === '综合评测安排') {
-      if (isDock || isFqr) {
+      if (
+        (isDock || isFqr) &&
+        XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2'
+      ) {
         if (ZXZT === '1')
           return (
             <div className="reopr-btn" onClick={() => handleCk(SWMC, SWZXID)}>
@@ -570,14 +516,14 @@ export default function ProjectItems(props) {
             })
           }
           successCallBack={() => {
-              setModalVisible(p => {
-                return {
-                  ...p,
-                  msgConfirmation: false,
-                };
-              });
-              reflush();
-            }}
+            setModalVisible(p => {
+              return {
+                ...p,
+                msgConfirmation: false,
+              };
+            });
+            reflush();
+          }}
           visible={modalVisible.msgConfirmation}
         />
       )}

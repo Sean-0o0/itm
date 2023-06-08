@@ -216,11 +216,9 @@ export default function InfoTable(props) {
                     JSON.stringify({
                       xqid: row.XQID,
                       fqrid: row.FQRID,
+                      routes: [{ name: '需求列表', pathname: location.pathname }],
                     }),
                   )}`,
-                  state: {
-                    routes: [{ name: '需求列表', pathname: location.pathname }],
-                  },
                 }}
                 className="table-link-strong"
               >

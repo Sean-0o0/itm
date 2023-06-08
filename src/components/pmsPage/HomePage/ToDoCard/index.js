@@ -24,6 +24,8 @@ export default function ToDoCard(props) {
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
   const [currentXmid, setCurrentXmid] = useState(-1); //当前项目id
   const [currentXmmc, setCurrentXmmc] = useState(''); //当前项目名称
+  const [currentXqid, setCurrentXqid] = useState('-1'); //当前需求id
+  const [currentSwzxid, setCurrentSwzxid] = useState('-1'); //当前需求事务执行id
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -169,30 +171,40 @@ export default function ToDoCard(props) {
       };
     });
     setCurrentXmid(item.xmid);
+    if (item.kzzd !== '') {
+      // console.log('item.kzzd', JSON.parse(item.kzzd));
+      setCurrentSwzxid(JSON.parse(item.kzzd).SWZXID);
+      setCurrentXqid(JSON.parse(item.kzzd).XQID);
+    }
   };
 
   //简历分发、提交录用申请
   const jumpToDemandDetail = item => {
-    UpdateMessageState({
-      zxlx: 'EXECUTE',
-      xxid: item.xxid,
-    })
-      .then((ret = {}) => {
-        const { code = 0, note = '', record = [] } = ret;
-        if (code === 1) {
-          // window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
-          //   JSON.stringify({
-          //     routes: [{ name: '个人工作台', pathname: location.pathname }],
-          //     xqid: item.xmid,
-          //   }),
-          // )}`;
-          reflush();
-          message.success('执行成功', 1);
-        }
+    if (item.kzzd !== '') {
+      UpdateMessageState({
+        zxlx: 'EXECUTE',
+        xxid: item.xxid,
       })
-      .catch(error => {
-        message.error('操作失败', 1);
-      });
+        .then((ret = {}) => {
+          const { code = 0, note = '', record = [] } = ret;
+          if (code === 1) {
+            // window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
+            //   JSON.stringify({
+            //     routes: [{ name: '个人工作台', pathname: location.pathname }],
+            //     xqid: JSON.parse(item.kzzd).XQID,
+            //     fqrid: JSON.parse(item.kzzd).FQRID.
+            //   }),
+            // )}`;
+            // reflush();
+            message.success('执行成功', 1);
+          }
+        })
+        .catch(error => {
+          message.error('操作失败', 1);
+        });
+    } else {
+      message.error('数据错误，操作失败', 1);
+    }
   };
 
   //获取操作按钮文本
@@ -402,10 +414,10 @@ export default function ToDoCard(props) {
               };
             });
           }}
-          xqid={Number(currentXmid)}
+          xqid={Number(currentXqid)}
           reflush={reflush}
           WBRYGW={WBRYGW}
-          todo={true}
+          swzxid={Number(currentSwzxid)}
         />
       )}
       {/* 付款流程发起弹窗 */}

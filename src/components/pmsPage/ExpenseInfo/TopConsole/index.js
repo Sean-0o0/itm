@@ -67,15 +67,15 @@ export default forwardRef(function TopConsole(props, ref) {
       })
         .then(res => {
           if (res?.code === 1) {
-            const { role = '' } = res;
+            const { role = '', zyrole } = res;
             QueryRequirementListPara({
               current: 1,
               pageSize: 10,
               paging: -1,
               sort: '',
               total: -1,
-              cxlx: 'XQLB',
-              js: role,
+              cxlx: 'FYJS',
+              js: zyrole === '外包项目对接人' ? zyrole : role,
             })
               .then(res => {
                 if (res?.success) {
@@ -135,21 +135,34 @@ export default forwardRef(function TopConsole(props, ref) {
       params.jssj = Number(moment(dateRange[1]).format('YYYYMM'));
     }
 
-    QueryOutsourceCostList(params)
-      .then(res => {
-        if (res?.success) {
-          const data = JSON.parse(res.xmxx);
-          // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
-          setTableData(p => data);
-          setTotal(res.totalrows);
-          setTableLoading(false);
-        }
+    LOGIN_USER_INFO.id !== undefined &&
+      QueryUserRole({
+        userId: String(LOGIN_USER_INFO.id),
       })
-      .catch(e => {
-        message.error('表格数据查询失败', 1);
-        console.error('getTableData', e);
-        setTableLoading(false);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '', zyrole } = res;
+            params.js = zyrole === '外包项目对接人' ? zyrole : role;
+            QueryOutsourceCostList(params)
+              .then(res => {
+                if (res?.success) {
+                  const data = JSON.parse(res.xmxx);
+                  // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
+                  setTableData(p => data);
+                  setTotal(res.totalrows);
+                  setTableLoading(false);
+                }
+              })
+              .catch(e => {
+                message.error('表格数据查询失败', 1);
+                console.error('getTableData', e);
+                setTableLoading(false);
+              });
+          }
+        })
+        .catch(e => {
+          message.error('用户角色信息查询失败', 1);
+        });
   };
 
   //重置按钮

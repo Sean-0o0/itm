@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
-import { QueryOutsourceCostList } from '../../../services/pmsServices';
+import { QueryOutsourceCostList, QueryUserRole } from '../../../services/pmsServices';
 import { message } from 'antd';
 import { set } from 'store';
 import moment from 'moment';
@@ -60,33 +60,46 @@ export default function DemandInfo(props) {
   //获取表格数据
   const getTableData = (current = 1, pageSize = 20) => {
     setTableLoading(true);
-    QueryOutsourceCostList({
-      current,
-      cxlx: 'XM',
-      pageSize,
-      paging: 1,
-      sort: '',
-      total: -1,
-      // xmid: 0,
-      // gysid: 0,
-      // jssj: 0,
-      // kssj: 0,
-    })
-      .then(res => {
-        if (res?.success) {
-          let data = JSON.parse(res.xmxx);
-          // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
-          // data = data.map(x => ({ ...x, ID: getUUID() }));
-          setTableData(p => data);
-          setTotal(res.totalrows);
-          setTableLoading(false);
-        }
+    LOGIN_USER_ID !== undefined &&
+      QueryUserRole({
+        userId: String(LOGIN_USER_ID),
       })
-      .catch(e => {
-        message.error('表格数据查询失败', 1);
-        console.error('getTableData', e);
-        setTableLoading(false);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '', zyrole } = res;
+            QueryOutsourceCostList({
+              current,
+              cxlx: 'XM',
+              pageSize,
+              paging: 1,
+              sort: '',
+              total: -1,
+              js: zyrole === '外包项目对接人' ? zyrole : role,
+              // xmid: 0,
+              // gysid: 0,
+              // jssj: 0,
+              // kssj: 0,
+            })
+              .then(res => {
+                if (res?.success) {
+                  let data = JSON.parse(res.xmxx);
+                  // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
+                  // data = data.map(x => ({ ...x, ID: getUUID() }));
+                  setTableData(p => data);
+                  setTotal(res.totalrows);
+                  setTableLoading(false);
+                }
+              })
+              .catch(e => {
+                message.error('表格数据查询失败', 1);
+                console.error('getTableData', e);
+                setTableLoading(false);
+              });
+          }
+        })
+        .catch(e => {
+          message.error('用户角色信息查询失败', 1);
+        });
   };
 
   const getSubTableData = (
@@ -95,35 +108,48 @@ export default function DemandInfo(props) {
     jssj = undefined,
     kssj = undefined,
   ) => {
-    QueryOutsourceCostList({
-      current: 1,
-      cxlx: 'XQ',
-      pageSize: 10,
-      paging: -1,
-      sort: '',
-      total: -1,
-      xmid,
-      gysid,
-      jssj,
-      kssj,
-    })
-      .then(res => {
-        if (res?.success) {
-          const data = JSON.parse(res.xqxx);
-          // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
-          setSubTableData(p => {
-            return {
-              ...p,
-              [xmid]: data,
-            };
-          });
-          setIsFinish(true);
-        }
+    LOGIN_USER_ID !== undefined &&
+      QueryUserRole({
+        userId: String(LOGIN_USER_ID),
       })
-      .catch(e => {
-        message.error('子表格数据查询失败', 1);
-        setTableLoading(false);
-      });
+        .then(res => {
+          if (res?.code === 1) {
+            const { role = '', zyrole } = res;
+            QueryOutsourceCostList({
+              current: 1,
+              cxlx: 'XQ',
+              pageSize: 10,
+              paging: -1,
+              sort: '',
+              total: -1,
+              xmid,
+              gysid,
+              jssj,
+              kssj,
+              js: zyrole === '外包项目对接人' ? zyrole : role,
+            })
+              .then(res => {
+                if (res?.success) {
+                  const data = JSON.parse(res.xqxx);
+                  // console.log('🚀 ~ file: index.js:332 ~ onExpand ~ data:', data);
+                  setSubTableData(p => {
+                    return {
+                      ...p,
+                      [xmid]: data,
+                    };
+                  });
+                  setIsFinish(true);
+                }
+              })
+              .catch(e => {
+                message.error('子表格数据查询失败', 1);
+                setTableLoading(false);
+              });
+          }
+        })
+        .catch(e => {
+          message.error('用户角色信息查询失败', 1);
+        });
   };
 
   return (

@@ -1,15 +1,11 @@
 import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
-import { Select, Button, Input, TreeSelect, Row, Col, Icon, message } from 'antd';
+import { Select, Button, Input, TreeSelect, message, Tooltip } from 'antd';
 import {
-  QueryProjectListPara,
-  QueryProjectListInfo,
   QueryOutsourceRequirementList,
   QueryRequirementListPara,
   QueryUserRole,
 } from '../../../../services/pmsServices';
-import TreeUtils from '../../../../utils/treeUtils';
-import { set } from 'store';
-const InputGroup = Input.Group;
+
 const { Option } = Select;
 
 export default forwardRef(function TopConsole(props, ref) {
@@ -174,9 +170,7 @@ export default forwardRef(function TopConsole(props, ref) {
               sort: '',
               total: -1,
               cxlx: 'XQLB',
-              js: zyrole === '外包项目对接人'
-              ? zyrole
-              : role,
+              js: zyrole === '外包项目对接人' ? zyrole : role,
             })
               .then(res => {
                 if (res?.success) {
@@ -321,7 +315,9 @@ export default forwardRef(function TopConsole(props, ref) {
           >
             {prjNameData.map((x, i) => (
               <Option key={i} value={x.ID}>
-                {x.XMMC}
+                <Tooltip title={x.XMMC} placement="bottomLeft">
+                  {x.XMMC}
+                </Tooltip>
               </Option>
             ))}
           </Select>
@@ -364,7 +360,9 @@ export default forwardRef(function TopConsole(props, ref) {
           >
             {dmNameData.map((x, i) => (
               <Option key={i} value={x.ID}>
-                {x.XQMC}
+                <Tooltip title={x.XQMC} placement="bottomLeft">
+                  {x.XQMC}
+                </Tooltip>
               </Option>
             ))}
           </Select>

@@ -40,6 +40,7 @@ export default function InfoTable(props) {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
+  const [userRole, setUserRole] = useState('普通人员'); //
 
   const location = useLocation();
 
@@ -64,6 +65,7 @@ export default function InfoTable(props) {
       .then(res => {
         if (res.code === 1) {
           setIsDock(res.zyrole === '外包项目对接人');
+          setUserRole(res.role);
         }
       })
       .catch(e => {
@@ -411,6 +413,7 @@ export default function InfoTable(props) {
         gysid: Number(record.GYSID),
         jssj: Number(202306),
         kssj: Number(record.KSSJ),
+        js: isDock ? '外包项目对接人' : userRole,
       });
       const data = JSON.parse(res.fyxq);
       // console.log("🚀 ~ file: index.js:321 ~ onExpand ~ data:", data)

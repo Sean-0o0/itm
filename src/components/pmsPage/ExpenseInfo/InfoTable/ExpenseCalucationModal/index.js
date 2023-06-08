@@ -17,6 +17,7 @@ import {
 import { EditableCell, EditableRow } from './EditableTable';
 import moment from 'moment';
 import {
+  CostCalculationCheck,
   FetchQueryGysInZbxx,
   OperateEvaluation,
   OutsourceCostCalculation,
@@ -50,7 +51,8 @@ function ExpenseCalucationModal(props) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [dateRange, setDateRange] = useState(quarterData[0]?.range); //开始结束月份
   const [showAdd, setShowAdd] = useState(false); //是否允许新增
-
+  const [tableOriginData, setTableOriginData] = useState([]); //用来最后获取校验用的人员数据
+  const [checkQuarter, setCheckQuarter] = useState('第一季度'); //用来最后获取校验用的
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
@@ -70,10 +72,26 @@ function ExpenseCalucationModal(props) {
 
   //季度变化
   const handleQuarterChange = (v, node) => {
+    // console.log('🚀 ~ file: index.js:75 ~ handleQuarterChange ~ v:', v);
     const range = [...(node?.props?.range ?? [])];
+    // console.log('🚀 ~ file: index.js:77 ~ handleQuarterChange ~ range:', range);
     setDateRange(range);
-    const arr = tableData.map(x => ({ ...x, ['RQ' + x.ID]: range }));
+    const arr = JSON.parse(JSON.stringify(tableData)).map(x => ({
+      ...x,
+      ['RQ' + x.ID]: range,
+    }));
+    console.log('🚀 ~ file: index.js:80 ~ handleQuarterChange ~ arr:', arr);
     setTableData([...arr]);
+    // setTableData([...arr]);
+    if (node?.props?.jd === 1) {
+      setCheckQuarter('第一季度');
+    } else if (node?.props?.jd === 2) {
+      setCheckQuarter('第二季度');
+    } else if (node?.props?.jd === 3) {
+      setCheckQuarter('第三季度');
+    } else {
+      setCheckQuarter('第四季度');
+    }
   };
 
   //下拉框数据
@@ -92,8 +110,8 @@ function ExpenseCalucationModal(props) {
               paging: -1,
               sort: '',
               total: -1,
-              cxlx: 'XQLB',
-              js: role,
+              cxlx: 'FYJS',
+              js: zyrole === '外包项目对接人' ? zyrole : role,
             })
               .then(res => {
                 if (res?.success) {
@@ -112,37 +130,74 @@ function ExpenseCalucationModal(props) {
   };
 
   const handleOk = () => {
-    form.validateFieldsAndScroll(err => {
+    validateFields(err => {
       if (!err) {
-        setIsSpinning(true);
-        let submitTable = tableData.map(x => {
-          if (x['RQ' + x.ID].length > 1)
-            return {
-              RYID: String(x['RYID' + x.ID]),
-              KSSJ: x['RQ' + x.ID][0]?.format('YYYYMM'),
-              JSSJ: x['RQ' + x.ID][1]?.format('YYYYMM'),
-            };
+        let rqNotEmpty = true;
+        tableData.forEach(x => {
+          if (
+            x['RQ' + x.ID].length === 0 ||
+            x['RQ' + x.ID][0] === null ||
+            x['RQ' + x.ID][1] === null
+          )
+            rqNotEmpty = false;
         });
-        let submitProps = {
-          xmid: Number(getFieldValue('xmmc')),
-          ryxx: JSON.stringify(submitTable),
-          count: submitTable.length,
-          czlx: 'MULTIPLE',
-        };
-        OutsourceCostCalculation(submitProps)
-          .then(res => {
-            if (res?.success) {
-              resetFields();
-              reflush();
-              setIsSpinning(false);
-              message.success('操作成功', 1);
-              setVisible(false);
-            }
-          })
-          .catch(e => {
-            message.error('操作失败');
-            setIsSpinning(false);
+        if (rqNotEmpty) {
+          setIsSpinning(true);
+          let submitTable = tableData.map(x => {
+            if (x['RQ' + x.ID].length > 1)
+              return {
+                RYID: String(x['RYID' + x.ID]),
+                KSSJ: x['RQ' + x.ID][0]?.format('YYYYMM'),
+                JSSJ: x['RQ' + x.ID][1]?.format('YYYYMM'),
+              };
           });
+          console.log('🚀 ~ file: index.js:138 ~ submitTable ~ submitTable:', submitTable);
+          let checkTable = tableOriginData
+            .filter(x => submitTable.map(z => z.RYID)?.includes(String(x.RYID)))
+            ?.map(y => ({ RYMC: y.RYMC, RYID: String(y.RYID) }));
+          CostCalculationCheck({
+            jd: checkQuarter,
+            nf: moment().year(),
+            ryid: checkTable,
+            xmid: Number(getFieldValue('xmmc')),
+          })
+            .then(res => {
+              if (res?.success) {
+                let arr = JSON.parse(res.result);
+                if (arr.length === 0) {
+                  let submitProps = {
+                    xmid: Number(getFieldValue('xmmc')),
+                    ryxx: JSON.stringify(submitTable),
+                    count: submitTable.length,
+                    czlx: 'MULTIPLE',
+                  };
+                  OutsourceCostCalculation(submitProps)
+                    .then(res => {
+                      if (res?.success) {
+                        resetFields();
+                        reflush();
+                        setIsSpinning(false);
+                        message.success('操作成功', 1);
+                        setVisible(false);
+                      }
+                    })
+                    .catch(e => {
+                      message.error('操作失败');
+                      setIsSpinning(false);
+                    });
+                } else {
+                  // console.log(arr);
+                  setIsSpinning(false);
+                  arr.forEach(x => {
+                    message.error(x.RYMC + x.INFO, 1);
+                  });
+                }
+              }
+            })
+            .catch(e => {
+              message.error('接口信息获取失败', 1);
+            });
+        }
       }
     });
   };
@@ -264,6 +319,7 @@ function ExpenseCalucationModal(props) {
                     RYMC: x.RYMC,
                   }));
                   const UUID = Date.now();
+                  setTableOriginData([...JSON.parse(result)]);
                   let tableArr = JSON.parse(result).map((x, i) => ({
                     ID: String(UUID) + i,
                     ['RYID' + String(UUID) + i]: x.RYID,
@@ -272,10 +328,6 @@ function ExpenseCalucationModal(props) {
                   setRyData(p => [...arr]);
                   setRyOriginData([...arr]);
                   setShowAdd(tableArr.length < arr.length);
-                  console.log(
-                    '🚀 ~ file: index.js:278 ~ handleXmmcChange ~ tableArr.length < arr.length:',
-                    tableArr.length, arr.length,
-                  );
                   setTableData([...tableArr]);
                   setIsSpinning(false);
                 }
@@ -333,7 +385,7 @@ function ExpenseCalucationModal(props) {
                     onChange={handleQuarterChange}
                   >
                     {quarterData.map((x, i) => (
-                      <Option key={i} value={x.title} range={x.range}>
+                      <Option key={i} value={x.title} range={x.range} jd={i + 1}>
                         {x.title}
                       </Option>
                     ))}
@@ -388,7 +440,7 @@ function ExpenseCalucationModal(props) {
                 rowKey={'ID'}
                 rowClassName={() => 'editable-row'}
                 dataSource={tableData}
-                scroll={tableData.length > 3 ? { y: 171 } : {}}
+                scroll={tableData.length > 4 ? { y: 228 } : {}}
                 pagination={false}
                 bordered
                 size="middle"

@@ -12,7 +12,7 @@ const DemandDetail = props => {
   } = props;
   const { state = {} } = location;
   const { routes = [] } = state;
-  console.log('🚀 ~ file: index.js ~ line 12 ~ DemandDetail ~ props', props);
+  // console.log('🚀 ~ file: index.js ~ line 12 ~ DemandDetail ~ props', props);
   let xqid = -1;
   let fqrid = -1;
   let routes2 = [];
@@ -20,17 +20,17 @@ const DemandDetail = props => {
     let obj = JSON.parse(DecryptBase64(encryptParams));
     xqid = obj.xqid;
     fqrid = obj.fqrid;
-    routes2 = [...routes].concat({
-      name: '需求详情',
-      pathname: props?.location?.pathname,
-    });
-    if (routes.length === 0) {
-      obj.routes &&
-        (routes2 = obj.routes?.concat({
-          name: '需求详情',
-          pathname: props?.location?.pathname,
-        }));
-    }
+    // routes2 = [...routes].concat({
+    //   name: '需求详情',
+    //   pathname: props?.location?.pathname,
+    // });
+    // if (routes.length === 0) {
+    obj.routes &&
+      (routes2 = obj.routes?.concat({
+        name: '需求详情',
+        pathname: props?.location?.pathname,
+      }));
+    // }
   }
   //去重
   const newArr = [];

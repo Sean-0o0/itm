@@ -33,7 +33,6 @@ function InterviewScoreModal(props) {
     swzxid,
     reflush,
     WBRYGW = [],
-    todo = false,
   } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
@@ -54,7 +53,7 @@ function InterviewScoreModal(props) {
     setIsSpinning(true);
     QueryEvaluationGradeInfo({
       xqid,
-      cxlx: todo ? 'SY' : 'ALL',
+      cxlx:'ALL',
     })
       .then(res => {
         if (res?.success) {
@@ -100,8 +99,8 @@ function InterviewScoreModal(props) {
           dfxx: JSON.stringify(submitTable),
           count: submitTable.length,
           xqid: Number(xqid),
-          swzxid: todo ? undefined : Number(swzxid),
-          czlx: todo ? 'SY' : 'XQ',
+          swzxid:  Number(swzxid),
+          czlx: 'XQ',
         };
         // console.log("🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:", submitProps)
         EvaluationScoring(submitProps)

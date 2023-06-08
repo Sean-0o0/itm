@@ -50,7 +50,7 @@ const EditableCell = props => {
         return (
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
-              initialValue: record[recIndex],
+              initialValue: record[recIndex] === -1 ? '' : record[recIndex],
               rules: [
                 {
                   required: true,

@@ -1,7 +1,9 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Form, Input, Tooltip, Select, DatePicker } from 'antd';
+import login from '../../../../../../utils/api/login';
 
 const { Option } = Select;
+const { RangePicker } = DatePicker;
 const EditableContext = React.createContext();
 
 const EditableRow = Form.create()(({ form, index, ...props }) => {
@@ -13,6 +15,7 @@ const EditableRow = Form.create()(({ form, index, ...props }) => {
 });
 const EditableCell = props => {
   const [editing, setEditing] = useState(false); //正在编辑
+  const [rpOpen, setRpOpen] = useState(false); //example
   const inputRef = useRef(null);
   const {
     editable,
@@ -30,18 +33,6 @@ const EditableCell = props => {
   useEffect(() => {
     return () => {};
   }, []);
-
-  const save = e => {
-    formdecorate.validateFields(
-      [
-        e.currentTarget.id, //只校验当前编辑项
-      ],
-      (error, values) => {
-        // console.log('🚀 ~ file: index.js:44 ~ save ~ values:', values);
-        handleSave({ ...record, ...values });
-      },
-    );
-  };
 
   const getDecotator = () => {
     const recIndex = dataIndex + record['ID'];
@@ -94,38 +85,38 @@ const EditableCell = props => {
         );
       case 'RQ':
         return (
-          <Form.Item style={{ margin: 0 }}>
-            {formdecorate.getFieldDecorator(recIndex, {
-              initialValue: record[recIndex],
-              rules: [
-                {
-                  required: true,
-                  message: `${title}不能为空`,
-                },
-              ],
-            })(
-              <DatePicker.RangePicker
-                style={{ minWidth: '100%' }}
-                mode={['month', 'month']}
-                placeholder="请选择"
-                format="YYYY-MM"
-                onBlur={() => {
-                  formdecorate.validateFields([
-                    'RQ', //只校验当前编辑项
-                  ]);
-                }}
-                onPanelChange={v => {
-                  formdecorate.validateFields(
-                    [
-                      'RQ', //只校验当前编辑项
-                    ],
-                    (error, values) => {
-                      handleSave({ ...record, [recIndex]: v });
-                    },
-                  );
-                }}
-              />,
-            )}
+          <Form.Item
+            style={{ margin: 0 }}
+            required
+            help={record[recIndex].length === 0 ? '日期不能为空' : ''}
+            validateStatus={record[recIndex].length === 0 ? 'error' : 'success'}
+          >
+            <RangePicker
+              style={{ minWidth: '100%' }}
+              mode={['month', 'month']}
+              placeholder="请选择"
+              format="YYYY-MM"
+              value={record[recIndex]}
+              onBlur={() => {
+                formdecorate.validateFields([
+                  dataIndex, //只校验当前编辑项
+                ]);
+              }}
+              onChange={(dates, dateStrings) => {
+                handleSave({ ...record, [recIndex]: dates });
+              }}
+              onPanelChange={v => {
+                console.log(v);
+                // formdecorate.validateFields(
+                //   [
+                //     dataIndex, //只校验当前编辑项
+                //   ],
+                //   (error, values) => {
+                handleSave({ ...record, [recIndex]: v });
+                // },
+                // );
+              }}
+            />
           </Form.Item>
         );
       default:

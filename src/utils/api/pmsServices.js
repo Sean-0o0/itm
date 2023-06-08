@@ -475,4 +475,16 @@ export default [
     url: '/projectManage/uploadCurriculumVitae',
     dis: '简历上传',
   },
+  {
+    code: '',
+    key: 'costCalculationCheck',
+    url: '/projectManage/costCalculationCheck',
+    dis: '费用计算前校验',
+  },
+  {
+    code: '',
+    key: 'outsourceCostExcel',
+    url: '/projectManage/outsourceCostExcel',
+    dis: '外包费用导出',
+  },
 ];

@@ -87,6 +87,8 @@ const {
     globalSearch,
     outsourceCostCalculation,
     uploadCurriculumVitae,
+    costCalculationCheck,
+    outsourceCostExcel,
   },
 } = api;
 
@@ -912,6 +914,26 @@ export async function OutsourceCostCalculation(payload) {
 export async function UploadCurriculumVitae(payload) {
   const option = {
     url: uploadCurriculumVitae,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 费用计算前校验
+export async function CostCalculationCheck(payload) {
+  const option = {
+    url: costCalculationCheck,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 外包费用导出
+export async function OutsourceCostExcel(payload) {
+  const option = {
+    url: outsourceCostExcel,
     method: 'post',
     data: payload,
   };
