@@ -102,7 +102,7 @@ export default class PageHeader extends React.PureComponent {
           </span>
         </div>
         {/*搜索框*/}
-        <div>
+        <div style={{borderBottom: '1px solid rgb(238, 239, 241)'}}>
           {
             searchModalVisible && <SearchModal closeModal={() => {
               this.setState({
@@ -114,7 +114,7 @@ export default class PageHeader extends React.PureComponent {
             <Input type="text" suffix={<i className="iconfont icon-search-name icon-personal"/>}
                    onFocus={() => this.setState({
                      searchModalVisible: true,
-                   })} placeholder='请输入项目/供应商/人员'/>
+                   })} placeholder='可查询项目、预算、文档、供应商、人员'/>
           </div>
         </div>
         {/*用户名*/}

@@ -25,13 +25,6 @@ export default forwardRef(function TopConsole(props) {
   const [zt, setZt] = useState(undefined); //状态
   const [filterFold, setFilterFold] = useState(true); //收起 true、展开 false
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-
-  useEffect(() => {
-    getFilterData();
-    return () => {
-    };
-  }, []);
-
   const {
     setTableLoading,
     setTableData,
@@ -41,8 +34,15 @@ export default forwardRef(function TopConsole(props) {
     curPage,
     curPageSize,
     dictionary,
+    xmid,
   } = props;
   const {WBRYGW = []} = dictionary;
+
+  useEffect(() => {
+    getFilterData();
+    return () => {
+    };
+  }, [xmid]);
 
 
   //顶部下拉框查询数据
@@ -53,7 +53,7 @@ export default forwardRef(function TopConsole(props) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = ''} = res;
+          const {role = '', zyrole = ''} = res;
           QueryRequirementListPara({
             current: 1,
             pageSize: 10,
@@ -61,11 +61,15 @@ export default forwardRef(function TopConsole(props) {
             sort: '',
             total: -1,
             cxlx: 'WBRYLB',
-            js: role,
+            js: zyrole === "暂无" ? role : zyrole,
           })
             .then(res => {
               if (res?.success) {
                 setPrjNameData([...JSON.parse(res.xmxx)]);
+                console.log("params.cccc", Number(xmid))
+                if (String(xmid) !== "" || xmid !== "undefined") {
+                  setPrjName(xmid)
+                }
                 setGysData([...JSON.parse(res.gysxx)]);
                 setRymcData([...JSON.parse(res.wbryxx)]);
                 setRydjData([...JSON.parse(res.rydjxx)]);
@@ -278,7 +282,7 @@ export default forwardRef(function TopConsole(props) {
             placeholder="请选择"
           >
             {prjNameData.map((x, i) => (
-              <Option key={i} value={x.ID}>
+              <Option key={x.ID} value={x.ID}>
                 {x.XMMC}
               </Option>
             ))}

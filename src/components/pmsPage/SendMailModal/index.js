@@ -250,6 +250,7 @@ class SendMailModal extends React.Component {
               this.setState({
                 addMailModalVisible: false
               })
+              this.queryEmail();
             }}
             onCancel={() => this.setState({
               addMailModalVisible: false

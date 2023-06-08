@@ -91,7 +91,7 @@ class ToConsole extends Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '40%',
-      height: '250px',
+      height: '300px',
       title: '修改密码',
       style: {top: '40px'},
       visible: changePwdVisible,
@@ -147,7 +147,7 @@ class ToConsole extends Component {
             <div className="header-left flex-r">
               <img src={XB === '1' ? boyImg : XB === '2' ? girlImg : boyImg} className="staff-img"/>
               <div className="member-detail-cont flex-c">
-                <div className="member-detail-line-import">
+                <div className="member-detail-line-import" style={{paddingBottom: '12px'}}>
                   <span className="member-detail-name">{RYMC || '-'}</span>
                   {/*<span className="staff-experience">&nbsp;已加入浙商证券{jrts}天</span>*/}
                 </div>
@@ -173,10 +173,10 @@ class ToConsole extends Component {
                       WebkitLineClamp: '2',
                     }}
                   >
-                    {RYGW || '-'}&nbsp;&nbsp;&nbsp;
+                    {RYGW || '-'}
                   </span>
                   </Tooltip>
-                  <span className="member-detail-label">所属项目：</span>
+                  <span className="member-detail-label" style={{paddingLeft: '24px'}}>所属项目：</span>
                   <span className="member-detail-value">{XMMC || '-'}</span>
                 </div>
               </div>

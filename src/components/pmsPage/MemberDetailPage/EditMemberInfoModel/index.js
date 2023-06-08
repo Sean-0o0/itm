@@ -160,7 +160,6 @@ class EditMemberInfoModel extends React.Component {
         message.warn('请选择试用期考核情况！');
         return;
       }
-      return;
       _this.setState({
         isSpinning: true
       })

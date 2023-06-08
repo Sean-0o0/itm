@@ -72,6 +72,7 @@ export default function MemberInfo(props) {
   return (
     <div className="supplier-info-box">
       <TopConsole
+        xmid={params.xmid}
         dictionary={dictionary}
         setTableData={setTableData}
         setTableLoading={setTableLoading}
