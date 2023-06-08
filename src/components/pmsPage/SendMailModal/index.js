@@ -132,7 +132,7 @@ class SendMailModal extends React.Component {
             isSpinning: false
           })
           //关闭弹窗
-          this.props.closeContractModal();
+          this.props.successCallBack();
         }
       })
       .catch(error => {
@@ -225,7 +225,7 @@ class SendMailModal extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       width: '40%',
-      height: '350px',
+      height: '420px',
       title: title,
       style: {top: '40px'},
       visible: addMailModalVisible,
@@ -318,7 +318,8 @@ class SendMailModal extends React.Component {
                                   message: '请选择发件人',
                                 },
                               ],
-                              initialValue: contactsID || "zhukantest@stocke.com.cn"
+                              // initialValue: contactsID || "zhukantest@stocke.com.cn"
+                              initialValue: "chenjian1@apexsoft.com.cn"
                             })(<Select
                               showSearch
                               allowClear
