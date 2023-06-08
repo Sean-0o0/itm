@@ -132,6 +132,7 @@ class SendMailModal extends React.Component {
             isSpinning: false
           })
           //关闭弹窗
+          message.info("发送邮件成功！")
           this.props.successCallBack();
         }
       })
