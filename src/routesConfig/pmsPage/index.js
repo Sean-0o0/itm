@@ -223,4 +223,14 @@ exports.routes = [
     path: `${prefix}/ExpenseInfo/:params`,
     component: './pmsPage/ExpenseInfo',
   },
+  {
+    // 考勤列表页面
+    path: `${prefix}/AttendanceListInfo/:params`,
+    component: './pmsPage/AttendanceListInfo',
+  },
+  {
+    // 考勤列表页面
+    path: `${prefix}/AttendanceListInfo`,
+    component: './pmsPage/AttendanceListInfo',
+  },
 ];

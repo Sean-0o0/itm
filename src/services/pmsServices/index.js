@@ -87,6 +87,7 @@ const {
     globalSearch,
     outsourceCostCalculation,
     uploadCurriculumVitae,
+    queryOutsourceMemberAttendance,
     costCalculationCheck,
     outsourceCostExportExcel,
   },
@@ -919,6 +920,17 @@ export async function UploadCurriculumVitae(payload) {
   };
   return request(option);
 }
+
+// 考勤查询
+export async function QueryOutsourceMemberAttendance(payload) {
+  const option = {
+    url: queryOutsourceMemberAttendance,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
 
 // 费用计算前校验
 export async function CostCalculationCheck(payload) {

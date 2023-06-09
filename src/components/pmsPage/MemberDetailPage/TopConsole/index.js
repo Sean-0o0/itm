@@ -10,10 +10,13 @@ import ktImg from '../../../../assets/staffDetail/img_kt.png';
 import EditMemberInfoModel from "../EditMemberInfoModel";
 import BridgeModal from "../../../Common/BasicModal/BridgeModel";
 import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import {CreateOperateHyperLink} from "../../../../services/pmsServices";
 
 class ToConsole extends Component {
   state = {
     editMemberInfoVisible: false,
+    changePwdVisible: false,
+    changePwdUrl: '',
   };
 
   handleEditMemberInfo = (type) => {
@@ -36,9 +39,7 @@ class ToConsole extends Component {
     if (zyrole === "外包项目对接人") {
       //type 编辑详情还是编辑试用期考核情况
       console.log("------修改密码----")
-      this.setState({
-        changePwdVisible: true
-      })
+      this.getChangePwdUrlUrl();
     } else {
       message.warn("只有外包项目对接人可修改密码!");
     }
@@ -59,8 +60,47 @@ class ToConsole extends Component {
     refreshPages();
   }
 
+  getChangePwdUrlUrl = id => {
+    const {
+      ryid = "",
+      data: {
+        XTZH = ""
+      },
+    } = this.props;
+    const params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'V_RYXX',
+      operateName: 'V_RYXX_MODPASSWORD',
+      parameter: [
+        {
+          name: 'RYID',
+          value: ryid,
+        },
+        {
+          name: 'WBRY',
+          value: ryid,
+        },
+      ],
+      userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+    };
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const {code, message, url} = ret;
+        if (code === 1) {
+          this.setState({
+            changePwdUrl: url,
+            changePwdVisible: true
+          })
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
+
   render() {
-    const {editMemberInfoVisible = false, operateType, changePwdVisible = false} = this.state;
+    const {editMemberInfoVisible = false, operateType, changePwdVisible = false, changePwdUrl = ''} = this.state;
     const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
     const {
       routes = [],
@@ -75,9 +115,11 @@ class ToConsole extends Component {
         XMMC = "",
         SYKHID = "",
         RYZT = "",
-        XMJLID = ""
+        XMJLID = "",
+        XTZH = ""
       },
     } = this.props;
+    console.log("routes1111", routes)
 
     const btnMoreContent = (
       <Menu>
@@ -97,8 +139,6 @@ class ToConsole extends Component {
       visible: changePwdVisible,
       footer: null,
     };
-
-    const changePwdUrl = `${localStorage.getItem('livebos') || ''}/OperateProcessor?operate=V_RYXX_MODPASSWORD&Table=V_RYXX&RYID=${ryid}`;
 
     return (
       <div className="top-console">

@@ -487,4 +487,10 @@ export default [
     url: '/projectManage/outsourceCostExportExcel',
     dis: '外包费用导出Excel',
   },
+  {
+    code: '',
+    key: 'queryOutsourceMemberAttendance',
+    url: '/projectManage/queryOutsourceMemberAttendance',
+    dis: '考勤查询',
+  },
 ];

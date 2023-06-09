@@ -108,6 +108,7 @@ class MemberDetailPage extends Component {
             RYZT: ryxxdata[0]?.RYZTID,
             XMJLID: ryxxdata[0]?.XMJLID,
             XMJL: ryxxdata[0]?.XMJL,
+            XTZH: ryxxdata[0]?.XTZH,
           }
           let basicData = {
             JL: ryxxdata[0]?.JL,
@@ -116,6 +117,8 @@ class MemberDetailPage extends Component {
             RYZT: ryxxdata[0]?.RYZT
           }
           let kqxxData = {
+            ryid: ryxxdata[0]?.RYID,
+            xmid: ryxxdata[0]?.XMID,
             zc: kqxxdata.filter(item => item.LX === "正常").length,
             zcrq: kqxxdata.filter(item => item.LX === "正常"),
             qj: kqxxdata.filter(item => item.LX === "请假").length,
@@ -162,17 +165,18 @@ class MemberDetailPage extends Component {
       zyrole = "",
     } = this.state
     const {routes, ryid} = this.props
+    console.log("routes={routes}", routes)
     return (
       <Spin spinning={tableLoading}>
         <div className="member-detail-box">
           <TopConsole
-            routes={routes}
+            routes={this.props.routes}
             data={ryxxData}
             ryid={ryid}
             zyrole={zyrole}
             refreshPages={this.refreshPages}
           />
-          <AttendanceInfo data={kqxxData}/>
+          <AttendanceInfo routes={this.props.routes} data={kqxxData}/>
           {
             ydkhData.length > 0 && <InfoTable ryid={ryid} pageParams={pageParams} tableData={ydkhData} routes={routes}/>
           }

@@ -669,7 +669,23 @@ class searchModal extends React.Component {
                               {
                                 item === "人员" && ryxxData?.map(ryxx => {
                                   return <div className="content">
-                                    <img className="icon" src={ryxxIcon}/>&nbsp;&nbsp;{ryxx.RYMC}
+                                    <img className="icon" src={ryxxIcon}/>
+                                    <Link
+                                      to={{
+                                        pathname:
+                                          '/pms/manage/staffDetail/' +
+                                          EncryptBase64(
+                                            JSON.stringify({
+                                              ryid: ryxx.ID,
+                                            }),
+                                          ),
+                                        state: {
+                                          // routes: [{ name: '人员列表', pathname: location.pathname }]
+                                        },
+                                      }}
+                                    >
+                                      &nbsp;&nbsp;<span onClick={() => this.closeModal()}>{ryxx.RYMC}</span>
+                                    </Link>
                                   </div>
                                 })
                               }
