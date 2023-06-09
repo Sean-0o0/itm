@@ -493,4 +493,10 @@ export default [
     url: '/projectManage/queryOutsourceMemberAttendance',
     dis: '考勤查询',
   },
+  {
+    code: '',
+    key: 'insertOutsourcePaymentInfo',
+    url: '/projectManage/insertOutsourcePaymentInfo',
+    dis: '外包人员付款后插入外包付款信息',
+  },
 ];

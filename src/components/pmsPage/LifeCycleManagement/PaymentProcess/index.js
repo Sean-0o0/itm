@@ -6,6 +6,7 @@ import {
   QueryPaymentAccountList,
   QueryPaymentFlowInfo,
   CreatPaymentFlow,
+  InsertOutsourcePaymentInfo,
 } from '../../../../services/pmsServices';
 import ExpenseDetail from './ExpenseDetail';
 import moment from 'moment';
@@ -55,6 +56,7 @@ const PaymentProcess = props => {
     projectCode,
     onSuccess,
     isHwPrj = false, //是否硬件入围项目类型
+    rlwbData, //人力外包费用支付 - 付款流程总金额
   } = props;
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
@@ -211,11 +213,13 @@ const PaymentProcess = props => {
             content: null,
             onOk() {
               setIsSpinning(true);
-
               CreatPaymentFlow(submitData)
                 .then(res => {
                   if (res.code === 200) {
                     setIsSpinning(false);
+                    if (JSON.stringify(rlwbData) !== '{}') {
+                      OutsourcePaymentInfoInsert(String(res.ykbid));
+                    }
                     message.success(
                       `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
                       1,
@@ -234,6 +238,23 @@ const PaymentProcess = props => {
         }
       }
     });
+  };
+
+  //外包人员付款后插入外包付款信息
+  const OutsourcePaymentInfoInsert = ykbid => {
+    InsertOutsourcePaymentInfo({
+      fkje: String(getFieldValue('htje') ?? ''),
+      fksj: Number(moment(sqrq).format('YYYYMMDD') ?? 0),
+      gysid: Number(rlwbData.GYSID ?? 0),
+      jd: String(rlwbData.JD ?? ''),
+      nf: Number(rlwbData.NF ?? 0),
+      xmid: Number(currentXmid ?? 0),
+      ykbid,
+    })
+      .then(res => {})
+      .catch(e => {
+        message.error('操作失败', 1);
+      });
   };
 
   //收款账户添加成功
@@ -328,6 +349,7 @@ const PaymentProcess = props => {
             setAddSkzhModalVisible={setAddSkzhModalVisible}
             isHwPrj={isHwPrj}
             currentXmid={currentXmid}
+            rlwbData={rlwbData}
           />
           <ExpenseDetail
             currentXmid={currentXmid}

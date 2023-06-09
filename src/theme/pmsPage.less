@@ -1434,13 +1434,34 @@
   }
 }
 
+.add-expense-upload-modal {
+  .content-box {
+    .ant-upload-list {
+      max-height: 306px;
+      overflow: hidden;
+      overflow-y: auto;
+      &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 8px;
+      }
+    }
+  }
+}
+
 //新增费用明细
 //发票列表
 .add-expense-drawer {
   .ant-select-selection-selected-value {
     color: #303133;
   }
-  .add-expense-btn-default{
+  .add-expense-btn-default {
     .antd-btn-default();
   }
 

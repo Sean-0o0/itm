@@ -79,7 +79,7 @@ const UploadReceipt = props => {
   };
   return (
     <Modal
-      wrapClassName="editMessage-modify"
+      wrapClassName="editMessage-modify add-expense-upload-modal"
       style={{ top: '60px' }}
       width={'560px'}
       maskClosable={false}
@@ -107,6 +107,7 @@ const UploadReceipt = props => {
           required
           help={receiptIsTurnRed ? '电子发票不允许空值' : ''}
           validateStatus={receiptIsTurnRed ? 'error' : 'success'}
+          className="content-box"
         >
           <Upload
             action={'/api/projectManage/queryfileOnlyByupload'}
@@ -198,12 +199,16 @@ const UploadReceipt = props => {
               点击上传
             </Button>
             <div
+              class="tip"
               style={{ marginTop: '8px' }}
               onClick={e => {
                 e.stopPropagation();
               }}
             >
-              （仅支持jpg、jpeg、png、pdf、ofd格式文件）
+              <div>1. 单次最多可上传50个文件，超过50个请分批次上传</div>
+              <div>2. 可上传增值税发票、火车票、出租车票、飞机行程单等票据照片</div>
+              <div>3. 只允许上传jpg、jpeg、png、pdf、ofd格式的文件</div>
+              <div>4. 发票文件名字建议为字母和数字(长度不超过20)，否则会导致预览失败的情况</div>
             </div>
           </Upload>
         </Form.Item>

@@ -26,6 +26,7 @@ export default function ToDoCard(props) {
   const [currentXmmc, setCurrentXmmc] = useState(''); //当前项目名称
   const [currentXqid, setCurrentXqid] = useState('-1'); //当前需求id
   const [currentSwzxid, setCurrentSwzxid] = useState('-1'); //当前需求事务执行id
+  const [rlwbData, setRlwbData] = useState({}); //人力外包费用支付 - 付款流程总金额等
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -96,6 +97,9 @@ export default function ToDoCard(props) {
     setIsHwPrj(item.sfbhyj === '1'); //1是2否
     setCurrentXmid(item.xmid);
     setCurrentXmmc(item.xmmc);
+    if (item.kzzd !== '') {
+      setRlwbData([...JSON.parse(item.kzzd)]);
+    }
   };
 
   //人员新增提醒
@@ -188,15 +192,14 @@ export default function ToDoCard(props) {
         .then((ret = {}) => {
           const { code = 0, note = '', record = [] } = ret;
           if (code === 1) {
-            // window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
-            //   JSON.stringify({
-            //     routes: [{ name: '个人工作台', pathname: location.pathname }],
-            //     xqid: JSON.parse(item.kzzd).XQID,
-            //     fqrid: JSON.parse(item.kzzd).FQRID.
-            //   }),
-            // )}`;
-            // reflush();
-            message.success('执行成功', 1);
+            window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
+              JSON.stringify({
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
+                xqid: JSON.parse(item.kzzd).XQID,
+                fqrid: JSON.parse(item.kzzd).FQR,
+              }),
+            )}`;
+            reflush();
           }
         })
         .catch(error => {
@@ -258,6 +261,7 @@ export default function ToDoCard(props) {
       //特殊处理
       case '付款流程':
       case '合同分期付款':
+      case '人力外包费用支付':
         return handlePaymentProcess(item);
       case '人员新增提醒':
         return handleRyxztx(item);
@@ -379,7 +383,7 @@ export default function ToDoCard(props) {
         {Number(item.xxlx) !== 2 ? (
           <div
             className="item-btn"
-            onClick={() => handleToDo(item)}
+            // onClick={() => handleToDo(item)}
             style={
               isLate
                 ? {
@@ -433,6 +437,7 @@ export default function ToDoCard(props) {
             handleOperateSuccess();
           }}
           isHwPrj={isHwPrj}
+          rlwbData={rlwbData}
         />
       )}
       {/*人员新增提醒弹窗*/}

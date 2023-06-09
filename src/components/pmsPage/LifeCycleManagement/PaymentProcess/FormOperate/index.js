@@ -23,7 +23,14 @@ const { TextArea } = Input;
 
 export default function FormOperate(props) {
   const [isSkzhOpen, setIsSkzhOpen] = useState(false);
-  const { form, formData, setAddSkzhModalVisible, isHwPrj = false, currentXmid = -2 } = props;
+  const {
+    form,
+    formData,
+    setAddSkzhModalVisible,
+    isHwPrj = false,
+    currentXmid = -2,
+    rlwbData={},
+  } = props;
   const {
     sfyht,
     setSfyht,
@@ -472,7 +479,7 @@ export default function FormOperate(props) {
     labelCol: 8,
     wrapperCol: 16,
     dataIndex: 'htje',
-    initialValue: htje,
+    initialValue: rlwbData.ZJE ?? htje,
     rules: [
       {
         required: true,
