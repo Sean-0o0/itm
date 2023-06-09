@@ -229,7 +229,7 @@ const SelectReceipt = props => {
   return (
     <Modal
       wrapClassName="editMessage-modify"
-      centered
+      style={{ top: '10px' }}
       width={'800px'}
       maskClosable={false}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}

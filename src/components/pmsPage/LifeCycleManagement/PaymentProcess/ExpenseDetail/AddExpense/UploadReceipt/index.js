@@ -80,7 +80,7 @@ const UploadReceipt = props => {
   return (
     <Modal
       wrapClassName="editMessage-modify"
-      centered
+      style={{ top: '60px' }}
       width={'560px'}
       maskClosable={false}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
@@ -193,7 +193,7 @@ const UploadReceipt = props => {
             accept={'.ofd,.pdf,.jpg,.jpeg,.png'}
             fileList={[...receiptFileList]}
           >
-            <Button type="dashed">
+            <Button type="dashed" style={{ marginTop: 6 }}>
               <Icon type="upload" />
               点击上传
             </Button>

@@ -203,12 +203,10 @@ const InputReceipt = props => {
       wrapClassName="editMessage-modify"
       width={'765px'}
       maskClosable={false}
+      style={{ top: '60px' }}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
       zIndex={103}
       cancelText={'关闭'}
-      style={{
-        top: '90px',
-      }}
       bodyStyle={{
         // height: 'calc(100vh - 25.5rem)',
         padding: '0',

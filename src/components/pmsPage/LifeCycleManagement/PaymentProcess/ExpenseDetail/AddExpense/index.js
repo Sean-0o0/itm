@@ -503,7 +503,7 @@ const AddExpense = props => {
             }
             fileList={[...formData[dataIndex + 'FileList']]}
           >
-            <Button type="dashed">
+            <Button type="dashed" className='add-expense-btn-default'>
               <Icon type="upload" />
               点击上传
             </Button>
@@ -582,7 +582,7 @@ const AddExpense = props => {
             }
             fileList={[...formData[dataIndex + 'FileList']]}
           >
-            <Button type="dashed">
+            <Button type="dashed" className='add-expense-btn-default'>
               <Icon type="upload" />
               点击上传
             </Button>
@@ -597,7 +597,7 @@ const AddExpense = props => {
       <Menu onClick={handleReceiptMenuClick}>
         <Menu.Item key="1">
           <Icon type="file-pdf" />
-          电子发票文件
+          电子发票（文件、图片）
         </Menu.Item>
         {/* <Menu.Item key="2">
           <Icon type="form" />
@@ -615,7 +615,7 @@ const AddExpense = props => {
         validateStatus={formData.receiptIsTurnRed ? 'error' : 'success'}
       >
         <Dropdown overlay={menu}>
-          <Button>
+          <Button className='add-expense-btn-default'>
             <Icon type="upload" />
             新增发票
           </Button>
