@@ -28,19 +28,19 @@ export default function DemandInfo(props) {
   const topConsoleRef = useRef(null);
   const quarterData = [
     {
-      title: moment().year() + '年第1季度',
+      title: `第一季度(${moment().year()}.01-${moment().year()}.03)`,
       range: [moment(moment().year() + '01'), moment(moment().year() + '03')],
     },
     {
-      title: moment().year() + '年第2季度',
+      title: `第二季度(${moment().year()}.04-${moment().year()}.06)`,
       range: [moment(moment().year() + '04'), moment(moment().year() + '06')],
     },
     {
-      title: moment().year() + '年第3季度',
+      title: `第三季度(${moment().year()}.07-${moment().year()}.09)`,
       range: [moment(moment().year() + '07'), moment(moment().year() + '09')],
     },
     {
-      title: moment().year() + '年第4季度',
+      title: `第四季度(${moment().year()}.10-${moment().year()}.12)`,
       range: [moment(moment().year() + '10'), moment(moment().year() + '12')],
     },
   ]; //季度数据

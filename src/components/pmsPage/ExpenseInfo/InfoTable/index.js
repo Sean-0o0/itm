@@ -12,6 +12,7 @@ import {
 } from '../../../../services/pmsServices/index.js';
 import moment from 'moment';
 import ExpenseCalucationModal from './ExpenseCalucationModal';
+import ExpenseExportModal from './ExpenseExportModal';
 
 export default function InfoTable(props) {
   const {
@@ -33,6 +34,7 @@ export default function InfoTable(props) {
   const [visible, setVisible] = useState({
     calculation: false, //费用计算
     payment: false, //付款
+    export: false, //导出
   }); //弹窗显隐
   const [currentXqid, setCurrentXqid] = useState(-1); //详情id
   const [currentXmid, setCurrentXmid] = useState(-1); //项目id
@@ -444,7 +446,7 @@ export default function InfoTable(props) {
   const handleCalculate = () => {
     setVisible(p => ({ ...p, calculation: true }));
   };
-  const handleExport = () => {};
+  const handleExport = () => setVisible(p => ({ ...p, export: true }));
 
   return (
     <div className="info-table">
@@ -452,6 +454,14 @@ export default function InfoTable(props) {
         <ExpenseCalucationModal
           visible={visible.calculation}
           setVisible={v => setVisible(p => ({ ...p, calculation: v }))}
+          quarterData={quarterData}
+          reflush={getTableData}
+        />
+      )}
+      {visible.export && (
+        <ExpenseExportModal
+          visible={visible.export}
+          setVisible={v => setVisible(p => ({ ...p, export: v }))}
           quarterData={quarterData}
           reflush={getTableData}
         />

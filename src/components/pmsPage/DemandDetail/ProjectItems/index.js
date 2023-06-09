@@ -100,6 +100,12 @@ export default function ProjectItems(props) {
       });
     } else if (SWMC === '综合评测安排') {
       modalName = 'personelArrangement';
+      setModalVisible(p => {
+        return {
+          ...p,
+          personelArrangementUpdate: ZXZT === '1',
+        };
+      });
     } else if (SWMC === '综合评测打分') {
       modalName = 'interviewScore';
     } else if (SWMC === '提交录用申请') {
@@ -149,38 +155,6 @@ export default function ProjectItems(props) {
         [modalName]: true,
       };
     });
-  };
-
-  //查看
-  const handleCk = (SWMC = '--', SWZXID) => {
-    if (SWMC === '综合评测安排') {
-      if (isDock || isFqr) {
-        if (XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2') {
-          //打开弹窗
-          setModalVisible(p => {
-            return {
-              ...p,
-              personelArrangement: true,
-              personelArrangementUpdate: true,
-            };
-          });
-          setSwzxid(SWZXID);
-        } else {
-          message.info('已提交录用申请，不允许综合评测安排', 1);
-          return;
-        }
-      } else {
-        message.info('只有外包项目对接人、需求发起人可以操作', 1);
-        return;
-      }
-    } else if (SWMC === '录用确认') {
-      if (isDock) {
-        // modalName = 'offerConfirmation';
-      } else {
-        message.info('只有外包项目对接人可以操作', 1);
-        return;
-      }
-    }
   };
 
   const getItemBtn = (item, SWZXID) => {
@@ -243,12 +217,6 @@ export default function ProjectItems(props) {
         (isDock || isFqr) &&
         XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2'
       ) {
-        if (ZXZT === '1')
-          return (
-            <div className="reopr-btn" onClick={() => handleCk(SWMC, SWZXID)}>
-              查看
-            </div>
-          );
         return (
           <div className="opr-btn" onClick={() => handleZx(item)}>
             执行

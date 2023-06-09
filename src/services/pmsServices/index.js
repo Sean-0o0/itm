@@ -88,7 +88,7 @@ const {
     outsourceCostCalculation,
     uploadCurriculumVitae,
     costCalculationCheck,
-    outsourceCostExcel,
+    outsourceCostExportExcel,
   },
 } = api;
 
@@ -930,10 +930,10 @@ export async function CostCalculationCheck(payload) {
   return request(option);
 }
 
-// 外包费用导出
-export async function OutsourceCostExcel(payload) {
+// 外包费用导出Excel
+export async function OutsourceCostExportExcel(payload) {
   const option = {
-    url: outsourceCostExcel,
+    url: outsourceCostExportExcel,
     method: 'post',
     data: payload,
   };

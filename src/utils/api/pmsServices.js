@@ -483,8 +483,8 @@ export default [
   },
   {
     code: '',
-    key: 'outsourceCostExcel',
-    url: '/projectManage/outsourceCostExcel',
-    dis: '外包费用导出',
+    key: 'outsourceCostExportExcel',
+    url: '/projectManage/outsourceCostExportExcel',
+    dis: '外包费用导出Excel',
   },
 ];

@@ -73,7 +73,7 @@ function PersonnelArrangementModal(props) {
           return acc;
         }, {}),
       );
-      console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', zhpc);
+      // console.log('🚀 ~ file: index.js:73 ~ useEffect ~  zhpc:', ZHPC, zhpc);
       if (zhpc.length > 0) {
         const UUID = Date.now();
         if (zhpc[0].TABLE?.length === 0) {
@@ -94,9 +94,7 @@ function PersonnelArrangementModal(props) {
           XQNRID: zhpc[0].XQNRID,
         });
         // console.log('🚀 ~ file: index.js:80 ~ useEffect ~ [...zhpc[0].TABLE]:', [...zhpc[0].TABLE]);
-      }
-    } else {
-      if (tableData.length === 0) {
+      } else {
         const UUID = Date.now();
         setTableData([
           {
@@ -203,41 +201,43 @@ function PersonnelArrangementModal(props) {
   const handleOk = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
-        setIsSpinning(true);
-        let submitTable = tableData.map(x => {
-          return {
-            PCID: x.NEW === true ? '-1' : x.PCID,
-            GYSID: String(x['GYSID' + x.PCID] ?? '-1'),
-            RYMC: x['RYMC' + x.PCID],
-            MSSJ: x['MSSJ' + x.PCID]?.format('YYYYMMDDHHmmss'),
-          };
-        });
-        // console.log('🚀 ~ file: index.js:134 ~ submitTable ~ tableData:', tableData);
-        // console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
-        let submitProps = {
-          xqid: Number(xqid),
-          swzxid: Number(swzxid),
-          ryap: JSON.stringify(submitTable),
-          ryxqid: Number(getFieldValue('ryxq')),
-          msg: getFieldValue('pcry')?.join(';'),
-          czlx: update ? 'UPDATEAP' : 'AP',
-          count: submitTable.length,
-        };
-        // console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
-        OperateEvaluation(submitProps)
-          .then(res => {
-            if (res?.success) {
-              resetFields();
-              reflush();
-              setIsSpinning(false);
-              message.success('操作成功', 1);
-              setVisible(false);
-            }
-          })
-          .catch(e => {
-            message.error('信息提交失败');
-            setIsSpinning(false);
+        if (tableData.length > 0) {
+          setIsSpinning(true);
+          let submitTable = tableData.map(x => {
+            return {
+              PCID: x.NEW === true ? '-1' : x.PCID,
+              GYSID: String(x['GYSID' + x.PCID] ?? '-1'),
+              RYMC: x['RYMC' + x.PCID],
+              MSSJ: x['MSSJ' + x.PCID]?.format('YYYYMMDDHHmmss'),
+            };
           });
+          // console.log('🚀 ~ file: index.js:134 ~ submitTable ~ tableData:', tableData);
+          // console.log('🚀 ~ file: index.js:87 ~ submitTable ~ submitTable:', submitTable);
+          let submitProps = {
+            xqid: Number(xqid),
+            swzxid: Number(swzxid),
+            ryap: JSON.stringify(submitTable),
+            ryxqid: Number(getFieldValue('ryxq')),
+            msg: getFieldValue('pcry')?.join(';'),
+            czlx: update ? 'UPDATEAP' : 'AP',
+            count: submitTable.length,
+          };
+          // console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
+          OperateEvaluation(submitProps)
+            .then(res => {
+              if (res?.success) {
+                resetFields();
+                reflush();
+                setIsSpinning(false);
+                message.success('操作成功', 1);
+                setVisible(false);
+              }
+            })
+            .catch(e => {
+              message.error('信息提交失败');
+              setIsSpinning(false);
+            });
+        }
       }
     });
   };
@@ -462,6 +462,8 @@ function PersonnelArrangementModal(props) {
             labelCol={{ span: 4 }}
             wrapperCol={{ span: 19 }}
             required
+            help={tableData.length === 0 ? '评测时间安排不允许空值' : null}
+            validateStatus={tableData.length === 0 ? 'error' : 'success'}
             style={{ marginBottom: 16, marginTop: 6 }}
           >
             <div className="ryxq-table-box">

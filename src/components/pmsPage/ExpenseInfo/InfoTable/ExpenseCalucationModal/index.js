@@ -13,6 +13,7 @@ import {
   DatePicker,
   Select,
   Breadcrumb,
+  Empty,
 } from 'antd';
 import { EditableCell, EditableRow } from './EditableTable';
 import moment from 'moment';
@@ -306,7 +307,7 @@ function ExpenseCalucationModal(props) {
               paging: -1,
               sort: '',
               total: -1,
-              cxlx: 'ALL',
+              cxlx: 'FYJS',
               js: zyrole === '暂无' ? role : zyrole,
               zzjg: String(LOGIN_USER_INFO.org),
               xmmc: Number(v),
@@ -345,7 +346,7 @@ function ExpenseCalucationModal(props) {
   return (
     <Modal
       wrapClassName="editMessage-modify expense-calculation-modal"
-      width={'900px'}
+      width={'810px'}
       maskClosable={false}
       zIndex={100}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
@@ -444,6 +445,18 @@ function ExpenseCalucationModal(props) {
                 pagination={false}
                 bordered
                 size="middle"
+                locale={{
+                  emptyText: (
+                    <Empty
+                      image={Empty.PRESENTED_IMAGE_SIMPLE}
+                      description={
+                        getFieldValue('xmmc') === ''
+                          ? '请先选择项目名称'
+                          : '该项目下人员暂无数据或未录入月度考核信息'
+                      }
+                    />
+                  ),
+                }}
               />
               {showAdd && (
                 <div

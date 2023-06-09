@@ -185,32 +185,112 @@ function UploadModal(props) {
                     }
                   }}
                   multiple={true}
-                  onChange={info => {
+                  onChange={async info => {
                     let list = [...info.fileList];
-                    // console.log('🚀 ~ file: index.js:114 ~ UploadModal ~ list:', info);
-                    setFileList(
-                      list.map(x => ({
-                        ...x,
-                        uid: x.uid,
-                        name: x.name,
-                        status: x.status,
-                        new: x.uid === +x.uid ? false : true,
-                        number: x.number || '',
-                      })),
-                    );
-                    if (list.length === 0) {
-                      setIsTurenRed(true);
-                    } else {
-                      setIsTurenRed(false);
+                    function readFile(file) {
+                      return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                          const arrayBuffer = reader.result;
+                          const headerBytes = new Uint8Array(arrayBuffer, 0, 8);
+                          const headerInfoHex = Array.from(headerBytes)
+                            .map(byte => byte.toString(16).padStart(2, '0'))
+                            .join('')
+                            .slice(0, 8);
+                          console.log(
+                            '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
+                            headerInfoHex,
+                            ['504b0304', '25504446'],
+                          );
+                          if (!['504b0304', '25504446'].includes(headerInfoHex)) {
+                            resolve(false);
+                          } else {
+                            resolve(true);
+                          }
+                        };
+                        reader.onerror = function() {
+                          reject(reader.error);
+                        };
+                        reader.readAsArrayBuffer(file);
+                      });
                     }
-                    let newArr = newAddData.filter(
-                      x => !(x.uid === info.file.uid && info.file.status === 'removed'),
-                    );
-                    // console.log('🚀 ~ file: index.js:144 ~ UploadModal ~ newArr:', newArr);
-                    setNewAddData([...newArr]);
+                    const typeAuth = await readFile(info.file);
+                    if (
+                      [
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                      ].includes(info.file.type)
+                    ) {
+                      if (typeAuth) {
+                        setFileList(
+                          list.map(x => ({
+                            ...x,
+                            uid: x.uid,
+                            name: x.name,
+                            status: x.status,
+                            new: x.uid === +x.uid ? false : true,
+                            number: x.number || '',
+                          })),
+                        );
+                        if (list.length === 0) {
+                          setIsTurenRed(true);
+                        } else {
+                          setIsTurenRed(false);
+                        }
+                        let newArr = newAddData.filter(
+                          x => !(x.uid === info.file.uid && info.file.status === 'removed'),
+                        );
+                        // console.log('🚀 ~ file: index.js:144 ~ UploadModal ~ newArr:', newArr);
+                        setNewAddData([...newArr]);
+                      }
+                    }
                   }}
-                  beforeUpload={(file, fileList) => {
-                    console.log(file, fileList);
+                  beforeUpload={async (file, fileList) => {
+                    function readFile(file) {
+                      return new Promise((resolve, reject) => {
+                        const reader = new FileReader();
+                        reader.onloadend = function() {
+                          const arrayBuffer = reader.result;
+                          const headerBytes = new Uint8Array(arrayBuffer, 0, 8);
+                          const headerInfoHex = Array.from(headerBytes)
+                            .map(byte => byte.toString(16).padStart(2, '0'))
+                            .join('')
+                            .slice(0, 8);
+                          console.log(
+                            '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
+                            headerInfoHex,
+                            ['504b0304', '25504446'],
+                          );
+                          if (!['504b0304', '25504446'].includes(headerInfoHex)) {
+                            resolve(false);
+                          } else {
+                            resolve(true);
+                          }
+                        };
+                        reader.onerror = function() {
+                          reject(reader.error);
+                        };
+                        reader.readAsArrayBuffer(file);
+                      });
+                    }
+                    const typeAuth = await readFile(file);
+                    if (
+                      ![
+                        'application/pdf',
+                        'application/msword',
+                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                      ].includes(file.type)
+                    ) {
+                      message.error('仅支持doc、docx、pdf格式文件', 1);
+                      return false;
+                    }
+                    if (!typeAuth) {
+                      message.error('仅支持doc、docx、pdf格式文件', 1);
+                      console.log(typeAuth, 2);
+                      return false;
+                    }
+                    console.log(typeAuth, 3);
                     let arr = [];
                     fileList.forEach((item, index) => {
                       let reader = new FileReader(); //实例化文件读取对象
