@@ -197,11 +197,11 @@ function UploadModal(props) {
                             .map(byte => byte.toString(16).padStart(2, '0'))
                             .join('')
                             .slice(0, 8);
-                          console.log(
-                            '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
-                            headerInfoHex,
-                            ['504b0304', '25504446'],
-                          );
+                          // console.log(
+                          //   '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
+                          //   headerInfoHex,
+                          //   ['504b0304', '25504446'],
+                          // );
                           if (!['504b0304', '25504446'].includes(headerInfoHex)) {
                             resolve(false);
                           } else {
@@ -214,7 +214,7 @@ function UploadModal(props) {
                         reader.readAsArrayBuffer(file);
                       });
                     }
-                    const typeAuth = await readFile(info.file);
+                    const typeAuth = await readFile(info.file.originFileObj);
                     if (
                       [
                         'application/pdf',
@@ -247,6 +247,7 @@ function UploadModal(props) {
                     }
                   }}
                   beforeUpload={async (file, fileList) => {
+                    console.log('🚀 ~ file: index.js:253 ~ beforeUpload={ ~ file:', file);
                     function readFile(file) {
                       return new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -257,11 +258,11 @@ function UploadModal(props) {
                             .map(byte => byte.toString(16).padStart(2, '0'))
                             .join('')
                             .slice(0, 8);
-                          console.log(
-                            '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
-                            headerInfoHex,
-                            ['504b0304', '25504446'],
-                          );
+                          // console.log(
+                          //   '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
+                          //   headerInfoHex,
+                          //   ['504b0304', '25504446'],
+                          // );
                           if (!['504b0304', '25504446'].includes(headerInfoHex)) {
                             resolve(false);
                           } else {
@@ -287,10 +288,8 @@ function UploadModal(props) {
                     }
                     if (!typeAuth) {
                       message.error('仅支持doc、docx、pdf格式文件', 1);
-                      console.log(typeAuth, 2);
                       return false;
                     }
-                    console.log(typeAuth, 3);
                     let arr = [];
                     fileList.forEach((item, index) => {
                       let reader = new FileReader(); //实例化文件读取对象
