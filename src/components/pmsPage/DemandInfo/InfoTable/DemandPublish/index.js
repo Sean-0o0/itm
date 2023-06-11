@@ -105,11 +105,11 @@ function ExpenseInfo(props) {
       dataIndex: 'YQ',
       key: 'YQ',
       ellipsis: false,
-      // render: text => (
-      //   <Tooltip title={text} placement="topLeft">
-      //     <span style={{ cursor: 'default' }}>{text}</span>
-      //   </Tooltip>
-      // ),
+      render: text => (
+        <Tooltip title={text.replace(/<br>/g, '')} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text.replace(/<br>/g, '')}</span>
+        </Tooltip>
+      ),
     },
   ];
 

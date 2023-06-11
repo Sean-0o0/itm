@@ -69,7 +69,7 @@ export default function SupplierDmInfo(props) {
             xqxx: nullCheck(res.xqxx),
           };
           setSltData(finalData);
-          getSplierDmData({});
+          getSplierDmData(sltParams);
         }
       })
       .catch(e => {
@@ -81,6 +81,7 @@ export default function SupplierDmInfo(props) {
   //获取供应商需求信息
   const getSplierDmData = ({ current = 1, gwmc = undefined, xqmc = undefined }) => {
     setIsSpinning(true);
+    setSltParams({ current, gwmc, xqmc });
     QuerySupplierDemand({
       current,
       pageSize: 3,

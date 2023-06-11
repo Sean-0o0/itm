@@ -30,10 +30,10 @@ const UploadReceipt = props => {
   }, []);
   useEffect(() => {
     setReceiptNew2(p => [...receiptNew2, ...receiptNew]);
-    console.log('🚀 ~ file: index.js ~ line 33 ~ useEffect ~ [...receiptNew2, ...receiptNew]', [
-      ...receiptNew2,
-      ...receiptNew,
-    ]);
+    // console.log('🚀 ~ file: index.js ~ line 33 ~ useEffect ~ [...receiptNew2, ...receiptNew]', [
+    //   ...receiptNew2,
+    //   ...receiptNew,
+    // ]);
     return () => {};
   }, [receiptNew]);
 
@@ -45,6 +45,8 @@ const UploadReceipt = props => {
       return;
     } else if (receiptIsError > 0) {
       message.error('存在不合法的发票', 1);
+    } else if (receiptFileList.length > 50) {
+      message.error('最多可上传50张，超出请分批次上传', 1);
     } else {
       setVisible(false);
       setSelectReceiptVisible(true);
@@ -199,7 +201,7 @@ const UploadReceipt = props => {
               点击上传
             </Button>
             <div
-              class="tip"
+              className="tip"
               style={{ marginTop: '8px' }}
               onClick={e => {
                 e.stopPropagation();

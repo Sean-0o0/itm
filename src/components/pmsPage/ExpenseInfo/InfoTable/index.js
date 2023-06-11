@@ -6,6 +6,7 @@ import { useLocation } from 'react-router';
 import DemandInitiated from '../../HardwareItems/DemandInitiated/index.js';
 import {
   OperateOutsourceRequirements,
+  OutsourceCostExportExcel,
   QueryOutsourceCostList,
   QueryOutsourceRequirementList,
   QueryUserRole,
@@ -13,6 +14,14 @@ import {
 import moment from 'moment';
 import ExpenseCalucationModal from './ExpenseCalucationModal';
 import ExpenseExportModal from './ExpenseExportModal';
+import Axios from 'axios';
+
+import config from '../../../../utils/config';
+
+const { api } = config;
+const {
+  pmsServices: { outsourceCostExportExcel },
+} = api;
 
 export default function InfoTable(props) {
   const {
@@ -24,25 +33,23 @@ export default function InfoTable(props) {
     curPageSize,
     subTableData,
     setSubTableData,
-    getSubTableData,
     xmid = -2,
-    WBRYGW,
     setTableData,
     quarterData,
     getTableData,
+    setTableLoading,
   } = props; //表格数据
   const [visible, setVisible] = useState({
     calculation: false, //费用计算
     payment: false, //付款
-    export: false, //导出
+    // export: false, //导出
   }); //弹窗显隐
-  const [currentXqid, setCurrentXqid] = useState(-1); //详情id
-  const [currentXmid, setCurrentXmid] = useState(-1); //项目id
-  const [currentXmmc, setCurrentXmmc] = useState(''); //项目名称
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
   const [userRole, setUserRole] = useState('普通人员'); //
+  const [exporting, setExporting] = useState(false); //导出状态，出现单选
+  const [selectedRow, setSelectedRow] = useState({}); //选中行
 
   const location = useLocation();
 
@@ -446,7 +453,55 @@ export default function InfoTable(props) {
   const handleCalculate = () => {
     setVisible(p => ({ ...p, calculation: true }));
   };
-  const handleExport = () => setVisible(p => ({ ...p, export: true }));
+  const handleExporting = () => setExporting(true);
+
+  //行选择
+  const rowSelection = {
+    onChange: (selectedRowKeys, selectedRows) => {
+      setSelectedRow(selectedRows[0]);
+      console.log('🚀 ~ file: index.js:468 ~ InfoTable ~ rowSelection.selectedRows:', selectedRows);
+    },
+    type: 'radio',
+  };
+
+  const confirmExport = () => {
+    setTableLoading(true);
+    const { XMID, JD, KSSJ, JSSJ, XMMC } = selectedRow;
+    Axios({
+      method: 'POST',
+      url: outsourceCostExportExcel,
+      responseType: 'blob',
+      data: {
+        jd: JD,
+        jssj: Number(JSSJ ?? 0),
+        kssj: Number(KSSJ ?? 0),
+        nf: moment().year(),
+        xmid: Number(XMID ?? 0),
+        xmmc: XMMC,
+      },
+    })
+      .then(res => {
+        console.log(res);
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = XMMC + JD + '人力外包费用结算表';
+        a.href = href;
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+        setTableLoading(false);
+        cancelExport();
+        message.success('正在导出', 1);
+      })
+      .catch(e => {
+        message.error('导出失败', 1);
+        setTableLoading(false);
+      });
+  };
+
+  const cancelExport = () => {
+    setExporting(false);
+    setSelectedRow({});
+  };
 
   return (
     <div className="info-table">
@@ -458,31 +513,43 @@ export default function InfoTable(props) {
           reflush={getTableData}
         />
       )}
-      {visible.export && (
+      {/* {visible.export && (
         <ExpenseExportModal
           visible={visible.export}
           setVisible={v => setVisible(p => ({ ...p, export: v }))}
           quarterData={quarterData}
           reflush={getTableData}
         />
+      )} */}
+      {exporting ? (
+        <div className="btn-add-prj-box">
+          <Button type="primary" className="btn-add-prj" onClick={confirmExport}>
+            确定
+          </Button>
+          <Button className="btn-cancel" onClick={cancelExport}>
+            取消
+          </Button>
+        </div>
+      ) : (
+        <div className="btn-add-prj-box">
+          <Button type="primary" className="btn-add-prj" onClick={handleCalculate}>
+            费用计算
+          </Button>
+          <Button type="primary" className="btn-add-prj btn-export" onClick={handleExporting}>
+            费用导出
+          </Button>
+        </div>
       )}
-      <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={handleCalculate}>
-          费用计算
-        </Button>
-        <Button type="primary" className="btn-add-prj btn-export" onClick={handleExport}>
-          费用导出
-        </Button>
-      </div>
       <div className="project-info-table-box">
         <Table
+          rowSelection={exporting ? rowSelection : false}
           loading={tableLoading}
           columns={columns}
           rowKey={'FYID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          expandedRowRender={expandedRowRender}
-          expandedRowKeys={expandedRowKeys}
+          expandedRowRender={exporting ? false : expandedRowRender}
+          expandedRowKeys={exporting ? [] : expandedRowKeys}
           onExpand={onExpand}
           pagination={{
             current: curPage,

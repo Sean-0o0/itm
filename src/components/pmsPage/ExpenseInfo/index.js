@@ -183,6 +183,7 @@ export default function DemandInfo(props) {
         WBRYGW={WBRYGW}
         setTableData={setTableData}
         quarterData={quarterData}
+        setTableLoading={setTableLoading}
       />
     </div>
   );

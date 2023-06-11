@@ -50,7 +50,7 @@ function ExpenseCalucationModal(props) {
   const [ryOriginData, setRyOriginData] = useState([]); //人员
   const [updateData, setUpdateData] = useState({}); //更新回显
   const [isSpinning, setIsSpinning] = useState(false);
-  const [dateRange, setDateRange] = useState(quarterData[0]?.range); //开始结束月份
+  const [dateRange, setDateRange] = useState(quarterData[moment().quarter() - 1]?.range); //开始结束月份
   const [showAdd, setShowAdd] = useState(false); //是否允许新增
   const [tableOriginData, setTableOriginData] = useState([]); //用来最后获取校验用的人员数据
   const [checkQuarter, setCheckQuarter] = useState('第一季度'); //用来最后获取校验用的
@@ -366,7 +366,7 @@ function ExpenseCalucationModal(props) {
             <Col span={12}>
               <Form.Item label="季度" labelCol={{ span: 8 }} wrapperCol={{ span: 14 }}>
                 {getFieldDecorator('jd', {
-                  initialValue: quarterData[0]?.title || '',
+                  initialValue: quarterData[moment().quarter() - 1]?.title || '',
                   rules: [
                     {
                       required: true,
