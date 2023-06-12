@@ -185,69 +185,76 @@ function UploadModal(props) {
                     }
                   }}
                   multiple={true}
-                  onChange={async info => {
+                  onChange={info => {
                     let list = [...info.fileList];
-                    function readFile(file) {
-                      return new Promise((resolve, reject) => {
-                        const reader = new FileReader();
-                        reader.onloadend = function() {
-                          const arrayBuffer = reader.result;
-                          const headerBytes = new Uint8Array(arrayBuffer, 0, 8);
-                          const headerInfoHex = Array.from(headerBytes)
-                            .map(byte => byte.toString(16).padStart(2, '0'))
-                            .join('')
-                            .slice(0, 8);
-                          // console.log(
-                          //   '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
-                          //   headerInfoHex,
-                          //   ['504b0304', '25504446'],
-                          // );
-                          if (!['504b0304', '25504446'].includes(headerInfoHex)) {
-                            resolve(false);
-                          } else {
-                            resolve(true);
-                          }
-                        };
-                        reader.onerror = function() {
-                          reject(reader.error);
-                        };
-                        reader.readAsArrayBuffer(file);
-                      });
-                    }
-                    const typeAuth = await readFile(info.file.originFileObj);
-                    if (
-                      [
-                        'application/pdf',
-                        'application/msword',
-                        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                      ].includes(info.file.type)
-                    ) {
-                      if (typeAuth) {
-                        setFileList(
-                          list.map(x => ({
-                            ...x,
-                            uid: x.uid,
-                            name: x.name,
-                            status: x.status,
-                            new: x.uid === +x.uid ? false : true,
-                            number: x.number || '',
-                          })),
-                        );
-                        if (list.length === 0) {
-                          setIsTurenRed(true);
-                        } else {
-                          setIsTurenRed(false);
-                        }
-                        let newArr = newAddData.filter(
-                          x => !(x.uid === info.file.uid && info.file.status === 'removed'),
-                        );
-                        // console.log('🚀 ~ file: index.js:144 ~ UploadModal ~ newArr:', newArr);
-                        setNewAddData([...newArr]);
+                    let newArr = newAddData.filter(
+                      x => !(x.uid === info.file.uid && info.file.status === 'removed'),
+                    );
+                    setNewAddData([...newArr]);
+                    const fn = item => {
+                      if (fileList.findIndex(x => x.uid === item.uid) === -1) {
+                        setFileList(p => {
+                          let arr = [
+                            ...p,
+                            {
+                              ...item,
+                              uid: item.uid,
+                              name: item.name,
+                              status: item.status === 'uploading' ? 'done' : item.status,
+                              new: item.uid === +item.uid ? false : true,
+                              number: item.number || '',
+                            },
+                          ];
+                          return arr;
+                        });
+                        // setFileList(p => {
+                        //   p.forEach(x => {
+                        //     x.status === 'uploading' ? 'done' : x.status;
+                        //   });
+                        // });
+                      } else {
+                        setFileList(p => {
+                          let arr = p.filter(x => x.status !== 'removed');
+                          return arr;
+                        });
                       }
-                    }
+                      if (list.length === 0) {
+                        setIsTurenRed(true);
+                      } else {
+                        setIsTurenRed(false);
+                      }
+                    };
+                    list.forEach(x => {
+                      if (x.originFileObj !== undefined && x.uid !== +x.uid) {
+                        console.log(x);
+                        if (
+                          [
+                            'application/pdf',
+                            'application/msword',
+                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                          ].includes(x.type)
+                        ) {
+                          const reader = new FileReader();
+                          reader.onloadend = function() {
+                            const arrayBuffer = reader.result;
+                            const headerBytes = new Uint8Array(arrayBuffer, 0, 8);
+                            const headerInfoHex = Array.from(headerBytes)
+                              .map(byte => byte.toString(16).padStart(2, '0'))
+                              .join('')
+                              .slice(0, 8);
+                            if (['504b0304', '25504446', 'd0cf11e0'].includes(headerInfoHex)) {
+                              fn(x);
+                            }
+                          };
+                          reader.readAsArrayBuffer(x.originFileObj);
+                        }
+                      } else {
+                        fn(x);
+                      }
+                    });
                   }}
                   beforeUpload={async (file, fileList) => {
-                    console.log('🚀 ~ file: index.js:253 ~ beforeUpload={ ~ file:', file);
+                    // console.log('🚀 ~ file: index.js:253 ~ beforeUpload={ ~ file:', file);
                     function readFile(file) {
                       return new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -258,12 +265,7 @@ function UploadModal(props) {
                             .map(byte => byte.toString(16).padStart(2, '0'))
                             .join('')
                             .slice(0, 8);
-                          // console.log(
-                          //   '🚀 ~ file: index.js:229 ~ returnnewPromise ~ headerInfoHex:',
-                          //   headerInfoHex,
-                          //   ['504b0304', '25504446'],
-                          // );
-                          if (!['504b0304', '25504446'].includes(headerInfoHex)) {
+                          if (!['504b0304', '25504446', 'd0cf11e0'].includes(headerInfoHex)) {
                             resolve(false);
                           } else {
                             resolve(true);

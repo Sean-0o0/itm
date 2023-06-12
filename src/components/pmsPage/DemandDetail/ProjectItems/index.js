@@ -195,7 +195,7 @@ export default function ProjectItems(props) {
         );
       return '';
     } else if (SWMC === '需求发起') {
-      if (isDock || isFqr)
+      if (isFqr)
         return (
           <div
             className="reopr-btn"

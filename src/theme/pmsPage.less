@@ -1440,6 +1440,7 @@
       max-height: 306px;
       overflow: hidden;
       overflow-y: auto;
+      padding-bottom: 4px;
       &::-webkit-scrollbar {
         width: 10px;
         height: 10px;
@@ -13081,6 +13082,24 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .employment-application-modal {
   .content-box {
     padding: 16px 24px;
+
+    .ant-upload-list {
+      max-height: 306px;
+      overflow: hidden;
+      overflow-y: auto;
+      padding-bottom: 4px;
+      &::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+        background-color: #f5f5f5;
+        border-radius: 8px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 8px;
+      }
+    }
   }
 }
 
@@ -13347,7 +13366,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       margin-left: 12px;
     }
 
-    .btn-cancel{
+    .btn-cancel {
       .antd-btn-default();
       margin-left: 12px;
     }
@@ -13360,7 +13379,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         tr.ant-table-expanded-row .ant-table-placeholder {
-          margin-top: -17.5px;
+          margin-top: -1.5px;
         }
 
         .ant-table-thead {
