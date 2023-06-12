@@ -18,7 +18,7 @@ import {
   InputNumber,
   Upload,
   Button,
-  Icon, Tooltip,
+  Icon, Tooltip, Popover,
 } from 'antd';
 
 const {Option} = Select;
@@ -28,7 +28,7 @@ import {connect} from 'dva';
 import {
   FetchQueryGysInZbxx, FetchqueryOutsourceRequirement,
   IndividuationGetOAResult,
-  OperateOutsourceRequirements, QueryWeekday
+  OperateOutsourceRequirements, QueryOutsourceRankInfo, QueryWeekday
 } from '../../../../services/pmsServices';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import moment from 'moment';
@@ -44,10 +44,14 @@ class DemandInitiated extends React.Component {
     kfsrqinit: '',
     pcrqinit: '',
     syrqinit: '',
+    rydjData: [],
+    current: 1,
+    total: 0,
   };
 
   componentDidMount() {
     this.fetchqueryWeekday();
+    this.getRydjData();
     console.log("xqidxqid", this.props.xqid)
     if (this.props.xqid && this.props.xqid !== 'undefined') {
       this.setState({
@@ -56,6 +60,29 @@ class DemandInitiated extends React.Component {
       console.log("xqidxqid", this.props.xqid)
       this.fetchqueryOutsourceRequirement(this.props.xqid, this.props.operateType, this.props.xmmc);
     }
+  }
+
+  getRydjData = () => {
+    const {current} = this.state;
+    console.log("1111", current)
+    QueryOutsourceRankInfo({
+      "current": current,
+      "cxlx": "ALL",
+      "pageSize": 5,
+      "paging": 1,
+      "sort": "",
+      "total": -1
+    }).then(res => {
+      if (res?.code === 1) {
+        const {result, totalrows} = res;
+        this.setState({
+          rydjData: [...JSON.parse(result)],
+          total: 32
+        })
+      }
+    }).catch(e => {
+      message.error('人员等级信息查询失败', 1);
+    });
   }
 
   fetchqueryWeekday = () => {
@@ -241,12 +268,74 @@ class DemandInitiated extends React.Component {
     })
   }
 
+  tablePopover = (data, columns) => {
+    const {current, total} = this.state;
+    return (
+      <div className="table-box">
+        <Table columns={columns} onChange={this.handleTableChange} rowKey={'id'}
+               getPopupContainer={triggerNode => triggerNode.parentNode} dataSource={data} size="middle" pagination={{
+          current,
+          pageSize: 5,
+          // pageSizeOptions: ['20', '40', '50', '100'],
+          // showSizeChanger: true,
+          hideOnSinglePage: false,
+          showQuickJumper: true,
+          showTotal: t => `共 ${total} 条数据`,
+          total: total,
+        }}/>
+      </div>
+    );
+  };
+
+  //表格跨行合并
+  getRowSpanCount = (data, key, target, bool = false) => {
+    //当合并项为可编辑时，最后传true
+    if (!Array.isArray(data)) return 1;
+    data = data.map(_ => _[key + (bool ? _.id : '')]); // 只取出筛选项
+    let preValue = data[0];
+    const res = [[preValue]]; // 放进二维数组里
+    let index = 0; // 二维数组下标
+    for (let i = 1; i < data.length; i++) {
+      if (data[i] === preValue) {
+        // 相同放进二维数组
+        res[index].push(data[i]);
+      } else {
+        // 不相同二维数组下标后移
+        index += 1;
+        res[index] = [];
+        res[index].push(data[i]);
+        preValue = data[i];
+      }
+    }
+    const arr = [];
+    res.forEach(_ => {
+      const len = _.length;
+      for (let i = 0; i < len; i++) {
+        arr.push(i === 0 ? len : 0);
+      }
+    });
+    return arr[target];
+  };
+
+  //表格操作后更新数据
+  handleTableChange = (pagination) => {
+    // console.log('handleTableChange', pagination, filters, sorter, extra);
+    const {current = 1,} = pagination;
+    this.setState({
+      current,
+    }, () => this.getRydjData())
+    // getTableData({ current, pageSize });
+
+  };
+
+
   render() {
     const {
       isSpinning = false,
       kfsrqinit = '',
       pcrqinit = '',
       syrqinit = '',
+      rydjData = [],
     } = this.state;
     const {
       visible,
@@ -434,47 +523,62 @@ class DemandInitiated extends React.Component {
                               //   },
                               // ],
                               // initialValue: "外采项目"
-                            })(<Tooltip overlayClassName='rysm-tooltip'
-                                        placement="right"
-                                        title={
-                                          <span>
-                                -----G1（13800元 /人月）<br/>
-                                UI/测试<br/>
-                                            &nbsp;&nbsp;&nbsp;2-3年工作经验，大专或以上学历<br/>
-                                前端、硬件维护工程师、JAVA/C/C++<br/>
-                                            &nbsp;&nbsp;&nbsp;1年工作经验，大专或以上学历<br/>
-                                -----G2（15500元 /人月）<br/>
-                                UI/测试<br/>
-                                            &nbsp;&nbsp;&nbsp;3-5年工作经验，大专或以上学历<br/>
-                                前端、JAVA/C/C++、运维工程师、网络安全管理员、IT基础架构工程师<br/>
-                                            &nbsp;&nbsp;&nbsp;2年工作经验，大专或以上学历<br/>
-                                客户端（Android/iOS）、数据库工程师、产品经理<br/>
-                                            &nbsp;&nbsp;&nbsp;1年工作经验，大专或以上学历<br/>
-                                -----G3（20000元 /人月）<br/>
-                                UI/测试：<br/>
-                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，大专或以上学历<br/>
-                                前端、JAVA/C/C++、网络安全管理员、IT基础架构工程师、运维工程师<br/>
-                                            &nbsp;&nbsp;&nbsp;3年工作经验，大专或以上学历<br/>
-                                客户端（Android/iOS）、数据库/大数据工程师、产品经理<br/>
-                                            &nbsp;&nbsp;&nbsp;2年工作经验，大专或以上学历<br/>
-                                -----G4（22800元 /人月）<br/>
-                                JAVA/C/C++	、前端、网络安全管理员、IT基础架构工程师、运维工程师<br/>
-                                            &nbsp;&nbsp;&nbsp;4年工作经验，大专或以上学历<br/>
-                                客户端（Android/iOS）、数据库/大数据工程师、产品经理<br/>
-                                            &nbsp;&nbsp;&nbsp;3年工作经验，大专或以上学历<br/>
-                                -----G5（3000元 /人月）<br/>
-                                JAVA/C/C++、前端<br/>
-                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，大专或以上学历<br/>
-                                客户端（Android/iOS）、数据库/大数据工程师、系统架构师、产品经理<br/>
-                                            &nbsp;&nbsp;&nbsp;4年以上工作经验，大专或以上学历<br/>
-                                项目经理<br/>
-                                            &nbsp;&nbsp;&nbsp;4年以上工作经验，2年项目管理经验，20人以上团队管理能力，大专或以上学历<br/>
-                                -----G6	（26500元 /人月）<br/>
-                                数据库/大数据工程师、系统架构师<br/>
-                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，大专或以上学历<br/>
-                                项目经理<br/>
-                                            &nbsp;&nbsp;&nbsp;5年以上工作经验，3年项目管理经验，20人以上团队管理能力，大专或以上学历<br/>
-                            </span>}><a style={{color: '#3361ff'}}>查看说明</a></Tooltip>)}
+                            })(<div className="info-item">
+                              {rydjData.length === 0 ? (
+                                '暂无数据'
+                              ) : (
+                                <Popover
+                                  placement="right"
+                                  title={null}
+                                  content={this.tablePopover(rydjData, [
+                                    {
+                                      title: '人员等级',
+                                      dataIndex: 'DJ',
+                                      width: 78,
+                                      key: 'DJ',
+                                      ellipsis: true,
+                                      render: (value, row, index) => {
+                                        const obj = {
+                                          children: <Tooltip title={value} placement="topLeft">
+                                            <span style={{cursor: 'default'}}>{value}</span>
+                                          </Tooltip>,
+                                          props: {},
+                                        };
+                                        obj.props.rowSpan = this.getRowSpanCount(rydjData, 'DJ', index);
+                                        return obj;
+                                      },
+                                    },
+                                    {
+                                      title: '岗位类型',
+                                      dataIndex: 'GWLX',
+                                      width: 60,
+                                      key: 'GWLX',
+                                      ellipsis: true,
+                                      render: txt => (
+                                        <Tooltip title={txt} placement="topLeft">
+                                          <span style={{cursor: 'default'}}>{txt}</span>
+                                        </Tooltip>
+                                      )
+                                    },
+                                    {
+                                      title: '岗位要求',
+                                      dataIndex: 'GWYQ',
+                                      width: 150,
+                                      key: 'GWYQ',
+                                      ellipsis: true,
+                                      render: txt => (
+                                        <Tooltip title={txt} placement="topLeft">
+                                          <span style={{cursor: 'default'}}>{txt}</span>
+                                        </Tooltip>
+                                      )
+                                    },
+                                  ])}
+                                  overlayClassName="project-topic-content-popover"
+                                >
+                                  <a style={{color: '#3361ff'}}>查看详情</a>
+                                </Popover>
+                              )}
+                            </div>)}
                           </Form.Item>
                         </Col>
                       </Row>

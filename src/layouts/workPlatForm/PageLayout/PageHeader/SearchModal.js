@@ -110,7 +110,7 @@ class searchModal extends React.Component {
       })
         .then(res => {
           if (res?.code === 1) {
-            const {role = ''} = res;
+            const {role = '', zyrole = ''} = res;
             GlobalSearch({
               "content": key,
               "current": 1,
@@ -123,7 +123,7 @@ class searchModal extends React.Component {
               "totalWd": -1,
               "totalXm": -1,
               "totalYs": -1,
-              js: role,
+              js: zyrole === "暂无" ? role : zyrole,
             })
               .then(res => {
                 if (res?.code === 1) {
@@ -286,8 +286,8 @@ class searchModal extends React.Component {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = ''} = res;
-          params.js = role;
+          const {role = '', zyrole = ''} = res;
+          params.js = zyrole === "暂无" ? role : zyrole;
           GlobalSearch({...params})
             .then(res => {
               if (res?.code === 1) {
@@ -479,8 +479,10 @@ class searchModal extends React.Component {
     const {
       visible,
       dictionary: {},
-      closeModal
+      closeModal,
+      authorities: {TGYS_GYSRYQX, V_GYSRYQX}
     } = this.props;
+    // console.log("ccccc-cc-ccc-c-c",this.props.authorities)
     const {getFieldDecorator,} = this.props.form;
 
     return (
@@ -733,4 +735,5 @@ class searchModal extends React.Component {
 
 export default connect(({global}) => ({
   dictionary: global.dictionary,
+  authorities: global.authorities,
 }))(Form.create()(searchModal));

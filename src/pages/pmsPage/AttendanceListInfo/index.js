@@ -31,7 +31,7 @@ const AttendanceListInfo = props => {
     let obj = JSON.parse(DecryptBase64(encryptParams));
     splId = obj.splId;
     routes2 = [...routes].concat({
-      name: '外包人员考勤信息',
+      name: '考勤列表',
       pathname: props?.pathname,
     });
   }

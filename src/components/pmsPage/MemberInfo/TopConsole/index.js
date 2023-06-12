@@ -3,14 +3,14 @@ import {Select, Button, Input, TreeSelect, Row, Col, DatePicker, message} from '
 import {
   QueryProjectListPara,
   QueryProjectListInfo,
-  QuerySupplierList, QueryUserRole, QueryRequirementListPara, QueryOutsourceMemberList,
+  QuerySupplierList, QueryUserRole, QueryRequirementListPara, QueryOutsourceMemberList, QueryOutsourceRankInfo,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
 
 const InputGroup = Input.Group;
 const {Option} = Select;
 
-export default forwardRef(function TopConsole(props) {
+export default forwardRef(function TopConsole(props, ref) {
   //下拉框数据
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [gysData, setGysData] = useState([]); //所属供应商
@@ -22,7 +22,7 @@ export default forwardRef(function TopConsole(props) {
   const [gw, setGw] = useState(undefined); //岗位
   const [prjName, setPrjName] = useState(undefined); //项目名称
   const [gysmc, setGysmc] = useState(undefined); //供应商名称
-  const [zt, setZt] = useState(undefined); //状态
+  // const [zt, setZt] = useState(undefined); //状态
   const [filterFold, setFilterFold] = useState(true); //收起 true、展开 false
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const {
@@ -44,6 +44,16 @@ export default forwardRef(function TopConsole(props) {
     };
   }, [xmid]);
 
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        handleSearch,
+        handleReset,
+      };
+    },
+    [rymc, rydj, gw, prjName, gysmc],
+  );
 
   //顶部下拉框查询数据
   const getFilterData = () => {
@@ -154,7 +164,7 @@ export default forwardRef(function TopConsole(props) {
     setGw(undefined);
     setPrjName(undefined);
     setGysmc(undefined);
-    setZt(undefined);
+    // setZt(undefined);
   };
 
   // onChange-start
@@ -183,9 +193,9 @@ export default forwardRef(function TopConsole(props) {
     console.log('handleGysmcChange', v);
     setGysmc(v);
   };
-  const handleZtChange = v => {
-    setZt(v);
-  };
+  // const handleZtChange = v => {
+  //   setZt(v);
+  // };
   // onChange-end
 
   return (

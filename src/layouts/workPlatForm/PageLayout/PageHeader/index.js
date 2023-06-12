@@ -1,5 +1,5 @@
 import React from 'react';
-import {Input, Tooltip} from 'antd';
+import {Input, message, Tooltip} from 'antd';
 // import SwitchTheme from './switchTheme';
 import UserDrop from './userDrop';
 import VisitedRoutes from './VisitedRoutes';
@@ -9,6 +9,7 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import SwitchMenu from './SwitchMenu';
 import styles from './index.less';
 import LocalPathUtils from '../../../../utils/localPathUtils';
+import {GlobalSearch, QueryUserRole} from "../../../../services/pmsServices";
 
 const {Search} = Input;
 export default class PageHeader extends React.PureComponent {
@@ -40,7 +41,8 @@ export default class PageHeader extends React.PureComponent {
       projectName,
       theme,
     } = this.props;
-    const { globalSearch } = authorities;
+    const {globalSearch, TGYS_GYSRYQX, V_GYSRYQX} = authorities;
+    // console.log("ccccc-cc-ccc-c-c",authorities)
     // 引导
     const guidesRecords = [
       {
@@ -88,7 +90,7 @@ export default class PageHeader extends React.PureComponent {
         {/*菜单栏*/}
         <div
           id="visited_routes_container"
-          style={{ flex: 1, overflow: 'hidden', backgroundColor: 'white' }}
+          style={{flex: 1, overflow: 'hidden', backgroundColor: 'white'}}
           className={`${styles.historyContainer}`}
         >
           <span>
@@ -101,8 +103,8 @@ export default class PageHeader extends React.PureComponent {
             />
           </span>
         </div>
-        {/*搜索框*/}
-        <div style={{borderBottom: '1px solid rgb(238, 239, 241)'}}>
+        {/*搜索框 */}
+        <div style={{display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : '', borderBottom: '1px solid rgb(238, 239, 241)'}}>
           {
             searchModalVisible && <SearchModal closeModal={() => {
               this.setState({

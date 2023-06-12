@@ -22,30 +22,12 @@ export default function InfoTable(props) {
   const location = useLocation();
 
 
-  //金额格式化
-  const getAmountFormat = value => {
-    if ([undefined, null, '', ' ', NaN].includes(value)) return '';
-    return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
-  };
-
-  //联系人展示
-  const getLxrinfContent = (arr = []) => {
-    return (
-      <div className="list">
-        {arr.map(x => (
-          <div className="item" key={x.ID}>
-            <div className="top">
-              <div>{x.LXR}</div>
-              <div className="position-tag">{x.ZW}</div>
-            </div>
-            <div className="bottom">
-              <span>电话：</span> {x.DH || '无'}
-              <span className="email">｜ 邮箱：</span> {x.QTLXFS || '无'}
-            </div>
-          </div>
-        ))}
-      </div>
-    );
+  //表格操作后更新数据
+  const handleTableChange = (pagination) => {
+    // console.log('handleTableChange', pagination, filters, sorter, extra);
+    const {current = 1, pageSize = 20} = pagination;
+    // getTableData({ current, pageSize });
+    handleSearch(current, pageSize);
   };
 
   //列配置
@@ -182,13 +164,14 @@ export default function InfoTable(props) {
           columns={columns}
           rowKey={'RYID'}
           dataSource={tableData}
-          // onChange={handleTableChange}
+          onChange={handleTableChange}
           // scroll={{ y: 500 }}
           pagination={{
             current: curPage,
             pageSize: curPageSize,
             defaultCurrent: 1,
-            pageSizeOptions: ['20', '40', '50', '100'],
+            defaultPageSize: 5,
+            // pageSizeOptions: ['20', '40', '50', '100'],
             showSizeChanger: true,
             hideOnSinglePage: false,
             showQuickJumper: true,

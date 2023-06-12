@@ -22,6 +22,14 @@ export default function InfoTable(props) {
   const [visible, setVisible] = useState(false); //新增供应商弹窗显隐
   const location = useLocation();
 
+  //表格操作后更新数据
+  const handleTableChange = (pagination) => {
+    // console.log('handleTableChange', pagination, filters, sorter, extra);
+    const {current = 1, pageSize = 20} = pagination;
+    // getTableData({ current, pageSize });
+    handleSearch(current, pageSize);
+  };
+
   //列配置
   const columns = [
     {
@@ -44,20 +52,20 @@ export default function InfoTable(props) {
       render: (text, row, index) => {
         return (
           <Tooltip title={text} placement="topLeft">
-            <Link
-              style={{color: '#3361ff'}}
-              to={{
-                pathname: `/pms/manage/MemberDetail/${EncryptBase64(
-                  JSON.stringify({ryid: row.RYID}),
-                )}`,
-                state: {
-                  routes: [{name: '外包人员列表', pathname: location.pathname}],
-                },
-              }}
-              className="table-link-strong"
-            >
-              {text}
-            </Link>
+            {/*<Link*/}
+            {/*  style={{color: '#3361ff'}}*/}
+            {/*  to={{*/}
+            {/*    pathname: `/pms/manage/MemberDetail/${EncryptBase64(*/}
+            {/*      JSON.stringify({ryid: row.RYID}),*/}
+            {/*    )}`,*/}
+            {/*    state: {*/}
+            {/*      routes: [{name: '考勤列表', pathname: location.pathname}],*/}
+            {/*    },*/}
+            {/*  }}*/}
+            {/*  className="table-link-strong"*/}
+            {/*>*/}
+            {text}
+            {/*</Link>*/}
           </Tooltip>
         );
       },
@@ -142,7 +150,7 @@ export default function InfoTable(props) {
           columns={columns}
           rowKey={'RYID'}
           dataSource={tableData}
-          // onChange={handleTableChange}
+          onChange={handleTableChange}
           // scroll={{ y: 500 }}
           pagination={{
             current: curPage,

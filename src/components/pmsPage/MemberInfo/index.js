@@ -14,6 +14,7 @@ export default function MemberInfo(props) {
   const {params = {}, dictionary = {}} = props;
   const {GYSLX} = dictionary;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const topConsoleRef = useRef(null);
 
   useEffect(() => {
     console.log("1111")
@@ -79,6 +80,7 @@ export default function MemberInfo(props) {
         setTotal={setTotal}
         setCurPage={setCurPage}
         setCurPageSize={setCurPageSize}
+        ref={topConsoleRef}
         curPage={curPage}
         curPageSize={curPageSize}
       />
@@ -90,6 +92,7 @@ export default function MemberInfo(props) {
         curPage={curPage}
         curPageSize={curPageSize}
         GYSLX={GYSLX}
+        handleSearch={topConsoleRef?.current?.handleSearch}
       />
     </div>
   );

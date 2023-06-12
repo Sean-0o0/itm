@@ -90,6 +90,7 @@ const {
     queryOutsourceMemberAttendance,
     costCalculationCheck,
     outsourceCostExportExcel,
+    queryOutsourceRankInfo,
     insertOutsourcePaymentInfo,
   },
 } = api;
@@ -947,6 +948,16 @@ export async function CostCalculationCheck(payload) {
 export async function OutsourceCostExportExcel(payload) {
   const option = {
     url: outsourceCostExportExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 人员等级查询
+export async function QueryOutsourceRankInfo(payload) {
+  const option = {
+    url: queryOutsourceRankInfo,
     method: 'post',
     data: payload,
   };

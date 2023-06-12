@@ -12,7 +12,7 @@ const InputGroup = Input.Group;
 const {Option} = Select;
 const {Item} = Breadcrumb;
 
-export default forwardRef(function TopConsole(props) {
+export default forwardRef(function TopConsole(props, ref) {
   //下拉框数据
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
   const [rymcData, setRymcData] = useState([]); //人员名称
@@ -42,6 +42,17 @@ export default forwardRef(function TopConsole(props) {
     return () => {
     };
   }, [xmid, ryid, lxid, routes]);
+
+  useImperativeHandle(
+    ref,
+    () => {
+      return {
+        handleSearch,
+        handleReset,
+      };
+    },
+    [rymc, prjName, kqlx],
+  );
 
 
   //顶部下拉框查询数据

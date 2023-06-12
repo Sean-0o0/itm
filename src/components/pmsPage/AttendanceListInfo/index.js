@@ -20,6 +20,7 @@ export default function AttendanceListInfo(props) {
   const {params = {}, dictionary = {}, routes,} = props;
   const {GYSLX} = dictionary;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const topConsoleRef = useRef(null);
 
   useEffect(() => {
     console.log("1111")
@@ -101,6 +102,7 @@ export default function AttendanceListInfo(props) {
         setTotal={setTotal}
         setCurPage={setCurPage}
         setCurPageSize={setCurPageSize}
+        ref={topConsoleRef}
         curPage={curPage}
         curPageSize={curPageSize}
       />
@@ -112,6 +114,7 @@ export default function AttendanceListInfo(props) {
         curPage={curPage}
         curPageSize={curPageSize}
         GYSLX={GYSLX}
+        handleSearch={topConsoleRef?.current?.handleSearch}
       />
     </div>
   );

@@ -499,4 +499,10 @@ export default [
     url: '/projectManage/insertOutsourcePaymentInfo',
     dis: '外包人员付款后插入外包付款信息',
   },
+  {
+    code: '',
+    key: 'queryOutsourceRankInfo',
+    url: '/projectManage/queryOutsourceRankInfo',
+    dis: '人员等级查询',
+  },
 ];
