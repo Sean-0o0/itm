@@ -10,21 +10,13 @@ const { Item } = Breadcrumb;
 const { TabPane } = Tabs;
 
 export default function TopConsole(props) {
-  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth } = props;
+  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth, activeKey, setActiveKey } = props;
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
-  const [activeKey, setActiveKey] = useState(xqid); //
   const [dmInitiatedVisible, setDmInitiatedVisible] = useState(false); //
   const { XMXX = {}, XQXQ = [] } = dtlData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-
-  useEffect(() => {
-    if (xqid !== -2) {
-      setActiveKey(xqid);
-    }
-    return () => {};
-  }, [xqid]);
 
   //获取项目标签
   const getTags = (text = '', idtxt = '') => {
@@ -173,7 +165,7 @@ export default function TopConsole(props) {
   const handleTabsChange = key => {
     setActiveKey(key);
     getDtldata(key, XQXQ.filter(x => x.XQID === key)[0]?.LRRID);
-    // console.log('handleTabsChange', key);
+    console.log('handleTabsChange', key);
   };
 
   //申请餐券/权限弹窗
@@ -255,7 +247,12 @@ export default function TopConsole(props) {
         {XMXX.CJSJ ? moment(XMXX.CJSJ).format('YYYY-MM-DD') : '--'}
       </div>
       <div className="demand-tabs">
-        <Tabs activeKey={activeKey} onChange={handleTabsChange} size={'large'}>
+        <Tabs
+          defaultActiveKey={activeKey}
+          activeKey={activeKey}
+          onChange={handleTabsChange}
+          size={'large'}
+        >
           {XQXQ.map((x, index) => (
             <TabPane tab={'人力需求' + (index + 1)} key={x.XQID}></TabPane>
           ))}

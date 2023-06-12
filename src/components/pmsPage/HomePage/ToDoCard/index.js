@@ -98,7 +98,7 @@ export default function ToDoCard(props) {
     setCurrentXmid(item.xmid);
     setCurrentXmmc(item.xmmc);
     if (item.kzzd !== '') {
-      setRlwbData([...JSON.parse(item.kzzd)]);
+      setRlwbData(JSON.parse(item.kzzd));
     }
   };
 

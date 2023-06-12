@@ -92,6 +92,7 @@ const {
     outsourceCostExportExcel,
     queryOutsourceRankInfo,
     insertOutsourcePaymentInfo,
+    finishOutsourceWork,
   },
 } = api;
 
@@ -933,7 +934,6 @@ export async function QueryOutsourceMemberAttendance(payload) {
   return request(option);
 }
 
-
 // 费用计算前校验
 export async function CostCalculationCheck(payload) {
   const option = {
@@ -968,6 +968,16 @@ export async function QueryOutsourceRankInfo(payload) {
 export async function InsertOutsourcePaymentInfo(payload) {
   const option = {
     url: insertOutsourcePaymentInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 完成外包事务
+export async function FinishOutsourceWork(payload) {
+  const option = {
+    url: finishOutsourceWork,
     method: 'post',
     data: payload,
   };

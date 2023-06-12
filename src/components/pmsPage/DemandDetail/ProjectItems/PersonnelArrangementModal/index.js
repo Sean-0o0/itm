@@ -248,7 +248,7 @@ function PersonnelArrangementModal(props) {
 
   //表格数据保存
   const handleTableSave = row => {
-    // console.log('🚀 ~ file: index.js:137 ~ handleTableSave ~ row:', row);
+    console.log('🚀 ~ file: index.js:137 ~ handleTableSave ~ row:', row);
     let newData = [...tableData];
     const index = newData.findIndex(item => row.PCID === item.PCID);
     const item = newData[index];
@@ -325,6 +325,7 @@ function PersonnelArrangementModal(props) {
           formdecorate: form,
           title: col?.title?.props?.children || col?.title,
           gysdata: gysData,
+          isdock: isDock,//是否对接人
         };
       },
     };

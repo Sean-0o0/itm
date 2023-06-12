@@ -258,6 +258,8 @@ export default function ResumeDistributionPage(props) {
                   defaultValue={x.JLMC}
                   onBlur={e => handleInputBlur(e, x)}
                   style={{ width: '100%' }}
+                  // suffix={'.pdf'}
+                  // allowClear
                 />
               ) : (
                 <span>{x.JLMC}</span>

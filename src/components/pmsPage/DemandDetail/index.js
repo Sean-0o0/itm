@@ -19,10 +19,12 @@ export default function DemandDetail(props) {
   const isAuth = isDock || String(LOGIN_USER_ID) === String(fqrid); //是否为外包项目对接人或需求发起人
   const [curXqid, setCurXqid] = useState(xqid); //当前xqid
   const [curFqrid, setCurFqrid] = useState(fqrid); //当前fqrid
+  const [activeKey, setActiveKey] = useState(xqid); //高亮的需求tab id
 
   useEffect(() => {
     if (xqid !== -2 && WBRYGW.length !== 0 && WBSWLX.length !== 0) {
-      // console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:', WBSWLX);
+      setActiveKey(String(xqid));
+      // console.log('🚀 ~ file: index.js:338 ~ DemandDetail ~ xqid, WBSWLX, fqrid:', xqid);
       getDtldata(xqid, fqrid);
     }
     return () => {};
@@ -221,6 +223,8 @@ export default function DemandDetail(props) {
           dtlData={dtlData}
           isAuth={isAuth}
           getDtldata={getDtldata}
+          activeKey={activeKey}
+          setActiveKey={setActiveKey}
         />
         <ProjectItems
           dtlData={dtlData}
@@ -233,8 +237,6 @@ export default function DemandDetail(props) {
           dictionary={dictionary}
           routes={routes}
         />
-        <DemandTable dtlData={dtlData} fqrid={curFqrid} setIsSpinning={setIsSpinning}  isDock={isDock}/>
-        <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
         <EvaluationTable
           dtlData={dtlData}
           dictionary={dictionary}
@@ -242,6 +244,13 @@ export default function DemandDetail(props) {
           xqid={curXqid}
           fqrid={curFqrid}
           getDtldata={getDtldata}
+          isDock={isDock}
+        />
+        <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
+        <DemandTable
+          dtlData={dtlData}
+          fqrid={curFqrid}
+          setIsSpinning={setIsSpinning}
           isDock={isDock}
         />
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />

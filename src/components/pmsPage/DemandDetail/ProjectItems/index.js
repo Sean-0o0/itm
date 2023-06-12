@@ -6,7 +6,7 @@ import PersonnelArrangementModal from './PersonnelArrangementModal';
 import InterviewScoreModal from './InterviewScoreModal';
 import DemandInitiated from '../../HardwareItems/DemandInitiated';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { CreateOperateHyperLink } from '../../../../services/pmsServices';
+import { CreateOperateHyperLink, FinishOutsourceWork } from '../../../../services/pmsServices';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router-dom';
 import SendMailModal from '../../SendMailModal';
@@ -174,11 +174,11 @@ export default function ProjectItems(props) {
       [
         '账号新增',
         '综合评测打分',
-        '发送确认邮件',
+        // '发送确认邮件', //暂时注释发送邮件
         '简历上传',
         '简历分发',
         '提交录用申请',
-        '录用确认',
+        // '录用确认',
       ].includes(SWMC)
     ) {
       if (
@@ -445,8 +445,25 @@ export default function ProjectItems(props) {
     },
   ];
 
+  //邮件发送后调的接口 - 完成外包事务
+  const handleOutsourceWockFinish = (swzxid, xqid) => {
+    FinishOutsourceWork({
+      swzxid: Number(swzxid),
+      xqid: Number(xqid),
+    })
+      .then(res => {
+        if (res?.success) {
+          reflush();
+        }
+      })
+      .catch(e => {
+        message.error('外包事务完成失败', 1);
+      });
+  };
+
   return (
     <div className="prj-items-box">
+      {/* 录用确认 */}
       {modalVisible.offerConfirmation && (
         <MoreOperationModal
           visible={modalVisible.offerConfirmation}
@@ -467,12 +484,15 @@ export default function ProjectItems(props) {
               getDtldata(xqid, fqrid);
             },
             swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0]?.SWZXID,
+            swzxid_email: XQSX_ORIGIN.filter(x => x.SWMC === '发送确认邮件')[0]?.SWZXID,
             isDock,
             fqrid,
           }}
           tableColumns={columns}
         />
       )}
+
+      {/* 发送邮件 */}
       {modalVisible.msgConfirmation && (
         <SendMailModal
           closeModal={() =>
@@ -490,7 +510,10 @@ export default function ProjectItems(props) {
                 msgConfirmation: false,
               };
             });
-            reflush();
+            handleOutsourceWockFinish(
+              XQSX_ORIGIN.filter(x => x.SWMC === '发送确认邮件')[0]?.SWZXID,
+              xqid,
+            );
           }}
           visible={modalVisible.msgConfirmation}
         />

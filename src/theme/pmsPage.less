@@ -13339,7 +13339,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-.demand-info-box {
+.demand-info-box,
+.expense-info-box {
   & > .top-console {
     & > .item-box {
       .ant-input-affix-wrapper .ant-input {
@@ -13419,6 +13420,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           cursor: pointer;
           font-size: 18px;
           margin-top: 2px;
+        }
+      }
+    }
+  }
+}
+
+.expense-info-box {
+  > .info-table {
+    .project-info-table-box {
+      .ant-table {
+        //嵌套子表格异常解决
+        tr.ant-table-expanded-row .ant-table-placeholder {
+          margin-top: -17.5px;
         }
       }
     }
@@ -14397,11 +14411,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               text-overflow: ellipsis;
               overflow: hidden;
               white-space: nowrap;
-              height: 40px;
+              // height: 40px;
               line-height: 40px;
             }
 
-            i {
+            .iconfont.delete {
               flex-shrink: 0;
               font-size: 20px;
               margin-left: 6px;

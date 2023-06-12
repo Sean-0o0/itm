@@ -29,8 +29,9 @@ export default function FormOperate(props) {
     setAddSkzhModalVisible,
     isHwPrj = false,
     currentXmid = -2,
-    rlwbData={},
+    rlwbData = {},
   } = props;
+  console.log('🚀 ~ file: index.js:33 ~ FormOperate ~ rlwbData:', rlwbData);
   const {
     sfyht,
     setSfyht,

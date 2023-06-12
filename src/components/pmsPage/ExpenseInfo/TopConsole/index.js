@@ -74,7 +74,7 @@ export default forwardRef(function TopConsole(props, ref) {
               paging: -1,
               sort: '',
               total: -1,
-              cxlx: 'FYJS',
+              cxlx: 'FYLB',
               js: zyrole === '外包项目对接人' ? zyrole : role,
             })
               .then(res => {

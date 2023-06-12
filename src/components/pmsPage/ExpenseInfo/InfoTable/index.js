@@ -420,7 +420,7 @@ export default function InfoTable(props) {
         total: -1,
         xmid: Number(record.XMID),
         gysid: Number(record.GYSID),
-        jssj: Number(202306),
+        jssj: Number(record.JSSJ),
         kssj: Number(record.KSSJ),
         js: isDock ? '外包项目对接人' : userRole,
       });
@@ -466,7 +466,7 @@ export default function InfoTable(props) {
 
   const confirmExport = () => {
     setTableLoading(true);
-    const { XMID, JD, KSSJ, JSSJ, XMMC } = selectedRow;
+    const { XMID, JD, KSSJ, JSSJ, XMMC, GYSID } = selectedRow;
     Axios({
       method: 'POST',
       url: outsourceCostExportExcel,
@@ -478,6 +478,7 @@ export default function InfoTable(props) {
         nf: moment().year(),
         xmid: Number(XMID ?? 0),
         xmmc: XMMC,
+        gysid: Number(GYSID ?? 0),
       },
     })
       .then(res => {

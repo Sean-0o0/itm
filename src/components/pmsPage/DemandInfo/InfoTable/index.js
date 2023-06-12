@@ -334,7 +334,7 @@ export default function InfoTable(props) {
                   <a className="xj">下架</a>
                 </Popconfirm>
               )}
-              {row.SJZT === '3' && (
+              {/* {row.SJZT === '3' && (
                 <a
                   className="xj"
                   onClick={() => {
@@ -348,62 +348,85 @@ export default function InfoTable(props) {
                 >
                   发送邮件
                 </a>
-              )}
-              <Popover
-                placement="bottomRight"
-                title={null}
-                content={
-                  <div className="list">
-                    {row.SJZT !== '3' && (
+              )} */}
+              {row.SJZT === '3' ? (
+                <a
+                  className="xj"
+                  onClick={() => {
+                    if (LOGIN_USER_ID === Number(row.FQRID)) {
+                      setVisible(p => {
+                        return {
+                          ...p,
+                          relaunch: true,
+                        };
+                      });
+                      setCurrentXqid(Number(row.XQID));
+                      setCurrentXmid(Number(row.XMID));
+                      setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
+                    } else {
+                      message.info('只有需求发起人可以操作');
+                    }
+                  }}
+                >
+                  重新发起
+                </a>
+              ) : (
+                <Popover
+                  placement="bottomRight"
+                  title={null}
+                  content={
+                    <div className="list">
+                      {row.SJZT !== '3' && (
+                        <div
+                          className="item"
+                          style={{ color: '#3361ff' }}
+                          onClick={() => {
+                            if (LOGIN_USER_ID === Number(row.FQRID) || isDock) {
+                              setVisible(p => {
+                                return {
+                                  ...p,
+                                  update: true,
+                                };
+                              });
+                              setCurrentXqid(Number(row.XQID));
+                              setCurrentXmid(Number(row.XMID));
+                              setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
+                            } else {
+                              message.info('只有外包项目对接人和需求发起人可以操作');
+                            }
+                          }}
+                        >
+                          修改
+                        </div>
+                      )}
                       <div
                         className="item"
                         style={{ color: '#3361ff' }}
                         onClick={() => {
-                          if (LOGIN_USER_ID === Number(row.FQRID) || isDock) {
+                          if (LOGIN_USER_ID === Number(row.FQRID)) {
                             setVisible(p => {
                               return {
                                 ...p,
-                                update: true,
+                                relaunch: true,
                               };
                             });
                             setCurrentXqid(Number(row.XQID));
                             setCurrentXmid(Number(row.XMID));
                             setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
                           } else {
-                            message.info('只有外包项目对接人和需求发起人可以操作');
+                            message.info('只有需求发起人可以操作');
                           }
                         }}
                       >
-                        修改
+                        重新发起
                       </div>
-                    )}
-                    <div
-                      className="item"
-                      style={{ color: '#3361ff' }}
-                      onClick={() => {
-                        if (LOGIN_USER_ID === Number(row.FQRID)) {
-                          setVisible(p => {
-                            return {
-                              ...p,
-                              relaunch: true,
-                            };
-                          });
-                          setCurrentXqid(Number(row.XQID));
-                          setCurrentXmid(Number(row.XMID));
-                          setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
-                        } else {
-                          message.info('只有需求发起人可以操作');
-                        }
-                      }}
-                    >
-                      重新发起
                     </div>
-                  </div>
-                }
-                overlayClassName="tc-btn-more-content-popover"
-              >
-                <Icon type="ellipsis" rotate={90} />
-              </Popover>
+                  }
+                  overlayClassName="tc-btn-more-content-popover"
+                >
+                  <Icon type="ellipsis" rotate={90} />
+                </Popover>
+              )}
             </div>
           );
         },

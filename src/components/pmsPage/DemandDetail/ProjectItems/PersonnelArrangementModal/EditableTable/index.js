@@ -24,6 +24,7 @@ const EditableCell = props => {
     formdecorate,
     children,
     gysdata,
+    isdock = false,
     ...restProps
   } = props;
 
@@ -37,7 +38,7 @@ const EditableCell = props => {
         e.currentTarget.id, //只校验当前编辑项
       ],
       (error, values) => {
-        console.log('🚀 ~ file: index.js:44 ~ save ~ values:', values);
+        // console.log('🚀 ~ file: index.js:44 ~ save ~ values:', values);
         handleSave({ ...record, ...values });
       },
     );
@@ -47,6 +48,7 @@ const EditableCell = props => {
     const recIndex = dataIndex + record['PCID'];
     switch (dataIndex) {
       case 'GYSID':
+        if (!isdock) return '';
         return (
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
@@ -77,7 +79,7 @@ const EditableCell = props => {
                 }}
                 onBlur={() => {
                   formdecorate.validateFields([
-                    recIndex, //只校验当前编辑项
+                    'GYSID', //只校验当前编辑项
                   ]);
                 }}
               >
@@ -126,7 +128,7 @@ const EditableCell = props => {
                 onChange={v => {
                   formdecorate.validateFields(
                     [
-                      recIndex, //只校验当前编辑项
+                      'MSSJ', //只校验当前编辑项
                     ],
                     (error, values) => {
                       handleSave({ ...record, [recIndex]: v });
@@ -135,7 +137,7 @@ const EditableCell = props => {
                 }}
                 onBlur={() => {
                   formdecorate.validateFields([
-                    recIndex, //只校验当前编辑项
+                    'MSSJ', //只校验当前编辑项
                   ]);
                 }}
               />,

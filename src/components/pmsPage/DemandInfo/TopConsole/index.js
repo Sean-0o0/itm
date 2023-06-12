@@ -305,7 +305,7 @@ export default forwardRef(function TopConsole(props, ref) {
             className="item-selector"
             dropdownClassName={'item-selector-dropdown'}
             filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              option.props.filterValue.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             showSearch
             allowClear
@@ -314,7 +314,7 @@ export default forwardRef(function TopConsole(props, ref) {
             placeholder="请选择"
           >
             {prjNameData.map((x, i) => (
-              <Option key={i} value={x.ID}>
+              <Option key={i} value={x.ID} filterValue={x.XMMC}>
                 <Tooltip title={x.XMMC} placement="bottomLeft">
                   {x.XMMC}
                 </Tooltip>
@@ -350,7 +350,7 @@ export default forwardRef(function TopConsole(props, ref) {
             className="item-selector"
             dropdownClassName={'item-selector-dropdown'}
             filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+              option.props.filterValue.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             showSearch
             allowClear
@@ -359,7 +359,7 @@ export default forwardRef(function TopConsole(props, ref) {
             placeholder="请选择"
           >
             {dmNameData.map((x, i) => (
-              <Option key={i} value={x.ID}>
+              <Option key={i} value={x.ID} filterValue={x.XQMC}>
                 <Tooltip title={x.XQMC} placement="bottomLeft">
                   {x.XQMC}
                 </Tooltip>

@@ -83,7 +83,7 @@ export default function DemandInfo(props) {
               .then(res => {
                 if (res?.success) {
                   let data = JSON.parse(res.xmxx);
-                  // console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
+                  console.log('🚀 ~ file: index.js:50 ~ getTableData ~ res:', data);
                   // data = data.map(x => ({ ...x, ID: getUUID() }));
                   setTableData(p => data);
                   setTotal(res.totalrows);
@@ -153,7 +153,7 @@ export default function DemandInfo(props) {
   };
 
   return (
-    <div className="demand-info-box">
+    <div className="demand-info-box expense-info-box">
       <TopConsole
         dictionary={dictionary}
         setTableData={setTableData}

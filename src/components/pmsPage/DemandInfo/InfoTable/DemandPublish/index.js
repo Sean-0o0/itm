@@ -1,21 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Modal,
-  Form,
-  message,
-  Spin,
-  Input,
-  Table,
-  Row,
-  Col,
-  Icon,
-  Popconfirm,
-  DatePicker,
-  Select,
-  Button,
-  Tooltip,
-  Drawer,
-} from 'antd';
+import { Modal, Form, message, Spin, Input, Table, Row, Col, DatePicker, Tooltip } from 'antd';
 import moment from 'moment';
 import {
   FetchqueryOutsourceRequirement,
@@ -46,6 +30,7 @@ function ExpenseInfo(props) {
     }
     return () => {};
   }, [xqid]);
+
   const getData = xqid => {
     setIsSpinning(true);
     FetchqueryOutsourceRequirement({
@@ -62,7 +47,7 @@ function ExpenseInfo(props) {
           };
           setData({ ...obj });
           setIsSpinning(false);
-          console.log('🚀 ~ file: index.js:49 ~ getData ~ obj:', obj);
+          // console.log('🚀 ~ file: index.js:49 ~ getData ~ obj:', obj);
         }
       })
       .catch(e => {
@@ -77,6 +62,7 @@ function ExpenseInfo(props) {
       width: '10%',
       key: 'RYDJ',
       ellipsis: true,
+      render: txt => <Input value={txt} readOnly />,
     },
     {
       title: '岗位',
@@ -84,7 +70,11 @@ function ExpenseInfo(props) {
       width: '10%',
       key: 'GW',
       ellipsis: true,
-      render: txt => WBRYGW.filter(x => x.ibm === txt)[0]?.note,
+      render: txt => (
+        <Tooltip title={WBRYGW.filter(x => x.ibm === txt)[0]?.note} placement="topLeft">
+          <Input value={WBRYGW.filter(x => x.ibm === txt)[0]?.note} readOnly />
+        </Tooltip>
+      ),
     },
     {
       title: '人员数量',
@@ -92,6 +82,7 @@ function ExpenseInfo(props) {
       width: '10%',
       key: 'RYSL',
       ellipsis: true,
+      render: txt => <Input value={txt} readOnly />,
     },
     {
       title: '时长(人/月)',
@@ -99,15 +90,23 @@ function ExpenseInfo(props) {
       width: '12%',
       key: 'SC',
       ellipsis: true,
+      render: txt => <Input value={txt} readOnly />,
     },
     {
       title: '要求',
       dataIndex: 'YQ',
       key: 'YQ',
       ellipsis: false,
-      render: text => (
-        <Tooltip title={text.replace(/<br>/g, '')} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text.replace(/<br>/g, '')}</span>
+      render: txt => (
+        <Tooltip title={txt.replace(/<br>/g, '\n')} placement="topLeft">
+          <TextArea
+            value={txt.replace(/<br>/g, '\n')}
+            autoSize={{ minRows: 1, maxRows: 6 }}
+            style={{ cursor: 'default' }}
+            readOnly
+          >
+            {txt.replace(/<br>/g, '\n')}
+          </TextArea>
         </Tooltip>
       ),
     },
@@ -157,7 +156,7 @@ function ExpenseInfo(props) {
           labelCol={{ span: colSpan === 12 ? 8 : 4 }}
           wrapperCol={{ span: colSpan === 12 ? 14 : 19 }}
         >
-          <div
+          {/* <div
             style={{
               width: '100%',
               minHeight,
@@ -171,7 +170,13 @@ function ExpenseInfo(props) {
             }}
           >
             {value}
-          </div>
+          </div> */}
+          <TextArea
+            value={value}
+            autoSize={{ minRows: 3, maxRows: 6 }}
+            style={{ cursor: 'default' }}
+            readOnly
+          ></TextArea>
         </Form.Item>
       </Col>
     );

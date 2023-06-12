@@ -505,4 +505,10 @@ export default [
     url: '/projectManage/queryOutsourceRankInfo',
     dis: '人员等级查询',
   },
+  {
+    code: '',
+    key: 'finishOutsourceWork',
+    url: '/projectManage/finishOutsourceWork',
+    dis: '完成外包事务',
+  },
 ];

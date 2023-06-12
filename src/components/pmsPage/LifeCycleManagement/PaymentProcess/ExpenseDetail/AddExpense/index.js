@@ -381,7 +381,8 @@ const AddExpense = props => {
     let obj = fylxData?.filter(x => x.ID === id)[0];
     setFylxInfo(obj);
     // console.log('🚀 ~ file: index.js ~ line 156 ~ handleFylxChange ~ obj', obj);
-    setIsBudget(obj.FID === '20'); //劳务费类型的id 20
+    // setIsBudget(obj.FID === '20'); //劳务费类型的id 20
+    setIsBudget(false); //劳务费类型的id 20
   };
   const handleFplxChange = (id, node) => {
     setFplxInfo({ ID: id, NAME: node.props.children, BM: node.props.bm });
@@ -503,7 +504,7 @@ const AddExpense = props => {
             }
             fileList={[...formData[dataIndex + 'FileList']]}
           >
-            <Button type="dashed" className='add-expense-btn-default'>
+            <Button type="dashed" className="add-expense-btn-default">
               <Icon type="upload" />
               点击上传
             </Button>
@@ -582,7 +583,7 @@ const AddExpense = props => {
             }
             fileList={[...formData[dataIndex + 'FileList']]}
           >
-            <Button type="dashed" className='add-expense-btn-default'>
+            <Button type="dashed" className="add-expense-btn-default">
               <Icon type="upload" />
               点击上传
             </Button>
@@ -615,7 +616,7 @@ const AddExpense = props => {
         validateStatus={formData.receiptIsTurnRed ? 'error' : 'success'}
       >
         <Dropdown overlay={menu}>
-          <Button className='add-expense-btn-default'>
+          <Button className="add-expense-btn-default">
             <Icon type="upload" />
             新增发票
           </Button>

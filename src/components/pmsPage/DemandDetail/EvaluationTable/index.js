@@ -185,6 +185,7 @@ export default function EvaluationTable(props) {
               getDtldata(xqid, fqrid);
             },
             swzxid: XQSX_ORIGIN.filter(x => x.SWMC === '综合评测安排')[0]?.SWZXID,
+            swzxid_email: XQSX_ORIGIN.filter(x => x.SWMC === '发送确认邮件')[0]?.SWZXID,
             isDock,
             fqrid,
           }}

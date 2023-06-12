@@ -1,24 +1,12 @@
 import React, { useEffect, useState } from 'react';
-import {
-  Modal,
-  Form,
-  message,
-  Spin,
-  Input,
-  Table,
-  Row,
-  Col,
-  Icon,
-  Popconfirm,
-  DatePicker,
-  Select,
-  Button,
-  Tooltip,
-  Drawer,
-} from 'antd';
+import { Modal, Form, message, Input, Table, Popconfirm, Button, Tooltip } from 'antd';
 import { EditableCell, EditableFormRow } from './EditableTable';
 import moment from 'moment';
-import { CreateOperateHyperLink, OperateEvaluation } from '../../../../../services/pmsServices';
+import {
+  CreateOperateHyperLink,
+  FinishOutsourceWork,
+  OperateEvaluation,
+} from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
 import SendMailModal from '../../../SendMailModal';
 
@@ -26,7 +14,17 @@ const { TextArea } = Input;
 
 function MoreOperationModal(props) {
   const { visible, setVisible, form, data = {} } = props;
-  const { tableData = [], DFZT = [], LYZT = [], xqid, swzxid, reflush, isDock, fqrid } = data;
+  const {
+    tableData = [],
+    DFZT = [],
+    LYZT = [],
+    xqid,
+    swzxid,
+    reflush,
+    isDock,
+    fqrid,
+    swzxid_email,
+  } = data;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [editing, setEditing] = useState(false); //编辑状态
   const [editData, setEditData] = useState([]); //编辑数据的id
@@ -357,6 +355,22 @@ function MoreOperationModal(props) {
     footer: null,
   };
 
+  //邮件发送后调的接口 - 完成外包事务
+  const handleOutsourceWockFinish = (swzxid, xqid) => {
+    FinishOutsourceWork({
+      swzxid: Number(swzxid),
+      xqid: Number(xqid),
+    })
+      .then(res => {
+        if (res?.success) {
+          reflush();
+        }
+      })
+      .catch(e => {
+        message.error('外包事务完成失败', 1);
+      });
+  };
+
   return (
     <Modal
       wrapClassName="editMessage-modify evaluation-more-operation-modal"
@@ -376,6 +390,7 @@ function MoreOperationModal(props) {
         <strong>综合评测信息列表</strong>
       </div>
       <div className="content-box">
+        {/* 发送邮件 */}
         {modalVisible.msgConfirmation && (
           <SendMailModal
             closeModal={() =>
@@ -393,7 +408,7 @@ function MoreOperationModal(props) {
                   msgConfirmation: false,
                 };
               });
-              reflush();
+              handleOutsourceWockFinish(swzxid_email, xqid);
             }}
             visible={modalVisible.msgConfirmation}
             gysmcArr={[...gysmcArr]}
@@ -553,7 +568,7 @@ function MoreOperationModal(props) {
                 </>
               ) : (
                 <>
-                  {isDock && (
+                  {/* {isDock && (
                     <>
                       <Button
                         type="primary"
@@ -582,7 +597,7 @@ function MoreOperationModal(props) {
                         确认录用申请
                       </Button>
                     </>
-                  )}
+                  )} */}
                   {String(fqrid) === String(JSON.parse(sessionStorage.getItem('user'))?.id) && (
                     <Button
                       type="primary"

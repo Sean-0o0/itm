@@ -178,37 +178,35 @@ class ItemBtn extends React.Component {
       this.getLink(params, 'lbModalUrl');
     };
     //文档预览 - 下载
-    const wdyl = ()=>{
-      
-    };
-    const reoprMoreCotent = (
-      <div className="list">
-        <div className="item" onClick={() => scxg(item, 'MOD')} key="上传新文档">
-        上传新文档
-        </div>
-      </div>
-    );
-    if (done)
-      return (
-        <div className="opr-more">
-          <div className="reopr-btn" onClick={() => wdyl(item)}>
-            查看
-          </div>
-          <Popover
-            placement="bottom"
-            title={null}
-            content={reoprMoreCotent}
-            overlayClassName="btn-more-content-popover"
-          >
-            <div className="reopr-more">
-              <i className="iconfont icon-more2" />
-            </div>
-          </Popover>
-        </div>
-      );
+    const wdyl = () => {};
+    // const reoprMoreCotent = (
+    //   <div className="list">
+    //     <div className="item" onClick={() => scxg(item, 'MOD')} key="上传新文档">
+    //     上传新文档
+    //     </div>
+    //   </div>
+    // );
+    // if (done)
+    //   return (
+    //     <div className="opr-more">
+    //       <div className="reopr-btn" onClick={() => wdyl(item)}>
+    //         查看
+    //       </div>
+    //       <Popover
+    //         placement="bottom"
+    //         title={null}
+    //         content={reoprMoreCotent}
+    //         overlayClassName="btn-more-content-popover"
+    //       >
+    //         <div className="reopr-more">
+    //           <i className="iconfont icon-more2" />
+    //         </div>
+    //       </Popover>
+    //     </div>
+    //   );
     return (
       <div className="opr-btn" onClick={() => scxg(item)}>
-        上传
+        {done ? '修改' : '上传'}
       </div>
     );
   };
