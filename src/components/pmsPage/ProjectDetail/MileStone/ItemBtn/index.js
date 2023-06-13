@@ -3,11 +3,12 @@ import {
   CreateOperateHyperLink,
   FetchQueryOAUrl,
   FetchQueryOwnerWorkflow,
+  FetchQueryWpsWDXX,
   GetApplyListProvisionalAuth,
   RemindSubProjectFinish,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import { message, Popover, Modal } from 'antd';
+import { message, Popover, Modal, Spin } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
@@ -20,6 +21,7 @@ import EnterBidInfoModel from '../../../HardwareItems/EnterBidInfoModel';
 import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
+import { is } from 'immutable';
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -62,6 +64,8 @@ class ItemBtn extends React.Component {
     hardWareContrastModalVisible: false,
     xbjglrModalVisible: false,
     xqfqModalVisible: false, //需求发起
+    currentFileList: [], //查看的文档列表
+    fileLoading: false, //获取查看的文档列表的加载状态
   };
   // timer = null;
 
@@ -177,36 +181,124 @@ class ItemBtn extends React.Component {
       });
       this.getLink(params, 'lbModalUrl');
     };
+    //获取文档
+    const getFileList = item => {
+      this.setState({
+        fileLoading: true,
+      });
+      FetchQueryWpsWDXX({
+        lcb: Number(item.lcbid),
+        sxid: Number(item.sxid),
+        xmmc: Number(item.xmid),
+      })
+        .then(res => {
+          if (res?.success) {
+            // console.log('🚀 ~ FetchQueryWpsWDXX ~ res', JSON.parse(res.record.url));
+            this.setState({
+              currentFileList: [...JSON.parse(res.record.url)],
+              fileLoading: false,
+            });
+          }
+        })
+        .catch(e => {
+          message.error('文档信息获取失败', 1);
+        });
+    };
     //文档预览 - 下载
-    const wdyl = () => {};
-    // const reoprMoreCotent = (
-    //   <div className="list">
-    //     <div className="item" onClick={() => scxg(item, 'MOD')} key="上传新文档">
-    //     上传新文档
-    //     </div>
-    //   </div>
-    // );
-    // if (done)
-    //   return (
-    //     <div className="opr-more">
-    //       <div className="reopr-btn" onClick={() => wdyl(item)}>
-    //         查看
-    //       </div>
-    //       <Popover
-    //         placement="bottom"
-    //         title={null}
-    //         content={reoprMoreCotent}
-    //         overlayClassName="btn-more-content-popover"
-    //       >
-    //         <div className="reopr-more">
-    //           <i className="iconfont icon-more2" />
-    //         </div>
-    //       </Popover>
-    //     </div>
-    //   );
+    const wdyl = (name, url) => {
+      var link = document.createElement('a');
+      link.href = url;
+      link.download = name;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+    };
+    const reoprMoreContent = (
+      <div className="list">
+        <div className="item" onClick={() => scxg(item, 'MOD')} key="上传新文档">
+          {/* 上传新文档 */}
+          修改
+        </div>
+      </div>
+    );
+    const documentContent = (
+      <div className="list">
+        {this.state.fileLoading ? (
+          <Spin tip="加载中" />
+        ) : (
+          this.state.currentFileList.map(x => (
+            <div className="item" key={x[0]} onClick={() => wdyl(x[1], x[2])}>
+              {x[1]}
+            </div>
+          ))
+        )}
+      </div>
+    );
+
+    //权限控制
+    const { isLeader = false, isMember = false, isMnger = false } = this.props.auth;
+    if ((isLeader && !isMnger) || (!isLeader && !isMember && !isMnger)) {
+      return (
+        <div className="opr-more">
+          <Popover
+            placement="bottomRight"
+            title={null}
+            content={documentContent}
+            overlayClassName="document-list-content-popover"
+            trigger="click"
+          >
+            <div className="reopr-btn" onClick={() => getFileList(item)}>
+              查看
+            </div>
+          </Popover>
+        </div>
+      );
+    } else if (isMember && !isMnger) {
+      if (done) {
+        return (
+          <div className="opr-more">
+            <Popover
+              placement="bottomRight"
+              title={null}
+              content={documentContent}
+              overlayClassName="document-list-content-popover"
+              trigger="click"
+            >
+              <div className="reopr-btn" onClick={() => getFileList(item)}>
+                查看
+              </div>
+            </Popover>
+          </div>
+        );
+      }
+    }
+    if (done)
+      return (
+        <div className="opr-more">
+          <Popover
+            placement="bottomRight"
+            title={null}
+            content={documentContent}
+            overlayClassName="document-list-content-popover"
+          >
+            <div className="reopr-btn" onMouseEnter={() => getFileList(item)}>
+              查看
+            </div>
+          </Popover>
+          <Popover
+            placement="bottom"
+            title={null}
+            content={reoprMoreContent}
+            overlayClassName="btn-more-content-popover"
+          >
+            <div className="reopr-more">
+              <i className="iconfont icon-more2" />
+            </div>
+          </Popover>
+        </div>
+      );
     return (
       <div className="opr-btn" onClick={() => scxg(item)}>
-        {done ? '修改' : '上传'}
+        上传
       </div>
     );
   };
@@ -405,7 +497,6 @@ class ItemBtn extends React.Component {
 
   //流程发起查看
   getLcfqck = (done, item) => {
-    // console.log('🚀 ~ file: index.js ~ line 224 ~ ItemBtn ~ done, item', done, item);
     //是否付款流程
     const isFklc = item.sxmc === '付款流程';
     //查看
@@ -578,7 +669,6 @@ class ItemBtn extends React.Component {
         );
       }
       if (item.sxmc === '信委会议案流程') {
-        console.log();
         params = this.getParams(
           'LC_XWHYALC',
           'LC_XWHYALC_TAFQ',
@@ -689,6 +779,27 @@ class ItemBtn extends React.Component {
         )}
       </div>
     );
+    //权限控制
+    const { isLeader = false, isMember = false, isMnger = false } = this.props.auth;
+    if (isLeader && !isMnger) {
+      return (
+        <div className="opr-more">
+          <div className="reopr-btn" onClick={() => lcck(item)}>
+            查看
+          </div>
+        </div>
+      );
+    } else if (isMember && !isMnger) {
+      if (done && item.sxmc === '信委会议案流程') {
+        return (
+          <div className="opr-more">
+            <div className="reopr-btn" onClick={() => lcck(item)}>
+              查看
+            </div>
+          </div>
+        );
+      }
+    }
     if (done)
       return (
         <div className="opr-more">
@@ -715,73 +826,253 @@ class ItemBtn extends React.Component {
   };
 
   //按钮事件配置
-  getItemBtn = (name, done, item) => {
-    switch (name) {
-      //流程发起
-      case '信委会议案流程':
-      case '软件费用审批流程-有合同':
-      case '软件费用审批流程-无合同':
-      case '项目立项申请':
-      case '招标方式变更流程':
-      case '软件合同签署流程':
-      case '申请VPN':
-      case '申请权限':
-      case '申请餐券':
-      case '会议议案提交':
-      case '付款流程':
-      case '设备采购有合同':
-      case '设备采购无合同':
-      case '框架内硬件采购流程':
-      case '框架外硬件采购流程':
-      case '总办会流程':
-      case '需求发起':
-        return this.getLcfqck(done, item);
+  getItemBtn = (name, done, item, { isLeader = false, isMember = false, isMnger = false }) => {
+    //！！！ 后边新增事项配置时，注意配置完整
+    if (isLeader && !isMnger) {
+      if (!done) return '';
+      switch (name) {
+        //流程发起
+        case '信委会议案流程':
+          return this.getLcfqck(done, item);
+        //文档上传
+        case '总办会会议纪要':
+        case '总办会提案':
+        case '中标公告':
+        case '评标报告':
+        case '可行性方案':
+        case '调研报告':
+        case 'UI设计图':
+        case '功能清单':
+        case '原型图':
+        case '需求文档':
+        case '开发文档':
+        case '系统拓扑图':
+        case '系统框架图':
+        case '测试文档':
+        case '原型设计说明书':
+        case '开发测试报告':
+        case '系统部署图、逻辑图':
+        case '评估报告':
+        case '软件系统验收测试报告':
+        case '生产安装部署手册':
+        case '生产操作及运维手册':
+        case '用户手册':
+        case '硬件合同':
+        case '验收报告':
+          return this.getWdscxg(done, item);
+        default:
+          console.error(`🚀 ~ 该事项名称【${name}】未配置`);
+          return '';
+      }
+    } else if (isMember && !isMnger) {
+      // if (!done && (['项目立项', '项目招采'].includes(item.lcb) || item.sxmc === '需求发起'))
+      if (['项目立项', '项目招采'].includes(item.lcb) || item.sxmc === '需求发起') return '';
+      if (done) {
+        switch (name) {
+          //流程发起
+          case '信委会议案流程':
+            return this.getLcfqck(done, item);
 
-      //信息录入
-      case '中标信息录入':
-      case '软件合同信息录入':
-        return this.getXxlrxg(done, item);
-      case '硬件中标信息录入':
-        return this.getYjxxlr(done, item);
-      case '硬件合同信息录入':
-        return this.getYjxxlr(done, item, false);
-      case '询比结果录入':
-        return this.getXbjglr(done, item);
+          //文档上传
+          case '总办会会议纪要':
+          case '总办会提案':
+          case '中标公告':
+          case '评标报告':
+          case '可行性方案':
+          case '调研报告':
+          case 'UI设计图':
+          case '功能清单':
+          case '原型图':
+          case '需求文档':
+          case '开发文档':
+          case '系统拓扑图':
+          case '系统框架图':
+          case '测试文档':
+          case '原型设计说明书':
+          case '开发测试报告':
+          case '系统部署图、逻辑图':
+          case '评估报告':
+          case '软件系统验收测试报告':
+          case '生产安装部署手册':
+          case '生产操作及运维手册':
+          case '用户手册':
+          case '硬件合同':
+          case '验收报告':
+            return this.getWdscxg(done, item);
 
-      //文档上传
-      case '总办会会议纪要':
-      case '总办会提案':
-      case '中标公告':
-      case '评标报告':
-      case '可行性方案':
-      case '调研报告':
-      case 'UI设计图':
-      case '功能清单':
-      case '原型图':
-      case '需求文档':
-      case '开发文档':
-      case '系统拓扑图':
-      case '系统框架图':
-      case '测试文档':
-      case '原型设计说明书':
-      case '开发测试报告':
-      case '系统部署图、逻辑图':
-      case '评估报告':
-      case '软件系统验收测试报告':
-      case '生产安装部署手册':
-      case '生产操作及运维手册':
-      case '用户手册':
-      case '硬件合同':
-        return this.getWdscxg(done, item);
+          default:
+            return '';
+        }
+      }
+      switch (name) {
+        //流程发起
+        case '信委会议案流程':
+        case '软件费用审批流程-有合同':
+        case '软件费用审批流程-无合同':
+        case '项目立项申请':
+        case '招标方式变更流程':
+        case '软件合同签署流程':
+        case '申请VPN':
+        case '申请权限':
+        case '申请餐券':
+        case '会议议案提交':
+        case '付款流程':
+        case '设备采购有合同':
+        case '设备采购无合同':
+        case '框架内硬件采购流程':
+        case '框架外硬件采购流程':
+        case '总办会流程':
+        case '需求发起':
+          return this.getLcfqck(done, item);
 
-      //操作
-      case '员工评价开启':
-      case '提醒子项目完善信息':
-        return this.getCz(done, item);
+        //信息录入
+        case '中标信息录入':
+        case '软件合同信息录入':
+          return this.getXxlrxg(done, item);
+        case '硬件中标信息录入':
+          return this.getYjxxlr(done, item);
+        case '硬件合同信息录入':
+          return this.getYjxxlr(done, item, false);
+        case '询比结果录入':
+          return this.getXbjglr(done, item);
 
-      default:
-        console.error(`🚀 ~ 该事项名称【${name}】未配置`);
-        return;
+        //文档上传
+        case '总办会会议纪要':
+        case '总办会提案':
+        case '中标公告':
+        case '评标报告':
+        case '可行性方案':
+        case '调研报告':
+        case 'UI设计图':
+        case '功能清单':
+        case '原型图':
+        case '需求文档':
+        case '开发文档':
+        case '系统拓扑图':
+        case '系统框架图':
+        case '测试文档':
+        case '原型设计说明书':
+        case '开发测试报告':
+        case '系统部署图、逻辑图':
+        case '评估报告':
+        case '软件系统验收测试报告':
+        case '生产安装部署手册':
+        case '生产操作及运维手册':
+        case '用户手册':
+        case '硬件合同':
+        case '验收报告':
+          return this.getWdscxg(done, item);
+
+        //操作
+        case '员工评价开启':
+        case '提醒子项目完善信息':
+          return this.getCz(done, item);
+
+        default:
+          return '';
+      }
+    } else if (!isLeader && !isMember && !isMnger) {
+      if (!done) return '';
+      if (['项目立项', '项目招采'].includes(item.lcb)) return '';
+      switch (name) {
+        //文档上传
+        case '总办会会议纪要':
+        case '总办会提案':
+        case '中标公告':
+        case '评标报告':
+        case '可行性方案':
+        case '调研报告':
+        case 'UI设计图':
+        case '功能清单':
+        case '原型图':
+        case '需求文档':
+        case '开发文档':
+        case '系统拓扑图':
+        case '系统框架图':
+        case '测试文档':
+        case '原型设计说明书':
+        case '开发测试报告':
+        case '系统部署图、逻辑图':
+        case '评估报告':
+        case '软件系统验收测试报告':
+        case '生产安装部署手册':
+        case '生产操作及运维手册':
+        case '用户手册':
+        case '硬件合同':
+        case '验收报告':
+          return this.getWdscxg(done, item);
+        default:
+          return '';
+      }
+    } else {
+      switch (name) {
+        //流程发起
+        case '信委会议案流程':
+        case '软件费用审批流程-有合同':
+        case '软件费用审批流程-无合同':
+        case '项目立项申请':
+        case '招标方式变更流程':
+        case '软件合同签署流程':
+        case '申请VPN':
+        case '申请权限':
+        case '申请餐券':
+        case '会议议案提交':
+        case '付款流程':
+        case '设备采购有合同':
+        case '设备采购无合同':
+        case '框架内硬件采购流程':
+        case '框架外硬件采购流程':
+        case '总办会流程':
+        case '需求发起':
+          return this.getLcfqck(done, item);
+
+        //信息录入
+        case '中标信息录入':
+        case '软件合同信息录入':
+          return this.getXxlrxg(done, item);
+        case '硬件中标信息录入':
+          return this.getYjxxlr(done, item);
+        case '硬件合同信息录入':
+          return this.getYjxxlr(done, item, false);
+        case '询比结果录入':
+          return this.getXbjglr(done, item);
+
+        //文档上传
+        case '总办会会议纪要':
+        case '总办会提案':
+        case '中标公告':
+        case '评标报告':
+        case '可行性方案':
+        case '调研报告':
+        case 'UI设计图':
+        case '功能清单':
+        case '原型图':
+        case '需求文档':
+        case '开发文档':
+        case '系统拓扑图':
+        case '系统框架图':
+        case '测试文档':
+        case '原型设计说明书':
+        case '开发测试报告':
+        case '系统部署图、逻辑图':
+        case '评估报告':
+        case '软件系统验收测试报告':
+        case '生产安装部署手册':
+        case '生产操作及运维手册':
+        case '用户手册':
+        case '硬件合同':
+        case '验收报告':
+          return this.getWdscxg(done, item);
+
+        //操作
+        case '员工评价开启':
+        case '提醒子项目完善信息':
+          return this.getCz(done, item);
+
+        default:
+          console.error(`🚀 ~ 该事项名称【${name}】未配置`);
+          return;
+      }
     }
   };
 
@@ -811,7 +1102,8 @@ class ItemBtn extends React.Component {
       xbjglrModalVisible,
       xqfqModalVisible,
     } = this.state;
-    const { item, xmmc, xmbh, isHwPrj } = this.props;
+    const { item, xmmc, xmbh, isHwPrj, auth = {} } = this.props;
+    // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
 
     //文档上传、修改弹窗
     const uploadModalProps = {
@@ -874,7 +1166,7 @@ class ItemBtn extends React.Component {
 
     return (
       <>
-        {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item)}
+        {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item, auth)}
 
         {/* 需求发起 */}
         {xqfqModalVisible && (

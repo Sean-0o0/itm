@@ -5774,6 +5774,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         height: 32px;
         margin-top: 2px;
 
+        & > .icon-star-fill,
+        & > .icon-star {
+          color: #f9a812;
+          font-size: 25px;
+          margin-right: 16px;
+        }
+
+        & > .icon-completed {
+          width: 110px;
+          margin-left: auto;
+          margin-right: 75px;
+        }
+
         //项目标签
         .prj-tags {
           width: 100%;
@@ -6522,11 +6535,42 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       & > .info-display-box {
+        margin-bottom: 16px;
+        border-radius: 8px;
+        background-color: #fff;
+        box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
+        overflow: hidden;
+        font-size: 16px;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #303133;
+
+        & > .top-box {
+          border-radius: 8px 8px 0 0;
+          border: 2px solid #fff;
+          padding: 15px 27px 17px 22px;
+          height: 56px;
+          background: #eff3ff;
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          font-size: 20px;
+        }
+
         & > .info-box {
-          margin-bottom: 16px;
+          padding: 24px 0;
+          margin: 0 24px;
+          box-shadow: none;
+          background-color: unset;
+          border-radius: unset;
+          border-bottom: 2px dashed #ebeef5;
+
+          & > .top-title {
+            font-size: 16px;
+          }
 
           &:last-child {
-            margin-bottom: 0;
+            border-bottom: 0;
           }
 
           & > .info-row {
@@ -6935,6 +6979,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .msg-edit-content-popover,
 .btn-more-content-popover,
 .other-supplier-content-popover,
+.document-list-content-popover,
 .demand-detail-content-popover {
   .ant-popover-inner-content {
     padding: 10px 0;
@@ -6958,6 +7003,40 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       &:hover {
         background-color: #fafafa;
+      }
+    }
+  }
+}
+.document-list-content-popover {
+  .list {
+    min-width: 100px;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 140px;
+
+    // margin-right: 5px;
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #f0f2f5;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #dbdfe6;
+      border-radius: 3px;
+    }
+    .ant-spin-spinning {
+      width: 100%;
+      color: #3361ff;
+      .ant-spin-dot-item {
+        background-color: #3361ff;
+      }
+    }
+    .item {
+      color: #3361ff;
+      cursor: pointer;
+      &:hover {
+        color: #3361ffaf;
       }
     }
   }

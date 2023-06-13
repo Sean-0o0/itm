@@ -56,33 +56,6 @@ export default function InfoDisplay(props) {
     footer: null,
   };
 
-  // useEffect(() => {
-  //   window.addEventListener('message', handleIframePostMessage);
-  //   return () => {
-  //     window.removeEventListener('message', handleIframePostMessage);
-  //   };
-  // }, []);
-  //
-  // //监听弹窗状态
-  // const handleIframePostMessage = event => {
-  //   if (typeof event.data !== 'string' && event.data.operate === 'close') {
-  //     setLbModal(p => {
-  //       return {
-  //         ...p,
-  //         xbjglbModalVisible: false
-  //       };
-  //     });
-  //   }
-  //   if (typeof event.data !== 'string' && event.data.operate === 'success') {
-  //     setLbModal(p => {
-  //       return {
-  //         ...p,
-  //         xbjglbModalVisible: false
-  //       };
-  //     });
-  //   }
-  // };
-
   //评标报告预览下载
   const handleFile = (id, fileName, entryno) => {
     axios({
@@ -118,13 +91,6 @@ export default function InfoDisplay(props) {
     member.forEach(x => {
       arr.push(x.RYID);
     });
-    // console.log(
-    //   '🚀 ~ isLeader:',
-    //   arr.includes(String(LOGIN_USER_INFO.id)) || isLeader,
-    //   member,
-    //   arr,
-    //   isLeader,
-    // );
     return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 
@@ -366,6 +332,7 @@ export default function InfoDisplay(props) {
           }
         />
       )}
+      <div className="top-box">项目信息</div>
 
       {/* 项目信息 */}
       <div className="info-box" key="xmxx">

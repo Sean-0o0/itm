@@ -5,8 +5,8 @@ import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
-import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
+import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
 
 const { Item } = Breadcrumb;
 const { SubMenu } = Menu;
@@ -716,7 +716,10 @@ export default function TopConsole(props) {
       <div className="prj-info-row">
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
+          <i className="iconfont icon-star-fill" />
+          <i className="iconfont icon-star" />
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
+          <img src={iconCompleted} className="icon-completed" alt="icon-completed" />
           {isMember() && (
             <>
               <Button className="btn-edit" onClick={handleEditPrjInfo}>

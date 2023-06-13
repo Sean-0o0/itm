@@ -17,7 +17,8 @@ const { Step } = Steps;
 
 export default function MileStone(props) {
   const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwPrj } = props;
-  const { risk = [], member = [], prjBasic = {},xmjbxxRecord=[] } = prjData;
+  const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
+  console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
@@ -355,6 +356,19 @@ export default function MileStone(props) {
                 setIsSpinning={setIsSpinning}
                 refresh={refresh}
                 isHwPrj={isHwPrj}
+                auth={{
+                  isLeader,
+                  isMember: (() => {
+                    const arr = [];
+                    member.forEach(x => {
+                      arr.push(x.RYID);
+                    });
+                    return arr
+                      .filter(x => x.RYID !== String(prjBasic.XMJLID))
+                      .includes(String(LOGIN_USER_INFO.id));
+                  })(),
+                  isMnger: String(prjBasic.XMJLID) === String(LOGIN_USER_INFO.id),
+                }}
               />
             </div>
           ))}
@@ -662,7 +676,7 @@ export default function MileStone(props) {
                     <div className="risk-tag" style={{ fontWeight: 'normal' }}>
                       已逾期
                     </div>
-                  )}{' '}
+                  )}
                   {getRiskTag(risk.filter(x => x.GLLCBID === step.lcbid))}
                 </>
               }
@@ -673,21 +687,20 @@ export default function MileStone(props) {
           ))}
         </Steps>
       </div>
-      {isMember() &&
-        (isUnfold ? (
-          <>
-            {getBottomBox()}
-            <div className="more-item-unfold" onClick={() => handleUnfold(false)}>
-              收起
-              <i className="iconfont icon-up" />
-            </div>
-          </>
-        ) : (
-          <div className="more-item" onClick={() => handleUnfold(true)}>
-            展开
-            <i className="iconfont icon-down" />
+      {isUnfold ? (
+        <>
+          {getBottomBox()}
+          <div className="more-item-unfold" onClick={() => handleUnfold(false)}>
+            收起
+            <i className="iconfont icon-up" />
           </div>
-        ))}
+        </>
+      ) : (
+        <div className="more-item" onClick={() => handleUnfold(true)}>
+          展开
+          <i className="iconfont icon-down" />
+        </div>
+      )}
     </div>
   );
 }
