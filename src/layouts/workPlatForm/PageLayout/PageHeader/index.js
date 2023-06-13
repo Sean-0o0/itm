@@ -104,7 +104,7 @@ export default class PageHeader extends React.PureComponent {
           </span>
         </div>
         {/*搜索框 */}
-        <div style={{display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : '', borderBottom: '1px solid rgb(238, 239, 241)'}}>
+        {/* <div style={{display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : '', borderBottom: '1px solid rgb(238, 239, 241)'}}>
           {
             searchModalVisible && <SearchModal closeModal={() => {
               this.setState({
@@ -118,7 +118,7 @@ export default class PageHeader extends React.PureComponent {
                      searchModalVisible: true,
                    })} placeholder='可查询项目、预算、文档、供应商、人员'/>
           </div>
-        </div>
+        </div> */}
         {/*用户名*/}
         <div
           id="fma_opertion_drops"

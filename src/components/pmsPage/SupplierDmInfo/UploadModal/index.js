@@ -16,10 +16,12 @@ function UploadModal(props) {
   const [fileList, setFileList] = useState([]); //文件列表
   const [newAddData, setNewAddData] = useState([]);
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const [nextId, setNextId] = useState(0); //
   //防抖定时器
   let timer = null;
 
   useEffect(() => {
+    // console.log(jldata);
     // setFileList([...jldata]);
     let jlArr =
       jldata.JLXX?.items?.map((x, i) => ({
@@ -30,8 +32,8 @@ function UploadModal(props) {
         new: false,
         number: x[0],
       })) ?? [];
-    // console.log('🚀 ~ file: index.js:25 ~ jlArr ~ jlArr:', jlArr);
     setFileList(jlArr);
+    setNextId(Number(jldata.JLXX?.nextId));
     return () => {
       clearTimeout(timer);
     };
@@ -42,8 +44,8 @@ function UploadModal(props) {
       setIsTurenRed(true);
     } else if (!isTurnRed) {
       setIsSpinning(true);
-      let newAdd = [...newAddData].map(x => ({
-        number: x.number,
+      let newAdd = [...newAddData].map((x, i) => ({
+        number: String(nextId + i + 1),
         fileName: x.fileName,
         data: x.data,
       })); //新增简历数据
@@ -68,7 +70,12 @@ function UploadModal(props) {
         params = {
           ...params,
           cvId: Number(jldata.JLID ?? -1),
-          nextId: updateArr[updateArr.length - 1].number + 1,
+          nextId:
+            Number(
+              newAdd.length === 0
+                ? updateArr[updateArr.length - 1].number
+                : newAdd[newAdd.length - 1].number,
+            ) + 1,
           operateType: 'UPDATE',
           updateCVInfo: updateArr,
         };
@@ -226,7 +233,7 @@ function UploadModal(props) {
                     };
                     list.forEach(x => {
                       if (x.originFileObj !== undefined && x.uid !== +x.uid) {
-                        console.log(x);
+                        // console.log(x);
                         if (
                           [
                             'application/pdf',
@@ -254,7 +261,7 @@ function UploadModal(props) {
                     });
                   }}
                   beforeUpload={async (file, fileList) => {
-                    // console.log('🚀 ~ file: index.js:253 ~ beforeUpload={ ~ file:', file);
+                    console.log('🚀 ~ file: index.js:253 ~ beforeUpload={ ~ file:', file);
                     function readFile(file) {
                       return new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -293,29 +300,58 @@ function UploadModal(props) {
                       return false;
                     }
                     let arr = [];
-                    fileList.forEach((item, index) => {
-                      let reader = new FileReader(); //实例化文件读取对象
-                      reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
-                      reader.onload = e => {
-                        //文件读取成功完成时触发
-                        let urlArr = e.target.result.split(',');
-                        arr.push({
-                          number: String(index),
-                          uid: item.uid,
-                          fileName: item.name,
-                          data: urlArr[1],
-                          // new: true,
-                        });
-                        if (arr.length === fileList.length) {
-                          debounce(() => {
-                            setNewAddData(p => {
-                              // console.log([...p, ...arr]);
-                              return [...p, ...arr];
-                            });
-                          }, 500);
-                        }
-                      };
-                    });
+                    // fileList.forEach((item, index) => {
+                    // let reader = new FileReader(); //实例化文件读取对象
+                    // reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                    // reader.onload = e => {
+                    //   //文件读取成功完成时触发
+                    //   let urlArr = e.target.result.split(',');
+                    //   arr.push({
+                    //     number: String(index),
+                    //     uid: item.uid,
+                    //     fileName: item.name,
+                    //     data: urlArr[1],
+                    //     // new: true,
+                    //   });
+                    //   if (arr.length === fileList.length) {
+                    //     debounce(() => {
+                    //       setNewAddData(p => {
+                    //         console.log('newAddData: ', [...p, ...arr]);
+                    //         return [...p, ...arr];
+                    //       });
+                    //     }, 500);
+                    //   }
+                    // };
+                    // });
+                    let reader = new FileReader(); //实例化文件读取对象
+                    reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
+                    reader.onload = e => {
+                      //文件读取成功完成时触发
+                      let urlArr = e.target.result.split(',');
+
+                      setNewAddData(p => {
+                        console.log('newAddData: ', [
+                          ...p,
+                          {
+                            number: String(0),
+                            uid: file.uid,
+                            fileName: file.name,
+                            data: urlArr[1],
+                            // new: true,
+                          },
+                        ]);
+                        return [
+                          ...p,
+                          {
+                            number: String(0),
+                            uid: file.uid,
+                            fileName: file.name,
+                            data: urlArr[1],
+                            // new: true,
+                          },
+                        ];
+                      });
+                    };
                   }}
                   accept={['.doc', '.docx', '.pdf']}
                   fileList={fileList}

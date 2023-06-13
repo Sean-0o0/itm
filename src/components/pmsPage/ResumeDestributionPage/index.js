@@ -71,7 +71,7 @@ export default function ResumeDistributionPage(props) {
           const groupItem = groupedData[JLID].find(group => group.GYSID === GYSID);
           if (groupItem) {
             // group already exists
-            groupItem.JLMC.items.push([jldata.ENTRYNO, jldata.JLMC]);
+            groupItem.JLMC.items.push([jldata.ENTRYNO, jldata.JLMC.trim()]);
           } else {
             // create new group
             groupedData[JLID].push({
@@ -79,7 +79,7 @@ export default function ResumeDistributionPage(props) {
               GYSID,
               JLMC: {
                 nextId: NEXTID,
-                items: [[jldata.ENTRYNO, jldata.JLMC]],
+                items: [[jldata.ENTRYNO, jldata.JLMC.trim()]],
               },
             });
           }
@@ -166,33 +166,66 @@ export default function ResumeDistributionPage(props) {
     };
     //单个编辑完成
     const handleInputBlur = (e, x) => {
-      let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
-      if (arr.length > 0) {
-        let jldata = [...arr[index].JLDATA];
-        jldata.forEach(j => {
-          // console.log('j', j, x);
-          if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
-            // console.log('%%$',j);
-            j.JLMC = e.target.value;
-          }
-        });
-        arr[index].JLDATA = jldata;
-        let dataArr = JSON.parse(JSON.stringify(data));
-        dataArr.forEach(d => {
-          if (d.RYXQ === activeKey) {
-            d.DATA = [...arr];
-          }
-        });
-        // console.log('🚀 ~ file: index.js:186 ~ handleInputBlur ~ dataArr:', dataArr);
-        setData([...dataArr]);
-        // let arrShow = JSON.parse(JSON.stringify(dataArr));
-        arrShow.forEach(x => {
-          x.DATA.forEach(y => {
-            y.UNFOLD = false;
-            y.SHOWFOLD = false;
+      e.persist();
+      const oldSuffix = x.JLMC.slice(x.JLMC.lastIndexOf('.')); //旧的文件后缀
+      const newSuffix = e.target.value.slice(e.target.value.lastIndexOf('.')); //新的文件后缀
+      const newFileName = e.target.value.slice(0, e.target.value.lastIndexOf('.'));
+      const newNameOldSuffix = newFileName + oldSuffix;
+      //编辑完保存数据
+      const afterEdit = (newValue = '') => {
+        // console.log('afterEdit被调用 ', newValue);
+        let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+        if (arr.length > 0) {
+          let jldata = [...arr[index].JLDATA];
+          jldata.forEach(j => {
+            if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
+              j.JLMC = newValue;
+            }
           });
-        });
-        setDataShow(arrShow);
+          arr[index].JLDATA = jldata;
+          let dataArr = JSON.parse(JSON.stringify(data));
+          dataArr.forEach(d => {
+            if (d.RYXQ === activeKey) {
+              d.DATA = [...arr];
+            }
+          });
+          setData([...dataArr]);
+          let arrShow = JSON.parse(JSON.stringify(dataArr));
+          arrShow.forEach(x => {
+            x.DATA.forEach(y => {
+              y.UNFOLD = false;
+              y.SHOWFOLD = false;
+            });
+          });
+          setDataShow(arrShow);
+        }
+      };
+
+      if (e.target.value === '') {
+        message.error('文件全名不能为空', 1);
+        afterEdit(x.JLMC + ' ');
+      } else if (newFileName === '') {
+        message.error('文件名不能为空', 1);
+        afterEdit(x.JLMC + ' ');
+      } else if (newSuffix === '') {
+        message.error('文件扩展名不能为空', 1);
+        afterEdit(x.JLMC + ' ');
+      } else {
+        if (oldSuffix.trim() !== newSuffix.trim()) {
+          Modal.confirm({
+            content: (
+              <div>
+                修改文件扩展名，可能导致文件不可用。<div>是否确定修改？</div>
+              </div>
+            ),
+            onOk: () => {
+              afterEdit(e.target.value);
+            },
+            onCancel: () => {
+              afterEdit(newNameOldSuffix + ' ');
+            },
+          });
+        }
       }
     };
     //单个删除
@@ -258,8 +291,13 @@ export default function ResumeDistributionPage(props) {
                   defaultValue={x.JLMC}
                   onBlur={e => handleInputBlur(e, x)}
                   style={{ width: '100%' }}
-                  // suffix={'.pdf'}
-                  // allowClear
+                  onFocus={e => {
+                    e.target.value = e.target.value.trim();
+                    const dotIndex = e.target.value.lastIndexOf('.');
+                    e.target.focus();
+                    e.target.setSelectionRange(0, dotIndex);
+                    e.target.setSelectionRange(0, dotIndex);
+                  }}
                 />
               ) : (
                 <span>{x.JLMC}</span>

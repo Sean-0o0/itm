@@ -328,7 +328,7 @@ export default function TopConsole(props) {
 
   const btnMoreContent = (
     <Menu>
-      <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
+      {/* <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
         <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
           项目立项申请流程
         </Menu.Item>
@@ -350,7 +350,7 @@ export default function TopConsole(props) {
         </Menu.Item>
         <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
         <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
-      </SubMenu>
+      </SubMenu> */}
       {/* <SubMenu
         title={<span style={{ marginLeft: 20 }}>付款补录</span>}
         arrow-icon={<Icon type="left" />}

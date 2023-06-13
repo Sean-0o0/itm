@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, message, Pagination, Popover, Select, Spin, Table } from 'antd';
+import { Button, Empty, message, Pagination, Popover, Select, Spin, Table } from 'antd';
 import moment from 'moment';
 import { QuerySupplierDemand } from '../../../services/pmsServices';
 import UploadModal from './UploadModal';
@@ -441,6 +441,13 @@ export default function SupplierDmInfo(props) {
           </div>
         </div>
         <div className="info-box" style={{ paddingBottom: splDmData.total <= 3 ? 8 : 24 }}>
+          {xqList.length === 0 && (
+            <Empty
+              description="暂无数据"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ width: '100%' }}
+            />
+          )}
           {xqList.map(x => getInfoItem(x))}
           {splDmData.total > 3 && (
             <Pagination
