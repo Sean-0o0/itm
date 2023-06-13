@@ -45,7 +45,7 @@ function UploadModal(props) {
     } else if (!isTurnRed) {
       setIsSpinning(true);
       let newAdd = [...newAddData].map((x, i) => ({
-        number: String(nextId + i + 1),
+        number: String(nextId + i),
         fileName: x.fileName,
         data: x.data,
       })); //新增简历数据
