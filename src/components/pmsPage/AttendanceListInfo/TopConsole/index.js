@@ -41,7 +41,7 @@ export default forwardRef(function TopConsole(props, ref) {
     getFilterData();
     return () => {
     };
-  }, [xmid, ryid, lxid, routes]);
+  }, [xmid, ryid, lxid]);
 
   useImperativeHandle(
     ref,
@@ -70,7 +70,7 @@ export default forwardRef(function TopConsole(props, ref) {
             paging: -1,
             sort: '',
             total: -1,
-            cxlx: 'WBRYLB',
+            cxlx: 'KQLB',
             js: zyrole === "暂无" ? role : zyrole,
           })
             .then(res => {
