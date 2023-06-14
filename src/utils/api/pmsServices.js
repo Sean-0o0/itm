@@ -511,4 +511,22 @@ export default [
     url: '/projectManage/finishOutsourceWork',
     dis: '完成外包事务',
   },
+  {
+    code: '',
+    key: 'queryProjectTracking',
+    url: '/projectManage/queryProjectTracking',
+    dis: '查询项目跟踪信息',
+  },
+  {
+    code: '',
+    key: 'queryProjectNode',
+    url: '/projectManage/queryProjectNode',
+    dis: '查询项目节点',
+  },
+  {
+    code: '',
+    key: 'projectCollect',
+    url: '/projectManage/finishOutsourceWork',
+    dis: '收藏项目',
+  },
 ];

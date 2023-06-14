@@ -158,15 +158,17 @@ const AddExpense = props => {
       setOaData([...OAProcessFileInfo]);
       setOtherData([...otherFileInfo]);
       let handledOAData = OAProcessFileInfo.map(x => ({
-        uid: getUUID(),
+        uid: x.uid,
         name: x.name,
         status: 'done',
+        old: true,
         // url: x.base64,
       }));
       let handledOtherData = otherFileInfo.map(x => ({
-        uid: getUUID(),
+        uid: x.uid,
         name: x.name,
         status: 'done',
+        old: true,
         // url: x.base64,
       }));
       setFormData(p => ({
@@ -182,6 +184,7 @@ const AddExpense = props => {
                   uid: getUUID(),
                   name: checkFileInfo.name,
                   status: 'done',
+                  old: true,
                   // url: checkFileInfo.base64,
                 },
               ]
@@ -193,6 +196,7 @@ const AddExpense = props => {
                   uid: getUUID(),
                   name: contractFileInfo.name,
                   status: 'done',
+                  old: true,
                   // url: contractFileInfo.base64,
                 },
               ]
@@ -209,13 +213,13 @@ const AddExpense = props => {
     console.log(selectorData?.fklcData);
     validateFields(err => {
       if (!err) {
-        let oaArr = oaData?.map(x => {
-          return {
-            name: x.name,
-            base64: x.base64,
-          };
-        });
-        let attachmentArr = [...oaArr];
+        // let oaArr = oaData?.map(x => {
+        //   return {
+        //     name: x.name,
+        //     base64: x.base64,
+        //   };
+        // });
+        let attachmentArr = [...oaData];
         formData?.contractFileUrl !== '' &&
           attachmentArr.push({
             base64: formData?.contractFileUrl,
@@ -237,7 +241,7 @@ const AddExpense = props => {
           fplxInfo,
           ysxmInfo,
           receiptFileInfo: [...receiptDisplay],
-          OAProcessFileInfo: [...oaArr],
+          OAProcessFileInfo: [...oaData],
           contractFileInfo:
             formData?.contractFileUrl === ''
               ? {
@@ -466,7 +470,8 @@ const AddExpense = props => {
               showPreviewIcon: true,
             }}
             onChange={info => {
-              let list = [...info.fileList];
+              let list = [...info.fileList.slice(-1)];
+              console.log('🚀 ~ file: index.js:470 ~ getUpload ~ list:', list);
               setFormData(p => {
                 p[dataIndex + 'FileList'] = [...list];
                 return { ...p };
@@ -474,6 +479,8 @@ const AddExpense = props => {
               if (list.length === 0) {
                 setFormData(p => {
                   p[dataIndex + 'IsTurnRed'] = true;
+                  p[dataIndex + 'FileUrl'] = '';
+                  p[dataIndex + 'FileName'] = '';
                   return { ...p };
                 });
               } else {
@@ -541,6 +548,14 @@ const AddExpense = props => {
             multiple={true}
             onChange={info => {
               let list = [...info.fileList];
+              let newArr =
+                dataIndex === 'OAProcess'
+                  ? oaData.filter(x => !(x.uid === info.file.uid && info.file.status === 'removed'))
+                  : otherData.filter(
+                      x => !(x.uid === info.file.uid && info.file.status === 'removed'),
+                    );
+              console.log('🚀 ~ file: index.js:554 ~ AddExpense ~ newArr:', info, newArr);
+              setData([...newArr]);
               setFormData(p => {
                 p[dataIndex + 'FileList'] = [...list];
                 return { ...p };
@@ -559,6 +574,7 @@ const AddExpense = props => {
             }}
             beforeUpload={(file, fileList) => {
               let arr = [];
+              console.log('🚀 ~ file: index.js:584 ~ AddExpense ~ fileList:', fileList);
               fileList.forEach(item => {
                 let reader = new FileReader(); //实例化文件读取对象
                 reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
@@ -566,6 +582,7 @@ const AddExpense = props => {
                   //文件读取成功完成时触发
                   let urlArr = e.target.result.split(',');
                   arr.push({
+                    uid: item.uid,
                     name: item.name,
                     base64: e.target.result,
                   });

@@ -30,8 +30,9 @@ export default function FormOperate(props) {
     isHwPrj = false,
     currentXmid = -2,
     rlwbData = {},
+    ddcgje = 0,
   } = props;
-  console.log('🚀 ~ file: index.js:33 ~ FormOperate ~ rlwbData:', rlwbData);
+  // console.log('🚀 ~ file: index.js:33 ~ FormOperate ~ rlwbData:', rlwbData);
   const {
     sfyht,
     setSfyht,
@@ -42,6 +43,8 @@ export default function FormOperate(props) {
     setZhfw,
     setskzhId,
     setYkbSkzhId,
+    fklx,
+    setFklx,
   } = formData;
   const { getFieldDecorator, getFieldValue } = form;
   //收款账户
@@ -56,7 +59,11 @@ export default function FormOperate(props) {
   useEffect(() => {
     if (currentXmid !== -2) {
       firstTimeQueryPaymentAccountList();
-      isHwPrj && getSelectorData();
+      if (isHwPrj) {
+        getSelectorData();
+      } else if (ddcgje !== 0) {
+        getSelectorData();
+      }
     }
     return () => {
       clearTimeout(timer);
@@ -438,6 +445,7 @@ export default function FormOperate(props) {
       </>
     );
   };
+
   //描述
   const getTextArea = () => {
     return (
@@ -569,7 +577,15 @@ export default function FormOperate(props) {
       </Row>
       <Row>
         {getInput(yfkjeInputProps)}
+        {/* 硬件入围优先 */}
         {isHwPrj && getGlsbcgyhtSelector()}
+        {!isHwPrj &&
+          ddcgje !== 0 &&
+          getRadio('付款类型', fklx, e => setFklx(e.target.value), '软件付款', '硬件付款')}
+      </Row>
+      <Row>
+        {/* 不是硬件入围，再看单独采购金额 */}
+        {!isHwPrj && ddcgje !== 0 && fklx === 2 && getGlsbcgyhtSelector()}
       </Row>
       <Row>{getSelector()}</Row>
       <Row>{getTextArea()}</Row>

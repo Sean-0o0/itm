@@ -5,10 +5,15 @@ import MileStone from './MileStone';
 import PrjMember from './PrjMember';
 import PrjMessage from './PrjMessage';
 import TopConsole from './TopConsole';
-import { QueryProjectInfoAll, QueryUserRole } from '../../../services/pmsServices/index';
+import {
+  QueryProjectInfoAll,
+  QueryProjectTracking,
+  QueryUserRole,
+} from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import moment from 'moment';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
+// import PrjTracking from './PrjTracking';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
@@ -66,6 +71,116 @@ export default function ProjectDetail(props) {
       .catch(e => {
         console.error('FetchQueryProjectLabel', e);
         message.error('项目类型查询失败', 1);
+      });
+  };
+
+  //获取项目跟踪数据
+  const getTrackingData = (obj = {}) => {
+    QueryProjectTracking({
+      projectId: Number(xmid),
+      // projectManager
+      // org
+      // startTime
+      // endTime
+      // cycle
+      queryType: 'ALL',
+      // projectType
+    })
+      .then(res => {
+        if (res?.success) {
+          let data = { ...obj };
+          // data.trackingData = JSON.parse(res.result);
+          data.trackingData = [
+            {
+              XMMC: '人力全流程',
+              XMID: 678,
+              XMZQ: '第1周',
+              XMJL: '萧方赛',
+              XMJLID: 11902,
+              KSSJ: 20230602,
+              JSSJ: 20230608,
+              DQJD: '11%',
+              DQZT: '进度正常',
+              ZYSXSM: '无重要事项报告',
+              BZGZNR: '本周无事告知，一切正常',
+              XZGZAP: '下周暂无计划',
+            },
+            {
+              XMMC: '人力全流程',
+              XMID: 678,
+              XMZQ: '第2周',
+              XMJL: '萧方赛',
+              XMJLID: 11902,
+              KSSJ: 20230602,
+              JSSJ: 20230608,
+              DQJD: '12%',
+              DQZT: '低风险',
+              ZYSXSM: '无重要事项报告',
+              BZGZNR: '本周无事告知，一切正常',
+              XZGZAP: '下周暂无计划',
+            },
+            {
+              XMMC: '人力全流程',
+              XMID: 678,
+              XMZQ: '第3周',
+              XMJL: '萧方赛',
+              XMJLID: 11902,
+              KSSJ: 20230602,
+              JSSJ: 20230608,
+              DQJD: '13%',
+              DQZT: '中风险',
+              ZYSXSM: '无重要事项报告',
+              BZGZNR: '本周无事告知，一切正常',
+              XZGZAP: '下周暂无计划',
+            },
+            {
+              XMMC: '人力全流程',
+              XMID: 678,
+              XMZQ: '第4周',
+              XMJL: '萧方赛',
+              XMJLID: 11902,
+              KSSJ: 20230602,
+              JSSJ: 20230608,
+              DQJD: '14%',
+              DQZT: '中风险',
+              ZYSXSM: '无重要事项报告',
+              BZGZNR: '本周无事告知，一切正常',
+              XZGZAP: '下周暂无计划',
+            },
+            {
+              XMMC: '人力全流程',
+              XMID: 678,
+              XMZQ: '第5周',
+              XMJL: '萧方赛',
+              XMJLID: 11902,
+              KSSJ: 20230602,
+              JSSJ: 20230608,
+              DQJD: '15%',
+              DQZT: '中风险',
+              ZYSXSM: '无重要事项报告',
+              BZGZNR: '本周无事告知，一切正常',
+              XZGZAP: '下周暂无计划',
+            },
+            {
+              XMMC: '人力全流程',
+              XMID: 678,
+              XMZQ: '第6周',
+              XMJL: '萧方赛',
+              XMJLID: 11902,
+              KSSJ: 20230602,
+              JSSJ: 20230608,
+              DQJD: '16%',
+              DQZT: '中风险',
+              ZYSXSM: '无重要事项报告',
+              BZGZNR: '本周无事告知，一切正常',
+              XZGZAP: '下周暂无计划',
+            },
+          ];
+          setPrjData(data);
+        }
+      })
+      .catch(e => {
+        message.error('接口信息获取失败', 1);
       });
   };
 
@@ -138,8 +253,9 @@ export default function ProjectDetail(props) {
             supplier: supplierArr,
             xmjbxxRecord: p(res.xmjbxxRecord),
           };
-          // console.log('🚀 ~ getPrjDtlData', obj);
           setPrjData(obj);
+          // console.log('🚀 ~ getPrjDtlData', obj);
+          // getTrackingData(obj);
         }
       })
       .catch(e => {
@@ -171,8 +287,9 @@ export default function ProjectDetail(props) {
               getPrjDtlData={getPrjDtlData}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}
-              isHwPrj={isHwPrj}
+              isHwSltPrj={isHwSltPrj}
             />
+            {/* <PrjTracking xmid={xmid} prjData={prjData} /> */}
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
               prjData={prjData}

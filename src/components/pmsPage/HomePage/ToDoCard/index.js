@@ -28,7 +28,8 @@ export default function ToDoCard(props) {
   const [currentSwzxid, setCurrentSwzxid] = useState('-1'); //当前需求事务执行id
   const [rlwbData, setRlwbData] = useState({}); //人力外包费用支付 - 付款流程总金额等
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
-  const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
+  const [isHwPrj, setIsHwPrj] = useState(false); //是否硬件入围 - 优先判断是否硬件入围
+  const [ddcgje, setDdcgje] = useState(undefined); //单独采购金额
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -94,7 +95,8 @@ export default function ToDoCard(props) {
     setPaymentModalVisible(true);
     setProjectCode(item.xmbh);
     // setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
-    setIsHwPrj(item.sfbhyj === '1'); //1是2否
+    setIsHwPrj(item.xmlx === '6');
+    setDdcgje(Number(item.sfbhyj ?? 0));
     setCurrentXmid(item.xmid);
     setCurrentXmmc(item.xmmc);
     if (item.kzzd !== '') {
@@ -436,7 +438,8 @@ export default function ToDoCard(props) {
           onSuccess={() => {
             handleOperateSuccess();
           }}
-          isHwPrj={isHwPrj}
+          isHwPrj={isHwPrj} // 是否硬件入围
+          ddcgje={ddcgje} // 单独采购金额，为0时无值
           rlwbData={rlwbData}
         />
       )}

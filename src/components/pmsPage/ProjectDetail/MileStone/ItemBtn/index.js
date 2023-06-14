@@ -279,8 +279,9 @@ class ItemBtn extends React.Component {
             title={null}
             content={documentContent}
             overlayClassName="document-list-content-popover"
+            trigger="click"
           >
-            <div className="reopr-btn" onMouseEnter={() => getFileList(item)}>
+            <div className="reopr-btn" onClick={() => getFileList(item)}>
               查看
             </div>
           </Popover>
@@ -1102,7 +1103,7 @@ class ItemBtn extends React.Component {
       xbjglrModalVisible,
       xqfqModalVisible,
     } = this.state;
-    const { item, xmmc, xmbh, isHwPrj, auth = {} } = this.props;
+    const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
 
     //文档上传、修改弹窗
@@ -1325,7 +1326,8 @@ class ItemBtn extends React.Component {
             }
             onSuccess={() => this.onSuccess()}
             projectCode={xmbh}
-            isHwPrj={isHwPrj}
+            isHwPrj={isHwSltPrj}
+            ddcgje={this.props.ddcgje}
           />
         )}
 

@@ -93,6 +93,9 @@ const {
     queryOutsourceRankInfo,
     insertOutsourcePaymentInfo,
     finishOutsourceWork,
+    queryProjectTracking,
+    queryProjectNode,
+    projectCollect
   },
 } = api;
 
@@ -983,3 +986,36 @@ export async function FinishOutsourceWork(payload) {
   };
   return request(option);
 }
+
+// 查询项目跟踪信息
+export async function QueryProjectTracking(payload) {
+  const option = {
+    url: queryProjectTracking,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目节点
+export async function QueryProjectNode(payload) {
+  const option = {
+    url: queryProjectNode,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 收藏项目
+export async function ProjectCollect(payload) {
+  const option = {
+    url: projectCollect,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+
+

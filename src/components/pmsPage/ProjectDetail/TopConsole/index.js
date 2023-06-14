@@ -716,10 +716,10 @@ export default function TopConsole(props) {
       <div className="prj-info-row">
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
-          <i className="iconfont icon-star-fill" />
-          <i className="iconfont icon-star" />
+          {/* <i className="iconfont icon-star-fill" /> */}
+          {/* <i className="iconfont icon-star" /> */}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
-          <img src={iconCompleted} className="icon-completed" alt="icon-completed" />
+          {/* <img src={iconCompleted} className="icon-completed" alt="icon-completed" /> */}
           {isMember() && (
             <>
               <Button className="btn-edit" onClick={handleEditPrjInfo}>

@@ -46,6 +46,7 @@ const PaymentProcess = props => {
   //费用明细新增按钮help显示
   const [isXzTurnRed, setIsXzTurnRed] = useState(false);
   const [expenseDetail, setExpenseDetail] = useState([]); //费用详情数据
+  const [fklx, setFklx] = useState(1); //单独采购金额-付款类型，为硬件付款 2 时出现关联设备...
 
   const {
     paymentModalVisible,
@@ -56,8 +57,10 @@ const PaymentProcess = props => {
     projectCode,
     onSuccess,
     isHwPrj = false, //是否硬件入围项目类型
-    rlwbData, //人力外包费用支付 - 付款流程总金额
+    ddcgje = 0, // 单独采购金额，为0时无值
+    rlwbData = {}, //人力外包费用支付 - 付款流程总金额
   } = props;
+  // console.log('🚀 ~ file: index.js:63 ~ PaymentProcess ~ rlwbData:', rlwbData);
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
     sfyht,
@@ -73,6 +76,8 @@ const PaymentProcess = props => {
     setskzhId,
     setYkbSkzhId,
     setDgskzh,
+    fklx,
+    setFklx,
   };
 
   useEffect(() => {
@@ -104,140 +109,144 @@ const PaymentProcess = props => {
   };
 
   const handleSubmit = (operateType = 'send') => {
-    validateFields(err => {
-      if (expenseDetail.length === 0) {
-        setIsXzTurnRed(true);
-        return;
-      }
-
-      if (!err) {
-        if (!isXzTurnRed) {
-          let details = [];
-          let lcid = '-1';
-          let fymxSum = 0; //费用明细金额总和
-          expenseDetail?.forEach(item => {
-            fymxSum += Number(item.je);
-            lcid = String(item.lcid);
-            let detailInfo = JSON.stringify({
-              FYLX: item.fylxInfo.ID,
-              JE: String(item.je),
-              RQ: item.date,
-              FPLX: item.fplxInfo?.ID,
-              YSXM: item.ysxmInfo?.ID,
-              XFSY: item.consumptionReasons,
-              SFWK: String(item.isFinalPay), //1,2
-            });
-            let invoice = item.receiptFileInfo.map(x => {
-              return { fileName: x.fileName, code64: x.base64.split(',')[1] };
-            });
-            let invoiceCheckInfo = item.receiptFileInfo.map(x => {
-              return {
-                CYXX: x.message,
-                YKBID: x.invoiceId,
-                MXID: x.detailIds,
-                FPMC: x.fileName,
-                ZJE: x.zje,
-                SE: x.se,
-                SL: x.sl,
-                CYJG: x.isCheck,
-                FILEID: x.fileId,
-                KEY: x.key,
-              };
-            });
-            let codeInfo = {
-              FYLXBM: item.fylxInfo.FYLXDM,
-              FYLXMBDM: item.fylxInfo.MBDM,
-              FPBM: item.fplxInfo?.BM,
-              YSFYDM: item.ysxmInfo?.YSFYDM,
-            };
-            let oaFile = item.OAProcessFileInfo?.concat(item.otherFileInfo ?? []).map(x => {
-              return {
-                fileName: x.name,
-                code64: x.base64.split(',')[1],
-              };
-            });
-            let detailItem = {
-              detailInfo,
-              invoice,
-              codeInfo,
-              contract: (item.contractFileInfo?.base64.split(','))[1] || '无',
-              contractName: item.contractFileInfo?.name,
-              report: (item.checkFileInfo?.base64.split(','))[1] || '无',
-              reportName: item.checkFileInfo?.name,
-              oaFile,
-              invoiceCheckInfo,
-              invoiceType: item.fplxInfo?.NAME,
-              feeType: item.fylxInfo.NAME,
-              consumptionReasons: item.consumptionReasons,
-              date: item.date,
-              taxAmount: String(item.taxAmount),
-            };
-            details.push(detailItem);
+    if (expenseDetail.length === 0) {
+      setIsXzTurnRed(true);
+      return;
+    }
+    const fn = err => {
+      if (!err && !isXzTurnRed) {
+        let details = [];
+        let lcid = '-1';
+        let fymxSum = 0; //费用明细金额总和
+        expenseDetail?.forEach(item => {
+          fymxSum += Number(item.je);
+          lcid = String(item.lcid);
+          let detailInfo = JSON.stringify({
+            FYLX: item.fylxInfo.ID,
+            JE: String(item.je),
+            RQ: item.date,
+            FPLX: item.fplxInfo?.ID,
+            YSXM: item.ysxmInfo?.ID,
+            XFSY: item.consumptionReasons,
+            SFWK: String(item.isFinalPay), //1,2
           });
-          const submitData = {
-            title: String(getFieldValue('bt')),
-            submitterId: String(userykbid),
-            expenseDepartment: String(orgykbid),
-            expenseDate: String(moment(sqrq).format('YYYYMMDD')),
-            payeeId: String(ykbSkzhId),
-            description:
-              String(getFieldValue('ms')) +
-              `\n由项目信息技术综合管理平台发起 项目名称：${String(currentXmmc)}`,
-            details,
-            haveContract: String(sfyht),
-            contractAmount: String(getFieldValue('htje')),
-            paidAmount: String(getFieldValue('yfkje')),
-            attQuantity: String(getFieldValue('fjzs')),
-            legalEntity: '浙商证券股份有限公司（ZSZQ）',
-            orgId: String(LOGIN_USER_ORG_ID),
-            projectName: String(currentXmmc),
-            payName: String(skzhId),
-            projectId: String(currentXmid),
-            projectCode,
-            operateType,
-            lcid,
+          let invoice = item.receiptFileInfo.map(x => {
+            return { fileName: x.fileName, code64: x.base64.split(',')[1] };
+          });
+          let invoiceCheckInfo = item.receiptFileInfo.map(x => {
+            return {
+              CYXX: x.message,
+              YKBID: x.invoiceId,
+              MXID: x.detailIds,
+              FPMC: x.fileName,
+              ZJE: x.zje,
+              SE: x.se,
+              SL: x.sl,
+              CYJG: x.isCheck,
+              FILEID: x.fileId,
+              KEY: x.key,
+            };
+          });
+          let codeInfo = {
+            FYLXBM: item.fylxInfo.FYLXDM,
+            FYLXMBDM: item.fylxInfo.MBDM,
+            FPBM: item.fplxInfo?.BM,
+            YSFYDM: item.ysxmInfo?.YSFYDM,
           };
-          isHwPrj && (submitData.yjyhtid = String(getFieldValue('glsb')));
-          console.log('submitData', submitData);
-          if (
-            Number(getFieldValue('htje')) !== 0 &&
-            Number(getFieldValue('htje')) - Number(getFieldValue('yfkje')) < fymxSum
-          ) {
-            message.error('费用明细金额总和不能超过未付款金额', 1);
-            return;
-          }
-          confirm({
-            title: `将提交该流程到易快报中，${
-              operateType === 'send' ? '直接发起流程进行审批' : '存为草稿'
-            }，请确认！`,
-            content: null,
-            onOk() {
-              setIsSpinning(true);
-              CreatPaymentFlow(submitData)
-                .then(res => {
-                  if (res.code === 200) {
-                    setIsSpinning(false);
-                    if (JSON.stringify(rlwbData) !== '{}') {
-                      OutsourcePaymentInfoInsert(String(res.ykbid));
-                    }
-                    message.success(
-                      `付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`,
-                      1,
-                    );
-                    if (onSuccess !== undefined) onSuccess(); //刷新数据
-                    resetFields();
-                    closePaymentProcessModal();
-                  }
-                })
-                .catch(e => {
-                  setIsSpinning(false);
-                  message.error(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}失败`, 1);
-                });
-            },
+          let oaFile = item.OAProcessFileInfo?.concat(item.otherFileInfo ?? []).map(x => {
+            return {
+              fileName: x.name,
+              code64: x.base64.split(',')[1],
+            };
           });
+          let detailItem = {
+            detailInfo,
+            invoice,
+            codeInfo,
+            contract: (item.contractFileInfo?.base64.split(','))[1] || '无',
+            contractName: item.contractFileInfo?.name,
+            report: (item.checkFileInfo?.base64.split(','))[1] || '无',
+            reportName: item.checkFileInfo?.name,
+            oaFile,
+            invoiceCheckInfo,
+            invoiceType: item.fplxInfo?.NAME,
+            feeType: item.fylxInfo.NAME,
+            consumptionReasons: item.consumptionReasons,
+            date: item.date,
+            taxAmount: String(item.taxAmount),
+          };
+          details.push(detailItem);
+        });
+        const submitData = {
+          title: String(getFieldValue('bt')),
+          submitterId: String(userykbid),
+          expenseDepartment: String(orgykbid),
+          expenseDate: String(moment(sqrq).format('YYYYMMDD')),
+          payeeId: String(ykbSkzhId),
+          description:
+            String(getFieldValue('ms')) +
+            `\n由项目信息技术综合管理平台发起 项目名称：${String(currentXmmc)}`,
+          details,
+          haveContract: String(sfyht),
+          contractAmount: String(getFieldValue('htje')),
+          paidAmount: String(getFieldValue('yfkje')),
+          attQuantity: String(getFieldValue('fjzs')),
+          legalEntity: '浙商证券股份有限公司（ZSZQ）',
+          orgId: String(LOGIN_USER_ORG_ID),
+          projectName: String(currentXmmc),
+          payName: String(skzhId),
+          projectId: String(currentXmid),
+          projectCode,
+          operateType,
+          lcid,
+        };
+        (isHwPrj || (!isHwPrj && ddcgje !== 0 && fklx === 2)) &&
+          (submitData.yjyhtid = String(getFieldValue('glsb')));
+        console.log('submitData', submitData);
+        if (
+          Number(getFieldValue('htje')) !== 0 &&
+          Number(getFieldValue('htje')) - Number(getFieldValue('yfkje')) < fymxSum
+        ) {
+          message.error('费用明细金额总和不能超过未付款金额', 1);
+          return;
         }
+        confirm({
+          title: `将提交该流程到易快报中，${
+            operateType === 'send' ? '直接发起流程进行审批' : '存为草稿'
+          }，请确认！`,
+          content: null,
+          onOk() {
+            setIsSpinning(true);
+            CreatPaymentFlow(submitData)
+              .then(res => {
+                if (res.code === 200) {
+                  setIsSpinning(false);
+                  if (JSON.stringify(rlwbData) !== '{}' && rlwbData !== undefined) {
+                    OutsourcePaymentInfoInsert(String(res.ykbid));
+                  }
+                  message.success(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}成功`, 1);
+                  if (onSuccess !== undefined) onSuccess(); //刷新数据
+                  resetFields();
+                  closePaymentProcessModal();
+                }
+              })
+              .catch(e => {
+                setIsSpinning(false);
+                console.error(' ~ e:', e);
+                message.error(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}失败`, 1);
+              });
+          },
+        });
       }
-    });
+    };
+    if (operateType === 'send') validateFields(fn);
+    else {
+      if (isHwPrj || (!isHwPrj && ddcgje !== 0 && fklx === 2))
+        validateFields(['glsb', 'bt', 'skzh'], fn);
+      else {
+        validateFields(['bt', 'skzh'], fn);
+      }
+    }
   };
 
   //外包人员付款后插入外包付款信息
@@ -348,6 +357,7 @@ const PaymentProcess = props => {
             formData={formData}
             setAddSkzhModalVisible={setAddSkzhModalVisible}
             isHwPrj={isHwPrj}
+            ddcgje={ddcgje}
             currentXmid={currentXmid}
             rlwbData={rlwbData}
           />

@@ -16,9 +16,9 @@ import Tool from '../../../../utils/api/tool';
 const { Step } = Steps;
 
 export default function MileStone(props) {
-  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwPrj } = props;
+  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwSltPrj } = props;
   const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
-  console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
+  // console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
   const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
@@ -355,7 +355,8 @@ export default function MileStone(props) {
                 xwhid={prjBasic.XWHID || -1}
                 setIsSpinning={setIsSpinning}
                 refresh={refresh}
-                isHwPrj={isHwPrj}
+                isHwSltPrj={isHwSltPrj} //是否硬件入围
+                ddcgje={Number(prjBasic.DDCGJE ?? 0)} //单独采购金额
                 auth={{
                   isLeader,
                   isMember: (() => {
