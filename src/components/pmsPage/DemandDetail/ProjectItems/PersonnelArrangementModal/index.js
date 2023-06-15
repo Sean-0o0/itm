@@ -106,6 +106,17 @@ function PersonnelArrangementModal(props) {
           },
         ]);
       }
+    } else {
+      const UUID = Date.now();
+      setTableData([
+        {
+          PCID: UUID,
+          ['GYSID' + UUID]: -1,
+          ['RYMC' + UUID]: '',
+          ['MSSJ' + UUID]: null,
+          NEW: true,
+        },
+      ]);
     }
     return () => {};
   }, [update, ZHPC]);
@@ -325,7 +336,7 @@ function PersonnelArrangementModal(props) {
           formdecorate: form,
           title: col?.title?.props?.children || col?.title,
           gysdata: gysData,
-          isdock: isDock,//是否对接人
+          isdock: isDock, //是否对接人
         };
       },
     };

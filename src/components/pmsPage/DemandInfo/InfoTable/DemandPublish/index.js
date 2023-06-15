@@ -116,6 +116,7 @@ function ExpenseInfo(props) {
   const handleOk = () => {
     validateFieldsAndScroll(err => {
       if (!err) {
+        setIsSpinning(true);
         let submitProps = {
           xqmc: getFieldValue('xqmc') !== '' ? getFieldValue('xqmc') : data.wbxq.XQMC,
           xqid: Number(xqid),
@@ -130,12 +131,14 @@ function ExpenseInfo(props) {
           .then(res => {
             if (res?.success) {
               setVisible(false);
-              message.success('上架成功', 1);
               resetFields();
               reflush();
+              setIsSpinning(false);
+              message.success('上架成功', 1);
             }
           })
           .catch(e => {
+            setIsSpinning(false);
             message.error('上架失败', 1);
           });
       }

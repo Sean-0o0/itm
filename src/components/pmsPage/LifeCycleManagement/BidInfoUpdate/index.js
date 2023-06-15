@@ -758,6 +758,9 @@ class BidInfoUpdate extends React.Component {
                 //评标报告不为空
                 if (!err) {
                   //表单部分必填不为空
+                  this.setState({
+                    isSpinning: true,
+                  });
                   let arr = [...tableData];
                   let newArr = [];
                   arr.map(item => {
@@ -814,11 +817,14 @@ class BidInfoUpdate extends React.Component {
                         // message.success('中标信息修改成功', 1);
                         onSuccess();
                         closeBidInfoModal();
-                        this.setState({ tableData: [] });
+                        this.setState({ isSpinning: false, tableData: [] });
                       }
                     })
                     .catch(e => {
                       message.error('中标信息修改失败', 1);
+                      this.setState({
+                        isSpinning: false,
+                      });
                     });
                 }
               } else {
@@ -832,6 +838,7 @@ class BidInfoUpdate extends React.Component {
             this.setState({ tableData: [] });
             closeBidInfoModal();
           }}
+          confirmLoading={isSpinning}
         >
           <div
             style={{

@@ -128,7 +128,7 @@ const EditableCell = props => {
                 onChange={v => {
                   formdecorate.validateFields(
                     [
-                      'MSSJ', //只校验当前编辑项
+                      recIndex, //只校验当前编辑项
                     ],
                     (error, values) => {
                       handleSave({ ...record, [recIndex]: v });
@@ -137,7 +137,7 @@ const EditableCell = props => {
                 }}
                 onBlur={() => {
                   formdecorate.validateFields([
-                    'MSSJ', //只校验当前编辑项
+                    recIndex, //只校验当前编辑项
                   ]);
                 }}
               />,

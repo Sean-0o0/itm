@@ -465,38 +465,42 @@ export default function InfoTable(props) {
   };
 
   const confirmExport = () => {
-    setTableLoading(true);
-    const { XMID, JD, KSSJ, JSSJ, XMMC, GYSID } = selectedRow;
-    Axios({
-      method: 'POST',
-      url: outsourceCostExportExcel,
-      responseType: 'blob',
-      data: {
-        jd: JD,
-        jssj: Number(JSSJ ?? 0),
-        kssj: Number(KSSJ ?? 0),
-        nf: moment().year(),
-        xmid: Number(XMID ?? 0),
-        xmmc: XMMC,
-        gysid: Number(GYSID ?? 0),
-      },
-    })
-      .then(res => {
-        console.log(res);
-        const href = URL.createObjectURL(res.data);
-        const a = document.createElement('a');
-        a.download = XMMC + JD + '人力外包费用结算表';
-        a.href = href;
-        a.click();
-        window.URL.revokeObjectURL(a.href);
-        setTableLoading(false);
-        cancelExport();
-        message.success('正在导出', 1);
+    if (JSON.stringify(selectedRow) !== '{}') {
+      setTableLoading(true);
+      const { XMID, JD, KSSJ, JSSJ, XMMC, GYSID } = selectedRow;
+      Axios({
+        method: 'POST',
+        url: outsourceCostExportExcel,
+        responseType: 'blob',
+        data: {
+          jd: JD,
+          jssj: Number(JSSJ ?? 0),
+          kssj: Number(KSSJ ?? 0),
+          nf: moment().year(),
+          xmid: Number(XMID ?? 0),
+          xmmc: XMMC,
+          gysid: Number(GYSID ?? 0),
+        },
       })
-      .catch(e => {
-        message.error('导出失败', 1);
-        setTableLoading(false);
-      });
+        .then(res => {
+          console.log(res);
+          const href = URL.createObjectURL(res.data);
+          const a = document.createElement('a');
+          a.download = XMMC + JD + '人力外包费用结算表';
+          a.href = href;
+          a.click();
+          window.URL.revokeObjectURL(a.href);
+          setTableLoading(false);
+          cancelExport();
+          message.success('正在导出', 1);
+        })
+        .catch(e => {
+          message.error('导出失败', 1);
+          setTableLoading(false);
+        });
+    } else {
+      message.info('请选择要导出的项目', 1);
+    }
   };
 
   const cancelExport = () => {

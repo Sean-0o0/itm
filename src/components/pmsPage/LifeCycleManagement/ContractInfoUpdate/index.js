@@ -574,6 +574,9 @@ class ContractInfoUpdate extends React.Component {
                 } else if (fkjeSum > getFieldValue('htje')) {
                   message.error('付款总额不能超过合同金额', 1);
                 } else {
+                  this.setState({
+                    isSpinning: true,
+                  });
                   let arr = [...tableData];
                   arr.forEach(item => {
                     for (let i in item) {
@@ -617,12 +620,15 @@ class ContractInfoUpdate extends React.Component {
                     .then(res => {
                       if (res?.code === 1) {
                         onSuccess();
-                        this.setState({ tableData: [] });
+                        this.setState({ isSpinning: false, tableData: [] });
                         closeMessageEditModal();
                       }
                     })
                     .catch(e => {
                       message.error('合同信息修改失败', 1);
+                      this.setState({
+                        isSpinning: false,
+                      });
                     });
                 }
               }
@@ -632,6 +638,7 @@ class ContractInfoUpdate extends React.Component {
             this.setState({ tableData: [] });
             closeMessageEditModal();
           }}
+          confirmLoading={isSpinning}
         >
           <div
             style={{

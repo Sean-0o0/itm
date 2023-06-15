@@ -31,6 +31,7 @@ function InfoOprtModal(props) {
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [contrastTable, setcontrastTable] = useState([]); //联系人表格数据 - 处理后
   const { splInfo = {}, contactInfo = [] } = detailData;
+  const [isSpinning, setIsSpinning] = useState(false);
   //数据处理 -供应商类型、状态
   const gyslx = (str = '') => {
     let arr = str.split(',');
@@ -80,6 +81,7 @@ function InfoOprtModal(props) {
   const handleOK = () => {
     form.validateFieldsAndScroll(err => {
       if (!err) {
+        setIsSpinning(true);
         let blacklist = '2',
           isSifted = '2';
         getFieldValue('gyszt')?.forEach(x => {
@@ -120,6 +122,7 @@ function InfoOprtModal(props) {
               if (res.code === 1) {
                 resetFields();
                 message.success(oprtType === 'ADD' ? '新增成功' : '编辑成功', 1);
+                setIsSpinning(false);
                 //刷新数据
                 getDetailData && getDetailData(splId);
                 getTableData && getTableData({});
@@ -128,10 +131,10 @@ function InfoOprtModal(props) {
             }
           })
           .catch(e => {
+            setIsSpinning(false);
             message.error((oprtType === 'ADD' ? '新增' : '编辑') + '失败', 1);
             console.error('OperateSupplierInfo', e);
           });
-        
       }
     });
   };
@@ -291,139 +294,142 @@ function InfoOprtModal(props) {
       okText="保存"
       onOk={handleOK}
       onCancel={handleCancel}
+      confirmLoading={isSpinning}
     >
       <div className="body-title-box">
         <strong>供应商信息{oprtType === 'EDIT' ? '编辑' : '新增'}</strong>
       </div>
-      <Form className="content-box">
-        <Form.Item label="供应商名称" style={{ marginBottom: '16px' }}>
-          {getFieldDecorator('gysmc', {
-            initialValue: splInfo.GYSMC || '',
-            rules: [
-              {
-                required: true,
-                message: '供应商名称不允许空值',
-              },
-            ],
-          })(<Input maxLength={100} allowClear placeholder={`请输入供应商名称`} />)}
-        </Form.Item>
-        <Row>
-          <Col span={12}>
-            <Form.Item label="供应商类型" style={{ marginBottom: '8px' }}>
-              {getFieldDecorator('gyslx', {
-                initialValue: gyslx(splInfo.GYSLX),
-                rules: [
-                  {
-                    required: true,
-                    message: '供应商类型不允许空值',
-                  },
-                ],
-              })(<Checkbox.Group options={getGyslxData()} />)}
-            </Form.Item>
-          </Col>
-          <Col span={12}>
-            <Form.Item label="是否为淘汰或黑名单供应商:" style={{ marginBottom: '8px' }}>
-              {getFieldDecorator('gyszt', {
-                initialValue: gyszt(),
-              })(
-                <Checkbox.Group
-                  options={[
-                    { label: '黑名单供应商', value: '1' },
-                    { label: '淘汰供应商', value: '2' },
-                  ]}
-                />,
-              )}
-            </Form.Item>
-          </Col>
-        </Row>
-        <Form.Item label="经营范围" style={{ marginBottom: '6px' }}>
-          {getFieldDecorator('jyfw' || '', {
-            initialValue: splInfo.JYFW,
-            rules: [
-              {
-                required: true,
-                message: '经营范围不允许空值',
-              },
-            ],
-          })(
-            <TextArea
-              allowClear
-              autoSize={{
-                minRows: 2,
-                //   maxRows: 7,
-              }}
-              maxLength={666}
-              placeholder={`请输入经营范围`}
-            />,
-          )}
-        </Form.Item>
-        <Form.Item label="经营地址" style={{ marginBottom: '16px' }}>
-          {getFieldDecorator('jydz', {
-            initialValue: splInfo.JYDZ || '',
-          })(<Input maxLength={166} allowClear placeholder={`请输入经营地址`} />)}
-        </Form.Item>
-        <Form.Item label="资质说明" style={{ marginBottom: '6px' }}>
-          {getFieldDecorator('zzsm', {
-            initialValue: splInfo.ZZSM || '',
-          })(
-            <TextArea
-              allowClear
-              autoSize={{
-                minRows: 2,
-                //   maxRows: 7,
-              }}
-              maxLength={333}
-              placeholder={`请输入资质说明`}
-            />,
-          )}
-        </Form.Item>
-        <Form.Item label="联系人信息" style={{ marginBottom: '16px' }}>
-          <div className="lxr-table-box">
-            <Table
-              columns={columns}
-              components={components}
-              rowKey={'ID'}
-              rowClassName={() => 'editable-row'}
-              dataSource={contrastTable}
-              scroll={contrastTable.length > 4 ? { y: 191 } : {}}
-              pagination={false}
-              size="middle"
-            />
-            <div
-              className="table-add-row"
-              onClick={() => {
-                let arrData = [...contrastTable];
-                const UUID = Date.now();
-                arrData.push({
-                  ID: UUID,
-                  GYSID: splInfo.ID,
-                  ['YWSX' + UUID]: '',
-                  ['LXR' + UUID]: '',
-                  ['ZW' + UUID]: '',
-                  SJ: '',
-                  ['DH' + UUID]: '',
-                  ['QTLXFS' + UUID]: '',
-                  ['BZ' + UUID]: '',
-                });
-                // setEditData({
-                //   ...editData,
-                //   contrastTable: [...arrData],
-                // });
-                setcontrastTable(p => [...arrData]);
-                setTimeout(() => {
-                  const table = document.querySelectorAll(`.lxr-table-box .ant-table-body`)[0];
-                  table.scrollTop = table.scrollHeight;
-                }, 200);
-              }}
-            >
-              <span>
-                <Icon type="plus" style={{ fontSize: '12px' }} />
-                <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增联系人信息</span>
-              </span>
+      <Spin spinning={isSpinning}>
+        <Form className="content-box">
+          <Form.Item label="供应商名称" style={{ marginBottom: '16px' }}>
+            {getFieldDecorator('gysmc', {
+              initialValue: splInfo.GYSMC || '',
+              rules: [
+                {
+                  required: true,
+                  message: '供应商名称不允许空值',
+                },
+              ],
+            })(<Input maxLength={100} allowClear placeholder={`请输入供应商名称`} />)}
+          </Form.Item>
+          <Row>
+            <Col span={12}>
+              <Form.Item label="供应商类型" style={{ marginBottom: '8px' }}>
+                {getFieldDecorator('gyslx', {
+                  initialValue: gyslx(splInfo.GYSLX),
+                  rules: [
+                    {
+                      required: true,
+                      message: '供应商类型不允许空值',
+                    },
+                  ],
+                })(<Checkbox.Group options={getGyslxData()} />)}
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item label="是否为淘汰或黑名单供应商:" style={{ marginBottom: '8px' }}>
+                {getFieldDecorator('gyszt', {
+                  initialValue: gyszt(),
+                })(
+                  <Checkbox.Group
+                    options={[
+                      { label: '黑名单供应商', value: '1' },
+                      { label: '淘汰供应商', value: '2' },
+                    ]}
+                  />,
+                )}
+              </Form.Item>
+            </Col>
+          </Row>
+          <Form.Item label="经营范围" style={{ marginBottom: '6px' }}>
+            {getFieldDecorator('jyfw' || '', {
+              initialValue: splInfo.JYFW,
+              rules: [
+                {
+                  required: true,
+                  message: '经营范围不允许空值',
+                },
+              ],
+            })(
+              <TextArea
+                allowClear
+                autoSize={{
+                  minRows: 2,
+                  //   maxRows: 7,
+                }}
+                maxLength={666}
+                placeholder={`请输入经营范围`}
+              />,
+            )}
+          </Form.Item>
+          <Form.Item label="经营地址" style={{ marginBottom: '16px' }}>
+            {getFieldDecorator('jydz', {
+              initialValue: splInfo.JYDZ || '',
+            })(<Input maxLength={166} allowClear placeholder={`请输入经营地址`} />)}
+          </Form.Item>
+          <Form.Item label="资质说明" style={{ marginBottom: '6px' }}>
+            {getFieldDecorator('zzsm', {
+              initialValue: splInfo.ZZSM || '',
+            })(
+              <TextArea
+                allowClear
+                autoSize={{
+                  minRows: 2,
+                  //   maxRows: 7,
+                }}
+                maxLength={333}
+                placeholder={`请输入资质说明`}
+              />,
+            )}
+          </Form.Item>
+          <Form.Item label="联系人信息" style={{ marginBottom: '16px' }}>
+            <div className="lxr-table-box">
+              <Table
+                columns={columns}
+                components={components}
+                rowKey={'ID'}
+                rowClassName={() => 'editable-row'}
+                dataSource={contrastTable}
+                scroll={contrastTable.length > 4 ? { y: 191 } : {}}
+                pagination={false}
+                size="middle"
+              />
+              <div
+                className="table-add-row"
+                onClick={() => {
+                  let arrData = [...contrastTable];
+                  const UUID = Date.now();
+                  arrData.push({
+                    ID: UUID,
+                    GYSID: splInfo.ID,
+                    ['YWSX' + UUID]: '',
+                    ['LXR' + UUID]: '',
+                    ['ZW' + UUID]: '',
+                    SJ: '',
+                    ['DH' + UUID]: '',
+                    ['QTLXFS' + UUID]: '',
+                    ['BZ' + UUID]: '',
+                  });
+                  // setEditData({
+                  //   ...editData,
+                  //   contrastTable: [...arrData],
+                  // });
+                  setcontrastTable(p => [...arrData]);
+                  setTimeout(() => {
+                    const table = document.querySelectorAll(`.lxr-table-box .ant-table-body`)[0];
+                    table.scrollTop = table.scrollHeight;
+                  }, 200);
+                }}
+              >
+                <span>
+                  <Icon type="plus" style={{ fontSize: '12px' }} />
+                  <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增联系人信息</span>
+                </span>
+              </div>
             </div>
-          </div>
-        </Form.Item>
-      </Form>
+          </Form.Item>
+        </Form>
+      </Spin>
     </Modal>
   );
 }
