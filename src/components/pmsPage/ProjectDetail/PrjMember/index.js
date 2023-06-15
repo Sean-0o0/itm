@@ -40,16 +40,16 @@ export default function PrjMember(props) {
           <div className="top">{position}</div>
           <div className="bottom">
             <div className="bottom-left">
-              <img src={gender === '男' ? avatarMale : avatarFemale} alt="" />{' '}
-              {status !== '1' &&
+              <img src={gender === '男' ? avatarMale : avatarFemale} alt="" />
+              {/* {status !== '1' &&
                 (status === '5' ? (
                   <img src={iconRefuse} alt="" className="member-status-img" />
                 ) : (
                   <img src={iconQuestion} alt="" className="member-status-img" />
-                ))}
+                ))} */}
             </div>
             <span>{name}</span>
-            {status !== '1' && (
+            {/* {status !== '1' && (
               <Popover
                 placement="bottomRight"
                 title={null}
@@ -59,7 +59,7 @@ export default function PrjMember(props) {
               >
                 <i className="iconfont icon-more2" />
               </Popover>
-            )}
+            )} */}
           </div>
         </Link>
       </div>
@@ -76,7 +76,7 @@ export default function PrjMember(props) {
             gender: x.XB,
             name: x.RYMC,
             key: x.RYID,
-            status: x.RYZT,
+            // status: x.RYZT,
           }),
         )}
         {member?.length === 0 && (
