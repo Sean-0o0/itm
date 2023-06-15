@@ -7,13 +7,15 @@ import PrjMessage from './PrjMessage';
 import TopConsole from './TopConsole';
 import {
   QueryProjectInfoAll,
+  QueryProjectNode,
   QueryProjectTracking,
   QueryUserRole,
 } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
 import moment from 'moment';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
-// import PrjTracking from './PrjTracking';
+import PrjTracking from './PrjTracking';
+import PrjNode from './PrjNode';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
@@ -30,10 +32,6 @@ export default function ProjectDetail(props) {
     if (xmid !== -1) {
       setIsSpinning(true);
       getIsLeader();
-      // console.log('🚀 ~ ProjectDetail');
-      // const htmlContent = document.getElementById('htmlContent');
-      // // console.log('🚀 ~ file: index.js ~ line 26 ~ useEffect ~ htmlContent', htmlContent);
-      // htmlContent.scrollTop = 0; //页面跳转后滚至顶部
     }
     return () => {};
   }, [HJRYDJ, ZSCQLX, RYGW, CGFS, xmid]);
@@ -83,99 +81,32 @@ export default function ProjectDetail(props) {
       // startTime
       // endTime
       // cycle
-      queryType: 'ALL',
+      queryType: 'GZZB',
       // projectType
+      sort: 'XMZQ ASC',
     })
       .then(res => {
         if (res?.success) {
           let data = { ...obj };
-          // data.trackingData = JSON.parse(res.result);
-          data.trackingData = [
-            {
-              XMMC: '人力全流程',
-              XMID: 678,
-              XMZQ: '第1周',
-              XMJL: '萧方赛',
-              XMJLID: 11902,
-              KSSJ: 20230602,
-              JSSJ: 20230608,
-              DQJD: '11%',
-              DQZT: '进度正常',
-              ZYSXSM: '无重要事项报告',
-              BZGZNR: '本周无事告知，一切正常',
-              XZGZAP: '下周暂无计划',
-            },
-            {
-              XMMC: '人力全流程',
-              XMID: 678,
-              XMZQ: '第2周',
-              XMJL: '萧方赛',
-              XMJLID: 11902,
-              KSSJ: 20230602,
-              JSSJ: 20230608,
-              DQJD: '12%',
-              DQZT: '低风险',
-              ZYSXSM: '无重要事项报告',
-              BZGZNR: '本周无事告知，一切正常',
-              XZGZAP: '下周暂无计划',
-            },
-            {
-              XMMC: '人力全流程',
-              XMID: 678,
-              XMZQ: '第3周',
-              XMJL: '萧方赛',
-              XMJLID: 11902,
-              KSSJ: 20230602,
-              JSSJ: 20230608,
-              DQJD: '13%',
-              DQZT: '中风险',
-              ZYSXSM: '无重要事项报告',
-              BZGZNR: '本周无事告知，一切正常',
-              XZGZAP: '下周暂无计划',
-            },
-            {
-              XMMC: '人力全流程',
-              XMID: 678,
-              XMZQ: '第4周',
-              XMJL: '萧方赛',
-              XMJLID: 11902,
-              KSSJ: 20230602,
-              JSSJ: 20230608,
-              DQJD: '14%',
-              DQZT: '中风险',
-              ZYSXSM: '无重要事项报告',
-              BZGZNR: '本周无事告知，一切正常',
-              XZGZAP: '下周暂无计划',
-            },
-            {
-              XMMC: '人力全流程',
-              XMID: 678,
-              XMZQ: '第5周',
-              XMJL: '萧方赛',
-              XMJLID: 11902,
-              KSSJ: 20230602,
-              JSSJ: 20230608,
-              DQJD: '15%',
-              DQZT: '中风险',
-              ZYSXSM: '无重要事项报告',
-              BZGZNR: '本周无事告知，一切正常',
-              XZGZAP: '下周暂无计划',
-            },
-            {
-              XMMC: '人力全流程',
-              XMID: 678,
-              XMZQ: '第6周',
-              XMJL: '萧方赛',
-              XMJLID: 11902,
-              KSSJ: 20230602,
-              JSSJ: 20230608,
-              DQJD: '16%',
-              DQZT: '中风险',
-              ZYSXSM: '无重要事项报告',
-              BZGZNR: '本周无事告知，一切正常',
-              XZGZAP: '下周暂无计划',
-            },
-          ];
+          data.trackingData = JSON.parse(res.result);
+          getNodeData(data);
+        }
+      })
+      .catch(e => {
+        message.error('接口信息获取失败', 1);
+      });
+  };
+
+  //获取项目节点数据
+  const getNodeData = (obj = {}) => {
+    QueryProjectNode({
+      projectId: Number(xmid),
+    })
+      .then(res => {
+        if (res?.success) {
+          let data = { ...obj };
+          data.nodeData = JSON.parse(res.result).reverse();
+          // console.log('🚀 ~ file: index.js:107 ~ getNodeData ~ data:', data);
           setPrjData(data);
         }
       })
@@ -253,9 +184,9 @@ export default function ProjectDetail(props) {
             supplier: supplierArr,
             xmjbxxRecord: p(res.xmjbxxRecord),
           };
-          setPrjData(obj);
+          // setPrjData(obj);
           // console.log('🚀 ~ getPrjDtlData', obj);
-          // getTrackingData(obj);
+          getTrackingData(obj);
         }
       })
       .catch(e => {
@@ -289,7 +220,7 @@ export default function ProjectDetail(props) {
               isLeader={isLeader}
               isHwSltPrj={isHwSltPrj}
             />
-            {/* <PrjTracking xmid={xmid} prjData={prjData} /> */}
+            <PrjTracking xmid={xmid} prjData={prjData} />
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
               prjData={prjData}
@@ -300,6 +231,7 @@ export default function ProjectDetail(props) {
           </div>
           <div className="col-right">
             <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />
+            <PrjNode prjData={prjData} />
             <PrjMessage xmid={xmid} />
           </div>
         </div>
