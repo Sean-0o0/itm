@@ -209,6 +209,7 @@ export default function PrjMessage(props) {
 
   //编辑留言
   const handleMsgEdit = () => {
+    setIsSpinning(true);
     if (newMsg) {
       UpdateProjectMessages({
         lyid: -1,
@@ -220,11 +221,13 @@ export default function PrjMessage(props) {
         .then(res => {
           if (res?.success) {
             getMsgData('留言新增成功');
+            setIsSpinning(false);
           }
         })
         .catch(e => {
           message.error('留言新增失败', 1);
           console.error('UpdateProjectMessages', e);
+          setIsSpinning(false);
         });
     } else {
       UpdateProjectMessages({
@@ -237,11 +240,13 @@ export default function PrjMessage(props) {
         .then(res => {
           if (res?.success) {
             getMsgData('留言修改成功');
+            setIsSpinning(false);
           }
         })
         .catch(e => {
           message.error('留言修改成功', 1);
           console.error('UpdateProjectMessages', e);
+          setIsSpinning(false);
         });
     }
     setDrawerVisible(false);
@@ -330,7 +335,13 @@ export default function PrjMessage(props) {
                 >
                   取消
                 </Button>
-                <Button size="small" type="primary" className="btn-submit" onClick={handleMsgEdit}>
+                <Button
+                  size="small"
+                  type="primary"
+                  className="btn-submit"
+                  onClick={handleMsgEdit}
+                  loading={isSpinning}
+                >
                   提交
                 </Button>
               </div>
