@@ -255,7 +255,7 @@ class ContractSigning extends React.Component {
     const formdata = {
       extinfo: {
         busdata: {
-          BGRQ: moment(values.BGRQ).format('YYYYMMDD'), // 报告日期
+          BGRQ: moment(values.BGRQ).format('YYYY-MM-DD'), // 报告日期
           QSBGNR: values.QSBGNR, //请示报告内容
           LB: '1', //固定传1
           HTMBLX: values.HTMBLX, //合同模板类型id
