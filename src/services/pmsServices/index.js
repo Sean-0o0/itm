@@ -95,7 +95,8 @@ const {
     finishOutsourceWork,
     queryProjectTracking,
     queryProjectNode,
-    projectCollect
+    projectCollect,
+    queryCustomQueryCriteria,
   },
 } = api;
 
@@ -1011,6 +1012,16 @@ export async function QueryProjectNode(payload) {
 export async function ProjectCollect(payload) {
   const option = {
     url: projectCollect,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询自定义报表里的查询条件
+export async function QueryCustomQueryCriteria(payload) {
+  const option = {
+    url: queryCustomQueryCriteria,
     method: 'post',
     data: payload,
   };

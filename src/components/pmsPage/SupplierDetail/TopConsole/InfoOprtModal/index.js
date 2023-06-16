@@ -297,7 +297,7 @@ function InfoOprtModal(props) {
       confirmLoading={isSpinning}
     >
       <div className="body-title-box">
-        <strong>供应商信息{oprtType === 'EDIT' ? '编辑' : '新增'}</strong>
+        <strong>供应商信息{oprtType === 'UPDATE' ? '编辑' : '新增'}</strong>
       </div>
       <Spin spinning={isSpinning}>
         <Form className="content-box">

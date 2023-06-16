@@ -529,4 +529,10 @@ export default [
     url: '/projectManage/finishOutsourceWork',
     dis: '收藏项目',
   },
+  {
+    code: '',
+    key: 'queryCustomQueryCriteria',
+    url: '/projectManage/queryCustomQueryCriteria',
+    dis: '查询自定义报表里的查询条件',
+  },
 ];

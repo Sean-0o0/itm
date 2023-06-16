@@ -91,7 +91,7 @@ export default function StaffInfo(props) {
             titleName: 'orgName',
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
-          })[0].children[0].children[0].children[0].children;
+          })[0].children[0].children[0].children;
           data.push({
             value: 'szyyzx',
             title: '数字应用中心',
@@ -252,7 +252,7 @@ export default function StaffInfo(props) {
     return (
       <div className="staff-org-item" key={data.value}>
         <div className="top-name">{data.title || '--'}</div>
-        {data.children.length === 0 ? (
+        {data.children?.length === 0 ? (
           <div className="item-empty">
             <Empty description="暂无数据..." />
           </div>
@@ -284,7 +284,7 @@ export default function StaffInfo(props) {
               defaultActiveKey={[data.children[0]?.value]}
               expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
             >
-              {data.children.map(x => (
+              {data.children?.map(x => (
                 <Panel header={x.title} key={x.value}>
                   <div className="panel-content">
                     {x.members.map(m =>
@@ -295,7 +295,7 @@ export default function StaffInfo(props) {
                         post: m.gw,
                       }),
                     )}
-                    {x.members.length === 0 && (
+                    {x.members?.length === 0 && (
                       <Empty
                         description="暂无数据..."
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
