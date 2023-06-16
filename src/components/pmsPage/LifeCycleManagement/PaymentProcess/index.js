@@ -191,7 +191,7 @@ const PaymentProcess = props => {
           contractAmount: String(getFieldValue('htje')),
           paidAmount: String(getFieldValue('yfkje')),
           attQuantity: String(getFieldValue('fjzs')),
-          legalEntity: '浙商证券股份有限公司（ZSZQ）',
+          legalEntity: '****股份有限公司（ZSZQ）',
           orgId: String(LOGIN_USER_ORG_ID),
           projectName: String(currentXmmc),
           payName: String(skzhId),

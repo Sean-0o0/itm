@@ -101,7 +101,7 @@ export default function OverviewCard(props) {
           <span>{getGreeting()}</span>
           <div className="desc">
             {overviewInfo?.sm}
-            {overviewInfo?.sm && '，'}这是你在浙商证券的第
+            {overviewInfo?.sm && '，'}这是你在****的第
             {moment().diff(moment(overviewInfo?.rzsj), 'days')}天
           </div>
         </div>

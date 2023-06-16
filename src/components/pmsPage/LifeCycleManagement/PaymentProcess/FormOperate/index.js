@@ -569,7 +569,7 @@ export default function FormOperate(props) {
       <div className="payment-info-title">付款信息</div>
       <Row>
         {getRadio('是否有合同', sfyht, onSfyhtChange, '是', '否')}
-        {getInputDisabled('法人实体', '浙商证券股份有限公司（ZSZQ）', 8, 16)}
+        {getInputDisabled('法人实体', '****股份有限公司（ZSZQ）', 8, 16)}
       </Row>
       <Row>
         {getInput(htjeInputProps)}

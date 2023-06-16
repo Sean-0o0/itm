@@ -339,7 +339,7 @@ class MainPageLayout extends React.PureComponent {
       const { item = [] } = menu;
       let icon = '';
       const { code, openType = 'self' } = this.parseUrl(url);
-      //使用浙商管理平台的图标
+      //使用管理平台的图标
       if (text === '首页' || text === '个人工作台') {
         icon = 'icon-home';
       }

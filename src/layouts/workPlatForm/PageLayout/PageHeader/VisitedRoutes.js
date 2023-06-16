@@ -232,7 +232,7 @@ function VisitedRoutes(props) {
                 urlEnd: 'ResumeDistribution',
               },
               {
-                title: '供应商需求',
+                title: '外包需求列表',
                 urlEnd: 'SupplierDmInfo',
               },
               {

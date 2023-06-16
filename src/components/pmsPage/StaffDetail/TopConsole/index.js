@@ -54,7 +54,7 @@ class ToConsole extends Component {
               <div className="staff-info-cont flex-c">
                 <div className="staff-line-import">
                   <span className="staff-name">{rymc}</span>
-                  <span className="staff-experience">&nbsp;已加入浙商证券{jrts}天</span>
+                  <span className="staff-experience">&nbsp;已加入****{jrts}天</span>
                 </div>
                 <div className="staff-line flex1 flex-r">
                   <span className="staff-label">部门：</span>
@@ -63,15 +63,15 @@ class ToConsole extends Component {
                 <div className="staff-line flex1 flex-r">
                   <span className="staff-label">岗位：</span>
                   <Tooltip title={gw}>
-                  <span
-                    className="staff-value"
-                    style={{
-                      WebkitBoxOrient: 'vertical',
-                      WebkitLineClamp: '2',
-                    }}
-                  >
-                    {gw}&nbsp;&nbsp;&nbsp;
-                  </span>
+                    <span
+                      className="staff-value"
+                      style={{
+                        WebkitBoxOrient: 'vertical',
+                        WebkitLineClamp: '2',
+                      }}
+                    >
+                      {gw}&nbsp;&nbsp;&nbsp;
+                    </span>
                   </Tooltip>
                   <span style={{ color: '#C0C4CC' }}>|</span>
                   <span className="staff-label">&nbsp;&nbsp;&nbsp;电话：</span>

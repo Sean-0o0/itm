@@ -66,25 +66,14 @@ export default class PageHeader extends React.PureComponent {
     const sysName = localStorage.getItem('sysName');
     return (
       <div className="zj-header" style={{ width: '100%', height: '100%' }}>
-        <div style={{ width: '200px', borderBottom: '1px solid #eeeff1' }}>
-          <span>
+        <div style={{ width: '200px', borderBottom: '1px solid #eeeff1', textAlign: 'center'}}>
+          <span >
             <img
               className="logo"
-              style={{ width: '26px' }}
-              src={require('../../../../assets/apex-logo-zszq-left.png')}
+              style={{ width: '118px' }}
+              src={require('../../../../assets/apex-logo.png')}
               alt=""
             />
-          </span>
-          <span
-            style={{
-              fontSize: '15px',
-              color: '#333',
-              fontWeight: 'bold',
-              letterSpacing: '1.68px',
-              verticalAlign: 'middle',
-            }}
-          >
-            {'信息技术综合管理平台'}
           </span>
         </div>
         {/*菜单栏*/}
