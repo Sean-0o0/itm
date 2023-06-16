@@ -233,4 +233,14 @@ exports.routes = [
     path: `${prefix}/AttendanceListInfo`,
     component: './pmsPage/AttendanceListInfo',
   },
+  {
+    // 项目跟踪页面
+    path: `${prefix}/ProjectTracking`,
+    component: './pmsPage/ProjectTracking',
+  },
+  {
+    // 月度考核
+    path: `${prefix}/MonthlyAssessment`,
+    component: './pmsPage/MonthlyAssessment',
+  },
 ];

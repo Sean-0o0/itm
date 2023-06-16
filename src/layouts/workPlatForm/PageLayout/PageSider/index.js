@@ -36,6 +36,9 @@ export default class PageSider extends React.Component {
     if (pathname && pathname.includes('/pms/manage/MemberInfo')) {
       newPathname = '/pms/manage/MemberInfo';
     }
+    if (pathname && pathname.includes('/pms/manage/ProjectTracking')) {
+      newPathname = '/pms/manage/ProjectTracking';
+    }
     if (oldPathname !== newPathname) {
       this.setState({
         selectedKeys: [newPathname],

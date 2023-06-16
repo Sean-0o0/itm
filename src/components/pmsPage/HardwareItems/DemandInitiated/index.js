@@ -68,7 +68,7 @@ class DemandInitiated extends React.Component {
     QueryOutsourceRankInfo({
       "current": current,
       "cxlx": "ALL",
-      "pageSize": 5,
+      "pageSize": 8,
       "paging": 1,
       "sort": "",
       "total": -1
@@ -77,7 +77,7 @@ class DemandInitiated extends React.Component {
         const {result, totalrows} = res;
         this.setState({
           rydjData: [...JSON.parse(result)],
-          total: 32
+          total: totalrows,
         })
       }
     }).catch(e => {
@@ -271,11 +271,11 @@ class DemandInitiated extends React.Component {
   tablePopover = (data, columns) => {
     const {current, total} = this.state;
     return (
-      <div className="table-box">
+      <div className='rysm-table-box'>
         <Table columns={columns} onChange={this.handleTableChange} rowKey={'id'}
                getPopupContainer={triggerNode => triggerNode.parentNode} dataSource={data} size="middle" pagination={{
           current,
-          pageSize: 5,
+          pageSize: 8,
           // pageSizeOptions: ['20', '40', '50', '100'],
           // showSizeChanger: true,
           hideOnSinglePage: false,
