@@ -1,64 +1,138 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip} from 'antd';
+import {Button, Table, Popover, message, Tooltip, Popconfirm} from 'antd';
 // import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
 import {EncryptBase64} from '../../../Common/Encrypt';
 import {Link} from 'react-router-dom';
 import {useLocation} from 'react-router';
 import InfoOprtModal from '../../SupplierDetail/TopConsole/InfoOprtModal/index.js';
+import moment from "moment";
+import {CreateOperateHyperLink} from "../../../../services/pmsServices";
 
 export default function InfoTable(props) {
+  const [operateVisible, setOperateVisible] = useState(false);
+  const [operateUrl, setOperateUrl] = useState('');
+  const [title, setTitle] = useState('');
   const {
     tableData,
-    tableLoading,
     getTableData,
+    tableLoading,
     total = 0,
     handleSearch,
     curPage,
     curPageSize,
-    GYSLX,
   } = props; //表格数据
-  const [visible, setVisible] = useState(false); //新增供应商弹窗显隐
   const location = useLocation();
+
+  useEffect(() => {
+    return () => {
+    };
+  }, [tableData]);
 
 
   //表格操作后更新数据
   const handleTableChange = (pagination) => {
     // console.log('handleTableChange', pagination, filters, sorter, extra);
     const {current = 1, pageSize = 20} = pagination;
-    // getTableData({ current, pageSize });
     handleSearch(current, pageSize);
+  };
+
+  const getOperateUrl = (id, operateName) => {
+    if (operateName === "V_YDKH_ADD") {
+      setTitle("新增月度考核信息")
+    }
+    if (operateName === "V_YDKH_MOD") {
+      setTitle("修改月度考核信息")
+    }
+    if (operateName === "V_YDKH_DELETE") {
+      setTitle("删除月度考核信息")
+    }
+    let params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'V_YDKH',
+      operateName: operateName,
+      parameter: [
+        {
+          name: 'YDKH',
+          value: id,
+        },
+      ],
+      userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+    };
+    if (id === '') {
+      params = {
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'V_YDKH',
+        operateName: operateName,
+        parameter: [],
+        userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+      };
+    }
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const {code, message, url} = ret;
+        if (code === 1) {
+          setOperateUrl(url);
+          if (operateName !== "V_YDKH_DELETE") {
+            setOperateVisible(true);
+          }
+
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
   };
 
   //列配置
   const columns = [
     {
       title: '月份',
-      dataIndex: 'RYDJ',
+      dataIndex: 'YF',
       width: '10%',
       // align: 'right',
-      key: 'RYDJ',
+      key: 'YF',
       ellipsis: true,
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => <span style={{marginRight: 20}}>{moment(text, "YYYY-MM").format("YYYY-MM") || '-'}</span>,
     },
     {
       title: '项目名称',
-      dataIndex: 'XTZH',
-      width: '14%',
-      key: 'XTZH',
+      dataIndex: 'XMMC',
+      width: '20%',
+      key: 'XMMC',
       ellipsis: true,
-      render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{cursor: 'default'}}>{(text && text.split(',').join('、')) || ''}</span>
-        </Tooltip>
-      ),
+      render: (text, row, index) => {
+        const {XMID = ''} = row;
+        return <div title={text}>
+          <Tooltip title={text} placement="topLeft">
+            <Link
+              style={{color: '#3361ff'}}
+              to={{
+                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                  JSON.stringify({
+                    xmid: XMID,
+                  }),
+                )}`,
+                state: {
+                  routes: [{name: '月度考核', pathname: location.pathname}],
+                },
+              }}
+              className="table-link-strong"
+            >
+              {text || '-'}
+            </Link>
+          </Tooltip>
+        </div>
+      }
     },
     {
       title: '人员名称',
       dataIndex: 'RYMC',
-      width: '20%',
+      width: '12%',
       key: 'RYMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -71,12 +145,12 @@ export default function InfoTable(props) {
                   JSON.stringify({ryid: row.RYID}),
                 )}`,
                 state: {
-                  routes: [{name: '外包人员列表', pathname: location.pathname}],
+                  routes: [{name: '月度考核', pathname: location.pathname}],
                 },
               }}
               className="table-link-strong"
             >
-              {text}
+              {text || '-'}
             </Link>
           </Tooltip>
         );
@@ -84,50 +158,50 @@ export default function InfoTable(props) {
     },
     {
       title: '评分',
-      dataIndex: 'GW',
-      width: '12%',
-      key: 'GW',
+      dataIndex: 'PF',
+      width: '6%',
+      key: 'PF',
       ellipsis: true,
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
     },
     {
       title: '综合评价',
-      dataIndex: 'SSXM',
+      dataIndex: 'ZHPJ',
       width: '12%',
-      key: 'SSXM',
+      key: 'ZHPJ',
       ellipsis: true,
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
     },
     {
       title: '附件',
-      dataIndex: 'JL',
-      width: '16%',
-      key: 'JL',
+      dataIndex: 'FJ',
+      width: '18%',
+      key: 'FJ',
       ellipsis: true,
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
       render: (text, row) => <span style={{marginRight: 20}}>
         <a style={{color: '#3361FF'}}
-           href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=JL&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${row.RYID}&fileid=0`}>
+           href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=FJ&PopupWin=false&Table=TWBRY_YDKH&operate=Download&Type=View&ID=${row.FJID}&fileid=0`}>
         {text}</a></span>,
     },
     {
       title: '日期',
-      dataIndex: 'RYZT',
-      width: '6%',
-      key: 'RYZT',
+      dataIndex: 'RQ',
+      width: '12%',
+      key: 'RQ',
       ellipsis: true,
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text || '暂无'}</span>,
+      render: text => <span style={{marginRight: 20}}>{moment(text, "YYYY-MM-DD").format("YYYY-MM-DD") || '-'}</span>,
     },
     {
       title: '操作',
@@ -135,26 +209,56 @@ export default function InfoTable(props) {
       width: 60,
       render: (text, record) => (
         <span>
-        <a>修改</a>
-        <a>&nbsp;&nbsp;删除</a>
+        <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_MOD")}>修改</a>
+          <Popconfirm
+            title="确定删除？"
+            onConfirm={() => {
+              window.location.href = operateUrl
+            }}
+            onCancel={() => {
+
+            }}
+            okText="确认"
+            cancelText="取消"
+          >
+        <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_DELETE")}>&nbsp;&nbsp;删除</a>
+          </Popconfirm>
       </span>
       ),
     },
   ];
 
+  const operateModalProps = {
+    isAllWindow: 1,
+    // defaultFullScreen: true,
+    width: '860px',
+    height: '420px',
+    title,
+    style: {top: '40px'},
+    visible: operateVisible,
+    footer: null,
+  };
+
   return (
     <div className="info-table">
-      {/*{visible && (*/}
-      {/*  <InfoOprtModal*/}
-      {/*    visible={visible}*/}
-      {/*    setVisible={setVisible}*/}
-      {/*    oprtType={'ADD'}*/}
-      {/*    GYSLX={GYSLX}*/}
-      {/*    getTableData={getTableData}*/}
-      {/*  />*/}
-      {/*)}*/}
+      {
+        operateVisible &&
+        <BridgeModel
+          modalProps={operateModalProps}
+          onSucess={() => {
+            message.info("操作成功！")
+            setOperateVisible(false)
+            handleSearch(curPage, curPageSize);
+          }}
+          onCancel={() => {
+            setOperateVisible(false)
+            handleSearch(curPage, curPageSize);
+          }}
+          src={operateUrl}
+        />
+      }
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={() => setVisible(true)}>
+        <Button type="primary" className="btn-add-prj" onClick={() => getOperateUrl('', "V_YDKH_ADD")}>
           新增
         </Button>
       </div>

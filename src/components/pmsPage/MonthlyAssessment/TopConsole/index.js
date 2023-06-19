@@ -3,7 +3,12 @@ import {Select, Button, Input, TreeSelect, Row, Col, DatePicker, message} from '
 import {
   QueryProjectListPara,
   QueryProjectListInfo,
-  QuerySupplierList, QueryUserRole, QueryRequirementListPara, QueryOutsourceMemberList, QueryOutsourceRankInfo,
+  QuerySupplierList,
+  QueryUserRole,
+  QueryRequirementListPara,
+  QueryOutsourceMemberList,
+  QueryOutsourceRankInfo,
+  QueryMonthlyAssessment,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
 
@@ -15,16 +20,12 @@ const {Option} = Select;
 export default forwardRef(function TopConsole(props, ref) {
   //下拉框数据
   const [prjNameData, setPrjNameData] = useState([]); //项目名称
-  const [gysData, setGysData] = useState([]); //所属供应商
   const [rymcData, setRymcData] = useState([]); //人员名称
-  const [rydjData, setRydjData] = useState([]); //人员等级
   //查询的值
   const [rymc, setRymc] = useState(undefined); //人员名称
-  const [rydj, setRydj] = useState(undefined); //人员等级
-  const [gw, setGw] = useState(undefined); //岗位
+  const [pj, setPj] = useState(undefined); //岗位
   const [prjName, setPrjName] = useState(undefined); //项目名称
-  const [gysmc, setGysmc] = useState(undefined); //供应商名称
-  // const [zt, setZt] = useState(undefined); //状态
+  const [month, setMonth] = useState(undefined); //供应商名称
   const [filterFold, setFilterFold] = useState(true); //收起 true、展开 false
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const {
@@ -38,7 +39,7 @@ export default forwardRef(function TopConsole(props, ref) {
     dictionary,
     xmid,
   } = props;
-  const {WBRYGW = []} = dictionary;
+  const {YDKHZHPJ = []} = dictionary;
 
   useEffect(() => {
     getFilterData();
@@ -54,7 +55,7 @@ export default forwardRef(function TopConsole(props, ref) {
         handleReset,
       };
     },
-    [rymc, rydj, gw, prjName, gysmc],
+    [rymc, prjName],
   );
 
   //顶部下拉框查询数据
@@ -82,9 +83,7 @@ export default forwardRef(function TopConsole(props, ref) {
                 if (String(xmid) !== "" || xmid !== "undefined") {
                   setPrjName(xmid)
                 }
-                setGysData([...JSON.parse(res.gysxx)]);
                 setRymcData([...JSON.parse(res.wbryxx)]);
-                setRydjData([...JSON.parse(res.rydjxx)]);
               }
             })
             .catch(e => {
@@ -112,31 +111,29 @@ export default forwardRef(function TopConsole(props, ref) {
           setCurPageSize(pageSize);
           let params = {
             current,
+            cxlx: "ALL",
+            js: zyrole === "暂无" ? role : zyrole,
             pageSize,
             paging: 1,
             sort: "",
             total: -1,
-            cxlx: 'ALL',
-            js: zyrole === "暂无" ? role : zyrole,
-            zzjg: String(LOGIN_USER_INFO.org)
           };
           if (rymc !== undefined && rymc !== '') {
             params.rymc = Number(rymc);
           }
-          if (rydj !== undefined && rydj !== '') {
-            params.rydj = Number(rydj);
-          }
-          if (gw !== undefined && gw !== '') {
-            params.rygw = Number(gw);
-          }
           if (prjName !== undefined && prjName !== '') {
             params.xmmc = Number(prjName);
           }
-          if (gysmc !== undefined && gysmc !== '') {
-            params.gys = Number(gysmc);
+          console.log("monthmonth", month)
+          if (month !== undefined && month !== '' && month !== null) {
+            const yf = moment(month, "YYYYMM").format("YYYYMM")
+            params.yf = yf;
+          }
+          if (pj !== undefined && pj !== '') {
+            params.zhpj = Number(pj);
           }
           console.log('🚀 ~ file: index.js:119 ~ handleSearch ~ params:', params);
-          QueryOutsourceMemberList(params)
+          QueryMonthlyAssessment(params)
             .then(res => {
               const {code, result, totalrows} = res
               if (code > 0) {
@@ -162,11 +159,9 @@ export default forwardRef(function TopConsole(props, ref) {
   //重置按钮
   const handleReset = () => {
     setRymc(undefined);
-    setRydj(undefined);
-    setGw(undefined);
+    setPj(undefined);
     setPrjName(undefined);
-    setGysmc(undefined);
-    // setZt(undefined);
+    setMonth(undefined);
   };
 
   // onChange-start
@@ -175,29 +170,21 @@ export default forwardRef(function TopConsole(props, ref) {
     console.log('handleRymcChange', v);
     setRymc(v);
   }
-  //人员等级
-  const handleRydjChange = v => {
-    console.log('handleRydjChange', v);
-    setRydj(v);
-  }
-  //岗位
-  const handleGwChange = v => {
-    console.log('handleRydjChange', v);
-    setGw(v);
+  //综合评价
+  const handlePjChange = v => {
+    console.log('handlePjChange', v);
+    setPj(v);
   }
   //项目名称
   const handlePrjNameChange = v => {
     console.log('handlePrjNameChange', v);
     setPrjName(v);
   };
-  //供应商
-  const handleGysmcChange = v => {
-    console.log('handleGysmcChange', v);
-    setGysmc(v);
+  //月份
+  const handleMonthChange = v => {
+    console.log('handleMonthChange', v);
+    setMonth(v);
   };
-  // const handleZtChange = v => {
-  //   setZt(v);
-  // };
   // onChange-end
 
   return (
@@ -255,11 +242,11 @@ export default forwardRef(function TopConsole(props, ref) {
             }
             showSearch
             allowClear
-            onChange={handleGwChange}
-            value={gw}
+            onChange={handlePjChange}
+            value={pj}
             placeholder="请选择"
           >
-            {WBRYGW.map((x, i) => (
+            {YDKHZHPJ.map((x, i) => (
               <Option key={i} value={x.ibm}>
                 {x.note}
               </Option>
@@ -280,7 +267,7 @@ export default forwardRef(function TopConsole(props, ref) {
       <div className="item-box">
         <div className="console-item">
           <div className="item-label">月份</div>
-          <MonthPicker className="item-selector" onChange={handleGysmcChange} value={gysmc} format="YYYY-MM"/>
+          <MonthPicker className="item-selector" onChange={handleMonthChange} value={month} format="YYYY-MM"/>
         </div>
       </div>
       {!filterFold && (

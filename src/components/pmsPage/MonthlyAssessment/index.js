@@ -1,7 +1,12 @@
 import React, {useEffect, useState, useRef} from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
-import {QueryOutsourceMemberList, QuerySupplierList, QueryUserRole} from '../../../services/pmsServices';
+import {
+  QueryMonthlyAssessment,
+  QueryOutsourceMemberList,
+  QuerySupplierList,
+  QueryUserRole
+} from '../../../services/pmsServices';
 import {setCommentRange} from 'typescript';
 import {message} from 'antd';
 
@@ -12,7 +17,7 @@ export default function MonthlyAssessment(props) {
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量
   const {params = {}, dictionary = {}} = props;
-  const {GYSLX} = dictionary;
+  const {} = dictionary;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const topConsoleRef = useRef(null);
 
@@ -25,6 +30,7 @@ export default function MonthlyAssessment(props) {
 
   //获取表格数据
   const getTableData = ({current = 1, pageSize = 20, queryType = 'ALL', sort = 'ID ASC'}) => {
+    console.log("刷新列表数据....")
     setTableLoading(true);
     //获取用户角色
     QueryUserRole({
@@ -35,19 +41,22 @@ export default function MonthlyAssessment(props) {
           const {role = '', zyrole = ''} = res;
           const param = {
             current,
-            pageSize,
-            paging: 1,
-            sort: "",
-            total: -1,
             cxlx: queryType,
             js: zyrole === "暂无" ? role : zyrole,
-            zzjg: String(LOGIN_USER_INFO.org)
+            pageSize,
+            paging: 1,
+            // rymc: 0,
+            sort: "",
+            total: -1,
+            // xmmc: 0,
+            // yf: 0,
+            // zhpj: 0
           }
-          console.log("params.xmid", params.xmid)
-          if (String(params.xmid) !== "" || params.xmid !== "undefined") {
-            param.xmmc = Number(params.xmid);
-          }
-          QueryOutsourceMemberList({...param})
+          // console.log("params.xmid", params.xmid)
+          // if (String(params.xmid) !== "" || params.xmid !== "undefined") {
+          //   param.xmmc = Number(params.xmid);
+          // }
+          QueryMonthlyAssessment({...param})
             .then(res => {
               const {code, result, totalrows} = res
               if (code > 0) {
@@ -73,7 +82,6 @@ export default function MonthlyAssessment(props) {
   return (
     <div className="supplier-info-box">
       <TopConsole
-        xmid={params.xmid}
         dictionary={dictionary}
         setTableData={setTableData}
         setTableLoading={setTableLoading}
@@ -91,7 +99,6 @@ export default function MonthlyAssessment(props) {
         total={total}
         curPage={curPage}
         curPageSize={curPageSize}
-        GYSLX={GYSLX}
         handleSearch={topConsoleRef?.current?.handleSearch}
       />
     </div>

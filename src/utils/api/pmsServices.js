@@ -535,4 +535,10 @@ export default [
     url: '/projectManage/queryCustomQueryCriteria',
     dis: '查询自定义报表里的查询条件',
   },
+  {
+    code: '',
+    key: 'queryMonthlyAssessment',
+    url: '/projectManage/queryMonthlyAssessment',
+    dis: '月度考核',
+  },
 ];

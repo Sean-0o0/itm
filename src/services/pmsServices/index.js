@@ -96,6 +96,8 @@ const {
     queryProjectTracking,
     queryProjectNode,
     projectCollect,
+    queryMonthlyAssessment,
+    projectCollect,
     queryCustomQueryCriteria,
   },
 } = api;
@@ -1022,6 +1024,16 @@ export async function ProjectCollect(payload) {
 export async function QueryCustomQueryCriteria(payload) {
   const option = {
     url: queryCustomQueryCriteria,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 月度考核
+export async function QueryMonthlyAssessment(payload) {
+  const option = {
+    url: queryMonthlyAssessment,
     method: 'post',
     data: payload,
   };
