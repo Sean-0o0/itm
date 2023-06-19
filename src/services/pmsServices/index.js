@@ -97,7 +97,6 @@ const {
     queryProjectNode,
     projectCollect,
     queryMonthlyAssessment,
-    projectCollect,
     queryCustomQueryCriteria,
   },
 } = api;

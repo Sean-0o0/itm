@@ -75,9 +75,9 @@ export default function InfoTable(props) {
         const {code, message, url} = ret;
         if (code === 1) {
           setOperateUrl(url);
-          if (operateName !== "V_YDKH_DELETE") {
+          // if (operateName !== "V_YDKH_DELETE") {
             setOperateVisible(true);
-          }
+          // }
 
         }
       })
@@ -210,19 +210,20 @@ export default function InfoTable(props) {
       render: (text, record) => (
         <span>
         <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_MOD")}>修改</a>
-          <Popconfirm
-            title="确定删除？"
-            onConfirm={() => {
-              window.location.href = operateUrl
-            }}
-            onCancel={() => {
+          {/*  <Popconfirm*/}
+          {/*    title="确定删除？"*/}
+          {/*    onConfirm={() => {*/}
+          {/*      window.location.href = operateUrl*/}
+          {/*    }}*/}
+          {/*    onCancel={() => {*/}
 
-            }}
-            okText="确认"
-            cancelText="取消"
-          >
-        <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_DELETE")}>&nbsp;&nbsp;删除</a>
-          </Popconfirm>
+          {/*    }}*/}
+          {/*    okText="确认"*/}
+          {/*    cancelText="取消"*/}
+          {/*  >*/}
+          {/*<a onClick={() => getOperateUrl(record.FJID, "V_YDKH_DELETE")}>&nbsp;&nbsp;删除</a>*/}
+          {/*  </Popconfirm>*/}
+          <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_DELETE")}>&nbsp;&nbsp;删除</a>
       </span>
       ),
     },
