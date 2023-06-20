@@ -189,33 +189,23 @@ class ContractSigning extends React.Component {
         if (_this.state.pbbgTurnRed) {
           message.warn('请上传合同附件！');
           return;
-        } if(xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE)> 0) {
+        } else if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) > 0) {
+          console.log("2222")
           if (Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)) {
             message.warn('合同金额不能超过立项流程金额(' + Number(xmjbxxRecord[0]?.LXLCJE) + ')！');
             return;
-          } else {
-            _this.setState({
-              isSpinning: true
-            })
-            _this.individuationGetOAResult(values);
           }
-        }
-        if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
+        } else if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
+          console.log("33333333")
           if (Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)) {
             message.warn('合同金额不能超过预算金额(' + Number(xmjbxxRecord[0]?.YSJE) + ')！');
             return;
-          } else {
-            _this.setState({
-              isSpinning: true
-            })
-            _this.individuationGetOAResult(values);
           }
-        } else {
-          _this.setState({
-            isSpinning: true
-          })
-          _this.individuationGetOAResult(values);
         }
+        _this.setState({
+          isSpinning: true
+        })
+        _this.individuationGetOAResult(values);
       }
     });
   };
@@ -317,7 +307,7 @@ class ContractSigning extends React.Component {
   handleProcessItemClick = id => {
     window.open(
       'http://10.52.130.12/ZSZQOA/getURLSyncBPM.do?_BPM_FUNCCODE=C_FormSetFormData&_mode=4&_form_control_design=LABEL&_tf_file_id=' +
-        id,
+      id,
     );
   };
   //关联流程 - 删除

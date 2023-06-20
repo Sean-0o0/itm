@@ -502,6 +502,7 @@ export default function TopConsole(props) {
             successCallBack={handleFileAddSuccess}
             xmid={src_fileAdd.xmid}
             type={src_fileAdd.type}
+            subItemFlag={src_fileAdd.subItemFlag}
             projectStatus={src_fileAdd.projectStatus}
           />
         </Modal>
