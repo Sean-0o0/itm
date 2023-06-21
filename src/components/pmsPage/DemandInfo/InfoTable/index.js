@@ -374,6 +374,7 @@ export default function InfoTable(props) {
                 <Popover
                   placement="bottomRight"
                   title={null}
+                  arrowPointAtCenter
                   content={
                     <div className="list">
                       {row.SJZT !== '3' && (

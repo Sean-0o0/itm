@@ -17,6 +17,7 @@ import ExpenseExportModal from './ExpenseExportModal';
 import Axios from 'axios';
 
 import config from '../../../../utils/config';
+import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 
 const { api } = config;
 const {
@@ -50,7 +51,12 @@ export default function InfoTable(props) {
   const [userRole, setUserRole] = useState('普通人员'); //
   const [exporting, setExporting] = useState(false); //导出状态，出现单选
   const [selectedRow, setSelectedRow] = useState({}); //选中行
-
+  const [rlwbData, setRlwbData] = useState([]); //人力外包数据
+  const [curData, setCurData] = useState({
+    xmid: -1,
+    xmmc: '',
+    xmbh: '',
+  }); //付款流程用
   const location = useLocation();
 
   useEffect(() => {
@@ -231,19 +237,34 @@ export default function InfoTable(props) {
       key: 'operation',
       align: 'center',
       width: '8%',
-      render: (txt, row) => (
-        <span
-          style={{ color: '#3361ff', cursor: 'pointer' }}
-          onClick={() => {
-            if (String(LOGIN_USER_ID) === row.XMJLID) {
-            } else {
-              message.info('只有项目经理可以操作', 1);
-            }
-          }}
-        >
-          付款
-        </span>
-      ),
+      render: (txt, row) =>
+        row.SFFK === '1' ? (
+          ''
+        ) : (
+          <span
+            style={{ color: '#3361ff', cursor: 'pointer' }}
+            onClick={() => {
+              if (String(LOGIN_USER_ID) === row.XMJLID) {
+                setCurData({
+                  xmid: Number(row.XMID),
+                  xmmc: row.XMMC,
+                  xmbh: row.XMBM,
+                });
+                setRlwbData({
+                  NF: Number(row.KSSJ.slice(0, 4)),
+                  JD: row.JD,
+                  GYSID: Number(row.GYSID),
+                  ZJE: parseFloat(row.ZFY),
+                });
+                setVisible(p => ({ ...p, payment: true }));
+              } else {
+                message.info('只有项目经理可以操作', 1);
+              }
+            }}
+          >
+            付款
+          </span>
+        ),
     },
   ];
 
@@ -516,6 +537,24 @@ export default function InfoTable(props) {
           setVisible={v => setVisible(p => ({ ...p, calculation: v }))}
           quarterData={quarterData}
           reflush={getTableData}
+        />
+      )}
+      {/* 付款流程发起弹窗 */}
+      {visible.payment && (
+        <PaymentProcess
+          paymentModalVisible={visible.payment}
+          fetchQueryLifecycleStuff={() => {}}
+          currentXmid={curData.xmid}
+          currentXmmc={curData.xmmc}
+          projectCode={curData.xmbh}
+          closePaymentProcessModal={() => setVisible(p => ({ ...p, payment: false }))}
+          onSuccess={() => {
+            setVisible(p => ({ ...p, payment: false }));
+            getTableData();
+          }}
+          isHwPrj={false} // 是否硬件入围
+          ddcgje={0} // 单独采购金额，为0时无值
+          rlwbData={rlwbData}
         />
       )}
       {/* {visible.export && (

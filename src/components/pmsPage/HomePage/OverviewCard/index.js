@@ -31,31 +31,31 @@ export default function OverviewCard(props) {
   };
 
   //待办块
-  const getToDoItem = (data) => {
-    return (
-      <div>
-        {data?.map(x => (
-          <div className="todo-card-box">
-            <div className="todo-card-title">
-              <div className="todo-card-xmmc">
-                {x.xmmc}
-              </div>
-              <div className="todo-deal-box">
-                <div className="todo-to-deal">
-                  去处理 <i className="iconfont icon-right todo-to-deal-icon"/>
-                </div>
-              </div>
+  // const getToDoItem = (data) => {
+  //   return (
+  //     <div>
+  //       {data?.map(x => (
+  //         <div className="todo-card-box">
+  //           <div className="todo-card-title">
+  //             <div className="todo-card-xmmc">
+  //               {x.xmmc}
+  //             </div>
+  //             <div className="todo-deal-box">
+  //               <div className="todo-to-deal">
+  //                 去处理 <i className="iconfont icon-right todo-to-deal-icon"/>
+  //               </div>
+  //             </div>
 
-            </div>
-            <div className="todo-card-content">
-              {Number(x.wdsl) < 0 && <div className="todo-card-status">逾期{Number(x.wdsl) * -1}天</div>}
-              <div className="todo-card-txnr">{x.txnr}</div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
+  //           </div>
+  //           <div className="todo-card-content">
+  //             {Number(x.wdsl) < 0 && <div className="todo-card-status">逾期{Number(x.wdsl) * -1}天</div>}
+  //             <div className="todo-card-txnr">{x.txnr}</div>
+  //           </div>
+  //         </div>
+  //       ))}
+  //     </div>
+  //   );
+  // };
 
   //概览块
   const getOverviewItem = ({
@@ -155,7 +155,7 @@ export default function OverviewCard(props) {
             amount: getAmountFormat(toDoDataNum),
             addNum: overviewInfo?.dbjrxz,
             unit: '项',
-            // more: false,
+            more: false,
           })}
           {getOverviewItem({
             title: '现有风险',

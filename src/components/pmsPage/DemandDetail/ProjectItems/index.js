@@ -11,6 +11,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router-dom';
 import SendMailModal from '../../SendMailModal';
 import MoreOperationModal from '../EvaluationTable/MoreOperationModal';
+import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 
 export default function ProjectItems(props) {
   const {
@@ -47,12 +48,19 @@ export default function ProjectItems(props) {
     employmentApplication: false,
     offerConfirmation: false,
     newAccount: false,
+    payment: false,
   }); //弹窗显隐
   const [lbModal, setLbModal] = useState({
     url: '#',
     title: '',
   }); //
   const [swzxid, setSwzxid] = useState(-1); //
+  const [rlwbData, setRlwbData] = useState([]); //人力外包数据
+  const [curData, setCurData] = useState({
+    xmid: -1,
+    xmmc: '',
+    xmbh: '',
+  }); //付款流程用
   const location = useLocation();
 
   useEffect(() => {
@@ -463,6 +471,24 @@ export default function ProjectItems(props) {
 
   return (
     <div className="prj-items-box">
+      {/* 付款流程发起弹窗 */}
+      {modalVisible.payment && (
+        <PaymentProcess
+          paymentModalVisible={modalVisible.payment}
+          fetchQueryLifecycleStuff={() => {}}
+          currentXmid={curData.xmid}
+          currentXmmc={curData.xmmc}
+          projectCode={curData.xmbh}
+          closePaymentProcessModal={() => setModalVisible(p => ({ ...p, payment: false }))}
+          onSuccess={() => {
+            setModalVisible(p => ({ ...p, payment: false }));
+            getDtldata(xqid, fqrid);
+          }}
+          isHwPrj={false} // 是否硬件入围
+          ddcgje={0} // 单独采购金额，为0时无值
+          rlwbData={rlwbData}
+        />
+      )}
       {/* 录用确认 */}
       {modalVisible.offerConfirmation && (
         <MoreOperationModal
@@ -695,7 +721,31 @@ export default function ProjectItems(props) {
           <div className="right">
             <i className="iconfont fill-info" />
             {FKTX.TXNR}
-            <div className="opr-btn">发起付款</div>
+            <div
+              className="opr-btn"
+              onClick={() => {
+                if (FKTX.KZZD !== '') {
+                  let kzzd = JSON.parse(FKTX.KZZD);
+                  setCurData({
+                    xmid: Number(XMXX.XMID),
+                    xmmc: XMXX.XMMC,
+                    xmbh: XMXX.XMBM,
+                  });
+                  setRlwbData({
+                    NF: Number(kzzd.NF),
+                    JD: kzzd.JD,
+                    GYSID: Number(kzzd.GYSID),
+                    ZJE: kzzd.ZFY,
+                  });
+                  setModalVisible(p => ({
+                    ...p,
+                    payment: true,
+                  }));
+                }
+              }}
+            >
+              发起付款
+            </div>
           </div>
         )}
       </div>
