@@ -23,7 +23,7 @@ export default forwardRef(function TopConsole(props, ref) {
   const [rymcData, setRymcData] = useState([]); //人员名称
   //查询的值
   const [rymc, setRymc] = useState(undefined); //人员名称
-  const [pj, setPj] = useState(undefined); //岗位
+  const [pj, setPj] = useState(undefined); //评价
   const [prjName, setPrjName] = useState(undefined); //项目名称
   const [month, setMonth] = useState(undefined); //供应商名称
   const [filterFold, setFilterFold] = useState(true); //收起 true、展开 false
@@ -37,7 +37,6 @@ export default forwardRef(function TopConsole(props, ref) {
     curPage,
     curPageSize,
     dictionary,
-    xmid,
   } = props;
   const {YDKHZHPJ = []} = dictionary;
 
@@ -45,7 +44,7 @@ export default forwardRef(function TopConsole(props, ref) {
     getFilterData();
     return () => {
     };
-  }, [xmid]);
+  }, []);
 
   useImperativeHandle(
     ref,
@@ -55,7 +54,7 @@ export default forwardRef(function TopConsole(props, ref) {
         handleReset,
       };
     },
-    [rymc, prjName],
+    [rymc, prjName, pj, month],
   );
 
   //顶部下拉框查询数据

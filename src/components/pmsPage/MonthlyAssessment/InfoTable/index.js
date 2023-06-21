@@ -7,7 +7,11 @@ import {Link} from 'react-router-dom';
 import {useLocation} from 'react-router';
 import InfoOprtModal from '../../SupplierDetail/TopConsole/InfoOprtModal/index.js';
 import moment from "moment";
-import {CreateOperateHyperLink} from "../../../../services/pmsServices";
+import {
+  CreateOperateHyperLink,
+  DeleteMonthlyAssessment,
+  QueryMonthlyAssessment
+} from "../../../../services/pmsServices";
 
 export default function InfoTable(props) {
   const [operateVisible, setOperateVisible] = useState(false);
@@ -27,7 +31,7 @@ export default function InfoTable(props) {
   useEffect(() => {
     return () => {
     };
-  }, [tableData]);
+  }, [total, tableData]);
 
 
   //表格操作后更新数据
@@ -38,29 +42,9 @@ export default function InfoTable(props) {
   };
 
   const getOperateUrl = (id, operateName) => {
+    let params = {}
     if (operateName === "V_YDKH_ADD") {
       setTitle("新增月度考核信息")
-    }
-    if (operateName === "V_YDKH_MOD") {
-      setTitle("修改月度考核信息")
-    }
-    if (operateName === "V_YDKH_DELETE") {
-      setTitle("删除月度考核信息")
-    }
-    let params = {
-      attribute: 0,
-      authFlag: 0,
-      objectName: 'V_YDKH',
-      operateName: operateName,
-      parameter: [
-        {
-          name: 'YDKH',
-          value: id,
-        },
-      ],
-      userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
-    };
-    if (id === '') {
       params = {
         attribute: 0,
         authFlag: 0,
@@ -70,21 +54,49 @@ export default function InfoTable(props) {
         userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
       };
     }
+    if (operateName === "V_YDKH_MOD") {
+      setTitle("修改月度考核信息")
+      params = {
+        attribute: 0,
+        authFlag: 0,
+        objectName: 'V_YDKH',
+        operateName: operateName,
+        parameter: [
+          {
+            name: 'YDKH',
+            value: id,
+          },
+        ],
+        userId: String(JSON.parse(sessionStorage.getItem('user')).loginName),
+      };
+    }
     CreateOperateHyperLink(params)
       .then((ret = {}) => {
         const {code, message, url} = ret;
         if (code === 1) {
           setOperateUrl(url);
-          // if (operateName !== "V_YDKH_DELETE") {
-            setOperateVisible(true);
-          // }
-
+          setOperateVisible(true);
         }
       })
       .catch(error => {
         message.error(!error.success ? error.message : error.note);
       });
   };
+
+  const delData = (id) => {
+    DeleteMonthlyAssessment({id})
+      .then(res => {
+        const {code, result} = res
+        if (code > 0) {
+          message.info('删除成功！', 1);
+          handleSearch(curPage, curPageSize);
+        }
+      })
+      .catch(e => {
+        message.error('表格数据查询失败', 1);
+        console.error('getTableData', e);
+      });
+  }
 
   //列配置
   const columns = [
@@ -209,22 +221,18 @@ export default function InfoTable(props) {
       width: 60,
       render: (text, record) => (
         <span>
-        <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_MOD")}>修改</a>
-          {/*  <Popconfirm*/}
-          {/*    title="确定删除？"*/}
-          {/*    onConfirm={() => {*/}
-          {/*      window.location.href = operateUrl*/}
-          {/*    }}*/}
-          {/*    onCancel={() => {*/}
-
-          {/*    }}*/}
-          {/*    okText="确认"*/}
-          {/*    cancelText="取消"*/}
-          {/*  >*/}
-          {/*<a onClick={() => getOperateUrl(record.FJID, "V_YDKH_DELETE")}>&nbsp;&nbsp;删除</a>*/}
-          {/*  </Popconfirm>*/}
-          <a onClick={() => getOperateUrl(record.FJID, "V_YDKH_DELETE")}>&nbsp;&nbsp;删除</a>
-      </span>
+         <a style={{color: '#3361FF'}} onClick={() => getOperateUrl(record.FJID, "V_YDKH_MOD")}>修改</a>
+            <Popconfirm
+              title="确定删除？"
+              onConfirm={() => delData(record.FJID)}
+              onCancel={() => {
+              }}
+              okText="确认"
+              cancelText="取消"
+            >
+              <a style={{color: '#3361FF'}}>&nbsp;&nbsp;删除</a>
+            </Popconfirm>
+        </span>
       ),
     },
   ];
