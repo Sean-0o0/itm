@@ -1071,7 +1071,7 @@ class ItemBtn extends React.Component {
           return this.getCz(done, item);
 
         default:
-          console.error(`🚀 ~ 该事项名称【${name}】未配置`);
+          console.error(`🚀 ~ 该事项名称【${name}】按钮尚未配置`);
           return;
       }
     }

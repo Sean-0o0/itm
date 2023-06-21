@@ -547,4 +547,10 @@ export default [
     url: '/projectManage/deleteMonthlyAssessment',
     dis: '删除月度考核',
   },
+  {
+    code: '',
+    key: 'saveCustomReportSetting',
+    url: '/projectManage/saveCustomReportSetting',
+    dis: '保存自定义报表配置',
+  },
 ];

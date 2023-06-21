@@ -14973,7 +14973,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-
 //项目跟踪列表
 .project-tracking-box {
   overflow: hidden;
@@ -15180,7 +15179,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
   }
 
-
   .info-table {
     padding: 0;
     margin: 16px 24px 0 24px;
@@ -15200,9 +15198,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       .prj-name {
         border-radius: 8px 1px 1px 1px;
-        border: 2px solid #FFFFFF;
+        border: 2px solid #ffffff;
         font-family: PingFangSC-Medium, PingFang SC;
-        font-weight: 500;
+        font-weight: bold;
         color: #303133;
         padding: 16px 24px;
         display: flex;
@@ -15266,7 +15264,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         .ant-progress-inner {
-          background-color: #F0F2F5 !important;
+          background-color: #f0f2f5 !important;
 
           .ant-progress-bg {
             height: 12px !important;
@@ -15345,7 +15343,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
-        color: #3361FF;
+        color: #3361ff;
         line-height: 22px;
       }
 
@@ -15354,7 +15352,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         width: 16px;
         height: 16px;
         padding-left: 4px;
-        color: #3361FF;
+        color: #3361ff;
 
         .iconfont {
           font-size: 14px;
@@ -15362,7 +15360,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
     }
   }
-
 }
 
 .tooltip-content {
@@ -15931,16 +15928,544 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-
 //自定义报表 - 报表管理
-.custom-rpt-management-box {
+.ant-spin-nested-loading.diy-style-spin-custom-rpt-management > div > .ant-spin {
+  height: calc(100vh - 46px);
+  max-height: unset;
+  position: fixed;
+  top: 31px;
+  left: 95px;
+}
+.custom-rpt-management-cascader {
+  .ant-cascader-menu {
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #fafafa;
+      border-radius: 3px;
+    }
 
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 3px;
+      width: 6px;
+    }
+  }
+}
+.custom-rpt-management-popover {
+  .ant-popover-inner-content {
+    padding: 16px;
+    overflow: hidden;
+
+    & > .setting-box {
+      overflow: hidden;
+
+      & > .content {
+        height: 394px;
+        overflow: hidden;
+        margin-bottom: 16px;
+
+        & > .left,
+        & > .right {
+          width: 220px;
+          height: 394px;
+          background: #ffffff;
+          border-radius: 4px;
+          border: 1px solid #dbdfe6;
+
+          & > .top {
+            height: 40px;
+            font-size: 14px;
+            font-family: PingFangSC-Medium, PingFang SC;
+            font-weight: bold;
+            color: #1f1f1f;
+            line-height: 40px;
+            border-bottom: 1px solid #dbdfe6;
+            padding: 0 16px;
+
+            span {
+              float: right;
+              font-weight: 400;
+              color: #3361ff;
+              cursor: pointer;
+              &:hover {
+                color: #3361ffaf;
+              }
+            }
+          }
+          & > .list {
+            padding: 8px 16px;
+            overflow: hidden;
+            overflow-y: auto;
+            height: 354px;
+
+            &::-webkit-scrollbar {
+              width: 6px;
+              background-color: #fafafa;
+              border-radius: 3px;
+            }
+
+            &::-webkit-scrollbar-thumb {
+              background-color: #c1c1c1;
+              border-radius: 3px;
+              width: 6px;
+            }
+
+            .slted-item {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              height: 32px;
+              background: #fafafb;
+              border-radius: 4px;
+              border: 1px solid #ebeef5;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #303133;
+              line-height: 32px;
+              padding: 0 10px;
+              cursor: pointer;
+              margin-bottom: 8px;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              &:hover {
+                color: #909399;
+                i {
+                  color: #909399;
+                }
+              }
+
+              .icon-drag-2 {
+                margin-right: 10px;
+                font-size: 16px;
+              }
+              .icon-close {
+                margin-left: auto;
+                font-size: 16px;
+
+                &:hover {
+                  color: #ff2f31;
+                }
+              }
+            }
+          }
+        }
+        & > .left {
+          margin-right: 8px;
+        }
+      }
+      & > .footer-btn {
+        height: 32px;
+        line-height: 32px;
+        overflow: hidden;
+        text-align: right;
+
+        .btn-cancel {
+          .antd-btn-default();
+          // color: #3361ff;
+          // border-color: #3361ff;
+          margin-right: 8px;
+        }
+
+        .btn-submit {
+          .antd-btn-primary();
+        }
+      }
+    }
+  }
+}
+.custom-rpt-management-box {
+  height: 100%;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+
+  & > .diy-style-spin-custom-rpt-management {
+    flex-shrink: 0;
+    margin: 16px 24px;
+  }
+
+  & > .bottom-wrapper {
+    flex-grow: 1;
+    width: calc(100% - 48px);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin: 0 24px 24px 24px;
+    overflow: hidden;
+
+    & > .rpt-sider {
+      height: 100%;
+      width: 240px;
+      flex-shrink: 0;
+      background-color: #fff;
+      box-shadow: 1px 0px 0px 0px #ebeef5;
+      border-radius: 8px 0px 0px 8px;
+    }
+    & > .rpt-right {
+      height: 100%;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      overflow: hidden;
+
+      & > .rpt-header {
+        flex-shrink: 0;
+        padding: 0 24px;
+        background-color: #fff;
+        overflow: hidden;
+        height: 64px;
+        box-shadow: inset 0px -1px 0px 0px #ebeef5;
+        border-radius: 0px 8px 0px 0px;
+        border-left: 1px solid #ebeef5;
+        width: 100%;
+        font-family: PingFangSC-Medium, PingFang SC;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+
+        .rpt-title {
+          width: 200px;
+          margin-bottom: 0;
+        }
+
+        .btn-delete,
+        .btn-cancel,
+        .btn-save,
+        .btn-history {
+          .antd-btn-default();
+          margin-right: 8px;
+          border-color: #3361ff;
+          color: #3361ff;
+        }
+        .btn-cancel {
+          border-color: unset;
+          color: unset;
+        }
+        .btn-delete {
+          border-color: #ff2f31;
+          color: #ff2f31;
+          margin-left: auto;
+
+          &:hover {
+            border-color: #ff2f31af;
+            color: #ff2f31af;
+          }
+        }
+        .btn-share {
+          .antd-btn-primary();
+        }
+      }
+      & > .rpt-content {
+        flex-grow: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        background-color: #f0f2f5;
+        border-radius: 0px 0px 8px 0px;
+        padding: 24px;
+        width: 100%;
+
+        & > .top {
+          flex-shrink: 0;
+          min-height: 128px;
+          background-color: #fff;
+          box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+          border-radius: 8px;
+          margin-bottom: 16px;
+          overflow: hidden;
+          width: 100%;
+          padding: 16px 24px;
+          max-height: calc(100vh - 493px);
+          overflow: hidden;
+          overflow-y: auto;
+
+          &::-webkit-scrollbar {
+            width: 10px;
+            background-color: #fafafa;
+            border-radius: 5px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #c1c1c1;
+            border-radius: 5px;
+            width: 10px;
+          }
+
+          .ant-btn {
+            box-shadow: none;
+          }
+
+          .filter-condition {
+            // height: 50%;
+            border-bottom: 1px dashed #ebeef5;
+            overflow: hidden;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            font-size: 14px;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-right: -2%;
+
+            button {
+              margin-right: 2%;
+              margin-bottom: 16px;
+            }
+
+            .condition-filter-item {
+              color: #222222;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              margin-bottom: 16px;
+              width: 30%;
+              margin-right: 3.3%;
+
+              .item-label {
+                width: 56px;
+                flex-shrink: 0;
+                margin-right: 8px;
+                line-height: 20px;
+              }
+
+              .item-component {
+                flex-grow: 1;
+              }
+
+              .input-between {
+                flex-grow: 1;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                .input-min,
+                .input-max {
+                  text-align: left;
+                  width: calc(50% - 0.5em);
+                }
+
+                .input-to {
+                  width: 1em;
+                  padding: 7px 0;
+                  border-left: 0;
+                  border-right: 0;
+                  pointer-events: none;
+                  background-color: #fff0;
+                  border-radius: unset;
+                  text-align: center;
+                }
+
+                .input-min {
+                  border-right: 1px solid #fff;
+                  border-radius: 4px 0 0 4px;
+
+                  &:hover {
+                    border-right: 1px solid #3361ff;
+                  }
+                }
+
+                .input-max {
+                  border-left: 1px solid #fff;
+                  border-radius: 0 4px 4px 0;
+
+                  &:hover {
+                    border-left: 1px solid #3361ff;
+                  }
+                }
+              }
+
+              .icon-close-circle {
+                margin-left: 8px;
+                font-size: 17px;
+                color: #909399;
+                cursor: pointer;
+
+                &:hover {
+                  color: #ff2f31;
+                }
+              }
+            }
+          }
+
+          .group-condition {
+            // height: 50%;
+            padding-top: 16px;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #222222;
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: center;
+            margin-bottom: -8px;
+            margin-right: -8px;
+
+            .label {
+              margin-bottom: 8px;
+              margin-right: 8px;
+            }
+
+            button {
+              margin-right: 8px;
+              margin-bottom: 8px;
+            }
+
+            .condition-group-item {
+              height: 32px;
+              background: #ffffff;
+              border-radius: 4px;
+              border: 1px solid #dbdfe6;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #303133;
+              margin-right: 8px;
+              margin-bottom: 8px;
+              padding: 0 8px;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+
+              .icon-close {
+                color: #909399;
+                margin-left: 10px;
+                font-size: 14px;
+                cursor: pointer;
+
+                &:hover {
+                  color: #ff2f31;
+                }
+              }
+            }
+          }
+        }
+        & > .bottom {
+          flex-grow: 1;
+          background-color: #fff;
+          box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+          border-radius: 8px;
+          overflow: hidden;
+          width: 100%;
+          padding: 16px 24px 0 24px;
+
+          .ant-table {
+            td {
+              padding: 9.17px;
+              font-size: 14px;
+              font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #303133;
+            }
+
+            th {
+              padding: 9.17px;
+              font-size: 14px;
+              background-color: #f5f7fa;
+              font-family: PingFangSC-Medium, PingFang SC;
+              font-weight: bold;
+              color: #606266;
+            }
+
+            .icon-set {
+              font-size: 16px;
+              color: #909399;
+              font-weight: normal;
+              margin-left: 12px;
+              cursor: pointer;
+            }
+
+            tr.ant-table-expanded-row td > .ant-table-wrapper {
+              margin: -10px -16px -10px;
+            }
+
+            .ant-table-body {
+              // min-height: 560px;
+              table {
+                border: 1px solid #e8e8e8;
+              }
+            }
+
+            .ant-table-scroll .ant-table-header {
+              margin-bottom: -16.5px !important; //表格表头底部边框
+              background-color: #f5f7fa;
+            }
+
+            .ant-table-placeholder {
+              .ant-empty-description {
+                font-size: 14px;
+              }
+            }
+
+            .ant-table-thead {
+              position: sticky;
+              top: 0;
+            }
+
+            //项目标签
+            .prj-tags {
+              width: 100%;
+              color: #606266;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+
+              .tag-item {
+                color: #3361ff;
+                font-size: 12px;
+                border: 1px solid rgba(51, 97, 255, 0.3);
+                border-radius: 4px;
+                background-color: #3363ff14;
+                padding: 1px 8px 2px 8px;
+                margin-right: 8px;
+                max-width: 38%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                line-height: initial;
+                flex-shrink: 0;
+                cursor: pointer;
+
+                &:last-child {
+                  margin-right: 0;
+                }
+              }
+            }
+
+            .ant-table-body {
+              // min-height: 560px;
+              table {
+                border: 1px solid #e8e8e8;
+              }
+            }
+
+            .ant-table-scroll .ant-table-header {
+              margin-bottom: -16.5px !important; //表格表头底部边框
+              background-color: #f5f7fa;
+            }
+
+            .ant-table-thead {
+              position: sticky;
+              top: 0;
+              z-index: 1;
+            }
+          }
+        }
+      }
+    }
+  }
 }
 
 //自定义报表 - 我的报表
 .custom-reports-box {
   .rep-tabs {
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
 
     .ant-tabs-bar {
@@ -15957,14 +16482,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-weight: 400;
         color: #303133;
         line-height: 24px;
-
       }
 
       .ant-tabs-nav .ant-tabs-tab-active {
         font-size: 16px;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: 500;
-        color: #3361FF;
+        color: #3361ff;
         line-height: 24px;
       }
     }
@@ -15973,7 +16497,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   .rep-infos {
     margin: 16px 24px;
     height: 378px;
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
     border-radius: 8px;
 
@@ -15998,9 +16522,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .rep-infos-content-box {
           width: 268px;
           height: 82px;
-          background: #FFFFFF;
+          background: #ffffff;
           border-radius: 4px;
-          border: 1px solid #EBEEF5;
+          border: 1px solid #ebeef5;
           padding: 16px 24px;
 
           .rep-infos-name {
@@ -16013,7 +16537,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               margin-left: 6px;
               width: 13px;
               height: 13px;
-              color: #F9A812;
+              color: #f9a812;
             }
           }
 
@@ -16023,19 +16547,18 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-weight: 400;
             color: #909399;
             line-height: 20px;
+            .rep-infos-foot {
+              display: block;
+              text-align: center;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #606266;
+              line-height: 20px;
+            }
           }
         }
       }
-    }
-
-    .rep-infos-foot {
-      display: block;
-      text-align: center;
-      font-size: 14px;
-      font-family: PingFangSC-Regular, PingFang SC;
-      font-weight: 400;
-      color: #606266;
-      line-height: 20px;
     }
   }
 }

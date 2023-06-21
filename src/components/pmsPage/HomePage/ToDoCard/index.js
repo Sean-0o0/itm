@@ -288,7 +288,7 @@ export default function ToDoCard(props) {
         return jumpToLBPage('');
 
       default:
-        console.error(`🚀 ~ 该待办事项名称【${item.sxmc}】未配置`);
+        console.error(`🚀 ~ 该待办事项名称【${item.sxmc}】尚未配置`);
         return;
     }
   };
