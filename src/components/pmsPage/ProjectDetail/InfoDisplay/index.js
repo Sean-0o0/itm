@@ -334,9 +334,9 @@ export default function InfoDisplay(props) {
       )}
       <div className="top-box">项目信息</div>
 
-      {/* 项目信息 */}
+      {/* 基本信息 */}
       <div className="info-box" key="xmxx">
-        <div className="top-title">项目信息</div>
+        <div className="top-title">基本信息</div>
         <div className="info-row-box">
           {getInfoItem('项目类型：', notNull(prjBasic.XMLX))}
           <div className="info-item" key="关联软件：">

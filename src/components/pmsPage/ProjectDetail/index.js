@@ -184,9 +184,9 @@ export default function ProjectDetail(props) {
             supplier: supplierArr,
             xmjbxxRecord: p(res.xmjbxxRecord),
           };
-          // setPrjData(obj);
+          setPrjData(obj);
           // console.log('🚀 ~ getPrjDtlData', obj);
-          getTrackingData(obj);
+          // getTrackingData(obj);
         }
       })
       .catch(e => {
@@ -220,7 +220,7 @@ export default function ProjectDetail(props) {
               isLeader={isLeader}
               isHwSltPrj={isHwSltPrj}
             />
-            <PrjTracking xmid={xmid} prjData={prjData} />
+            {/* <PrjTracking xmid={xmid} prjData={prjData} /> */}
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
               prjData={prjData}
@@ -231,7 +231,7 @@ export default function ProjectDetail(props) {
           </div>
           <div className="col-right">
             <PrjMember routes={routes} prjData={prjData} dictionary={dictionary} />
-            <PrjNode prjData={prjData} />
+            {/* <PrjNode prjData={prjData} /> */}
             <PrjMessage xmid={xmid} />
           </div>
         </div>
