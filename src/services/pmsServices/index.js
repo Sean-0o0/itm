@@ -98,6 +98,7 @@ const {
     projectCollect,
     queryMonthlyAssessment,
     queryCustomQueryCriteria,
+    deleteMonthlyAssessment,
   },
 } = api;
 
@@ -1033,6 +1034,16 @@ export async function QueryCustomQueryCriteria(payload) {
 export async function QueryMonthlyAssessment(payload) {
   const option = {
     url: queryMonthlyAssessment,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 月度考核
+export async function DeleteMonthlyAssessment(payload) {
+  const option = {
+    url: deleteMonthlyAssessment,
     method: 'post',
     data: payload,
   };

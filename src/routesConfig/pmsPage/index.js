@@ -253,4 +253,9 @@ exports.routes = [
     path: `${prefix}/CustomRptManagement/:params`,
     component: './pmsPage/CustomRptManagement',
   },
+  {
+    // 自定义报表 - 我的报表
+    path: `${prefix}/CustomReports`,
+    component: './pmsPage/CustomReports',
+  },
 ];

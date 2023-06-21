@@ -541,4 +541,10 @@ export default [
     url: '/projectManage/queryMonthlyAssessment',
     dis: '月度考核',
   },
+  {
+    code: '',
+    key: 'deleteMonthlyAssessment',
+    url: '/projectManage/deleteMonthlyAssessment',
+    dis: '删除月度考核',
+  },
 ];
