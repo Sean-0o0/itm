@@ -6,10 +6,11 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import { message } from 'antd';
+import {message, Popover, Tooltip} from 'antd';
 
 export default function OverviewCard(props) {
-  const { width = '70%', overviewInfo = [], userRole = '', toDoDataNum = 0 } = props;
+  const [hovered, setHovered] = useState(false);
+  const {width = '70%', overviewInfo = [], userRole = '', toDoData = [], toDoDataNum = 0} = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
 
@@ -29,30 +30,69 @@ export default function OverviewCard(props) {
     return greeting;
   };
 
+  //待办块
+  const getToDoItem = (data) => {
+    return (
+      <div>
+        {data?.map(x => (
+          <div className="todo-card-box">
+            <div className="todo-card-title">
+              <div className="todo-card-xmmc">
+                {x.xmmc}
+              </div>
+              <div className="todo-deal-box">
+                <div className="todo-to-deal">
+                  去处理 <i className="iconfont icon-right todo-to-deal-icon"/>
+                </div>
+              </div>
+
+            </div>
+            <div className="todo-card-content">
+              {Number(x.wdsl) < 0 && <div className="todo-card-status">逾期{Number(x.wdsl) * -1}天</div>}
+              <div className="todo-card-txnr">{x.txnr}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
   //概览块
   const getOverviewItem = ({
-    title = '--',
-    more = true,
-    width = '24%',
-    img = '',
-    amount = '--',
-    percent = '--',
-    addNum = '--',
-    unit = '',
-    fn = false,
-    linkTo = false,
-  }) => {
+                             title = '--',
+                             more = true,
+                             width = '24%',
+                             img = '',
+                             amount = '--',
+                             percent = '--',
+                             addNum = '--',
+                             unit = '',
+                             fn = false,
+                             linkTo = false,
+                           }) => {
     return (
-      <div className="overview-item" style={{ width }}>
+      <div className="overview-item" style={{width}}>
         <div className="item-top">
           <img
             className="top-img"
             src={require(`../../../../assets/homePage/icon_${img}@2x.png`)}
           />
           {!fn && !linkTo && (
-            <div className="top-txt">
+            <div className="top-txt top-txt-link">
               {title}
-              {more && <i className="iconfont icon-right" />}
+              {more && <Popover
+                title={null}
+                placement="rightTop"
+                visible={hovered}
+                onVisibleChange={() => {
+                  setHovered(true)
+                }}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
+                autoAdjustOverflow={true}
+                content={getToDoItem(toDoData)}
+                overlayClassName="todo-card-content-popover"
+              ><i className="iconfont icon-right"/>
+              </Popover>}
             </div>
           )}
           {fn && (
@@ -115,7 +155,7 @@ export default function OverviewCard(props) {
             amount: getAmountFormat(toDoDataNum),
             addNum: overviewInfo?.dbjrxz,
             unit: '项',
-            more: false,
+            // more: false,
           })}
           {getOverviewItem({
             title: '现有风险',

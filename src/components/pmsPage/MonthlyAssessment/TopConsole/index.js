@@ -78,10 +78,6 @@ export default forwardRef(function TopConsole(props, ref) {
             .then(res => {
               if (res?.success) {
                 setPrjNameData([...JSON.parse(res.xmxx)]);
-                console.log("params.cccc", Number(xmid))
-                if (String(xmid) !== "" || xmid !== "undefined") {
-                  setPrjName(xmid)
-                }
                 setRymcData([...JSON.parse(res.wbryxx)]);
               }
             })

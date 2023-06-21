@@ -218,7 +218,7 @@ export default function InfoTable(props) {
     {
       title: '操作',
       key: 'action',
-      width: 60,
+      width: 120,
       render: (text, record) => (
         <span>
          <a style={{color: '#3361FF'}} onClick={() => getOperateUrl(record.FJID, "V_YDKH_MOD")}>修改</a>

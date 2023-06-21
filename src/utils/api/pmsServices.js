@@ -549,6 +549,12 @@ export default [
   },
   {
     code: '',
+    key: 'queryCustomReportList',
+    url: '/projectManage/queryCustomReportList',
+    dis: '查询报表',
+  },
+  {
+    code: '',
     key: 'saveCustomReportSetting',
     url: '/projectManage/saveCustomReportSetting',
     dis: '保存自定义报表配置',

@@ -134,6 +134,7 @@ class MemberDetailPage extends Component {
             basicData,
             kqxxData,
             ydkhData: [...JSON.parse(ydkh)],
+            pageParams: {...this.state.pageParams, total: res.totalrows},
             tableLoading: false,
           })
         } else {

@@ -346,7 +346,7 @@ export default function HomePage(props) {
       date: Number(new moment().format('YYYYMMDD')),
       paging: 1,
       current: 1,
-      pageSize: 2,
+      pageSize: 99999,
       total: -1,
       sort: '',
     })
@@ -410,6 +410,7 @@ export default function HomePage(props) {
               width={leftWidth}
               overviewInfo={overviewInfo}
               userRole={userRole}
+              toDoData={toDoData}
               toDoDataNum={total.todo}
             />
             {['二级部门领导', '普通人员'].includes(userRole) ? (

@@ -99,6 +99,7 @@ const {
     queryMonthlyAssessment,
     queryCustomQueryCriteria,
     deleteMonthlyAssessment,
+    queryCustomReportList,
     saveCustomReportSetting,
   },
 } = api;
@@ -1045,6 +1046,16 @@ export async function QueryMonthlyAssessment(payload) {
 export async function DeleteMonthlyAssessment(payload) {
   const option = {
     url: deleteMonthlyAssessment,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 报表查询
+export async function FetchQueryCustomReportList(payload) {
+  const option = {
+    url: queryCustomReportList,
     method: 'post',
     data: payload,
   };
