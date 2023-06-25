@@ -9,7 +9,7 @@ import {
   QueryUserRole,
   FetchQueryOwnerMessage,
   FetchQueryOwnerWorkflow,
-  FetchQueryOwnerProjectList,
+  FetchQueryOwnerProjectList, FetchQueryCustomReportList,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -21,15 +21,17 @@ import SupplierCard from './SupplierCard';
 import TeamCard from './TeamCard';
 import ToDoCard from './ToDoCard';
 import moment from 'moment';
+import AnalyzeRepsCard from "./AnalyzeRepsCard";
+import PrjTracking from "./PrjTracking";
 
 //金额格式化
 const getAmountFormat = value => {
   if ([undefined, null, '', ' ', NaN].includes(value)) return '';
   return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
-export { getAmountFormat };
+export {getAmountFormat};
 export default function HomePage(props) {
-  const { cacheLifecycles, dictionary } = props;
+  const {cacheLifecycles, dictionary} = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
@@ -42,6 +44,8 @@ export default function HomePage(props) {
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [processData, setProcessData] = useState([]); //流程情况
   const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
+  const [totalWD, setWDTotal] = useState(0);//分析报表数据总条数
+  const [cusRepDataWD, setCusRepDataWD] = useState([]);//分析报表数据
   const [total, setTotal] = useState({
     todo: 0,
     project: 0,
@@ -157,9 +161,11 @@ export default function HomePage(props) {
       })
         .then(res => {
           if (res?.code === 1) {
-            const { role = '' } = res;
+            const {role = ''} = res;
             setUserRole(role);
             getBudgetData(role);
+            //获取分析报表数据
+            getCusRepData("WD", 3);
             if (['二级部门领导', '普通人员'].includes(role)) {
               reflush ? getToDoData() : getProcessData(); //待办刷新时不用刷新流程数据
             } else {
@@ -346,7 +352,7 @@ export default function HomePage(props) {
       date: Number(new moment().format('YYYYMMDD')),
       paging: 1,
       current: 1,
-      pageSize: 2,
+      pageSize: 99999,
       total: -1,
       sort: '',
     })
@@ -396,6 +402,33 @@ export default function HomePage(props) {
       });
   };
 
+  //获取报表数据
+  const getCusRepData = (cxlx, pageSize) => {
+    const payload = {
+      current: 1,
+      //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
+      cxlx,
+      pageSize,
+      paging: 1,
+      sort: "",
+      total: -1
+    }
+    FetchQueryCustomReportList({...payload})
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
+          if (cxlx === "WD") {
+            setCusRepDataWD(p => [...JSON.parse(res.result)]);
+            setWDTotal(res.totalrows);
+          }
+        }
+      })
+      .catch(e => {
+        message.error('报表信息查询失败', 1);
+      });
+  };
+
+
   return (
     <Spin
       spinning={isSpinning}
@@ -405,21 +438,29 @@ export default function HomePage(props) {
     >
       <div className="home-page-box">
         <div className="row-box">
-          <div className="col-left" style={{ width: leftWidth }}>
+          <div className="col-left" style={{width: leftWidth}}>
             <OverviewCard
               width={leftWidth}
               overviewInfo={overviewInfo}
               userRole={userRole}
+              toDoData={toDoData}
+              reflush={() => getUserRole(true)}
+              dictionary={dictionary}
               toDoDataNum={total.todo}
             />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <ToDoCard
-                itemWidth={itemWidth}
-                getAfterItem={getAfterItem}
-                toDoData={toDoData}
-                reflush={() => getUserRole(true)}
-                total={total.todo}
-                dictionary={dictionary}
+              // <ToDoCard
+              //   itemWidth={itemWidth}
+              //   getAfterItem={getAfterItem}
+              //   toDoData={toDoData}
+              //   reflush={() => getUserRole(true)}
+              //   total={total.todo}
+              //   dictionary={dictionary}
+              // />
+              <AnalyzeRepsCard
+                totalWD={totalWD}
+                cusRepDataWD={cusRepDataWD}
+                getCusRepData={getCusRepData}
               />
             ) : (
               <CptBudgetCard
@@ -438,10 +479,14 @@ export default function HomePage(props) {
               placement={placement}
               setPlacement={setPlacement}
             />
+            {/*项目跟踪*/}
+            {/*<PrjTracking*/}
+            {/*  dictionary={dictionary}*/}
+            {/*/>*/}
           </div>
           <div className="col-right">
-            <GuideCard />
-            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
+            <GuideCard/>
+            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo}/>
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <CptBudgetCard
                 isVertical={true}

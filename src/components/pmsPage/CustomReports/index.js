@@ -12,28 +12,34 @@ import moment from "moment";
 
 export default function CustomReports(props) {
   const [isSpinning, setIsSpinning] = useState(false);
-  const [cusRepDataWD, setCusRepDataWD] = useState([]);
+  const [cusRepDataSC, setCusRepDataSC] = useState([]);
   const [cusRepDataCJ, setCusRepDataCJ] = useState([]);
   const [cusRepDataGX, setCusRepDataGX] = useState([]);
-  const [totalWD, setWDTotal] = useState(0);
+  const [cusRepDataCJR, setCusRepDataCJR] = useState([]);
+  const [cusRepDataKJBB, setCusRepDataKJBB] = useState([]);
+  const [totalSC, setSCTotal] = useState(0);
   const [totalCJ, setCJTotal] = useState(0);
   const [totalGX, setGXTotal] = useState(0);
+  const [totalCJR, setCJRTotal] = useState(0);
+  const [totalKJBB, setKJBBTotal] = useState(0);
   const [tabsKey, setTabsKey] = useState(1);
   const [params, setParams] = useState({cjr: '', bbmc: ''});
 
   useEffect(() => {
-    getCusRepData("WD", 12);
+    getCusRepData("CJR", 9999);
+    getCusRepData("KJBB", 9999);
+    getCusRepData("SC", 12);
     getCusRepData("CJ", 12);
     return () => {
     };
   }, []);
 
-  //获取待办数据
+  //获取报表数据
   const getCusRepData = (cxlx, pageSize) => {
     setIsSpinning(true);
     const payload = {
       current: 1,
-      //WD|我的报表;GX|共享报表;CJ|我创建的报表
+      //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
       cxlx,
       pageSize,
       paging: 1,
@@ -50,9 +56,9 @@ export default function CustomReports(props) {
       .then(res => {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
-          if (cxlx === "WD") {
-            setCusRepDataWD(p => [...JSON.parse(res.result)]);
-            setWDTotal(res.totalrows);
+          if (cxlx === "SC") {
+            setCusRepDataSC(p => [...JSON.parse(res.result)]);
+            setSCTotal(res.totalrows);
           }
           if (cxlx === "GX") {
             setCusRepDataGX(p => [...JSON.parse(res.result)]);
@@ -61,6 +67,14 @@ export default function CustomReports(props) {
           if (cxlx === "CJ") {
             setCusRepDataCJ(p => [...JSON.parse(res.result)]);
             setCJTotal(res.totalrows);
+          }
+          if (cxlx === "CJR") {
+            setCusRepDataCJR(p => [...JSON.parse(res.result)]);
+            setCJRTotal(res.totalrows);
+          }
+          if (cxlx === "KJBB") {
+            setCusRepDataKJBB(p => [...JSON.parse(res.result)]);
+            setKJBBTotal(res.totalrows);
           }
           setIsSpinning(false);
         }
@@ -73,7 +87,7 @@ export default function CustomReports(props) {
 
   const tabsCallback = (key) => {
     if (key === 1) {
-      getCusRepData("WD", 12);
+      getCusRepData("SC", 12);
       getCusRepData("CJ", 12);
     }
     if (key === 2) {
@@ -97,12 +111,16 @@ export default function CustomReports(props) {
         getCusRepData={getCusRepData}
         params={params}
         paramsCallback={paramsCallback}
-        totalWD={totalWD}
-        cusRepDataWD={cusRepDataWD}
+        totalSC={totalSC}
+        cusRepDataSC={cusRepDataSC}
         totalCJ={totalCJ}
         cusRepDataCJ={cusRepDataCJ}
         totalGX={totalGX}
         cusRepDataGX={cusRepDataGX}
+        cusRepDataCJR={cusRepDataCJR}
+        cusRepDataKJBB={cusRepDataKJBB}
+        totalCJR={totalCJR}
+        totalKJBB={totalKJBB}
         tabsKey={tabsKey}
       />
     </div>

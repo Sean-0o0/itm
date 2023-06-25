@@ -1,18 +1,40 @@
-import React, { useEffect, useState } from 'react';
-import { getAmountFormat } from '..';
-import { EncryptBase64 } from '../../../Common/Encrypt';
-import { useLocation } from 'react-router';
-import { Link } from 'react-router-dom';
+import React, {useEffect, useState} from 'react';
+import {getAmountFormat} from '..';
+import {EncryptBase64} from '../../../Common/Encrypt';
+import {useLocation} from 'react-router';
+import {Link} from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import {message, Popover, Tooltip} from 'antd';
+import {message, Modal, Popover, Tooltip} from 'antd';
+import {CreateOperateHyperLink, UpdateMessageState} from "../../../../services/pmsServices";
+import InterviewScoreModal from "../../DemandDetail/ProjectItems/InterviewScoreModal";
+import PaymentProcess from "../../LifeCycleManagement/PaymentProcess";
+import BridgeModel from "../../../Common/BasicModal/BridgeModel";
+import EditProjectInfoModel from "../../EditProjectInfoModel";
 
 export default function OverviewCard(props) {
   const [hovered, setHovered] = useState(false);
-  const {width = '70%', overviewInfo = [], userRole = '', toDoData = [], toDoDataNum = 0} = props;
+  const {overviewInfo = [], userRole = '', toDoData = [], toDoDataNum = 0, reflush, dictionary} = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
+  const {WBRYGW} = dictionary;
+  const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
+  const [ryxztxModalVisible, setRyxztxModalVisible] = useState(false); //人员新增提醒发起弹窗
+  const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
+  const [currentXmid, setCurrentXmid] = useState(-1); //当前项目id
+  const [currentXmmc, setCurrentXmmc] = useState(''); //当前项目名称
+  const [currentXqid, setCurrentXqid] = useState('-1'); //当前需求id
+  const [currentSwzxid, setCurrentSwzxid] = useState('-1'); //当前需求事务执行id
+  const [rlwbData, setRlwbData] = useState({}); //人力外包费用支付 - 付款流程总金额等
+  const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
+  const [isHwPrj, setIsHwPrj] = useState(false); //是否硬件入围 - 优先判断是否硬件入围
+  const [ddcgje, setDdcgje] = useState(undefined); //单独采购金额
+  const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
+  const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
+  const [modalVisible, setModalVisible] = useState({
+    wbrymspf: false, //外包人员面试评分
+  }); //弹窗显隐
 
   //获取招呼语
   const getGreeting = () => {
@@ -30,32 +52,277 @@ export default function OverviewCard(props) {
     return greeting;
   };
 
-  //待办块
-  // const getToDoItem = (data) => {
-  //   return (
-  //     <div>
-  //       {data?.map(x => (
-  //         <div className="todo-card-box">
-  //           <div className="todo-card-title">
-  //             <div className="todo-card-xmmc">
-  //               {x.xmmc}
-  //             </div>
-  //             <div className="todo-deal-box">
-  //               <div className="todo-to-deal">
-  //                 去处理 <i className="iconfont icon-right todo-to-deal-icon"/>
-  //               </div>
-  //             </div>
+//弹窗操作成功
+  const handleOperateSuccess = txt => {
+    txt && message.success(txt, 1);
+    //刷新数据
+    reflush();
+  };
 
-  //           </div>
-  //           <div className="todo-card-content">
-  //             {Number(x.wdsl) < 0 && <div className="todo-card-status">逾期{Number(x.wdsl) * -1}天</div>}
-  //             <div className="todo-card-txnr">{x.txnr}</div>
-  //           </div>
-  //         </div>
-  //       ))}
-  //     </div>
-  //   );
-  // };
+  //跳转livebos页面
+  const jumpToLBPage = tableName => {
+    // console.log('openLiveBosModal', tableName);
+    if (tableName === '') {
+      console.error(`🚀 ~ 该待办事项暂不处理`);
+      return;
+    }
+    window.location.href = `/#/UIProcessor?Table=${tableName}&hideTitlebar=true`;
+  };
+
+  //跳转项目详情
+  const jumpToProjectDetail = item => {
+    window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
+      JSON.stringify({
+        routes: [{name: '个人工作台', pathname: location.pathname}],
+        xmid: item.xmid,
+      }),
+    )}`;
+  };
+
+  //付款流程
+  const handlePaymentProcess = item => {
+    // console.log('handlePaymentProcess', item);
+    setPaymentModalVisible(true);
+    setProjectCode(item.xmbh);
+    // setProjectCode((xmbhData?.filter(x => Number(x.xmid) === Number(item.xmid)))[0]?.xmbh);
+    setIsHwPrj(item.xmlx === '6');
+    setDdcgje(Number(item.sfbhyj ?? 0));
+    setCurrentXmid(item.xmid);
+    setCurrentXmmc(item.xmmc);
+    if (item.kzzd !== '') {
+      setRlwbData(JSON.parse(item.kzzd));
+    }
+  };
+
+  //人员新增提醒
+  const handleRyxztx = item => {
+    const params = {
+      attribute: 0,
+      authFlag: 0,
+      objectName: 'V_RYXXGL',
+      operateName: 'TRY_XMRY_COMFIRM',
+      parameter: [
+        {
+          name: 'SSXM',
+          value: item.xmid,
+        },
+        {
+          name: 'RYMC',
+          value: String(LOGIN_USER_INFO.id),
+        },
+      ],
+      userId: String(LOGIN_USER_INFO.loginName),
+    };
+    CreateOperateHyperLink(params)
+      .then((ret = {}) => {
+        const {code, message, url} = ret;
+        if (code === 1) {
+          setRyxztxUrl(url);
+          setRyxztxModalVisible(true);
+        }
+      })
+      .catch(error => {
+        console.error('人员新增提醒', !error.success ? error.message : error.note);
+        message.error('人员新增提醒失败', 1);
+      });
+  };
+
+  //信委会会议结果
+  const handleXwhhyjg = item => {
+    UpdateMessageState({
+      zxlx: 'EXECUTE',
+      xxid: item.xxid,
+    })
+      .then((ret = {}) => {
+        const {code = 0, note = '', record = []} = ret;
+        if (code === 1) {
+          //刷新数据
+          reflush();
+          message.success('执行成功', 1);
+        }
+      })
+      .catch(error => {
+        message.error('操作失败', 1);
+        console.error('信委会会议结果', !error.success ? error.message : error.note);
+      });
+  };
+
+  const jumpToEditProjectInfo = item => {
+    setFileAddVisible(true);
+    setSrc_fileAdd({
+      xmid: item.xmid,
+      type: true,
+      subItemFlag: true,
+      subItemFinish: true,
+      projectStatus: 'SAVE',
+    });
+  };
+
+  //外包人员面试评分
+  const handleWbrymspf = item => {
+    setModalVisible(p => {
+      return {
+        ...p,
+        wbrymspf: true,
+      };
+    });
+    setCurrentXmid(item.xmid);
+    if (item.kzzd !== '') {
+      // console.log('item.kzzd', JSON.parse(item.kzzd));
+      setCurrentSwzxid(JSON.parse(item.kzzd).SWZXID);
+      setCurrentXqid(JSON.parse(item.kzzd).XQID);
+    }
+  };
+
+  //简历分发、提交录用申请
+  const jumpToDemandDetail = item => {
+    if (item.kzzd !== '') {
+      UpdateMessageState({
+        zxlx: 'EXECUTE',
+        xxid: item.xxid,
+      })
+        .then((ret = {}) => {
+          const {code = 0, note = '', record = []} = ret;
+          if (code === 1) {
+            window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
+              JSON.stringify({
+                routes: [{name: '个人工作台', pathname: location.pathname}],
+                xqid: JSON.parse(item.kzzd).XQID,
+                fqrid: JSON.parse(item.kzzd).FQR,
+              }),
+            )}`;
+            reflush();
+          }
+        })
+        .catch(error => {
+          message.error('操作失败', 1);
+        });
+    } else {
+      message.error('数据错误，操作失败', 1);
+    }
+  };
+
+  //获取操作按钮文本
+  const getBtnTxt = (txt, sxmc) => {
+    if (sxmc === '信委会会议结果') return '确认';
+    else if (txt.includes('录入')) return '录入';
+    else if (txt.includes('填写')) return '填写';
+    else return '处理';
+  };
+
+  //按钮点击
+  const handleToDo = item => {
+    // console.log('handleToDo', item);
+    switch (item?.sxmc) {
+      //跳转livebos页面
+      case '月报填写':
+        return jumpToLBPage('ZBYBTX');
+      case '流程待处理':
+      case '信委会议案被退回':
+      case '信委会流程待审批':
+      case '信委会议案流程待审批':
+        return jumpToLBPage('WORKFLOW_TOTASKS');
+      case '信委会议案待上会前审批':
+        return jumpToLBPage('V_XWHYALC_LDSP');
+      case '信委会议案待上会':
+      case '信委会议案待提交领导审批':
+        return jumpToLBPage('XWHYAGL');
+      case '收款账户供应商维护':
+        return jumpToLBPage('View_GYSXX');
+      case '周报填写':
+        return jumpToLBPage('ZBYBTX');
+      case '资本性预算年中录入':
+        return jumpToLBPage('V_ZBXYSNZLR');
+      case '资本性预算年中录入被退回':
+        return jumpToLBPage('V_ZBXYSNZLR');
+      case '资本性预算年初录入':
+        return jumpToLBPage('V_ZBXYSNCLR');
+      case '资本性预算年初录入被退回':
+        return jumpToLBPage('V_ZBXYSNCLR');
+      case '非资本性预算年中录入':
+        return jumpToLBPage('V_FZBXYSNZLR');
+      case '非资本性预算年中录入被退回':
+        return jumpToLBPage('V_FZBXYSNZLR');
+      case '非资本性预算年初录入':
+        return jumpToLBPage('V_FZBXYSNCLR');
+      case '非资本性预算年初录入被退回':
+        return jumpToLBPage('V_FZBXYSNCLR');
+      case '信委会流程待处理':
+        return jumpToLBPage('WORKFLOW_TOTASKS');
+
+      //特殊处理
+      case '付款流程':
+      case '合同分期付款':
+      case '人力外包费用支付':
+        return handlePaymentProcess(item);
+      case '人员新增提醒':
+        return handleRyxztx(item);
+      case '信委会会议结果':
+        return handleXwhhyjg(item);
+      case '项目信息完善':
+        return jumpToEditProjectInfo(item);
+      case '预算使用超限':
+        return jumpToProjectDetail(item);
+      case '外包人员面试评分':
+        return handleWbrymspf(item);
+      case '提交录用申请':
+      case '简历分发':
+        return jumpToDemandDetail(item);
+
+      //暂不处理
+      case '外包人员录用信息提交':
+        return jumpToLBPage('');
+      case '外包项目需求填写':
+        return jumpToLBPage('');
+      case '里程碑逾期':
+        return jumpToLBPage('');
+
+      default:
+        console.error(`🚀 ~ 该待办事项名称【${item.sxmc}】尚未配置`);
+        return;
+    }
+  };
+
+  const closeFileAddModal = () => {
+    setFileAddVisible(false);
+  };
+
+
+  //待办块
+  const getToDoItem = (data) => {
+    return (
+      <div>
+        {data?.map(item => (
+          <div className="todo-card-box">
+            <div className="todo-card-title">
+              <div className="todo-card-xmmc">
+                {item.xmmc}
+              </div>
+              <div className="todo-deal-box">
+                <div className="todo-to-deal" onClick={() => {
+                  if (Number(item.xxlx) !== 2) {
+                    setHovered(false);
+                    handleToDo(item);
+                  }
+                }}>
+                  去{getBtnTxt(item.txnr, item.sxmc)} <i className="iconfont icon-right todo-to-deal-icon"/>
+                </div>
+              </div>
+
+            </div>
+            <div className="todo-card-content">
+              {Number(item.wdsl) < 0 && <div className="todo-card-status">逾期{Number(item.wdsl) * -1}天</div>}
+              <div className="todo-card-txnr">{item.txnr}</div>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  };
+
+  const handleVisibleChange = visible => {
+    setHovered(visible)
+  };
 
   //概览块
   const getOverviewItem = ({
@@ -83,10 +350,9 @@ export default function OverviewCard(props) {
               {more && <Popover
                 title={null}
                 placement="rightTop"
+                trigger="click"
                 visible={hovered}
-                onVisibleChange={() => {
-                  setHovered(true)
-                }}
+                onVisibleChange={handleVisibleChange}
                 getPopupContainer={triggerNode => triggerNode.parentNode}
                 autoAdjustOverflow={true}
                 content={getToDoItem(toDoData)}
@@ -133,9 +399,103 @@ export default function OverviewCard(props) {
 
   return (
     <div className="overview-card-box">
+      {/* 外包人员面试评分 */}
+      {modalVisible.wbrymspf && (
+        <InterviewScoreModal
+          visible={modalVisible.wbrymspf}
+          setVisible={v => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                wbrymspf: v,
+              };
+            });
+          }}
+          xqid={Number(currentXqid)}
+          reflush={reflush}
+          WBRYGW={WBRYGW}
+          swzxid={Number(currentSwzxid)}
+        />
+      )}
+      {/* 付款流程发起弹窗 */}
+      {paymentModalVisible && (
+        <PaymentProcess
+          paymentModalVisible={paymentModalVisible}
+          fetchQueryLifecycleStuff={() => {
+          }}
+          currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
+          projectCode={projectCode}
+          closePaymentProcessModal={() => setPaymentModalVisible(false)}
+          onSuccess={() => {
+            handleOperateSuccess();
+          }}
+          isHwPrj={isHwPrj} // 是否硬件入围
+          ddcgje={ddcgje} // 单独采购金额，为0时无值
+          rlwbData={rlwbData}
+        />
+      )}
+      {/*人员新增提醒弹窗*/}
+      {ryxztxModalVisible && (
+        <BridgeModel
+          modalProps={ryxztxModalProps}
+          onSucess={() => {
+            handleOperateSuccess('人员新增操作');
+            setRyxztxModalVisible(false);
+          }}
+          onCancel={() => setRyxztxModalVisible(false)}
+          src={ryxztxUrl}
+        />
+      )}
+      {fileAddVisible && (
+        <Modal
+          wrapClassName="editMessage-modify xbjgEditStyle"
+          width={'1000px'}
+          // height={'700px'}
+          maskClosable={false}
+          zIndex={100}
+          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
+          style={{top: '10px'}}
+          visible={fileAddVisible}
+          okText="保存"
+          bodyStyle={{
+            padding: 0,
+          }}
+          onCancel={closeFileAddModal}
+          title={
+            <div
+              style={{
+                width: '100%',
+                display: 'flex',
+                alignItems: 'center',
+                backgroundColor: '#3361FF',
+                color: 'white',
+                borderRadius: '8px 8px 0 0',
+                fontSize: '16px',
+              }}
+            >
+              <strong>完善子项目</strong>
+            </div>
+          }
+          footer={null}
+        >
+          <EditProjectInfoModel
+            closeModel={closeFileAddModal}
+            successCallBack={() => {
+              closeFileAddModal();
+              reflush();
+            }}
+            xmid={src_fileAdd.xmid}
+            type={src_fileAdd.type}
+            subItemFlag={src_fileAdd.subItemFlag}
+            subItemFinish={src_fileAdd.subItemFinish}
+            projectStatus={src_fileAdd.projectStatus}
+          />
+        </Modal>
+      )}
       <div className="avatar-card-box">
         <div className="avatar">
-          <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
+          <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt=""/>
         </div>
         <div className="title">
           <span>{getGreeting()}</span>
@@ -155,7 +515,7 @@ export default function OverviewCard(props) {
             amount: getAmountFormat(toDoDataNum),
             addNum: overviewInfo?.dbjrxz,
             unit: '项',
-            more: false,
+            more: true,
           })}
           {getOverviewItem({
             title: '现有风险',

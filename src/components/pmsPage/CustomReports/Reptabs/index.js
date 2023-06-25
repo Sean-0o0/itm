@@ -5,7 +5,9 @@ const {TabPane} = Tabs;
 
 export default function Reptabs(props) {
   const [isSpinning, setIsSpinning] = useState(false);
-  const {tabsCallback} = props;
+  const {
+    tabsCallback,
+  } = props;
 
   useEffect(() => {
     return () => {

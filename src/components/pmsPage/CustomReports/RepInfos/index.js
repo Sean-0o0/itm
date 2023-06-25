@@ -1,18 +1,22 @@
 import React, {useEffect, useState, useRef} from 'react';
 import {Button, Icon, message, Rate, Select, Tabs} from 'antd';
 import styles from "../../../Common/TagSelect/index.less";
+import {FetchQueryCustomReportList, ProjectCollect} from "../../../../services/pmsServices";
+import {useLocation} from "react-router";
+import {EncryptBase64} from "../../../Common/Encrypt";
 
 const {TabPane} = Tabs;
 
 export default function RepInfos(props) {
-  const [showExtendsWD, setShowExtendsWD] = useState(false);
+  const [showExtendsSC, setShowExtendsSC] = useState(false);
   const [showExtendsCJ, setShowExtendsCJ] = useState(false);
   const [showExtendsGX, setShowExtendsGX] = useState(false);
   const [bbmc, setBbmc] = useState(false);
   const [cjr, setCjr] = useState(false);
+  const location = useLocation();
   const {
-    cusRepDataWD = [],
-    totalWD = 0,
+    cusRepDataSC = [],
+    totalSC = 0,
     cusRepDataCJ = [],
     totalCJ = 0,
     cusRepDataGX = [],
@@ -21,6 +25,10 @@ export default function RepInfos(props) {
     params = {},
     paramsCallback,
     getCusRepData,
+    cusRepDataCJR,
+    cusRepDataKJBB,
+    totalCJR,
+    totalKJBB,
   } = props;
 
   useEffect(() => {
@@ -45,13 +53,13 @@ export default function RepInfos(props) {
     paramsCallback({bbmc: '', cjr: ''})
   };
 
-  const handleExtendsWD = (flag) => {
+  const handleExtendsSC = (flag) => {
     if (!flag) {
-      getCusRepData("WD", 99999);
+      getCusRepData("SC", 99999);
     } else {
-      getCusRepData("WD", 12);
+      getCusRepData("SC", 12);
     }
-    setShowExtendsWD(!flag)
+    setShowExtendsSC(!flag)
   }
 
   const handleExtendsCJ = (flag) => {
@@ -72,20 +80,63 @@ export default function RepInfos(props) {
     setShowExtendsGX(!flag)
   }
 
+  const handleProjectCollect = (flag, id) => {
+    let payload = {}
+    if (flag) {
+      payload.operateType = 'SCBB'
+    } else {
+      payload.operateType = 'QXBB'
+    }
+    payload.projectId = id;
+    ProjectCollect({...payload})
+      .then(res => {
+        if (res?.success) {
+          if (showExtendsGX) {
+            getCusRepData("GX", 99999);
+          } else {
+            getCusRepData("GX", 28);
+          }
+          if (showExtendsCJ) {
+            getCusRepData("CJ", 99999);
+          } else {
+            getCusRepData("CJ", 12);
+          }
+          if (showExtendsSC) {
+            getCusRepData("SC", 99999);
+          } else {
+            getCusRepData("SC", 12);
+          }
+        }
+      })
+      .catch(e => {
+        message.error(flag ? '收藏报表失败!' : '取消收藏报表失败!', 1);
+      });
+  }
+
+  const toDetail = (bbid) => {
+    window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
+      JSON.stringify({
+        routes: [{name: '自定义报表', pathname: location.pathname}],
+        bbid,
+      }),
+    )}`
+  }
+
   return (
     <>
       {
-        cusRepDataWD.length > 0 && tabsKey === 1 && <div id="rep-infos" className="rep-infos">
+        cusRepDataSC.length > 0 && tabsKey === 1 && <div className="rep-infos">
           <div className="rep-infos-title">
             我收藏的
           </div>
           <div className="rep-infos-box">
             {
-              cusRepDataWD.map(i => {
-                return <div className="rep-infos-content">
+              cusRepDataSC.map(i => {
+                return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>{i.BBMC}<i
+                      onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
                       className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                     </div>
                     <div className="rep-infos-time">
@@ -96,9 +147,9 @@ export default function RepInfos(props) {
               })
             }
             {
-              totalWD > 12 && (
-                <div className='rep-infos-foot' onClick={() => handleExtendsWD(showExtendsWD)}>
-                  {showExtendsWD ? '收起' : '展开'} <Icon type={showExtendsWD ? 'up' : 'down'}/>
+              totalSC > 12 && (
+                <div className='rep-infos-foot' onClick={() => handleExtendsSC(showExtendsSC)}>
+                  {showExtendsSC ? '收起' : '展开'} <Icon type={showExtendsSC ? 'up' : 'down'}/>
                 </div>
               )
             }
@@ -113,10 +164,11 @@ export default function RepInfos(props) {
           <div className="rep-infos-box">
             {
               cusRepDataCJ.map(i => {
-                return <div className="rep-infos-content">
+                return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>{i.BBMC}<i
+                      onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
                       className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                     </div>
                     <div className="rep-infos-time">
@@ -154,7 +206,7 @@ export default function RepInfos(props) {
                   value={bbmc}
                   placeholder="请选择"
                 >
-                  {cusRepDataGX.map((x, i) => (
+                  {cusRepDataKJBB.map((x, i) => (
                     <Option key={x.BBID} value={x.BBID}>
                       {x.BBMC}
                     </Option>
@@ -175,7 +227,7 @@ export default function RepInfos(props) {
                   value={cjr}
                   placeholder="请选择"
                 >
-                  {cusRepDataGX.map((x, i) => (
+                  {cusRepDataCJR.map((x, i) => (
                     <Option key={x.CJRID} value={x.CJRID}>
                       {x.CJR}
                     </Option>
@@ -203,10 +255,11 @@ export default function RepInfos(props) {
               <div className="rep-infos-box">
                 {
                   cusRepDataGX.map(i => {
-                    return <div className="rep-infos-content">
+                    return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
                       <div className="rep-infos-content-box">
                         <div className="rep-infos-name">
                           <i className="rep-infos-icon iconfont icon-report"/>{i.BBMC}<i
+                          onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
                           className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                         </div>
                         <div className="rep-infos-time">

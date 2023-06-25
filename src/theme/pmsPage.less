@@ -16491,6 +16491,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         color: #3361ff;
         line-height: 24px;
       }
+
+      .ant-tabs-ink-bar {
+        margin: 0 24px;
+        width: 64px !important;
+        height: 4px;
+        background: #3361FF;
+      }
     }
   }
 
@@ -16715,7 +16722,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           padding: 12px;
           width: 25%;
 
+          .rep-infos-content-box:hover {
+            box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+          }
+
           .rep-infos-content-box {
+            cursor: pointer;
             height: 82px;
             background: #FFFFFF;
             border-radius: 4px;
@@ -16727,6 +16739,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               font-weight: 500;
               color: #303133;
               line-height: 22px;
+              font-family: PingFangSC-Medium, PingFang SC;
 
               .rep-infos-icon {
                 font-size: 15px;
@@ -16795,11 +16808,17 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       display: flex;
       flex-wrap: wrap;
 
+
       .rep-infos-content {
         padding: 12px;
         width: 25%;
 
+        .rep-infos-content-box:hover {
+          box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        }
+
         .rep-infos-content-box {
+          cursor: pointer;
           height: 82px;
           background: #ffffff;
           border-radius: 4px;
@@ -16811,6 +16830,118 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-weight: 500;
             color: #303133;
             line-height: 22px;
+            font-family: PingFangSC-Medium, PingFang SC;
+
+            .rep-infos-icon {
+              font-size: 15px;
+              color: #3361ff;
+              padding-right: 10px;
+            }
+
+            .rep-infos-icon2 {
+              color: #F9A812;
+              font-size: 16px;
+              padding-left: 6px;
+            }
+
+            .anticon svg {
+              margin-left: 6px;
+              width: 13px;
+              height: 13px;
+              color: #F9A812;
+            }
+          }
+
+          .rep-infos-time {
+            margin-top: 8px;
+            font-size: 12px;
+            font-weight: 400;
+            color: #909399;
+            line-height: 20px;
+          }
+        }
+      }
+
+      .rep-infos-foot {
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #606266;
+        line-height: 20px;
+      }
+    }
+  }
+}
+
+//首页的分析报表
+.custom-reports-box-homePage {
+  .rep-infos {
+    margin: 0 0 16px 0;
+    //max-height: 378px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border-radius: 8px;
+
+    .rep-infos-title {
+      padding: 16px 24px;
+      display: flex;
+      height: 24px;
+      line-height: 24px;
+      font-family: PingFangSC-Medium, PingFang SC;
+
+      .rep-infos-left {
+        width: 50%;
+        font-size: 16px;
+        font-weight: 500;
+        color: #303133;
+      }
+
+      .rep-infos-right {
+        width: 50%;
+        cursor: pointer;
+        text-align: end;
+        font-size: 14px;
+        font-weight: 400;
+        color: #606266;
+
+        .iconfont {
+          font-size: 14px;
+        }
+      }
+    }
+
+
+    .rep-infos-box {
+      padding: 16px 12px;
+      display: flex;
+      flex-wrap: wrap;
+
+
+      .rep-infos-content {
+        padding: 12px;
+        width: 33.33%;
+
+        .rep-infos-content-box:hover {
+          box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .rep-infos-content-box {
+          cursor: pointer;
+          height: 82px;
+          background: #FFFFFF;
+          border-radius: 4px;
+          border: 1px solid #EBEEF5;
+          padding: 16px 24px;
+
+          .rep-infos-name {
+            font-size: 14px;
+            font-weight: 500;
+            color: #303133;
+            line-height: 22px;
+            font-family: PingFangSC-Medium, PingFang SC;
 
             .rep-infos-icon {
               font-size: 15px;
@@ -16859,10 +16990,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 //待办popover
 .todo-card-content-popover .ant-popover-inner-content {
   padding: 0;
-  max-height: 400px;
+  max-height: 480px;
   overflow-y: auto;
   width: 405px;
-  height: 400px;
+  height: 480px;
   background: #FFFFFF;
   border-radius: 8px;
   box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
@@ -16892,6 +17023,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         text-align: end;
 
         .todo-to-deal {
+          cursor: pointer;
           display: contents;
           width: 42px;
           height: 22px;
@@ -16934,6 +17066,434 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-weight: 400;
         color: #606266;
         line-height: 22px;
+      }
+    }
+  }
+}
+
+//首页项目跟踪
+.prj-tracking-box-homePage {
+  .prj-tracking-infos {
+    margin: 0 0 16px 0;
+    //max-height: 378px;
+    background: #FFFFFF;
+    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border-radius: 8px;
+
+    .prj-tracking-infos-title {
+      padding: 16px 24px;
+      display: flex;
+      height: 24px;
+      line-height: 24px;
+      font-family: PingFangSC-Medium, PingFang SC;
+
+      .prj-tracking-infos-left {
+        width: 50%;
+        font-size: 16px;
+        font-weight: 500;
+        color: #303133;
+        display: flex;
+
+        .prj-tracking-infos-left-select > span {
+          display: flex;
+        }
+
+        .prj-tracking-infos-left-select {
+          cursor: pointer;
+          padding-left: 16px;
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+          line-height: 24px;
+
+          .prj-tracking-filter-popover .ant-popover-inner-content {
+            display: flex;
+            background: #FFFFFF;
+            box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+            border-radius: 8px;
+            padding: 0;
+
+            .filter-box:hover {
+              background: #FAFAFB;
+              color: #3361FF;
+            }
+
+            .filter-box {
+              padding: 8px 16px;
+              //height: 32px;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #303133;
+              //line-height: 32px;
+            }
+          }
+
+          .icon-filter {
+            padding-right: 4px;
+            font-size: 16px;
+            color: #909399;
+          }
+
+          .left-select-res {
+          }
+        }
+      }
+
+      .prj-tracking-infos-right {
+        width: 50%;
+        cursor: pointer;
+        text-align: end;
+        font-size: 14px;
+        font-weight: 400;
+        color: #606266;
+
+        .iconfont {
+          font-size: 14px;
+        }
+      }
+    }
+
+
+    .prj-tracking-infos-box {
+      padding: 16px 12px;
+      display: flex;
+      flex-wrap: wrap;
+
+
+      .prj-tracking-infos-content {
+        padding: 12px;
+        width: 33.33%;
+
+        .prj-tracking-infos-content-box:hover {
+          box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+        }
+
+        .prj-tracking-infos-content-box {
+          cursor: pointer;
+          height: 138px;
+          background: #FFFFFF;
+          border-radius: 4px;
+          border: 1px solid #EBEEF5;
+          //padding: 16px 24px;
+
+          //高风险
+          .level-1 {
+            background: linear-gradient(270deg, rgba(255, 47, 49, 0) 0%, rgba(255, 47, 49, 0.1) 100%);
+            border-radius: 1px;
+          }
+
+          //中风险/低风险
+          .level-2 {
+            background: linear-gradient(270deg, rgba(144, 147, 153, 0) 0%, rgba(144, 147, 153, 0.1) 100%);
+            border-radius: 1px;
+          }
+
+          .prj-tracking-infos-name {
+            display: flex;
+            padding: 9px 16px;
+            height: 40px;
+
+            .prj-tracking-infos-left-flex {
+              flex: 1; //在可用的空间内100%填充
+              width: 0;
+
+              .prj-tracking-infos-left {
+                overflow: hidden;
+                text-overflow: ellipsis;
+                //规定段落中的文本不进行换行
+                white-space: nowrap;
+                //width: 60%;
+                font-size: 14px;
+                font-weight: 500;
+                color: #303133;
+                line-height: 22px;
+                font-family: PingFangSC-Medium, PingFang SC;
+              }
+            }
+
+            .prj-tracking-infos-week {
+              text-align: end;
+              width: 85px;
+              height: 22px;
+              font-size: 12px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #909399;
+              line-height: 22px;
+
+              .prj-tracking-infos-icon {
+                font-size: 15px;
+                color: #3361ff;
+                padding-right: 10px;
+              }
+
+              .prj-tracking-infos-icon2 {
+                color: #F9A812;
+                font-size: 16px;
+                padding-right: 19px;
+              }
+
+              .anticon svg {
+                margin-left: 6px;
+                width: 13px;
+                height: 13px;
+                color: #F9A812;
+              }
+            }
+          }
+
+          .prj-tracking-infos-detail {
+            padding: 16px;
+
+            .prj-tracking-infos-detail-row1 {
+              display: flex;
+              height: 18px;
+              font-size: 12px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #858585;
+              line-height: 18px;
+
+              .prj-tracking-infos-detail-row1-name {
+                width: calc(100% - 85px);
+
+                .icon-detail {
+                  margin-left: 6px;
+                  color: #909399;
+                  font-size: 14px;
+                }
+
+                .prj-tracking-detail-popover .ant-popover-inner-content {
+                  padding: 0;
+                  max-height: 346px;
+                  overflow-y: auto;
+                  width: 365px;
+                  height: 346px;
+                  background: #FFFFFF;
+                  border-radius: 8px;
+                  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+                  .todo-card-box:hover {
+                    background: #F5F7FA;
+                  }
+
+                  .todo-card-box {
+                    padding: 16px 24px;
+
+                    .todo-card-title {
+                      width: 100%;
+                      display: flex;
+                      align-items: center;
+
+                      .todo-card-xmmc {
+                        width: 70%;
+                        font-size: 14px;
+                        font-weight: 500;
+                        color: #303133;
+                        line-height: 22px;
+                      }
+
+                      .todo-deal-box {
+                        width: 30%;
+                        text-align: end;
+
+                        .todo-to-deal {
+                          cursor: pointer;
+                          display: contents;
+                          width: 42px;
+                          height: 22px;
+                          font-size: 14px;
+                          font-weight: 400;
+                          color: #3361FF;
+                          line-height: 22px;
+
+                          .todo-to-deal-icon {
+                            margin-left: 0 !important;
+                            font-size: 14px;
+                            color: #3D78F7 !important;
+                            line-height: 22px;
+                          }
+                        }
+                      }
+                    }
+
+                    .todo-card-content {
+                      padding-top: 8px;
+                      display: flex;
+                      align-items: center;
+
+                      .todo-card-status {
+                        flex: none;
+                        height: 22px;
+                        background: rgba(215, 14, 25, 0.06);
+                        border-radius: 4px;
+                        border: 1px solid rgba(215, 14, 25, 0.3);
+                        font-size: 12px;
+                        font-weight: 400;
+                        color: #FF2F31;
+                        line-height: 22px;
+                        padding: 0 8px;
+                        margin-right: 8px;
+                      }
+
+                      .todo-card-txnr {
+                        font-size: 14px;
+                        font-weight: 400;
+                        color: #606266;
+                        line-height: 22px;
+                      }
+                    }
+                  }
+                }
+              }
+
+              .prj-tracking-infos-detail-row1-percent {
+                text-align: end;
+                width: 85px;
+                height: 14px;
+                font-size: 14px;
+                font-family: THSMoneyfont-Medium, THSMoneyfont;
+                font-weight: 500;
+                color: #909399;
+                line-height: 17px;
+
+                .icon-rise {
+                  margin: 0 4px;
+                  font-size: 16px;
+                  display: inline-block;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  color: #DBDFE6;
+                  transform: rotate(90deg);
+                }
+              }
+            }
+
+            //高风险
+            .prj-tracking-infos-detail-row2-lev1 {
+              padding: 8px 0;
+
+              .ant-progress-show-info .ant-progress-outer {
+                padding-right: 0;
+              }
+
+              .ant-progress-inner {
+                height: 12px;
+                border-radius: 6px;
+
+                .ant-progress-bg {
+                  background-color: rgba(255, 47, 49, 0.3) !important;
+                  height: 12px !important;
+                  border-radius: 6px;
+                }
+
+                .ant-progress-success-bg {
+                  height: 12px !important;
+                  background-color: #FF2F31;
+                  border-radius: 6px;
+                }
+              }
+
+              .ant-progress-text {
+                display: none;
+              }
+            }
+
+            //中风险
+            .prj-tracking-infos-detail-row2-lev2 {
+              padding: 8px 0;
+
+              .ant-progress-show-info .ant-progress-outer {
+                padding-right: 0;
+              }
+
+              .ant-progress-inner {
+                height: 12px;
+                border-radius: 6px;
+
+                .ant-progress-bg {
+                  background-color: rgba(51, 97, 255, 0.3) !important;
+                  height: 12px !important;
+                  border-radius: 6px;
+                }
+
+                .ant-progress-success-bg {
+                  height: 12px !important;
+                  background-color: #3361FF;
+                  border-radius: 6px;
+                }
+              }
+
+              .ant-progress-text {
+                display: none;
+              }
+            }
+
+            //低风险
+            .prj-tracking-infos-detail-row2-lev3 {
+              padding: 8px 0;
+
+              .ant-progress-show-info .ant-progress-outer {
+                padding-right: 0;
+              }
+
+              .ant-progress-inner {
+                height: 12px;
+                border-radius: 6px;
+
+                .ant-progress-bg {
+                  background-color: rgba(114, 147, 153, 0.3) !important;
+                  height: 12px !important;
+                  border-radius: 6px;
+                }
+
+                .ant-progress-success-bg {
+                  height: 12px !important;
+                  background: #909399;
+                  border-radius: 6px;
+                }
+              }
+
+              .ant-progress-text {
+                display: none;
+              }
+            }
+
+            .prj-tracking-infos-detail-row3 {
+              display: flex;
+
+              .prj-tracking-infos-detail-row3-risk {
+                height: 18px;
+                font-size: 12px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: #909399;
+                line-height: 18px;
+              }
+
+              .icon-rise {
+                margin: 0 8px;
+                font-size: 16px;
+                display: inline-block;
+                font-family: THSMoneyfont-Medium, THSMoneyfont;
+                color: #DBDFE6;
+                transform: rotate(90deg);
+              }
+            }
+          }
+        }
+      }
+
+      .prj-tracking-infos-foot {
+        width: 100%;
+        cursor: pointer;
+        text-align: center;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #606266;
+        line-height: 20px;
       }
     }
   }
