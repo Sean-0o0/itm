@@ -543,33 +543,30 @@ class RealtivePicturePage extends Component {
                 name: item[ele],
                 symbolSize: 20,
                 category: 0,
-                draggable: true,
-                itemStyle: name === item[ele] ? itemStyle : {},
-              });
+                itemStyle: name === item[ele] ? itemStyle : {}
+              })
             } else if (ele === 'YSMC') {
               nodes.push({
                 name: item[ele],
                 category: 1,
                 symbolSize: 20,
-                draggable: true,
-                itemStyle: name === item[ele] ? itemStyle : {},
-              });
+                itemStyle: name === item[ele] ? itemStyle : {}
+              })
             } else if (ele === 'GYS') {
               nodes.push({
                 name: item[ele],
                 symbolSize: 20,
                 category: 3,
-                draggable: true,
-                itemStyle: name === item[ele] ? itemStyle : {},
-              });
+                itemStyle: name === item[ele] ? itemStyle : {}
+              })
             }
           }
           let link = {};
           if (ele !== 'XMMC') {
             link.source = item.XMMC;
             link.target = item[ele];
-            links.push(link);
-            const index = nodeNm.indexOf(item.XMMC);
+            links.push(link)
+            const index = nodeNm.indexOf(item[ele]);
             if (nodes[index].symbolSize < 60) {
               nodes[index].symbolSize += 5;
             }
@@ -597,9 +594,8 @@ class RealtivePicturePage extends Component {
                 name: li,
                 category: 2,
                 symbolSize: 20,
-                draggable: true,
-                itemStyle: name === li ? itemStyle : {},
-              });
+                itemStyle: name === li ? itemStyle : {}
+              })
             }
             let link = {};
             link.source = item.XMMC;
@@ -673,8 +669,8 @@ class RealtivePicturePage extends Component {
         if (item.GYS === name) {
           data.push({
             XMMC: item.XMMC,
-            YSMC: name,
-          });
+            GYS: name
+          })
         }
       });
       this.getGraph(data);
@@ -755,126 +751,127 @@ class RealtivePicturePage extends Component {
       },
     };
 
-    return (
-      <div className="realtive-page" style={{ height: '100%' }}>
-        {nodes && (
-          <ReactEchartsCore
-            ref={e => {
-              this.chart = e;
-            }}
-            echarts={echarts}
-            style={{ height: '100%', width: '100%' }}
-            option={{
-              legend: [
-                {
-                  data: ['项目', '预算项目', '人员', '供应商'],
-                  bottom: 20,
-                  left: 20,
-                  icon: 'circle',
+    return (<div className='realtive-page' style={{ height: '100%' }}>
+      {nodes && <ReactEchartsCore
+        ref={(e) => { this.chart = e; }}
+        echarts={echarts}
+        style={{ height: '100%', width: '100%' }}
+        option={{
+          legend: [{
+            data: ['项目', '预算项目', '人员', '供应商'],
+            bottom: 20,
+            left: 20,
+            icon: 'circle',
+          }],
+          tooltip: {
+            show: true,
+            enterable: true,
+            hideDelay: 100,
+            backgroundColor: '#f7f8fa',
+            padding: 0,
+            renderMode: 'html',
+            formatter: (params) => {
+              const { data = {}, dataType } = params
+              if (dataType === 'node') {
+                return "<div class='tooltip-content'>"
+                  + "<div class='top-header'>"
+                  + "<div class='header-title'>投研平台建设</div>"
+                  + "<a class='header-link' href='https://www.baidu.com/' target='_blank'>详情 ＞</a>"
+                  + "</div>"
+                  + "<div class='label-box'>"
+                  + "<div class='label-item'>自研项目</div>"
+                  + "<div class='label-item'>专班项目</div>"
+                  + "<div class='label-item'>迭代项目</div>"
+                  + "</div>"
+                  + "<div class='detail-box'>"
+                  + "<div class='detail-item'>"
+                  + "<div class='item-label'>项目经理：</div>"
+                  + "<div class='item-value'>郑潜</div>"
+                  + "</div>"
+                  + "<div class='detail-item'>"
+                  + "<div class='item-label'>创建时间：</div>"
+                  + "<div class='item-value'>2023/03/03</div>"
+                  + "</div>"
+                  + "<div class='detail-item'>"
+                  + "<div class='item-label'>属性2：</div>"
+                  + "<div class='item-value'>外采部门</div>"
+                  + "</div>"
+                  + "<div class='detail-item'>"
+                  + "<div class='item-label'>应用部门：</div>"
+                  + "<div class='item-value'>项目管理部门</div>"
+                  + "</div>"
+                  + "</div>"
+                  + "<div class='lcb-box'>"
+                  + "<div class='lcb-header'>"
+                  + "<div class='dot'></div>"
+                  + "⌜项目立项⌟ 阶段"
+                  + "<div class='value'>16.7%</div>"
+                  + "</div>"
+                  + "<div class='lcb-process'>"
+                  + "<div class='lcb-process-percent' style='width: 16.7%'></div>"
+                  + "</div>"
+                  + "</div>"
+                  + "</div>"
+              } else if (dataType === 'edge')
+                return "<div style='width: 0;height:0; opacity: 0'></div>"
+            }
+          },
+          color: ['rgb(85, 121, 214)', 'rgb(254, 167, 87)', 'rgb(214, 216, 225)', 'rgb(213, 58, 53)'],
+          series: [
+            {
+              type: 'graph',
+              layout: 'force',
+              nodes: nodes,
+              links: links,
+              categories: categories,
+              zoom: zoom,
+              roam: 'move',
+              emphasis: {
+                itemStyle: {
+                  color: '#f7f8fa',
+                  borderWidth: 4,
+                  borderColor: 'rgb(51, 97, 255)'
                 },
-              ],
-              tooltip: {
-                show: true,
-                enterable: true,
-                backgroundColor: '#fff',
-                renderMode: 'html',
-                formatter: params => {
-                  const { data = {} } = params;
-                  return (
-                    "<div class='tooltip-content'>" +
-                    "<div class='top-header'>" +
-                    "<div class='header-title'>投研平台建设</div>" +
-                    "<a class='header-link' href='https://www.baidu.com/' target='_blank'>详情 ＞</a>" +
-                    '</div>' +
-                    "<div class='label-box'>" +
-                    "<div class='label-item'>自研项目</div>" +
-                    "<div class='label-item'>专班项目</div>" +
-                    "<div class='label-item'>迭代项目</div>" +
-                    '</div>' +
-                    "<div class='detail-box'>" +
-                    "<div class='detail-item'>" +
-                    "<div class='item-label'>项目经理：</div>" +
-                    "<div class='item-value'>郑潜</div>" +
-                    '</div>' +
-                    "<div class='detail-item'>" +
-                    "<div class='item-label'>创建时间：</div>" +
-                    "<div class='item-value'>2023/03/03</div>" +
-                    '</div>' +
-                    "<div class='detail-item'>" +
-                    "<div class='item-label'>属性2：</div>" +
-                    "<div class='item-value'>外采部门</div>" +
-                    '</div>' +
-                    "<div class='detail-item'>" +
-                    "<div class='item-label'>应用部门：</div>" +
-                    "<div class='item-value'>项目管理部门</div>" +
-                    '</div>' +
-                    '</div>' +
-                    "<div class='lcb-box'>" +
-                    "<div class='lcb-header'>" +
-                    "<div class='dot'></div>" +
-                    '⌜项目立项⌟ 阶段' +
-                    "<div class='value'>16.7%</div>" +
-                    '</div>' +
-                    "<div class='lcb-process'>" +
-                    "<div class='lcb-process-percent' style='width: 16.7%'></div>" +
-                    '</div>' +
-                    '</div>' +
-                    '</div>'
-                  );
-                },
+                lineStyle: {
+                  width: 3,
+                  color: '#000'
+                }
               },
-              color: [
-                'rgb(85, 121, 214)',
-                'rgb(254, 167, 87)',
-                'rgb(214, 216, 225)',
-                'rgb(213, 58, 53)',
-              ],
-              series: [
-                {
-                  type: 'graph',
-                  layout: 'force',
-                  nodes: nodes,
-                  links: links,
-                  categories: categories,
-                  zoom: zoom,
-                  draggable: true,
-                  roam: true,
-                  label: {
-                    position: 'bottom',
-                    distance: 5,
-                    align: 'center',
-                    color: '#333',
-                    formatter: params => {
-                      const { name } = params;
-                      if (name.length > 16) {
-                        return name.slice(0, 8) + '\n' + name.slice(8, 16) + '...';
-                      } else if (name.length > 8) {
-                        const length = Math.floor(name.length / 2);
-                        return name.slice(0, length) + '\n' + name.slice(length);
-                      } else {
-                        return name;
-                      }
-                    },
-                  },
-                  force: {
-                    //力引导图基本配置
-                    repulsion: 200, //节点之间的斥力因子。支持数组表达斥力范围，值越大斥力越大。
-                    gravity: 0.02, //节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
-                    edgeLength: 100, //边的两个节点之间的距离，这个距离也会受 repulsion。[10, 50] 。值越小则长度越长
-                    // layoutAnimation: false
-                    //因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
-                  },
-                },
-              ],
-            }}
-            notMerge
-            lazyUpdate={false}
-            onEvents={onEvents}
-          />
-        )}
-        <FilterBox dataSource={dataSource} onSelect={this.onSelect} />
-        <ZoomBox getRoam={this.getRoam} roamMap={this.roamMap} />
-      </div>
+              label: {
+                position: "bottom",
+                distance: 5,
+                align: "center",
+                color: '#333',
+                formatter: (params) => {
+                  const { name } = params;
+                  if (name.length > 16) {
+                    return name.slice(0, 8) + '\n' + name.slice(8, 16) + '...'
+                  } else if (name.length > 8) {
+                    const length = Math.floor(name.length / 2)
+                    return name.slice(0, length) + '\n' + name.slice(length)
+                  } else {
+                    return name
+                  }
+                }
+              },
+              force: { //力引导图基本配置
+                repulsion: 200, //节点之间的斥力因子。支持数组表达斥力范围，值越大斥力越大。
+                gravity: 0.02, //节点受到的向中心的引力因子。该值越大节点越往中心点靠拢。
+                edgeLength: 100, //边的两个节点之间的距离，这个距离也会受 repulsion。[10, 50] 。值越小则长度越长
+                // layoutAnimation: false
+                //因为力引导布局会在多次迭代后才会稳定，这个参数决定是否显示布局的迭代动画，在浏览器端节点数据较多（>100）的时候不建议关闭，布局过程会造成浏览器假死。
+              },
+            }
+          ]
+        }}
+        notMerge
+        lazyUpdate={false}
+        onEvents={onEvents}
+      />
+      }
+      <FilterBox dataSource={dataSource} onSelect={this.onSelect} />
+      <ZoomBox getRoam={this.getRoam} roamMap={this.roamMap} />
+    </div>
     );
   }
 }
