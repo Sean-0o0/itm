@@ -25,8 +25,8 @@ export default function AnalyzeRepsCard(props) {
 
 
   //获取报表数据
-  const getCusRepData = (cxlx, pageSize, flag = true) => {
-    setIsLoading(true);
+  const getCusRepData = (cxlx, pageSize, flag = true, col = '') => {
+    col === '' && setIsLoading(true);
     const payload = {
       current: 1,
       //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
@@ -43,13 +43,13 @@ export default function AnalyzeRepsCard(props) {
           if (cxlx === "WD") {
             setCusRepDataWD(p => [...JSON.parse(res.result)]);
             setWDTotal(res.totalrows);
-            setIsLoading(false);
+            col === '' && setIsLoading(false);
             setShowExtendsWD(!flag)
           }
         }
       })
       .catch(e => {
-        setIsLoading(false);
+        col === '' && setIsLoading(false);
         setShowExtendsWD(!flag)
         message.error('报表信息查询失败', 1);
       });
@@ -63,7 +63,8 @@ export default function AnalyzeRepsCard(props) {
     }
   }
 
-  const handleProjectCollect = (flag, id) => {
+  const handleProjectCollect = (e, flag, id) => {
+    e.stopPropagation();// 阻止事件冒泡
     let payload = {}
     if (flag) {
       payload.operateType = 'SCBB'
@@ -75,9 +76,9 @@ export default function AnalyzeRepsCard(props) {
       .then(res => {
         if (res?.success) {
           if (showExtendsWD) {
-            getCusRepData("WD", 99999);
+            getCusRepData("WD", 99999, true, "collection");
           } else {
-            getCusRepData("WD", 3);
+            getCusRepData("WD", 3, true, "collection");
           }
         }
       })
@@ -120,7 +121,7 @@ export default function AnalyzeRepsCard(props) {
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
                       {i.BBMC}
-                      <i onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
+                      <i onClick={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
                          className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                     </div>
                     <div className="rep-infos-time">
