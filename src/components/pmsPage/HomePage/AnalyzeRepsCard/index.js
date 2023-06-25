@@ -10,26 +10,57 @@ const {TabPane} = Tabs;
 
 export default function AnalyzeRepsCard(props) {
   const [showExtendsWD, setShowExtendsWD] = useState(false);
-  const {
-    totalWD,
-    cusRepDataWD,
-    getCusRepData,
-  } = props;
+  const [totalWD, setWDTotal] = useState(0);//分析报表数据总条数
+  const [cusRepDataWD, setCusRepDataWD] = useState([]);//分析报表数据
+  const [isLoading, setIsLoading] = useState(false); //加载状态
+  const {} = props;
   const location = useLocation();
 
   useEffect(() => {
+    //获取分析报表数据
+    getCusRepData("WD", 3);
     return () => {
     };
   }, []);
 
 
+  //获取报表数据
+  const getCusRepData = (cxlx, pageSize, flag = true) => {
+    setIsLoading(true);
+    const payload = {
+      current: 1,
+      //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
+      cxlx,
+      pageSize,
+      paging: 1,
+      sort: "",
+      total: -1
+    }
+    FetchQueryCustomReportList({...payload})
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
+          if (cxlx === "WD") {
+            setCusRepDataWD(p => [...JSON.parse(res.result)]);
+            setWDTotal(res.totalrows);
+            setIsLoading(false);
+            setShowExtendsWD(!flag)
+          }
+        }
+      })
+      .catch(e => {
+        setIsLoading(false);
+        setShowExtendsWD(!flag)
+        message.error('报表信息查询失败', 1);
+      });
+  };
+
   const handleExtendsWD = (flag) => {
     if (!flag) {
-      getCusRepData("WD", 99999);
+      getCusRepData("WD", 99999, flag);
     } else {
-      getCusRepData("WD", 3);
+      getCusRepData("WD", 3, flag);
     }
-    setShowExtendsWD(!flag)
   }
 
   const handleProjectCollect = (flag, id) => {
@@ -99,13 +130,18 @@ export default function AnalyzeRepsCard(props) {
                 </div>
               })
             }
-            {
-              totalWD > 3 && (
-                <div className='rep-infos-foot' onClick={() => handleExtendsWD(showExtendsWD)}>
-                  {showExtendsWD ? '收起' : '展开'} <Icon type={showExtendsWD ? 'up' : 'down'}/>
-                </div>
-              )
-            }
+            {totalWD > 3 &&
+            (showExtendsWD ? (
+              <div className="rep-infos-foot" onClick={() => handleExtendsWD(true)}>
+                收起
+                <i className="iconfont icon-up"/>
+              </div>
+            ) : (
+              <div className="rep-infos-foot" onClick={() => handleExtendsWD(false)}>
+                展开
+                {isLoading ? <Icon type="loading"/> : <i className="iconfont icon-down"/>}
+              </div>
+            ))}
           </div>
         </div>
       }

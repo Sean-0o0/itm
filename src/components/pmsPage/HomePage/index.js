@@ -44,8 +44,6 @@ export default function HomePage(props) {
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [processData, setProcessData] = useState([]); //流程情况
   const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
-  const [totalWD, setWDTotal] = useState(0);//分析报表数据总条数
-  const [cusRepDataWD, setCusRepDataWD] = useState([]);//分析报表数据
   const [total, setTotal] = useState({
     todo: 0,
     project: 0,
@@ -164,8 +162,6 @@ export default function HomePage(props) {
             const {role = ''} = res;
             setUserRole(role);
             getBudgetData(role);
-            //获取分析报表数据
-            getCusRepData("WD", 3);
             if (['二级部门领导', '普通人员'].includes(role)) {
               reflush ? getToDoData() : getProcessData(); //待办刷新时不用刷新流程数据
             } else {
@@ -402,32 +398,6 @@ export default function HomePage(props) {
       });
   };
 
-  //获取报表数据
-  const getCusRepData = (cxlx, pageSize) => {
-    const payload = {
-      current: 1,
-      //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
-      cxlx,
-      pageSize,
-      paging: 1,
-      sort: "",
-      total: -1
-    }
-    FetchQueryCustomReportList({...payload})
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
-          if (cxlx === "WD") {
-            setCusRepDataWD(p => [...JSON.parse(res.result)]);
-            setWDTotal(res.totalrows);
-          }
-        }
-      })
-      .catch(e => {
-        message.error('报表信息查询失败', 1);
-      });
-  };
-
 
   return (
     <Spin
@@ -457,11 +427,7 @@ export default function HomePage(props) {
               //   total={total.todo}
               //   dictionary={dictionary}
               // />
-              <AnalyzeRepsCard
-                totalWD={totalWD}
-                cusRepDataWD={cusRepDataWD}
-                getCusRepData={getCusRepData}
-              />
+              <AnalyzeRepsCard/>
             ) : (
               <CptBudgetCard
                 userRole={userRole}
