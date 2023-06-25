@@ -433,9 +433,12 @@ export default function CustomRptManagement(props) {
       });
       conditionFilterArr.forEach(x => {
         let SXSJ = x.SELECTORVALUE;
-        if (SXSJ !== undefined) {
+        if (SXSJ !== undefined && SXSJ !== null && JSON.stringify(SXSJ) !== '[]') {
           if (x.ZJLX === 'DATE') {
-            SXSJ = [Number(moment(x.SELECTORVALUE).format('YYYYMMDD')), 20500000];
+            SXSJ = [
+              Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
+              Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
+            ];
           } else if (x.ZJLX === 'RANGE') {
             SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
           }

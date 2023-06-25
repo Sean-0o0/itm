@@ -258,4 +258,14 @@ exports.routes = [
     path: `${prefix}/CustomReports`,
     component: './pmsPage/CustomReports',
   },
+  {
+    // 自定义报表 - 报表详情
+    path: `${prefix}/CustomRptInfo`,
+    component: './pmsPage/CustomRptInfo',
+  },
+  {
+    // 自定义报表 - 报表详情
+    path: `${prefix}/CustomRptInfo/:params`,
+    component: './pmsPage/CustomRptInfo',
+  },
 ];

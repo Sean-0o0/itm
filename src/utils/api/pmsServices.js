@@ -559,4 +559,10 @@ export default [
     url: '/projectManage/saveCustomReportSetting',
     dis: '保存自定义报表配置',
   },
+  {
+    code: '',
+    key: 'queryCustomReport',
+    url: '/projectManage/queryCustomReport',
+    dis: '自定义报表查询',
+  },
 ];

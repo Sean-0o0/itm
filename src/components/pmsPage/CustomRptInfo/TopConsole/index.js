@@ -1,27 +1,51 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, forwardRef, useImperativeHandle } from 'react';
 import {
-  Button,
-  message,
   Select,
+  Button,
   TreeSelect,
   InputNumber,
-  DatePicker,
   Cascader,
   Input,
+  message,
+  DatePicker,
 } from 'antd';
+import {} from '../../../../services/pmsServices';
+import TreeUtils from '../../../../utils/treeUtils';
+import { set } from 'store';
+const InputGroup = Input.Group;
+const { Option } = Select;
+const { MonthPicker } = DatePicker;
 import moment from 'moment';
 
-export default function ConditionFilter(props) {
-  const {
-    options = [],
-    data = [],
-    setData = () => {},
-    onChange = () => {},
-    onDelete = () => {},
-  } = props;
+export default function TopConsole(props) {
+  //下拉框数据
+  const { data = {}, setData = () => {}, getSQL = () => {} } = props;
+  //查询的值
+
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+
   useEffect(() => {
     return () => {};
   }, []);
+
+  const handleReset = () => {};
+
+  // onChange-start
+  //项目名称
+  const handlePrjNameChange = v => {
+    // console.log('handlePrjMngerChange', v);
+    setPrjName(v);
+  };
+  //供应商
+  const handleGysChange = v => {
+    setGys(v);
+  };
+  const handleJdChange = (v, node) => {
+    setDateRange([...(node?.props?.range ?? [])]);
+    setQuarter(v);
+  };
+  // onChange-end
+
   const getComponent = (x = []) => {
     const { ID = -1, NAME = '--', ZJLX = 'MULTIPLE', SELECTORDATA = [], SELECTORVALUE = [] } = x;
     // console.log('🚀 ~ file: index.js:28 ~ getComponent ~ SELECTORDATA:', SELECTORDATA);
@@ -36,13 +60,13 @@ export default function ConditionFilter(props) {
 
     //修改数据
     const modifyData = value => {
-      let arr = [...data];
+      let arr = [...data.filterData];
       arr.forEach(y => {
         if (y.ID === ID) {
           y.SELECTORVALUE = value;
         }
       });
-      setData(arr);
+      setData(p => ({ ...p, filterData: arr }));
     };
 
     const handleMultipleSltChange = (v, node) => {
@@ -160,22 +184,32 @@ export default function ConditionFilter(props) {
       <div className="condition-filter-item" key={ID}>
         <div className="item-label">{NAME}</div>
         {component}
-        <i className="iconfont icon-close-circle" onClick={() => onDelete(ID)} />
       </div>
     );
   };
+
   return (
-    <div className="filter-condition">
-      {data.map(x => getComponent(x))}
-      <Cascader
-        options={options}
-        onChange={onChange}
-        popupClassName="custom-rpt-management-cascader"
-      >
-        <Button type="dashed" icon={'plus-circle'}>
-          添加筛选条件
-        </Button>
-      </Cascader>
+    <div className="top-console">
+      <div className="filter-condition">
+        <div className="left">{data.filterData?.map(x => getComponent(x))}</div>
+        <div className="right">
+          <Button className="btn-search" type="primary" onClick={() => getSQL()}>
+            查询
+          </Button>
+          <Button className="btn-reset" onClick={handleReset}>
+            重置
+          </Button>
+        </div>
+      </div>
+      <div className="group-condition">
+        <span className="label">组合条件</span>
+        {data.groupData?.map(x => (
+          <div className="condition-group-item">
+            {x.length - 2 >= 0 && x[x.length - 2].NAME + ' - '}
+            {x[x.length - 1].NAME}
+          </div>
+        ))}
+      </div>
     </div>
   );
 }
