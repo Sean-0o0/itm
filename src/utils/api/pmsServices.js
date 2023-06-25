@@ -526,7 +526,7 @@ export default [
   {
     code: '',
     key: 'projectCollect',
-    url: '/projectManage/finishOutsourceWork',
+    url: '/projectManage/projectCollect',
     dis: '收藏项目',
   },
   {
