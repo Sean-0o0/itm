@@ -9,19 +9,19 @@ const CustomRptInfo = props => {
     },
     dictionary,
   } = props;
-  let xqid = -1;
-  let fqrid = -1;
+  // console.log("🚀 ~ file: index.js:12 ~ CustomRptInfo ~  props:",  props)
+  let bbid = -1;
   let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
-    xqid = obj.xqid;
-    fqrid = obj.fqrid;
+    bbid = obj.bbid;
     obj.routes &&
       (routes2 = obj.routes?.concat({
         name: '报表管理',
         pathname: props?.location?.pathname,
       }));
   }
+    
   //去重
   const newArr = [];
   let name = [];
@@ -36,7 +36,7 @@ const CustomRptInfo = props => {
 
   return (
     <Fragment>
-      <CustomRptInfoTab dictionary={dictionary} routes={newArr} xqid={xqid} fqrid={fqrid} />
+      <CustomRptInfoTab dictionary={dictionary} routes={newArr} bbid={bbid} />
     </Fragment>
   );
 };

@@ -83,7 +83,32 @@ export default function CustomRptManagement(props) {
                         conditionGroup: data2,
                         columnFields: data3,
                       });
-                      setIsSpinning(false);
+                      //筛选条件和展示字段默认项目名称
+                      let conditionFilterXmmc = data.filter(x => x.ID === 8)[0];
+                      let columnFieldsXmmc = JSON.parse(res.result).filter(x => x.ID === 8)[0];
+                      columnFieldsXmmc.title = columnFieldsXmmc.NAME;
+                      columnFieldsXmmc.key = columnFieldsXmmc.ID;
+                      if (conditionFilterXmmc.TJBCXLX) {
+                        QueryCustomQueryCriteria({
+                          queryType: conditionFilterXmmc.TJBCXLX,
+                        })
+                          .then(res => {
+                            if (res?.success) {
+                              conditionFilterXmmc.SELECTORDATA = JSON.parse(res.result);
+                              setSelectedData(p => ({
+                                ...p,
+                                conditionFilter: [conditionFilterXmmc],
+                                columnFields: [columnFieldsXmmc],
+                              }));
+                              setIsSpinning(false);
+                            }
+                          })
+                          .catch(e => {
+                            console.error('🚀', e);
+                            message.error(obj.TJBCXLX + '信息获取失败', 1);
+                            setIsSpinning(false);
+                          });
+                      }
                     }
                   })
                   .catch(e => {
@@ -166,13 +191,27 @@ export default function CustomRptManagement(props) {
           if (res?.success) {
             console.log(obj.TJBCXLX, JSON.parse(res.result));
             if (obj.TJBCXLX === 'YSXM') {
-              console.log('YSXM', JSON.parse(res.result));
+              function uniqueFunc(arr, uniId) {
+                const res = new Map();
+                return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+              }
+              let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+              let origin = JSON.parse(res.result);
+              obj.SELECTORDATA = {
+                type,
+                origin,
+              };
+              if (type.length > 0)
+                obj.SELECTORVALUE = {
+                  type: type[0]?.YSLXID,
+                  typeObj: type[0],
+                  value: [],
+                };
             } else if (obj.ZJLX === 'TREE-MULTIPLE') {
               obj.SELECTORDATA = buildTree(JSON.parse(res.result));
             } else {
               obj.SELECTORDATA = JSON.parse(res.result);
             }
-
             setIsSpinning(false);
           }
         })
@@ -233,7 +272,7 @@ export default function CustomRptManagement(props) {
         });
         node.disabled = false;
       } else {
-        if (node.GRADE < 2 || node.ID === 19) {
+        if (node.GRADE < 2) {
           node.disabled = true;
         }
       }
@@ -272,7 +311,7 @@ export default function CustomRptManagement(props) {
       // console.log('🚀 ~ file: index.js:245 ~ nodeArr ~ nodeArr:', nodeArr);
       setSelectingData(p => ({
         ...p,
-        columnFields: nodeArr.filter(x => x.GRADE !== 1 && x.ID !== 19),
+        columnFields: nodeArr.filter(x => x.GRADE !== 1),
       }));
     };
 
@@ -350,7 +389,7 @@ export default function CustomRptManagement(props) {
               {selectingData.columnFields.map(x => (
                 <div
                   className="slted-item"
-                  key={x?.key}
+                  key={x?.ID}
                   data-index={x?.ID}
                   draggable
                   onDragStart={handleDragStart}
@@ -408,7 +447,7 @@ export default function CustomRptManagement(props) {
         dataIndex: x.ZSZD,
         key: x.ZSZD,
         align: 'left',
-        width: x.title.length * 20,
+        width: x.title?.length * 20,
       };
     }),
   ];
@@ -421,71 +460,90 @@ export default function CustomRptManagement(props) {
   //操作按钮
   const handleSave = () => {
     if (rptName !== '') {
-      setIsSpinning(true);
-      const zszdArr = selectedData.columnFields.map(x => ({ ID: x.ID, ZSZD: x.ZSZD }));
-      let bmArr = ['TXMXX_XMXX XM'];
-      let sxtjArr = [];
-      let columnFieldsArr = [...selectedData.columnFields];
-      let conditionFilterArr = [...selectedData.conditionFilter];
-      let conditionGroupArr = [...selectedData.conditionGroup];
-      columnFieldsArr.forEach(x => {
-        bmArr.push(x.BM);
-      });
-      conditionFilterArr.forEach(x => {
-        let SXSJ = x.SELECTORVALUE;
-        if (SXSJ !== undefined && SXSJ !== null && JSON.stringify(SXSJ) !== '[]') {
-          if (x.ZJLX === 'DATE') {
-            SXSJ = [
-              Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
-              Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
-            ];
-          } else if (x.ZJLX === 'RANGE') {
-            SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
-          }
+      if (rptName === '未命名报表') {
+        message.error('请修改默认报表名称', 1);
+      } else {
+        setIsSpinning(true);
+        const zszdArr = selectedData.columnFields.map(x => ({ ID: x.ID, ZSZD: x.ZSZD }));
+        let bmArr = ['TXMXX_XMXX XM'];
+        let sxtjArr = [];
+        let columnFieldsArr = [...selectedData.columnFields];
+        let conditionFilterArr = JSON.parse(JSON.stringify(selectedData.conditionFilter));
+        let conditionGroupArr = [...selectedData.conditionGroup];
+        columnFieldsArr.forEach(x => {
           bmArr.push(x.BM);
-          sxtjArr.push({
-            SXLX: x.ZJLX,
-            SXTJ: x.SXTJ,
-            SXSJ,
-          });
-        }
-        delete x.SELECTORDATA;
-      });
-      conditionGroupArr.forEach(x => {
-        bmArr.push(x[x.length - 1].BM);
-        sxtjArr.push({
-          SXLX: 'ZHTJ',
-          SXTJ: x[x.length - 1].SXTJ,
-          SXSJ: [],
         });
-      });
-      bmArr = [...new Set(bmArr)]; //去重
-
-      let params = {
-        sxtj: sxtjArr,
-        cxb: bmArr,
-        cxzd: zszdArr,
-        qdzssxzd: conditionFilterArr,
-        qdzszhzd: conditionGroupArr,
-        qdzsbtzd: columnFieldsArr,
-        czlx: 'ADD',
-        bbid: -1,
-        bbmc: rptName,
-      };
-      console.log('🚀 ~ file: index.js:438 ~ handleSave ~ params:', params);
-      //保存自定义报表配置
-      SaveCustomReportSetting(params)
-        .then(res => {
-          if (res?.success) {
-            message.success('保存成功', 1);
-            setIsSpinning(false);
+        conditionFilterArr.forEach(x => {
+          let SXSJ = x.SELECTORVALUE;
+          let SXLX = x.ZJLX;
+          let SXTJ = x.SXTJ;
+          if (
+            SXSJ !== undefined &&
+            SXSJ !== null &&
+            JSON.stringify(SXSJ) !== '[]' &&
+            JSON.stringify(SXSJ?.value) !== '[]'
+          ) {
+            if (x.ZJLX === 'DATE') {
+              SXSJ = [
+                Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
+                Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
+              ];
+              bmArr.push(x.BM);
+            } else if (x.ZJLX === 'RANGE') {
+              SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
+              bmArr.push(x.BM);
+            } else if (x.TJBCXLX === 'YSXM') {
+              SXSJ = x.SELECTORVALUE.value;
+              SXTJ = x.SELECTORVALUE.typeObj?.CXTJ;
+              SXLX = 'MULTIPLE';
+              bmArr.push(x.SELECTORVALUE.typeObj?.CXB);
+            } else {
+              bmArr.push(x.BM);
+            }
+            sxtjArr.push({
+              SXLX,
+              SXTJ,
+              SXSJ,
+            });
           }
-        })
-        .catch(e => {
-          console.error('🚀保存', e);
-          message.error('保存失败', 1);
-          setIsSpinning(false);
+          delete x.SELECTORDATA;
         });
+        conditionGroupArr.forEach(x => {
+          bmArr.push(x[x.length - 1].BM);
+          sxtjArr.push({
+            SXLX: 'ZHTJ',
+            SXTJ: x[x.length - 1].SXTJ,
+            SXSJ: [],
+          });
+        });
+        bmArr = [...new Set(bmArr)]; //去重
+
+        let params = {
+          sxtj: sxtjArr,
+          cxb: bmArr,
+          cxzd: zszdArr,
+          qdzssxzd: conditionFilterArr,
+          qdzszhzd: conditionGroupArr,
+          qdzsbtzd: columnFieldsArr,
+          czlx: 'ADD',
+          bbid: -1,
+          bbmc: rptName,
+        };
+        console.log('🚀 ~ file: index.js:438 ~ handleSave ~ params:', params);
+        //保存自定义报表配置
+        SaveCustomReportSetting(params)
+          .then(res => {
+            if (res?.success) {
+              message.success('保存成功', 1);
+              setIsSpinning(false);
+            }
+          })
+          .catch(e => {
+            console.error('🚀保存', e);
+            message.error('保存失败', 1);
+            setIsSpinning(false);
+          });
+      }
     }
   };
 
@@ -527,7 +585,7 @@ export default function CustomRptManagement(props) {
             </Form.Item>
 
             <Button className="btn-delete">删除</Button>
-            <Button className="btn-cancel">取消</Button>
+            {/* <Button className="btn-cancel">取消</Button> */}
             <Button className="btn-save" onClick={handleSave}>
               保存
             </Button>

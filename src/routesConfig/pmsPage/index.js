@@ -215,12 +215,12 @@ exports.routes = [
   },
   {
     // 费用列表页面
-    path: `${prefix}/ExpenseInfo`,
+    path: `${prefix}/ExpenseInfo/:params`,
     component: './pmsPage/ExpenseInfo',
   },
   {
     // 费用列表页面
-    path: `${prefix}/ExpenseInfo/:params`,
+    path: `${prefix}/ExpenseInfo`,
     component: './pmsPage/ExpenseInfo',
   },
   {
@@ -259,13 +259,13 @@ exports.routes = [
     component: './pmsPage/CustomReports',
   },
   {
-    // 自定义报表 - 报表详情
-    path: `${prefix}/CustomRptInfo`,
+    // 自定义报表 - 报表详情  - 带参数的要放前边
+    path: `${prefix}/CustomRptInfo/:params`,
     component: './pmsPage/CustomRptInfo',
   },
   {
     // 自定义报表 - 报表详情
-    path: `${prefix}/CustomRptInfo/:params`,
+    path: `${prefix}/CustomRptInfo`,
     component: './pmsPage/CustomRptInfo',
   },
 ];

@@ -8,9 +8,10 @@ import {
 } from '../../../services/pmsServices/index';
 import TopConsole from './TopConsole';
 import InfoTable from './InfoTable';
+import { Link } from 'react-router-dom';
 
 export default function CustomRptInfo(props) {
-  const {} = props;
+  const { bbid, routes } = props;
   const [data, setData] = useState({}); //通过报表id查询到的报表数据
   const [tableData, setTableData] = useState({
     data: [],
@@ -21,9 +22,11 @@ export default function CustomRptInfo(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
 
   useEffect(() => {
-    getData();
+    if (bbid !== -1) {
+      getData();
+    }
     return () => {};
-  }, []);
+  }, [bbid]);
 
   //转树结构
   function buildTree(list, label = 'label', value = 'value') {
@@ -72,7 +75,7 @@ export default function CustomRptInfo(props) {
     setIsSpinning(true);
     //报表信息
     QueryCustomReport({
-      bbid: 15,
+      bbid,
       current: 1,
       cxlx: 'MB',
       pageSize: 20,
@@ -118,7 +121,22 @@ export default function CustomRptInfo(props) {
           .then(res => {
             if (res?.success) {
               if (x.TJBCXLX === 'YSXM') {
-                console.log('YSXM', JSON.parse(res.result));
+                function uniqueFunc(arr, uniId) {
+                  const res = new Map();
+                  return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+                }
+                let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+                let origin = JSON.parse(res.result);
+                x.SELECTORDATA = {
+                  type,
+                  origin,
+                };
+                // if (type.length > 0)
+                //   x.SELECTORVALUE = {
+                //     type: type[0]?.YSLXID,
+                //     typeObj: type[0],
+                //     value: [],
+                //   };
               } else if (x.ZJLX === 'TREE-MULTIPLE') {
                 x.SELECTORDATA = buildTree(JSON.parse(res.result));
               } else {
@@ -151,7 +169,8 @@ export default function CustomRptInfo(props) {
   };
 
   //表格数据 - 查询按钮
-  const getSQL = tableParams => {
+  const getSQL = (tableParams = {}) => {
+    console.log('🚀 ~ file: index.js:155 ~ getSQL ~ tableParams:', tableParams);
     setIsSpinning(true);
     const {
       origin = {
@@ -164,26 +183,41 @@ export default function CustomRptInfo(props) {
     let bmArr = ['TXMXX_XMXX XM'];
     let sxtjArr = [];
     let columnFieldsArr = [...origin.columns];
-    let conditionFilterArr = [...filterData];
+    let conditionFilterArr = JSON.parse(JSON.stringify(filterData));
     let conditionGroupArr = [...groupData];
     columnFieldsArr.forEach(x => {
       bmArr.push(x.BM);
     });
     conditionFilterArr.forEach(x => {
       let SXSJ = x.SELECTORVALUE;
-      if (SXSJ !== undefined && SXSJ !== null && JSON.stringify(SXSJ) !== '[]') {
+      let SXLX = x.ZJLX;
+      let SXTJ = x.SXTJ;
+      if (
+        SXSJ !== undefined &&
+        SXSJ !== null &&
+        JSON.stringify(SXSJ) !== '[]' &&
+        JSON.stringify(SXSJ?.value) !== '[]'
+      ) {
         if (x.ZJLX === 'DATE') {
           SXSJ = [
             Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
             Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
           ];
+          bmArr.push(x.BM);
         } else if (x.ZJLX === 'RANGE') {
           SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
+          bmArr.push(x.BM);
+        } else if (x.TJBCXLX === 'YSXM') {
+          SXSJ = x.SELECTORVALUE.value;
+          SXTJ = x.SELECTORVALUE.typeObj?.CXTJ;
+          SXLX = 'MULTIPLE';
+          bmArr.push(x.SELECTORVALUE.typeObj?.CXB);
+        } else {
+          bmArr.push(x.BM);
         }
-        bmArr.push(x.BM);
         sxtjArr.push({
-          SXLX: x.ZJLX,
-          SXTJ: x.SXTJ,
+          SXLX,
+          SXTJ,
           SXSJ,
         });
       }
@@ -219,22 +253,23 @@ export default function CustomRptInfo(props) {
   };
   const getTableData = ({ sql = '', current = 1, pageSize = 20, sort = 'XMID DESC' }) => {
     QueryCustomReport({
-      bbid: 15,
-      current: 1,
+      bbid,
+      current,
       cxlx: 'SQL',
       sql,
-      pageSize: 20,
+      pageSize,
       paging: 1,
-      sort: 'string',
+      sort,
       total: -1,
     })
       .then(res => {
         if (res?.success) {
-          // setTableData(p => ({
-          //   ...p,
-          //   data: JSON.parse(res.result),
-          //   total: res.totalrows,
-          // }));
+          setTableData({
+            data: JSON.parse(res.result),
+            total: res.totalrows,
+            curPage: current,
+            curPageSize: pageSize,
+          });
           setIsSpinning(false);
         }
       })
@@ -253,15 +288,20 @@ export default function CustomRptInfo(props) {
         size="large"
         wrapperClassName="diy-style-spin-custom-rpt-management"
       >
-        <Breadcrumb>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <a href="">Application Center</a>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <a href="">Application List</a>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>An Application</Breadcrumb.Item>
+        <Breadcrumb separator=">">
+          {routes?.map((item, index) => {
+            const { name = item, pathname = '' } = item;
+            const historyRoutes = routes.slice(0, index + 1);
+            return (
+              <Breadcrumb.Item key={index}>
+                {index === routes.length - 1 ? (
+                  <>{name}</>
+                ) : (
+                  <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
+                )}
+              </Breadcrumb.Item>
+            );
+          })}
         </Breadcrumb>
         <div className="header">{data.rptName}</div>
       </Spin>
