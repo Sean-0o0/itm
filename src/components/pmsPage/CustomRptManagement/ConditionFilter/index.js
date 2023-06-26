@@ -20,7 +20,9 @@ export default function ConditionFilter(props) {
     onChange = () => {},
     onDelete = () => {},
   } = props;
+
   useEffect(() => {
+    
     return () => {};
   }, []);
 
@@ -195,6 +197,7 @@ export default function ConditionFilter(props) {
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               showSearch
+              showArrow={false}
               allowClear
               mode="multiple"
               maxTagCount={maxTagCount}

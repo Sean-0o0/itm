@@ -25,10 +25,6 @@ export default function TopConsole(props) {
 
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
-  useEffect(() => {console.log("🚀 ~ file: index.js:23 ~ TopConsole ~ data:", data)
-    return () => {};
-  }, [data]);
-
   const handleReset = () => {
     // console.log('kkkk');
     let arr = [...data.filterData];
@@ -159,6 +155,7 @@ export default function TopConsole(props) {
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
+          showArrow={false}
           showSearch
           allowClear
           value={SELECTORVALUE.type}

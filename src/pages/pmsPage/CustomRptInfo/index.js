@@ -17,7 +17,7 @@ const CustomRptInfo = props => {
     bbid = obj.bbid;
     obj.routes &&
       (routes2 = obj.routes?.concat({
-        name: '报表管理',
+        name: '报表详情',
         pathname: props?.location?.pathname,
       }));
   }

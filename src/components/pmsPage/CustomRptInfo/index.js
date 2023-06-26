@@ -162,7 +162,7 @@ export default function CustomRptInfo(props) {
           })
           .catch(e => {
             console.error('🚀', e);
-            message.error(obj.TJBCXLX + '信息获取失败', 1);
+            message.error(x.TJBCXLX + '信息获取失败', 1);
           });
       }
     });
@@ -208,9 +208,23 @@ export default function CustomRptInfo(props) {
           SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
           bmArr.push(x.BM);
         } else if (x.TJBCXLX === 'YSXM') {
-          SXSJ = x.SELECTORVALUE.value;
-          SXTJ = x.SELECTORVALUE.typeObj?.CXTJ;
-          SXLX = 'MULTIPLE';
+          if (JSON.stringify(SXSJ?.value) !== '[]') {
+            SXSJ = x.SELECTORVALUE.value;
+            SXTJ = x.SELECTORVALUE.typeObj?.CXTJ;
+            SXLX = 'MULTIPLE';
+          } else {
+            SXSJ = [];
+            if (x.SELECTORVALUE.typeObj?.YSLXID === 1) {
+              SXTJ = 'XM.GLYSXM IS NOT NULL';
+            } else if (x.SELECTORVALUE.typeObj?.YSLXID === 2) {
+              SXTJ = 'XM.GLFZBYSXM IS NOT NULL';
+            } else if (x.SELECTORVALUE.typeObj?.YSLXID === 3) {
+              SXTJ = 'XM.GLKYYS IS NOT NULL';
+            } else {
+              SXTJ = 'XM.GLYSXM <=0';
+            }
+            SXLX = 'ZHTJ';
+          }
           bmArr.push(x.SELECTORVALUE.typeObj?.CXB);
         } else {
           bmArr.push(x.BM);
