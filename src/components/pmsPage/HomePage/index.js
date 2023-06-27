@@ -435,20 +435,20 @@ export default function HomePage(props) {
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
               />
             )}
-            <ProjectCard
-              itemWidth={itemWidth}
-              getAfterItem={getAfterItem}
-              userRole={userRole}
-              prjInfo={prjInfo}
-              getPrjInfo={getPrjInfo}
-              total={total.project}
-              placement={placement}
-              setPlacement={setPlacement}
-            />
-            {/*项目跟踪*/}
-            {/*<PrjTracking*/}
-            {/*  dictionary={dictionary}*/}
+            {/*<ProjectCard*/}
+            {/*  itemWidth={itemWidth}*/}
+            {/*  getAfterItem={getAfterItem}*/}
+            {/*  userRole={userRole}*/}
+            {/*  prjInfo={prjInfo}*/}
+            {/*  getPrjInfo={getPrjInfo}*/}
+            {/*  total={total.project}*/}
+            {/*  placement={placement}*/}
+            {/*  setPlacement={setPlacement}*/}
             {/*/>*/}
+            {/*项目跟踪*/}
+            <PrjTracking
+              dictionary={dictionary}
+            />
           </div>
           <div className="col-right">
             <GuideCard/>

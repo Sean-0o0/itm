@@ -108,6 +108,7 @@ export default function CustomReports(props) {
         tabsCallback={tabsCallback}
       />
       <RepInfos
+        isSpinning={isSpinning}
         getCusRepData={getCusRepData}
         params={params}
         paramsCallback={paramsCallback}

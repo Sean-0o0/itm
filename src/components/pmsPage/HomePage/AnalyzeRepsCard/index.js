@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {Button, Icon, message, Rate, Select, Tabs} from 'antd';
+import {Button, Icon, message, Rate, Select, Tabs, Tooltip} from 'antd';
 import styles from "../../../Common/TagSelect/index.less";
 import {FetchQueryCustomReportList, ProjectCollect} from "../../../../services/pmsServices";
 import {Link} from "react-router-dom";
@@ -95,10 +95,11 @@ export default function AnalyzeRepsCard(props) {
   };
 
   const toDetail = (bbid) => {
+    console.log("bbid", bbid)
     window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
       JSON.stringify({
         routes: [{name: '个人工作台', pathname: location.pathname}],
-        bbid,
+        bbid: bbid,
       }),
     )}`
   }
@@ -120,7 +121,7 @@ export default function AnalyzeRepsCard(props) {
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
-                      {i.BBMC}
+                      <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
                       <i onClick={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
                          className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                     </div>

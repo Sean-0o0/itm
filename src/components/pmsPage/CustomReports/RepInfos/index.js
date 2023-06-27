@@ -1,9 +1,10 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {Button, Icon, message, Rate, Select, Tabs} from 'antd';
+import {Button, Empty, Icon, message, Rate, Select, Tabs, Tooltip} from 'antd';
 import styles from "../../../Common/TagSelect/index.less";
 import {FetchQueryCustomReportList, ProjectCollect} from "../../../../services/pmsServices";
 import {useLocation} from "react-router";
 import {EncryptBase64} from "../../../Common/Encrypt";
+import {Link} from "react-router-dom";
 
 const {TabPane} = Tabs;
 
@@ -80,7 +81,8 @@ export default function RepInfos(props) {
     setShowExtendsGX(!flag)
   }
 
-  const handleProjectCollect = (flag, id) => {
+  const handleProjectCollect = (e, flag, id) => {
+    e.stopPropagation();// 阻止事件冒泡
     let payload = {}
     if (flag) {
       payload.operateType = 'SCBB'
@@ -114,37 +116,50 @@ export default function RepInfos(props) {
   }
 
   const toDetail = (bbid) => {
+    console.log("bbid", bbid)
     window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
       JSON.stringify({
         routes: [{name: '自定义报表', pathname: location.pathname}],
-        bbid,
+        bbid: bbid,
       }),
     )}`
   }
 
+  const linkTo = {
+    pathname: `/pms/manage/CustomRptManagement`,
+    state: {
+      routes: [{name: '自定义报表', pathname: location.pathname}],
+    },
+  };
+
   return (
     <>
       {
-        cusRepDataSC.length > 0 && tabsKey === 1 && <div className="rep-infos">
+        tabsKey === 1 && <div className="rep-infos">
           <div className="rep-infos-title">
             我收藏的
           </div>
           <div className="rep-infos-box">
             {
-              cusRepDataSC.map(i => {
+              cusRepDataSC.length > 0 ? cusRepDataSC.map(i => {
                 return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
-                      <i className="rep-infos-icon iconfont icon-report"/>{i.BBMC}<i
-                      onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
-                      className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
+                      <i className="rep-infos-icon iconfont icon-report"/>
+                      <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                      <i onClick={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                         className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                     </div>
                     <div className="rep-infos-time">
                       {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
                     </div>
                   </div>
                 </div>
-              })
+              }) : <Empty
+                description="暂无数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{width: '100%'}}
+              />
             }
             {
               totalSC > 12 && (
@@ -157,26 +172,34 @@ export default function RepInfos(props) {
         </div>
       }
       {
-        cusRepDataCJ.length > 0 && tabsKey === 1 && <div className="rep-infos">
-          <div className="rep-infos-title">
-            我创建的
+        tabsKey === 1 && <div className="rep-infos">
+          <div className="rep-infos-title-oper">
+            <div className="oper-title">我创建的</div>
+            <Link to={linkTo} className="oper-link">
+              <div className="oper-link-to"><i className="oper-icon iconfont icon-system"/>报表管理</div>
+            </Link>
           </div>
           <div className="rep-infos-box">
             {
-              cusRepDataCJ.map(i => {
+              cusRepDataCJ.length > 0 ? cusRepDataCJ.map(i => {
                 return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
-                      <i className="rep-infos-icon iconfont icon-report"/>{i.BBMC}<i
-                      onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
-                      className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
+                      <i className="rep-infos-icon iconfont icon-report"/>
+                      <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                      <i onClick={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                         className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                     </div>
                     <div className="rep-infos-time">
                       {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
                     </div>
                   </div>
                 </div>
-              })
+              }) : <Empty
+                description="暂无数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{width: '100%'}}
+              />
             }
             {
               totalCJ > 12 && (
@@ -251,23 +274,28 @@ export default function RepInfos(props) {
             </div>
           </div>
           {
-            cusRepDataGX.length > 0 && <div className="rep-infos">
+            <div className="rep-infos">
               <div className="rep-infos-box">
                 {
-                  cusRepDataGX.map(i => {
+                  cusRepDataGX.length > 0 ? cusRepDataGX.map(i => {
                     return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
                       <div className="rep-infos-content-box">
                         <div className="rep-infos-name">
-                          <i className="rep-infos-icon iconfont icon-report"/>{i.BBMC}<i
-                          onClick={() => handleProjectCollect(i.SFSC === 0, i.BBID)}
-                          className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
+                          <i className="rep-infos-icon iconfont icon-report"/>
+                          <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                          <i onClick={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                             className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
                         </div>
                         <div className="rep-infos-time">
                           {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
                         </div>
                       </div>
                     </div>
-                  })
+                  }) : <Empty
+                    description="暂无数据"
+                    image={Empty.PRESENTED_IMAGE_SIMPLE}
+                    style={{width: '100%'}}
+                  />
                 }
                 {
                   totalGX > 28 && (

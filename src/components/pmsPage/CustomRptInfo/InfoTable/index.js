@@ -5,7 +5,11 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 
 export default function InfoTable(props) {
-  const { tableData = {}, columns = [], handleExport = () => {}, getSQL = () => {}, data } = props; //表格数据
+  const {
+    tableData = {}, columns = [], handleExport = () => {
+    }, exportExcelFile, getSQL = () => {
+    }, data
+  } = props; //表格数据
   const location = useLocation();
 
   //金额格式化

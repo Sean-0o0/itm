@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {Button, Icon, message, Popover, Progress, Rate, Select, Tabs} from 'antd';
+import {Button, Divider, Empty, Icon, message, Popover, Progress, Rate, Select, Spin, Tabs, Tooltip} from 'antd';
 import styles from "../../../Common/TagSelect/index.less";
 import {FetchQueryCustomReportList, ProjectCollect, QueryProjectTracking} from "../../../../services/pmsServices";
 import {Link} from "react-router-dom";
@@ -22,18 +22,19 @@ export default function PrjTracking(props) {
     projectType: ''
   }); //表格数据-项目列表
   const [trackingData, setTrackingData] = useState([{tableInfo: []}]);
+  const [trackingDetail, setTrackingDetail] = useState({});
   const [total, setTotal] = useState(0);
   const {
     dictionary
   } = props;
-  const {XMGZSX} = dictionary; //字典
+  const {XMGZSX, XMJDZT} = dictionary; //字典
   const location = useLocation();
 
   useEffect(() => {
     getTableData(params);
     return () => {
     };
-  }, [XMGZSX]);
+  }, [XMGZSX, XMJDZT]);
 
   //项目数据
   const getTableData = (params) => {
@@ -70,15 +71,7 @@ export default function PrjTracking(props) {
         if (res?.success) {
           setIsSpinning(false)
           const track = JSON.parse(res.result)
-          if (trackingData.length > 0) {
-            track.map((item, index) => {
-              item.extends = index === 0;
-              item.tableInfo = [];
-            })
-            track.map((item, index) => {
-              index === 0 && getInitData(item, track)
-            })
-          }
+          setTrackingData(track)
           setTotal(res.totalrows)
         }
       })
@@ -88,23 +81,17 @@ export default function PrjTracking(props) {
       });
   };
 
-  const getInitData = async (val, track) => {
-    //本周数据
-    await getDetailData(val, val.XMZQ, track)
-    //上周数据
-    await getDetailData(val, -1, track)
-  }
-
   //项目内表格数据-本周/上周
-  const getDetailData = (val, XMZQ, trackold) => {
+  const getDetailData = (xmid) => {
+    setIsSpinning(true);
     QueryProjectTracking({
       current: 1,
-      cycle: XMZQ,
+      cycle: 1,
       // endTime: 0,
       // org: 0,
       pageSize: 5,
       paging: 1,
-      projectId: val.XMID,
+      projectId: xmid,
       // projectManager: 0,
       // projectType: 0,
       queryType: "GZZB",
@@ -115,14 +102,8 @@ export default function PrjTracking(props) {
       .then(res => {
         if (res?.success) {
           const track = JSON.parse(res.result)
-          console.log("track", track)
-          if (track.length > 0) {
-            track[0].SJ = XMZQ === -1 ? "上周" : "本周";
-            trackold[0].tableInfo.push(track[0]);
-          }
-          setTrackingData([...trackold])
-          XMZQ === -1 && setIsSpinning(false)
-          console.log("trackingDataNew", trackold)
+          setTrackingDetail({...track[0]})
+          setIsSpinning(false);
         }
       })
       .catch(e => {
@@ -165,37 +146,48 @@ export default function PrjTracking(props) {
   }
 
   //待办块
-  const getPrjDetail = (data) => {
-    // return (
-    //   <div>
-    //     {data.length>0 && data.map(x => (
-    //       <div className="todo-card-box">
-    //         <div className="todo-card-title">
-    //           <div className="todo-card-xmmc">
-    //             {x.xmmc}
-    //           </div>
-    //           <div className="todo-deal-box">
-    //             <div className="todo-to-deal">
-    //               去处理 <i className="iconfont icon-right todo-to-deal-icon"/>
-    //             </div>
-    //           </div>
-    //
-    //         </div>
-    //         <div className="todo-card-content">
-    //           {Number(x.wdsl) < 0 && <div className="todo-card-status">逾期{Number(x.wdsl) * -1}天</div>}
-    //           <div className="todo-card-txnr">{x.txnr}</div>
-    //         </div>
-    //       </div>
-    //     ))}
-    //   </div>
-    // );
+  const getPrjDetail = () => {
+    return (
+      <div>
+        {trackingDetail && <Spin className='prj-detail-spin' spinning={isSpinning}>
+          <div className="prj-detail-bzgz">
+            <div className="prj-detail-bzgz-title">本周工作内容:</div>
+            {
+              trackingDetail.BZGZNR ? <div className="prj-detail-bzgz-content">{trackingDetail.BZGZNR}</div> : <Empty
+                description="暂无数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{width: '100%'}}/>
+            }
+          </div>
+          <div className="prj-detail-xzgz">
+            <div className="prj-detail-xzgz-title">下周工作计划:</div>
+            {
+              trackingDetail.XZGZAP ? <div className="prj-detail-xzgz-content">{trackingDetail.XZGZAP}</div> : <Empty
+                description="暂无数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{width: '100%'}}/>
+            }
+          </div>
+          <Divider/>
+          <div className="prj-detail-sxsm">
+            <div className="prj-detail-sxsm-title">重要事项说明:</div>
+            {
+              trackingDetail.ZYSXSM ? <div className="prj-detail-sxsm-content">{trackingDetail.ZYSXSM}</div> : <Empty
+                description="暂无数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{width: '100%'}}/>
+            }
+          </div>
+        </Spin>
+        }
+      </div>
+    );
   };
 
   const getFilterDetail = (data) => {
-    console.log("datadatad", data)
     return (
       <div>
-        {data.map(x => (
+        {data && data.map(x => (
           <div onClick={() => {
             setFilterVisible(false)
             setFilterResName(x.note)
@@ -220,6 +212,9 @@ export default function PrjTracking(props) {
       routes: [{name: '个人工作台', pathname: location.pathname}],
     },
   };
+
+  console.log("XMJDZT", XMJDZT)
+  console.log("trackingData", trackingData)
 
   return (
     <div className="prj-tracking-box-homePage">
@@ -259,7 +254,9 @@ export default function PrjTracking(props) {
                       {/*<i className="prj-tracking-infos-icon iconfont icon-report"/>*/}
                       <div className="prj-tracking-infos-left-flex">
                         <div className="prj-tracking-infos-left">
-                          {i.XMMC}
+                          <Tooltip title={i.XMMC}>
+                            {i.XMMC}
+                          </Tooltip>
                         </div>
                       </div>
                       <div className="prj-tracking-infos-week">
@@ -269,7 +266,7 @@ export default function PrjTracking(props) {
                       </div>
                     </div>
                     {
-                      i.tableInfo && <div className="prj-tracking-infos-detail">
+                      <div className="prj-tracking-infos-detail">
                         <div className="prj-tracking-infos-detail-row1">
                           <div className="prj-tracking-infos-detail-row1-name">项目概况
                             <Popover
@@ -278,31 +275,42 @@ export default function PrjTracking(props) {
                               trigger="click"
                               getPopupContainer={triggerNode => triggerNode.parentNode}
                               autoAdjustOverflow={true}
-                              content={getPrjDetail(i.tableInfo)}
+                              content={getPrjDetail(i.XMID)}
                               overlayClassName="prj-tracking-detail-popover"
-                            ><i className="iconfont icon-detail"/>
+                            ><i onClick={() => getDetailData(i.XMID)} className="iconfont icon-detail"/>
                             </Popover>
                           </div>
-                          <div className="prj-tracking-infos-detail-row1-percent">50%<i className="iconfont icon-rise"/>60%
+                          <div
+                            className="prj-tracking-infos-detail-row1-percent">{i.SZJD && i.SZJD > 0 ? <>{i.SZJD}%</> : '0%'}
+                            {i.BZJD && <><i className="iconfont icon-rise"/>{i.BZJD}%</>}
                           </div>
                         </div>
                         {/*延期项目*/}
-                        <div className="prj-tracking-infos-detail-row2-lev1">
-                          <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small"
-                                    status="active"/>
-                        </div>
+                        {
+                          <div className="prj-tracking-infos-detail-row2-lev1">
+                            <Progress strokeColor="#3361FF" percent={i.BZJD} successPercent={i.SZJD} size="small"
+                                      status="active"/>
+                          </div>
+                        }
                         {/*正常项目*/}
-                        {/*<div className="prj-tracking-infos-detail-row2-lev2">*/}
-                        {/*  <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
-                        {/*</div>*/}
+                        {/*{*/}
+                        {/*  i.BZZT && i.BZZT == '1' || i.BZZT == '4' && <div className="prj-tracking-infos-detail-row2-lev2">*/}
+                        {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
+                        {/*  </div>*/}
+                        {/*}*/}
                         {/*低风险项目*/}
-                        {/*<div className="prj-tracking-infos-detail-row2-lev3">*/}
-                        {/*  <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
-                        {/*</div>*/}
+                        {/*{*/}
+                        {/*  i.BZZT && i.BZZT == '6' && <div className="prj-tracking-infos-detail-row2-lev3">*/}
+                        {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
+                        {/*  </div>*/}
+                        {/*}*/}
                         <div className="prj-tracking-infos-detail-row3">
-                          <div className="prj-tracking-infos-detail-row3-risk">高风险</div>
-                          <i className="iconfont icon-rise"/>
-                          <div className="prj-tracking-infos-detail-row3-risk">延期</div>
+                          <div
+                            className="prj-tracking-infos-detail-row3-risk">{i.SZZT && i.SZZT > 0 ? <>{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
+                          {i.BZZT && <><i className="iconfont icon-rise"/>
+                            <div
+                              className="prj-tracking-infos-detail-row3-risk">{XMJDZT.filter(item => item.ibm == i.BZZT)[0]?.note}</div>
+                          </>}
                         </div>
                       </div>
                     }

@@ -21,7 +21,7 @@ const CustomRptInfo = props => {
         pathname: props?.location?.pathname,
       }));
   }
-    
+
   //去重
   const newArr = [];
   let name = [];

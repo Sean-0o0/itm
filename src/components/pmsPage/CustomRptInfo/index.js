@@ -8,7 +8,8 @@ import {
 } from '../../../services/pmsServices/index';
 import TopConsole from './TopConsole';
 import InfoTable from './InfoTable';
-import { Link } from 'react-router-dom';
+import {Link} from 'react-router-dom';
+import * as XLSX from "xlsx";
 
 export default function CustomRptInfo(props) {
   const { bbid, routes } = props;
@@ -310,8 +311,33 @@ export default function CustomRptInfo(props) {
     })
       .then(res => {
         if (res?.success) {
+          const arrayList = [];
           let exportData = JSON.parse(res.result);
-          console.log('🚀 ~ handleExport ~ exportData:', exportData);
+          console.log('exportData', exportData)
+          console.log('data.columns', data.columns)
+          //3条数据
+          exportData.map(item => {
+            let array = {};
+            for (let key in item) {
+              data.columns.map((col, index) => {
+                if (Object.keys(item).includes(col.key)) {
+                  if (col.key === key) {
+                    array[col.title] = item[key];
+                  }
+                } else {
+                  array[col.title] = '';
+                }
+              })
+            }
+            arrayList.push(array);
+          })
+          console.log('要导出的没顺序的数据', arrayList)
+          //导出的顺序
+          let titleOrder = [];
+          data.columns.forEach(e => {
+            titleOrder.push(e.title)
+          })
+          // exportExcelFile(arrayList)
         }
       })
       .catch(e => {
@@ -319,6 +345,25 @@ export default function CustomRptInfo(props) {
         message.error('导出数据获取失败', 1);
       });
   };
+
+  /**
+   * 导出 excel 文件
+   * @param array JSON 数组
+   * @param sheetName 第一张表名
+   * @param fileName 文件名
+   */
+  const exportExcelFile = (array = [], sheetName = '表1', fileName = 'example.xlsx') => {
+    console.log('要导出的数据', array)
+    const jsonWorkSheet = XLSX.utils.json_to_sheet(array);
+    const workBook = {
+      SheetNames: [sheetName],
+      Sheets: {
+        [sheetName]: jsonWorkSheet,
+      }
+    };
+    return XLSX.writeFile(workBook, fileName);
+  }
+
 
   return (
     <div className="custom-rpt-info-box">
@@ -353,6 +398,7 @@ export default function CustomRptInfo(props) {
           tableData={tableData}
           getSQL={getSQL}
           handleExport={handleExport}
+          exportExcelFile={exportExcelFile}
         />
       </div>
     </div>
