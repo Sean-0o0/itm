@@ -65,12 +65,6 @@ export default function CustomRptManagement(props) {
                   .then(res => {
                     if (res?.success) {
                       let data3 = buildTree(JSON.parse(res.result), 'title', 'key');
-                      console.log(
-                        '🚀 ~ file: index.js:62 ~ getBasicData ~ data3:',
-                        data,
-                        data2,
-                        data3,
-                      );
                       setBasicData({
                         conditionFilter: data,
                         conditionGroup: data2,
@@ -149,7 +143,6 @@ export default function CustomRptManagement(props) {
       .then(res => {
         if (res?.success) {
           const obj = JSON.parse(res.mbxx)[0];
-          console.log('🚀 ~ file: index.js:144 ~ getEditData ~ obj:', obj);
           let filterData = JSON.parse(obj.QDZSSXZD);
           filterData.forEach(x => {
             if (x.TJBCXLX) {
@@ -219,7 +212,6 @@ export default function CustomRptManagement(props) {
       .then(res => {
         if (res?.success) {
           let rec = JSON.parse(res.result);
-          // console.log('🚀 ~ getRptList ~ rec:', rec);
           // if (res.totalrows <= 10) {
           //   isNoMoreData.current = true;
           //   setRptList([...rec]);
@@ -297,6 +289,7 @@ export default function CustomRptManagement(props) {
     setRptName('未命名报表');
     setDragKey(null);
     setStatus('normal');
+    setEditingId(-1);
   };
 
   return (

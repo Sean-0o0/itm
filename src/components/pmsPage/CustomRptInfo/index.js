@@ -20,6 +20,8 @@ export default function CustomRptInfo(props) {
     total: 0,
   }); //表格数据
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const [curSQL, setCurSQL] = useState(''); //当前sql
+  // const [exportData, setExportData] = useState([]); //导出的数据 - 不分页
 
   useEffect(() => {
     if (bbid !== -1) {
@@ -158,7 +160,7 @@ export default function CustomRptInfo(props) {
               },
             };
             setData(finalObj);
-            setIsSpinning(false);
+            getSQL({}, finalObj);
           })
           .catch(e => {
             console.error('🚀', e);
@@ -169,9 +171,8 @@ export default function CustomRptInfo(props) {
   };
 
   //表格数据 - 查询按钮
-  const getSQL = (tableParams = {}) => {
-    console.log('🚀 ~ file: index.js:155 ~ getSQL ~ tableParams:', tableParams);
-    setIsSpinning(true);
+  const getSQL = (tableParams = {}, data, isExport = false) => {
+    !isExport && setIsSpinning(true);
     const {
       origin = {
         columns: [],
@@ -256,7 +257,8 @@ export default function CustomRptInfo(props) {
     SaveCustomReportSetting(params)
       .then(res => {
         if (res?.success) {
-          getTableData({ sql: res.note.replace(/\n/g, ' '), ...tableParams });
+          setCurSQL(res.note.replace(/\n/g, ' '));
+          !isExport && getTableData({ sql: res.note.replace(/\n/g, ' '), ...tableParams });
         }
       })
       .catch(e => {
@@ -294,6 +296,30 @@ export default function CustomRptInfo(props) {
       });
   };
 
+  //导出
+  const handleExport = () => {
+    QueryCustomReport({
+      bbid,
+      current: 1,
+      cxlx: 'SQL',
+      sql: curSQL,
+      pageSize: 20,
+      paging: -1, //不分页
+      sort: '',
+      total: -1,
+    })
+      .then(res => {
+        if (res?.success) {
+          let exportData = JSON.parse(res.result);
+          console.log('🚀 ~ handleExport ~ exportData:', exportData);
+        }
+      })
+      .catch(e => {
+        console.error('🚀导出数据', e);
+        message.error('导出数据获取失败', 1);
+      });
+  };
+
   return (
     <div className="custom-rpt-info-box">
       <Spin
@@ -321,7 +347,13 @@ export default function CustomRptInfo(props) {
       </Spin>
       <div className="content">
         <TopConsole data={data} setData={setData} getSQL={getSQL} />
-        <InfoTable columns={data.columns} tableData={tableData} getSQL={getSQL} />
+        <InfoTable
+          data={data}
+          columns={data.columns}
+          tableData={tableData}
+          getSQL={getSQL}
+          handleExport={handleExport}
+        />
       </div>
     </div>
   );

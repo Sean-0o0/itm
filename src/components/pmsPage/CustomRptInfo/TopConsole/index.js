@@ -43,7 +43,6 @@ export default function TopConsole(props) {
   };
 
   const getComponent = (x = []) => {
-    console.log('llll');
     const {
       ID = -1,
       NAME = '--',
@@ -317,7 +316,7 @@ export default function TopConsole(props) {
       <div className="filter-condition">
         <div className="left">{data.filterData?.map(x => getComponent(x))}</div>
         <div className="right">
-          <Button className="btn-search" type="primary" onClick={() => getSQL()}>
+          <Button className="btn-search" type="primary" onClick={() => getSQL({}, data)}>
             查询
           </Button>
           <Button className="btn-reset" onClick={handleReset}>

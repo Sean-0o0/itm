@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 
 export default function InfoTable(props) {
-  const { tableData = {}, columns = [], getTableData = () => {}, getSQL = () => {} } = props; //表格数据
+  const { tableData = {}, columns = [], handleExport = () => {}, getSQL = () => {}, data } = props; //表格数据
   const location = useLocation();
 
   //金额格式化
@@ -51,37 +51,44 @@ export default function InfoTable(props) {
     const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        getSQL({ current, pageSize, sort: sorter.field + ' DESC,XMID DESC' });
+        getSQL({ current, pageSize, sort: sorter.field + ' DESC,XMID DESC' }, data);
       } else {
-        getSQL({ current, pageSize, sort: sorter.field + ' ASC,XMID DESC' });
+        getSQL({ current, pageSize, sort: sorter.field + ' ASC,XMID DESC' }, data);
       }
     } else {
-      getSQL({ current, pageSize });
+      getSQL({ current, pageSize }, data);
     }
     return;
   };
 
   return (
-    <div className="project-info-table-box">
-      <Table
-        columns={columns}
-        rowKey={'projectId'}
-        dataSource={tableData.data}
-        onChange={handleTableChange}
-        pagination={{
-          current: tableData.curPage,
-          pageSize: tableData.curPageSize,
-          defaultCurrent: 1,
-          pageSizeOptions: ['20', '40', '50', '100'],
-          showSizeChanger: true,
-          hideOnSinglePage: false,
-          showQuickJumper: true,
-          showTotal: t => `共 ${tableData.total} 条数据`,
-          total: tableData.total,
-        }}
-        scroll={{ x: true }}
-        // bordered
-      />
+    <div className="info-table">
+      <div className="btn-export-box">
+        <Button type="primary" className="btn-export" onClick={handleExport}>
+          导出
+        </Button>
+      </div>
+      <div className="project-info-table-box">
+        <Table
+          columns={columns}
+          rowKey={'projectId'}
+          dataSource={tableData.data}
+          onChange={handleTableChange}
+          pagination={{
+            current: tableData.curPage,
+            pageSize: tableData.curPageSize,
+            defaultCurrent: 1,
+            pageSizeOptions: ['20', '40', '50', '100'],
+            showSizeChanger: true,
+            hideOnSinglePage: false,
+            showQuickJumper: true,
+            showTotal: t => `共 ${tableData.total} 条数据`,
+            total: tableData.total,
+          }}
+          scroll={{ x: true }}
+          // bordered
+        />
+      </div>
     </div>
   );
 }
