@@ -115,12 +115,13 @@ export default function RepInfos(props) {
       });
   }
 
-  const toDetail = (bbid) => {
-    console.log("bbid", bbid)
+  const toDetail = (i) => {
+    console.log("bbid", i)
     window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
       JSON.stringify({
         routes: [{name: '自定义报表', pathname: location.pathname}],
-        bbid: bbid,
+        bbid: i.BBID,
+        bbmc: i.BBMC,
       }),
     )}`
   }
@@ -142,7 +143,7 @@ export default function RepInfos(props) {
           <div className="rep-infos-box">
             {
               cusRepDataSC.length > 0 ? cusRepDataSC.map(i => {
-                return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
+                return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
@@ -182,7 +183,7 @@ export default function RepInfos(props) {
           <div className="rep-infos-box">
             {
               cusRepDataCJ.length > 0 ? cusRepDataCJ.map(i => {
-                return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
+                return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
@@ -278,7 +279,7 @@ export default function RepInfos(props) {
               <div className="rep-infos-box">
                 {
                   cusRepDataGX.length > 0 ? cusRepDataGX.map(i => {
-                    return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
+                    return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                       <div className="rep-infos-content-box">
                         <div className="rep-infos-name">
                           <i className="rep-infos-icon iconfont icon-report"/>

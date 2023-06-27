@@ -94,12 +94,13 @@ export default function AnalyzeRepsCard(props) {
     },
   };
 
-  const toDetail = (bbid) => {
-    console.log("bbid", bbid)
+  const toDetail = (i) => {
+    console.log("bbid", i)
     window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
       JSON.stringify({
         routes: [{name: '个人工作台', pathname: location.pathname}],
-        bbid: bbid,
+        bbid: i.BBID,
+        bbmc: i.BBMC,
       }),
     )}`
   }
@@ -117,7 +118,7 @@ export default function AnalyzeRepsCard(props) {
           <div className="rep-infos-box">
             {
               cusRepDataWD.map(i => {
-                return <div className="rep-infos-content" onClick={() => toDetail(i.BBID)}>
+                return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
