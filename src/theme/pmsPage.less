@@ -16058,8 +16058,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
       & > .footer-btn {
-        height: 32px;
-        line-height: 32px;
         overflow: hidden;
         text-align: right;
 
@@ -16072,6 +16070,93 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .btn-submit {
           .antd-btn-primary();
+        }
+      }
+    }
+
+    & > .share-box {
+      width: 480px;
+      padding: 0 8px;
+
+      .ant-select-selection:hover,
+      .ant-select-focused .ant-select-selection,
+      .ant-select-selection:focus,
+      .ant-select-selection:active {
+        border-color: #3361ff;
+        box-shadow: 0 0 0 2px rgba(84, 169, 223, 0.2);
+      }
+
+      .footer-btn {
+        overflow: hidden;
+        text-align: right;
+
+        .btn-cancel {
+          .antd-btn-default();
+          // color: #3361ff;
+          // border-color: #3361ff;
+          margin-right: 8px;
+        }
+
+        .btn-submit {
+          .antd-btn-primary();
+        }
+      }
+    }
+
+    & > .history-box {
+      width: 480px;
+      max-height: 400px;
+      overflow: hidden;
+      overflow-y: auto;
+      padding-top: 10px;
+      padding-right: 8px;
+      margin-right: -8px;
+
+      &::-webkit-scrollbar {
+        width: 6px;
+        background-color: #fafafa;
+        border-radius: 3px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 3px;
+        width: 6px;
+      }
+
+      .ant-timeline-item-last > .ant-timeline-item-content {
+        min-height: unset;
+      }
+
+      .ant-timeline-item-last {
+        padding-bottom: 0;
+      }
+
+      .history-item {
+        .ant-timeline-item-content {
+          display: flex;
+          flex-direction: row;
+          justify-content: space-between;
+          line-height: 20px;
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+
+          div {
+            flex-grow: 1;
+            // text-overflow: ellipsis;
+            overflow: hidden;
+            // white-space: nowrap;
+          }
+
+          span {
+            flex-shrink: 0;
+            width: max-content;
+            margin-left: 6px;
+            font-size: 12px;
+            color: #909399;
+          }
         }
       }
     }
@@ -16488,105 +16573,84 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           width: 100%;
           padding: 16px 24px 0 24px;
 
-          .ant-table {
-            td {
-              padding: 9.17px;
-              font-size: 14px;
-              font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
-              font-weight: 400;
-              color: #303133;
+          & > .table-box {
+            border: 1px solid #e8e8e8;
+            box-shadow: inset 0px -1px 0px 0px #ebeef5;
+            border-radius: 4px;
+            overflow: hidden;
+            overflow-x: auto;
+            position: relative;
+
+            &::-webkit-scrollbar {
+              height: 10px;
+              background-color: #fafafa;
+              border-radius: 5px;
             }
 
-            th {
-              padding: 9.17px;
-              font-size: 14px;
-              background-color: #f5f7fa;
-              font-family: PingFangSC-Medium, PingFang SC;
-              font-weight: bold;
-              color: #606266;
+            &::-webkit-scrollbar-thumb {
+              background-color: #c1c1c1;
+              border-radius: 5px;
+              height: 10px;
             }
 
-            .icon-set {
-              font-size: 16px;
-              color: #909399;
-              font-weight: normal;
-              margin-left: 12px;
-              cursor: pointer;
-            }
-
-            tr.ant-table-expanded-row td > .ant-table-wrapper {
-              margin: -10px -16px -10px;
-            }
-
-            .ant-table-body {
-              // min-height: 560px;
-              table {
-                border: 1px solid #e8e8e8;
-              }
-            }
-
-            .ant-table-scroll .ant-table-header {
-              margin-bottom: -16.5px !important; //表格表头底部边框
-              background-color: #f5f7fa;
-            }
-
-            .ant-table-placeholder {
-              .ant-empty-description {
-                font-size: 14px;
-              }
-            }
-
-            .ant-table-thead {
-              position: sticky;
-              top: 0;
-            }
-
-            //项目标签
-            .prj-tags {
+            & > .table-header {
               width: 100%;
-              color: #606266;
+              min-height: 40px;
+              background-color: #f5f7fa;
               display: flex;
               flex-direction: row;
               align-items: center;
 
-              .tag-item {
-                color: #3361ff;
-                font-size: 12px;
-                border: 1px solid rgba(51, 97, 255, 0.3);
-                border-radius: 4px;
-                background-color: #3363ff14;
-                padding: 1px 8px 2px 8px;
-                margin-right: 8px;
-                max-width: 38%;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-                line-height: initial;
+              .header-item {
+                height: 40px;
+                font-size: 14px;
+                font-family: PingFangSC-Medium, PingFang SC;
+                font-weight: bold;
+                color: #606266;
+                line-height: 40px;
+                background-color: #f5f7fa;
+                border-right: 1px solid #ebeef5;
+                padding: 0 16px;
+                width: max-content;
                 flex-shrink: 0;
-                cursor: pointer;
+
+                &:nth-last-child(2) {
+                  border-right: 0;
+                }
 
                 &:last-child {
-                  margin-right: 0;
+                  border-right: 0;
+                  border-left: 1px solid #ebeef5;
+                  position: sticky;
+                  right: 0;
+                }
+
+                .icon-set {
+                  font-size: 16px;
                 }
               }
             }
 
-            .ant-table-body {
-              // min-height: 560px;
-              table {
-                border: 1px solid #e8e8e8;
-              }
-            }
-
-            .ant-table-scroll .ant-table-header {
-              margin-bottom: -16.5px !important; //表格表头底部边框
-              background-color: #f5f7fa;
-            }
-
-            .ant-table-thead {
+            & > .table-empty {
+              padding: 32px 0;
+              text-align: center;
               position: sticky;
-              top: 0;
-              z-index: 1;
+              left: 0;
+              border-top: 1px solid #ebeef5;
+
+              img {
+                width: 100px;
+                margin-bottom: 8px;
+              }
+
+              div {
+                height: 20px;
+                font-size: 14px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: #909399;
+                line-height: 20px;
+              }
             }
           }
         }
@@ -16884,7 +16948,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
           .rep-infos-content-box:hover {
             box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+              0px 9px 28px 8px rgba(0, 0, 0, 0.05);
           }
 
           .rep-infos-content-box {
@@ -16976,7 +17040,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         height: 24px;
         font-weight: 500;
         color: #303133;
-
       }
 
       .oper-link {
@@ -16984,14 +17047,14 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         text-align: end;
         height: 24px;
         font-weight: 400;
-        color: #3361FF;
+        color: #3361ff;
         line-height: 24px;
 
         .oper-link-to {
           display: inline-flex;
 
           .oper-icon {
-            color: #3361FF;
+            color: #3361ff;
             padding-right: 6px;
           }
         }
@@ -17019,7 +17082,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .rep-infos-content-box:hover {
           box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-          0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
 
         .rep-infos-content-box {
@@ -17054,7 +17117,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
             .rep-infos-icon2 {
               //width: 10%;
-              color: #F9A812;
+              color: #f9a812;
               font-size: 16px;
               padding-left: 6px;
             }
@@ -17139,7 +17202,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .rep-infos-content-box:hover {
           box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-          0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
 
         .rep-infos-content-box {
@@ -17176,7 +17239,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
             .rep-infos-icon2 {
               //width: 10%;
-              color: #F9A812;
+              color: #f9a812;
               font-size: 16px;
               padding-left: 6px;
             }
@@ -17337,14 +17400,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       background: #ffffff;
       box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
       border-radius: 8px;
-      min-height: 128px;
+      // min-height: 128px;
       margin-bottom: 16px;
       padding: 0 24px;
 
       & > .filter-condition {
         display: flex;
         flex-direction: row;
-        border-bottom: 1px dashed #ebeef5;
 
         & > .left {
           flex-grow: 1;
@@ -17441,6 +17503,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       & > .group-condition {
         // height: 50%;
+        border-top: 1px dashed #ebeef5;
         padding-top: 16px;
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
@@ -17689,7 +17752,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             display: flex;
             background: #ffffff;
             box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+              0px 9px 28px 8px rgba(0, 0, 0, 0.05);
             border-radius: 8px;
             padding: 0;
 
@@ -17745,7 +17808,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .prj-tracking-infos-content-box:hover {
           box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-          0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
 
         .prj-tracking-infos-content-box {
@@ -17758,17 +17821,21 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
           //高风险
           .level-1 {
-            background: linear-gradient(270deg,
-            rgba(255, 47, 49, 0) 0%,
-            rgba(255, 47, 49, 0.1) 100%);
+            background: linear-gradient(
+              270deg,
+              rgba(255, 47, 49, 0) 0%,
+              rgba(255, 47, 49, 0.1) 100%
+            );
             border-radius: 1px;
           }
 
           //中风险/低风险
           .level-2 {
-            background: linear-gradient(270deg,
-            rgba(144, 147, 153, 0) 0%,
-            rgba(144, 147, 153, 0.1) 100%);
+            background: linear-gradient(
+              270deg,
+              rgba(144, 147, 153, 0) 0%,
+              rgba(144, 147, 153, 0.1) 100%
+            );
             border-radius: 1px;
           }
 
@@ -17853,12 +17920,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   overflow-y: auto;
                   width: 365px;
                   //height: 346px;
-                  background: #FFFFFF;
+                  background: #ffffff;
                   height: 346px;
                   background: #ffffff;
                   border-radius: 8px;
                   box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12),
-                  0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+                    0px 6px 16px 0px rgba(0, 0, 0, 0.08), 0px 9px 28px 8px rgba(0, 0, 0, 0.05);
 
                   .ant-spin-container {
                     margin: 16px 24px;

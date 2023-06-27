@@ -8,9 +8,10 @@ import {
 import emptyImg from '../../../assets/homePage/custom-rpt-empty.png';
 import SiderRptList from './SiderRptList';
 import RightRptContent from './RightRptContent';
+import { Link } from 'react-router-dom';
 
 export default function CustomRptManagement(props) {
-  const {} = props;
+  const { routes = [] } = props;
   const [basicData, setBasicData] = useState({
     conditionFilter: [],
     conditionGroup: [],
@@ -300,15 +301,20 @@ export default function CustomRptManagement(props) {
         size="large"
         wrapperClassName="diy-style-spin-custom-rpt-management"
       >
-        <Breadcrumb>
-          <Breadcrumb.Item>Home</Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <a href="">Application Center</a>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>
-            <a href="">Application List</a>
-          </Breadcrumb.Item>
-          <Breadcrumb.Item>An Application</Breadcrumb.Item>
+        <Breadcrumb separator=">">
+          {routes?.map((item, index) => {
+            const { name = item, pathname = '' } = item;
+            const historyRoutes = routes.slice(0, index + 1);
+            return (
+              <Breadcrumb.Item key={index}>
+                {index === routes.length - 1 ? (
+                  <>{name}</>
+                ) : (
+                  <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>{name}</Link>
+                )}
+              </Breadcrumb.Item>
+            );
+          })}
         </Breadcrumb>
       </Spin>
       <div className="bottom-wrapper">

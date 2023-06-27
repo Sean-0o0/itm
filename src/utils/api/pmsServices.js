@@ -565,4 +565,10 @@ export default [
     url: '/projectManage/queryCustomReport',
     dis: '自定义报表查询',
   },
+  {
+    code: '',
+    key: 'queryReportOperateRecord',
+    url: '/projectManage/queryReportOperateRecord',
+    dis: '查询报表历史操作记录',
+  },
 ];

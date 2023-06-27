@@ -9,21 +9,26 @@ const CustomRptManagement = props => {
     },
     dictionary,
   } = props;
-  let xqid = -1;
-  let fqrid = -1;
+  const { routes = [] } = props?.location?.state || {};
   let routes2 = [];
-  if (props.match.params.params !== undefined) {
-    let obj = JSON.parse(DecryptBase64(encryptParams));
-    xqid = obj.xqid;
-    fqrid = obj.fqrid;
-    obj.routes &&
-      (routes2 = obj.routes?.concat({
-        name: '报表管理',
-        pathname: props?.location?.pathname,
-      }));
-  }
+
+  routes2 = [...routes].concat({
+    name: '报表管理',
+    pathname: props?.pathname,
+  });
+  // if (props.match.params.params !== undefined) {
+  //   let obj = JSON.parse(DecryptBase64(encryptParams));
+  //   routes.length === 0 &&
+  //     obj.routes &&
+  //     (routes2 = obj.routes?.concat({
+  //       name: '报表管理',
+  //       pathname: props?.location?.pathname,
+  //     }));
+  // }
+
   //去重
   const newArr = [];
+
   let name = [];
   for (let i = 0; i < routes2.length; i++) {
     //判断在id这个数组中有没有找到id
@@ -36,7 +41,7 @@ const CustomRptManagement = props => {
 
   return (
     <Fragment>
-      <CustomRptManagementTab dictionary={dictionary} routes={newArr} xqid={xqid} fqrid={fqrid} />
+      <CustomRptManagementTab dictionary={dictionary} routes={newArr} />
     </Fragment>
   );
 };

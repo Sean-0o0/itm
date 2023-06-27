@@ -245,12 +245,12 @@ exports.routes = [
   },
   {
     // 自定义报表 - 报表管理
-    path: `${prefix}/CustomRptManagement`,
+    path: `${prefix}/CustomRptManagement/:params`,
     component: './pmsPage/CustomRptManagement',
   },
   {
     // 自定义报表 - 报表管理
-    path: `${prefix}/CustomRptManagement/:params`,
+    path: `${prefix}/CustomRptManagement`,
     component: './pmsPage/CustomRptManagement',
   },
   {

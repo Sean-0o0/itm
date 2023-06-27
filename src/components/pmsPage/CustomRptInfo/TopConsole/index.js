@@ -20,7 +20,7 @@ import moment from 'moment';
 export default function TopConsole(props) {
   //下拉框数据
   const { data = {}, setData = () => {}, getSQL = () => {} } = props;
-  
+
   //查询的值
 
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
@@ -324,15 +324,17 @@ export default function TopConsole(props) {
           </Button>
         </div>
       </div>
-      <div className="group-condition">
-        <span className="label">组合条件</span>
-        {data.groupData?.map(x => (
-          <div className="condition-group-item">
-            {x.length - 2 >= 0 && x[x.length - 2].NAME + ' - '}
-            {x[x.length - 1].NAME}
-          </div>
-        ))}
-      </div>
+      {data.groupData?.length !== 0 && (
+        <div className="group-condition">
+          <span className="label">组合条件</span>
+          {data.groupData?.map(x => (
+            <div className="condition-group-item">
+              {x.length - 2 >= 0 && x[x.length - 2].NAME + ' - '}
+              {x[x.length - 1].NAME}
+            </div>
+          ))}
+        </div>
+      )}
     </div>
   );
 }

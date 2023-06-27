@@ -102,6 +102,7 @@ const {
     queryCustomReportList,
     saveCustomReportSetting,
     queryCustomReport,
+    queryReportOperateRecord,
   },
 } = api;
 
@@ -1077,6 +1078,16 @@ export async function SaveCustomReportSetting(payload) {
 export async function QueryCustomReport(payload) {
   const option = {
     url: queryCustomReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询报表历史操作记录
+export async function QueryReportOperateRecord(payload) {
+  const option = {
+    url: queryReportOperateRecord,
     method: 'post',
     data: payload,
   };

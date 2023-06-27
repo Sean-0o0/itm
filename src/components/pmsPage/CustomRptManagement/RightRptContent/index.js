@@ -1,12 +1,26 @@
 import React, { Fragment, useEffect, useState } from 'react';
 import moment from 'moment';
-import { Button, Cascader, message, Popover, Table, Tree, Input, Form, Modal } from 'antd';
+import {
+  Button,
+  Cascader,
+  message,
+  Popover,
+  Table,
+  Tree,
+  Input,
+  Form,
+  Modal,
+  Select,
+  Timeline,
+} from 'antd';
 import {
   SaveCustomReportSetting,
   QueryCustomQueryCriteria,
+  QueryUserInfo,
+  QueryReportOperateRecord,
 } from '../../../../services/pmsServices/index';
 import ConditionFilter from '../ConditionFilter';
-import { func } from 'prop-types';
+import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
 
 export default function RightRptContent(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -35,12 +49,27 @@ export default function RightRptContent(props) {
     share: false, //分享
     history: false, //操作记录
   }); //浮窗显隐
+  const [shareRyData, setShareRyData] = useState({
+    selector: [],
+    value: [],
+    name: [],
+    turnRed: false,
+  }); //分享人员下拉数据
+  const [historyData, setHistoryData] = useState([]); //报表历史操作记录
 
   useEffect(() => {
+    getShareRyData();
     return () => {};
   }, []);
 
-  //浮窗显隐时数据回显
+  useEffect(() => {
+    if (editingId !== -1) {
+      getHistoryData(editingId);
+    }
+    return () => {};
+  }, [editingId]);
+
+  //字段浮窗显隐时数据回显
   useEffect(() => {
     setSelectingData(p => ({
       ...p,
@@ -48,6 +77,47 @@ export default function RightRptContent(props) {
     }));
     return () => {};
   }, [popoverVisible.setting]);
+
+  //分享浮窗显隐时数据回显
+  useEffect(() => {
+    setShareRyData(p => ({
+      ...p,
+      value: [],
+    }));
+    return () => {};
+  }, [popoverVisible.share]);
+
+  //分享人员下拉数据
+  const getShareRyData = () => {
+    QueryUserInfo({
+      type: '信息技术事业部',
+    })
+      .then(res => {
+        if (res.success) {
+          setShareRyData({ selector: [...res.record], value: [] });
+        }
+      })
+      .catch(e => {
+        message.error('分享人员下拉数据查询失败', 1);
+      });
+  };
+
+  //历史操作记录
+  const getHistoryData = bbid => {
+    QueryReportOperateRecord({
+      bbid,
+    })
+      .then(res => {
+        if (res?.success) {
+          console.log('🚀 ~ QueryReportOperateRecord ~ res', JSON.parse(res.result));
+          setHistoryData(JSON.parse(res.result));
+        }
+      })
+      .catch(e => {
+        console.error('🚀历史操作记录', e);
+        message.error('历史操作记录获取失败', 1);
+      });
+  };
 
   //组合、筛选条件变化
   const handleConditionGroupChange = (value, selectedOptions) => {
@@ -163,20 +233,128 @@ export default function RightRptContent(props) {
 
   //分享浮窗
   const shareContent = () => {
+    const onChange = (v, nodeArr) => {
+      let nameArr = nodeArr.map(x => x.props?.name);
+      setShareRyData(p => ({ ...p, value: v, name: nameArr, turnRed: v.length === 0 }));
+    };
+    const onBlur = () => {
+      setShareRyData(p => ({ ...p, turnRed: p.value.length === 0 }));
+    };
+    const onCancel = () => {
+      setShareRyData(p => ({ ...p, value: [], turnRed: false }));
+      setPopoverVisible(p => ({ ...p, share: false }));
+    };
+    const onConfirm = () => {
+      if (shareRyData.value.length !== 0) {
+        setPopoverVisible(p => ({ ...p, share: false }));
+        Modal.confirm({
+          title: '提示：',
+          content: `是否确定分享给${shareRyData.name.join('、')}吗？`,
+          okText: '确定',
+          cancelText: '取消',
+          onOk: () => {
+            if (editingId !== -1) {
+              SaveCustomReportSetting({
+                cxzd: [],
+                cxb: [],
+                sxtj: [],
+                qdzssxzd: [],
+                qdzszhzd: [],
+                qdzsbtzd: [],
+                bbid: editingId,
+                bbmc: shareRyData.value.join(';'),
+                czlx: 'SHARE',
+              })
+                .then(res => {
+                  if (res?.success) {
+                    getHistoryData(editingId);
+                    message.success('分享成功', 1);
+                    setIsSpinning(false);
+                  }
+                })
+                .catch(e => {
+                  console.error('🚀分享', e);
+                  message.error('分享失败', 1);
+                  setIsSpinning(false);
+                });
+            }
+          },
+        });
+      } else {
+        setShareRyData(p => ({ ...p, turnRed: true }));
+      }
+    };
     return (
-      <div className="box">
+      <div className="share-box">
         <Form.Item
           className="selector"
+          label="分享人员"
+          labelCol={{ span: 4 }}
+          wrapperCol={{ span: 20 }}
           required
-          help={rptName === '' ? '报表名称不能为空' : null}
-          validateStatus={rptName === '' ? 'error' : 'success'}
-        ></Form.Item>
-        <div className="footer-btn"></div>
+          help={shareRyData.turnRed ? '分享人员不能为空' : null}
+          validateStatus={shareRyData.turnRed ? 'error' : 'success'}
+        >
+          <Select
+            style={{ width: '100%' }}
+            filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+            }
+            mode="multiple"
+            maxTagCount={2}
+            maxTagTextLength={160}
+            maxTagPlaceholder={extraArr => {
+              return `等${extraArr.length + 2}个`;
+            }}
+            showSearch
+            allowClear
+            value={shareRyData.value}
+            onChange={onChange}
+            placeholder="请选择"
+          >
+            {shareRyData.selector?.map(x => (
+              <Select.Option key={x.id} value={x.id} name={x.name}>
+                {x.name}
+              </Select.Option>
+            ))}
+          </Select>
+        </Form.Item>
+        <div className="footer-btn">
+          <Button className="btn-cancel" onClick={onCancel}>
+            取消
+          </Button>
+          <Button className="btn-submit" type="primary" onClick={onConfirm}>
+            确定
+          </Button>
+        </div>
       </div>
     );
   };
+
   //操作记录浮窗
-  const historyContent = () => {};
+  const historyContent = () => {
+    const getName = id => shareRyData.selector.filter(x => Number(x.id) === id)[0]?.name;
+    return (
+      <Timeline className="history-box">
+        {historyData.map((x, i) => (
+          <Timeline.Item color="#3361ff" className="history-item" key={i}>
+            <div>
+              {getName(x.CZR) +
+                (x.CZFF === '分享'
+                  ? '把模版分享给了' + x.FXDX?.replace(/,/g, '、')
+                  : x.CZFF + '了模板信息')}
+            </div>
+            <span>
+              {x.CZSJ &&
+                moment(x.CZSJ.substring(0, 8) + ' ' + x.CZSJ.substring(8)).format(
+                  'YYYY-MM-DD HH:mm:ss',
+                )}
+            </span>
+          </Timeline.Item>
+        ))}
+      </Timeline>
+    );
+  };
 
   //表格字段设置浮窗
   const columnFieldsSetting = () => {
@@ -294,6 +472,15 @@ export default function RightRptContent(props) {
 
   //表格字段、字段新增浮窗
   const columns = [
+    ...selectedData.columnFields.map((x, i) => {
+      return {
+        title: x.title,
+        dataIndex: x.ZSZD,
+        key: x.ZSZD,
+        align: 'left',
+        width: x.title?.length * 20,
+      };
+    }),
     {
       title: (
         <Popover
@@ -317,15 +504,6 @@ export default function RightRptContent(props) {
       width: '58px',
       // fixed: 'left',
     },
-    ...selectedData.columnFields.map((x, i) => {
-      return {
-        title: x.title,
-        dataIndex: x.ZSZD,
-        key: x.ZSZD,
-        align: 'left',
-        width: x.title?.length * 20,
-      };
-    }),
   ];
 
   //报表名称
@@ -347,16 +525,18 @@ export default function RightRptContent(props) {
           SaveCustomReportSetting({ bbid: editingId, czlx: 'DELETE' })
             .then(res => {
               if (res?.success) {
-                message.success('保存成功', 1);
+                message.success('删除成功', 1);
                 getRptList(); //刷新数据
                 setIsSpinning(false);
               }
             })
             .catch(e => {
-              console.error('🚀保存', e);
-              message.error('保存失败', 1);
+              console.error('🚀删除', e);
+              message.error('删除失败', 1);
               setIsSpinning(false);
             });
+        } else {
+          message.success('删除成功', 1);
         }
       },
     });
@@ -477,7 +657,6 @@ export default function RightRptContent(props) {
             allowClear
           />
         </Form.Item>
-
         <Button className="btn-delete" onClick={handleDelete}>
           删除
         </Button>
@@ -487,7 +666,18 @@ export default function RightRptContent(props) {
         </Button>
         {status === 'editing' ? (
           <Fragment>
-            <Button className="btn-history">操作记录</Button>
+            <Popover
+              placement="bottomRight"
+              content={historyContent()}
+              overlayClassName="custom-rpt-management-popover"
+              title={null}
+              trigger="click"
+              visible={popoverVisible.history}
+              onVisibleChange={v => setPopoverVisible(p => ({ ...p, history: v }))}
+              arrowPointAtCenter
+            >
+              <Button className="btn-history">操作记录</Button>
+            </Popover>
             <Popover
               placement="bottomRight"
               content={shareContent()}
@@ -538,15 +728,19 @@ export default function RightRptContent(props) {
           </div>
         </div>
         <div className="bottom">
-          <Table
-            columns={columns}
-            rowKey={'ID'}
-            dataSource={[]}
-            pagination={false}
-            // bordered
-            // scroll={{ x: tablewidth }}
-            scroll={{ x: true }}
-          />
+          <div className="table-box">
+              <div className="table-header">
+                {columns.map(x => (
+                  <div className="header-item" key={x.dataIndex}>
+                    {x.title}
+                  </div>
+                ))}
+              </div>
+              <div className="table-empty">
+              <img src={emptyImg} alt="" />
+              <div>暂无数据</div>
+            </div>
+          </div>
         </div>
       </div>
     </div>

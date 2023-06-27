@@ -68,31 +68,33 @@ export default function SiderRptList(props) {
   //报表块
   const getRptItem = ({ BBID, BBMC = '--', CJR = '--', CJRID, FXR = '', SFSC = '0' }) => {
     const handleEdit = id => {
-      if (status === 'adding') {
-        Modal.confirm({
-          title: '提示：',
-          content: `请确保当前报表已保存，是否确定离开？`,
-          okText: '确定',
-          cancelText: '取消',
-          onOk: () => {
-            hangleDataRestore();
-            getEditData(id);
-          },
-        });
-      } else if (status === 'editing') {
-        Modal.confirm({
-          title: '提示：',
-          content: `请确保当前报表已保存，是否确定离开？`,
-          okText: '确定',
-          cancelText: '取消',
-          onOk: () => {
-            hangleDataRestore();
-            getEditData(id);
-          },
-        });
-      } else {
-        getEditData(id);
-      }
+      // if (status === 'adding') {
+      //   Modal.confirm({
+      //     title: '提示：',
+      //     content: `请确保当前报表已保存，是否确定离开？`,
+      //     okText: '确定',
+      //     cancelText: '取消',
+      //     onOk: () => {
+      //       hangleDataRestore();
+      //       getEditData(id);
+      //     },
+      //   });
+      // } else if (status === 'editing') {
+      //   Modal.confirm({
+      //     title: '提示：',
+      //     content: `请确保当前报表已保存，是否确定离开？`,
+      //     okText: '确定',
+      //     cancelText: '取消',
+      //     onOk: () => {
+      //       hangleDataRestore();
+      //       getEditData(id);
+      //     },
+      //   });
+      // } else {
+      //   getEditData(id);
+      // }
+      hangleDataRestore();
+      getEditData(id);
     };
     return (
       <div className="rpt-item" key={BBID} onClick={() => handleEdit(BBID)}>
@@ -120,20 +122,21 @@ export default function SiderRptList(props) {
     }, waits);
   };
 
+  //新建
   const handleAddRpt = () => {
     if (status === 'normal') {
       setStatus('adding');
     } else {
-      Modal.confirm({
-        title: '提示：',
-        content: `请确保当前报表已保存，是否确定离开？`,
-        okText: '确定',
-        cancelText: '取消',
-        onOk: () => {
+      // Modal.confirm({
+      //   title: '提示：',
+      //   content: `请确保当前报表已保存，是否确定离开？`,
+      //   okText: '确定',
+      //   cancelText: '取消',
+      //   onOk: () => {
           hangleDataRestore();
           setStatus('adding');
-        },
-      });
+      //   },
+      // });
     }
   };
 
