@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {Button, Icon, message, Rate, Select, Tabs, Tooltip} from 'antd';
+import {Button, Icon, message, Popconfirm, Rate, Select, Tabs, Tooltip} from 'antd';
 import styles from "../../../Common/TagSelect/index.less";
 import {FetchQueryCustomReportList, ProjectCollect} from "../../../../services/pmsServices";
 import {Link} from "react-router-dom";
@@ -66,9 +66,12 @@ export default function AnalyzeRepsCard(props) {
   const handleProjectCollect = (e, flag, id) => {
     e.stopPropagation();// 阻止事件冒泡
     let payload = {}
+    let info = ""
     if (flag) {
+      info = "收藏报表成功！"
       payload.operateType = 'SCBB'
     } else {
+      info = "取消收藏报表成功！"
       payload.operateType = 'QXBB'
     }
     payload.projectId = id;
@@ -80,6 +83,7 @@ export default function AnalyzeRepsCard(props) {
           } else {
             getCusRepData("WD", 3, true, "collection");
           }
+          message.success(info)
         }
       })
       .catch(e => {
@@ -123,8 +127,20 @@ export default function AnalyzeRepsCard(props) {
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
                       <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
-                      <i onClick={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
-                         className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
+                      <Popconfirm
+                        title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
+                        onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
+                        onCancel={(e) => {
+                          e.stopPropagation()
+                        }}
+                        okText="确认"
+                        cancelText="取消"
+                      >
+                        <i onClick={(e) => {
+                          e.stopPropagation()
+                        }}
+                           className={i.SFSC === 0 ? "rep-infos-icon2 iconfont icon-star" : "rep-infos-icon2 iconfont icon-fill-star"}/>
+                      </Popconfirm>
                     </div>
                     <div className="rep-infos-time">
                       {i.CJR}&nbsp;&nbsp;{i.CJSJ}创建
