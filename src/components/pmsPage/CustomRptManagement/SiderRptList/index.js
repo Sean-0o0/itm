@@ -1,11 +1,11 @@
 import React, { useEffect, useState, useRef, useCallback } from 'react';
-import { Button, message, Input, Spin, Empty, Modal } from 'antd';
+import { Button, message, Input, Spin, Empty, Modal, Tooltip } from 'antd';
 import moment from 'moment';
 import { FetchQueryCustomReportList } from '../../../../services/pmsServices';
 
 export default function SiderRptList(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const { status = 'normal', rptList, rptOrigin } = dataProps;
+  const { status = 'normal', rptList, rptOrigin, editingId = -1 } = dataProps;
   const { setStatus, hangleDataRestore, getEditData, setRptList } = funcProps;
   // const [bbmc, setBbmc] = useState(''); //报表名称
   // const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -97,9 +97,16 @@ export default function SiderRptList(props) {
       getEditData(id);
     };
     return (
-      <div className="rpt-item" key={BBID} onClick={() => handleEdit(BBID)}>
+      <div
+        className="rpt-item"
+        key={BBID}
+        onClick={() => handleEdit(BBID)}
+        style={editingId === BBID ? { backgroundColor: '#3361ff1a' } : {}} //选中样式
+      >
         <div className="top">
-          {BBMC}
+          <Tooltip title={BBMC} placement="topLeft">
+            <span>{BBMC}</span>
+          </Tooltip>
           {SFSC === 1 && <i className="iconfont icon-star-fill" />}
         </div>
         <div className="bottom">
@@ -133,8 +140,8 @@ export default function SiderRptList(props) {
       //   okText: '确定',
       //   cancelText: '取消',
       //   onOk: () => {
-          hangleDataRestore();
-          setStatus('adding');
+      hangleDataRestore();
+      setStatus('adding');
       //   },
       // });
     }

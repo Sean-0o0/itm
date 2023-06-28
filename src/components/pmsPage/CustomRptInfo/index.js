@@ -8,11 +8,11 @@ import {
 } from '../../../services/pmsServices/index';
 import TopConsole from './TopConsole';
 import InfoTable from './InfoTable';
-import {Link} from 'react-router-dom';
-import * as XLSX from "xlsx";
+import { Link } from 'react-router-dom';
+import * as XLSX from 'xlsx';
 
 export default function CustomRptInfo(props) {
-  const {bbid, bbmc, routes} = props;
+  const { bbid, bbmc, routes } = props;
   const [data, setData] = useState({}); //通过报表id查询到的报表数据
   const [tableData, setTableData] = useState({
     data: [],
@@ -28,8 +28,7 @@ export default function CustomRptInfo(props) {
     if (bbid !== -1) {
       getData();
     }
-    return () => {
-    };
+    return () => {};
   }, [bbid, bbmc]);
 
   //转树结构
@@ -112,8 +111,9 @@ export default function CustomRptInfo(props) {
         title: x.title,
         dataIndex: x.QDQZZD,
         key: x.QDQZZD,
-        align: 'left',
         width: x.title.length * 20,
+        jumpId: x.QDTZZD,
+        ellipsis: true,
       };
     });
     let filterData = JSON.parse(obj.QDZSSXZD);
@@ -314,8 +314,8 @@ export default function CustomRptInfo(props) {
         if (res?.success) {
           const arrayList = [];
           let exportData = JSON.parse(res.result);
-          console.log('exportData', exportData)
-          console.log('data.columns', data.columns)
+          console.log('exportData', exportData);
+          console.log('data.columns', data.columns);
           //3条数据
           // exportData.map(item => {
           //   let array = {};
@@ -344,13 +344,13 @@ export default function CustomRptInfo(props) {
             finalArr.push(temp);
           });
           console.log('🚀 ~ file: index.js:321 ~ handleExport ~ finalArr:', finalArr);
-          console.log('要导出的没顺序的数据', arrayList)
+          console.log('要导出的没顺序的数据', arrayList);
           //导出的顺序
           let titleOrder = [];
           data.columns.forEach(e => {
-            titleOrder.push(e.title)
-          })
-          exportExcelFile(finalArr, 'Sheet1', bbmc + '.xlsx')
+            titleOrder.push(e.title);
+          });
+          exportExcelFile(finalArr, 'Sheet1', bbmc + '.xlsx');
         }
       })
       .catch(e => {
@@ -366,17 +366,16 @@ export default function CustomRptInfo(props) {
    * @param fileName 文件名
    */
   const exportExcelFile = (array = [], sheetName = 'Sheet1', fileName = 'example.xlsx') => {
-    console.log('要导出的数据', array)
+    console.log('要导出的数据', array);
     const jsonWorkSheet = XLSX.utils.json_to_sheet(array);
     const workBook = {
       SheetNames: [sheetName],
       Sheets: {
         [sheetName]: jsonWorkSheet,
-      }
+      },
     };
     return XLSX.writeFile(workBook, fileName);
-  }
-
+  };
 
   return (
     <div className="custom-rpt-info-box">
@@ -412,6 +411,7 @@ export default function CustomRptInfo(props) {
           getSQL={getSQL}
           handleExport={handleExport}
           exportExcelFile={exportExcelFile}
+          routes={routes}
         />
       </div>
     </div>

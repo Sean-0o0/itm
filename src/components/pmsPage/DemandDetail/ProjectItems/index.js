@@ -274,7 +274,7 @@ export default function ProjectItems(props) {
   const resumeUploadModalProps = {
     isAllWindow: 1,
     width: '760px',
-    height: '305px',
+    height: '520px',
     title: '简历上传',
     style: { top: '60px' },
     visible: modalVisible.resumeUpload,
@@ -754,23 +754,27 @@ export default function ProjectItems(props) {
           <div className="item" key={item.SWLX}>
             <div className="item-top">{item.SWLX}</div>
             <div className="item-bottom">
-              {item.SXDATA.map((x, i) => (
-                <div
-                  className="bottom-row"
-                  style={x.ZXZT === '2' ? {} : { color: '#3361ff' }}
-                  key={x.SWZXID}
-                >
-                  {x.ZXZT === '2' ? (
-                    <i className="iconfont circle-reduce" />
-                  ) : (
-                    <i className="iconfont circle-check" />
-                  )}
-                  <Tooltip title={x.SWMC} placement="topLeft">
-                    <span>{x.SWMC}</span>
-                  </Tooltip>
-                  {getItemBtn(x, x.SWZXID)}
-                </div>
-              ))}
+              {item.SXDATA.map((x, i) => {
+                // 暂时隐藏
+                if (x.SWMC === '发送确认邮件' || x.SWMC === '录用确认') return '';
+                return (
+                  <div
+                    className="bottom-row"
+                    style={x.ZXZT === '2' ? {} : { color: '#3361ff' }}
+                    key={x.SWZXID}
+                  >
+                    {x.ZXZT === '2' ? (
+                      <i className="iconfont circle-reduce" />
+                    ) : (
+                      <i className="iconfont circle-check" />
+                    )}
+                    <Tooltip title={x.SWMC} placement="topLeft">
+                      <span>{x.SWMC}</span>
+                    </Tooltip>
+                    {getItemBtn(x, x.SWZXID)}
+                  </div>
+                );
+              })}
             </div>
           </div>
         ))}

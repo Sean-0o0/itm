@@ -109,7 +109,7 @@ export default function RightRptContent(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ QueryReportOperateRecord ~ res', JSON.parse(res.result));
+          // console.log('🚀 ~ QueryReportOperateRecord ~ res', JSON.parse(res.result));
           setHistoryData(JSON.parse(res.result));
         }
       })
@@ -376,8 +376,11 @@ export default function RightRptContent(props) {
 
     //单个删除
     const onColumnFieldsDelete = id => {
-      let arr = [...selectingData.columnFields].filter(x => x.ID !== id);
-      setSelectingData(p => ({ ...p, columnFields: arr }));
+      if (id !== 8) {
+        //项目名称不允许删除，ID为8
+        let arr = [...selectingData.columnFields].filter(x => x.ID !== id);
+        setSelectingData(p => ({ ...p, columnFields: arr }));
+      }
     };
 
     //取消
@@ -452,7 +455,12 @@ export default function RightRptContent(props) {
                 >
                   <i className="iconfont icon-drag-2" />
                   <span>{x?.title}</span>
-                  <i className="iconfont icon-close" onClick={() => onColumnFieldsDelete(x?.ID)} />
+                  {x?.ID !== 8 && (
+                    <i
+                      className="iconfont icon-close"
+                      onClick={() => onColumnFieldsDelete(x?.ID)}
+                    />
+                  )}
                 </div>
               ))}
             </div>
@@ -729,14 +737,14 @@ export default function RightRptContent(props) {
         </div>
         <div className="bottom">
           <div className="table-box">
-              <div className="table-header">
-                {columns.map(x => (
-                  <div className="header-item" key={x.dataIndex}>
-                    {x.title}
-                  </div>
-                ))}
-              </div>
-              <div className="table-empty">
+            <div className="table-header">
+              {columns.map(x => (
+                <div className="header-item" key={x.dataIndex}>
+                  {x.title}
+                </div>
+              ))}
+            </div>
+            <div className="table-empty">
               <img src={emptyImg} alt="" />
               <div>暂无数据</div>
             </div>

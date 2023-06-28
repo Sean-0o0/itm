@@ -15774,19 +15774,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .info-table {
-    //padding: 16px 24px;
-    background-color: #fff;
-    box-shadow: 0 4px 4px 0 rgb(20 38 98 / 4%);
-    border-radius: 8;
-    overflow: hidden;
-  }
-
-  .info-table {
-    //margin: 16px 24px 24px 24px;
-    // height: calc(100vh - 235px);
     flex-grow: 1;
     display: flex;
     flex-direction: column;
+    background-color: #fff;
+    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+    border-radius: 8;
+    overflow: hidden;
 
     & > .btn-add-prj-box {
       margin-bottom: 16px;
@@ -16262,7 +16256,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           font-family: PingFangSC-Medium, PingFang SC;
 
           &:hover {
-            background-color: #3361ff1a;
+            background-color: #c9cdd91a;
           }
 
           & > .top {
@@ -16275,12 +16269,16 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             display: flex;
             flex-direction: row;
             align-items: center;
-            max-width: calc(100% - 16px);
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
+
+            span {
+              // max-width: calc(100% - 22px);
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
 
             .icon-star-fill {
+              flex-shrink: 0;
               font-size: 16px;
               color: #f9a812;
               margin-left: 6px;
@@ -17554,6 +17552,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       flex-grow: 1;
       display: flex;
       flex-direction: column;
+      position: relative;
 
       & > .btn-export-box {
         text-align: right;
@@ -17563,27 +17562,43 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .antd-btn-primary();
         }
       }
+      // .white-blank {
+      //   position: absolute;
+      //   bottom: 16px;
+      //   background-color: #ffffff;
+      //   width: 2px;
+      //   height: 60px;
+      //   left: 23.5px;
+      //   z-index: 1;
+      // }
 
       .project-info-table-box {
         flex-grow: 1;
-        overflow: hidden;
-        overflow-y: auto;
-        padding-right: 4px;
-
-        &::-webkit-scrollbar {
-          width: 8px;
-          background-color: #ffffff;
-          border-radius: 4px;
-        }
-
-        &::-webkit-scrollbar-thumb {
-          background-color: #d8d8d8;
-          border-radius: 4px;
-        }
+        border: 1px solid #e8e8e8;
+        border-radius: 4px;
 
         .table-link-strong();
 
         .ant-table {
+          height: calc(100vh - 390px);
+          width: 100%;
+          overflow: hidden;
+          overflow-y: auto;
+          overflow-x: auto;
+
+          &::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+            background-color: #ffffff;
+            border-radius: 4px;
+            // border: 1px solid #e8e8e8;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #d8d8d8;
+            border-radius: 4px;
+          }
+
           td {
             padding: 9.17px;
             font-size: 14px;
@@ -17599,13 +17614,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-family: PingFangSC-Medium, PingFang SC;
             font-weight: bold;
             color: #606266;
-          }
-
-          .ant-table-body {
-            // min-height: 560px;
-            table {
-              border: 1px solid #e8e8e8;
-            }
           }
 
           .ant-table-scroll .ant-table-header {
@@ -17624,6 +17632,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .ant-table-thead {
             position: sticky;
             top: 0;
+            border-top: 1px solid #e8e8e8;
           }
 
           //项目标签
@@ -17664,8 +17673,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           align-items: center;
           background-color: #fff;
           width: 100%;
-          position: sticky;
-          bottom: -1px;
+          // width: calc(100% - 304px);
+          // position: fixed;
+          // bottom: 48.5px;
+          // left: 248px;
+          // border-left: 1px solid #e8e8e8;
+          // border-bottom: 1px solid #e8e8e8;
 
           .ant-select {
             font-size: 14px !important;

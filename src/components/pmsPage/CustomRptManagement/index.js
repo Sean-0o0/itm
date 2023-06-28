@@ -65,13 +65,27 @@ export default function CustomRptManagement(props) {
                 })
                   .then(res => {
                     if (res?.success) {
-                      let data3 = buildTree(JSON.parse(res.result), 'title', 'key');
+                      let columnFieldsArr = JSON.parse(res.result);
+                      columnFieldsArr.forEach(x => {
+                        if (x.ID === 8) {
+                          x.disabled = true; //项目名称不可操作, ID为8
+                        }
+                      });
+                      const data3 = buildTree(columnFieldsArr, 'title', 'key');
+                      // console.log(
+                      //   'conditionFilter: ',
+                      //   data,
+                      //   'conditionGroup: ',
+                      //   data2,
+                      //   'columnFields: ',
+                      //   data3,
+                      // );
                       setBasicData({
                         conditionFilter: data,
                         conditionGroup: data2,
                         columnFields: data3,
                       });
-                      //筛选条件和展示字段默认项目名称
+                      //筛选条件和展示字段默认项目名称, ID为8
                       let conditionFilterXmmc = data.filter(x => x.ID === 8)[0];
                       let columnFieldsXmmc = JSON.parse(res.result).filter(x => x.ID === 8)[0];
                       columnFieldsXmmc.title = columnFieldsXmmc.NAME;
@@ -323,6 +337,7 @@ export default function CustomRptManagement(props) {
             status,
             rptList,
             rptOrigin,
+            editingId,
           }}
           funcProps={{
             setStatus,
