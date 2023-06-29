@@ -147,7 +147,6 @@ export default function ConditionFilter(props) {
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
           showSearch
-          allowClear
           showArrow
           value={SELECTORVALUE.type}
           onChange={handleYSXMLXChange}

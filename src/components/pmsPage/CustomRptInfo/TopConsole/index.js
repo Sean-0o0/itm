@@ -169,7 +169,6 @@ export default function TopConsole(props) {
           }
           showArrow
           showSearch
-          allowClear
           value={SELECTORVALUE.type}
           onChange={handleYSXMLXChange}
           placeholder="请选择"
