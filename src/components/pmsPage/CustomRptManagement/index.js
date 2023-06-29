@@ -39,6 +39,7 @@ export default function CustomRptManagement(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [status, setStatus] = useState('normal'); //editing、adding、normal
   const [editingId, setEditingId] = useState(-1); //正在编辑的报表id
+  const [saved, setSaved] = useState(false); //是否已保存
 
   useEffect(() => {
     getBasicData();
@@ -109,6 +110,7 @@ export default function CustomRptManagement(props) {
                                 ),
                                 columnFields: [JSON.parse(JSON.stringify(columnFieldsXmmc))],
                               }));
+                              setSaved(true);
                               getRptList();
                             }
                           })
@@ -192,6 +194,7 @@ export default function CustomRptManagement(props) {
                   });
                   setRptName(obj.BBMC);
                   setStatus('editing');
+                  setSaved(true);
                   setIsSpinning(false);
                 })
                 .catch(e => {
@@ -305,6 +308,7 @@ export default function CustomRptManagement(props) {
     setDragKey(null);
     setStatus('normal');
     setEditingId(-1);
+    setSaved(true);
   };
 
   return (
@@ -338,6 +342,7 @@ export default function CustomRptManagement(props) {
             rptList,
             rptOrigin,
             editingId,
+            saved,
           }}
           funcProps={{
             setStatus,
@@ -374,6 +379,7 @@ export default function CustomRptManagement(props) {
               setSelectedData,
               hangleDataRestore,
               getRptList,
+              setSaved,
             }}
           />
         )}

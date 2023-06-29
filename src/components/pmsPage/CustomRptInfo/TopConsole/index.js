@@ -8,6 +8,7 @@ import {
   Input,
   message,
   DatePicker,
+  Icon,
 } from 'antd';
 import {} from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
@@ -50,6 +51,7 @@ export default function TopConsole(props) {
       SELECTORDATA = [],
       SELECTORVALUE = [],
       TJBCXLX = '',
+      sltOpen = false,
     } = x;
     // console.log("🚀 ~ file: index.js:57 ~ getComponent ~ TJBCXLX:", TJBCXLX)
     // console.log('🚀 ~ file: index.js:28 ~ getComponent ~ SELECTORDATA:', SELECTORDATA);
@@ -75,6 +77,17 @@ export default function TopConsole(props) {
       arr.forEach(y => {
         if (y.ID === ID) {
           y.SELECTORVALUE = value;
+        }
+      });
+      setData(p => ({ ...p, filterData: arr }));
+    };
+
+    //修改 sltOpen
+    const modifySltOpen = bool => {
+      let arr = JSON.parse(JSON.stringify([...data.filterData]));
+      arr.forEach(y => {
+        if (y.ID === ID) {
+          y.sltOpen = bool;
         }
       });
       setData(p => ({ ...p, filterData: arr }));
@@ -154,7 +167,7 @@ export default function TopConsole(props) {
           filterOption={(input, option) =>
             option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
           }
-          showArrow={false}
+          showArrow
           showSearch
           allowClear
           value={SELECTORVALUE.type}
@@ -170,27 +183,33 @@ export default function TopConsole(props) {
       );
 
       const component2 = (
-        <TreeSelect
-          allowClear
-          showArrow
-          className="item-component"
-          showSearch
-          treeCheckable
-          maxTagCount={maxTagCount}
-          maxTagTextLength={42}
-          maxTagPlaceholder={extraArr => {
-            return `等${extraArr.length + maxTagCount}个`;
-          }}
-          showCheckedStrategy={TreeSelect.SHOW_CHILD}
-          treeNodeFilterProp="title"
-          dropdownClassName="newproject-treeselect"
-          dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-          treeData={ysxmArr}
-          value={SELECTORVALUE.value}
-          placeholder="请选择"
-          onChange={handleYSXMChange}
-          // treeDefaultExpandAll
-        />
+        <Fragment>
+          <TreeSelect
+            allowClear
+            className="item-component"
+            showSearch
+            treeCheckable
+            maxTagCount={maxTagCount}
+            maxTagTextLength={42}
+            maxTagPlaceholder={extraArr => {
+              return `等${extraArr.length + maxTagCount}个`;
+            }}
+            showCheckedStrategy={TreeSelect.SHOW_CHILD}
+            treeNodeFilterProp="title"
+            dropdownClassName="newproject-treeselect"
+            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+            treeData={ysxmArr}
+            value={SELECTORVALUE.value}
+            placeholder="请选择"
+            onChange={handleYSXMChange}
+            open={sltOpen}
+            onDropdownVisibleChange={v => modifySltOpen(v)}
+          />
+          <Icon
+            type="down"
+            className={'label-selector-arrow' + (sltOpen ? ' selector-rotate' : '')}
+          />
+        </Fragment>
       );
       return (
         <Fragment>
@@ -215,6 +234,7 @@ export default function TopConsole(props) {
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               showSearch
+              showArrow
               allowClear
               mode="multiple"
               maxTagCount={maxTagCount}
@@ -258,13 +278,13 @@ export default function TopConsole(props) {
                 onChange={handleMultipleSltChange}
                 // />
                 treeDefaultExpandedKeys={treeDefaultExpandedKeys}
-                // open={orgOpen}
-                // onDropdownVisibleChange={v => setOrgOpen(v)}
+                open={sltOpen}
+                onDropdownVisibleChange={v => modifySltOpen(v)}
               />
-              {/* <Icon
+              <Icon
                 type="down"
-                className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
-              /> */}
+                className={'label-selector-arrow' + (sltOpen ? ' selector-rotate' : '')}
+              />
             </Fragment>
           );
           break;
@@ -278,6 +298,8 @@ export default function TopConsole(props) {
                 placeholder="下限"
                 type="number"
                 allowClear
+                min={0}
+                max={9999999999}
               />
               <Input className="input-to" placeholder="-" disabled />
               <InputNumber
@@ -287,6 +309,8 @@ export default function TopConsole(props) {
                 placeholder="上限"
                 type="number"
                 allowClear
+                max={9999999999}
+                min={0}
               />
             </div>
           );

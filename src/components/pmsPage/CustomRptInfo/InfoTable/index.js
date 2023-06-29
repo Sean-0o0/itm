@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip, Modal } from 'antd';
+import { Button, Table, Popover, message, Tooltip, Modal, Pagination } from 'antd';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
@@ -240,7 +240,7 @@ export default function InfoTable(props) {
             }
           })
           .catch(e => {});
-      console.log('🚀 ~ file: index.js:21 ~ useEffect ~ columns:', columns);
+      // console.log('🚀 ~ file: index.js:21 ~ useEffect ~ columns:', columns);
     }
     return () => {};
   }, [JSON.stringify(columns)]);
@@ -279,21 +279,33 @@ export default function InfoTable(props) {
       };
     });
     // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
-    return arr3.reverse();
+    return arr3;
   };
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
-    // console.log('handleTableChange', pagination, filters, sorter, extra);
-    const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        getSQL({ current, pageSize, sort: sorter.field + ' DESC' }, data);
+        getSQL(
+          {
+            current: tableData.curPage,
+            pageSize: tableData.curPageSize,
+            sort: sorter.field + ' DESC',
+          },
+          data,
+        );
       } else {
-        getSQL({ current, pageSize, sort: sorter.field + ' ASC,XMID DESC' }, data);
+        getSQL(
+          {
+            current: tableData.curPage,
+            pageSize: tableData.curPageSize,
+            sort: sorter.field + ' ASC,XMID DESC',
+          },
+          data,
+        );
       }
     } else {
-      getSQL({ current, pageSize }, data);
+      getSQL({ current: tableData.curPage, pageSize: tableData.curPageSize }, data);
     }
     return;
   };
@@ -305,7 +317,6 @@ export default function InfoTable(props) {
           导出
         </Button>
       </div>
-      <div className="white-blank"></div>
       <div
         className="project-info-table-box"
         style={tableData.data.length === 0 ? { border: 0 } : {}}
@@ -315,20 +326,40 @@ export default function InfoTable(props) {
           rowKey={'XMID'}
           dataSource={tableData.data}
           onChange={handleTableChange}
-          pagination={{
-            current: tableData.curPage,
-            pageSize: tableData.curPageSize,
-            defaultCurrent: 1,
-            pageSizeOptions: ['20', '40', '50', '100'],
-            showSizeChanger: true,
-            hideOnSinglePage: false,
-            showQuickJumper: true,
-            showTotal: t => `共 ${tableData.total} 条数据`,
-            total: tableData.total,
-          }}
+          // pagination={{
+          //   current: tableData.curPage,
+          //   pageSize: tableData.curPageSize,
+          //   defaultCurrent: 1,
+          //   pageSizeOptions: ['20', '40', '50', '100'],
+          //   showSizeChanger: true,
+          //   hideOnSinglePage: false,
+          //   showQuickJumper: true,
+          //   showTotal: t => `共 ${tableData.total} 条数据`,
+          //   total: tableData.total,
+          // }}
+          pagination={false}
           // bordered
         />
       </div>
+      <Pagination
+        {...{
+          current: tableData.curPage,
+          pageSize: tableData.curPageSize,
+          defaultCurrent: 1,
+          pageSizeOptions: ['20', '40', '50', '100'],
+          showSizeChanger: true,
+          hideOnSinglePage: false,
+          showQuickJumper: true,
+          showTotal: t => `共 ${tableData.total} 条数据`,
+          total: tableData.total,
+        }}
+        onChange={(p, ps) => {
+          getSQL({ current: p, pageSize: ps }, data);
+        }}
+        onShowSizeChange={(cur, size) => {
+          getSQL({ current: cur, pageSize: size }, data);
+        }}
+      />
     </div>
   );
 }

@@ -22,7 +22,6 @@ export default function ConditionFilter(props) {
   } = props;
 
   useEffect(() => {
-    
     return () => {};
   }, []);
 
@@ -34,6 +33,7 @@ export default function ConditionFilter(props) {
       SELECTORDATA = [],
       SELECTORVALUE = [],
       TJBCXLX = '',
+      sltOpen,
     } = x;
     // console.log('🚀 ~ file: index.js:28 ~ getComponent ~ SELECTORDATA:', SELECTORDATA);
     let maxTagCount = 1;
@@ -58,6 +58,17 @@ export default function ConditionFilter(props) {
       arr.forEach(y => {
         if (y.ID === ID) {
           y.SELECTORVALUE = value;
+        }
+      });
+      setData(arr);
+    };
+
+    //修改 sltOpen
+    const modifySltOpen = bool => {
+      let arr = [...data];
+      arr.forEach(y => {
+        if (y.ID === ID) {
+          y.sltOpen = bool;
         }
       });
       setData(arr);
@@ -137,6 +148,7 @@ export default function ConditionFilter(props) {
           }
           showSearch
           allowClear
+          showArrow
           value={SELECTORVALUE.type}
           onChange={handleYSXMLXChange}
           placeholder="请选择"
@@ -150,27 +162,33 @@ export default function ConditionFilter(props) {
       );
 
       const component2 = (
-        <TreeSelect
-          allowClear
-          showArrow
-          className="item-component"
-          showSearch
-          treeCheckable
-          maxTagCount={maxTagCount}
-          maxTagTextLength={42}
-          maxTagPlaceholder={extraArr => {
-            return `等${extraArr.length + maxTagCount}个`;
-          }}
-          showCheckedStrategy={TreeSelect.SHOW_CHILD}
-          treeNodeFilterProp="title"
-          dropdownClassName="newproject-treeselect"
-          dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
-          treeData={ysxmArr}
-          value={SELECTORVALUE.value}
-          placeholder="请选择"
-          onChange={handleYSXMChange}
-          // treeDefaultExpandAll
-        />
+        <Fragment>
+          <TreeSelect
+            allowClear
+            className="item-component"
+            showSearch
+            treeCheckable
+            maxTagCount={maxTagCount}
+            maxTagTextLength={42}
+            maxTagPlaceholder={extraArr => {
+              return `等${extraArr.length + maxTagCount}个`;
+            }}
+            showCheckedStrategy={TreeSelect.SHOW_CHILD}
+            treeNodeFilterProp="title"
+            dropdownClassName="newproject-treeselect"
+            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+            treeData={ysxmArr}
+            value={SELECTORVALUE.value}
+            placeholder="请选择"
+            onChange={handleYSXMChange}
+            open={sltOpen}
+            onDropdownVisibleChange={v => modifySltOpen(v)}
+          />
+          <Icon
+            type="down"
+            className={'label-selector-arrow' + (sltOpen ? ' selector-rotate' : '')}
+          />
+        </Fragment>
       );
       return (
         <Fragment>
@@ -197,7 +215,7 @@ export default function ConditionFilter(props) {
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }
               showSearch
-              showArrow={false}
+              showArrow
               allowClear
               mode="multiple"
               maxTagCount={maxTagCount}
@@ -222,7 +240,6 @@ export default function ConditionFilter(props) {
             <Fragment>
               <TreeSelect
                 allowClear
-                showArrow
                 className="item-component"
                 showSearch
                 treeCheckable
@@ -239,15 +256,14 @@ export default function ConditionFilter(props) {
                 value={SELECTORVALUE}
                 placeholder="请选择"
                 onChange={handleMultipleSltChange}
-                // />
                 treeDefaultExpandedKeys={treeDefaultExpandedKeys}
-                // open={orgOpen}
-                // onDropdownVisibleChange={v => setOrgOpen(v)}
+                open={sltOpen}
+                onDropdownVisibleChange={v => modifySltOpen(v)}
               />
-              {/* <Icon
+              <Icon
                 type="down"
-                className={'label-selector-arrow' + (orgOpen ? ' selector-rotate' : '')}
-              /> */}
+                className={'label-selector-arrow' + (sltOpen ? ' selector-rotate' : '')}
+              />
             </Fragment>
           );
           break;
@@ -261,6 +277,8 @@ export default function ConditionFilter(props) {
                 placeholder="下限"
                 type="number"
                 allowClear
+                max={9999999999}
+                min={0}
               />
               <Input className="input-to" placeholder="-" disabled />
               <InputNumber
@@ -270,6 +288,8 @@ export default function ConditionFilter(props) {
                 placeholder="上限"
                 type="number"
                 allowClear
+                max={9999999999}
+                min={0}
               />
             </div>
           );

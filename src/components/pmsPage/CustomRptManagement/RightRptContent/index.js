@@ -43,6 +43,7 @@ export default function RightRptContent(props) {
     setSelectingData,
     hangleDataRestore,
     getRptList,
+    setSaved,
   } = funcProps;
   const [popoverVisible, setPopoverVisible] = useState({
     setting: false, //字段设置
@@ -123,6 +124,7 @@ export default function RightRptContent(props) {
   const handleConditionGroupChange = (value, selectedOptions) => {
     // console.log(value, selectedOptions);
     // setSelectingData(p => ({ ...p, conditionGroup: [...selectedOptions] }));
+    setSaved(false);
     setSelectedData(p => ({ ...p, conditionGroup: [...p.conditionGroup, [...selectedOptions]] }));
   };
   const handleConditionFilterChange = (value, selectedOptions) => {
@@ -136,6 +138,7 @@ export default function RightRptContent(props) {
           if (res?.success) {
             console.log(obj.TJBCXLX, JSON.parse(res.result));
             if (obj.TJBCXLX === 'YSXM') {
+              obj.sltOpen = false; //树下拉框展开收起
               function uniqueFunc(arr, uniId) {
                 const res = new Map();
                 return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
@@ -154,6 +157,7 @@ export default function RightRptContent(props) {
                 };
             } else if (obj.ZJLX === 'TREE-MULTIPLE') {
               obj.SELECTORDATA = buildTree(JSON.parse(res.result));
+              obj.sltOpen = false; //树下拉框展开收起
             } else {
               obj.SELECTORDATA = JSON.parse(res.result);
             }
@@ -166,6 +170,7 @@ export default function RightRptContent(props) {
           setIsSpinning(false);
         });
     }
+    setSaved(false);
     setSelectedData(p => ({
       ...p,
       conditionFilter: [...p.conditionFilter, obj],
@@ -174,10 +179,12 @@ export default function RightRptContent(props) {
 
   //组合、筛选条件删除
   const onConditionGroupDelete = id => {
+    setSaved(false);
     let arr = [...selectedData.conditionGroup].filter(x => x[x.length - 1].ID !== id);
     setSelectedData(p => ({ ...p, conditionGroup: arr }));
   };
   const onConditionFilterDelete = id => {
+    setSaved(false);
     console.log('🚀 ~ file: index.js:110 ~ onConditionFilterDelete ~ id:', id);
     let arr = [...selectedData.conditionFilter].filter(x => x.ID !== id);
     setSelectedData(p => ({ ...p, conditionFilter: arr }));
@@ -390,6 +397,7 @@ export default function RightRptContent(props) {
 
     //确定
     const onColumnFieldsConfirm = () => {
+      setSaved(false);
       // console.log('selectingData.columnFields', selectingData.columnFields);
       setSelectedData(p => ({ ...p, columnFields: [...selectingData.columnFields] }));
       onColumnFieldsCancel();
@@ -517,6 +525,7 @@ export default function RightRptContent(props) {
   //报表名称
   const handleRptNameChange = e => {
     setRptName(e.target.value);
+    setSaved(false);
   };
 
   //操作按钮
@@ -635,6 +644,7 @@ export default function RightRptContent(props) {
         SaveCustomReportSetting(params)
           .then(res => {
             if (res?.success) {
+              setSaved(true);
               message.success('保存成功', 1);
               getRptList(); //刷新数据
               setIsSpinning(false);
@@ -710,7 +720,10 @@ export default function RightRptContent(props) {
             data={selectedData.conditionFilter}
             onChange={handleConditionFilterChange}
             onDelete={onConditionFilterDelete}
-            setData={v => setSelectedData(p => ({ ...p, conditionFilter: v }))}
+            setData={v => {
+              setSaved(false);
+              setSelectedData(p => ({ ...p, conditionFilter: v }));
+            }}
           />
           <div className="group-condition">
             <span className="label">组合条件</span>
