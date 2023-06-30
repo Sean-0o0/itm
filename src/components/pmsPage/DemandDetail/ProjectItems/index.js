@@ -190,8 +190,9 @@ export default function ProjectItems(props) {
       ].includes(SWMC)
     ) {
       if (
-        (['发送确认邮件', '简历上传', '简历分发', '录用确认'].includes(SWMC) && isDock) ||
-        (['账号新增', '提交录用申请'].includes(SWMC) && isFqr) ||
+        (['账号新增', '发送确认邮件', '简历上传', '简历分发', '录用确认'].includes(SWMC) &&
+          isDock) ||
+        (['提交录用申请'].includes(SWMC) && isFqr) ||
         (SWMC === '综合评测打分' &&
           isPcry() &&
           XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2')
@@ -294,7 +295,7 @@ export default function ProjectItems(props) {
   const newAccountProps = {
     isAllWindow: 1,
     width: '760px',
-    height: '360px',
+    height: '370px',
     title: '账号新增',
     style: { top: '60px' },
     visible: modalVisible.newAccount,

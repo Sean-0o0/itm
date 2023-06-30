@@ -192,7 +192,8 @@ class PersonnelNeeds extends Component {
         RYSL: item['RYSL' + item.ID],
         SC: item['SC' + item.ID],
         YQ: item['YQ' + item.ID]?.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>').replace(/\s/g, ' '),
-        PCZT: item['PCZT' + item.ID]
+        PCZT: item['PCZT' + item.ID],
+        BZ: item['BZ' + item.ID]?.replace(/\r\n/g, '<br>').replace(/\n/g, '<br>').replace(/\s/g, ' '),
       };
       newArr.push(obj);
     });
@@ -227,7 +228,7 @@ class PersonnelNeeds extends Component {
       {
         title: '人员等级',
         dataIndex: 'RYDJ',
-        width: 100,
+        width: 130,
         align: 'center',
         key: 'RYDJ',
         ellipsis: true,
@@ -304,10 +305,25 @@ class PersonnelNeeds extends Component {
         },
       },
       {
+        title: <span style={{marginLeft: 12}}>备注</span>,
+        dataIndex: 'BZ',
+        key: 'BZ',
+        ellipsis: true,
+        // editable: true,
+        render(text, record, index) {
+          return (<Tooltip title={text?.replace(/<br>/g, '\n')} placement="topLeft">
+            <TextArea defaultValue={record['BZ' + record.ID]?.replace(/<br>/g, '\n')}
+                      autoSize={{minRows: 1, maxRows: 6}}
+                      onChange={(e) => _this.GWChange(e.target.value, record, index, 'BZ')}
+                      style={{cursor: 'default'}}>{text?.replace(/<br>/g, '\n')}</TextArea>
+          </Tooltip>)
+        },
+      },
+      {
         title: '操作',
         dataIndex: 'OPRT',
         align: 'center',
-        width: '10%',
+        width: '8%',
         key: 'OPRT',
         ellipsis: true,
         render: (text, record) => (
@@ -377,6 +393,7 @@ class PersonnelNeeds extends Component {
               ['SC' + Date.now()]: '',
               ['YQ' + Date.now()]: '',
               ['PCZT' + Date.now()]: '1',
+              ['BZ' + Date.now()]: '',
             });
             this.setState({tableData: arrData}, () => {
               this.callbackData();

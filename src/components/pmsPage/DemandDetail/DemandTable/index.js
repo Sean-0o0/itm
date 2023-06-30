@@ -63,8 +63,19 @@ export default function DemandTable(props) {
       key: 'YQ',
       ellipsis: true,
       render: text => (
-        <Tooltip title={text.replace(/<br>/g, '')} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text.replace(/<br>/g, '')}</span>
+        <Tooltip title={text?.replace(/<br>/g, '')} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text?.replace(/<br>/g, '')}</span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: '备注',
+      dataIndex: 'BZ',
+      key: 'BZ',
+      ellipsis: true,
+      render: text => (
+        <Tooltip title={text?.replace(/<br>/g, '')} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{text?.replace(/<br>/g, '')}</span>
         </Tooltip>
       ),
     },

@@ -3,6 +3,7 @@ import { Form, Input, Tooltip, Select, DatePicker } from 'antd';
 
 const { Option } = Select;
 const EditableContext = React.createContext();
+const { RangePicker } = DatePicker;
 
 const EditableRow = Form.create()(({ form, index, ...props }) => {
   return (
@@ -120,8 +121,8 @@ const EditableCell = props => {
                 },
               ],
             })(
-              <DatePicker
-                style={{ minWidth: '100%' }}
+              <RangePicker
+                style={{ minWidth: '100%', width: 'unset' }}
                 showTime={{ format: 'HH:mm' }}
                 format="YYYY-MM-DD HH:mm"
                 placeholder="请选择"

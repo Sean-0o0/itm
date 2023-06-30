@@ -290,7 +290,7 @@ export default function TableTabs(props) {
     {
       title: '人员等级',
       dataIndex: 'RYDJ',
-      width: '7%',
+      width: '8%',
       key: 'RYDJ',
       ellipsis: true,
     },

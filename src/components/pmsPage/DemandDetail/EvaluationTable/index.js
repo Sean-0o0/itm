@@ -7,7 +7,7 @@ import { useLocation } from 'react-router';
 import MoreOperationModal from './MoreOperationModal';
 
 export default function EvaluationTable(props) {
-  const { dtlData = {}, dictionary = {}, isAuth=false, xqid, getDtldata, fqrid, isDock } = props;
+  const { dtlData = {}, dictionary = {}, isAuth = false, xqid, getDtldata, fqrid, isDock } = props;
   const [modalVisible, setModalVisible] = useState(false); //更多操作弹窗显隐
   const { ZHPC = [], XQSX_ORIGIN = [] } = dtlData;
   const { DFZT, LYZT } = dictionary;
@@ -130,7 +130,13 @@ export default function EvaluationTable(props) {
       width: '13%',
       key: 'ZHPCSJ',
       ellipsis: true,
-      render: (txt, row) => (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--',
+      render: txt => {
+        return (
+          <Tooltip title={txt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
+            <span style={{ cursor: 'default' }}>{txt}</span>
+          </Tooltip>
+        );
+      },
     },
     {
       title: '综合评测分数',

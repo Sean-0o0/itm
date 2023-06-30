@@ -187,10 +187,9 @@ function MoreOperationModal(props) {
       key: 'ZHPCSJ',
       ellipsis: true,
       render: txt => {
-        let date = (txt && moment(txt).format('YYYY-MM-DD HH:mm')) || '--';
         return (
-          <Tooltip title={date} placement="topLeft">
-            <span style={{ cursor: 'default' }}> {date}</span>
+          <Tooltip title={txt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
+            <span style={{ cursor: 'default' }}>{txt}</span>
           </Tooltip>
         );
       },

@@ -74,13 +74,10 @@ export default function InfoTable(props) {
     {
       title: '人员等级',
       dataIndex: 'RYDJ',
-      width: '6%',
+      width: '8%',
       // align: 'right',
       key: 'RYDJ',
       ellipsis: true,
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
     },
     {
       title: '岗位',
@@ -96,43 +93,56 @@ export default function InfoTable(props) {
     {
       title: '所属项目',
       dataIndex: 'SSXM',
-      width: '16%',
+      // width: '16%',
       key: 'SSXM',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{cursor: 'default'}}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '所属供应商',
       dataIndex: 'SSGYS',
-      width: '22%',
+      width: '15%',
       key: 'SSGYS',
       ellipsis: true,
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{cursor: 'default'}}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '简历',
       dataIndex: 'JL',
-      width: '10%',
+      width: '12%',
       key: 'JL',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: (text, row) => <span style={{marginRight: 20}}>
+      render: (text, row) => <Tooltip title={text} placement="topLeft">
         <a style={{color: '#3361FF'}}
            href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=JL&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${row.RYID}&fileid=0`}>
-        {text}</a></span>,
+        {text}</a></Tooltip>,
+    },
+    {
+      title: '保密协议',
+      dataIndex: 'BMXY',
+      width: '12%',
+      key: 'BMXY',
+      ellipsis: true,
+      render: (text, row) => <Tooltip title={text} placement="topLeft">
+        <a style={{color: '#3361FF'}}
+           href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=BMXY&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${row.RYID}&fileid=0`}>
+        {text}</a></Tooltip>,
     },
     {
       title: '人员状态',
       dataIndex: 'RYZT',
-      width: '6%',
+      width: '8%',
       key: 'RYZT',
       ellipsis: true,
       // align: 'right',

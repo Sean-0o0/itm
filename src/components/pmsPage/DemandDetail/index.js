@@ -106,7 +106,10 @@ export default function DemandDetail(props) {
                             return jldataItem;
                           })
                           .flat();
-                  return { ...item1, JLDATA: jldata };
+                  return {
+                    ...item1,
+                    JLDATA: jldata.filter(x => x.JLMC.substring(0, 4) !== '%no%'), //过滤有不分发标记的
+                  };
                 });
                 const zhpc =
                   JSON.parse(res.zhpc).length === 0

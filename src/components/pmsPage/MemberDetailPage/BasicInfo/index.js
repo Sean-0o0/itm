@@ -15,6 +15,7 @@ class BasicInfo extends Component {
         JL = "",
         SYKH = "",
         RYZT = "",
+        BMXY = ""
       }, ryid
     } = this.props;
 
@@ -43,6 +44,19 @@ class BasicInfo extends Component {
                   <span style={{color: '#303133'}}>暂无</span>}
               </a>
               {/*{JL || <span style={{color: '#303133'}}>暂无</span>}</a>*/}
+            </Tooltip>
+          </div>
+          <div
+            className="info-item"
+            key="保密协议："
+            style={{display: 'flex', height: 'unset'}}
+          >
+            <div style={{flexShrink: 0, color: '#909399'}}>保密协议：</div>
+            <Tooltip title={BMXY || <span style={{color: '#303133'}}>暂无</span>}>
+              <a style={{color: '#3361FF'}}
+                 href={`${localStorage.getItem('livebos') || ''}/OperateProcessor?Column=BMXY&PopupWin=false&Table=TWBRY_RYXX&operate=Download&Type=View&ID=${ryid}&fileid=0`}>
+                {BMXY || <span style={{color: '#303133'}}>暂无</span>}
+              </a>
             </Tooltip>
           </div>
           <div

@@ -13092,6 +13092,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     & > .table-box {
+      // overflow: hidden;
       .ant-table {
         td {
           padding: 9.17px;
@@ -13421,6 +13422,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .icon-download {
             // margin-left: auto;
             font-size: 19px;
+            cursor: pointer;
           }
         }
       }
@@ -14115,6 +14117,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       flex-wrap: wrap;
       align-items: flex-start;
       margin-bottom: -16px;
+      margin-right: -1%;
 
       & > .info-item {
         height: 22px;
@@ -14127,12 +14130,18 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
-        margin-right: 2%;
+        margin-right: 1%;
         margin-bottom: 16px;
 
-        &:nth-child(3n) {
-          margin-right: 0;
+        a {
+          text-overflow: ellipsis;
+          overflow: hidden;
+          white-space: nowrap;
         }
+
+        // &:nth-child(3n) {
+        //   margin-right: 0;
+        // }
 
         .item-top,
         .item-bottom {
@@ -14924,7 +14933,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 40px;
             }
 
-            .iconfont.delete {
+            .iconfont.circle-reduce,
+            .iconfont.circle-add,
+            .iconfont.icon-more2,
+            .iconfont.circle-check {
               flex-shrink: 0;
               font-size: 20px;
               margin-left: 6px;
@@ -14936,9 +14948,36 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
             }
 
+            .iconfont.circle-reduce {
+              flex-shrink: 0;
+              font-size: 20px;
+              margin-left: 6px;
+              color: #a5a6a5;
+              cursor: pointer;
+
+              &:hover {
+                color: #ff2f31;
+              }
+            }
+
+            .iconfont.edit-disabled {
+              cursor: default;
+              color: #303133;
+              margin-right: 6px;
+
+              &:hover {
+                color: #303133;
+              }
+            }
+
             .icon-download {
               // margin-left: auto;
               font-size: 19px;
+              cursor: pointer;
+
+              &:hover {
+                color: #3361ff;
+              }
             }
           }
         }

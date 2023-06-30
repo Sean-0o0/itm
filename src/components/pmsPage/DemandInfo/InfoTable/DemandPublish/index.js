@@ -59,7 +59,7 @@ function ExpenseInfo(props) {
     {
       title: '人员等级',
       dataIndex: 'RYDJ',
-      width: '10%',
+      width: '15%',
       key: 'RYDJ',
       ellipsis: true,
       render: txt => <Input value={txt} readOnly />,
@@ -97,7 +97,25 @@ function ExpenseInfo(props) {
       dataIndex: 'YQ',
       key: 'YQ',
       ellipsis: false,
-      render: txt => (
+      render: (txt = '') => (
+        <Tooltip title={txt.replace(/<br>/g, '\n')} placement="topLeft">
+          <TextArea
+            value={txt.replace(/<br>/g, '\n')}
+            autoSize={{ minRows: 1, maxRows: 6 }}
+            style={{ cursor: 'default' }}
+            readOnly
+          >
+            {txt.replace(/<br>/g, '\n')}
+          </TextArea>
+        </Tooltip>
+      ),
+    },
+    {
+      title: '备注',
+      dataIndex: 'BZ',
+      key: 'BZ',
+      ellipsis: false,
+      render: (txt = '') => (
         <Tooltip title={txt.replace(/<br>/g, '\n')} placement="topLeft">
           <TextArea
             value={txt.replace(/<br>/g, '\n')}
@@ -123,7 +141,7 @@ function ExpenseInfo(props) {
           jlrqsj: Number(getFieldValue('jlrqsj')?.format('YYYYMMDD')),
           pcrqsj: Number(getFieldValue('pcrqsj')?.format('YYYYMMDD')),
           dcrqsj: Number(getFieldValue('dcrqsj')?.format('YYYYMMDD')),
-          xqrqsj: Number(getFieldValue('xqrqsj')?.format('YYYYMMDD')),
+          // xqrqsj: Number(getFieldValue('xqrqsj')?.format('YYYYMMDD')),
           czlx: 'SJ',
         };
         console.log('🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:', submitProps);
@@ -262,11 +280,11 @@ function ExpenseInfo(props) {
               'pcrqsj',
               data.wbxq.YJZHPCRQ !== undefined ? moment(data.wbxq.YJZHPCRQ) : null,
             )}
-            {getDatePicker(
+            {/* {getDatePicker(
               '需求截止日期',
               'xqrqsj',
               data.wbxq.XQJZRQ_SJ !== undefined ? moment(data.wbxq.XQJZRQ_SJ) : null,
-            )}
+            )} */}
           </Row>
           <Row>{getInputDisabled('项目简介', data.wbxq.XMJJ, '64px', 24)}</Row>
           <Form.Item
