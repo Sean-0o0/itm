@@ -263,7 +263,7 @@ class PersonnelNeeds extends Component {
               {
                 WBRYGW.length > 0 && WBRYGW.map((item, index) => {
                   return (
-                    <Option key={item?.ibm} value={item?.ibm}>{item?.note}</Option>
+                    <Option key={item?.ibm} value={item?.ibm}><Tooltip title={item?.note} placement='topLeft'>{item?.note}</Tooltip></Option>
                   )
                 })
               }

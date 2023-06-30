@@ -54,14 +54,18 @@ class EditMemberInfoModel extends React.Component {
     uploadFileParams: [],
     fileList: [],
     pbbgTurnRed: false,
+    uploadFileParams2: [], //保密协议
+    fileList2: [],
+    pbbgTurnRed2: false,
   };
 
   componentDidMount() {
     this.fetchqueryOutsourceRequirement();
     this.fetchQueryGysInZbxx();
     const {data = {},} = this.props;
-    if (data.jldata) {
-      console.log("jldata", data.jldata)
+    console.log("🚀 ~ file: index.js:66 ~ EditMemberInfoModel ~ componentDidMount ~ data:", data)
+    if (data.jldata && data.bmxydata) {
+      // console.log("jldata", data.jldata)
       let arrTemp = [];
       let arrTemp2 = [];
       arrTemp.push({
@@ -78,6 +82,17 @@ class EditMemberInfoModel extends React.Component {
       this.setState({
         fileList: arrTemp,
         uploadFileParams: arrTemp2,
+        fileList2: [{
+          uid: getUuid(),
+          name: data.bmxydata.fileName,
+          status: 'done',
+          url: data.bmxydata.url,
+          base64: data.bmxydata.data,
+        }],
+        uploadFileParams2: [{
+          base64: data.bmxydata.data,
+          name: data.bmxydata.fileName,
+        }],
       })
     }
   }
@@ -155,14 +170,27 @@ class EditMemberInfoModel extends React.Component {
           message.warn('请上传简历！');
           return;
         }
+        if (errs.includes('bmxy') && operateType === "bjxq") {
+          message.warn('请上传保密协议！');
+          return;
+        };
       }
       if (operateType === "syqkh" && values.syqkh === '' || values.syqkh === undefined) {
         message.warn('请选择试用期考核情况！');
         return;
       }
+      if (this.state.fileList.length === 0){
+        message.warn('请上传简历！');
+        return;
+      }
+      if (this.state.fileList2.length === 0){
+        message.warn('请上传保密协议！');
+        return;
+      }
       _this.setState({
         isSpinning: true
       })
+      console.log('kkk', values);
       _this.updateOutsourceMemberInfo(values);
     });
   };
@@ -194,7 +222,7 @@ class EditMemberInfoModel extends React.Component {
 
   handleParams = values => {
     console.log("values", values)
-    const {uploadFileParams} = this.state;
+    const {uploadFileParams, uploadFileParams2} = this.state;
     let fileInfo = [];
     uploadFileParams.map(item => {
       fileInfo.push({fileName: item.name, data: item.base64});
@@ -224,6 +252,8 @@ class EditMemberInfoModel extends React.Component {
         ssgys: Number(values.ssgys),
         jl: uploadFileParams[0].name,
         fileData: uploadFileParams[0].base64,
+        bmxy: uploadFileParams2[0].name,
+        bmxyFileData: uploadFileParams2[0].base64,
         ryzt: values.ryzt,
         czlx: "UPDATE"
       }
@@ -239,6 +269,8 @@ class EditMemberInfoModel extends React.Component {
       uploadFileParams = [],
       rydjxxJson = [],
       glgys = [],
+      fileList2 = [],
+      uploadFileParams2 = [],
     } = this.state;
     const {
       visible,
@@ -677,6 +709,150 @@ class EditMemberInfoModel extends React.Component {
                                 点击上传
                               </Button>
                             </Upload>)}
+                          </Form.Item>
+                        </Col>
+                      </Row>
+                      <Row>
+                        <Col span={12}>
+                          <Form.Item
+                            label='保密协议:'
+                            colon={false}
+                            labelCol={{ span: 8 }}
+                            wrapperCol={{ span: 16 }}
+                          >
+                            {getFieldDecorator('bmxy', {
+                              rules: [
+                                {
+                                  required: true,
+                                  message: '请上传保密协议',
+                                },
+                              ],
+                              initialValue: fileList2,
+                            })(
+                              <Upload
+                                className='uploadStyle'
+                                action={'/api/projectManage/queryfileOnlyByupload'}
+                                onDownload={(file) => {
+                                  if (!file.url) {
+                                    let reader = new FileReader();
+                                    reader.readAsDataURL(file.originFileObj);
+                                    reader.onload = (e) => {
+                                      var link = document.createElement('a');
+                                      link.href = e.target.result;
+                                      link.download = file.name;
+                                      link.click();
+                                      window.URL.revokeObjectURL(link.href);
+                                    };
+                                  } else {
+                                    // window.location.href=file.url;
+                                    var link = document.createElement('a');
+                                    link.href = file.url;
+                                    link.download = file.name;
+                                    link.click();
+                                    window.URL.revokeObjectURL(link.href);
+                                  }
+                                }}
+                                showUploadList={{
+                                  showDownloadIcon: true,
+                                  showRemoveIcon: true,
+                                  showPreviewIcon: true,
+                                }}
+                                // multiple={true}
+                                onChange={(info) => {
+                                  let fileList = [...info.fileList];
+                                  fileList = fileList.slice(-1);
+                                  this.setState({ fileList2: fileList });
+                                  console.log('fileListfileList', fileList);
+                                  let newArr = [];
+                                  if (
+                                    fileList.filter((item) => item.originFileObj !== undefined)
+                                      .length === 0
+                                  ) {
+                                    fileList.forEach((item) => {
+                                      newArr.push({
+                                        name: item.name,
+                                        base64: item.base64,
+                                      });
+                                    });
+                                    if (newArr.length === fileList.length) {
+                                      this.setState({
+                                        uploadFileParams2: [...newArr],
+                                      });
+                                    }
+                                  } else {
+                                    fileList.forEach((item) => {
+                                      console.log('item.originFileObj', item.originFileObj);
+                                      if (item.originFileObj === undefined) {
+                                        newArr.push({
+                                          name: item.name,
+                                          base64: item.base64,
+                                        });
+                                      } else {
+                                        let reader = new FileReader(); //实例化文件读取对象
+                                        reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                                        reader.onload = (e) => {
+                                          let urlArr = e.target.result.split(',');
+                                          newArr.push({
+                                            name: item.name,
+                                            base64: urlArr[1],
+                                          });
+                                          if (newArr.length === fileList.length) {
+                                            this.setState({
+                                              uploadFileParams2: [...newArr],
+                                            });
+                                          }
+                                        };
+                                      }
+                                    });
+                                  }
+
+                                  this.setState({
+                                    fileList2: fileList,
+                                  });
+                                  if (fileList.length === 0) {
+                                    this.setState({
+                                      pbbgTurnRed2: true,
+                                    });
+                                  } else {
+                                    this.setState({
+                                      pbbgTurnRed2: false,
+                                    });
+                                  }
+                                }}
+                                beforeUpload={(file, fileList) => {
+                                  let arr = [];
+                                  console.log('目前file', file);
+                                  console.log('目前fileList2222', fileList);
+                                  console.log('目前fileList333', this.props.fileList);
+                                  fileList.forEach((item) => {
+                                    let reader = new FileReader(); //实例化文件读取对象
+                                    reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                                    reader.onload = (e) => {
+                                      let urlArr = e.target.result.split(',');
+                                      arr.push({
+                                        name: item.name,
+                                        base64: urlArr[1],
+                                      });
+                                      if (arr.length === fileList.length) {
+                                        // console.log('arrarrarr', arr);
+                                        this.setState({
+                                          uploadFileParams2: [...arr, ...uploadFileParams2],
+                                        });
+                                      }
+                                    };
+                                  });
+                                }}
+                                accept={
+                                  '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                }
+                                fileList={[...fileList2]}
+                              >
+                                <Button type='dashed'>
+                                  <Icon type='upload' />
+                                  点击上传
+                                </Button>
+                              </Upload>
+                            )}
                           </Form.Item>
                         </Col>
                       </Row>

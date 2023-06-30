@@ -84,7 +84,7 @@ class MemberDetailPage extends Component {
     }
     FetchQueryOutsourceMemberDetail(param)
       .then((res = {}) => {
-        const { code = 0, ryxx, kqxx, ydkh, jldata } = res;
+        const { code = 0, ryxx, kqxx, ydkh, jldata, bmxydata } = res;
         if (code > 0) {
           let ryxxdata = JSON.parse(ryxx);
           let kqxxdata = JSON.parse(kqxx);
@@ -102,6 +102,7 @@ class MemberDetailPage extends Component {
             SYKH: ryxxdata[0]?.SYKH,
             SYKHID: ryxxdata[0]?.SYKHID,
             jldata: jldata !== '' ? JSON.parse(jldata) : '',
+            bmxydata: bmxydata !== '' ? JSON.parse(bmxydata) : '',
             RYZT: ryxxdata[0]?.RYZTID,
             XMJLID: ryxxdata[0]?.XMJLID,
             XMJL: ryxxdata[0]?.XMJL,

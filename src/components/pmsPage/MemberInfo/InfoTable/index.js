@@ -85,10 +85,11 @@ export default function InfoTable(props) {
       width: '10%',
       key: 'GW',
       ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{cursor: 'default'}}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '所属项目',
