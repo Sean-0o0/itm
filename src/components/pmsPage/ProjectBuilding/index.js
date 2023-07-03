@@ -1,19 +1,20 @@
-import React, { Component } from 'react'
+import React, {Component} from 'react'
 import TopConsole from './TopConsole'
 import Overview from './Overview'
 import InfoTable from './InfoTable'
-import { message, Spin } from 'antd'
-import { QueryProjectGeneralInfo, QueryUserRole } from '../../../services/pmsServices'
+import {message, Spin, Radio} from 'antd'
+import {QueryProjectDynamics, QueryProjectGeneralInfo, QueryUserRole} from '../../../services/pmsServices'
+import ProjectDynamics from "./ProjectDynamics";
 
 class ProjectBuilding extends Component {
-    state = {
-        role: '',
-        orgid: '',
-        fxxx: [],
-        jrxz: [],
-        ryxx: [],
-        xmxx: [],
-        data: [{
+  state = {
+    role: '',
+    orgid: '',
+    fxxx: [],
+    jrxz: [],
+    ryxx: [],
+    xmxx: [],
+    data: [{
             name: '自研项目',
             total: 0,
             add: 0
@@ -36,21 +37,44 @@ class ProjectBuilding extends Component {
         }, {
             name: '课题项目',
             total: 0,
-            add: 0
-        }],
-        tableLoading: false,
-        loading: false,
-        pageParam: {
-            current: 1,
-            pageSize: 20,
-            paging: 1,
-            sort: "",
-            total: -1
-        }
-    }
+      add: 0
+    }],
+    tableLoading: false,
+    loading: false,
+    pageParam: {
+      current: 1,
+      pageSize: 20,
+      paging: 1,
+      sort: "",
+      total: -1
+    },
+    radioKeys: '项目列表',
+    //项目动态信息-付款信息
+    prjDynamicsFKInfo: [],
+    totalrowsFK: 0,
+    //项目动态信息-合同信息
+    prjDynamicsHTInfo: [],
+    totalrowsHT: 0,
+    //项目动态信息-立项信息
+    prjDynamicsLXInfo: [],
+    totalrowsLX: 0,
+    //项目动态信息-上线信息
+    prjDynamicsSXInfo: [],
+    totalrowsSX: 0,
+    //项目动态信息-完结信息
+    prjDynamicsWJInfo: [],
+    totalrowsWJ: 0,
+    //项目动态信息-信委会信息
+    prjDynamicsXWHInfo: [],
+    totalrowsXWH: 0,
+    //项目动态信息-总办会信息
+    prjDynamicsZBHInfo: [],
+    totalrowsZBH: 0,
+  }
 
     componentDidMount() {
-        this.fetchRole();
+      this.state.radioKeys === "项目列表" && this.fetchRole()
+      this.state.radioKeys === "项目动态" && this.queryProjectDynamics()
     }
 
     fetchRole = () => {
@@ -133,22 +157,91 @@ class ProjectBuilding extends Component {
                 })
             }
         }).catch(err => {
-            message.error("查询项目列表失败")
-            this.setState({
-                tableLoading: false,
-            })
+          message.error("查询项目列表失败")
+          this.setState({
+            tableLoading: false,
+          })
         })
     }
 
-    handleData = (fxxx, ryxx, jrxz) => {
-        const zy = {
-            name: '自研项目',
-            total: 0,
-            add: 0
-        };
-        const wc = {
-            name: '外采项目',
-            total: 0,
+  queryProjectDynamics = () => {
+    this.setState({
+      loading: true
+    })
+    const payload = {
+      "current": 1,
+      // "manager": 0,
+      "pageSize": 5,
+      "paging": 1,
+      // "projectID": 0,
+      "queryType": "ALL",
+      "sort": "",
+      "total": -1,
+      "totalrowsFK": -1,
+      "totalrowsHT": -1,
+      "totalrowsLX": -1,
+      "totalrowsSX": -1,
+      "totalrowsWJ": -1,
+      "totalrowsXWH": -1,
+      "totalrowsZBH": -1,
+      "year": 2023
+    }
+    QueryProjectDynamics({
+      ...payload
+    }).then(res => {
+      const {
+        code = 0,
+        resultFK, resultHT, resultLX, resultSX, resultWJ, resultXWH, resultZBH,
+        totalrowsFK, totalrowsHT, totalrowsLX, totalrowsSX, totalrowsWJ, totalrowsXWH, totalrowsZBH,
+      } = res
+      if (code > 0) {
+        this.setState({
+          loading: false,
+          //项目动态信息-付款信息
+          prjDynamicsFKInfo: JSON.parse(resultFK),
+          totalrowsFK: totalrowsFK,
+          //项目动态信息-合同信息
+          prjDynamicsHTInfo: JSON.parse(resultHT),
+          totalrowsHT: totalrowsHT,
+          //项目动态信息-立项信息
+          prjDynamicsLXInfo: JSON.parse(resultLX),
+          totalrowsLX: totalrowsLX,
+          //项目动态信息-上线信息
+          prjDynamicsSXInfo: JSON.parse(resultSX),
+          totalrowsSX: totalrowsSX,
+          //项目动态信息-完结信息
+          prjDynamicsWJInfo: JSON.parse(resultWJ),
+          totalrowsWJ: totalrowsWJ,
+          //项目动态信息-信委会信息
+          prjDynamicsXWHInfo: JSON.parse(resultXWH),
+          totalrowsXWH: totalrowsXWH,
+          //项目动态信息-总办会信息
+          prjDynamicsZBHInfo: JSON.parse(resultZBH),
+          totalrowsZBH: totalrowsZBH,
+        })
+      } else {
+        message.error(note)
+        this.setState({
+          loading: false,
+        })
+      }
+    }).catch(err => {
+      message.error("查询项目动态失败")
+      this.setState({
+        loading: false,
+      })
+    })
+  }
+
+  handleData = (fxxx, ryxx, jrxz) => {
+    const zy = {
+      name: '自研项目',
+      total: 0,
+      add: 0
+    };
+    const wc = {
+      name: '外采项目',
+      total: 0,
             add: 0
         };
         const zb = {
@@ -226,38 +319,108 @@ class ProjectBuilding extends Component {
                     kt.add = Number.parseInt(XMSL);
                     break;
                 default:
-                    break;
+                  break;
             }
         });
-        this.setState({
-            data:[
-                zy,wc,zb,dd,xc,kt
-            ]
-        })
-    }
+    this.setState({
+      data: [
+        zy, wc, zb, dd, xc, kt
+      ]
+    })
+  }
 
-    render() {
-        const { routes } = this.props
-        const { role = '',
-            orgid = '',
-            tableLoading,
-            pageParam,
-            data,
-            xmxx = [],
-            loading
-        } = this.state
+  handleRadioChange = (e) => {
+    const radioKeys = e.target.value;
+    console.log("radioKeys", radioKeys)
+    this.setState({
+      radioKeys,
+    })
+    radioKeys === "项目列表" && this.fetchRole()
+    radioKeys === "项目动态" && this.queryProjectDynamics()
+  }
+
+  render() {
+    const {routes} = this.props
+    const {
+      role = '',
+      orgid = '',
+      tableLoading,
+      pageParam,
+      data,
+      xmxx = [],
+      loading,
+      radioKeys = "项目列表",
+      //项目动态信息-付款信息
+      prjDynamicsFKInfo = [],
+      totalrowsFK = 0,
+      //项目动态信息-合同信息
+      prjDynamicsHTInfo = [],
+      totalrowsHT = 0,
+      //项目动态信息-立项信息
+      prjDynamicsLXInfo = [],
+      totalrowsLX = 0,
+      //项目动态信息-上线信息
+      prjDynamicsSXInfo = [],
+      totalrowsSX = 0,
+      //项目动态信息-完结信息
+      prjDynamicsWJInfo = [],
+      totalrowsWJ = 0,
+      //项目动态信息-信委会信息
+      prjDynamicsXWHInfo = [],
+      totalrowsXWH = 0,
+      //项目动态信息-总办会信息
+      prjDynamicsZBHInfo = [],
+      totalrowsZBH = 0,
+    } = this.state
 
 
-        return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large"><div className="project-build-box cont-box">
-            <TopConsole routes={routes} />
+        return (<Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
+          <div className="project-build-box cont-box">
+            <TopConsole routes={routes}/>
             <div className="overview-box">
-                {data.map((item, index) => {
-                    return <Overview routes={routes} role={role} orgid={orgid} key={index} data={item} order={index} />
-                })
-                }
+              {data.map((item, index) => {
+                return <Overview routes={routes} role={role} orgid={orgid} key={index} data={item} order={index}/>
+              })
+              }
             </div>
-            <InfoTable xmxx={xmxx} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} fetchData={this.queryProjectGeneralInfo} />
-        </div></Spin>);
+            <div className='top-tabs-boxs'>
+              <Radio.Group defaultValue="项目列表" buttonStyle="solid" onChange={this.handleRadioChange}>
+                <Radio.Button value="项目列表">项目列表</Radio.Button>
+                <Radio.Button value="项目动态">项目动态</Radio.Button>
+              </Radio.Group>
+            </div>
+            {
+              radioKeys === "项目动态" &&
+              <ProjectDynamics
+                //项目动态信息-付款信息
+                prjDynamicsFKInfo={prjDynamicsFKInfo}
+                totalrowsFK={totalrowsFK}
+                //项目动态信息-合同信息
+                prjDynamicsHTInfo={prjDynamicsHTInfo}
+                totalrowsHT={totalrowsHT}
+                //项目动态信息-立项信息
+                prjDynamicsLXInfo={prjDynamicsLXInfo}
+                totalrowsLX={totalrowsLX}
+                //项目动态信息-上线信息
+                prjDynamicsSXInfo={prjDynamicsSXInfo}
+                totalrowsSX={totalrowsSX}
+                //项目动态信息-完结信息
+                prjDynamicsWJInfo={prjDynamicsWJInfo}
+                totalrowsWJ={totalrowsWJ}
+                //项目动态信息-信委会信息
+                prjDynamicsXWHInfo={prjDynamicsXWHInfo}
+                totalrowsXWH={totalrowsXWH}
+                //项目动态信息-总办会信息
+                prjDynamicsZBHInfo={prjDynamicsZBHInfo}
+                totalrowsZBH={totalrowsZBH}
+              />
+            }
+            {
+              radioKeys === "项目列表" &&
+              <InfoTable xmxx={xmxx} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading}
+                         fetchData={this.queryProjectGeneralInfo}/>
+            }
+          </div></Spin>);
     }
 }
 
