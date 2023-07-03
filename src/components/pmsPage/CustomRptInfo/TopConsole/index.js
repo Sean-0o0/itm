@@ -189,7 +189,7 @@ export default function TopConsole(props) {
             showSearch
             treeCheckable
             maxTagCount={maxTagCount}
-            maxTagTextLength={42}
+            maxTagTextLength={8}
             maxTagPlaceholder={extraArr => {
               return `等${extraArr.length + maxTagCount}个`;
             }}
@@ -237,7 +237,7 @@ export default function TopConsole(props) {
               allowClear
               mode="multiple"
               maxTagCount={maxTagCount}
-              maxTagTextLength={160}
+              maxTagTextLength={8}
               maxTagPlaceholder={extraArr => {
                 return `等${extraArr.length + maxTagCount}个`;
               }}
@@ -263,7 +263,7 @@ export default function TopConsole(props) {
                 showSearch
                 treeCheckable
                 maxTagCount={maxTagCount}
-                maxTagTextLength={42}
+                maxTagTextLength={8}
                 maxTagPlaceholder={extraArr => {
                   return `等${extraArr.length + maxTagCount}个`;
                 }}

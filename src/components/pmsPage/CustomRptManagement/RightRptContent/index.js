@@ -309,7 +309,7 @@ export default function RightRptContent(props) {
             }
             mode="multiple"
             maxTagCount={2}
-            maxTagTextLength={160}
+            maxTagTextLength={3}
             maxTagPlaceholder={extraArr => {
               return `等${extraArr.length + 2}个`;
             }}

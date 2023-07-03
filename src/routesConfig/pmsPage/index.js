@@ -268,4 +268,24 @@ exports.routes = [
     path: `${prefix}/CustomRptInfo`,
     component: './pmsPage/CustomRptInfo',
   },
+  {
+    // 自定义报告 - 列表  - 带参数的要放前边
+    path: `${prefix}/CustomReportInfo/:params`,
+    component: './pmsPage/CustomReportInfo',
+  },
+  {
+    // 自定义报告 - 列表
+    path: `${prefix}/CustomReportInfo`,
+    component: './pmsPage/CustomReportInfo',
+  },
+  {
+    // 自定义报告 - 详情  - 带参数的要放前边
+    path: `${prefix}/CustomReportDetail/:params`,
+    component: './pmsPage/CustomReportDetail',
+  },
+  {
+    // 自定义报告 - 详情
+    path: `${prefix}/CustomReportDetail`,
+    component: './pmsPage/CustomReportDetail',
+  },
 ];

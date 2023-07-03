@@ -341,25 +341,27 @@ export default function InfoTable(props) {
           // bordered
         />
       </div>
-      <Pagination
-        {...{
-          current: tableData.curPage,
-          pageSize: tableData.curPageSize,
-          defaultCurrent: 1,
-          pageSizeOptions: ['20', '40', '50', '100'],
-          showSizeChanger: true,
-          hideOnSinglePage: false,
-          showQuickJumper: true,
-          showTotal: t => `共 ${tableData.total} 条数据`,
-          total: tableData.total,
-        }}
-        onChange={(p, ps) => {
-          getSQL({ current: p, pageSize: ps }, data);
-        }}
-        onShowSizeChange={(cur, size) => {
-          getSQL({ current: cur, pageSize: size }, data);
-        }}
-      />
+      {tableData.data.length !== 0 && (
+        <Pagination
+          {...{
+            current: tableData.curPage,
+            pageSize: tableData.curPageSize,
+            defaultCurrent: 1,
+            pageSizeOptions: ['20', '40', '50', '100'],
+            showSizeChanger: true,
+            hideOnSinglePage: false,
+            showQuickJumper: true,
+            showTotal: t => `共 ${tableData.total} 条数据`,
+            total: tableData.total,
+          }}
+          onChange={(p, ps) => {
+            getSQL({ current: p, pageSize: ps }, data);
+          }}
+          onShowSizeChange={(cur, size) => {
+            getSQL({ current: cur, pageSize: size }, data);
+          }}
+        />
+      )}
     </div>
   );
 }
