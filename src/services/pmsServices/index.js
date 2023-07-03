@@ -103,6 +103,8 @@ const {
     saveCustomReportSetting,
     queryCustomReport,
     queryReportOperateRecord,
+    queryProjectStatisticsList,
+    queryProjectDynamics,
   },
 } = api;
 
@@ -1088,6 +1090,26 @@ export async function QueryCustomReport(payload) {
 export async function QueryReportOperateRecord(payload) {
   const option = {
     url: queryReportOperateRecord,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询
+export async function QueryProjectStatisticsList(payload) {
+  const option = {
+    url: queryProjectStatisticsList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询首页项目动态信息
+export async function QueryProjectDynamics(payload) {
+  const option = {
+    url: queryProjectDynamics,
     method: 'post',
     data: payload,
   };

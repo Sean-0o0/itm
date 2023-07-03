@@ -571,4 +571,16 @@ export default [
     url: '/projectManage/queryReportOperateRecord',
     dis: '查询报表历史操作记录',
   },
+  {
+    code: '',
+    key: 'queryProjectStatisticsList',
+    url: '/projectManage/queryProjectStatisticsList',
+    dis: '查询',
+  },
+  {
+    code: '',
+    key: 'queryProjectDynamics',
+    url: '/projectManage/queryProjectDynamics',
+    dis: '查询首页项目动态信息',
+  },
 ];
