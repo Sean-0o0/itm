@@ -28,6 +28,7 @@ export default function TopConsole(props) {
     sbcgwht: false,
     xwhfj: false,
     qt: false,
+    blgys: false, //补录供应商
     title: '',
     url: '#',
   }); //livebos弹窗显隐
@@ -306,12 +307,19 @@ export default function TopConsole(props) {
           value: Number(xmid),
         },
       ]);
+    } else if (attribute === 'blgys') {
+      params = getParams('View_TBXX', 'View_TBXX_BL', [
+        {
+          name: 'XMMC',
+          value: Number(xmid),
+        },
+      ]);
     }
     getLink(params);
     setLbModal(p => ({
       ...p,
       [attribute]: true,
-      title: modalName + '补录',
+      title: '补录' + modalName,
     }));
   };
 
@@ -359,6 +367,7 @@ export default function TopConsole(props) {
         <Menu.Item>设备采购有合同流程信息</Menu.Item>
         <Menu.Item>设备采购无合同流程</Menu.Item>
       </SubMenu> */}
+      <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>补录供应商</Menu.Item>
       <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
       <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
     </Menu>
@@ -460,6 +469,15 @@ export default function TopConsole(props) {
     height: '530px',
     style: { top: '60px' },
     visible: lbmodal.qt,
+    footer: null,
+  };
+  const blgysModalProps = {
+    isAllWindow: 1,
+    title: lbmodal.title,
+    width: '600px',
+    height: '500px',
+    style: { top: '60px' },
+    visible: lbmodal.blgys,
     footer: null,
   };
 
@@ -693,6 +711,26 @@ export default function TopConsole(props) {
             setLbModal(p => ({
               ...p,
               qt: false,
+            }))
+          }
+          src={lbmodal.url}
+        />
+      )}
+      {lbmodal.blgys && (
+        <BridgeModel
+          modalProps={blgysModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            setLbModal(p => ({
+              ...p,
+              blgys: false,
+            }));
+            getPrjDtlData();
+          }}
+          onCancel={() =>
+            setLbModal(p => ({
+              ...p,
+              blgys: false,
             }))
           }
           src={lbmodal.url}
