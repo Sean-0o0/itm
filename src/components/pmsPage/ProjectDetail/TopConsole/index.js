@@ -12,7 +12,7 @@ const { Item } = Breadcrumb;
 const { SubMenu } = Menu;
 
 export default function TopConsole(props) {
-  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader } = props;
+  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader, haveSpl = false } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
@@ -367,7 +367,7 @@ export default function TopConsole(props) {
         <Menu.Item>设备采购有合同流程信息</Menu.Item>
         <Menu.Item>设备采购无合同流程</Menu.Item>
       </SubMenu> */}
-      <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>补录供应商</Menu.Item>
+      {!haveSpl && <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>补录供应商</Menu.Item>}
       <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
       <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
     </Menu>

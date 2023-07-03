@@ -185,7 +185,7 @@ export default function ProjectDetail(props) {
             xmjbxxRecord: p(res.xmjbxxRecord),
           };
           setPrjData(obj);
-          // console.log('🚀 ~ getPrjDtlData', obj);
+          console.log('🚀 ~ getPrjDtlData', obj);
           // getTrackingData(obj);
         }
       })
@@ -209,6 +209,7 @@ export default function ProjectDetail(props) {
           prjData={prjData}
           getPrjDtlData={getPrjDtlData}
           isLeader={isLeader}
+          haveSpl={!isHwSltPrj && prjData?.supplier?.length !== 0}
         />
         <div className="detail-row">
           <div className="col-left">
