@@ -157,6 +157,33 @@ export default function ToDoCard(props) {
       });
   };
 
+  //创建需求
+  const handleCjxq = item => {
+    console.log('🚀 ~ file: index.js:162 ~ handleCjxq ~ item:', item);
+    UpdateMessageState({
+      zxlx: 'EXECUTE',
+      xxid: item.xxid,
+    })
+      .then((ret = {}) => {
+        const { code = 0, note = '', record = [] } = ret;
+        if (code === 1) {
+          //刷新数据
+          reflush();
+          message.success('执行成功', 1);
+          window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
+            JSON.stringify({
+              routes: [{ name: '个人工作台', pathname: location.pathname }],
+              xqid: JSON.parse(item.kzzd).XQID,
+            }),
+          )}`;
+        }
+      })
+      .catch(error => {
+        message.error('操作失败', 1);
+        console.error('创建需求', !error.success ? error.message : error.note);
+      });
+  };
+
   const jumpToEditProjectInfo = item => {
     setFileAddVisible(true);
     setSrc_fileAdd({
@@ -278,6 +305,8 @@ export default function ToDoCard(props) {
       case '提交录用申请':
       case '简历分发':
         return jumpToDemandDetail(item);
+      case '创建需求':
+        return handleCjxq(item);
 
       //暂不处理
       case '外包人员录用信息提交':

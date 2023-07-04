@@ -1,24 +1,31 @@
-import React, {useEffect, useState} from 'react';
-import {getAmountFormat} from '..';
-import {EncryptBase64} from '../../../Common/Encrypt';
-import {useLocation} from 'react-router';
-import {Link} from 'react-router-dom';
+import React, { useEffect, useState } from 'react';
+import { getAmountFormat } from '..';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { useLocation } from 'react-router';
+import { Link } from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import {message, Modal, Popover, Tooltip} from 'antd';
-import {CreateOperateHyperLink, UpdateMessageState} from "../../../../services/pmsServices";
-import InterviewScoreModal from "../../DemandDetail/ProjectItems/InterviewScoreModal";
-import PaymentProcess from "../../LifeCycleManagement/PaymentProcess";
-import BridgeModel from "../../../Common/BasicModal/BridgeModel";
-import EditProjectInfoModel from "../../EditProjectInfoModel";
+import { message, Modal, Popover, Tooltip } from 'antd';
+import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services/pmsServices';
+import InterviewScoreModal from '../../DemandDetail/ProjectItems/InterviewScoreModal';
+import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
+import BridgeModel from '../../../Common/BasicModal/BridgeModel';
+import EditProjectInfoModel from '../../EditProjectInfoModel';
 
 export default function OverviewCard(props) {
   const [hovered, setHovered] = useState(false);
-  const {overviewInfo = [], userRole = '', toDoData = [], toDoDataNum = 0, reflush, dictionary} = props;
+  const {
+    overviewInfo = [],
+    userRole = '',
+    toDoData = [],
+    toDoDataNum = 0,
+    reflush,
+    dictionary,
+  } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
-  const {WBRYGW} = dictionary;
+  const { WBRYGW } = dictionary;
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗
   const [ryxztxModalVisible, setRyxztxModalVisible] = useState(false); //人员新增提醒发起弹窗
   const [ryxztxUrl, setRyxztxUrl] = useState('#'); //人员新增提醒发起弹窗
@@ -52,7 +59,7 @@ export default function OverviewCard(props) {
     return greeting;
   };
 
-//弹窗操作成功
+  //弹窗操作成功
   const handleOperateSuccess = txt => {
     txt && message.success(txt, 1);
     //刷新数据
@@ -73,7 +80,7 @@ export default function OverviewCard(props) {
   const jumpToProjectDetail = item => {
     window.location.href = `/#/pms/manage/ProjectDetail/${EncryptBase64(
       JSON.stringify({
-        routes: [{name: '个人工作台', pathname: location.pathname}],
+        routes: [{ name: '个人工作台', pathname: location.pathname }],
         xmid: item.xmid,
       }),
     )}`;
@@ -115,7 +122,7 @@ export default function OverviewCard(props) {
     };
     CreateOperateHyperLink(params)
       .then((ret = {}) => {
-        const {code, message, url} = ret;
+        const { code, message, url } = ret;
         if (code === 1) {
           setRyxztxUrl(url);
           setRyxztxModalVisible(true);
@@ -134,7 +141,7 @@ export default function OverviewCard(props) {
       xxid: item.xxid,
     })
       .then((ret = {}) => {
-        const {code = 0, note = '', record = []} = ret;
+        const { code = 0, note = '', record = [] } = ret;
         if (code === 1) {
           //刷新数据
           reflush();
@@ -144,6 +151,33 @@ export default function OverviewCard(props) {
       .catch(error => {
         message.error('操作失败', 1);
         console.error('信委会会议结果', !error.success ? error.message : error.note);
+      });
+  };
+
+  //创建需求
+  const handleCjxq = item => {
+    console.log('🚀 ~ file: index.js:162 ~ handleCjxq ~ item:', item);
+    UpdateMessageState({
+      zxlx: 'EXECUTE',
+      xxid: item.xxid,
+    })
+      .then((ret = {}) => {
+        const { code = 0, note = '', record = [] } = ret;
+        if (code === 1) {
+          //刷新数据
+          reflush();
+          message.success('执行成功', 1);
+          window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
+            JSON.stringify({
+              routes: [{ name: '个人工作台', pathname: location.pathname }],
+              xqid: JSON.parse(item.kzzd).XQID,
+            }),
+          )}`;
+        }
+      })
+      .catch(error => {
+        message.error('操作失败', 1);
+        console.error('创建需求', !error.success ? error.message : error.note);
       });
   };
 
@@ -182,11 +216,11 @@ export default function OverviewCard(props) {
         xxid: item.xxid,
       })
         .then((ret = {}) => {
-          const {code = 0, note = '', record = []} = ret;
+          const { code = 0, note = '', record = [] } = ret;
           if (code === 1) {
             window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
               JSON.stringify({
-                routes: [{name: '个人工作台', pathname: location.pathname}],
+                routes: [{ name: '个人工作台', pathname: location.pathname }],
                 xqid: JSON.parse(item.kzzd).XQID,
                 fqrid: JSON.parse(item.kzzd).FQR,
               }),
@@ -268,6 +302,8 @@ export default function OverviewCard(props) {
       case '提交录用申请':
       case '简历分发':
         return jumpToDemandDetail(item);
+      case '创建需求':
+        return handleCjxq(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -336,29 +372,32 @@ export default function OverviewCard(props) {
   }
 
   //待办块
-  const getToDoItem = (data) => {
+  const getToDoItem = data => {
     return (
       <div>
         {data?.map(item => (
           <div className="todo-card-box">
             <div className="todo-card-title">
-              <div className="todo-card-xmmc">
-                {item.xmmc}
-              </div>
+              <div className="todo-card-xmmc">{item.xmmc}</div>
               <div className="todo-deal-box">
-                <div className="todo-to-deal" onClick={() => {
-                  if (Number(item.xxlx) !== 2) {
-                    setHovered(false);
-                    handleToDo(item);
-                  }
-                }}>
-                  去{getBtnTxt(item.txnr, item.sxmc)} <i className="iconfont icon-right todo-to-deal-icon"/>
+                <div
+                  className="todo-to-deal"
+                  onClick={() => {
+                    if (Number(item.xxlx) !== 2) {
+                      setHovered(false);
+                      handleToDo(item);
+                    }
+                  }}
+                >
+                  去{getBtnTxt(item.txnr, item.sxmc)}{' '}
+                  <i className="iconfont icon-right todo-to-deal-icon" />
                 </div>
               </div>
-
             </div>
             <div className="todo-card-content">
-              {Number(item.wdsl) < 0 && <div className="todo-card-status">逾期{Number(item.wdsl) * -1}天</div>}
+              {Number(item.wdsl) < 0 && (
+                <div className="todo-card-status">逾期{Number(item.wdsl) * -1}天</div>
+              )}
               <div className="todo-card-txnr">{item.txnr}</div>
             </div>
           </div>
@@ -368,24 +407,24 @@ export default function OverviewCard(props) {
   };
 
   const handleVisibleChange = visible => {
-    setHovered(visible)
+    setHovered(visible);
   };
 
   //概览块
   const getOverviewItem = ({
-                             title = '--',
-                             more = true,
-                             width = '24%',
-                             img = '',
-                             amount = '--',
-                             percent = '--',
-                             addNum = '--',
-                             unit = '',
-                             fn = false,
-                             linkTo = false,
-                           }) => {
+    title = '--',
+    more = true,
+    width = '24%',
+    img = '',
+    amount = '--',
+    percent = '--',
+    addNum = '--',
+    unit = '',
+    fn = false,
+    linkTo = false,
+  }) => {
     return (
-      <div className="overview-item" style={{width}}>
+      <div className="overview-item" style={{ width }}>
         <div className="item-top">
           <img
             className="top-img"
@@ -469,8 +508,7 @@ export default function OverviewCard(props) {
       {paymentModalVisible && (
         <PaymentProcess
           paymentModalVisible={paymentModalVisible}
-          fetchQueryLifecycleStuff={() => {
-          }}
+          fetchQueryLifecycleStuff={() => {}}
           currentXmid={Number(currentXmid)}
           currentXmmc={currentXmmc}
           projectCode={projectCode}
@@ -502,8 +540,8 @@ export default function OverviewCard(props) {
           // height={'700px'}
           maskClosable={false}
           zIndex={100}
-          maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
-          style={{top: '10px'}}
+          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+          style={{ top: '10px' }}
           visible={fileAddVisible}
           okText="保存"
           bodyStyle={{
@@ -543,7 +581,7 @@ export default function OverviewCard(props) {
       )}
       <div className="avatar-card-box">
         <div className="avatar">
-          <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt=""/>
+          <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
         </div>
         <div className="title">
           <span>{getGreeting()}</span>
