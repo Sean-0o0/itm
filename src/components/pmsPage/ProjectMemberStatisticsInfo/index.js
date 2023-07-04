@@ -1,0 +1,158 @@
+import React, {useEffect, useState, useRef} from 'react';
+import InfoTable from './InfoTable';
+import TopConsole from './TopConsole';
+import {
+  QueryProjectDynamics,
+  QueryProjectListInfo,
+  QueryProjectStatistics,
+  QueryProjectStatisticsList
+} from '../../../services/pmsServices';
+import {message} from 'antd';
+import YjbmAllTable from "./infoTable/yjbmAllTable";
+import EjbmAllTable from "./infoTable/ejbmAllTable";
+
+export default function ProjectMemberStatisticsInfo(props) {
+  const [activeKey, setActiveKey] = useState('YJBM_ALL');
+  const [tableData, setTableData] = useState([]); //全部
+  const [total, setTotal] = useState([]); //全部
+  const [tabsData, setTabsData] = useState([]); //TAB
+  const [tableDataLD, setTableDataLD] = useState([]); //一级部门领导
+  const [totalLD, setTotalLD] = useState([]); //
+  const [tableDataBM, setTableDataBM] = useState([]); //一级部门下的二级部门
+  const [totalBM, setTotalBM] = useState([]); //
+  const [loading, setLoading] = useState([]); //表格数据-项目列表
+  const [bmid, setBMID] = useState('-1');
+
+  useEffect(() => {
+    getTableData(activeKey);
+    return () => {
+    };
+  }, []);
+
+  const tabsKeyCallback = (key) => {
+    setActiveKey(key);
+    setLoading(true);
+    if (key === "YJBM_ALL") {
+      getTableData(key);
+    } else {
+      setBMID(key)
+      getTableDataBM("YJBM_LD", key);
+      getTableDataBM("YJBM_BM", key);
+    }
+  }
+
+  const getTableData = (queryType) => {
+    setLoading(true);
+    // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
+    // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
+    // YJBM_BM|查询对应一级部门下的二级部门数据（传一级部门的id）;
+    // EJBM_ALL|查询对应二级部门下人员的数据（传二级部门的id）;
+    // RY|查询对应人员id的数据（传人员的id）;
+    // BM|查询对应部门的数据（部门的id）
+    const payload = {
+      "current": 1,
+      // "memberId": 0,
+      // "orgID": -1,
+      "pageSize": 10,
+      "paging": 1,
+      "queryType": queryType,
+      "sort": '',
+      "total": -1
+    }
+    QueryProjectStatistics({
+      ...payload
+    }).then(res => {
+      const {
+        code = 0,
+        result,
+        totalrows = 0,
+      } = res
+      if (code > 0) {
+        setTableData([...JSON.parse(result)])
+        if (queryType === 'YJBM_ALL') {
+          setTabsData([...JSON.parse(result)])
+        }
+        setTotal(totalrows)
+        setLoading(false);
+      } else {
+        message.error(note)
+        setLoading(false);
+      }
+    }).catch(err => {
+      message.error("查询项目统计失败")
+      setLoading(false);
+    })
+  }
+
+  const getTableDataBM = (queryType, id = '-1') => {
+    setLoading(true);
+    // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
+    // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
+    // YJBM_BM|查询对应一级部门下的二级部门数据（传一级部门的id）;
+    // EJBM_ALL|查询对应二级部门下人员的数据（传二级部门的id）;
+    // RY|查询对应人员id的数据（传人员的id）;
+    // BM|查询对应部门的数据（部门的id）
+    const payload = {
+      "current": 1,
+      // "memberId": 0,
+      "orgID": id,
+      "pageSize": 10,
+      "paging": 1,
+      "queryType": queryType,
+      "sort": '',
+      "total": -1
+    }
+    QueryProjectStatistics({
+      ...payload
+    }).then(res => {
+      const {
+        code = 0,
+        result,
+        totalrows = 0,
+      } = res
+      if (code > 0) {
+        if (queryType === 'YJBM_LD') {
+          setTableDataLD([...JSON.parse(result)])
+          setTotalLD(totalrows)
+        }
+        if (queryType === 'YJBM_BM') {
+          setTableDataBM([...JSON.parse(result)])
+          setTotalBM(totalrows)
+        }
+        setLoading(false);
+      } else {
+        message.error(note)
+        setLoading(false);
+      }
+    }).catch(err => {
+      message.error("查询项目统计失败")
+      setLoading(false);
+    })
+  }
+
+  return (
+    <div className="project-member-statistics-info-box">
+      <TopConsole tabsData={tabsData} tabsKeyCallback={tabsKeyCallback} activeKey={activeKey}
+                  setActiveKey={setActiveKey}/>
+      {
+        activeKey === 'YJBM_ALL' ?
+          //一级部门
+          <YjbmAllTable
+            loading={loading}
+            tableData={tableData}
+            total={total}
+            getTableData={getTableData}
+          /> : <EjbmAllTable
+            // 二级部门
+            bmid={bmid}
+            loading={loading}
+            tableDataLD={tableDataLD}
+            totalLD={totalLD}
+            tableDataBM={tableDataBM}
+            totalBM={totalBM}
+            getTableDataBM={getTableDataBM}
+          />
+      }
+    </div>
+  );
+}

@@ -583,4 +583,10 @@ export default [
     url: '/projectManage/queryProjectDynamics',
     dis: '查询首页项目动态信息',
   },
+  {
+    code: '',
+    key: 'queryProjectStatistics',
+    url: '/projectManage/queryProjectStatistics',
+    dis: '查询项目统计',
+  },
 ];

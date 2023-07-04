@@ -22,6 +22,7 @@ export default function SupplierInfo(props) {
   // console.log("🚀 ~ file: index.js:17 ~ SupplierInfo ~ GYSLX:", GYSLX)
 
   useEffect(() => {
+    console.log("刷新刷新1111")
     if (supplierId === -2) {
       //无参数
       getTableData({});

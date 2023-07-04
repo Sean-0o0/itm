@@ -169,7 +169,7 @@ class searchModal extends React.Component {
                       totalrowsYs
                     } = res;
                     let titleDataList = [];
-                    let reg = new RegExp("(" + key + ")", "g");
+                    // let reg = new RegExp("(" + key + ")", "g");
                     let xmxxData = JSON.parse(xmxx);
                     xmxxData.map(item => {
                       return item.XMMC = item.XMMC.split(key).flatMap(str => [<span

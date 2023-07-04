@@ -146,7 +146,7 @@ export default function RepInfos(props) {
                 return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
-                      <i className="rep-infos-icon iconfont icon-report"/>
+                      <i className="rep-infos-icon iconfont icon-report2"/>
                       <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
                       <Popconfirm
                         title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
@@ -198,7 +198,7 @@ export default function RepInfos(props) {
                 return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
-                      <i className="rep-infos-icon iconfont icon-report"/>
+                      <i className="rep-infos-icon iconfont icon-report2"/>
                       <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
                       <Popconfirm
                         title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
@@ -306,7 +306,7 @@ export default function RepInfos(props) {
                     return <div className="rep-infos-content" onClick={() => toDetail(i)}>
                       <div className="rep-infos-content-box">
                         <div className="rep-infos-name">
-                          <i className="rep-infos-icon iconfont icon-report"/>
+                          <i className="rep-infos-icon iconfont icon-report2"/>
                           <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
                           <Popconfirm
                             title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}

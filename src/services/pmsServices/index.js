@@ -105,6 +105,7 @@ const {
     queryReportOperateRecord,
     queryProjectStatisticsList,
     queryProjectDynamics,
+    queryProjectStatistics,
   },
 } = api;
 
@@ -1110,6 +1111,16 @@ export async function QueryProjectStatisticsList(payload) {
 export async function QueryProjectDynamics(payload) {
   const option = {
     url: queryProjectDynamics,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目统计
+export async function QueryProjectStatistics(payload) {
+  const option = {
+    url: queryProjectStatistics,
     method: 'post',
     data: payload,
   };

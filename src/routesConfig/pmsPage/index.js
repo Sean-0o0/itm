@@ -288,4 +288,29 @@ exports.routes = [
     path: `${prefix}/CustomReportDetail`,
     component: './pmsPage/CustomReportDetail',
   },
+  {
+    // 项目列表
+    path: `${prefix}/ProjectStatisticsInfo/:params`,
+    component: './pmsPage/ProjectStatisticsInfo',
+  },
+  {
+    // 项目列表
+    path: `${prefix}/ProjectStatisticsInfo`,
+    component: './pmsPage/ProjectStatisticsInfo',
+  },
+  {
+    // 项目列表-按阶段分
+    path: `${prefix}/ProjectStateInfo/:params`,
+    component: './pmsPage/ProjectStateInfo',
+  },
+  {
+    // 项目列表-按阶段分
+    path: `${prefix}/ProjectStateInfo`,
+    component: './pmsPage/ProjectStateInfo',
+  },
+  {
+    // 项目人员/部门统计
+    path: `${prefix}/ProjectMemberStatisticsInfo`,
+    component: './pmsPage/ProjectMemberStatisticsInfo',
+  },
 ];

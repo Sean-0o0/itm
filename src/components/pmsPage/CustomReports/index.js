@@ -26,13 +26,13 @@ export default function CustomReports(props) {
   const [params, setParams] = useState({cjr: '', bbmc: ''});
 
   useEffect(() => {
-    getCusRepData("CJR", 9999);
-    getCusRepData("KJBB", 9999);
+    // getCusRepData("CJR", 9999);
+    // getCusRepData("KJBB", 9999);
     getCusRepData("SC", 12);
     getCusRepData("CJ", 12);
     return () => {
     };
-  }, []);
+  }, [props]);
 
   //获取报表数据
   const getCusRepData = (cxlx, pageSize) => {
@@ -63,19 +63,30 @@ export default function CustomReports(props) {
           if (cxlx === "GX") {
             setCusRepDataGX(p => [...JSON.parse(res.result)]);
             setGXTotal(res.totalrows);
+            const cjr = JSON.parse(res.result);
+            const result = cjr.reduce((acc, curr) => {
+              const index = acc.findIndex((item) => item.CJRID === curr.CJRID)
+              if (index < 0) {
+                acc.push(curr)
+              }
+              return acc
+            }, [])
+            console.log(result) // [1, 2, 3, 4]
+            setCusRepDataCJR(p => [...result]);
+            // setCJRTotal(res.totalrows);
           }
           if (cxlx === "CJ") {
             setCusRepDataCJ(p => [...JSON.parse(res.result)]);
             setCJTotal(res.totalrows);
           }
-          if (cxlx === "CJR") {
-            setCusRepDataCJR(p => [...JSON.parse(res.result)]);
-            setCJRTotal(res.totalrows);
-          }
-          if (cxlx === "KJBB") {
-            setCusRepDataKJBB(p => [...JSON.parse(res.result)]);
-            setKJBBTotal(res.totalrows);
-          }
+          // if (cxlx === "CJR") {
+          //   setCusRepDataCJR(p => [...JSON.parse(res.result)]);
+          //   setCJRTotal(res.totalrows);
+          // }
+          // if (cxlx === "KJBB") {
+          //   setCusRepDataKJBB(p => [...JSON.parse(res.result)]);
+          //   setKJBBTotal(res.totalrows);
+          // }
           setIsSpinning(false);
         }
       })
@@ -119,9 +130,9 @@ export default function CustomReports(props) {
         totalGX={totalGX}
         cusRepDataGX={cusRepDataGX}
         cusRepDataCJR={cusRepDataCJR}
-        cusRepDataKJBB={cusRepDataKJBB}
-        totalCJR={totalCJR}
-        totalKJBB={totalKJBB}
+        cusRepDataKJBB={cusRepDataGX}
+        // totalCJR={totalCJR}
+        // totalKJBB={totalKJBB}
         tabsKey={tabsKey}
       />
     </div>

@@ -383,12 +383,14 @@ class ProjectBuilding extends Component {
               })
               }
             </div>
-            <div className='top-tabs-boxs'>
-              <Radio.Group defaultValue="项目列表" buttonStyle="solid" onChange={this.handleRadioChange}>
-                <Radio.Button value="项目列表">项目列表</Radio.Button>
-                <Radio.Button value="项目动态">项目动态</Radio.Button>
-              </Radio.Group>
-            </div>
+            {
+              radioKeys === "项目动态" && <div className='top-tabs-boxs'>
+                <Radio.Group defaultValue="项目动态" buttonStyle="solid" onChange={this.handleRadioChange}>
+                  <Radio.Button value="项目列表"><i className="iconfont icon-xmlb"/>项目列表</Radio.Button>
+                  <Radio.Button value="项目动态"><i className="iconfont icon-xmdt"/>项目动态</Radio.Button>
+                </Radio.Group>
+              </div>
+            }
             {
               radioKeys === "项目动态" &&
               <ProjectDynamics
@@ -418,7 +420,7 @@ class ProjectBuilding extends Component {
             {
               radioKeys === "项目列表" &&
               <InfoTable xmxx={xmxx} routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading}
-                         fetchData={this.queryProjectGeneralInfo}/>
+                         fetchData={this.queryProjectGeneralInfo} handleRadioChange={this.handleRadioChange}/>
             }
           </div></Spin>);
     }
