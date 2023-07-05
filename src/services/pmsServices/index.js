@@ -106,6 +106,8 @@ const {
     queryProjectStatisticsList,
     queryProjectDynamics,
     queryProjectStatistics,
+    queryCustomReportContent,
+    configureCustomReport,
   },
 } = api;
 
@@ -1127,4 +1129,23 @@ export async function QueryProjectStatistics(payload) {
   return request(option);
 }
 
+// 查询自定义报告内容
+export async function QueryCustomReportContent(payload) {
+  const option = {
+    url: queryCustomReportContent,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 创建自定义报告
+export async function ConfigureCustomReport(payload) {
+  const option = {
+    url: configureCustomReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
 

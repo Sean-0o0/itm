@@ -589,4 +589,16 @@ export default [
     url: '/projectManage/queryProjectStatistics',
     dis: '查询项目统计',
   },
+  {
+    code: '',
+    key: 'queryCustomReportContent',
+    url: '/projectManage/queryCustomReportContent',
+    dis: '查询自定义报告内容',
+  },
+  {
+    code: '',
+    key: 'configureCustomReport',
+    url: '/projectManage/configureCustomReport',
+    dis: '创建自定义报告',
+  },
 ];
