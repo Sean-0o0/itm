@@ -9,6 +9,7 @@ import {
   message,
   DatePicker,
   Icon,
+  Radio,
 } from 'antd';
 import {} from '../../../../services/pmsServices';
 import TreeUtils from '../../../../utils/treeUtils';
@@ -18,9 +19,12 @@ const { Option } = Select;
 const { MonthPicker } = DatePicker;
 import moment from 'moment';
 
+const { RangePicker } = DatePicker;
+
 export default function TopConsole(props) {
   //下拉框数据
   const { data = {}, setData = () => {}, getSQL = () => {} } = props;
+  const [isUnfold, setIsUnfold] = useState(false); //是否展开
 
   //查询的值
 
@@ -67,9 +71,11 @@ export default function TopConsole(props) {
     }
 
     let component = '';
-    let dateValue = ['', ' ', undefined, [], null].includes(SELECTORVALUE)
-      ? null
-      : moment(SELECTORVALUE);
+    let dateValue = ['', ' ', 'undefined', 'null', '[]'].includes(JSON.stringify(SELECTORVALUE))
+      ? [null, null]
+      : ['', ' ', undefined, null].includes(SELECTORVALUE[0])
+      ? [null, null]
+      : [moment(SELECTORVALUE[0]), moment(SELECTORVALUE[1])];
 
     //修改数据
     const modifyData = value => {
@@ -114,7 +120,7 @@ export default function TopConsole(props) {
 
     const handleDateChange = (ds, d) => {
       console.log('🚀 ~ file: index.js:25 ~ handleDateChange ~ ds, d:', ds, d);
-      modifyData(ds);
+      modifyData([...d]);
     };
 
     const handleYSXMLXChange = v => {
@@ -124,6 +130,7 @@ export default function TopConsole(props) {
         typeObj: SELECTORDATA.type?.filter(x => x.YSLXID === v)[0] || {},
       });
     };
+
     const handleYSXMChange = v => {
       console.log('🚀 ~ file: index.js:125 ~ handleYSXMChange ~ v:', v);
       modifyData({
@@ -131,6 +138,10 @@ export default function TopConsole(props) {
         typeObj: SELECTORVALUE?.typeObj,
         value: v,
       });
+    };
+
+    const handleRadioChange = v => {
+      modifyData(v.target.value);
     };
 
     if (TJBCXLX === 'YSXM') {
@@ -189,9 +200,9 @@ export default function TopConsole(props) {
             showSearch
             treeCheckable
             maxTagCount={maxTagCount}
-            maxTagTextLength={8}
+            //
             maxTagPlaceholder={extraArr => {
-              return `等${extraArr.length + maxTagCount}个`;
+              return `+${extraArr.length + maxTagCount}`;
             }}
             showCheckedStrategy={TreeSelect.SHOW_CHILD}
             treeNodeFilterProp="title"
@@ -237,9 +248,8 @@ export default function TopConsole(props) {
               allowClear
               mode="multiple"
               maxTagCount={maxTagCount}
-              maxTagTextLength={8}
               maxTagPlaceholder={extraArr => {
-                return `等${extraArr.length + maxTagCount}个`;
+                return `+${extraArr.length + maxTagCount}`;
               }}
               value={SELECTORVALUE}
               onChange={handleMultipleSltChange}
@@ -263,9 +273,8 @@ export default function TopConsole(props) {
                 showSearch
                 treeCheckable
                 maxTagCount={maxTagCount}
-                maxTagTextLength={8}
                 maxTagPlaceholder={extraArr => {
-                  return `等${extraArr.length + maxTagCount}个`;
+                  return `+${extraArr.length + maxTagCount}`;
                 }}
                 showCheckedStrategy={TreeSelect.SHOW_ALL}
                 treeNodeFilterProp="title"
@@ -316,7 +325,25 @@ export default function TopConsole(props) {
           break;
         case 'DATE':
           component = (
-            <DatePicker value={dateValue} onChange={handleDateChange} className="item-component" />
+            <RangePicker
+              format="YYYY-MM-DD"
+              placeholder="请选择"
+              value={dateValue}
+              onChange={handleDateChange}
+              className="item-component"
+            />
+          );
+          break;
+        case 'RADIO':
+          component = (
+            <Radio.Group
+              value={SELECTORVALUE}
+              onChange={handleRadioChange}
+              className="item-component"
+            >
+              <Radio value={true}>是</Radio>
+              <Radio value={false}>否</Radio>
+            </Radio.Group>
           );
           break;
         case 'SINGLE':
@@ -336,19 +363,21 @@ export default function TopConsole(props) {
 
   return (
     <div className="top-console">
-      <div className="filter-condition">
-        <div className="left">{data.filterData?.map(x => getComponent(x))}</div>
-        <div className="right">
-          <Button className="btn-search" type="primary" onClick={() => getSQL({}, data)}>
-            查询
-          </Button>
-          <Button className="btn-reset" onClick={handleReset}>
-            重置
-          </Button>
+      {data.filterData?.length !== 0 && (
+        <div className="filter-condition" style={isUnfold ? {} : { height: 112 }}>
+          <div className="left">{data.filterData?.map(x => getComponent(x))}</div>
+          <div className="right">
+            <Button className="btn-search" type="primary" onClick={() => getSQL({}, data)}>
+              查询
+            </Button>
+            <Button className="btn-reset" onClick={handleReset}>
+              重置
+            </Button>
+          </div>
         </div>
-      </div>
+      )}
       {data.groupData?.length !== 0 && (
-        <div className="group-condition">
+        <div className="group-condition" style={isUnfold ? {} : { height: 56, overflow: 'hidden' }}>
           <span className="label">组合条件</span>
           {data.groupData?.map(x => (
             <div className="condition-group-item">
@@ -358,6 +387,18 @@ export default function TopConsole(props) {
           ))}
         </div>
       )}
+      {data.filterData?.length > 6 &&
+        (isUnfold ? (
+          <div className="more-item" onClick={() => setIsUnfold(false)}>
+            收起
+            <i className="iconfont icon-up" />
+          </div>
+        ) : (
+          <div className="more-item-unfold" onClick={() => setIsUnfold(true)}>
+            更多
+            <i className="iconfont icon-down" />
+          </div>
+        ))}
     </div>
   );
 }

@@ -18,6 +18,7 @@ import {
   QueryCustomQueryCriteria,
   QueryUserInfo,
   QueryReportOperateRecord,
+  QueryMemberInfo,
 } from '../../../../services/pmsServices/index';
 import ConditionFilter from '../ConditionFilter';
 import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
@@ -37,13 +38,12 @@ export default function RightRptContent(props) {
     setIsSpinning,
     buildTree,
     setSelectedData,
-    setStatus,
     setDragKey,
     setRptName,
     setSelectingData,
     hangleDataRestore,
     getRptList,
-    setSaved,
+    setStatus,
   } = funcProps;
   const [popoverVisible, setPopoverVisible] = useState({
     setting: false, //字段设置
@@ -90,12 +90,12 @@ export default function RightRptContent(props) {
 
   //分享人员下拉数据
   const getShareRyData = () => {
-    QueryUserInfo({
-      type: '信息技术事业部',
+    QueryMemberInfo({
+      type: 'XXJS',
     })
       .then(res => {
         if (res.success) {
-          setShareRyData({ selector: [...res.record], value: [] });
+          setShareRyData({ selector: [...JSON.parse(res.record)], value: [] });
         }
       })
       .catch(e => {
@@ -124,7 +124,6 @@ export default function RightRptContent(props) {
   const handleConditionGroupChange = (value, selectedOptions) => {
     // console.log(value, selectedOptions);
     // setSelectingData(p => ({ ...p, conditionGroup: [...selectedOptions] }));
-    setSaved(false);
     setSelectedData(p => ({ ...p, conditionGroup: [...p.conditionGroup, [...selectedOptions]] }));
   };
   const handleConditionFilterChange = (value, selectedOptions) => {
@@ -136,7 +135,7 @@ export default function RightRptContent(props) {
       })
         .then(res => {
           if (res?.success) {
-            console.log(obj.TJBCXLX, JSON.parse(res.result));
+            // console.log(obj.TJBCXLX, JSON.parse(res.result));
             if (obj.TJBCXLX === 'YSXM') {
               obj.sltOpen = false; //树下拉框展开收起
               function uniqueFunc(arr, uniId) {
@@ -158,6 +157,8 @@ export default function RightRptContent(props) {
             } else if (obj.ZJLX === 'TREE-MULTIPLE') {
               obj.SELECTORDATA = buildTree(JSON.parse(res.result));
               obj.sltOpen = false; //树下拉框展开收起
+            } else if (obj.ZJLX === 'RADIO') {
+              obj.SELECTORVALUE = false;
             } else {
               obj.SELECTORDATA = JSON.parse(res.result);
             }
@@ -170,7 +171,6 @@ export default function RightRptContent(props) {
           setIsSpinning(false);
         });
     }
-    setSaved(false);
     setSelectedData(p => ({
       ...p,
       conditionFilter: [...p.conditionFilter, obj],
@@ -179,12 +179,10 @@ export default function RightRptContent(props) {
 
   //组合、筛选条件删除
   const onConditionGroupDelete = id => {
-    setSaved(false);
     let arr = [...selectedData.conditionGroup].filter(x => x[x.length - 1].ID !== id);
     setSelectedData(p => ({ ...p, conditionGroup: arr }));
   };
   const onConditionFilterDelete = id => {
-    setSaved(false);
     console.log('🚀 ~ file: index.js:110 ~ onConditionFilterDelete ~ id:', id);
     let arr = [...selectedData.conditionFilter].filter(x => x.ID !== id);
     setSelectedData(p => ({ ...p, conditionFilter: arr }));
@@ -275,6 +273,7 @@ export default function RightRptContent(props) {
                 .then(res => {
                   if (res?.success) {
                     getHistoryData(editingId);
+                    getRptList();
                     message.success('分享成功', 1);
                     setIsSpinning(false);
                   }
@@ -308,10 +307,9 @@ export default function RightRptContent(props) {
               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
             }
             mode="multiple"
-            maxTagCount={2}
-            maxTagTextLength={3}
+            maxTagCount={3}
             maxTagPlaceholder={extraArr => {
-              return `等${extraArr.length + 2}个`;
+              return `等${extraArr.length + 3}个`;
             }}
             showSearch
             allowClear
@@ -378,7 +376,7 @@ export default function RightRptContent(props) {
 
     //清空
     const onColumnFieldsClear = () => {
-      setSelectingData(p => ({ ...p, columnFields: [] }));
+      setSelectingData(p => ({ ...p, columnFields: p.columnFields.filter(x => x.ID === 8) }));
     };
 
     //单个删除
@@ -397,7 +395,6 @@ export default function RightRptContent(props) {
 
     //确定
     const onColumnFieldsConfirm = () => {
-      setSaved(false);
       // console.log('selectingData.columnFields', selectingData.columnFields);
       setSelectedData(p => ({ ...p, columnFields: [...selectingData.columnFields] }));
       onColumnFieldsCancel();
@@ -500,7 +497,7 @@ export default function RightRptContent(props) {
     {
       title: (
         <Popover
-          placement="bottomRight"
+          placement="left"
           content={columnFieldsSetting()}
           overlayClassName="custom-rpt-management-popover"
           title={null}
@@ -525,7 +522,6 @@ export default function RightRptContent(props) {
   //报表名称
   const handleRptNameChange = e => {
     setRptName(e.target.value);
-    setSaved(false);
   };
 
   //操作按钮
@@ -578,15 +574,34 @@ export default function RightRptContent(props) {
           let SXSJ = x.SELECTORVALUE;
           let SXLX = x.ZJLX;
           let SXTJ = x.SXTJ;
-          if (SXSJ !== undefined && SXSJ !== null && JSON.stringify(SXSJ) !== '[]') {
+          if (
+            SXSJ !== undefined &&
+            SXSJ !== null &&
+            JSON.stringify(SXSJ) !== '[]' &&
+            JSON.stringify(SXSJ?.value) !== '[]'
+          ) {
             if (x.ZJLX === 'DATE') {
-              SXSJ = [
-                Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
-                Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
-              ];
+              if (x.SELECTORVALUE[0] === '' && x.SELECTORVALUE[1] === '') {
+                SXSJ = [0, 20500000];
+              } else {
+                SXSJ = [
+                  Number(moment(x.SELECTORVALUE[0]).format('YYYYMMDD')),
+                  Number(moment(x.SELECTORVALUE[1]).format('YYYYMMDD')),
+                ];
+              }
               bmArr.push(x.BM);
             } else if (x.ZJLX === 'RANGE') {
               SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
+              bmArr.push(x.BM);
+            } else if (x.ZJLX === 'RADIO') {
+              //目前只有是否为父项目，暂时写死以下情况
+              SXSJ = undefined;
+              SXLX = 'ZHTJ';
+              if (x.SELECTORVALUE) {
+                SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) > 0';
+              } else {
+                SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) <= 0';
+              }
               bmArr.push(x.BM);
             } else if (x.TJBCXLX === 'YSXM') {
               if (JSON.stringify(SXSJ?.value) !== '[]') {
@@ -644,9 +659,9 @@ export default function RightRptContent(props) {
         SaveCustomReportSetting(params)
           .then(res => {
             if (res?.success) {
-              setSaved(true);
               message.success('保存成功', 1);
               getRptList(); //刷新数据
+              setStatus('normal');
               setIsSpinning(false);
             }
           })
@@ -675,9 +690,11 @@ export default function RightRptContent(props) {
             allowClear
           />
         </Form.Item>
-        <Button className="btn-delete" onClick={handleDelete}>
-          删除
-        </Button>
+        {status !== 'adding' && (
+          <Button className="btn-delete" onClick={handleDelete}>
+            删除
+          </Button>
+        )}
         {/* <Button className="btn-cancel">取消</Button> */}
         <Button className="btn-save" onClick={handleSave}>
           保存
@@ -721,14 +738,13 @@ export default function RightRptContent(props) {
             onChange={handleConditionFilterChange}
             onDelete={onConditionFilterDelete}
             setData={v => {
-              setSaved(false);
               setSelectedData(p => ({ ...p, conditionFilter: v }));
             }}
           />
           <div className="group-condition">
             <span className="label">组合条件</span>
             {selectedData.conditionGroup.map(x => (
-              <div className="condition-group-item">
+              <div className="condition-group-item" key={x[x.length - 1].ID}>
                 {x.length - 2 >= 0 && x[x.length - 2].NAME + ' - '}
                 {x[x.length - 1].NAME}
                 <i

@@ -9,6 +9,7 @@ import emptyImg from '../../../assets/homePage/custom-rpt-empty.png';
 import SiderRptList from './SiderRptList';
 import RightRptContent from './RightRptContent';
 import { Link } from 'react-router-dom';
+import { isEqual } from 'lodash';
 
 export default function CustomRptManagement(props) {
   const { routes = [] } = props;
@@ -31,7 +32,13 @@ export default function CustomRptManagement(props) {
     conditionFilter: [],
     conditionGroup: [],
     columnFields: [],
-  }); //已选条件数据 - 原数据
+  }); //已选条件数据 - 原数据 - 新建时
+  const [selectedEditOrigin, setSelectedEditOrigin] = useState({
+    conditionFilter: [],
+    conditionGroup: [],
+    columnFields: [],
+  }); //已选条件数据 - 原数据 - 编辑时
+  const [rptNameOrigin, setRptNameOrigin] = useState('未命名报表'); //报表名称
   const [rptList, setRptList] = useState([]); //我的报表列表数据
   const [rptOrigin, setRptOrigin] = useState([]); //我的报表列表数据 - 原数据
   const [dragKey, setDragKey] = useState(null); //拖动id
@@ -39,15 +46,14 @@ export default function CustomRptManagement(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [status, setStatus] = useState('normal'); //editing、adding、normal
   const [editingId, setEditingId] = useState(-1); //正在编辑的报表id
-  const [saved, setSaved] = useState(false); //是否已保存
 
   useEffect(() => {
-    getBasicData();
+    getRptList();
     return () => {};
   }, []);
 
   // 获取条件基础数据
-  const getBasicData = () => {
+  const getBasicData = (isAdding = true) => {
     setIsSpinning(true);
     QueryCustomQueryCriteria({
       queryType: 'SXTJ',
@@ -86,39 +92,46 @@ export default function CustomRptManagement(props) {
                         conditionGroup: data2,
                         columnFields: data3,
                       });
-                      //筛选条件和展示字段默认项目名称, ID为8
-                      let conditionFilterXmmc = data.filter(x => x.ID === 8)[0];
-                      let columnFieldsXmmc = JSON.parse(res.result).filter(x => x.ID === 8)[0];
-                      columnFieldsXmmc.title = columnFieldsXmmc.NAME;
-                      columnFieldsXmmc.key = columnFieldsXmmc.ID;
-                      if (conditionFilterXmmc.TJBCXLX) {
-                        QueryCustomQueryCriteria({
-                          queryType: conditionFilterXmmc.TJBCXLX,
-                        })
-                          .then(res => {
-                            if (res?.success) {
-                              conditionFilterXmmc.SELECTORDATA = JSON.parse(res.result);
-                              setSelectedData(p => ({
-                                ...p,
-                                conditionFilter: [conditionFilterXmmc],
-                                columnFields: [columnFieldsXmmc],
-                              }));
-                              setSelectedOrigin(p => ({
-                                ...p,
-                                conditionFilter: JSON.parse(
-                                  JSON.stringify([{ ...conditionFilterXmmc }]),
-                                ),
-                                columnFields: [JSON.parse(JSON.stringify(columnFieldsXmmc))],
-                              }));
-                              setSaved(true);
-                              getRptList();
-                            }
+                      //新增时 - 筛选条件和展示字段默认项目名称, ID为8
+                      if (isAdding) {
+                        let conditionFilterXmmc = data.filter(x => x.ID === 8)[0];
+                        let columnFieldsXmmc = JSON.parse(res.result).filter(x => x.ID === 8)[0];
+                        columnFieldsXmmc.title = columnFieldsXmmc.NAME;
+                        columnFieldsXmmc.key = columnFieldsXmmc.ID;
+                        if (conditionFilterXmmc.TJBCXLX) {
+                          QueryCustomQueryCriteria({
+                            queryType: conditionFilterXmmc.TJBCXLX,
                           })
-                          .catch(e => {
-                            console.error('🚀', e);
-                            message.error(conditionFilterXmmc.TJBCXLX + '信息获取失败', 1);
-                            setIsSpinning(false);
-                          });
+                            .then(res => {
+                              if (res?.success) {
+                                conditionFilterXmmc.SELECTORVALUE = undefined;
+                                conditionFilterXmmc.SELECTORDATA = JSON.parse(res.result);
+                                setSelectedData(p => ({
+                                  ...p,
+                                  conditionFilter: [conditionFilterXmmc],
+                                  columnFields: [columnFieldsXmmc],
+                                }));
+                                setSelectedOrigin(p => ({
+                                  ...p,
+                                  conditionFilter: [
+                                    {
+                                      ...JSON.parse(JSON.stringify(conditionFilterXmmc)),
+                                      SELECTORVALUE: undefined,
+                                    },
+                                  ],
+                                  columnFields: [JSON.parse(JSON.stringify(columnFieldsXmmc))],
+                                }));
+                                setIsSpinning(false);
+                              }
+                            })
+                            .catch(e => {
+                              console.error('🚀', e);
+                              message.error(conditionFilterXmmc.TJBCXLX + '信息获取失败', 1);
+                              setIsSpinning(false);
+                            });
+                        }
+                      } else {
+                        setIsSpinning(false);
                       }
                     }
                   })
@@ -151,7 +164,7 @@ export default function CustomRptManagement(props) {
     QueryCustomReport({
       bbid,
       current: 1,
-      cxlx: 'MB',
+      cxlx: 'NORESULT',
       pageSize: 20,
       paging: 1,
       sort: 'XMID DESC',
@@ -161,48 +174,72 @@ export default function CustomRptManagement(props) {
         if (res?.success) {
           const obj = JSON.parse(res.mbxx)[0];
           let filterData = JSON.parse(obj.QDZSSXZD);
-          filterData.forEach(x => {
-            if (x.TJBCXLX) {
-              QueryCustomQueryCriteria({
-                queryType: x.TJBCXLX,
-              })
-                .then(res => {
-                  if (res?.success) {
-                    if (x.TJBCXLX === 'YSXM') {
-                      function uniqueFunc(arr, uniId) {
-                        const res = new Map();
-                        return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+          if (filterData.length > 0) {
+            filterData.forEach(x => {
+              if (x.TJBCXLX) {
+                QueryCustomQueryCriteria({
+                  queryType: x.TJBCXLX,
+                })
+                  .then(res => {
+                    if (res?.success) {
+                      if (x.TJBCXLX === 'YSXM') {
+                        function uniqueFunc(arr, uniId) {
+                          const res = new Map();
+                          return arr.filter(
+                            item => !res.has(item[uniId]) && res.set(item[uniId], 1),
+                          );
+                        }
+                        let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+                        let origin = JSON.parse(res.result);
+                        x.SELECTORDATA = {
+                          type,
+                          origin,
+                        };
+                      } else if (x.ZJLX === 'TREE-MULTIPLE') {
+                        x.SELECTORDATA = buildTree(JSON.parse(res.result));
+                      } else {
+                        x.SELECTORDATA = JSON.parse(res.result);
                       }
-                      let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
-                      let origin = JSON.parse(res.result);
-                      x.SELECTORDATA = {
-                        type,
-                        origin,
-                      };
-                    } else if (x.ZJLX === 'TREE-MULTIPLE') {
-                      x.SELECTORDATA = buildTree(JSON.parse(res.result));
-                    } else {
-                      x.SELECTORDATA = JSON.parse(res.result);
                     }
-                  }
-                })
-                .then(() => {
-                  setSelectedData({
-                    conditionFilter: filterData,
-                    conditionGroup: JSON.parse(obj.QDZSZHZD),
-                    columnFields: JSON.parse(obj.QDZSBTZD),
+                  })
+                  .then(() => {
+                    setSelectedData({
+                      conditionFilter: filterData,
+                      conditionGroup: JSON.parse(obj.QDZSZHZD),
+                      columnFields: JSON.parse(obj.QDZSBTZD),
+                    });
+                    setSelectedEditOrigin({
+                      conditionFilter: filterData,
+                      conditionGroup: JSON.parse(obj.QDZSZHZD),
+                      columnFields: JSON.parse(obj.QDZSBTZD),
+                    });
+                    setRptName(obj.BBMC);
+                    setRptNameOrigin(obj.BBMC);
+                    setStatus('editing');
+                    setIsSpinning(false);
+                  })
+                  .catch(e => {
+                    console.error('🚀', e);
+                    message.error(x.TJBCXLX + '信息获取失败', 1);
                   });
-                  setRptName(obj.BBMC);
-                  setStatus('editing');
-                  setSaved(true);
-                  setIsSpinning(false);
-                })
-                .catch(e => {
-                  console.error('🚀', e);
-                  message.error(x.TJBCXLX + '信息获取失败', 1);
-                });
-            }
-          });
+              }
+            });
+          } else {
+            setSelectedData({
+              conditionFilter: filterData,
+              conditionGroup: JSON.parse(obj.QDZSZHZD),
+              columnFields: JSON.parse(obj.QDZSBTZD),
+            });
+            setSelectedEditOrigin({
+              conditionFilter: filterData,
+              conditionGroup: JSON.parse(obj.QDZSZHZD),
+              columnFields: JSON.parse(obj.QDZSBTZD),
+            });
+            setRptName(obj.BBMC);
+            setRptNameOrigin(obj.BBMC);
+            setStatus('editing');
+            setIsSpinning(false);
+          }
         }
       })
       .catch(e => {
@@ -214,9 +251,10 @@ export default function CustomRptManagement(props) {
 
   //获取我的报表列表数据
   const getRptList = (bbmc = undefined, current = 1) => {
+    setIsSpinning(true);
     let params = {
       current,
-      cxlx: 'WD',
+      cxlx: 'CJ',
       pageSize: 10,
       paging: -1,
       sort: '',
@@ -305,10 +343,27 @@ export default function CustomRptManagement(props) {
       columnFields: [],
     });
     setRptName('未命名报表');
+    setRptNameOrigin('未命名报表');
     setDragKey(null);
     setStatus('normal');
     setEditingId(-1);
-    setSaved(true);
+  };
+
+  //是否保存
+  const getIsSaved = (status = 'normal') => {
+    console.log(
+      '🚀 ~ getIsSaved',
+      rptName,
+      rptNameOrigin,
+      selectedData,
+      selectedOrigin,
+      selectedEditOrigin
+    );
+    if (status === 'adding')
+      return isEqual(selectedData, selectedOrigin) && isEqual(rptName, rptNameOrigin);
+    else if (status === 'editing')
+      return isEqual(selectedData, selectedEditOrigin) && isEqual(rptName, rptNameOrigin);
+    else return true;
   };
 
   return (
@@ -342,13 +397,15 @@ export default function CustomRptManagement(props) {
             rptList,
             rptOrigin,
             editingId,
-            saved,
+            basicData,
           }}
           funcProps={{
-            setStatus,
             hangleDataRestore,
             getEditData,
             setRptList,
+            getBasicData,
+            setStatus,
+            getIsSaved,
           }}
         />
         {status === 'normal' ? (
@@ -379,7 +436,6 @@ export default function CustomRptManagement(props) {
               setSelectedData,
               hangleDataRestore,
               getRptList,
-              setSaved,
             }}
           />
         )}

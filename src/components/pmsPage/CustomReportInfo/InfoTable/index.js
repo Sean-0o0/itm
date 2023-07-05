@@ -20,9 +20,6 @@ export default function InfoTable(props) {
   const { setFilterData, getTableData } = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
   const location = useLocation();
-  const hotRef = useRef(null);
-
-  
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
@@ -130,7 +127,7 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
-      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} hotRef={hotRef} />
+      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} />
       <div className="btn-add-prj-box">
         <Button type="primary" className="btn-add-prj" onClick={() => setNewRptVisible(true)}>
           新增

@@ -9,8 +9,12 @@ import {
   Cascader,
   Input,
   Icon,
+  Radio,
+  Popover,
 } from 'antd';
 import moment from 'moment';
+
+const { RangePicker } = DatePicker;
 
 export default function ConditionFilter(props) {
   const {
@@ -48,9 +52,11 @@ export default function ConditionFilter(props) {
     }
 
     let component = '';
-    let dateValue = ['', ' ', undefined, [], null].includes(SELECTORVALUE)
-      ? null
-      : moment(SELECTORVALUE);
+    let dateValue = ['', ' ', 'undefined', 'null', '[]'].includes(JSON.stringify(SELECTORVALUE))
+      ? [null, null]
+      : ['', ' ', undefined, null].includes(SELECTORVALUE[0])
+      ? [null, null]
+      : [moment(SELECTORVALUE[0]), moment(SELECTORVALUE[1])];
 
     //修改数据
     const modifyData = value => {
@@ -94,8 +100,8 @@ export default function ConditionFilter(props) {
     };
 
     const handleDateChange = (ds, d) => {
-      console.log('🚀 ~ file: index.js:25 ~ handleDateChange ~ ds, d:', ds, d);
-      modifyData(ds);
+      // console.log('🚀 ~ file: index.js:25 ~ handleDateChange ~ ds, d:', ds, d);
+      modifyData([...d]);
     };
     const handleYSXMLXChange = v => {
       modifyData({
@@ -112,6 +118,25 @@ export default function ConditionFilter(props) {
         value: v,
       });
     };
+    const handleRadioChange = v => {
+      modifyData(v.target.value);
+    };
+
+    // const popoverContent = (data = []) => (
+    //   <div className="list">
+    //     {data.map(x => (
+    //       <div
+    //         className="item"
+    //         // key={x.ENTRYNO + x.JLMC + x.JLID}
+    //         // onClick={() => handleFilePreview(x.JLID, x.JLMC, x.ENTRYNO)}
+    //       >
+    //         {x}
+    //         {/* <a style={{ color: '#3361ff' }}>{x.JLMC}</a> */}
+    //       </div>
+    //     ))}
+    //   </div>
+    // );
+
     if (TJBCXLX === 'YSXM') {
       let ysxmArr = (
         SELECTORDATA.origin?.filter(x => x.YSLXID === SELECTORVALUE.type) || []
@@ -167,10 +192,18 @@ export default function ConditionFilter(props) {
             className="item-component"
             showSearch
             treeCheckable
-            maxTagCount={maxTagCount}
-            maxTagTextLength={2}
+            maxTagCount={1}
             maxTagPlaceholder={extraArr => {
-              return `等${extraArr.length + maxTagCount}个`;
+              return (
+                // <Popover
+                //   placement="bottom"
+                //   title={null}
+                //   content={popoverContent(extraArr)}
+                //   overlayClassName="demand-detail-content-popover"
+                // >
+                `+${extraArr.length + maxTagCount}`
+                // </Popover>
+              );
             }}
             showCheckedStrategy={TreeSelect.SHOW_CHILD}
             treeNodeFilterProp="title"
@@ -217,10 +250,9 @@ export default function ConditionFilter(props) {
               showArrow
               allowClear
               mode="multiple"
-              maxTagCount={maxTagCount}
-              maxTagTextLength={2}
+              maxTagCount={1}
               maxTagPlaceholder={extraArr => {
-                return `等${extraArr.length + maxTagCount}个`;
+                return `+${extraArr.length + maxTagCount}`;
               }}
               value={SELECTORVALUE}
               onChange={handleMultipleSltChange}
@@ -242,10 +274,9 @@ export default function ConditionFilter(props) {
                 className="item-component"
                 showSearch
                 treeCheckable
-                maxTagCount={maxTagCount}
-                maxTagTextLength={2}
+                maxTagCount={1}
                 maxTagPlaceholder={extraArr => {
-                  return `等${extraArr.length + maxTagCount}个`;
+                  return `+${extraArr.length + maxTagCount}`;
                 }}
                 showCheckedStrategy={TreeSelect.SHOW_ALL}
                 treeNodeFilterProp="title"
@@ -295,11 +326,31 @@ export default function ConditionFilter(props) {
           break;
         case 'DATE':
           component = (
-            <DatePicker value={dateValue} onChange={handleDateChange} className="item-component" />
+            <RangePicker
+              format="YYYY-MM-DD"
+              placeholder="请选择"
+              value={dateValue}
+              onChange={handleDateChange}
+              className="item-component"
+            />
+          );
+          break;
+
+        case 'RADIO':
+          component = (
+            <Radio.Group
+              value={SELECTORVALUE}
+              onChange={handleRadioChange}
+              className="item-component"
+            >
+              <Radio value={true}>是</Radio>
+              <Radio value={false}>否</Radio>
+            </Radio.Group>
           );
           break;
         case 'SINGLE':
         case 'TREE-SINGLE':
+
         default:
           console.error(`🚀 ~ 该类型组件【${ZJLX}】尚未配置`);
           return;

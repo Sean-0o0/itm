@@ -117,59 +117,78 @@ export default function CustomRptInfo(props) {
       };
     });
     let filterData = JSON.parse(obj.QDZSSXZD);
-    filterData.forEach(x => {
-      if (x.TJBCXLX) {
-        QueryCustomQueryCriteria({
-          queryType: x.TJBCXLX,
-        })
-          .then(res => {
-            if (res?.success) {
-              if (x.TJBCXLX === 'YSXM') {
-                function uniqueFunc(arr, uniId) {
-                  const res = new Map();
-                  return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+    if (filterData.length > 0) {
+      filterData.forEach(x => {
+        if (x.TJBCXLX) {
+          QueryCustomQueryCriteria({
+            queryType: x.TJBCXLX,
+          })
+            .then(res => {
+              if (res?.success) {
+                if (x.TJBCXLX === 'YSXM') {
+                  function uniqueFunc(arr, uniId) {
+                    const res = new Map();
+                    return arr.filter(item => !res.has(item[uniId]) && res.set(item[uniId], 1));
+                  }
+                  let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
+                  let origin = JSON.parse(res.result);
+                  x.SELECTORDATA = {
+                    type,
+                    origin,
+                  };
+                  // if (type.length > 0)
+                  //   x.SELECTORVALUE = {
+                  //     type: type[0]?.YSLXID,
+                  //     typeObj: type[0],
+                  //     value: [],
+                  //   };
+                } else if (x.ZJLX === 'TREE-MULTIPLE') {
+                  x.SELECTORDATA = buildTree(JSON.parse(res.result));
+                } else if (x.ZJLX === 'RADIO') {
+                  // x.SELECTORVALUE = false;
+                } else {
+                  x.SELECTORDATA = JSON.parse(res.result);
                 }
-                let type = uniqueFunc(JSON.parse(res.result), 'YSLXID');
-                let origin = JSON.parse(res.result);
-                x.SELECTORDATA = {
-                  type,
-                  origin,
-                };
-                // if (type.length > 0)
-                //   x.SELECTORVALUE = {
-                //     type: type[0]?.YSLXID,
-                //     typeObj: type[0],
-                //     value: [],
-                //   };
-              } else if (x.ZJLX === 'TREE-MULTIPLE') {
-                x.SELECTORDATA = buildTree(JSON.parse(res.result));
-              } else {
-                x.SELECTORDATA = JSON.parse(res.result);
               }
-            }
-          })
-          .then(() => {
-            let finalObj = {
-              rptName: obj.BBMC,
-              authIds: obj.KJR?.split(';'),
-              columns,
-              filterData,
-              groupData: JSON.parse(obj.QDZSZHZD),
-              origin: {
-                columns: JSON.parse(obj.QDZSBTZD),
-                filterData: JSON.parse(obj.QDZSSXZD),
+            })
+            .then(() => {
+              let finalObj = {
+                rptName: obj.BBMC,
+                authIds: obj.KJR?.split(';'),
+                columns,
+                filterData,
                 groupData: JSON.parse(obj.QDZSZHZD),
-              },
-            };
-            setData(finalObj);
-            getSQL({}, finalObj);
-          })
-          .catch(e => {
-            console.error('🚀', e);
-            message.error(x.TJBCXLX + '信息获取失败', 1);
-          });
-      }
-    });
+                origin: {
+                  columns: JSON.parse(obj.QDZSBTZD),
+                  filterData: JSON.parse(obj.QDZSSXZD),
+                  groupData: JSON.parse(obj.QDZSZHZD),
+                },
+              };
+              setData(finalObj);
+              getSQL({}, finalObj);
+            })
+            .catch(e => {
+              console.error('🚀', e);
+              message.error(x.TJBCXLX + '信息获取失败', 1);
+            });
+        }
+      });
+    } else {
+      let finalObj = {
+        rptName: obj.BBMC,
+        authIds: obj.KJR?.split(';'),
+        columns,
+        filterData,
+        groupData: JSON.parse(obj.QDZSZHZD),
+        origin: {
+          columns: JSON.parse(obj.QDZSBTZD),
+          filterData: JSON.parse(obj.QDZSSXZD),
+          groupData: JSON.parse(obj.QDZSZHZD),
+        },
+      };
+      setData(finalObj);
+      getSQL({}, finalObj);
+    }
   };
 
   //表格数据 - 查询按钮
@@ -202,13 +221,27 @@ export default function CustomRptInfo(props) {
         JSON.stringify(SXSJ?.value) !== '[]'
       ) {
         if (x.ZJLX === 'DATE') {
-          SXSJ = [
-            Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
-            Number(moment(x.SELECTORVALUE).format('YYYYMMDD')),
-          ];
+          if (x.SELECTORVALUE[0] === '' && x.SELECTORVALUE[1] === '') {
+            SXSJ = [0, 20500000];
+          } else {
+            SXSJ = [
+              Number(moment(x.SELECTORVALUE[0]).format('YYYYMMDD')),
+              Number(moment(x.SELECTORVALUE[1]).format('YYYYMMDD')),
+            ];
+          }
           bmArr.push(x.BM);
         } else if (x.ZJLX === 'RANGE') {
           SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
+          bmArr.push(x.BM);
+        } else if (x.ZJLX === 'RADIO') {
+          //目前只有是否为父项目，暂时写死以下情况
+          SXSJ = undefined;
+          SXLX = 'ZHTJ';
+          if (x.SELECTORVALUE) {
+            SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) > 0';
+          } else {
+            SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) <= 0';
+          }
           bmArr.push(x.BM);
         } else if (x.TJBCXLX === 'YSXM') {
           if (JSON.stringify(SXSJ?.value) !== '[]') {

@@ -5,8 +5,21 @@ import { FetchQueryCustomReportList } from '../../../../services/pmsServices';
 
 export default function SiderRptList(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const { status = 'normal', rptList, rptOrigin, editingId = -1, saved = true } = dataProps;
-  const { setStatus, hangleDataRestore, getEditData, setRptList } = funcProps;
+  const {
+    status = 'normal',
+    rptList,
+    rptOrigin,
+    editingId = -1,
+    basicData = {},
+  } = dataProps;
+  const {
+    getEditData,
+    setRptList,
+    getBasicData,
+    setStatus,
+    hangleDataRestore,
+    getIsSaved,
+  } = funcProps;
   // const [bbmc, setBbmc] = useState(''); //报表名称
   // const [isSpinning, setIsSpinning] = useState(false); //加载状态
   // const listRef = useRef(null); //滚动元素
@@ -68,24 +81,35 @@ export default function SiderRptList(props) {
   //报表块
   const getRptItem = ({ BBID, BBMC = '--', CJR = '--', CJRID, FXR = '', SFSC = '0' }) => {
     const handleEdit = id => {
+      console.log('status', status, getIsSaved(status));
       if (id !== editingId) {
-        // if (status === 'normal') {
-        //   getEditData(id);
-        // } else if (!saved) {
-        //   Modal.confirm({
-        //     title: '提示：',
-        //     content: `当前报表未保存，是否确定离开？`,
-        //     okText: '确定',
-        //     cancelText: '取消',
-        //     onOk: () => {
-        //       hangleDataRestore();
-        //       getEditData(id);
-        //     },
-        //   });
-        // } else {
-        hangleDataRestore();
-        getEditData(id);
-        // }
+        if (!getIsSaved(status)) {
+          Modal.confirm({
+            title: '提示：',
+            content: `当前报表未保存，是否确定离开？`,
+            okText: '确定',
+            cancelText: '取消',
+            onOk: () => {
+              if (basicData.conditionFilter?.length === 0) {
+                //需要获取基础数据
+                getBasicData(false);
+              } else {
+                hangleDataRestore();
+              }
+              setStatus('editing');
+              getEditData(id);
+            },
+          });
+        } else {
+          if (basicData.conditionFilter?.length === 0) {
+            //需要获取基础数据
+            getBasicData(false);
+          } else {
+            hangleDataRestore();
+          }
+          setStatus('editing');
+          getEditData(id);
+        }
       }
     };
     return (
@@ -123,23 +147,31 @@ export default function SiderRptList(props) {
 
   //新建
   const handleAddRpt = () => {
-    // if (status === 'normal') {
-    //   setStatus('adding');
-    // } else if (!saved) {
-    //   Modal.confirm({
-    //     title: '提示：',
-    //     content: `当前报表未保存，是否确定离开？`,
-    //     okText: '确定',
-    //     cancelText: '取消',
-    //     onOk: () => {
-    //       hangleDataRestore();
-    //       setStatus('adding');
-    //     },
-    //   });
-    // } else {
-    hangleDataRestore();
-    setStatus('adding');
-    // }
+    if (!getIsSaved(status)) {
+      Modal.confirm({
+        title: '提示：',
+        content: `当前报表未保存，是否确定离开？`,
+        okText: '确定',
+        cancelText: '取消',
+        onOk: () => {
+          if (basicData.conditionFilter?.length === 0) {
+            //需要获取基础数据
+            getBasicData();
+          } else {
+            hangleDataRestore();
+          }
+          setStatus('adding');
+        },
+      });
+    } else {
+      if (basicData.conditionFilter?.length === 0) {
+        //需要获取基础数据
+        getBasicData();
+      } else {
+        hangleDataRestore();
+      }
+      setStatus('adding');
+    }
   };
 
   return (
@@ -154,7 +186,7 @@ export default function SiderRptList(props) {
       <Input
         allowClear
         onChange={handleInputChange}
-        placeholder="请输入"
+        placeholder="请输入报表名称"
         suffix={<i className="iconfont icon-search-name" />}
       />
       <div

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { Button, Table, Popover, message, Tooltip, Popconfirm, Icon, Spin } from 'antd';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
@@ -104,7 +104,7 @@ export default function InfoTable(props) {
       width: '29%',
       key: 'XMMC',
       ellipsis: true,
-      render: (text, row, index) => {
+      render: (text, row) => {
         return (
           <Tooltip title={text} placement="topLeft">
             <Link
@@ -119,9 +119,10 @@ export default function InfoTable(props) {
                   routes: [{ name: '需求列表', pathname: location.pathname }],
                 },
               }}
-              className="table-link-strong"
+              className="table-link-strong new-demand-exsit-box"
             >
-              {text}
+              {row.CZWSJXQ === '1' && <div className="new-demand-exsit">新</div>}
+              <span>{text}</span>
             </Link>
           </Tooltip>
         );

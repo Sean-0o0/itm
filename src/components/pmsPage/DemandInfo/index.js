@@ -21,14 +21,8 @@ export default function DemandInfo(props) {
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
 
   useEffect(() => {
-    if (xmid === -2) {
-      //无参数
-      getTableData();
-      topConsoleRef?.current?.handleReset();
-    } else {
-      getTableData();
-      topConsoleRef?.current?.handleReset();
-    }
+    getTableData();
+    topConsoleRef?.current?.handleReset();
     return () => {};
   }, [xmid]);
 
@@ -43,7 +37,7 @@ export default function DemandInfo(props) {
       sort: 'XMID DESC',
       total: -1,
       // xmjl: 0,
-      xmmc: xmid,
+      xmmc: xmid === -2 ? undefined : Number(xmid),
       // xqfqr: 0,
       // xqmc: 0,
       // yslx: 0,
@@ -56,7 +50,7 @@ export default function DemandInfo(props) {
           setTableData(p => data);
           setTotal(res.totalrows);
           setTableLoading(false);
-          getSubTableData(Number(xmid));
+          if (xmid !== -2) getSubTableData(Number(xmid));
         }
       })
       .catch(e => {
@@ -74,9 +68,9 @@ export default function DemandInfo(props) {
       paging: -1,
       sort: '',
       total: -1,
-      xmmc: Number(xmid),
-      xqmc: Number(xqid),
-      xqfqr: Number(xqfqr),
+      xmmc: xmid,
+      xqmc: xqid,
+      xqfqr: xqfqr,
     })
       .then(res => {
         if (res?.success) {
