@@ -13,6 +13,9 @@ import MemberAllTable from "../memberAllTable";
 import {QueryProjectStatistics} from "../../../../../services/pmsServices";
 import {EncryptBase64} from "../../../../Common/Encrypt";
 import {Link} from "react-router-dom";
+import DataComparison from "../dataComparisonRY";
+import DataComparisonRY from "../dataComparisonRY";
+import DataComparisonBM from "../dataComparisonBM";
 
 
 const {TabPane} = Tabs;
@@ -25,7 +28,10 @@ export default function EjbmAllTable(props) {
   const [tableDataRY, setTableDataRY] = useState([]);
   const [totalRY, setTotalRY] = useState(0);
   const [bmmc, setBMMC] = useState('');
-  const [memberLoading, setMemberLoading] = useState(false);
+  const [memberLoading, setMemberLoading] = useState(true);
+  const [compareRYVisible, setCompareRYVisible] = useState(false);//人员对比
+  const [compareBMVisible, setCompareBMVisible] = useState(false);//部门对比
+  const [orgId, setOrgId] = useState('');
 
   const {
     tableDataLD = [],
@@ -270,6 +276,23 @@ export default function EjbmAllTable(props) {
     getTableDataBM("YJBM_BM", bmid);
   }
 
+  const closeCompareRYVisibleModal = () => {
+    setCompareRYVisible(false)
+  }
+
+  const getCompareRYModel = () => {
+    setCompareRYVisible(true)
+  }
+
+  const closeCompareBMVisibleModal = () => {
+    setCompareBMVisible(false)
+  }
+
+  const getCompareBMModel = (item) => {
+    setOrgId(item.ORGID)
+    setCompareBMVisible(true)
+  }
+
   // console.log("tableDatatableData",tableData)
 
   return (
@@ -285,36 +308,73 @@ export default function EjbmAllTable(props) {
             {
               tableDataLD.length > 0 && tableDataLD.map(item => {
                 return <div className="info-table-content-box">
+                  {
+                    compareRYVisible && (
+                      <DataComparisonRY userId={item.USERID} closeModal={closeCompareRYVisibleModal}
+                                        visible={compareRYVisible}/>
+                    )}
                   <div className="info-table-content-box-title">
                     <div className="info-table-content-box-title-left">
                       {item.NAME}
                     </div>
-                    {/*<div className="info-table-content-box-title-right">*/}
-                    {/*  <i className="iconfont icon-vs"/>数据对比*/}
-                    {/*</div>*/}
+                    <div className="info-table-content-box-title-right" onClick={(e) => getCompareRYModel(e)}>
+                      <i className="iconfont icon-vs" onClick={(e) => getCompareRYModel(e)}/>数据对比
+                    </div>
                   </div>
-                  <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
-                       onMouseLeave={hiddenFooterLD}>
-                    <ReactEchartsCore
-                      echarts={echarts}
-                      option={getRadarChatLD(item)}
-                      notMerge
-                      lazyUpdate
-                      style={{height: '240px'}}
-                      theme=""
-                    />
-                    {/*{*/}
-                    {/*  footerVisableLD === item.USERID &&*/}
-                    {/*  <div className="info-table-content-box-footer">*/}
-                    {/*    <div className="info-table-content-box-footer-left">*/}
-                    {/*      <span className="info-table-content-box-footer-left-span">项目明细</span>*/}
-                    {/*    </div>*/}
-                    {/*    <div className="info-table-content-box-footer-right">*/}
-                    {/*      <span className="info-table-content-box-footer-left-span" onClick={() =>toDetail(item)}>部门详情</span>*/}
-                    {/*    </div>*/}
-                    {/*  </div>*/}
-                    {/*}*/}
-                  </div>
+                  <Link
+                    style={{color: '#3361ff', width: '100%'}}
+                    to={{
+                      pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(
+                        JSON.stringify({
+                          cxlx: 'RY',
+                          memberID: item.USERID,
+                        }),
+                      )}`,
+                      state: {
+                        routes: [{name: '统计分析', pathname: location.pathname}],
+                      },
+                    }}
+                    className="table-link-strong"
+                  >
+                    <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
+                         onMouseLeave={hiddenFooterLD}>
+                      <ReactEchartsCore
+                        echarts={echarts}
+                        option={getRadarChatLD(item)}
+                        notMerge
+                        lazyUpdate
+                        style={{height: '240px'}}
+                        theme=""
+                      />
+                      {/*{*/}
+                      {/*  footerVisableLD === item.USERID &&*/}
+                      {/*  <div className="info-table-content-box-footer">*/}
+                      {/*    <Link*/}
+                      {/*      style={{color: '#3361ff',justifyContent: 'center',display: 'flex',width: '100%'}}*/}
+                      {/*      to={{*/}
+                      {/*        pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(*/}
+                      {/*          JSON.stringify({*/}
+                      {/*            cxlx: 'RY',*/}
+                      {/*            memberID: item.USERID,*/}
+                      {/*          }),*/}
+                      {/*        )}`,*/}
+                      {/*        state: {*/}
+                      {/*          routes: [{name: '统计分析', pathname: location.pathname}],*/}
+                      {/*        },*/}
+                      {/*      }}*/}
+                      {/*      className="table-link-strong"*/}
+                      {/*    >*/}
+                      {/*      <div className="info-table-content-box-footer-left" style={{width:'100%'}}>*/}
+                      {/*        <span className="info-table-content-box-footer-left-span">项目明细</span>*/}
+                      {/*      </div>*/}
+                      {/*    </Link>*/}
+                      {/*    /!*<div className="info-table-content-box-footer-right">*!/*/}
+                      {/*    /!*  <span className="info-table-content-box-footer-left-span" onClick={() =>toDetail(item)}>部门详情</span>*!/*/}
+                      {/*    /!*</div>*!/*/}
+                      {/*  </div>*/}
+                      {/*}*/}
+                    </div>
+                  </Link>
                 </div>
               })
             }
@@ -324,6 +384,11 @@ export default function EjbmAllTable(props) {
               部门统计
             </div>
           }
+          {
+            compareBMVisible && (
+              <DataComparisonBM orgId={orgId} closeModal={closeCompareBMVisibleModal}
+                                visible={compareBMVisible}/>
+            )}
           <div className="info-table-content">
             {
               tableDataBM.length > 0 && tableDataBM.map(item => {
@@ -332,9 +397,9 @@ export default function EjbmAllTable(props) {
                     <div className="info-table-content-box-title-left">
                       {item.ORGNAME}
                     </div>
-                    {/*<div className="info-table-content-box-title-right">*/}
-                    {/*  <i className="iconfont icon-vs"/>数据对比*/}
-                    {/*</div>*/}
+                    <div className="info-table-content-box-title-right" onClick={() => getCompareBMModel(item)}>
+                      <i className="iconfont icon-vs" onClick={() => getCompareBMModel(item)}/>数据对比
+                    </div>
                   </div>
                   <div className="info-table-content-box-radar" onMouseEnter={() => getFooterBM(item.ORGID)}
                        onMouseLeave={hiddenFooterBM}>
@@ -368,9 +433,8 @@ export default function EjbmAllTable(props) {
                             <span className="info-table-content-box-footer-left-span">项目明细</span>
                           </div>
                         </Link>
-                        <div className="info-table-content-box-footer-right">
-                          <span className="info-table-content-box-footer-left-span"
-                                onClick={() => toDetail(item)}>部门详情</span>
+                        <div className="info-table-content-box-footer-right" onClick={() => toDetail(item)}>
+                          <span className="info-table-content-box-footer-left-span">部门详情</span>
                         </div>
                       </div>
                     }

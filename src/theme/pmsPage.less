@@ -19228,6 +19228,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
 
           .info-table-content-box-title-right {
+            cursor: pointer;
             width: 50%;
             padding-right: 24px;
             text-align: end;
@@ -19237,6 +19238,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-weight: 400;
             color: #3361FF;
             line-height: 24px;
+
+            .iconfont {
+              padding-right: 4px;
+              font-size: 14px;
+            }
           }
         }
 
@@ -19295,6 +19301,40 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
         }
+      }
+    }
+  }
+}
+
+.dataComparison-modal {
+  .spin {
+    height: 570px;
+    max-height: 570px;
+    width: 100%;
+
+    .info-table {
+      margin: 16px 24px;
+
+      .console-item {
+        .item-label {
+          //width: 72px;
+          height: 22px;
+          font-size: 14px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #303133;
+          line-height: 22px;
+        }
+
+        .item-selector {
+          padding-top: 4px;
+          width: 100%;
+        }
+      }
+
+      .info-table-content {
+        padding-top: 16px;
+        width: 100%;
       }
     }
   }

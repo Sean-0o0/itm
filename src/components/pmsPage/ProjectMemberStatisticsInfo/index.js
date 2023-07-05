@@ -14,13 +14,13 @@ import EjbmAllTable from "./infoTable/ejbmAllTable";
 export default function ProjectMemberStatisticsInfo(props) {
   const [activeKey, setActiveKey] = useState('YJBM_ALL');
   const [tableData, setTableData] = useState([]); //全部
-  const [total, setTotal] = useState([]); //全部
+  const [total, setTotal] = useState(0); //全部
   const [tabsData, setTabsData] = useState([]); //TAB
   const [tableDataLD, setTableDataLD] = useState([]); //一级部门领导
-  const [totalLD, setTotalLD] = useState([]); //
+  const [totalLD, setTotalLD] = useState(0); //
   const [tableDataBM, setTableDataBM] = useState([]); //一级部门下的二级部门
-  const [totalBM, setTotalBM] = useState([]); //
-  const [loading, setLoading] = useState([]); //表格数据-项目列表
+  const [totalBM, setTotalBM] = useState(0); //
+  const [loading, setLoading] = useState(true); //表格数据-项目列表
   const [bmid, setBMID] = useState('-1');
 
   useEffect(() => {
@@ -92,6 +92,8 @@ export default function ProjectMemberStatisticsInfo(props) {
     // EJBM_ALL|查询对应二级部门下人员的数据（传二级部门的id）;
     // RY|查询对应人员id的数据（传人员的id）;
     // BM|查询对应部门的数据（部门的id）
+    //DRY|查询对应多个人员的数据；格式为英文括号，里面多个id用逗号隔开，(11169,15508) DBM时传
+    //DBM|查询对应多个部门的数据 格式为英文括号，格式为英文括号，里面多个id用逗号隔开，(115148,12488) DRY时传
     const payload = {
       "current": 1,
       // "memberId": 0,

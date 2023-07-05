@@ -307,7 +307,7 @@ export default function CustomRptInfo(props) {
       sql: curSQL,
       pageSize: 20,
       paging: -1, //不分页
-      sort: '',
+      sort: 'XMID DESC',
       total: -1,
     })
       .then(res => {

@@ -42,7 +42,7 @@ export default function CustomReports(props) {
       //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
       cxlx,
       pageSize,
-      paging: 1,
+      paging: cxlx === "GX" ? -1 : 1,
       sort: "",
       total: -1
     }

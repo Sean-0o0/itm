@@ -23,7 +23,7 @@ export default function YjbmAllTable(props) {
   const [tableDataRY, setTableDataRY] = useState([]);
   const [totalRY, setTotalRY] = useState(0);
   const [bmmc, setBMMC] = useState('');
-  const [memberLoading, setMemberLoading] = useState(false);
+  const [memberLoading, setMemberLoading] = useState(true);
   const {
     tableData = [],
     total = 0,
@@ -234,9 +234,8 @@ export default function YjbmAllTable(props) {
                             <span className="info-table-content-box-footer-left-span">项目明细</span>
                           </div>
                         </Link>
-                        <div className="info-table-content-box-footer-right">
-                          <span className="info-table-content-box-footer-left-span"
-                                onClick={() => toDetail(item)}>部门详情</span>
+                        <div className="info-table-content-box-footer-right" onClick={() => toDetail(item)}>
+                          <span className="info-table-content-box-footer-left-span">部门详情</span>
                         </div>
                       </div>
                     }

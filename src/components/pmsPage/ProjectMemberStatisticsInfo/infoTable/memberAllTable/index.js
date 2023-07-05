@@ -8,6 +8,9 @@ import 'echarts/lib/component/legend';
 import 'echarts/lib/component/legendScroll';
 import 'echarts/lib/component/title';
 import ReactEchartsCore from 'echarts-for-react/lib/core';
+import SendMailModal from "../../../SendMailModal";
+import DataComparison from "../dataComparisonRY";
+import DataComparisonRY from "../dataComparisonRY";
 
 
 const {TabPane} = Tabs;
@@ -15,6 +18,8 @@ const {TabPane} = Tabs;
 export default function MemberAllTable(props) {
 
   const [footerVisable, setFooterVisable] = useState('');
+  const [compareVisible, setCompareVisible] = useState(false);
+  const [userId, setUserId] = useState('');
   const {
     tableData = [],
     total = 0,
@@ -114,11 +119,24 @@ export default function MemberAllTable(props) {
     setFooterVisable(false)
   }
 
+  const closeCompareVisibleModal = () => {
+    setCompareVisible(false)
+  }
 
-  console.log("tableDatatableData", tableData)
+  const getCompareModel = (item) => {
+    setUserId(item.USERID)
+    setCompareVisible(true)
+  }
+
+
+  // console.log("tableDatatableData", tableData)
 
   return (
     tableData.length > 0 ? <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
+        {
+          compareVisible && (
+            <DataComparisonRY userId={userId} closeModal={closeCompareVisibleModal} visible={compareVisible}/>
+          )}
         <div className="info-table">
           <div className="info-table-detail-title">
             <div className='info-table-detail-title-back' onClick={handleBack}>
@@ -136,8 +154,8 @@ export default function MemberAllTable(props) {
                     <div className="info-table-content-box-title-left">
                       {item.NAME}
                     </div>
-                    <div className="info-table-content-box-title-right">
-                      <i className="iconfont icon-vs"/>数据对比
+                    <div className="info-table-content-box-title-right" onClick={() => getCompareModel(item)}>
+                      <i className="iconfont icon-vs" onClick={() => getCompareModel(item)}/>数据对比
                     </div>
                   </div>
                   <div className="info-table-content-box-radar"

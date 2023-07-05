@@ -6427,7 +6427,7 @@ class EditProjectInfoModel extends React.Component {
                                     </div>
                                     {
                                       <div className="right" style={{ marginTop: '12px' }}>
-                                        {index > 0 && !subItemFlag && item.lcbmc?.includes('项目立项') ? (
+                                        {index > 0 && !subItemFlag ? (
                                           <Tooltip title="上移">
                                             <a
                                               style={{
@@ -6440,7 +6440,7 @@ class EditProjectInfoModel extends React.Component {
                                             />
                                           </Tooltip>
                                         ) : null}
-                                        {index !== milePostInfo.length - 1 && !subItemFlag && item.lcbmc?.includes('项目立项') ? (
+                                        {index !== milePostInfo.length - 1 && !subItemFlag ? (
                                           <Tooltip title="下移">
                                             <a
                                               style={{

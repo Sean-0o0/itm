@@ -174,10 +174,10 @@ class ContractSigning extends React.Component {
           message.warn('请选择印章类型！');
           return;
         }
-        if (errs.includes('YT')) {
-          message.warn('请输入用途！');
-          return;
-        }
+        // if (errs.includes('YT')) {
+        //   message.warn('请输入用途！');
+        //   return;
+        // }
         if (errs.includes('QSBGNR')) {
           message.warn('请输入请示报告内容！');
           return;
@@ -250,7 +250,7 @@ class ContractSigning extends React.Component {
           LB: '1', //固定传1
           HTMBLX: values.HTMBLX, //合同模板类型id
           YZLX: String(values.YZLX), //印章类型字典id，多个用,隔开
-          YT: values.YT, //用途
+          YT: '', //用途
           BM1: '', //传空
           BM2: '', //传空
           NGR1: '', //传空
@@ -714,31 +714,31 @@ class ContractSigning extends React.Component {
                             </Form.Item>
                           </Col>
                         </Row>
-                        <Row gutter={24}>
-                          <Col span={24}>
-                            <Form.Item
-                              label="用途"
-                              labelCol={{ span: 4 }}
-                              wrapperCol={{ span: 20 }}
-                            >
-                              {getFieldDecorator('YT', {
-                                rules: [
-                                  {
-                                    required: true,
-                                    message: '请输入用途',
-                                  },
-                                ],
-                                // initialValue: "外采项目"
-                              })(<Input placeholder="请输入用途" />)}
-                            </Form.Item>
-                          </Col>
-                        </Row>
+                        {/*<Row gutter={24}>*/}
+                        {/*  <Col span={24}>*/}
+                        {/*    <Form.Item*/}
+                        {/*      label="用途"*/}
+                        {/*      labelCol={{ span: 4 }}*/}
+                        {/*      wrapperCol={{ span: 20 }}*/}
+                        {/*    >*/}
+                        {/*      {getFieldDecorator('YT', {*/}
+                        {/*        rules: [*/}
+                        {/*          {*/}
+                        {/*            required: true,*/}
+                        {/*            message: '请输入用途',*/}
+                        {/*          },*/}
+                        {/*        ],*/}
+                        {/*        // initialValue: "外采项目"*/}
+                        {/*      })(<Input placeholder="请输入用途" />)}*/}
+                        {/*    </Form.Item>*/}
+                        {/*  </Col>*/}
+                        {/*</Row>*/}
                         <Row gutter={24}>
                           <Col span={24}>
                             <Form.Item
                               label="请示报告内容"
-                              labelCol={{ span: 4 }}
-                              wrapperCol={{ span: 20 }}
+                              labelCol={{span: 4}}
+                              wrapperCol={{span: 20}}
                             >
                               {getFieldDecorator('QSBGNR', {
                                 rules: [
