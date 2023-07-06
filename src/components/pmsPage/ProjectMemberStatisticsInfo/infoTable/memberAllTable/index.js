@@ -36,6 +36,8 @@ export default function MemberAllTable(props) {
     //获取雷达图数据
     let max = item.CYXM;
     let datavalue = [item.XMZS, item.ZBXM, item.KTXM, item.CYXM, item.HJXM];
+    let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.CYXM === 0 && item.HJXM === 0
+    let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
     return {
       // title: {
@@ -101,12 +103,7 @@ export default function MemberAllTable(props) {
         areaStyle: {
           color: '#5B8FF9',
         },
-        data: [
-          {
-            value: datavalue,
-            name: item.ORGNAME,
-          },
-        ]
+        data: flag ? [] : data,
       }]
     };
   }
