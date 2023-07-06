@@ -52,6 +52,7 @@ class DemandInitiated extends React.Component {
     rydjData: [],
     current: 1,
     total: 0,
+    dataOK: false, //数据加载完毕
   };
 
   componentDidMount() {
@@ -126,7 +127,7 @@ class DemandInitiated extends React.Component {
           this.props.form.setFieldsValue({
             glxm: wbxqxxJson[0].XMMC,
             xqmc:
-              operateType === 'relaunch' ? "关于" + xmmc + "的人力外包需求" : wbxqxxJson[0].XQMC,
+              operateType === 'relaunch' ? '关于' + xmmc + '的人力外包需求' : wbxqxxJson[0].XQMC,
             kfsrq: moment(moment(wbxqxxJson[0].KFSFKQX).format('YYYY-MM-DD'), 'YYYY-MM-DD'),
             pcrq: moment(moment(wbxqxxJson[0].YJZHPCRQ).format('YYYY-MM-DD'), 'YYYY-MM-DD'),
             syrq: moment(moment(wbxqxxJson[0].YJSYRQ).format('YYYY-MM-DD'), 'YYYY-MM-DD'),
@@ -159,10 +160,17 @@ class DemandInitiated extends React.Component {
             tableData.push(data2);
           });
           console.log('tableData1111', tableDataInit);
-          this.setState({
-            tableDataInit,
-            tableData,
-          });
+          this.setState(
+            {
+              tableDataInit,
+              tableData,
+            },
+            () => {
+              this.setState({
+                dataOK: true,
+              });
+            },
+          );
         }
       })
       .catch(error => {
@@ -437,8 +445,11 @@ class DemandInitiated extends React.Component {
             }}
           >
             <strong>
-              {this.state.xqid === -1 || this.state.xqid === 'undefined' ? '需求发起' 
-              :  this.props.operateType === 'relaunch' ? '需求重新发起' : '需求修改' }
+              {this.state.xqid === -1 || this.state.xqid === 'undefined'
+                ? '需求发起'
+                : this.props.operateType === 'relaunch'
+                ? '需求重新发起'
+                : '需求修改'}
             </strong>
           </div>
           <Spin
@@ -485,16 +496,16 @@ class DemandInitiated extends React.Component {
                                   message: '请输入需求名称',
                                 },
                               ],
-                              initialValue: "关于" + xmmc + "的人力外包需求",
+                              initialValue: '关于' + xmmc + '的人力外包需求',
                             })(
                               <Tooltip
                                 overlayStyle={{ width: 'auto' }}
                                 placement="bottomLeft"
-                                title={"关于" + xmmc + "的人力外包需求"}
+                                title={'关于' + xmmc + '的人力外包需求'}
                               >
                                 <Input
                                   disabled={true}
-                                  placeholder={"关于" + xmmc + "的人力外包需求"}
+                                  placeholder={'关于' + xmmc + '的人力外包需求'}
                                 />
                               </Tooltip>,
                             )}
@@ -689,6 +700,7 @@ class DemandInitiated extends React.Component {
                                 operateType={operateType}
                                 tableDataInit={this.state.tableDataInit}
                                 recordCallback={this.recordCallback}
+                                dataOK={this.state.dataOK}
                               />,
                             )}
                           </Form.Item>

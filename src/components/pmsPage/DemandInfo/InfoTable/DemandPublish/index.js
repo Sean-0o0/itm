@@ -23,6 +23,7 @@ function ExpenseInfo(props) {
     wbxq: {},
   }); //回显数据
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const [dataOK, setDataOK] = useState(false); //数据加载完毕
 
   useEffect(() => {
     if (xqid !== -2) {
@@ -49,6 +50,9 @@ function ExpenseInfo(props) {
           setIsSpinning(false);
           // console.log('🚀 ~ file: index.js:49 ~ getData ~ obj:', obj);
         }
+      })
+      .then(() => {
+        setDataOK(true);
       })
       .catch(e => {
         message.error('接口信息获取失败');
@@ -103,7 +107,7 @@ function ExpenseInfo(props) {
         <Tooltip title={txt.replace(/<br>/g, '\n')} placement="topLeft">
           <TextArea
             value={txt.replace(/<br>/g, '\n')}
-            autoSize={{ minRows: 1, maxRows: 6 }}
+            autoSize={{ minRows: 1, maxRows: dataOK ? 6 : 1 }}
             style={{ cursor: 'default' }}
             readOnly
           >
@@ -122,7 +126,7 @@ function ExpenseInfo(props) {
         <Tooltip title={txt.replace(/<br>/g, '\n')} placement="topLeft">
           <TextArea
             value={txt.replace(/<br>/g, '\n')}
-            autoSize={{ minRows: 1, maxRows: 6 }}
+            autoSize={{ minRows: 1, maxRows: dataOK ? 6 : 1 }}
             style={{ cursor: 'default' }}
             readOnly
           >
@@ -262,7 +266,7 @@ function ExpenseInfo(props) {
       <div className="body-title-box">
         <strong>需求上架</strong>
       </div>
-      <Spin spinning={isSpinning}>
+      <Spin spinning={isSpinning} tip="加载中">
         <Form className="content-box" style={{ paddingRight: 0, paddingLeft: 34 }}>
           <Row>
             {getInput(
@@ -309,7 +313,7 @@ function ExpenseInfo(props) {
                 dataSource={data.ryxq}
                 scroll={data.length > 3 ? { y: 171 } : {}}
                 pagination={false}
-                bordered
+                // bordered
                 size="middle"
               />
             </div>

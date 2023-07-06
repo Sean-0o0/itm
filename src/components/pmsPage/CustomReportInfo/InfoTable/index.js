@@ -18,7 +18,7 @@ export default function InfoTable(props) {
       total: 0, //数据总数
     },
     filterData = {},
-    BGLX=[]
+    BGLX = [],
   } = dataProps;
   const { getBasicData, getTableData, setTableLoading, setTableData } = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
@@ -30,8 +30,8 @@ export default function InfoTable(props) {
     const { current = 1, pageSize = 20 } = pagination;
     setTableData(p => ({
       ...p,
-     current,
-     pageSize,
+      current,
+      pageSize,
     }));
     return;
   };
@@ -95,16 +95,14 @@ export default function InfoTable(props) {
           <Tooltip title={txt} placement="topLeft">
             <Link
               style={{ color: '#3361ff' }}
-              to={
-                {
-                  // pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
-                  //   JSON.stringify({ splId: row.ID }),
-                  // )}`,
-                  // state: {
-                  //   routes: [{ name: '自定义报告', pathname: location.pathname }],
-                  // },
-                }
-              }
+              to={{
+                pathname: `/pms/manage/CustomReportDetail/${EncryptBase64(
+                  JSON.stringify({
+                    bgid: row.ID,
+                    routes: [{ name: '自定义报告', pathname: location.pathname }],
+                  }),
+                )}`,
+              }}
               className="table-link-strong"
             >
               {txt}
@@ -189,7 +187,7 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
-      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} BGLX={BGLX}/>
+      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} BGLX={BGLX} />
       <div className="btn-add-prj-box">
         <Button type="primary" className="btn-add-prj" onClick={() => setNewRptVisible(true)}>
           新增
@@ -199,7 +197,7 @@ export default function InfoTable(props) {
         <Table
           loading={tableLoading}
           columns={columns}
-          rowKey={'BGID'}
+          rowKey={'ID'}
           dataSource={tableData.data}
           onChange={handleTableChange}
           pagination={{

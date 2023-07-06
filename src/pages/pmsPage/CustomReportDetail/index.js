@@ -10,7 +10,7 @@ const CustomReportDetail = props => {
     dictionary,
   } = props;
   
-  let bgid = -1;
+  let bgid = -2;
   let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));

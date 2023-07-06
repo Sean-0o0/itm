@@ -222,7 +222,7 @@ class PersonnelNeeds extends Component {
       tableData = [],
       rydjxxJson = [],
     } = this.state;
-    const {dictionary: {WBRYGW = [],}} = this.props;
+    const {dictionary: {WBRYGW = [],}, dataOK=false,} = this.props;
     const _this = this;
     const tableColumns = [
       {
@@ -298,7 +298,7 @@ class PersonnelNeeds extends Component {
         render(text, record, index) {
           return (<Tooltip title={text?.replace(/<br>/g, '\n')} placement="topLeft">
             <TextArea defaultValue={record['YQ' + record.ID]?.replace(/<br>/g, '\n')}
-                      autoSize={{minRows: 1, maxRows: 6}}
+                      autoSize={{ minRows: 1, maxRows: dataOK ? 6 : 1 }}
                       onChange={(e) => _this.GWChange(e.target.value, record, index, 'YQ')}
                       style={{cursor: 'default'}}>{text?.replace(/<br>/g, '\n')}</TextArea>
           </Tooltip>)
@@ -314,7 +314,7 @@ class PersonnelNeeds extends Component {
         render(text, record, index) {
           return (<Tooltip title={text?.replace(/<br>/g, '\n')} placement="topLeft">
             <TextArea defaultValue={record['BZ' + record.ID]?.replace(/<br>/g, '\n')}
-                      autoSize={{minRows: 1, maxRows: 6}}
+                      autoSize={{ minRows: 1, maxRows: dataOK ? 6 : 1 }}
                       onChange={(e) => _this.GWChange(e.target.value, record, index, 'BZ')}
                       style={{cursor: 'default'}}>{text?.replace(/<br>/g, '\n')}</TextArea>
           </Tooltip>)
@@ -375,7 +375,7 @@ class PersonnelNeeds extends Component {
             // scroll={tableData.length > 3 ? {y: 195} : {}}
             pagination={false}
             style={{paddingBottom: '12px',}}
-            bordered
+            // bordered
             size="middle"
           ></Table>
           <div style={{
