@@ -17374,12 +17374,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         flex-wrap: wrap;
 
         .rep-infos-content {
-          padding: 12px;
+          padding: 6px 12px;
           width: 25%;
 
           .rep-infos-content-box:hover {
             box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-              0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
           }
 
           .rep-infos-content-box {
@@ -17406,7 +17406,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
 
               .rep-infos-bbmc {
-                max-width: 80%;
+                //max-width: 80%;
                 overflow: hidden;
                 text-overflow: ellipsis;
                 white-space: nowrap;
@@ -17438,6 +17438,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
 
         .rep-infos-foot {
+          padding-top: 6px;
           width: 100%;
           cursor: pointer;
           text-align: center;
@@ -17508,12 +17509,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       flex-wrap: wrap;
 
       .rep-infos-content {
-        padding: 12px;
+        padding: 6px 12px;
         width: 25%;
 
         .rep-infos-content-box:hover {
           box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+          0px 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
 
         .rep-infos-content-box {
@@ -17540,7 +17541,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
 
             .rep-infos-bbmc {
-              width: 80%;
+              //width: 80%;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -17572,6 +17573,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .rep-infos-foot {
+        padding-top: 6px;
         width: 100%;
         cursor: pointer;
         text-align: center;
@@ -17628,12 +17630,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       flex-wrap: wrap;
 
       .rep-infos-content {
-        padding: 12px;
+        padding: 6px 12px;
         width: 33.33%;
 
         .rep-infos-content-box:hover {
           box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-            0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+          0px 9px 28px 8px rgba(0, 0, 0, 0.05);
         }
 
         .rep-infos-content-box {
@@ -17662,7 +17664,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
 
             .rep-infos-bbmc {
-              width: 80%;
+              //width: 80%;
               overflow: hidden;
               text-overflow: ellipsis;
               white-space: nowrap;
@@ -17694,6 +17696,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .rep-infos-foot {
+        padding-top: 6px;
         width: 100%;
         cursor: pointer;
         text-align: center;
@@ -19213,6 +19216,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 }
 
 .project-member-statistics-info-box {
+  height: 100%;
+
   .top-console {
     .ant-tabs-bar {
       margin: 0;
@@ -19304,6 +19309,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
     }
+  }
+
+  .spin {
+    height: calc(100% - 55px);
+    overflow-y: auto;
   }
 
   .info-table {
@@ -19466,6 +19476,25 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       margin: 16px 24px;
 
       .console-item {
+        .down {
+          .label-selector-arrow {
+            position: absolute;
+            top: 50%;
+            right: 12px;
+            margin-top: -7px;
+            color: rgba(0, 0, 0, 0.25);
+            font-size: 12px;
+            line-height: 1;
+            cursor: pointer;
+            transition: all 0.3s;
+            pointer-events: none;
+          }
+
+          .selector-rotate {
+            transform: rotate(-180deg);
+          }
+        }
+
         .item-label {
           //width: 72px;
           height: 22px;

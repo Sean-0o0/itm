@@ -528,7 +528,67 @@
 
   //面包屑
   .header-bread {
-    margin: 12px 24px;
+    padding: 0 24px;
+
+    .top-tabs-boxs {
+      //justify-content: end;
+      //align-items: center;
+      width: 20%;
+      height: 55px;
+      line-height: 55px;
+      //margin: 20px 24px 0px 24px;
+      text-align: end;
+
+      .ant-radio-group-solid .ant-radio-button-wrapper-checked:not(.ant-radio-button-wrapper-disabled) {
+        color: #3361FF;
+        background: rgba(51, 97, 255, 0.1);
+        border-color: #3361FF;
+
+        > span {
+          display: flex;
+        }
+
+        .iconfont {
+          padding-right: 4px;
+          color: #3361FF;
+          font-size: 18px;
+        }
+      }
+
+      .ant-radio-button .ant-radio-button-checked {
+        border-radius: 0px 4px 4px 0px;
+        border: 1px solid #3361FF;
+
+        > span {
+          display: flex;
+        }
+
+        .iconfont {
+          padding-right: 4px;
+          font-size: 18px;
+        }
+      }
+
+      .ant-radio-button-wrapper {
+        > span {
+          display: flex;
+        }
+
+        .iconfont {
+          padding-right: 4px;
+          font-size: 18px;
+        }
+      }
+
+      .ant-radio-button-wrapper:hover {
+        color: #3361FF;
+
+        .iconfont {
+          padding-right: 4px;
+          font-size: 18px;
+        }
+      }
+    }
   }
 
   //区域

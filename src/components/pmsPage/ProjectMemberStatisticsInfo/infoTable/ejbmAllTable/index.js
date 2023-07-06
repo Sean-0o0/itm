@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import {Empty, message, Spin, Tabs} from 'antd';
 import {useLocation} from 'react-router';
 import echarts from 'echarts/lib/echarts';

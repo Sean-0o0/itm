@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Button, Empty, message, Modal, Select, Spin, Tabs} from 'antd';
+import {Button, Empty, Icon, message, Modal, Select, Spin, Tabs, TreeSelect} from 'antd';
 import {useLocation} from 'react-router';
 import echarts from 'echarts/lib/echarts';
 import 'echarts/lib/chart/pie';
@@ -44,7 +44,8 @@ export default function DataComparisonBM(props) {
   const [totalCYXM, setTotalCYXM] = useState(0); //参与项目总数
   const [totalHJXM, setTotalHJXM] = useState(0); //获奖项目总数
   const [totalArr, setTotalArr] = useState([0, 0, 0, 0, 0]); //获奖项目总数组成的数组
-  const [totalNameArr, setTotalNameArr] = useState([0, 0, 0, 0, 0]); //人名组成的数组-legend
+  const [totalNameArr, setTotalNameArr] = useState(['', '', '', '', '']); //部门组成的数组-legend
+  const [isDownOrg, setIsDownOrg] = useState(true); //人名组成的数组-legend
 
   const {
     orgId = '',
@@ -185,8 +186,8 @@ export default function DataComparisonBM(props) {
             fid: '11167',
             children: [],
           });
-          // setOrgData([...data]);
-          setOrgData([...res.record]);
+          setOrgData([...data]);
+          // setOrgData([...res.record]);
         }
       })
       .catch(e => {
@@ -302,8 +303,28 @@ export default function DataComparisonBM(props) {
     console.log('handlePrjMngerChange2222', String(v));
     // if (v === undefined) v = '';
     setPrjMnger(v);
-    getTableData('DBM', v);
+    if (v.length > 0) {
+      getTableData('DBM', v);
+    } else {
+      setTooltipData([]);
+      setRadardata([]);
+      setTotalXMZS(0);
+      setTotalZBXM(0);
+      setTotalKTXM(0);
+      setTotalCYXM(0);
+      setTotalHJXM(0);
+      setTotalArr([0, 0, 0, 0, 0])
+      setTotalNameArr(['暂无']);
+    }
   };
+
+  const onOrgDropdown = (open) => {
+    if (open) {
+      setIsDownOrg(false)
+    } else {
+      setIsDownOrg(true)
+    }
+  }
 
   // console.log("tableDatatableData",tableData)
 
@@ -345,36 +366,53 @@ export default function DataComparisonBM(props) {
           {/*  领导统计*/}
           {/*</div>*/}
           <div className="console-item">
-            <div className="item-label">选择人员:</div>
-            <Select
-              mode="multiple"
-              className="item-selector"
-              dropdownClassName={'item-selector-dropdown'}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              showSearch
-              allowClear
-              onChange={(selectValue) => {
-                console.log("selectValue", selectValue)
-                // 模式为多选且存在最大值时，当最大长度大于输入长度时触发校验
-                if (selectValue?.length > 5) {
-                  message.warn("最多选择五个部门进行比较！")
-                  selectValue?.pop(); // 删除多余项
-                  handlePrjMngerChange(selectValue);
-                } else {
-                  handlePrjMngerChange(selectValue);
-                }
+            <span><span style={{
+              fontFamily: 'SimSun, sans-serif',
+              color: '#f5222d',
+              marginRight: '4px',
+              lineHeight: 1
+            }}>*</span>选择部门:</span>
+            <div
+              id="down"
+              className="down"
+              style={{
+                width: '100%',
+                display: "inline-block",
+                position: "relative",
+                verticalAlign: "super",
               }}
-              value={prjMnger}
-              placeholder="请选择"
             >
-              {orgData.map((x, i) => (
-                <Option key={i} value={x.orgId}>
-                  {x.orgName}
-                </Option>
-              ))}
-            </Select>
+              <TreeSelect
+                multiple
+                showSearch
+                value={prjMnger}
+                treeNodeFilterProp="title"
+                style={{width: '100%'}}
+                dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                treeData={orgData}
+                placeholder="请选择要对比的部门"
+                // treeCheckable
+                // treeDefaultExpandAll
+                getPopupContainer={triggerNode => triggerNode.parentNode}
+                onDropdownVisibleChange={(open) => onOrgDropdown(open)}
+                // treeDefaultExpandedKeys={orgExpendKeys}
+                onChange={(selectValue) => {
+                  console.log("selectValue", selectValue)
+                  // 模式为多选且存在最大值时，当最大长度大于输入长度时触发校验
+                  if (selectValue?.length > 5) {
+                    message.warn("最多选择五个部门进行比较！")
+                    selectValue?.pop(); // 删除多余项
+                    handlePrjMngerChange(selectValue);
+                  } else {
+                    handlePrjMngerChange(selectValue);
+                  }
+                }}
+              />
+              <Icon
+                type="up"
+                className={'label-selector-arrow' + (isDownOrg ? ' selector-rotate' : '')}
+              />
+            </div>
           </div>
           <div className="info-table-content">
             <div className="info-table-content-box">

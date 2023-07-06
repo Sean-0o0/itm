@@ -1,6 +1,6 @@
 import React, { Component } from 'react'
-import { Link } from 'dva/router';
-import { Breadcrumb } from 'antd'
+import {Link} from 'dva/router';
+import {Breadcrumb, Radio, Tabs} from 'antd'
 import boyImg from '../../../../assets/staffDetail/img_boy.png';
 import girlImg from '../../../../assets/staffDetail/img_girl.png';
 import fqImg from '../../../../assets/staffDetail/img_fq.png';
@@ -13,25 +13,31 @@ class ToConsole extends Component {
     }
 
     render() {
-        const { routes = [] } = this.props;
+      const {routes = [], handleRadioChange} = this.props;
         console.log("routesroutes-ccc-staf", routes)
         return (
-            <div className="header-bread">
-                <Breadcrumb separator=">">
-                    {routes.map((item, index) => {
-                        const { name = item, pathname = '' } = item
-                        const historyRoutes = routes.slice(0, index + 1)
-                        return <Breadcrumb.Item key={index}>
-                            {index === routes.length - 1 ? <>{name}</> :
-                                <Link to={{ pathname: pathname, state: { routes: historyRoutes } }}>
-                                    {name}
-                                </Link>}
-                        </Breadcrumb.Item>
-                    })
+          <div className="header-bread" style={{display: "flex"}}>
+            <Breadcrumb separator=">" style={{width: '80%', display: 'flex', alignItems: 'center'}}>
+              {routes.map((item, index) => {
+                const {name = item, pathname = ''} = item
+                const historyRoutes = routes.slice(0, index + 1)
+                return <Breadcrumb.Item key={index}>
+                  {index === routes.length - 1 ? <>{name}</> :
+                    <Link to={{pathname: pathname, state: {routes: historyRoutes}}}>
+                      {name}
+                    </Link>}
+                </Breadcrumb.Item>
+              })
 
-                    }
-                </Breadcrumb>
-            </div>);
+              }
+            </Breadcrumb>
+            <div className='top-tabs-boxs'>
+              <Radio.Group defaultValue="项目列表" buttonStyle="solid" onChange={handleRadioChange}>
+                <Radio.Button value="项目列表"><i className="iconfont icon-xmlb"/>项目列表</Radio.Button>
+                <Radio.Button value="项目统计"><i className="iconfont icon-xmtj"/>项目统计</Radio.Button>
+              </Radio.Group>
+            </div>
+          </div>);
     }
 }
 

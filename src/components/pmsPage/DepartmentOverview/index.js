@@ -3,39 +3,48 @@ import TopConsole from './TopConsole'
 import Overview from './Overview'
 import InfoTable from './InfoTable'
 import { message } from 'antd'
-import { QueryMemberOverviewInfo, QueryUserRole } from '../../../services/pmsServices'
+import {QueryMemberOverviewInfo, QueryUserRole} from '../../../services/pmsServices'
+import ProjectMemberStatisticsInfo from "../ProjectMemberStatisticsInfo";
 
 class DepartmentOverview extends Component {
     state = {
         role: '',
         orgid: '',
         bmry: [],
-        wbry: [],
-        gwfb: [],
-        bgxx: [],
-        tableLoading: false,
-        pageParam: {
-            current: 1,
-            pageSize: 20,
-            paging: -1,
-            sort: "",
-            total: -1
-        }
+      wbry: [],
+      gwfb: [],
+      bgxx: [],
+      tableLoading: false,
+      pageParam: {
+        current: 1,
+        pageSize: 20,
+        paging: -1,
+        sort: "",
+        total: -1
+      },
+      radioKey: '项目列表',
     }
 
-    componentDidMount() {
-        this.fetchRole();
-    }
+  componentDidMount() {
+    this.fetchRole();
+  }
 
-    fetchRole = () => {
-        const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
-        if (LOGIN_USERID !== undefined) {
-            QueryUserRole({
-                userId: Number(LOGIN_USERID),
-            }).then(res => {
-                const { code = 0, role } = res
-                if (code > 0) {
-                    this.setState({
+  handleRadioChange = (e) => {
+    console.log("keykey", e.target.value)
+    this.setState({
+      radioKey: e.target.value,
+    })
+  }
+
+  fetchRole = () => {
+    const LOGIN_USERID = JSON.parse(sessionStorage.getItem("user"))?.id;
+    if (LOGIN_USERID !== undefined) {
+      QueryUserRole({
+        userId: Number(LOGIN_USERID),
+      }).then(res => {
+        const {code = 0, role} = res
+        if (code > 0) {
+          this.setState({
                         role: role,
                         orgid: JSON.parse(sessionStorage.getItem("user"))?.org
                     }, () => {
@@ -104,25 +113,29 @@ class DepartmentOverview extends Component {
 
     render() {
         const { routes } = this.props
-        const { role = '',
-            bmry = [],
-            wbry = [],
-            gwfb = [],
-            bgxx = [],
-            tableLoading,
-            pageParam
+        const {
+          role = '',
+          bmry = [],
+          wbry = [],
+          gwfb = [],
+          bgxx = [],
+          tableLoading,
+          pageParam,
+          radioKey
         } = this.state
 
         return (<div className="department-staff-box cont-box">
-            {(role === '信息技术事业部领导' || role === '一级部门领导') &&
-                <>
-                    <TopConsole routes={routes} />
-                    <div className="overview-box">
-                        <Overview order={1} title='自研团队建设' dataSource={bmry} />
-                        <Overview order={2} title='外部团队建设' dataSource={wbry} />
-                    </div>
-                </>}
-            <InfoTable routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} gwfb={gwfb} bgxx={bgxx} fetchData={this.queryMemberOverviewInfo} />
+          {(role === '信息技术事业部领导' || role === '一级部门领导') && radioKey === "项目列表" ?
+            <>
+              <TopConsole routes={routes} handleRadioChange={this.handleRadioChange}/>
+              <div className="overview-box">
+                <Overview order={1} title='自研团队建设' dataSource={bmry}/>
+                <Overview order={2} title='外部团队建设' dataSource={wbry}/>
+              </div>
+            </> : <ProjectMemberStatisticsInfo handleRadioChange={this.handleRadioChange}/>}
+          {radioKey === "项目列表" &&
+          <InfoTable routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} gwfb={gwfb}
+                     bgxx={bgxx} fetchData={this.queryMemberOverviewInfo}/>}
         </div>);
     }
 }

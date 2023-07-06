@@ -40,7 +40,7 @@ export default forwardRef(function TopConsole(props, ref) {
         onChange={handleTab}
         activeKey={activeKey}
         tabBarExtraContent={<div className='top-tabs-boxs'>
-          <Radio.Group defaultValue="项目列表" buttonStyle="solid">
+          <Radio.Group defaultValue="项目统计" buttonStyle="solid" onChange={(e) => handleRadioChange(e)}>
             <Radio.Button value="项目列表"><i className="iconfont icon-xmlb"/>项目列表</Radio.Button>
             <Radio.Button value="项目统计"><i className="iconfont icon-xmtj"/>项目统计</Radio.Button>
           </Radio.Group>

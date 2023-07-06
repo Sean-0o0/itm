@@ -43,7 +43,7 @@ export default function DataComparisonRY(props) {
   const [totalCYXM, setTotalCYXM] = useState(0); //参与项目总数
   const [totalHJXM, setTotalHJXM] = useState(0); //获奖项目总数
   const [totalArr, setTotalArr] = useState([0, 0, 0, 0, 0]); //获奖项目总数组成的数组
-  const [totalNameArr, setTotalNameArr] = useState([0, 0, 0, 0, 0]); //人名组成的数组-legend
+  const [totalNameArr, setTotalNameArr] = useState(['', '', '', '', '']); //人名组成的数组-legend
 
   const {
     userId = '',
@@ -289,7 +289,19 @@ export default function DataComparisonRY(props) {
     console.log('handlePrjMngerChange2222', String(v));
     // if (v === undefined) v = '';
     setPrjMnger(v);
-    getTableData('DRY', v);
+    if (v.length > 0) {
+      getTableData('DRY', v);
+    } else {
+      setTooltipData([]);
+      setRadardata([]);
+      setTotalXMZS(0);
+      setTotalZBXM(0);
+      setTotalKTXM(0);
+      setTotalCYXM(0);
+      setTotalHJXM(0);
+      setTotalArr([0, 0, 0, 0, 0])
+      setTotalNameArr(['暂无']);
+    }
   };
 
   // console.log("tableDatatableData",tableData)
@@ -332,8 +344,14 @@ export default function DataComparisonRY(props) {
           {/*  领导统计*/}
           {/*</div>*/}
           <div className="console-item">
-            <div className="item-label">选择人员:</div>
+            <span><span style={{
+              fontFamily: 'SimSun, sans-serif',
+              color: '#f5222d',
+              marginRight: '4px',
+              lineHeight: 1
+            }}>*</span>选择人员:</span>
             <Select
+              showArrow={true}
               mode="multiple"
               className="item-selector"
               dropdownClassName={'item-selector-dropdown'}
