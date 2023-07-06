@@ -14,25 +14,38 @@ class StaffTable extends Component {
 
     handleChange = (current, pageSize) => {
         const { fetchData, queryType, pageParam } = this.props;
-        if (fetchData) {
-            fetchData(queryType, {
-                ...pageParam,
-                current: current,
-                pageSize: pageSize,
-                total: -1,
-            })
-        }
+      if (fetchData) {
+        fetchData(queryType, {
+          ...pageParam,
+          current: current,
+          pageSize: pageSize,
+          total: -1,
+        })
+      }
     }
 
-    queryBudgetOverviewInfo = (ysid) => {
-        this.setState({
-            loading: {
-                ...this.state.loading,
-                [ysid]: true,
-            }
-        })
-        const { role, orgid, queryType } = this.props;
-        QueryBudgetOverviewInfo({
+  handleTableChange = (pagination, filters, sorter) => {
+    const {fetchData, queryType, pageParam} = this.props;
+    console.log("sortersorter", sorter)
+    const {order = '', field = ''} = sorter;
+    if (fetchData) {
+      fetchData(queryType, {
+        ...pageParam,
+        total: -1,
+        sort: order ? `${field} ${order.slice(0, -3)},YSID ASC` : ''
+      })
+    }
+  };
+
+  queryBudgetOverviewInfo = (ysid) => {
+    this.setState({
+      loading: {
+        ...this.state.loading,
+        [ysid]: true,
+      }
+    })
+    const {role, orgid, queryType} = this.props;
+    QueryBudgetOverviewInfo({
             ysid: ysid,
             org: orgid,
             queryType: queryType,
@@ -139,47 +152,55 @@ class StaffTable extends Component {
                         </div>
                 }
             }, {
-                title: '总预算(万元)',
-                dataIndex: 'ZYS',
-                width: '17%',
-                key: 'ZYS',
-                ellipsis: true,
-                align: 'right',
-            }, {
-                title: '可执行预算(万元)',
-                dataIndex: 'KZXYS',
-                width: '17%',
-                key: 'KZXYS',
-                ellipsis: true,
-                align: 'right',
-                render: (value, row, index) => {
-                    return value?value:0
-                },
+            title: '总预算(万元)',
+            dataIndex: 'ZYS',
+            width: '17%',
+            key: 'ZYS',
+            ellipsis: true,
+            align: 'right',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
+          }, {
+            title: '可执行预算(万元)',
+            dataIndex: 'KZXYS',
+            width: '17%',
+            key: 'KZXYS',
+            ellipsis: true,
+            align: 'right',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
+            render: (value, row, index) => {
+              return value ? value : 0
             },
-            {
-                title: '已执行预算(万元)',
-                dataIndex: 'YZXYS',
-                width: '17%',
-                key: 'YZXYS',
-                ellipsis: true,
-                align: 'right',
-                render: (value, row, index) => {
-                    return value?value:0
-                },
-            }, {
-                title: '预计执行率',
-                dataIndex: 'YJZXL',
-                width: '17%',
-                key: 'YJZXL',
-                align: 'right',
-                ellipsis: true,
-                render: (value, row, index) => {
-                    const { YZXYS, KZXYS} = row
-                    let rate = Number.parseFloat(YZXYS)*100/Number.parseFloat(KZXYS);
-                    rate = rate&&!isNaN(rate)?rate.toFixed(2): '0'
-                    return rate?rate + '%':''
-                },
-            }
+          },
+          {
+            title: '已执行预算(万元)',
+            dataIndex: 'YZXYS',
+            width: '17%',
+            key: 'YZXYS',
+            ellipsis: true,
+            align: 'right',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
+            render: (value, row, index) => {
+              return value ? value : 0
+            },
+          }, {
+            title: '预计执行率',
+            dataIndex: 'YJZXL',
+            width: '17%',
+            key: 'YJZXL',
+            align: 'right',
+            ellipsis: true,
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
+            render: (value, row, index) => {
+              const {YZXYS, KZXYS} = row
+              let rate = Number.parseFloat(YZXYS) * 100 / Number.parseFloat(KZXYS);
+              rate = rate && !isNaN(rate) ? rate.toFixed(2) : '0'
+              return rate ? rate + '%' : ''
+            },
+          }
         ];
 
         return <Table loading={loading[YSID]} showHeader={false}  columns={columns} dataSource={subTabData[YSID]} pagination={false} />;
@@ -205,47 +226,55 @@ class StaffTable extends Component {
             key: 'YSXMMC',
             ellipsis: true,
         }, {
-            title: '总预算(万元)',
-            dataIndex: 'ZYS',
-            width: '17%',
-            key: 'ZYS',
-            ellipsis: true,
-            align: 'right',
-            render: (value, row, index) => {
-                return value?value:0
-            },
+          title: '总预算(万元)',
+          dataIndex: 'ZYS',
+          width: '17%',
+          key: 'ZYS',
+          ellipsis: true,
+          align: 'right',
+          sorter: true,
+          sortDirections: ['descend', 'ascend'],
+          render: (value, row, index) => {
+            return value ? value : 0
+          },
         }, {
-            title: '可执行预算(万元)',
-            dataIndex: 'KZXYS',
-            width: '17%',
-            key: 'KZXYS',
-            ellipsis: true,
-            align: 'right',
-            render: (value, row, index) => {
-                return value?value:0
-            },
+          title: '可执行预算(万元)',
+          dataIndex: 'KZXYS',
+          width: '17%',
+          key: 'KZXYS',
+          ellipsis: true,
+          align: 'right',
+          sorter: true,
+          sortDirections: ['descend', 'ascend'],
+          render: (value, row, index) => {
+            return value ? value : 0
+          },
         },
-        {
+          {
             title: '已执行预算(万元)',
             dataIndex: 'YZXYS',
             width: '17%',
             key: 'YZXYS',
             ellipsis: true,
             align: 'right',
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             render: (value, row, index) => {
-                return value?value:0
+              return value ? value : 0
             },
-        }, {
+          }, {
             title: '预算执行率',
             dataIndex: 'YJZXL',
             width: '17%',
             key: 'YJZXL',
             align: 'right',
             ellipsis: true,
+            sorter: true,
+            sortDirections: ['descend', 'ascend'],
             render: (value, row, index) => {
-                return value?value + '%':''
+              return value ? value + '%' : ''
             },
-        }
+          }
         ]
 
         return (<div className='table-box'>
