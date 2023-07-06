@@ -166,7 +166,7 @@ export default function OverviewCard(props) {
         if (code === 1) {
           //刷新数据
           reflush();
-          message.success('执行成功', 1);
+          // message.success('执行成功', 1);
           window.location.href = `/#/pms/manage/DemandDetail/${EncryptBase64(
             JSON.stringify({
               routes: [{ name: '个人工作台', pathname: location.pathname }],
