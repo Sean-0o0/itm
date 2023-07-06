@@ -97,13 +97,13 @@ export default function CustomReports(props) {
   };
 
   const tabsCallback = (key) => {
-    if (key === 1) {
-      getCusRepData("SC", 12);
-      getCusRepData("CJ", 12);
-    }
-    if (key === 2) {
-      getCusRepData("GX", 28);
-    }
+    // if (key === 1) {
+    //   getCusRepData("SC", 12);
+    //   getCusRepData("CJ", 12);
+    // }
+    // if (key === 2) {
+    //   getCusRepData("GX", 28);
+    // }
     setTabsKey(key);
   }
 
@@ -119,6 +119,7 @@ export default function CustomReports(props) {
         tabsCallback={tabsCallback}
       />
       <RepInfos
+        tabsKey={tabsKey}
         isSpinning={isSpinning}
         getCusRepData={getCusRepData}
         params={params}

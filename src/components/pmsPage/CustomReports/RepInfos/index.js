@@ -22,7 +22,7 @@ export default function RepInfos(props) {
     totalCJ = 0,
     cusRepDataGX = [],
     totalGX = 0,
-    tabsKey = 1,
+    tabsKey,
     params = {},
     paramsCallback,
     getCusRepData,
@@ -33,9 +33,27 @@ export default function RepInfos(props) {
   } = props;
 
   useEffect(() => {
+    if (tabsKey === 1 && !showExtendsSC) {
+      getCusRepData("SC", 12);
+    }
+    if (tabsKey === 1 && !showExtendsCJ) {
+      getCusRepData("CJ", 12);
+    }
+    if (tabsKey === 1 && showExtendsSC) {
+      getCusRepData("SC", 99999);
+    }
+    if (tabsKey === 1 && showExtendsCJ) {
+      getCusRepData("CJ", 99999);
+    }
+    if (tabsKey === 2 && !showExtendsGX) {
+      getCusRepData("GX", 28);
+    }
+    if (tabsKey === 2 && showExtendsGX) {
+      getCusRepData("GX", 99999);
+    }
     return () => {
     };
-  }, []);
+  }, [tabsKey]);
 
   const handleBbmcChange = (key) => {
     setBbmc(key);
@@ -116,6 +134,9 @@ export default function RepInfos(props) {
   }
 
   const toDetail = (i) => {
+    setShowExtendsSC(false);
+    setShowExtendsCJ(false);
+    setShowExtendsGX(false);
     console.log("bbid", i)
     window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
       JSON.stringify({
@@ -134,7 +155,7 @@ export default function RepInfos(props) {
   };
 
   return (
-    <>
+    <div className="rep-infos-box">
       {
         tabsKey === 1 && <div className="rep-infos">
           <div className="rep-infos-title">
@@ -188,7 +209,10 @@ export default function RepInfos(props) {
         tabsKey === 1 && <div className="rep-infos">
           <div className="rep-infos-title-oper">
             <div className="oper-title">我创建的</div>
-            <Link to={linkTo} className="oper-link">
+            <Link to={linkTo} className="oper-link" onClick={() => {
+              setShowExtendsSC(false);
+              setShowExtendsCJ(false);
+            }}>
               <div className="oper-link-to"><i className="oper-icon iconfont icon-system"/>报表管理</div>
             </Link>
           </div>
@@ -346,6 +370,6 @@ export default function RepInfos(props) {
           }
         </div>
       }
-    </>
+    </div>
   );
 }
