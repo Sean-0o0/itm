@@ -14,6 +14,7 @@ import * as XLSX from 'xlsx';
 export default function CustomRptInfo(props) {
   const { bbid, bbmc, routes } = props;
   const [data, setData] = useState({}); //通过报表id查询到的报表数据
+  const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [tableData, setTableData] = useState({
     data: [],
     curPage: 1,
@@ -435,8 +436,14 @@ export default function CustomRptInfo(props) {
         </Breadcrumb>
         <div className="header">{data.rptName}</div>
       </Spin>
-      <div className="content">
-        <TopConsole data={data} setData={setData} getSQL={getSQL} />
+      <div className="content" style={isUnfold ? {} : { height: 'calc(100vh - 138px)' }}>
+        <TopConsole
+          data={data}
+          setData={setData}
+          getSQL={getSQL}
+          isUnfold={isUnfold}
+          setIsUnfold={setIsUnfold}
+        />
         <InfoTable
           data={data}
           columns={data.columns}

@@ -145,6 +145,8 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/ExpenseInfo/,
       /^\/pms\/manage\/CustomRptManagement/,
       /^\/pms\/manage\/CustomRptInfo/,
+      /^\/pms\/manage\/CustomReportDetail/,
+      /^\/pms\/manage\/CustomReportInfo/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -248,6 +250,14 @@ function VisitedRoutes(props) {
               {
                 title: '报表详情',
                 urlEnd: 'CustomRptInfo',
+              },
+              {
+                title: '自定义报告',
+                urlEnd: 'CustomReportInfo',
+              },
+              {
+                title: '报告详情',
+                urlEnd: 'CustomReportDetail',
               },
             ];
             urlEndArr.forEach(x => {

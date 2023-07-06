@@ -23,8 +23,7 @@ const { RangePicker } = DatePicker;
 
 export default function TopConsole(props) {
   //下拉框数据
-  const { data = {}, setData = () => {}, getSQL = () => {} } = props;
-  const [isUnfold, setIsUnfold] = useState(false); //是否展开
+  const { data = {}, setData = () => {}, getSQL = () => {}, isUnfold, setIsUnfold } = props;
 
   //查询的值
 
@@ -364,7 +363,10 @@ export default function TopConsole(props) {
   return (
     <div className="top-console">
       {data.filterData?.length !== 0 && (
-        <div className="filter-condition" style={isUnfold ? {} : { height: 112 }}>
+        <div
+          className="filter-condition"
+          style={data.filterData?.length > 6 ? (isUnfold ? {} : { height: 112 }) : {}}
+        >
           <div className="left">{data.filterData?.map(x => getComponent(x))}</div>
           <div className="right">
             <Button className="btn-search" type="primary" onClick={() => getSQL({}, data)}>
@@ -377,7 +379,18 @@ export default function TopConsole(props) {
         </div>
       )}
       {data.groupData?.length !== 0 && (
-        <div className="group-condition" style={isUnfold ? {} : { height: 56, overflow: 'hidden' }}>
+        <div
+          className="group-condition"
+          style={
+            data.filterData?.length > 6
+              ? isUnfold
+                ? {}
+                : { height: 56, overflow: 'hidden' }
+              : data.filterData?.length === 0
+              ? { borderTop: 0 }
+              : {}
+          }
+        >
           <span className="label">组合条件</span>
           {data.groupData?.map(x => (
             <div className="condition-group-item">

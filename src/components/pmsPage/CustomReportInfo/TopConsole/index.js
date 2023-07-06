@@ -28,6 +28,7 @@ export default forwardRef(function TopConsole(props, ref) {
       ...p,
       value: v,
     }));
+    getTableData(v);
   };
   // onChange-end
 
@@ -50,17 +51,17 @@ export default forwardRef(function TopConsole(props, ref) {
           >
             {filterData.data.map((x, i) => (
               <Option key={i} value={x.ID}>
-                {x.NAME}
+                {x.BGMC}
               </Option>
             ))}
           </Select>
-        </div>
-        <Button className="btn-search" type="primary" onClick={getTableData}>
+         </div>
+        {/*<Button className="btn-search" type="primary" onClick={getTableData}>
           查询
         </Button>
         <Button className="btn-reset" onClick={handleReset}>
           重置
-        </Button>
+        </Button> */}
       </div>
     </div>
   );

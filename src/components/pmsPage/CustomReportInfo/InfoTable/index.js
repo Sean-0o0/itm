@@ -1,10 +1,11 @@
 import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip } from 'antd';
+import { Button, Table, Popover, message, Tooltip, Switch, Popconfirm } from 'antd';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import moment from 'moment';
 import OprtModal from './OprtModal';
+import { ConfigureCustomReport } from '../../../../services/pmsServices';
 
 export default function InfoTable(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -16,16 +17,69 @@ export default function InfoTable(props) {
       pageSize, //每页条数
       total: 0, //数据总数
     },
+    filterData = {},
+    BGLX=[]
   } = dataProps;
-  const { setFilterData, getTableData } = funcProps;
+  const { getBasicData, getTableData, setTableLoading, setTableData } = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
+  const [switchLoading, setSwitchLoading] = useState(false); //禁用调接口加载状态
   const location = useLocation();
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     const { current = 1, pageSize = 20 } = pagination;
-    getTableData(current, pageSize);
+    setTableData(p => ({
+      ...p,
+     current,
+     pageSize,
+    }));
     return;
+  };
+
+  //禁用开关
+  const handleSwitch = (id, checked) => {
+    setTableLoading(true);
+    ConfigureCustomReport({
+      // dataCount: 0,
+      // fieldCount: 0,
+      // fieldInfo: 'string',
+      operateType: 'UPDATEZT',
+      // presetData: 'string',
+      reportId: Number(id),
+      reportName: checked ? 'OPEN' : 'CLOSE',
+      // reportType: 'string',
+    })
+      .then(res => {
+        if (res?.success) {
+          getBasicData(filterData.value);
+          message.success('操作成功', 1);
+        }
+      })
+      .catch(e => {
+        console.error('🚀禁用开关', e);
+        message.error('操作失败', 1);
+        setTableLoading(false);
+      });
+  };
+
+  //删除
+  const handleDelete = id => {
+    setTableLoading(true);
+    ConfigureCustomReport({
+      operateType: 'DELETE',
+      reportId: Number(id),
+    })
+      .then(res => {
+        if (res?.success) {
+          getBasicData();
+          message.success('操作成功', 1);
+        }
+      })
+      .catch(e => {
+        console.error('🚀删除', e);
+        message.error('操作失败', 1);
+        setTableLoading(false);
+      });
   };
 
   //列配置
@@ -53,7 +107,7 @@ export default function InfoTable(props) {
               }
               className="table-link-strong"
             >
-              {ext}
+              {txt}
             </Link>
           </Tooltip>
         );
@@ -90,7 +144,7 @@ export default function InfoTable(props) {
       width: '12%',
       key: 'ZJGXSJ',
       ellipsis: true,
-      // render: txt => (txt && moment()) || '',
+      render: txt => (txt && moment(txt).format('YYYY-MM-DD')) || '',
     },
     {
       title: '创建日期',
@@ -98,16 +152,22 @@ export default function InfoTable(props) {
       width: '12%',
       key: 'CJRQ',
       ellipsis: true,
-      // render: txt => (txt && moment()) || '',
+      render: txt => (txt && moment(txt).format('YYYY-MM-DD')) || '',
     },
     {
-      title: '状态',
+      title: '禁用状态',
       dataIndex: 'ZT',
       width: '12%',
       align: 'center',
       key: 'ZT',
       ellipsis: true,
-      render: txt => <Switch size="small" loading />,
+      render: (txt, row) => (
+        <Switch
+          // loading={switchLoading}
+          defaultChecked={txt === '1'}
+          onChange={checked => handleSwitch(row.ID, checked)}
+        />
+      ),
     },
     {
       title: '操作',
@@ -116,10 +176,12 @@ export default function InfoTable(props) {
       align: 'center',
       key: 'OPRT',
       ellipsis: true,
-      render: () => (
+      render: (txt, row) => (
         <Fragment>
           <a style={{ color: '#3361ff' }}>修改</a>
-          <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
+          <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row.ID)}>
+            <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
+          </Popconfirm>
         </Fragment>
       ),
     },
@@ -127,7 +189,7 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
-      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} />
+      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} BGLX={BGLX}/>
       <div className="btn-add-prj-box">
         <Button type="primary" className="btn-add-prj" onClick={() => setNewRptVisible(true)}>
           新增
