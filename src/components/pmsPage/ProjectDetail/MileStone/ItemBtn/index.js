@@ -66,6 +66,8 @@ class ItemBtn extends React.Component {
     xqfqModalVisible: false, //需求发起
     currentFileList: [], //查看的文档列表
     fileLoading: false, //获取查看的文档列表的加载状态
+    fklcLoading: false, //获取付款流程列表的加载状态
+    currentFklcList: [], //查看的付款流程列表
   };
   // timer = null;
 
@@ -503,6 +505,9 @@ class ItemBtn extends React.Component {
     //查看
     const lcck = item => {
       if (isFklc) {
+        this.setState({
+          fklcLoading: true,
+        });
         FetchQueryOwnerWorkflow({
           paging: -1,
           current: 1,
@@ -513,30 +518,17 @@ class ItemBtn extends React.Component {
           .then(ret => {
             const { code = 0, record = [] } = ret;
             if (code === 1) {
-              record.forEach(x => {
-                if (x.xmid === item.xmid) {
-                  if (x.url.includes('YKB:')) {
-                    const arr = x.url.split(',');
-                    const id = arr[0].split(':')[1];
-                    const userykbid = arr[1];
-                    GetApplyListProvisionalAuth({
-                      id,
-                      userykbid,
-                    })
-                      .then(res => {
-                        window.open(res.url);
-                      })
-                      .catch(e => {
-                        console.error(e);
-                        message.error('付款流程查看失败', 1);
-                      });
-                  }
-                }
+              this.setState({
+                fklcLoading: false,
+                currentFklcList: record.filter(x => x.xmid === item.xmid),
               });
             }
           })
           .catch(error => {
             message.error('流程信息获取失败', 1);
+            this.setState({
+              fklcLoading: false,
+            });
             console.error(!error.success ? error.message : error.note);
           });
         return;
@@ -780,6 +772,39 @@ class ItemBtn extends React.Component {
         )}
       </div>
     );
+    const fklcNameListContent = () => {
+      const jumpToYKB = url => {
+        if (url.includes('YKB:')) {
+          const arr = url.split(',');
+          const id = arr[0].split(':')[1];
+          const userykbid = arr[1];
+          GetApplyListProvisionalAuth({
+            id,
+            userykbid,
+          })
+            .then(res => {
+              window.open(res.url);
+            })
+            .catch(e => {
+              console.error(e);
+              message.error('付款流程查看失败', 1);
+            });
+        }
+      };
+      return (
+        <div className="list">
+          {this.state.fklcLoading ? (
+            <Spin tip="加载中" />
+          ) : (
+            this.state.currentFklcList.map(x => (
+              <div className="item" key={x.subject} onClick={() => jumpToYKB(x.url)}>
+                {x.subject}
+              </div>
+            ))
+          )}
+        </div>
+      );
+    };
     //权限控制
     const { isLeader = false, isMember = false, isMnger = false } = this.props.auth;
     if (isLeader && !isMnger) {
@@ -804,9 +829,23 @@ class ItemBtn extends React.Component {
     if (done)
       return (
         <div className="opr-more">
-          <div className="reopr-btn" onClick={() => lcck(item)}>
-            查看
-          </div>
+          {isFklc ? (
+            <Popover
+              placement="bottomRight"
+              title={null}
+              content={fklcNameListContent()}
+              overlayClassName="document-list-content-popover"
+              trigger="click"
+            >
+              <div className="reopr-btn" onClick={() => lcck(item)}>
+                查看
+              </div>
+            </Popover>
+          ) : (
+            <div className="reopr-btn" onClick={() => lcck(item)}>
+              查看
+            </div>
+          )}
           <Popover
             placement="bottom"
             title={null}

@@ -126,7 +126,7 @@ class DemandInitiated extends React.Component {
           this.props.form.setFieldsValue({
             glxm: wbxqxxJson[0].XMMC,
             xqmc:
-              operateType === 'relaunch' ? `****人力外包需求（${moment().format('YYYYMMDD')}）（${xmmc}）` : wbxqxxJson[0].XQMC,
+              operateType === 'relaunch' ? "关于" + xmmc + "的人力外包需求" : wbxqxxJson[0].XQMC,
             kfsrq: moment(moment(wbxqxxJson[0].KFSFKQX).format('YYYY-MM-DD'), 'YYYY-MM-DD'),
             pcrq: moment(moment(wbxqxxJson[0].YJZHPCRQ).format('YYYY-MM-DD'), 'YYYY-MM-DD'),
             syrq: moment(moment(wbxqxxJson[0].YJSYRQ).format('YYYY-MM-DD'), 'YYYY-MM-DD'),
@@ -448,7 +448,7 @@ class DemandInitiated extends React.Component {
             size="large"
             wrapperClassName="contrast-signing-modal-spin"
           >
-            <div style={{ padding: '0 3.5712rem' }}>
+            <div style={{ paddingRight: '12px' }}>
               <div className="steps-content">
                 <React.Fragment>
                   <Form
@@ -485,16 +485,16 @@ class DemandInitiated extends React.Component {
                                   message: '请输入需求名称',
                                 },
                               ],
-                              initialValue: `****人力外包需求（${moment().format('YYYYMMDD')}）（${xmmc}）`,
+                              initialValue: "关于" + xmmc + "的人力外包需求",
                             })(
                               <Tooltip
                                 overlayStyle={{ width: 'auto' }}
                                 placement="bottomLeft"
-                                title={`****人力外包需求（${moment().format('YYYYMMDD')}）（${xmmc}）`}
+                                title={"关于" + xmmc + "的人力外包需求"}
                               >
                                 <Input
                                   disabled={true}
-                                  placeholder={`****人力外包需求（${moment().format('YYYYMMDD')}）（${xmmc}）`}
+                                  placeholder={"关于" + xmmc + "的人力外包需求"}
                                 />
                               </Tooltip>,
                             )}

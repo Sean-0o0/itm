@@ -36,7 +36,7 @@ export default function EvaluationTable(props) {
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
-      width: isDock ? '20%' : '0',
+      width: isDock ? '11%' : '0',
       key: 'GYSMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -90,7 +90,7 @@ export default function EvaluationTable(props) {
     {
       title: '评测人员',
       dataIndex: 'MSG',
-      width: '12%',
+      width: '10%',
       key: 'MSG',
       ellipsis: true,
       render: (txt, row) => {
@@ -127,7 +127,7 @@ export default function EvaluationTable(props) {
     {
       title: '综合评测时间',
       dataIndex: 'ZHPCSJ',
-      width: '13%',
+      width: '24%',
       key: 'ZHPCSJ',
       ellipsis: true,
       render: txt => {
@@ -215,6 +215,7 @@ export default function EvaluationTable(props) {
             showTotal: t => `共 ${ZHPC.length} 条数据`,
             total: ZHPC.length,
           }}
+          bordered
         />
       </div>
     </div>

@@ -222,8 +222,8 @@ function PersonnelArrangementModal(props) {
               GYSID: String(x['GYSID' + x.PCID] ?? '-1'),
               RYMC: x['RYMC' + x.PCID],
               MSSJ:
-                x['MSSJ' + x.PCID][0]?.format('YYYY/MM/DD+HH?mm?ss-') +
-                x['MSSJ' + x.PCID][1]?.format('YYYY/MM/DD+HH?mm?ss'),
+                x['MSSJ' + x.PCID][0]?.format('YYYY/MM/DD+HH?mm-') +
+                x['MSSJ' + x.PCID][1]?.format('YYYY/MM/DD+HH?mm'),
             };
           });
           let submitProps = {

@@ -60,6 +60,7 @@ function ExpenseInfo(props) {
       title: '人员等级',
       dataIndex: 'RYDJ',
       width: '15%',
+      align: 'center',
       key: 'RYDJ',
       ellipsis: true,
       render: txt => <Input value={txt} readOnly />,
@@ -68,6 +69,7 @@ function ExpenseInfo(props) {
       title: '岗位',
       dataIndex: 'GW',
       width: '10%',
+      align: 'center',
       key: 'GW',
       ellipsis: true,
       render: txt => (
@@ -114,6 +116,7 @@ function ExpenseInfo(props) {
       title: '备注',
       dataIndex: 'BZ',
       key: 'BZ',
+      width: '16%',
       ellipsis: false,
       render: (txt = '') => (
         <Tooltip title={txt.replace(/<br>/g, '\n')} placement="topLeft">
@@ -261,7 +264,13 @@ function ExpenseInfo(props) {
       </div>
       <Spin spinning={isSpinning}>
         <Form className="content-box" style={{ paddingRight: 0, paddingLeft: 34 }}>
-          <Row>{getInput('需求名称', 'xqmc', data.wbxq.XQMC)}</Row>
+          <Row>
+            {getInput(
+              '需求名称',
+              'xqmc',
+              `****人力外包需求（${moment().format('YYYYMMDD')}）（${data.wbxq.XMMC}）`,
+            )}
+          </Row>
           <Row>
             {getDatePicker(
               '简历反馈截止日期',

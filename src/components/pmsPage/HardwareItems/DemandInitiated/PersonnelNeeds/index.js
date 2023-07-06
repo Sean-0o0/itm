@@ -228,7 +228,7 @@ class PersonnelNeeds extends Component {
       {
         title: '人员等级',
         dataIndex: 'RYDJ',
-        width: 130,
+        width: 120,
         align: 'center',
         key: 'RYDJ',
         ellipsis: true,
@@ -251,7 +251,7 @@ class PersonnelNeeds extends Component {
       {
         title: '岗位',
         dataIndex: 'GW',
-        width: 120,
+        width: 110,
         align: 'center',
         key: 'GW',
         ellipsis: true,
@@ -274,7 +274,7 @@ class PersonnelNeeds extends Component {
       {
         title: '人员数量',
         dataIndex: 'RYSL',
-        width: 100,
+        width: 90,
         align: 'center',
         key: 'RYSL',
         ellipsis: true,
@@ -283,7 +283,7 @@ class PersonnelNeeds extends Component {
       {
         title: '时长(人/月)',
         dataIndex: 'SC',
-        width: '16%',
+        width: 110,
         align: 'center',
         key: 'SC',
         ellipsis: true,
@@ -308,6 +308,7 @@ class PersonnelNeeds extends Component {
         title: <span style={{marginLeft: 12}}>备注</span>,
         dataIndex: 'BZ',
         key: 'BZ',
+        width: 110,
         ellipsis: true,
         // editable: true,
         render(text, record, index) {
@@ -323,7 +324,7 @@ class PersonnelNeeds extends Component {
         title: '操作',
         dataIndex: 'OPRT',
         align: 'center',
-        width: '8%',
+        width: 60,
         key: 'OPRT',
         ellipsis: true,
         render: (text, record) => (
