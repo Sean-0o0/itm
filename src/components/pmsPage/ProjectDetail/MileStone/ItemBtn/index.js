@@ -8,7 +8,7 @@ import {
   RemindSubProjectFinish,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import { message, Popover, Modal, Spin } from 'antd';
+import { message, Popover, Modal, Spin, Tooltip } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
@@ -22,6 +22,7 @@ import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
 import { is } from 'immutable';
+import Tool from '../../../../../utils/api/tool';
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -228,9 +229,11 @@ class ItemBtn extends React.Component {
           <Spin tip="加载中" />
         ) : (
           this.state.currentFileList.map(x => (
-            <div className="item" key={x[0]} onClick={() => wdyl(x[1], x[2])}>
-              {x[1]}
-            </div>
+            <Tooltip title={x[1]} placement="topLeft" key={x[0]}>
+              <div className="item" onClick={() => wdyl(x[1], x[2])}>
+                {x[1]}
+              </div>
+            </Tooltip>
           ))
         )}
       </div>
@@ -797,9 +800,11 @@ class ItemBtn extends React.Component {
             <Spin tip="加载中" />
           ) : (
             this.state.currentFklcList.map(x => (
-              <div className="item" key={x.subject} onClick={() => jumpToYKB(x.url)}>
-                {x.subject}
-              </div>
+              <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
+                <div className="item" key={x.subject} onClick={() => jumpToYKB(x.url)}>
+                  {x.subject}
+                </div>
+              </Tooltip>
             ))
           )}
         </div>
