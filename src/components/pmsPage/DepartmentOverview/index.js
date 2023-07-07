@@ -124,19 +124,23 @@ class DepartmentOverview extends Component {
           radioKey
         } = this.state
 
-        return (<div className="department-staff-box cont-box">
-          {(role === '信息技术事业部领导' || role === '一级部门领导') && radioKey === "项目列表" ?
-            <>
-              <TopConsole routes={routes} handleRadioChange={this.handleRadioChange}/>
-              <div className="overview-box">
-                <Overview order={1} title='自研团队建设' dataSource={bmry}/>
-                <Overview order={2} title='外部团队建设' dataSource={wbry}/>
-              </div>
-            </> : <ProjectMemberStatisticsInfo handleRadioChange={this.handleRadioChange}/>}
-          {radioKey === "项目列表" &&
+      console.log("radioKeyradioKey", radioKey)
+
+      return (<div className="department-staff-box cont-box">
+        {radioKey === "项目列表" ? <TopConsole routes={routes} handleRadioChange={this.handleRadioChange}/> : ''}
+        {(role === '信息技术事业部领导' || role === '一级部门领导') &&
+        radioKey === "项目列表" && <>
+          <div className="overview-box">
+            <Overview order={1} title='自研团队建设' dataSource={bmry}/>
+            <Overview order={2} title='外部团队建设' dataSource={wbry}/>
+          </div>
+        </>
+        }
+        {radioKey === "项目列表" ?
           <InfoTable routes={routes} role={role} pageParam={pageParam} tableLoading={tableLoading} gwfb={gwfb}
-                     bgxx={bgxx} fetchData={this.queryMemberOverviewInfo}/>}
-        </div>);
+                     bgxx={bgxx} fetchData={this.queryMemberOverviewInfo}/> :
+          <ProjectMemberStatisticsInfo handleRadioChange={this.handleRadioChange}/>}
+      </div>);
     }
 }
 

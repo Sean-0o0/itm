@@ -31,6 +31,8 @@ export default function ProjectStatisticsInfo(props) {
 
   //获取表格数据
   const getTableData = (queryType) => {
+    setCurPage(1)
+    setCurPageSize(20)
     setTableLoading(true);
     //信委会，总办会，项目立项，合同签署，上线，付款，完结
     //ALL|查询全部；XWH|只查信委会过会；ZBH|只查总办会过会；XMLX|项目立项完成；HTQS|只查合同签署流程完成

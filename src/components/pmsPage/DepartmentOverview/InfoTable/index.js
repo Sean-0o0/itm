@@ -40,7 +40,7 @@ class InfoTable extends Component {
   render() {
     const { activeKey, queryType, gwbm } = this.state;
     const { gwfb = [], bgxx = [], tableLoading, pageParam, role, routes } = this.props;
-    return (<div className='info-table'>
+    return (<div className='info-table' style={{marginTop: role === '信息技术事业部领导' || role === '一级部门领导' ? '20px' : '0'}}>
       <Spin spinning={false} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <Tabs
           onChange={this.handleTab}
@@ -49,7 +49,8 @@ class InfoTable extends Component {
           activeKey={activeKey}
         >
           <TabPane tab='全部' key='0'>
-            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData} bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam} />
+            <StaffTable routes={routes} role={role} queryType={queryType} gwbm={gwbm} fetchData={this.props.fetchData}
+                        bgxx={bgxx} tableLoading={tableLoading} pageParam={pageParam}/>
           </TabPane>
           {gwfb.map(item => {
             const { BMGW = '-', BMGWID = '-' } = item
