@@ -68,6 +68,7 @@ class ItemBtn extends React.Component {
     currentFileList: [], //查看的文档列表
     fileLoading: false, //获取查看的文档列表的加载状态
     fklcLoading: false, //获取付款流程列表的加载状态
+    jumpLoading: false, //付款流程列表跳转加载状态
     currentFklcList: [], //查看的付款流程列表
   };
   // timer = null;
@@ -781,33 +782,45 @@ class ItemBtn extends React.Component {
           const arr = url.split(',');
           const id = arr[0].split(':')[1];
           const userykbid = arr[1];
+          this.setState({
+            jumpLoading: true,
+          });
           GetApplyListProvisionalAuth({
             id,
             userykbid,
           })
             .then(res => {
+              this.setState({
+                jumpLoading: false,
+              });
               window.open(res.url);
             })
             .catch(e => {
               console.error(e);
               message.error('付款流程查看失败', 1);
+              this.setState({
+                jumpLoading: false,
+              });
             });
         }
       };
       return (
-        <div className="list">
-          {this.state.fklcLoading ? (
-            <Spin tip="加载中" />
-          ) : (
-            this.state.currentFklcList.map(x => (
-              <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
-                <div className="item" key={x.subject} onClick={() => jumpToYKB(x.url)}>
-                  {x.subject}
-                </div>
-              </Tooltip>
-            ))
-          )}
-        </div>
+        <Spin tip="跳转中" spinning={this.state.jumpLoading} size="small">
+          <Spin tip="加载中" spinning={this.state.fklcLoading} size="small">
+            <div
+              className="list"
+              style={this.state.jumpLoading || this.state.fklcLoading ? { minHeight: 40 } : {}}
+            >
+              {this.state.currentFklcList.map(x => (
+                <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
+                  <div className="item" key={x.subject} onClick={() => jumpToYKB(x.url)}>
+                    {x.subject}
+                  </div>
+                </Tooltip>
+              ))}
+            </div>
+          </Spin>
+        </Spin>
       );
     };
     //权限控制
