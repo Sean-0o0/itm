@@ -264,7 +264,7 @@ export default function DataComparisonRY(props) {
           if (item.KTXM > totalKTXM) {
             totalKTXM = item.KTXM;
           }
-          if (item.XCXM > totalCYXM) {
+          if (item.CYXM > totalCYXM) {
             totalCYXM = item.CYXM;
           }
           if (item.HJXM > totalHJXM) {
