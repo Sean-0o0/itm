@@ -11,7 +11,7 @@ const {TabPane} = Tabs;
 export default function RepInfos(props) {
   const [showExtendsSC, setShowExtendsSC] = useState(false);
   const [showExtendsCJ, setShowExtendsCJ] = useState(false);
-  const [showExtendsGX, setShowExtendsGX] = useState(false);
+  // const [showExtendsGX, setShowExtendsGX] = useState(false);
   const [bbmc, setBbmc] = useState(false);
   const [cjr, setCjr] = useState(false);
   const location = useLocation();
@@ -45,10 +45,10 @@ export default function RepInfos(props) {
     if (tabsKey === 1 && showExtendsCJ) {
       getCusRepData("CJ", 99999);
     }
-    if (tabsKey === 2 && !showExtendsGX) {
-      getCusRepData("GX", 28);
-    }
-    if (tabsKey === 2 && showExtendsGX) {
+    // if (tabsKey === 2 && !showExtendsGX) {
+    //   getCusRepData("GX", 28);
+    // }
+    if (tabsKey === 2) {
       getCusRepData("GX", 99999);
     }
     return () => {
@@ -90,14 +90,14 @@ export default function RepInfos(props) {
     setShowExtendsCJ(!flag)
   }
 
-  const handleExtendsGX = (flag) => {
-    if (!flag) {
-      getCusRepData("GX", 99999);
-    } else {
-      getCusRepData("GX", 28);
-    }
-    setShowExtendsGX(!flag)
-  }
+  // const handleExtendsGX = (flag) => {
+  //   if (!flag) {
+  //     getCusRepData("GX", 99999);
+  //   } else {
+  //     getCusRepData("GX", 28);
+  //   }
+  //   setShowExtendsGX(!flag)
+  // }
 
   const handleProjectCollect = (e, flag, id) => {
     e.stopPropagation();// 阻止事件冒泡
@@ -136,7 +136,7 @@ export default function RepInfos(props) {
   const toDetail = (i) => {
     setShowExtendsSC(false);
     setShowExtendsCJ(false);
-    setShowExtendsGX(false);
+    // setShowExtendsGX(false);
     console.log("bbid", i)
     window.location.href = `/#/pms/manage/CustomRptInfo/${EncryptBase64(
       JSON.stringify({
@@ -310,7 +310,7 @@ export default function RepInfos(props) {
                 <Button
                   className="btn-search"
                   type="primary"
-                  onClick={() => getCusRepData("GX", 28)}
+                  onClick={() => getCusRepData("GX", 99999)}
                 >
                   查询
                 </Button>
@@ -358,13 +358,13 @@ export default function RepInfos(props) {
                     style={{width: '100%'}}
                   />
                 }
-                {
-                  totalGX > 28 && (
-                    <div className='rep-infos-foot' onClick={() => handleExtendsGX(showExtendsGX)}>
-                      {showExtendsGX ? '收起' : '展开'} <Icon type={showExtendsGX ? 'up' : 'down'}/>
-                    </div>
-                  )
-                }
+                {/*{*/}
+                {/*  totalGX > 28 && (*/}
+                {/*    <div className='rep-infos-foot' onClick={() => handleExtendsGX(showExtendsGX)}>*/}
+                {/*      {showExtendsGX ? '收起' : '展开'} <Icon type={showExtendsGX ? 'up' : 'down'}/>*/}
+                {/*    </div>*/}
+                {/*  )*/}
+                {/*}*/}
               </div>
             </div>
           }

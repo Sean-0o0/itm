@@ -118,7 +118,7 @@ export default function ProjectDynamics(props) {
             {
               prjDynamicsXWHInfo.length > 0 && <div className='info-prj-dynamics-footer'>
                 <Link
-                  // style={{ color: '#303133' }}
+                  style={{color: '#303133'}}
                   to={{
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
@@ -211,7 +211,7 @@ export default function ProjectDynamics(props) {
             {
               prjDynamicsZBHInfo.length > 0 && <div className='info-prj-dynamics-footer'>
                 <Link
-                  // style={{ color: '#303133' }}
+                  style={{color: '#303133'}}
                   to={{
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
@@ -304,7 +304,7 @@ export default function ProjectDynamics(props) {
             {
               prjDynamicsLXInfo.length > 0 && <div className='info-prj-dynamics-footer'>
                 <Link
-                  // style={{ color: '#303133' }}
+                  style={{color: '#303133'}}
                   to={{
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
@@ -398,7 +398,7 @@ export default function ProjectDynamics(props) {
               prjDynamicsHTInfo.length > 0 &&
               <div className='info-prj-dynamics-footer'>
                 <Link
-                  // style={{ color: '#303133' }}
+                  style={{color: '#303133'}}
                   to={{
                     pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
                       JSON.stringify({
@@ -488,11 +488,27 @@ export default function ProjectDynamics(props) {
                   }}/>
               }
             </div>
-            {/*{*/}
-            {/*  prjDynamicsSXInfo.length > 0 && <div className='info-prj-dynamics-footer'>*/}
-            {/*    查看详情<i class="iconfont icon-right"/>*/}
-            {/*  </div>*/}
-            {/*}*/}
+            {
+              prjDynamicsHTInfo.length > 0 &&
+              <div className='info-prj-dynamics-footer'>
+                <Link
+                  style={{color: '#303133'}}
+                  to={{
+                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
+                      JSON.stringify({
+                        cxlx: 'SXXM',
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                    },
+                  }}
+                  className="table-link-strong"
+                >
+                  查看详情<i class="iconfont icon-right"/>
+                </Link>
+              </div>
+            }
           </div>
         }
         {
@@ -566,11 +582,27 @@ export default function ProjectDynamics(props) {
                   }}/>
               }
             </div>
-            {/*{*/}
-            {/*  prjDynamicsFKInfo.length > 0 && <div className='info-prj-dynamics-footer'>*/}
-            {/*    查看详情<i class="iconfont icon-right"/>*/}
-            {/*  </div>*/}
-            {/*}*/}
+            {
+              prjDynamicsHTInfo.length > 0 &&
+              <div className='info-prj-dynamics-footer'>
+                <Link
+                  style={{color: '#303133'}}
+                  to={{
+                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
+                      JSON.stringify({
+                        cxlx: 'FKXM',
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                    },
+                  }}
+                  className="table-link-strong"
+                >
+                  查看详情<i class="iconfont icon-right"/>
+                </Link>
+              </div>
+            }
           </div>
         }
         {
@@ -644,11 +676,27 @@ export default function ProjectDynamics(props) {
                   }}/>
               }
             </div>
-            {/*{*/}
-            {/*  prjDynamicsWJInfo.length > 0 && <div className='info-prj-dynamics-footer'>*/}
-            {/*    查看详情<i class="iconfont icon-right"/>*/}
-            {/*  </div>*/}
-            {/*}*/}
+            {
+              prjDynamicsHTInfo.length > 0 &&
+              <div className='info-prj-dynamics-footer'>
+                <Link
+                  style={{color: '#303133'}}
+                  to={{
+                    pathname: `/pms/manage/ProjectStateInfo/${EncryptBase64(
+                      JSON.stringify({
+                        cxlx: 'WJXM',
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                    },
+                  }}
+                  className="table-link-strong"
+                >
+                  查看详情<i class="iconfont icon-right"/>
+                </Link>
+              </div>
+            }
           </div>
         }
       </div>

@@ -22,12 +22,12 @@ export default function ProjectStatisticsInfo(props) {
   useEffect(() => {
     // console.log("1231231312",cxlx)
     if (cxlx !== '') {
-      getTableData(cxlx);
       setQueryType(cxlx);
+      getTableData(cxlx);
     }
     return () => {
     };
-  }, [props]);
+  }, [cxlx]);
 
   //获取表格数据
   const getTableData = (queryType) => {
@@ -76,6 +76,18 @@ export default function ProjectStatisticsInfo(props) {
         if (queryType === "HTQS") {
           setTableData([...JSON.parse(resultHT)]);
           setTotal(totalrowsHT)
+        }
+        if (queryType === "SXXM") {
+          setTableData([...JSON.parse(resultSX)]);
+          setTotal(totalrowsSX)
+        }
+        if (queryType === "FKXM") {
+          setTableData([...JSON.parse(resultFK)]);
+          setTotal(totalrowsFK)
+        }
+        if (queryType === "WJXM") {
+          setTableData([...JSON.parse(resultWJ)]);
+          setTotal(totalrowsWJ)
         }
         setTableLoading(false);
       } else {

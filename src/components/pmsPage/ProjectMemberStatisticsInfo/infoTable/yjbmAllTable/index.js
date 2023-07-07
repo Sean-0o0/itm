@@ -24,6 +24,7 @@ export default function YjbmAllTable(props) {
   const [totalRY, setTotalRY] = useState(0);
   const [bmmc, setBMMC] = useState('');
   const [memberLoading, setMemberLoading] = useState(true);
+  const [itemWidth, setItemWidth] = useState("calc(33.33% - 24px)"); //块宽度
   const {
     tableData = [],
     total = 0,
@@ -39,12 +40,62 @@ export default function YjbmAllTable(props) {
   }, [props]);
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
 
+  //防抖定时器
+  let timer = null;
+
+  useEffect(() => {
+    // 页面变化时获取浏览器窗口的大小
+    window.addEventListener('resize', resizeUpdate);
+    window.dispatchEvent(new Event('resize', {bubbles: true, composed: true})); //刷新时能触发resize
+    return () => {
+      // 组件销毁时移除监听事件
+      window.removeEventListener('resize', resizeUpdate);
+      clearTimeout(timer);
+    };
+  }, []);
+
+  //屏幕宽度变化触发
+  const resizeUpdate = e => {
+    const fn = () => {
+      let w = e.target.innerWidth; //屏幕宽度
+      console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+      if (w < 1440) {
+        setItemWidth('calc(33.33% - 24px)');
+      } else if (w < 1730) {
+        setItemWidth('calc(33.33% - 24px)');
+      } else if (w < 2021) {
+        setItemWidth('calc(25% - 24px)');
+      } else if (w < 2312) {
+        setItemWidth('calc(25% - 24px)');
+      } else if (w < 2603) {
+        setItemWidth('calc(20% - 24px)');
+      } else if (w < 2894) {
+        setItemWidth('calc(20% - 24px)');
+      } else if (w < 3185) {
+        setItemWidth('calc(20% - 24px)');
+      } else {
+        setItemWidth('calc(20% - 24px)'); //5个
+      }
+    };
+    debounce(fn, 300);
+  };
+
+  // 防抖
+  const debounce = (fn, waits = 500) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
 
   const getRadarChat = (item) => {
     // console.log("雷达数据",item)
     //获取雷达图数据
     let max = item.XMZS;
-    let datavalue = [item.XMZS, item.ZBXM, item.KTXM, item.XCXM, item.HJXM];
+    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
     let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
@@ -88,10 +139,10 @@ export default function YjbmAllTable(props) {
         },
         indicator: [
           {name: '项目总数', max: max},
-          {name: '专班项目', max: max},
-          {name: '课题项目', max: max},
-          {name: '信创项目', max: max},
           {name: '获奖项目', max: max},
+          {name: '课题项目', max: max},
+          {name: '专班项目', max: max},
+          {name: '信创项目', max: max},
         ],
         splitArea: {
           show: true,
@@ -190,7 +241,7 @@ export default function YjbmAllTable(props) {
           <div className="info-table-content">
             {
               tableData.map(item => {
-                return <div className="info-table-content-box">
+                return <div style={{width: itemWidth}} className="info-table-content-box">
                   <div className="info-table-content-box-title">
                     <div className="info-table-content-box-title-left">
                       {item.ORGNAME}

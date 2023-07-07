@@ -13,6 +13,7 @@ import EjbmAllTable from "./infoTable/ejbmAllTable";
 
 export default function ProjectMemberStatisticsInfo(props) {
   const [activeKey, setActiveKey] = useState('YJBM_ALL');
+  const [activeKeyFlag, setActiveKeyFlag] = useState(false);
   const [tableData, setTableData] = useState([]); //全部
   const [total, setTotal] = useState(0); //全部
   const [tabsData, setTabsData] = useState([]); //TAB
@@ -31,6 +32,7 @@ export default function ProjectMemberStatisticsInfo(props) {
   }, []);
 
   const tabsKeyCallback = (key) => {
+    setActiveKeyFlag(true)
     setActiveKey(key);
     setLoading(true);
     if (key === "YJBM_ALL") {
@@ -148,6 +150,8 @@ export default function ProjectMemberStatisticsInfo(props) {
             getTableData={getTableData}
           /> : <EjbmAllTable
             // 二级部门
+            setActiveKeyFlag={setActiveKeyFlag}
+            activeKeyFlag={activeKeyFlag}
             bmid={bmid}
             loading={loading}
             tableDataLD={tableDataLD}

@@ -252,8 +252,16 @@ export default forwardRef(function TopConsole(props, ref) {
       pageSize,
       paging: 1,
       sort: '',
-      total: -1,
       queryType,
+      "total": -1,
+      "totalrowsFK": -1,
+      "totalrowsHT": -1,
+      "totalrowsLX": -1,
+      "totalrowsSX": -1,
+      "totalrowsWJ": -1,
+      "totalrowsXWH": -1,
+      "totalrowsZBH": -1,
+      "year": 2023
     };
     if (prjName !== undefined && prjName !== '') {
       params.projectID = Number(prjName);
@@ -287,6 +295,18 @@ export default forwardRef(function TopConsole(props, ref) {
           if (queryType === "HTQS") {
             setTableData([...JSON.parse(resultHT)]);
             setTotal(totalrowsHT)
+          }
+          if (queryType === "SXXM") {
+            setTableData([...JSON.parse(resultSX)]);
+            setTotal(totalrowsSX)
+          }
+          if (queryType === "FKXM") {
+            setTableData([...JSON.parse(resultFK)]);
+            setTotal(totalrowsFK)
+          }
+          if (queryType === "WJXM") {
+            setTableData([...JSON.parse(resultWJ)]);
+            setTotal(totalrowsWJ)
           }
           setTableLoading(false);
         }

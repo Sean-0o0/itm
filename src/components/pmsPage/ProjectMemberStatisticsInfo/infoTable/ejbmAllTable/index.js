@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useLayoutEffect, useState} from 'react';
 import {Empty, message, Spin, Tabs} from 'antd';
 import {useLocation} from 'react-router';
 import echarts from 'echarts/lib/echarts';
@@ -25,6 +25,7 @@ export default function EjbmAllTable(props) {
   const [footerVisableLD, setFooterVisableLD] = useState('');
   const [footerVisableBM, setFooterVisableBM] = useState('');
   const [detailVisable, setDetailVisable] = useState(false);
+  const [itemWidth, setItemWidth] = useState("calc(33.33% - 24px)"); //块宽度
   const [tableDataRY, setTableDataRY] = useState([]);
   const [totalRY, setTotalRY] = useState(0);
   const [bmmc, setBMMC] = useState('');
@@ -32,6 +33,7 @@ export default function EjbmAllTable(props) {
   const [compareRYVisible, setCompareRYVisible] = useState(false);//人员对比
   const [compareBMVisible, setCompareBMVisible] = useState(false);//部门对比
   const [orgId, setOrgId] = useState('');
+  const [userId, setUserId] = useState('');
 
   const {
     tableDataLD = [],
@@ -41,16 +43,68 @@ export default function EjbmAllTable(props) {
     loading = true,
     getTableDataBM,
     bmid,
+    activeKeyFlag,
+    setActiveKeyFlag,
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
 
+  //防抖定时器
+  let timer = null;
+
+  useEffect(() => {
+    // 页面变化时获取浏览器窗口的大小
+    window.addEventListener('resize', resizeUpdate);
+    window.dispatchEvent(new Event('resize', {bubbles: true, composed: true})); //刷新时能触发resize
+    return () => {
+      // 组件销毁时移除监听事件
+      window.removeEventListener('resize', resizeUpdate);
+      clearTimeout(timer);
+    };
+  }, []);
+
+  //屏幕宽度变化触发
+  const resizeUpdate = e => {
+    const fn = () => {
+      let w = e.target.innerWidth; //屏幕宽度
+      console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
+      if (w < 1440) {
+        setItemWidth('calc(33.33% - 24px)');
+      } else if (w < 1730) {
+        setItemWidth('calc(33.33% - 24px)');
+      } else if (w < 2021) {
+        setItemWidth('calc(25% - 24px)');
+      } else if (w < 2312) {
+        setItemWidth('calc(25% - 24px)');
+      } else if (w < 2603) {
+        setItemWidth('calc(20% - 24px)');
+      } else if (w < 2894) {
+        setItemWidth('calc(20% - 24px)');
+      } else if (w < 3185) {
+        setItemWidth('calc(20% - 24px)');
+      } else {
+        setItemWidth('calc(20% - 24px)'); //5个
+      }
+    };
+    debounce(fn, 300);
+  };
+
+  // 防抖
+  const debounce = (fn, waits = 500) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
 
   const getRadarChatLD = (item) => {
     // console.log("雷达数据",item)
     //获取雷达图数据
     let max = item.XMZS;
-    let datavalue = [item.XMZS, item.ZBXM, item.KTXM, item.XCXM, item.HJXM];
+    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
     let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
@@ -94,10 +148,10 @@ export default function EjbmAllTable(props) {
         },
         indicator: [
           {name: '负责项目', max: max},
-          {name: '专班项目', max: max},
-          {name: '课题项目', max: max},
-          {name: '信创项目', max: max},
           {name: '获奖项目', max: max},
+          {name: '课题项目', max: max},
+          {name: '专班项目', max: max},
+          {name: '信创项目', max: max},
         ],
         splitArea: {
           show: true,
@@ -127,7 +181,7 @@ export default function EjbmAllTable(props) {
     // console.log("雷达数据",item)
     //获取雷达图数据
     let max = item.XMZS;
-    let datavalue = [item.XMZS, item.ZBXM, item.KTXM, item.XCXM, item.HJXM];
+    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
     let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
@@ -171,10 +225,10 @@ export default function EjbmAllTable(props) {
         },
         indicator: [
           {name: '所有项目', max: max},
-          {name: '专班项目', max: max},
-          {name: '课题项目', max: max},
-          {name: '信创项目', max: max},
           {name: '获奖项目', max: max},
+          {name: '课题项目', max: max},
+          {name: '专班项目', max: max},
+          {name: '信创项目', max: max},
         ],
         splitArea: {
           show: true,
@@ -219,6 +273,7 @@ export default function EjbmAllTable(props) {
   const toDetail = (item) => {
     setMemberLoading(true);
     setDetailVisable(true);
+    setActiveKeyFlag(false);
     setBMMC(item.ORGNAME)
     getTableDataMember('EJBM_ALL', item.ORGID)
   }
@@ -274,7 +329,8 @@ export default function EjbmAllTable(props) {
     setCompareRYVisible(false)
   }
 
-  const getCompareRYModel = () => {
+  const getCompareRYModel = (item) => {
+    setUserId(item.USERID)
     setCompareRYVisible(true)
   }
 
@@ -287,10 +343,9 @@ export default function EjbmAllTable(props) {
     setCompareBMVisible(true)
   }
 
-  // console.log("tableDatatableData",tableData)
 
   return (
-    !detailVisable ? (tableDataLD.length > 0 || tableDataBM.length > 0 ?
+    activeKeyFlag ? (tableDataLD.length > 0 || tableDataBM.length > 0 ?
       <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <div className="info-table">
           {
@@ -298,21 +353,36 @@ export default function EjbmAllTable(props) {
               领导统计
             </div>
           }
+          {
+            compareRYVisible && (
+              <DataComparisonRY userId={userId} closeModal={closeCompareRYVisibleModal}
+                                visible={compareRYVisible}/>
+            )}
           <div className="info-table-content">
             {
               tableDataLD.length > 0 && tableDataLD.map(item => {
-                return <div className="info-table-content-box">
-                  {
-                    compareRYVisible && (
-                      <DataComparisonRY userId={item.USERID} closeModal={closeCompareRYVisibleModal}
-                                        visible={compareRYVisible}/>
-                    )}
+                return <div style={{width: itemWidth}} className="info-table-content-box">
                   <div className="info-table-content-box-title">
                     <div className="info-table-content-box-title-left">
-                      {item.NAME}
+                      <Link
+                        style={{color: '#303133'}}
+                        to={{
+                          pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                            JSON.stringify({
+                              ryid: item.USERID,
+                            }),
+                          )}`,
+                          state: {
+                            routes: [{name: '统计分析', pathname: location.pathname}],
+                          },
+                        }}
+                        className="table-link-strong"
+                      >
+                        {item.NAME}
+                      </Link>
                     </div>
-                    <div className="info-table-content-box-title-right" onClick={(e) => getCompareRYModel(e)}>
-                      <i className="iconfont icon-vs" onClick={(e) => getCompareRYModel(e)}/>数据对比
+                    <div className="info-table-content-box-title-right" onClick={() => getCompareRYModel(item)}>
+                      <i className="iconfont icon-vs" onClick={() => getCompareRYModel(item)}/>数据对比
                     </div>
                   </div>
                   <Link
@@ -385,8 +455,191 @@ export default function EjbmAllTable(props) {
             )}
           <div className="info-table-content">
             {
-              tableDataBM.length > 0 && tableDataBM.map(item => {
-                return <div className="info-table-content-box">
+              tableDataBM.length > 0 && tableDataBM.map((item, index) => {
+                return <div style={{width: itemWidth}} className="info-table-content-box">
+                  <div className="info-table-content-box-title">
+                    <div className="info-table-content-box-title-left">
+                      {item.ORGNAME}
+                    </div>
+                    <div className="info-table-content-box-title-right" onClick={() => getCompareBMModel(item)}>
+                      <i className="iconfont icon-vs" onClick={() => getCompareBMModel(item)}/>数据对比
+                    </div>
+                  </div>
+                  <div className="info-table-content-box-radar" onMouseEnter={() => getFooterBM(item.ORGID)}
+                       onMouseLeave={hiddenFooterBM}>
+                    <Link
+                      style={{color: '#3361ff'}}
+                      to={{
+                        pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(
+                          JSON.stringify({
+                            cxlx: 'BM',
+                            orgID: item.ORGID,
+                          }),
+                        )}`,
+                        state: {
+                          routes: [{name: '统计分析', pathname: location.pathname}],
+                        },
+                      }}
+                      className="table-link-strong"
+                    >
+                      <ReactEchartsCore
+                        echarts={echarts}
+                        option={getRadarChatBM(item)}
+                        notMerge
+                        lazyUpdate
+                        style={{height: '240px'}}
+                        theme=""
+                      />
+                    </Link>
+                    {
+                      footerVisableBM === item.ORGID &&
+                      <div className="info-table-content-box-footer">
+                        <Link
+                          style={{color: '#3361ff'}}
+                          to={{
+                            pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(
+                              JSON.stringify({
+                                cxlx: 'BM',
+                                orgID: item.ORGID,
+                              }),
+                            )}`,
+                            state: {
+                              routes: [{name: '统计分析', pathname: location.pathname}],
+                            },
+                          }}
+                          className="table-link-strong"
+                        >
+                          <div className="info-table-content-box-footer-left">
+                            <span className="info-table-content-box-footer-left-span">项目明细</span>
+                          </div>
+                        </Link>
+                        <div className="info-table-content-box-footer-right" onClick={() => toDetail(item)}>
+                          <span className="info-table-content-box-footer-left-span">部门详情</span>
+                        </div>
+                      </div>
+                    }
+                  </div>
+                </div>
+              })
+            }
+          </div>
+        </div>
+      </Spin> : <Empty
+        description="暂无数据"
+        image={Empty.PRESENTED_IMAGE_SIMPLE}
+        style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}
+      />) : (!detailVisable ? (tableDataLD.length > 0 || tableDataBM.length > 0 ?
+      <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
+        <div className="info-table">
+          {
+            tableDataLD.length > 0 && <div className="info-table-title">
+              领导统计
+            </div>
+          }
+          {
+            compareRYVisible && (
+              <DataComparisonRY userId={userId} closeModal={closeCompareRYVisibleModal}
+                                visible={compareRYVisible}/>
+            )}
+          <div className="info-table-content">
+            {
+              tableDataLD.length > 0 && tableDataLD.map(item => {
+                return <div style={{width: itemWidth}} className="info-table-content-box">
+                  <div className="info-table-content-box-title">
+                    <div className="info-table-content-box-title-left">
+                      <Link
+                        style={{color: '#303133'}}
+                        to={{
+                          pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                            JSON.stringify({
+                              ryid: item.USERID,
+                            }),
+                          )}`,
+                          state: {
+                            routes: [{name: '统计分析', pathname: location.pathname}],
+                          },
+                        }}
+                        className="table-link-strong"
+                      >
+                        {item.NAME}
+                      </Link>
+                    </div>
+                    <div className="info-table-content-box-title-right" onClick={() => getCompareRYModel(item)}>
+                      <i className="iconfont icon-vs" onClick={() => getCompareRYModel(item)}/>数据对比
+                    </div>
+                  </div>
+                  <Link
+                    style={{color: '#3361ff', width: '100%'}}
+                    to={{
+                      pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(
+                        JSON.stringify({
+                          cxlx: 'RY',
+                          memberID: item.USERID,
+                        }),
+                      )}`,
+                      state: {
+                        routes: [{name: '统计分析', pathname: location.pathname}],
+                      },
+                    }}
+                    className="table-link-strong"
+                  >
+                    <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
+                         onMouseLeave={hiddenFooterLD}>
+                      <ReactEchartsCore
+                        echarts={echarts}
+                        option={getRadarChatLD(item)}
+                        notMerge
+                        lazyUpdate
+                        style={{height: '240px'}}
+                        theme=""
+                      />
+                      {/*{*/}
+                      {/*  footerVisableLD === item.USERID &&*/}
+                      {/*  <div className="info-table-content-box-footer">*/}
+                      {/*    <Link*/}
+                      {/*      style={{color: '#3361ff',justifyContent: 'center',display: 'flex',width: '100%'}}*/}
+                      {/*      to={{*/}
+                      {/*        pathname: `/pms/manage/ProjectStatisticsInfo/${EncryptBase64(*/}
+                      {/*          JSON.stringify({*/}
+                      {/*            cxlx: 'RY',*/}
+                      {/*            memberID: item.USERID,*/}
+                      {/*          }),*/}
+                      {/*        )}`,*/}
+                      {/*        state: {*/}
+                      {/*          routes: [{name: '统计分析', pathname: location.pathname}],*/}
+                      {/*        },*/}
+                      {/*      }}*/}
+                      {/*      className="table-link-strong"*/}
+                      {/*    >*/}
+                      {/*      <div className="info-table-content-box-footer-left" style={{width:'100%'}}>*/}
+                      {/*        <span className="info-table-content-box-footer-left-span">项目明细</span>*/}
+                      {/*      </div>*/}
+                      {/*    </Link>*/}
+                      {/*    /!*<div className="info-table-content-box-footer-right">*!/*/}
+                      {/*    /!*  <span className="info-table-content-box-footer-left-span" onClick={() =>toDetail(item)}>部门详情</span>*!/*/}
+                      {/*    /!*</div>*!/*/}
+                      {/*  </div>*/}
+                      {/*}*/}
+                    </div>
+                  </Link>
+                </div>
+              })
+            }
+          </div>
+          {
+            tableDataBM.length > 0 && <div className="info-table-title">
+              部门统计
+            </div>
+          }
+          {
+            compareBMVisible && (
+              <DataComparisonBM orgId={orgId} closeModal={closeCompareBMVisibleModal}
+                                visible={compareBMVisible}/>
+            )}
+          <div className="info-table-content">
+            {
+              tableDataBM.length > 0 && tableDataBM.map((item, index) => {
+                return <div style={{width: itemWidth}} className="info-table-content-box">
                   <div className="info-table-content-box-title">
                     <div className="info-table-content-box-title-left">
                       {item.ORGNAME}
@@ -459,6 +712,7 @@ export default function EjbmAllTable(props) {
         image={Empty.PRESENTED_IMAGE_SIMPLE}
         style={{width: '100%', display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%'}}
       />) : <MemberAllTable handleBack={handleBack} bmmc={bmmc} tableData={tableDataRY} total={totalRY}
-                            loading={memberLoading}/>
+                            loading={memberLoading}/>)
+
   );
 }

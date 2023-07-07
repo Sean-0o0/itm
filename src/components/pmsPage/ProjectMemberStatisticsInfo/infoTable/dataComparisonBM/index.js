@@ -38,11 +38,11 @@ export default function DataComparisonBM(props) {
   const [tooltipData, setTooltipData] = useState([]); //tooltip展示数据
   const [radardata, setRadardata] = useState([]); //雷达数据
   //各项目类型总数
-  const [totalXMZS, setTotalXMZS] = useState(0); //发起项目总数
-  const [totalZBXM, setTotalZBXM] = useState(0); //专班项目总数
-  const [totalKTXM, setTotalKTXM] = useState(0); //课题项目总数
-  const [totalCYXM, setTotalCYXM] = useState(0); //参与项目总数
-  const [totalHJXM, setTotalHJXM] = useState(0); //获奖项目总数
+  const [totalXMZS, setTotalXMZS] = useState(0); //发起项目最大值
+  const [totalZBXM, setTotalZBXM] = useState(0); //专班项目最大值
+  const [totalKTXM, setTotalKTXM] = useState(0); //课题项目最大值
+  const [totalCYXM, setTotalCYXM] = useState(0); //参与项目最大值
+  const [totalHJXM, setTotalHJXM] = useState(0); //获奖项目最大值
   const [totalArr, setTotalArr] = useState([0, 0, 0, 0, 0]); //获奖项目总数组成的数组
   const [totalNameArr, setTotalNameArr] = useState(['', '', '', '', '']); //部门组成的数组-legend
   const [isDownOrg, setIsDownOrg] = useState(true); //人名组成的数组-legend
@@ -70,6 +70,9 @@ export default function DataComparisonBM(props) {
     // console.log("雷达数据",item)
     //获取雷达图数据
     let i = -1;
+    let arr = [totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM]
+    let max = Math.max(...arr)
+    let flag = totalXMZS === 0 && totalHJXM === 0 && totalKTXM === 0 && totalZBXM === 0 && totalCYXM === 0;
     return {
       // title: {
       //   text: '基础雷达图'
@@ -136,11 +139,11 @@ export default function DataComparisonBM(props) {
           }
         },
         indicator: [
-          {name: '项目总数', max: totalXMZS},
-          {name: '专班项目', max: totalZBXM},
-          {name: '课题项目', max: totalKTXM},
-          {name: '信创项目', max: totalCYXM},
-          {name: '获奖项目', max: totalHJXM},
+          {name: '项目总数', max},
+          {name: '获奖项目', max},
+          {name: '课题项目', max},
+          {name: '专班项目', max},
+          {name: '信创项目', max},
         ],
         splitArea: {
           show: true,
@@ -161,7 +164,7 @@ export default function DataComparisonBM(props) {
         // areaStyle: {
         //   color: '#5B8FF9',
         // },
-        data: radardata,
+        data: flag ? [] : radardata,
       }]
     };
   }
@@ -180,12 +183,12 @@ export default function DataComparisonBM(props) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0].children[0].children;
-          data.push({
-            value: 'szyyzx',
-            title: '数字应用中心',
-            fid: '11167',
-            children: [],
-          });
+          // data.push({
+          //   value: 'szyyzx',
+          //   title: '数字应用中心',
+          //   fid: '11167',
+          //   children: [],
+          // });
           setOrgData([...data]);
           // setOrgData([...res.record]);
         }
@@ -258,7 +261,7 @@ export default function DataComparisonBM(props) {
           const KTXM = {name: item.ORGNAME, value: item.KTXM};
           const CYXM = {name: item.ORGNAME, value: item.XCXM};
           const HJXM = {name: item.ORGNAME, value: item.HJXM};
-          const radar = {name: item.ORGNAME, value: [item.XMZS, item.ZBXM, item.KTXM, item.XCXM, item.HJXM]};
+          const radar = {name: item.ORGNAME, value: [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM]};
           tooltipDataXMZS.push(XMZS);
           tooltipDataZBXM.push(ZBXM);
           tooltipDataKTXM.push(KTXM);
@@ -266,17 +269,27 @@ export default function DataComparisonBM(props) {
           tooltipDataHJXM.push(HJXM);
           radardata.push(radar)
           name.push(item.ORGNAME);
-          totalXMZS = totalXMZS + item.XMZS;
-          totalZBXM = totalZBXM + item.ZBXM;
-          totalKTXM = totalKTXM + item.KTXM;
-          totalCYXM = totalCYXM + item.XCXM;
-          totalHJXM = totalHJXM + item.HJXM;
+          if (item.XMZS > totalXMZS) {
+            totalXMZS = item.XMZS;
+          }
+          if (item.ZBXM > totalZBXM) {
+            totalZBXM = item.ZBXM;
+          }
+          if (item.KTXM > totalKTXM) {
+            totalKTXM = item.KTXM;
+          }
+          if (item.XCXM > totalCYXM) {
+            totalCYXM = item.XCXM;
+          }
+          if (item.HJXM > totalHJXM) {
+            totalHJXM = item.HJXM;
+          }
         })
-        let tooltipData = [{xmlx: '项目总数', data: tooltipDataXMZS}, {xmlx: '专班项目', data: tooltipDataZBXM},
-          {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '信创项目', data: tooltipDataCYXM}, {
-            xmlx: '获奖项目',
-            data: tooltipDataHJXM
-          },]
+        let tooltipData = [{xmlx: '项目总数', data: tooltipDataXMZS}, {xmlx: '获奖项目', data: tooltipDataHJXM},
+          {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '专班项目', data: tooltipDataZBXM}, {
+            xmlx: '信创项目',
+            data: tooltipDataCYXM
+          }]
         setTooltipData(tooltipData);
         setRadardata(radardata);
         setTotalXMZS(totalXMZS);
@@ -284,7 +297,7 @@ export default function DataComparisonBM(props) {
         setTotalKTXM(totalKTXM);
         setTotalCYXM(totalCYXM);
         setTotalHJXM(totalHJXM);
-        setTotalArr([totalXMZS, totalZBXM, totalKTXM, totalCYXM, totalHJXM])
+        setTotalArr([totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM])
         setTotalNameArr(name);
         setMemberLoading(false);
       } else {

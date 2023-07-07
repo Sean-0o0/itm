@@ -16,7 +16,7 @@ export default function InfoTable(props) {
     tableLoading,
     getTableData,
     // projectManager = -1,
-    queryType = 'XHW',
+    queryType,
     setQueryType,
     total,
     handleSearch,
@@ -27,6 +27,11 @@ export default function InfoTable(props) {
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
+
+  useEffect(() => {
+    return () => {
+    };
+  }, [queryType, tableData]);
 
   //获取项目标签数据
   const getTagData = (tag, idtxt) => {
@@ -65,16 +70,15 @@ export default function InfoTable(props) {
     const {current = 1, pageSize = 20} = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        handleSearch(current, pageSize, queryType,);
+        handleSearch(current, pageSize, queryType);
       } else {
-        handleSearch(current, pageSize, queryType,);
+        handleSearch(current, pageSize, queryType);
       }
     } else {
-      handleSearch(current, pageSize, queryType,);
+      handleSearch(current, pageSize, queryType);
     }
     return;
   };
-
 
   //列配置
   const columns = [
@@ -258,7 +262,8 @@ export default function InfoTable(props) {
     getTableData(activeKey);
   }
 
-  // console.log("queryTypequeryType",queryType)
+  console.log("queryTypequeryType", queryType)
+  console.log("tabledata", tableData)
 
   return (
     <div className="info-table">
@@ -334,6 +339,75 @@ export default function InfoTable(props) {
           </div>
         </TabPane>
         <TabPane tab="合同签署完成" key="HTQS">
+          <div className="project-info-table-box">
+            <Table
+              loading={tableLoading}
+              columns={columns}
+              rowKey={'projectId'}
+              dataSource={tableData}
+              onChange={handleTableChange}
+              pagination={{
+                current: curPage,
+                pageSize: curPageSize,
+                defaultCurrent: 1,
+                pageSizeOptions: ['20', '40', '50', '100'],
+                showSizeChanger: true,
+                hideOnSinglePage: false,
+                showQuickJumper: true,
+                showTotal: t => `共 ${total} 条数据`,
+                total: total,
+              }}
+              // bordered
+            />
+          </div>
+        </TabPane>
+        <TabPane tab="项目上线" key="SXXM">
+          <div className="project-info-table-box">
+            <Table
+              loading={tableLoading}
+              columns={columns}
+              rowKey={'projectId'}
+              dataSource={tableData}
+              onChange={handleTableChange}
+              pagination={{
+                current: curPage,
+                pageSize: curPageSize,
+                defaultCurrent: 1,
+                pageSizeOptions: ['20', '40', '50', '100'],
+                showSizeChanger: true,
+                hideOnSinglePage: false,
+                showQuickJumper: true,
+                showTotal: t => `共 ${total} 条数据`,
+                total: total,
+              }}
+              // bordered
+            />
+          </div>
+        </TabPane>
+        <TabPane tab="项目付款" key="FKXM">
+          <div className="project-info-table-box">
+            <Table
+              loading={tableLoading}
+              columns={columns}
+              rowKey={'projectId'}
+              dataSource={tableData}
+              onChange={handleTableChange}
+              pagination={{
+                current: curPage,
+                pageSize: curPageSize,
+                defaultCurrent: 1,
+                pageSizeOptions: ['20', '40', '50', '100'],
+                showSizeChanger: true,
+                hideOnSinglePage: false,
+                showQuickJumper: true,
+                showTotal: t => `共 ${total} 条数据`,
+                total: total,
+              }}
+              // bordered
+            />
+          </div>
+        </TabPane>
+        <TabPane tab="完结项目" key="WJXM">
           <div className="project-info-table-box">
             <Table
               loading={tableLoading}

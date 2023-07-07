@@ -68,6 +68,9 @@ export default function DataComparisonRY(props) {
     // console.log("雷达数据",item)
     //获取雷达图数据
     let i = -1;
+    let arr = [totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM]
+    let max = Math.max(...arr)
+    let flag = totalXMZS === 0 && totalHJXM === 0 && totalKTXM === 0 && totalZBXM === 0 && totalCYXM === 0;
     return {
       // title: {
       //   text: '基础雷达图'
@@ -134,11 +137,11 @@ export default function DataComparisonRY(props) {
           }
         },
         indicator: [
-          {name: '发起项目', max: totalXMZS},
-          {name: '专班项目', max: totalZBXM},
-          {name: '课题项目', max: totalKTXM},
-          {name: '参与项目', max: totalCYXM},
-          {name: '获奖项目', max: totalHJXM},
+          {name: '发起项目', max},
+          {name: '获奖项目', max},
+          {name: '课题项目', max},
+          {name: '专班项目', max},
+          {name: '参与项目', max},
         ],
         splitArea: {
           show: true,
@@ -159,7 +162,7 @@ export default function DataComparisonRY(props) {
         // areaStyle: {
         //   color: '#5B8FF9',
         // },
-        data: radardata,
+        data: flag ? [] : radardata,
       }]
     };
   }
@@ -244,7 +247,7 @@ export default function DataComparisonRY(props) {
           const KTXM = {name: item.NAME, value: item.KTXM};
           const CYXM = {name: item.NAME, value: item.CYXM};
           const HJXM = {name: item.NAME, value: item.HJXM};
-          const radar = {name: item.NAME, value: [item.XMZS, item.ZBXM, item.KTXM, item.CYXM, item.HJXM]};
+          const radar = {name: item.NAME, value: [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.CYXM]};
           tooltipDataXMZS.push(XMZS);
           tooltipDataZBXM.push(ZBXM);
           tooltipDataKTXM.push(KTXM);
@@ -252,17 +255,27 @@ export default function DataComparisonRY(props) {
           tooltipDataHJXM.push(HJXM);
           radardata.push(radar)
           name.push(item.NAME);
-          totalXMZS = totalXMZS + item.XMZS;
-          totalZBXM = totalZBXM + item.ZBXM;
-          totalKTXM = totalKTXM + item.KTXM;
-          totalCYXM = totalCYXM + item.CYXM;
-          totalHJXM = totalHJXM + item.HJXM;
+          if (item.XMZS > totalXMZS) {
+            totalXMZS = item.XMZS;
+          }
+          if (item.ZBXM > totalZBXM) {
+            totalZBXM = item.ZBXM;
+          }
+          if (item.KTXM > totalKTXM) {
+            totalKTXM = item.KTXM;
+          }
+          if (item.XCXM > totalCYXM) {
+            totalCYXM = item.CYXM;
+          }
+          if (item.HJXM > totalHJXM) {
+            totalHJXM = item.HJXM;
+          }
         })
-        let tooltipData = [{xmlx: '发起项目', data: tooltipDataXMZS}, {xmlx: '专班项目', data: tooltipDataZBXM},
-          {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '参与项目', data: tooltipDataCYXM}, {
-            xmlx: '获奖项目',
-            data: tooltipDataHJXM
-          },]
+        let tooltipData = [{xmlx: '发起项目', data: tooltipDataXMZS}, {xmlx: '获奖项目', data: tooltipDataHJXM},
+          {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '专班项目', data: tooltipDataZBXM}, {
+            xmlx: '参与项目',
+            data: tooltipDataCYXM
+          }]
         setTooltipData(tooltipData);
         setRadardata(radardata);
         setTotalXMZS(totalXMZS);
@@ -270,7 +283,7 @@ export default function DataComparisonRY(props) {
         setTotalKTXM(totalKTXM);
         setTotalCYXM(totalCYXM);
         setTotalHJXM(totalHJXM);
-        setTotalArr([totalXMZS, totalZBXM, totalKTXM, totalCYXM, totalHJXM])
+        setTotalArr([totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM])
         setTotalNameArr(name);
         setMemberLoading(false);
       } else {
