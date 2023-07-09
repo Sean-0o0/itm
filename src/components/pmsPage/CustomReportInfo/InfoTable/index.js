@@ -99,6 +99,7 @@ export default function InfoTable(props) {
                 pathname: `/pms/manage/CustomReportDetail/${EncryptBase64(
                   JSON.stringify({
                     bgid: row.ID,
+                    bgmc: txt,
                     routes: [{ name: '自定义报告', pathname: location.pathname }],
                   }),
                 )}`,

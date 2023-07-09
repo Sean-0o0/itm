@@ -328,10 +328,10 @@ export default function ConditionFilter(props) {
           component = (
             <RangePicker
               format="YYYY-MM-DD"
-              placeholder="请选择"
               value={dateValue}
               onChange={handleDateChange}
               className="item-component"
+              // placeholder={['开始', '结束']}
             />
           );
           break;

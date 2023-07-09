@@ -601,4 +601,10 @@ export default [
     url: '/projectManage/configureCustomReport',
     dis: '创建自定义报告',
   },
+  {
+    code: '',
+    key: 'editCustomReport',
+    url: '/projectManage/editCustomReport',
+    dis: '编辑自定义报告内容',
+  },
 ];

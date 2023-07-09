@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Breadcrumb, Button, message, Spin } from 'antd';
+import { Breadcrumb, Button, message, Spin, Tooltip } from 'antd';
 import moment from 'moment';
 import {
   QueryCustomQueryCriteria,
@@ -434,7 +434,11 @@ export default function CustomRptInfo(props) {
             );
           })}
         </Breadcrumb>
-        <div className="header">{data.rptName}</div>
+        <div className="header">
+          <Tooltip title={data.rptName} placement="topLeft">
+            {data.rptName}
+          </Tooltip>
+        </div>
       </Spin>
       <div className="content" style={isUnfold ? {} : { height: 'calc(100vh - 138px)' }}>
         <TopConsole

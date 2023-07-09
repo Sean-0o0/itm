@@ -1,12 +1,12 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Breadcrumb, Button, message } from 'antd';
+import { Breadcrumb, Button, message, Spin } from 'antd';
 import moment from 'moment';
-import { QueryCustomReportContent } from '../../../services/pmsServices';
+import { QueryCustomReportContent, QueryUserRole } from '../../../services/pmsServices';
 import TableBox from './TableBox';
 import { Link } from 'react-router-dom';
 
 export default function CustomReportDetail(props) {
-  const { bgid = -2, routes } = props;
+  const { bgid = -2, routes = [], bgmc = '' } = props;
   const [tableData, setTableData] = useState({
     data: [],
     origin: [], //编辑前的数据
@@ -15,16 +15,20 @@ export default function CustomReportDetail(props) {
   const [tableLoading, setTableLoading] = useState(false);
   const [edited, setEdited] = useState(false);
   const [monthData, setMonthData] = useState(null); //月份下拉框数据
+  const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
+  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   useEffect(() => {
-    if (bgid !== -2) {
-      getData(Number(bgid));
+    if (bgid !== -2 && LOGIN_USER_ID !== undefined) {
+      setMonthData(moment());
+      getUserRole();
     }
+
     return () => {};
-  }, [bgid]);
+  }, [bgid, LOGIN_USER_ID]);
 
   //获取数据
-  const getData = reportID => {
+  const getData = (reportID, month) => {
     QueryCustomReportContent({
       current: 1,
       pageSize: 20,
@@ -33,15 +37,174 @@ export default function CustomReportDetail(props) {
       reportID,
       sort: '',
       total: -1,
+      month,
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ QueryCustomReportContent ~ res', res);
+          let tableArr = JSON.parse(res.nrxx);
+          let columnsArr = JSON.parse(res.zdxx);
+          console.log('🚀 ~ 本月', tableArr, columnsArr);
+          //上月数据
+          QueryCustomReportContent({
+            current: 1,
+            pageSize: 20,
+            paging: -1,
+            queryType: 'SY',
+            reportID,
+            sort: '',
+            total: -1,
+            month,
+          })
+            .then(res => {
+              if (res?.success) {
+                let tableArrLast = JSON.parse(res.nrxx);
+                console.log('🚀 ~ 上月', tableArrLast);
+                let mergeData = []; //本月上月数据合并
+                let filteredArr = columnsArr.filter(item => item.ZDLX === '1'); //分类字段信息
+                let otherArr = columnsArr.filter(item => item.ZDLX !== '1'); //填写字段信息
+                tableArr.forEach(item1 => {
+                  let newItem = { ...item1 };
+                  tableArrLast.forEach(item2 => {
+                    if (item2.ID === item1.SYJL) {
+                      delete item2.ID;
+                      delete item2.GXZT;
+                      delete item2.SYJL;
+                      delete item2.YF;
+                      delete item2.TXR;
+                      delete item2.GLXM;
+                      delete item2.BBID;
+                      delete item2.GLXMID;
+                      delete item2.JHSXSJ;
+                      delete item2.TXRID;
+                      delete item2.XMFZRID;
+                      delete item2.XMFZR;
+                      delete item2.JD;
+                      delete item2.XMJD;
+
+                      Object.keys(item2).forEach(key => {
+                        newItem[key + '_LAST'] = item2[key];
+                      });
+                    }
+                  });
+                  mergeData.push(newItem);
+                });
+                mergeData = mergeData.map(obj => {
+                  const newObj = { ID: obj.ID };
+                  for (const key in obj) {
+                    if (key !== 'ID') {
+                      // if (key === 'TXR') {
+                      //   newObj[key + obj.ID] =
+                      //     obj.TXR?.trim() === '' ? [] : obj.TXR?.trim()?.split(';');
+                      // } else {
+                      newObj[key + obj.ID] = obj[key] === 'undefined' ? '' : obj[key];
+                      // }
+                    }
+                  }
+                  return newObj;
+                });
+                console.log('🚀 ~ mergeData:', mergeData);
+                //排列顺序 - 分类字段（合并） - 关联项目 - 上月字段 - 本月填写字段 - 固定字段 - 填写人
+                let finalColumns = [
+                  //分类字段（合并）
+                  ...filteredArr,
+                  //关联项目
+                  {
+                    ZDMC: '关联项目',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'GLXM',
+                  },
+                  //上月字段
+                  ...otherArr.map(x => ({
+                    ZDMC: x.ZDMC + '(上期)',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: x.QZZD + '_LAST',
+                  })),
+                  //本月填写字段
+                  ...otherArr,
+                  //固定字段
+                  {
+                    ZDMC: '计划上线时间',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'JHSXSJ',
+                  },
+                  {
+                    ZDMC: '项目负责人',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'XMFZR',
+                  },
+                  {
+                    ZDMC: '项目阶段',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'XMJD',
+                  },
+                  {
+                    ZDMC: '进度',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'JD',
+                  },
+                  //填写人
+                  {
+                    ZDMC: '填写人',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'TXR',
+                  },
+                ];
+                console.log('🚀 ~ finalColumns:', finalColumns);
+                let tableWidth = 0;
+                finalColumns.forEach(x => {
+                  if (x.ZDLX === '1') {
+                    tableWidth += x.ZDMC?.length * 35;
+                  } else if (x.QZZD === 'GLXM') {
+                    tableWidth += 200;
+                  } else if (x.ZDLX === '2') {
+                    tableWidth += 300;
+                  } else {
+                    tableWidth += x.ZDMC?.length * 35;
+                  }
+                });
+                setColumnsData(finalColumns);
+                setTableData({
+                  data: JSON.parse(JSON.stringify(mergeData)),
+                  origin: JSON.parse(JSON.stringify([...mergeData])), //编辑前的原数据
+                  customColumns: columnsArr
+                    .map(x => x.QZZD)
+                    .concat(['ID', 'GLXM', 'TXR', 'GXZT', 'YF']),
+                  tableWidth,
+                });
+                setTableLoading(false);
+              }
+            })
+            .catch(e => {
+              console.error('🚀上月表格数据', e);
+              message.error('上月表格数据获取失败', 1);
+              setTableLoading(false);
+            });
         }
       })
       .catch(e => {
-        console.error('🚀表格数据', e);
-        message.error('表格数据获取失败', 1);
+        console.error('🚀本月表格数据', e);
+        message.error('本月表格数据获取失败', 1);
+        setTableLoading(false);
+      });
+  };
+
+  //获取用户角色
+  const getUserRole = () => {
+    setTableLoading(true);
+    QueryUserRole({
+      userId: String(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          const { role = '', zyjs = '' } = res;
+          setIsAdministrator(zyjs === '自定义报告管理员');
+          getData(Number(bgid), Number(moment().format('YYYYMM')));
+        }
+      })
+      .catch(e => {
+        console.error('HomePage-QueryUserRole', e);
+        message.error('用户角色信息查询失败', 1);
+        setTableLoading(false);
       });
   };
 
@@ -62,22 +225,28 @@ export default function CustomReportDetail(props) {
           );
         })}
       </Breadcrumb>
-      <TableBox
-        dataProps={{
-          tableData,
-          columnsData,
-          tableLoading,
-          edited,
-          monthData,
-        }}
-        funcProps={{
-          setEdited,
-          setTableData,
-          setColumnsData,
-          setTableLoading,
-          setMonthData,
-        }}
-      />
+      <Spin spinning={tableLoading} tip="加载中">
+        <TableBox
+          dataProps={{
+            bgid,
+            bgmc,
+            tableData,
+            columnsData,
+            tableLoading,
+            edited,
+            monthData,
+            isAdministrator,
+          }}
+          funcProps={{
+            setEdited,
+            setTableData,
+            setColumnsData,
+            setTableLoading,
+            setMonthData,
+            getData,
+          }}
+        />
+      </Spin>
     </div>
   );
 }
