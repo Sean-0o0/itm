@@ -8,6 +8,7 @@ const CustomRptManagement = props => {
       params: { params: encryptParams = '' },
     },
     dictionary,
+    cacheLifecycles,
   } = props;
   const { routes = [] } = props?.location?.state || {};
   let routes2 = [];
@@ -41,7 +42,11 @@ const CustomRptManagement = props => {
 
   return (
     <Fragment>
-      <CustomRptManagementTab dictionary={dictionary} routes={newArr} />
+      <CustomRptManagementTab
+        dictionary={dictionary}
+        routes={newArr}
+        cacheLifecycles={cacheLifecycles}
+      />
     </Fragment>
   );
 };

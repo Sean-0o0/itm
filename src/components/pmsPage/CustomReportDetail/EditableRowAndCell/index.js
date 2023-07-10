@@ -66,6 +66,7 @@ const EditableCell = props => {
       </Form.Item>
     );
   };
+
   return (
     <>
       <td style={borderleft ? { borderLeft: '1px solid #e8e8e8' } : {}} {...restProps}>

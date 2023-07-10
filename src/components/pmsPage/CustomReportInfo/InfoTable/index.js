@@ -22,7 +22,7 @@ export default function InfoTable(props) {
   } = dataProps;
   const { getBasicData, getTableData, setTableLoading, setTableData } = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
-  const [switchLoading, setSwitchLoading] = useState(false); //禁用调接口加载状态
+  const [switchLoading, setSwitchLoading] = useState(false); //完结调接口加载状态
   const location = useLocation();
 
   //表格操作后更新数据
@@ -36,7 +36,7 @@ export default function InfoTable(props) {
     return;
   };
 
-  //禁用开关
+  //完结开关
   const handleSwitch = (id, checked) => {
     setTableLoading(true);
     ConfigureCustomReport({
@@ -56,7 +56,7 @@ export default function InfoTable(props) {
         }
       })
       .catch(e => {
-        console.error('🚀禁用开关', e);
+        console.error('🚀完结开关', e);
         message.error('操作失败', 1);
         setTableLoading(false);
       });
@@ -100,6 +100,7 @@ export default function InfoTable(props) {
                   JSON.stringify({
                     bgid: row.ID,
                     bgmc: txt,
+                    wjzt: row.ZT === '2',
                     routes: [{ name: '自定义报告', pathname: location.pathname }],
                   }),
                 )}`,
@@ -154,18 +155,23 @@ export default function InfoTable(props) {
       render: txt => (txt && moment(txt).format('YYYY-MM-DD')) || '',
     },
     {
-      title: '禁用状态',
+      title: '填写状态',
       dataIndex: 'ZT',
       width: '12%',
       align: 'center',
       key: 'ZT',
       ellipsis: true,
       render: (txt, row) => (
-        <Switch
-          // loading={switchLoading}
-          defaultChecked={txt === '1'}
-          onChange={checked => handleSwitch(row.ID, checked)}
-        />
+        <div className="table-switch-desc">
+          <Switch
+            // loading={switchLoading}
+            defaultChecked={txt === '1'}
+            // checkedChildren="开启填写"
+            // unCheckedChildren="关闭填写"
+            onChange={checked => handleSwitch(row.ID, checked)}
+          />
+          {/* {txt === '1' ? <span>开启填写</span> : <span>关闭填写</span>} */}
+        </div>
       ),
     },
     {

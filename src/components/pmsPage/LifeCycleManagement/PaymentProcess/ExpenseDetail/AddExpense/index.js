@@ -24,6 +24,7 @@ import UploadReceipt from './UploadReceipt';
 import SelectReceipt from './SelectReceipt';
 import { CheckInvoice, QueryCreatePaymentInfo } from '../../../../../../services/pmsServices';
 import TreeUtils from '../../../../../../utils/treeUtils';
+import ApportionDetail from './ApportionDetail';
 const { TextArea } = Input;
 
 function getUUID() {
@@ -34,10 +35,17 @@ function getUUID() {
 }
 
 const AddExpense = props => {
-  //弹窗全屏
-  const [isModalFullScreen, setIsModalFullScreen] = useState(false);
-  const [isSelectorOpen, setIsSelectorOpenn] = useState(false);
-  const [isTreeSelectorOpen, setIsTreeSelectorOpen] = useState(false);
+  const {
+    visible,
+    setVisible,
+    form,
+    userykbid,
+    handleAddExpenseSuccess,
+    currentXmid,
+    updateExpense,
+    setUpdateExpense,
+  } = props;
+  const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [formData, setFormData] = useState({
     date: '',
     expenseType: 0,
@@ -65,11 +73,11 @@ const AddExpense = props => {
     otherFileName: '',
     otherFileList: [], //
     otherIsTurnRed: false,
+    isApportion: false, //是否分摊明细， 分摊方式暂时写死 - 报销部门分摊
+    apportionmentData: [], //分摊数据表格
   });
   //是否尾款
   const [isFinalPay, setIsFinalPay] = useState(2);
-  //是否hover
-  const [isHover, setIsHover] = useState(false);
   //新增发票
   const [inputReceiptVisible, setInputReceiptVisible] = useState(false);
   const [uploadReceiptVisible, setUploadReceiptVisible] = useState(false);
@@ -104,27 +112,19 @@ const AddExpense = props => {
   //发票数据
   const [receiptData, setReceiptData] = useState([]); //发票数据 - 电子上传,手录
   const [receiptDisplay, setReceiptDisplay] = useState([]); //发票数据-展示用
-  const {
-    visible,
-    setVisible,
-    form,
-    userykbid,
-    handleAddExpenseSuccess,
-    currentXmid,
-    updateExpense,
-    setUpdateExpense,
-  } = props;
-  const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [oaData, setOaData] = useState([]); //oa数据
   const [otherData, setOtherData] = useState([]); //其他附件数据
+
   //防抖定时器
   let timer = null;
+
   useEffect(() => {
     getSelectorData();
     return () => {
       clearTimeout(timer);
     };
   }, []);
+
   //防抖
   const debounce = (fn, waits) => {
     if (timer) {
@@ -996,6 +996,9 @@ const AddExpense = props => {
         <Row>
           {getRadio('是否尾款', isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}
         </Row>
+        <ApportionDetail dataProps={{
+          formData
+        }} funcProps={{setFormData, getFieldDecorator}} />
         <div className="footer-btn">
           <Button onClick={handleClose} className="btn-cancel">
             关闭

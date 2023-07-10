@@ -607,4 +607,10 @@ export default [
     url: '/projectManage/editCustomReport',
     dis: '编辑自定义报告内容',
   },
+  {
+    code: '',
+    key: 'completeReport',
+    url: '/projectManage/completeReport',
+    dis: '报告填写完结',
+  },
 ];

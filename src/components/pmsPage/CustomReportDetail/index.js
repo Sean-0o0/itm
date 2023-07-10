@@ -16,6 +16,7 @@ export default function CustomReportDetail(props) {
   const [edited, setEdited] = useState(false);
   const [monthData, setMonthData] = useState(null); //月份下拉框数据
   const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
+  // const [isFinish, setIsFinish] = useState(false); //完结状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   useEffect(() => {
@@ -196,8 +197,9 @@ export default function CustomReportDetail(props) {
     })
       .then(res => {
         if (res?.code === 1) {
-          const { role = '', zyjs = '' } = res;
-          setIsAdministrator(zyjs === '自定义报告管理员');
+          const { role = '', zyrole = '' } = res;
+          console.log('🚀 ~ file: index.js:202 ~ getUserRole ~ res:', res);
+          setIsAdministrator(zyrole === '自定义报告管理员');
           getData(Number(bgid), Number(moment().format('YYYYMM')));
         }
       })
@@ -207,7 +209,9 @@ export default function CustomReportDetail(props) {
         setTableLoading(false);
       });
   };
-
+  console.log(
+    tableData.data.length > 0 ? tableData.data[0]['WJZT' + tableData.data[0].ID] === '1' : false,
+  );
   return (
     <div className="weekly-report-detail">
       <Breadcrumb separator=">" style={{ margin: '16px 24px' }}>
@@ -236,6 +240,10 @@ export default function CustomReportDetail(props) {
             edited,
             monthData,
             isAdministrator,
+            isFinish:
+              tableData.data.length > 0
+                ? tableData.data[0]['WJZT' + tableData.data[0].ID] === '1'
+                : false,
           }}
           funcProps={{
             setEdited,

@@ -174,6 +174,7 @@ const PaymentProcess = props => {
             consumptionReasons: item.consumptionReasons,
             date: item.date,
             taxAmount: String(item.taxAmount),
+            apportions: [], //分摊明细
           };
           details.push(detailItem);
         });

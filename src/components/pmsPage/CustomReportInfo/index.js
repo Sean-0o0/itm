@@ -40,7 +40,7 @@ export default function CustomReportInfo(props) {
     })
       .then(res => {
         if (res?.success) {
-          // console.log('🚀 ~ QueryCustomReportContent ~ res', JSON.parse(res.nrxx));
+          console.log('🚀 ~ QueryCustomReportContent ~ res', JSON.parse(res.nrxx));
           setTableData(p => ({
             ...p,
             origin: JSON.parse(res.nrxx), //表格数据, 搜索不影响

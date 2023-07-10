@@ -108,7 +108,8 @@ const {
     queryProjectStatistics,
     queryCustomReportContent,
     configureCustomReport,
-    editCustomReport
+    editCustomReport,
+    completeReport,
   },
 } = api;
 
@@ -1154,6 +1155,16 @@ export async function ConfigureCustomReport(payload) {
 export async function EditCustomReport(payload) {
   const option = {
     url: editCustomReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 报告填写完结
+export async function CompleteReport(payload) {
+  const option = {
+    url: completeReport,
     method: 'post',
     data: payload,
   };

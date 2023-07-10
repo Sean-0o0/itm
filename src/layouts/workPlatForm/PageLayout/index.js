@@ -580,7 +580,7 @@ class MainPageLayout extends React.PureComponent {
                       //取消路由缓存
                       (path && path.includes('/pms/manage/CustomReportDetail')) ||
                       (path && path.includes('/pms/manage/CustomReportInfo')) ||
-                      (path && path.includes('/pms/manage/CustomRptManagement')) ||
+                      // (path && path.includes('/pms/manage/CustomRptManagement')) ||
                       // (path && path.includes('/pms/manage/CustomRptInfo')) ||
                       (path && path.includes('/pms/manage/SupplierDmInfo')) ||
                       (path && path.includes('/pms/manage/ProjectDetail')) ||

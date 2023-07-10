@@ -11,11 +11,13 @@ const CustomReportDetail = props => {
   } = props;
   let bgmc = '';
   let bgid = -2;
+  let wjzt = false;
   let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
     bgid = obj.bgid;
     bgmc = obj.bgmc;
+    wjzt = obj.wjzt;
     obj.routes &&
       (routes2 = obj.routes?.concat({
         name: '报告列表',
@@ -37,7 +39,13 @@ const CustomReportDetail = props => {
 
   return (
     <Fragment>
-      <CustomReportDetailTab dictionary={dictionary} routes={newArr} bgid={bgid} bgmc={bgmc} />
+      <CustomReportDetailTab
+        dictionary={dictionary}
+        routes={newArr}
+        bgid={bgid}
+        bgmc={bgmc}
+        wjzt={wjzt}
+      />
     </Fragment>
   );
 };

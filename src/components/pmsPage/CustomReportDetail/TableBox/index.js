@@ -1,7 +1,7 @@
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, Fragment } from 'react';
 import { Button, Table, message, Modal, Popconfirm, Form, DatePicker, Select, Icon } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
-import { QueryUserInfo, EditCustomReport } from '../../../../services/pmsServices';
+import { QueryUserInfo, EditCustomReport, CompleteReport } from '../../../../services/pmsServices';
 import moment from 'moment';
 import * as XLSX from 'xlsx';
 
@@ -18,6 +18,7 @@ const TableBox = props => {
     edited,
     monthData,
     isAdministrator,
+    isFinish,
   } = dataProps;
   const { setEdited, setTableData, setTableLoading, setMonthData, getData } = funcProps;
   const [isSaved, setIsSaved] = useState(false);
@@ -25,7 +26,7 @@ const TableBox = props => {
   const [editingIndex, setEditingIndex] = useState(-1); //编辑
   const [editData, setEditData] = useState([]); //编辑数据
   const [dltData, setDltData] = useState([]); //删除行id
-
+  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -78,7 +79,6 @@ const TableBox = props => {
       });
     }
     setEditData(p => [...newEdit]);
-    console.log('🚀 ~ handleTableSave ~ [...newEdit]:', [...newEdit]);
     setEdited(true);
     console.log('TableData', newData);
     setTableData(p => ({
@@ -95,10 +95,6 @@ const TableBox = props => {
         //过滤删除的数据
         let editDataDelFilter = editData.filter(
           x => dltData.findIndex(item => x.ID === item.ID) === -1,
-        );
-        console.log(
-          '🚀 ~ file: index.js:130 ~ handleSubmit ~ tableData.customColumns:',
-          tableData.customColumns,
         );
         const notNullStr = v => {
           if (['', ' ', undefined, null].includes(v)) return 'undefined';
@@ -129,8 +125,6 @@ const TableBox = props => {
           reportId: Number(bgid),
           reportInfo: JSON.stringify(submitTable),
         };
-        console.log('🚀 ~ updateParams:', updateParams);
-
         if (dltData.length !== 0) {
           let deleteTable = [];
           dltData.forEach(obj => {
@@ -156,7 +150,6 @@ const TableBox = props => {
             reportId: Number(bgid),
             reportInfo: JSON.stringify(deleteTable),
           };
-          console.log('🚀 ~ deledtParams:', deledtParams);
           EditCustomReport({ ...deledtParams })
             .then(res => {
               if (res?.code === 1) {
@@ -225,6 +218,26 @@ const TableBox = props => {
     setDltData(p => [...p.filter(x => x.ID !== row.ID)]);
   };
 
+  //完结
+  const handleFinish = () => {
+    setTableLoading(true);
+    //完结
+    CompleteReport({
+      operateType: 'WJ',
+      reportId: Number(bgid),
+    })
+      .then(res => {
+        if (res?.success) {
+          getData(Number(bgid), Number(monthData.format('YYYYMM')));
+          message.success('操作成功', 1);
+        }
+      })
+      .catch(e => {
+        console.error('🚀完结', e);
+        message.error('操作失败', 1);
+      });
+  };
+
   //导出
   const handleExport = () => {
     try {
@@ -253,7 +266,6 @@ const TableBox = props => {
    * @param fileName 文件名
    */
   const exportExcelFile = (array = [], sheetName = 'Sheet1', fileName = 'example.xlsx') => {
-    console.log('🚀 ~ file: index.js:274 ~ exportExcelFile ~ array:', array, XLSX.utils);
     const jsonWorkSheet = XLSX.utils.json_to_sheet(array);
     const workBook = {
       SheetNames: [sheetName],
@@ -278,7 +290,7 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: x.ZDMC?.length * 20,
+            width: x.ZDMC?.length * 25,
             fixed: true,
             ellipsis: true,
             borderLeft: true, //左边框
@@ -352,19 +364,21 @@ const TableBox = props => {
         fixed: 'right',
         borderLeft: true, //左边框
         render: (txt, row, index) => {
-          return (
-            <div>
-              {dltData.findIndex(x => x.ID === row.ID) !== -1 ? (
-                <a style={{ color: '#3361ff' }} onClick={() => handleDeleteCancel(row)}>
-                  撤销删除
-                </a>
-              ) : (
-                <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
-                  <a style={{ color: '#3361ff' }}>删除</a>
-                </Popconfirm>
-              )}
-            </div>
-          );
+          if (Number(row['TXRID' + row.ID]) === LOGIN_USER_ID || isAdministrator)
+            return (
+              <div>
+                {dltData.findIndex(x => x.ID === row.ID) !== -1 ? (
+                  <a style={{ color: '#3361ff' }} onClick={() => handleDeleteCancel(row)}>
+                    撤销删除
+                  </a>
+                ) : (
+                  <Popconfirm title="确定要删除吗?" onConfirm={() => handleDelete(row)}>
+                    <a style={{ color: '#3361ff' }}>删除</a>
+                  </Popconfirm>
+                )}
+              </div>
+            );
+          return '';
         },
       });
     }
@@ -430,6 +444,11 @@ const TableBox = props => {
   const handleEdit = () => {
     setEditing(true);
     if (tableData.data.length > 0) setEditingIndex(tableData.data[0]?.ID);
+    // setTableLoading(true);
+    setTimeout(() => {
+      window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
+      // setTableLoading(false);
+    }, 200);
   };
 
   const handleEditCancel = () => {
@@ -443,6 +462,10 @@ const TableBox = props => {
     setIsSaved(true);
     setDltData([]);
   };
+
+  //管理员、填写人可以编辑
+  const allowEdit =
+    tableData.data.map(x => x['TXRID' + x.ID]).includes(String(LOGIN_USER_ID)) || isAdministrator;
 
   return (
     <>
@@ -479,18 +502,22 @@ const TableBox = props => {
                 </Popconfirm>
               </>
             ) : (
-              <Button onClick={handleEdit}>修改</Button>
+              <Fragment>
+                {!isFinish && (
+                  <Fragment>
+                    {allowEdit && <Button onClick={handleEdit}>修改</Button>}
+                    {isAdministrator && (
+                      <Popconfirm title="确定要完结吗?" onConfirm={handleFinish}>
+                        <Button style={{ marginLeft: '8px' }}>完结</Button>
+                      </Popconfirm>
+                    )}
+                  </Fragment>
+                )}
+                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                  <Button style={{ marginLeft: '8px' }}>导出</Button>
+                </Popconfirm>
+              </Fragment>
             )}
-            <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-              <Button className="ss" style={{ marginLeft: '8px' }}>
-                导出
-              </Button>
-            </Popconfirm>
-            <Popconfirm title="确定要完结吗?" onConfirm={() => {}}>
-              <Button className="ss" style={{ marginLeft: '8px' }}>
-                完结
-              </Button>
-            </Popconfirm>
           </div>
         </div>
         <div className="table-content">
@@ -499,7 +526,15 @@ const TableBox = props => {
               return {
                 onClick: () => {
                   if (editing) {
-                    setEditingIndex(record.ID);
+                    setTimeout(() => {
+                      window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug
+                      // setTableLoading(false);
+                    }, 200);
+                    if (Number(record['TXRID' + record.ID]) === LOGIN_USER_ID || isAdministrator) {
+                      setEditingIndex(record.ID);
+                    } else {
+                      message.info('只有管理员、填写人可以编辑该行', 1);
+                    }
                   }
                 },
               };

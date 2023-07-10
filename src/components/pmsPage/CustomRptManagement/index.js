@@ -8,11 +8,11 @@ import {
 import emptyImg from '../../../assets/homePage/custom-rpt-empty.png';
 import SiderRptList from './SiderRptList';
 import RightRptContent from './RightRptContent';
-import { Link } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { isEqual } from 'lodash';
 
 export default function CustomRptManagement(props) {
-  const { routes = [] } = props;
+  const { routes = [], cacheLifecycles = {} } = props;
   const [basicData, setBasicData] = useState({
     conditionFilter: [],
     conditionGroup: [],
@@ -46,11 +46,46 @@ export default function CustomRptManagement(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [status, setStatus] = useState('normal'); //editing、adding、normal
   const [editingId, setEditingId] = useState(-1); //正在编辑的报表id
+  const history = useHistory();
 
   useEffect(() => {
     getRptList();
+    // // // 监听浏览器即将关闭事件
+    // window.addEventListener('beforeunload', handleBeforeUnload);
+
+    // // 组件卸载时，移除事件监听
+    // return () => {
+    //   window.removeEventListener('beforeunload', handleBeforeUnload);
+    // };
     return () => {};
   }, []);
+
+  useEffect(() => {
+    if (history?.location.pathname !== '/pms/manage/CustomRptManagement') {
+      history.block(false);
+    }
+    return () => {};
+  }, [JSON.stringify(history)]);
+
+  // 页面恢复，跳转回页面时触发
+  cacheLifecycles.didRecover(() => {
+    // setPlacement('rightTop'); //参与人popover位置
+    console.log('跳转回页面时触发');
+  });
+
+  cacheLifecycles.didCache(() => {
+    // setPlacement(undefined); //参与人popover位置
+    // history.block();
+    console.log('页面缓存时触发');
+  });
+
+  // const handleBeforeUnload = (event) => {
+  //   console.log("🚀 ~ file: index.js:62 ~ handleBeforeUnload ~ event:", event)
+  //   event.preventDefault();
+  //   event.returnValue = '111'; // 必须设置一个空字符串
+  //   // // console.log('浏览器即将关闭');
+  //   // return '11111'
+  // };
 
   // 获取条件基础数据
   const getBasicData = (isAdding = true) => {
@@ -357,7 +392,7 @@ export default function CustomRptManagement(props) {
       rptNameOrigin,
       selectedData,
       selectedOrigin,
-      selectedEditOrigin
+      selectedEditOrigin,
     );
     if (status === 'adding')
       return isEqual(selectedData, selectedOrigin) && isEqual(rptName, rptNameOrigin);
