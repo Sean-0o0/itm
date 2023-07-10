@@ -1371,11 +1371,11 @@ class ItemBtn extends React.Component {
         )}
 
         {/* 付款流程发起弹窗 */}
-        {/* {paymentModalVisible && ( */}
-        {true && (
+        {paymentModalVisible && (
+        // {true && (
           <PaymentProcess
-            // paymentModalVisible={paymentModalVisible}
-            paymentModalVisible={true}
+            paymentModalVisible={paymentModalVisible}
+            // paymentModalVisible={true}
             currentXmid={Number(item.xmid)}
             currentXmmc={xmmc}
             closePaymentProcessModal={() =>
