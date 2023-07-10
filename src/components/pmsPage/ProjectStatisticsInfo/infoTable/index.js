@@ -29,6 +29,7 @@ export default function InfoTable(props) {
     prjMnger,
     tabsKeyCallBack,
     tabsKey,
+    routes,
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
@@ -108,7 +109,7 @@ export default function InfoTable(props) {
                   }),
                 )}`,
                 state: {
-                  routes: [{name: '项目列表', pathname: location.pathname}],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -137,7 +138,7 @@ export default function InfoTable(props) {
                 }),
               )}`,
               state: {
-                routes: [{name: '项目列表', pathname: location.pathname}],
+                routes,
               },
             }}
             className="table-link-strong"
@@ -220,7 +221,7 @@ export default function InfoTable(props) {
                             }),
                           )}`,
                           state: {
-                            routes: [{name: '项目列表', pathname: location.pathname}],
+                            routes,
                           },
                         }}
                         className="table-link-strong"
@@ -247,7 +248,7 @@ export default function InfoTable(props) {
                                     }),
                                   )}`,
                                   state: {
-                                    routes: [{name: '项目列表', pathname: location.pathname}],
+                                    routes,
                                   },
                                 }}
                                 className="table-link-strong"
@@ -281,7 +282,7 @@ export default function InfoTable(props) {
 
   return (
     <div className="info-table">
-      <Tabs type="card" onChange={handleTabsKeyChange}>
+      <Tabs activeKey={tabsKey} type="card" onChange={handleTabsKeyChange}>
         <TabPane tab="所有项目" key="0">
           <div className="project-info-table-box">
             <Table

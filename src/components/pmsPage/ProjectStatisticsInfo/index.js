@@ -20,7 +20,7 @@ export default function ProjectStatisticsInfo(props) {
   const [prjMnger, setPrjMnger] = useState(undefined); //项目经理
   const [prjName, setPrjName] = useState(undefined); //项目名称
   const [prjType, setPrjType] = useState(undefined); //项目类型
-  const [tabsKey, setTabsKey] = useState(undefined); //项目类型
+  const [tabsKey, setTabsKey] = useState('0'); //项目类型
   const [isComplete, setIsComplete] = useState(false); //
 
   // useEffect(() => {
@@ -34,10 +34,12 @@ export default function ProjectStatisticsInfo(props) {
     if (cxlx !== '') {
       if (cxlx === 'BM' && orgID !== '') {
         getTableData({cxlx, memberID, orgID});
+        setTabsKey('0')
         setQueryType(cxlx);
       }
       if (cxlx === 'RY' && memberID !== '') {
         getTableData({cxlx, memberID, orgID});
+        setTabsKey('0')
         setQueryType(cxlx);
       }
     }
@@ -145,6 +147,7 @@ export default function ProjectStatisticsInfo(props) {
         tabsKey={tabsKey}
       />
       <InfoTable
+        routes={routes}
         tableData={tableData}
         tableLoading={tableLoading}
         getTableData={getTableData}

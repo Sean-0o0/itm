@@ -27,16 +27,16 @@ const ProjectStatisticsInfo = props => {
     // console.log('🚀 ~ file: index.js:20 ~ ProjecDetail ~ obj:', obj);
     // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes', routes);
     routes2 = [...routes].concat({
-      name: '项目列表',
+      name: '项目明细',
       pathname: props?.pathname,
     });
     if (routes.length === 0) {
       obj.routes &&
       (routes2 = obj.routes?.concat({
-        name: '项目列表',
+        name: '项目明细',
         pathname: props?.pathname,
       }));
-      // console.log('🚀 ~ file: index.js:29 ~ ProjecDetail ~ routes2:', routes2);
+      console.log('🚀 ~ file: index.js:29 ~ ProjecDetail ~ routes2:', routes2);
     }
   }
   //去重 考虑到从标签详情页面回退到项目详情页面的情况

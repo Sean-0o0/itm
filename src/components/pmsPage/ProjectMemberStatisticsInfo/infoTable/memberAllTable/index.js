@@ -216,7 +216,7 @@ export default function MemberAllTable(props) {
                             routes: [{name: '统计分析', pathname: location.pathname}],
                           },
                         }}
-                        className="table-link-strong"
+                        className="table-link-strong-staffname"
                       >
                         {item.NAME}
                       </Link>

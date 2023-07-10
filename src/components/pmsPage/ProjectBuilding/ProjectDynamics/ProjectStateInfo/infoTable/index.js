@@ -24,6 +24,7 @@ export default function InfoTable(props) {
     curPageSize,
     setPrjMnger,
     setPrjName,
+    routes,
   } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
@@ -101,7 +102,7 @@ export default function InfoTable(props) {
                   }),
                 )}`,
                 state: {
-                  routes: [{name: '项目列表', pathname: location.pathname}],
+                  routes,
                 },
               }}
               className="table-link-strong"
@@ -130,7 +131,7 @@ export default function InfoTable(props) {
                 }),
               )}`,
               state: {
-                routes: [{name: '项目列表', pathname: location.pathname}],
+                routes,
               },
             }}
             className="table-link-strong"
@@ -201,7 +202,7 @@ export default function InfoTable(props) {
                             }),
                           )}`,
                           state: {
-                            routes: [{name: '项目列表', pathname: location.pathname}],
+                            routes,
                           },
                         }}
                         className="table-link-strong"
@@ -228,7 +229,7 @@ export default function InfoTable(props) {
                                     }),
                                   )}`,
                                   state: {
-                                    routes: [{name: '项目列表', pathname: location.pathname}],
+                                    routes,
                                   },
                                 }}
                                 className="table-link-strong"

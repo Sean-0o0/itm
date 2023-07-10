@@ -136,6 +136,7 @@ export default function ProjectStatisticsInfo(props) {
         setPrjName={setPrjName}
       />
       <InfoTable
+        routes={routes}
         tableData={tableData}
         tableLoading={tableLoading}
         getTableData={getTableData}
