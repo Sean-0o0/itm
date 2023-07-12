@@ -18,12 +18,13 @@ export default function CustomReportInfo(props) {
   }); //报告名称下拉框数据
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-  const { dictionary = {} } = props;
-  const {BGLX} = dictionary;
+  const {dictionary = {}} = props;
+  const {BGLX, ZDYBGMB} = dictionary;
 
   useEffect(() => {
     getBasicData();
-    return () => {};
+    return () => {
+    };
   }, []);
 
   //获取基础数据
@@ -79,7 +80,7 @@ export default function CustomReportInfo(props) {
         total: p.origin.length, //数据总数
       }));
     }
-    
+
   };
 
   return (
@@ -99,6 +100,7 @@ export default function CustomReportInfo(props) {
           tableLoading,
           filterData,
           BGLX,
+          ZDYBGMB,
         }}
         funcProps={{
           getTableData,

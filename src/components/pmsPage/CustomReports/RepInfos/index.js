@@ -111,11 +111,7 @@ export default function RepInfos(props) {
     ProjectCollect({...payload})
       .then(res => {
         if (res?.success) {
-          if (showExtendsGX) {
-            getCusRepData("GX", 99999);
-          } else {
-            getCusRepData("GX", 28);
-          }
+          getCusRepData("GX", 99999);
           if (showExtendsCJ) {
             getCusRepData("CJ", 99999);
           } else {

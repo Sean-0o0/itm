@@ -1,14 +1,15 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip, Switch, Popconfirm } from 'antd';
-import { EncryptBase64 } from '../../../Common/Encrypt';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router';
+import React, {Fragment, useEffect, useRef, useState} from 'react';
+import {Button, Table, Popover, message, Tooltip, Switch, Popconfirm} from 'antd';
+import {EncryptBase64} from '../../../Common/Encrypt';
+import {Link} from 'react-router-dom';
+import {useLocation} from 'react-router';
 import moment from 'moment';
 import OprtModal from './OprtModal';
-import { ConfigureCustomReport } from '../../../../services/pmsServices';
+import {ConfigureCustomReport, QueryCustomReportContent} from '../../../../services/pmsServices';
+import EditCusRepTable from "./OprtModal/EditCusRepTable";
 
 export default function InfoTable(props) {
-  const { dataProps = {}, funcProps = {} } = props;
+  const {dataProps = {}, funcProps = {}} = props;
   const {
     tableLoading,
     tableData = {
@@ -19,15 +20,20 @@ export default function InfoTable(props) {
     },
     filterData = {},
     BGLX = [],
+    ZDYBGMB = []
   } = dataProps;
-  const { getBasicData, getTableData, setTableLoading, setTableData } = funcProps;
+  const {getBasicData, getTableData, setTableLoading, setTableData} = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
-  const [switchLoading, setSwitchLoading] = useState(false); //完结调接口加载状态
+  const [switchLoading, setSwitchLoading] = useState(false); //禁用调接口加载状态
+  const [bgmb, setBgmb] = useState([]); //编辑时查出来的报告模版
+  const [bgdata, setBgdata] = useState([]); //编辑时查出来的报告数据
+  const [bgInfo, setBgInfo] = useState({ID: ''}); //当前编辑的报告基本信息
+  const [title, setTitle] = useState(''); //当前编辑的报告基本信息
   const location = useLocation();
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
-    const { current = 1, pageSize = 20 } = pagination;
+    const {current = 1, pageSize = 20} = pagination;
     setTableData(p => ({
       ...p,
       current,
@@ -183,20 +189,74 @@ export default function InfoTable(props) {
       ellipsis: true,
       render: (txt, row) => (
         <Fragment>
-          <a style={{ color: '#3361ff' }}>修改</a>
+          <a style={{color: '#3361ff'}} onClick={() => handleEditCusRep(row)}>修改</a>
           <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row.ID)}>
-            <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
+            <a style={{color: '#3361ff', marginLeft: 6}}>删除</a>
           </Popconfirm>
         </Fragment>
       ),
     },
   ];
 
+  const handleEditCusRep = (row) => {
+    // console.log("idid",row.ID)
+    setTitle("编辑报告")
+    setBgInfo(row)
+    queryCustomReportContent(row.ID).then().finally(r => {
+      setNewRptVisible(true)
+    })
+  }
+
+  //获取基础数据
+  const queryCustomReportContent = async (id = undefined) => {
+    QueryCustomReportContent({
+      current: 1,
+      pageSize: 20,
+      paging: -1,
+      queryType: 'NR',
+      reportID: id,
+      sort: '',
+      total: -1,
+    })
+      .then(res => {
+        if (res?.success) {
+          //表格数据
+          const nrxx = JSON.parse(res.nrxx)
+          //表头数据
+          const zdxx = JSON.parse(res.zdxx)
+          // const mb = []
+          // zdxx.map((item,index) =>{
+          //   const num = Number(index) + 1
+          //   mb.push({
+          //     key: num,
+          //     ID: num,
+          //     ['ZDMC' + num]: item.ZDMC,
+          //     ['ZDLX' + num]: item.ZDLX,
+          //   })
+          // })
+          // console.log("zdxxzdxx",zdxx)
+          setBgmb([...zdxx])
+          setBgdata([...nrxx])
+          // console.log('🚀 ~ QueryCustomReportContent ~ res', JSON.parse(res.nrxx));
+        }
+      })
+      .catch(e => {
+        console.error('🚀表格数据', e);
+        message.error('表格数据获取失败', 1);
+      });
+  };
+
   return (
     <div className="info-table">
-      <OprtModal visible={newRptVisible} setVisible={setNewRptVisible} BGLX={BGLX} />
+      <OprtModal title={title} getBasicData={getBasicData} setBgInfo={setBgInfo} bgInfo={bgInfo} bgmb={bgmb}
+                 bgdata={bgdata} ZDYBGMB={ZDYBGMB} basicInfo={tableData.data} visible={newRptVisible}
+                 setVisible={setNewRptVisible} BGLX={BGLX}/>
       <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={() => setNewRptVisible(true)}>
+        <Button type="primary" className="btn-add-prj" onClick={() => {
+          setBgInfo({ID: ''});
+          setTitle("新增报告")
+          setNewRptVisible(true)
+        }}>
           新增
         </Button>
       </div>
