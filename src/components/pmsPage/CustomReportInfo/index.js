@@ -24,7 +24,7 @@ export default function CustomReportInfo(props) {
   const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const { dictionary = {} } = props;
-  const { BGLX } = dictionary;
+  const { BGLX, ZDYBGMB } = dictionary;
 
   useEffect(() => {
     getUserRole();
