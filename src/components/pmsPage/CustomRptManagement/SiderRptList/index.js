@@ -11,6 +11,7 @@ export default function SiderRptList(props) {
     rptOrigin,
     editingId = -1,
     basicData = {},
+    selectedOrigin = {},
   } = dataProps;
   const {
     getEditData,
@@ -154,7 +155,10 @@ export default function SiderRptList(props) {
         okText: '确定',
         cancelText: '取消',
         onOk: () => {
-          if (basicData.conditionFilter?.length === 0) {
+          if (
+            basicData.conditionFilter?.length === 0 ||
+            selectedOrigin.conditionFilter?.length === 0
+          ) {
             //需要获取基础数据
             getBasicData();
           } else {
@@ -164,7 +168,7 @@ export default function SiderRptList(props) {
         },
       });
     } else {
-      if (basicData.conditionFilter?.length === 0) {
+      if (basicData.conditionFilter?.length === 0 || selectedOrigin.conditionFilter?.length === 0) {
         //需要获取基础数据
         getBasicData();
       } else {

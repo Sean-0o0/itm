@@ -12,7 +12,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { isEqual } from 'lodash';
 
 export default function CustomRptManagement(props) {
-  const { routes = [], cacheLifecycles = {} } = props;
+  const { routes = [] } = props;
   const [basicData, setBasicData] = useState({
     conditionFilter: [],
     conditionGroup: [],
@@ -50,42 +50,13 @@ export default function CustomRptManagement(props) {
 
   useEffect(() => {
     getRptList();
-    // // // 监听浏览器即将关闭事件
-    // window.addEventListener('beforeunload', handleBeforeUnload);
-
-    // // 组件卸载时，移除事件监听
-    // return () => {
-    //   window.removeEventListener('beforeunload', handleBeforeUnload);
-    // };
     return () => {};
   }, []);
 
   useEffect(() => {
-    if (history?.location.pathname !== '/pms/manage/CustomRptManagement') {
-      history.block(false);
-    }
+    console.log('🚀 ~ selectedData:', selectedData);
     return () => {};
-  }, [JSON.stringify(history)]);
-
-  // 页面恢复，跳转回页面时触发
-  cacheLifecycles.didRecover(() => {
-    // setPlacement('rightTop'); //参与人popover位置
-    console.log('跳转回页面时触发');
-  });
-
-  cacheLifecycles.didCache(() => {
-    // setPlacement(undefined); //参与人popover位置
-    // history.block();
-    console.log('页面缓存时触发');
-  });
-
-  // const handleBeforeUnload = (event) => {
-  //   console.log("🚀 ~ file: index.js:62 ~ handleBeforeUnload ~ event:", event)
-  //   event.preventDefault();
-  //   event.returnValue = '111'; // 必须设置一个空字符串
-  //   // // console.log('浏览器即将关闭');
-  //   // return '11111'
-  // };
+  }, [JSON.stringify(selectedData)]);
 
   // 获取条件基础数据
   const getBasicData = (isAdding = true) => {
@@ -129,6 +100,7 @@ export default function CustomRptManagement(props) {
                       });
                       //新增时 - 筛选条件和展示字段默认项目名称, ID为8
                       if (isAdding) {
+                        // console.log('新建数据初始化');
                         let conditionFilterXmmc = data.filter(x => x.ID === 8)[0];
                         let columnFieldsXmmc = JSON.parse(res.result).filter(x => x.ID === 8)[0];
                         columnFieldsXmmc.title = columnFieldsXmmc.NAME;
@@ -244,7 +216,7 @@ export default function CustomRptManagement(props) {
                       columnFields: JSON.parse(obj.QDZSBTZD),
                     });
                     setSelectedEditOrigin({
-                      conditionFilter: filterData,
+                      conditionFilter: JSON.parse(JSON.stringify(filterData)),
                       conditionGroup: JSON.parse(obj.QDZSZHZD),
                       columnFields: JSON.parse(obj.QDZSBTZD),
                     });
@@ -266,7 +238,7 @@ export default function CustomRptManagement(props) {
               columnFields: JSON.parse(obj.QDZSBTZD),
             });
             setSelectedEditOrigin({
-              conditionFilter: filterData,
+              conditionFilter: JSON.parse(JSON.stringify(filterData)),
               conditionGroup: JSON.parse(obj.QDZSZHZD),
               columnFields: JSON.parse(obj.QDZSBTZD),
             });
@@ -372,6 +344,7 @@ export default function CustomRptManagement(props) {
       ...selectedOrigin,
       conditionFilter: [{ ...selectedOrigin.conditionFilter[0], SELECTORVALUE: undefined }],
     });
+
     setSelectingData({
       conditionFilter: [],
       conditionGroup: [],
@@ -433,6 +406,7 @@ export default function CustomRptManagement(props) {
             rptOrigin,
             editingId,
             basicData,
+            selectedOrigin,
           }}
           funcProps={{
             hangleDataRestore,

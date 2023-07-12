@@ -50,7 +50,7 @@ const EditableCell = props => {
       <Form.Item style={{ margin: 0 }}>
         {formdecorate.getFieldDecorator(dataIndex + record['ID'], {
           rules: [{ max: 1000, message: `${title}长度不能超过1000` }],
-          initialValue: record[dataIndex + record['ID']],
+          initialValue: record[dataIndex + record['ID']]?.replace(/<br>/g, '\n'),
         })(
           <TextArea
             ref={targetNode}
@@ -82,7 +82,9 @@ const EditableCell = props => {
             className="normal-cell-value-wrap"
             style={{ textDecoration: 'line-through', color: 'red' }}
           >
-            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]}
+            {dataIndex === 'OPRT'
+              ? children
+              : record[dataIndex + record.ID]?.replace(/<br>/g, '\n')}
           </div>
         ) : editingindex === record.ID &&
           editable &&
@@ -90,7 +92,7 @@ const EditableCell = props => {
           <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
         ) : (
           <div className="normal-cell-value-wrap">
-            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]}
+            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]?.replace(/<br>/g, '')}
           </div>
         )}
       </td>

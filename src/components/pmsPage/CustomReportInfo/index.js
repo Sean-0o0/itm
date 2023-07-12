@@ -1,7 +1,11 @@
 import React, { useEffect, useState, useRef } from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
-import { QueryCustomReportContent, QuerySupplierList } from '../../../services/pmsServices';
+import {
+  QueryCustomReportContent,
+  QuerySupplierList,
+  QueryUserRole,
+} from '../../../services/pmsServices';
 import { message } from 'antd';
 
 export default function CustomReportInfo(props) {
@@ -17,14 +21,14 @@ export default function CustomReportInfo(props) {
     value: undefined,
   }); //报告名称下拉框数据
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
+  const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-  const {dictionary = {}} = props;
-  const {BGLX, ZDYBGMB} = dictionary;
+  const { dictionary = {} } = props;
+  const { BGLX } = dictionary;
 
   useEffect(() => {
-    getBasicData();
-    return () => {
-    };
+    getUserRole();
+    return () => {};
   }, []);
 
   //获取基础数据
@@ -49,7 +53,7 @@ export default function CustomReportInfo(props) {
             total: JSON.parse(res.nrxx).length, //数据总数
           }));
           //获取报告名称下拉框数据
-          setFilterData(p=>({
+          setFilterData(p => ({
             ...p,
             data: JSON.parse(res.nrxx),
           }));
@@ -67,7 +71,7 @@ export default function CustomReportInfo(props) {
   //查询获取表格数据
   const getTableData = (id = undefined) => {
     if (id !== undefined) {
-      const result = [...tableData.origin].filter(x => id===x.ID);
+      const result = [...tableData.origin].filter(x => id === x.ID);
       setTableData(p => ({
         ...p,
         data: result, //表格数据
@@ -80,7 +84,26 @@ export default function CustomReportInfo(props) {
         total: p.origin.length, //数据总数
       }));
     }
+  };
 
+  //获取用户角色
+  const getUserRole = () => {
+    setTableLoading(true);
+    QueryUserRole({
+      userId: String(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          const { role = '', zyrole = '' } = res;
+          setIsAdministrator(zyrole === '自定义报告管理员');
+          getBasicData();
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('用户角色信息查询失败', 1);
+        setTableLoading(false);
+      });
   };
 
   return (
@@ -101,6 +124,7 @@ export default function CustomReportInfo(props) {
           filterData,
           BGLX,
           ZDYBGMB,
+          isAdministrator,
         }}
         funcProps={{
           getTableData,

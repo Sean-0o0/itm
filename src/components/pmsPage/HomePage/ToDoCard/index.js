@@ -26,6 +26,7 @@ export default function ToDoCard(props) {
   const [currentXmmc, setCurrentXmmc] = useState(''); //当前项目名称
   const [currentXqid, setCurrentXqid] = useState('-1'); //当前需求id
   const [currentSwzxid, setCurrentSwzxid] = useState('-1'); //当前需求事务执行id
+  const [currentXxid, setCurrentXxid] = useState('-1'); //当前xxid
   const [rlwbData, setRlwbData] = useState({}); //人力外包费用支付 - 付款流程总金额等
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否硬件入围 - 优先判断是否硬件入围
@@ -99,6 +100,7 @@ export default function ToDoCard(props) {
     setDdcgje(Number(item.sfbhyj ?? 0));
     setCurrentXmid(item.xmid);
     setCurrentXmmc(item.xmmc);
+    setCurrentXxid(item.xxid);
     if (item.kzzd !== '') {
       setRlwbData(JSON.parse(item.kzzd));
     }
@@ -239,6 +241,19 @@ export default function ToDoCard(props) {
     }
   };
 
+  //自定义报告详情
+  const jumpToCustomReportDetail = item => {
+    if (item.kzzd !== '') {
+      window.location.href = `/#/pms/manage/CustomReportDetail/${EncryptBase64(
+        JSON.stringify({
+          bgid: JSON.parse(item.kzzd).BGID,
+          bgmc: JSON.parse(item.kzzd).BGMC,
+          routes: [{ name: '个人工作台', pathname: location.pathname }],
+        }),
+      )}`;
+    }
+  };
+
   //获取操作按钮文本
   const getBtnTxt = (txt, sxmc) => {
     if (sxmc === '信委会会议结果') return '确认';
@@ -307,6 +322,8 @@ export default function ToDoCard(props) {
         return jumpToDemandDetail(item);
       case '创建需求':
         return handleCjxq(item);
+      case '自定义月报填写':
+        return jumpToCustomReportDetail(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -465,7 +482,21 @@ export default function ToDoCard(props) {
           projectCode={projectCode}
           closePaymentProcessModal={() => setPaymentModalVisible(false)}
           onSuccess={() => {
-            handleOperateSuccess();
+            UpdateMessageState({
+              zxlx: 'EXECUTE',
+              xxid: currentXxid,
+            })
+              .then((ret = {}) => {
+                const { code = 0, note = '', record = [] } = ret;
+                if (code === 1) {
+                  //刷新数据
+                  reflush();
+                }
+              })
+              .catch(error => {
+                message.error('操作失败', 1);
+                console.error('付款流程', !error.success ? error.message : error.note);
+              });
           }}
           isHwPrj={isHwPrj} // 是否硬件入围
           ddcgje={ddcgje} // 单独采购金额，为0时无值

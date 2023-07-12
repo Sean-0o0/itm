@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef, useCallback, Fragment } from 'react';
 import { Button, Table, message, Modal, Popconfirm, Form, DatePicker, Select, Icon } from 'antd';
 import { EditableFormRow, EditableCell } from '../EditableRowAndCell';
-import { QueryUserInfo, EditCustomReport, CompleteReport } from '../../../../services/pmsServices';
+import {
+  EditCustomReport,
+  CompleteReport,
+  QueryCustomReportContent,
+} from '../../../../services/pmsServices';
+import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
 import moment from 'moment';
 import * as XLSX from 'xlsx';
 
@@ -27,6 +32,10 @@ const TableBox = props => {
   const [editData, setEditData] = useState([]); //编辑数据
   const [dltData, setDltData] = useState([]); //删除行id
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+
+  //管理员、填写人可以编辑
+  const allowEdit =
+    tableData.data.map(x => x['TXRID' + x.ID]).includes(String(LOGIN_USER_ID)) || isAdministrator;
 
   //表格跨行合并
   const getRowSpanCount = (data, key, target, bool = false) => {
@@ -111,7 +120,10 @@ const TableBox = props => {
               } else if (originalKey === 'GLXM') {
                 restoredObj[originalKey] = notNullStr(obj['GLXMID' + obj.ID]);
               } else {
-                restoredObj[originalKey] = notNullStr(obj[key]);
+                restoredObj[originalKey] = notNullStr(obj[key])
+                  .replace(/\r\n/g, '<br>')
+                  .replace(/\n/g, '<br>')
+                  .replace(/\s/g, ' ');
               }
             }
           }
@@ -240,23 +252,94 @@ const TableBox = props => {
 
   //导出
   const handleExport = () => {
-    try {
-      let dataIndexArr = tableColumns().map(item => item.dataIndex);
-      let finalArr = [];
-      tableData.data.forEach(obj => {
-        let temp = {};
-        dataIndexArr.forEach(dataIndex => {
-          let title = tableColumns().find(item => item.dataIndex === dataIndex)?.title;
-          temp[title] = obj[dataIndex + obj.ID];
-          delete obj[dataIndex];
-        });
-        finalArr.push(temp);
+    QueryCustomReportContent({
+      current: 1,
+      pageSize: 20,
+      paging: -1,
+      queryType: 'DC',
+      reportID: Number(bgid),
+      sort: '',
+      total: -1,
+      month: Number(monthData.format('YYYYMM')),
+    })
+      .then(res => {
+        if (res?.success) {
+          let tableArr = JSON.parse(res.nrxx);
+          let columnsArr = JSON.parse(res.zdxx);
+          console.log('🚀 ~ 本月', tableArr, columnsArr);
+          let mergeData = []; //本月上月数据合并
+          let filteredArr = columnsArr.filter(item => item.ZDLX === '1'); //分类字段信息
+          let otherArr = columnsArr.filter(item => item.ZDLX !== '1'); //填写字段信息
+          tableArr = tableArr.map(obj => {
+            const newObj = { ID: obj.ID };
+            for (const key in obj) {
+              if (key !== 'ID') {
+                newObj[key + obj.ID] = obj[key] === 'undefined' ? '' : obj[key];
+              }
+            }
+            return newObj;
+          });
+          console.log('🚀 ~ 导出 tableArr:', tableArr);
+          //排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
+          let finalColumns = [
+            //分类字段（合并）
+            ...filteredArr,
+            //关联项目
+            {
+              ZDMC: '关联项目',
+              ZDLX: '3', //非分类、非填写
+              QZZD: 'GLXM',
+            },
+            //填写人
+            {
+              ZDMC: '填写人',
+              ZDLX: '3', //非分类、非填写
+              QZZD: 'TXR',
+            },
+            //本月填写字段
+            ...otherArr,
+            //固定字段
+            {
+              ZDMC: '计划上线时间',
+              ZDLX: '3', //非分类、非填写
+              QZZD: 'JHSXSJ',
+            },
+            {
+              ZDMC: '项目负责人',
+              ZDLX: '3', //非分类、非填写
+              QZZD: 'XMFZR',
+            },
+            {
+              ZDMC: '项目阶段',
+              ZDLX: '3', //非分类、非填写
+              QZZD: 'XMJD',
+            },
+            {
+              ZDMC: '进度(%)',
+              ZDLX: '3', //非分类、非填写
+              QZZD: 'JD',
+            },
+          ];
+          console.log('🚀 ~ 导出 finalColumns:', finalColumns);
+          let dataIndexArr = finalColumns.map(item => item.QZZD);
+          let finalArr = [];
+          tableData.data.forEach(obj => {
+            let temp = {};
+            dataIndexArr.forEach(dataIndex => {
+              let title = finalColumns.find(item => item.QZZD === dataIndex)?.ZDMC;
+              temp[title] = obj[dataIndex + obj.ID];
+              delete obj[dataIndex];
+            });
+            finalArr.push(temp);
+          });
+          exportExcelFile(finalArr, 'Sheet1', bgmc + '.xlsx');
+          setTableLoading(false);
+        }
+      })
+      .catch(error => {
+        console.error('🚀 ~ 导出失败:', error);
+        message.error('导出失败', 1);
       });
-      exportExcelFile(finalArr, 'Sheet1', bgmc + '.xlsx');
-    } catch (error) {
-      console.error('🚀 ~ 导出失败:', error);
-      message.error('导出失败', 1);
-    }
   };
 
   /**
@@ -276,13 +359,8 @@ const TableBox = props => {
     return XLSX.writeFile(workBook, fileName);
   };
 
-  //列配置 - 排列顺序 - 分类字段（合并） - 关联项目 - 上月字段 - 本月填写字段 - 固定字段 - 填写人
+  //列配置 - 排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
   const tableColumns = () => {
-    // console.log(
-    //   '@@@',
-    //   tableData.tableWidth,
-    //   document.body.clientWidth,
-    // );
     let arr = [
       ...columnsData.map(x => {
         if (x.ZDLX === '1')
@@ -331,7 +409,7 @@ const TableBox = props => {
             width:
               tableData.tableWidth < document.body.clientWidth - 296
                 ? undefined
-                : x.ZDMC?.length * 35,
+                : x.ZDMC?.length * 25,
             ellipsis: true,
           };
         if (x.ZDLX === '2')
@@ -344,24 +422,33 @@ const TableBox = props => {
             editable: true,
             ellipsis: true,
           };
+        if (x.QZZD === 'JD')
+          return {
+            title: x.ZDMC,
+            dataIndex: x.QZZD,
+            key: x.QZZD,
+            width: 80,
+            ellipsis: true,
+          };
         return {
           title: x.ZDMC,
           dataIndex: x.QZZD,
           key: x.QZZD,
-          width: x.ZDMC?.length * 35,
+          width: x.ZDMC?.length * 25,
           // fixed: true,
           ellipsis: true,
         };
       }),
     ];
+    //编辑才有操作列
     if (editing) {
-      return arr.concat({
+      arr.push({
         title: '操作',
         dataIndex: 'OPRT',
         key: 'OPRT',
         align: 'center',
         width: 80,
-        fixed: 'right',
+        // fixed: 'right',
         borderLeft: true, //左边框
         render: (txt, row, index) => {
           if (Number(row['TXRID' + row.ID]) === LOGIN_USER_ID || isAdministrator)
@@ -381,6 +468,10 @@ const TableBox = props => {
           return '';
         },
       });
+    }
+    //不允许编辑的不显示上月信息
+    if (!allowEdit) {
+      arr = arr.filter(x => !x.title.includes('(上期)'));
     }
     return arr;
   };
@@ -463,15 +554,10 @@ const TableBox = props => {
     setDltData([]);
   };
 
-  //管理员、填写人可以编辑
-  const allowEdit =
-    tableData.data.map(x => x['TXRID' + x.ID]).includes(String(LOGIN_USER_ID)) || isAdministrator;
-
   return (
     <>
       <div className="table-box" style={{ height: 'calc(100vh - 123px)', marginTop: 0 }}>
         <div className="table-console">
-          <div className="console-date"></div>
           <Button onClick={handleMonthChange.bind(this, 'current')} style={{ marginRight: '16px' }}>
             本月
           </Button>
@@ -518,6 +604,7 @@ const TableBox = props => {
                 </Popconfirm>
               </Fragment>
             )}
+            {isFinish && <img className="img-finish" src={iconCompleted} alt="" />}
           </div>
         </div>
         <div className="table-content">
@@ -545,9 +632,9 @@ const TableBox = props => {
             rowKey={'ID'}
             rowClassName={() => 'editable-row'}
             dataSource={tableData.data}
-            scroll={{ y: 'auto', x: 'auto' }}
+            scroll={{ y: 'calc(100vh - 253px)', x: 'auto' }}
             pagination={false}
-            // bordered
+            bordered
           />
         </div>
       </div>

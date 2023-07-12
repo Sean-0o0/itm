@@ -360,14 +360,36 @@ export default function TopConsole(props) {
     }
   };
 
+  //筛选条件个数
+  const getFilterLength = (arr = []) => {
+    let haveYSXM = false;
+    arr.forEach(x => {
+      if (x.TJBCXLX === 'YSXM') haveYSXM = true;
+    });
+    if (haveYSXM) return arr.length + 1;
+    return arr.length;
+  };
+
   return (
     <div className="top-console">
-      {data.filterData?.length !== 0 && (
+      {getFilterLength(data.filterData) !== 0 && (
         <div
           className="filter-condition"
-          style={data.filterData?.length > 6 ? (isUnfold ? {} : { height: 112 }) : {}}
+          style={getFilterLength(data.filterData) > 6 ? (isUnfold ? {} : { height: 112 }) : {}}
         >
-          <div className="left">{data.filterData?.map(x => getComponent(x))}</div>
+          <div className="left">
+            {data.filterData?.map(x => getComponent(x))}
+            {getFilterLength(data.filterData) % 3 !== 0 && isUnfold && (
+              <div
+                className="more-item"
+                onClick={() => setIsUnfold(false)}
+                style={{ marginTop: 0, marginBottom: 16 }}
+              >
+                收起
+                <i className="iconfont icon-up" />
+              </div>
+            )}
+          </div>
           <div className="right">
             <Button className="btn-search" type="primary" onClick={() => getSQL({}, data)}>
               查询
@@ -375,6 +397,22 @@ export default function TopConsole(props) {
             <Button className="btn-reset" onClick={handleReset}>
               重置
             </Button>
+            {getFilterLength(data.filterData) > 6 && !isUnfold && (
+              <div className="more-item-unfold" onClick={() => setIsUnfold(true)}>
+                更多
+                <i className="iconfont icon-down" />
+              </div>
+            )}
+            {getFilterLength(data.filterData) % 3 === 0 && isUnfold && (
+              <div
+                className="more-item"
+                onClick={() => setIsUnfold(false)}
+                style={{ marginTop: (getFilterLength(data.filterData) / 3 - 2) * 48 + 24 }}
+              >
+                收起
+                <i className="iconfont icon-up" />
+              </div>
+            )}
           </div>
         </div>
       )}
@@ -382,11 +420,12 @@ export default function TopConsole(props) {
         <div
           className="group-condition"
           style={
-            data.filterData?.length > 6
-              ? isUnfold
-                ? {}
-                : { height: 56, overflow: 'hidden' }
-              : data.filterData?.length === 0
+            // getFilterLength(data.filterData) > 6
+            //   ? isUnfold
+            //     ? {}
+            //     : { height: 56, overflow: 'hidden' }
+            //   : 
+              getFilterLength(data.filterData) === 0
               ? { borderTop: 0 }
               : {}
           }
@@ -400,7 +439,7 @@ export default function TopConsole(props) {
           ))}
         </div>
       )}
-      {data.filterData?.length > 6 &&
+      {/* {getFilterLength(data.filterData) > 6 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => setIsUnfold(false)}>
             收起
@@ -411,7 +450,7 @@ export default function TopConsole(props) {
             更多
             <i className="iconfont icon-down" />
           </div>
-        ))}
+        ))} */}
     </div>
   );
 }

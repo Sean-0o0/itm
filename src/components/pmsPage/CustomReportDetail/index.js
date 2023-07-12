@@ -104,7 +104,7 @@ export default function CustomReportDetail(props) {
                   return newObj;
                 });
                 console.log('🚀 ~ mergeData:', mergeData);
-                //排列顺序 - 分类字段（合并） - 关联项目 - 上月字段 - 本月填写字段 - 固定字段 - 填写人
+                //排列顺序 - 分类字段（合并） - 关联项目 - 填写人 - 上月字段 - 本月填写字段 - 固定字段
                 let finalColumns = [
                   //分类字段（合并）
                   ...filteredArr,
@@ -113,6 +113,12 @@ export default function CustomReportDetail(props) {
                     ZDMC: '关联项目',
                     ZDLX: '3', //非分类、非填写
                     QZZD: 'GLXM',
+                  },
+                  //填写人
+                  {
+                    ZDMC: '填写人',
+                    ZDLX: '3', //非分类、非填写
+                    QZZD: 'TXR',
                   },
                   //上月字段
                   ...otherArr.map(x => ({
@@ -139,28 +145,24 @@ export default function CustomReportDetail(props) {
                     QZZD: 'XMJD',
                   },
                   {
-                    ZDMC: '进度',
+                    ZDMC: '进度(%)',
                     ZDLX: '3', //非分类、非填写
                     QZZD: 'JD',
-                  },
-                  //填写人
-                  {
-                    ZDMC: '填写人',
-                    ZDLX: '3', //非分类、非填写
-                    QZZD: 'TXR',
                   },
                 ];
                 console.log('🚀 ~ finalColumns:', finalColumns);
                 let tableWidth = 0;
                 finalColumns.forEach(x => {
                   if (x.ZDLX === '1') {
-                    tableWidth += x.ZDMC?.length * 35;
+                    tableWidth += x.ZDMC?.length * 25;
                   } else if (x.QZZD === 'GLXM') {
                     tableWidth += 200;
                   } else if (x.ZDLX === '2') {
                     tableWidth += 300;
+                  } else if (x.QZZD === 'JD') {
+                    tableWidth += 80;
                   } else {
-                    tableWidth += x.ZDMC?.length * 35;
+                    tableWidth += x.ZDMC?.length * 25;
                   }
                 });
                 setColumnsData(finalColumns);
@@ -209,9 +211,9 @@ export default function CustomReportDetail(props) {
         setTableLoading(false);
       });
   };
-  console.log(
-    tableData.data.length > 0 ? tableData.data[0]['WJZT' + tableData.data[0].ID] === '1' : false,
-  );
+  // console.log(
+  //   tableData.data.length > 0 ? tableData.data[0]['WJZT' + tableData.data[0].ID] === '1' : false,
+  // );
   return (
     <div className="weekly-report-detail">
       <Breadcrumb separator=">" style={{ margin: '16px 24px' }}>
