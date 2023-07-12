@@ -37,6 +37,8 @@ const ExpenseDetail = props => {
     userykbid,
     expenseDetail,
     setExpenseDetail,
+    bxbmData,
+    setBxbmData
   } = props;
   const [addExpenseModalVisiable, setAddExpenseModalVisiable] = useState(false);
 
@@ -44,6 +46,7 @@ const ExpenseDetail = props => {
   const [isExpenseSpinning, setIsExpenseSpinning] = useState(false);
   const { getFieldDecorator } = form;
   const [updateExpense, setUpdateExpense] = useState(undefined); //费用明细编辑修改回显得数据
+  
 
   //费用明细新增弹窗调用成功 - 获取费用明细
   const handleAddExpenseSuccess = data => {
@@ -76,17 +79,6 @@ const ExpenseDetail = props => {
     return Number(je) % 1 === 0 ? je + '.00' : je;
   };
 
-  //费用明细弹窗参数
-  const addExpenseModalProps = {
-    isAllWindow: 1,
-    // defaultFullScreen: true,
-    title: '新增',
-    width: '120rem',
-    height: '90rem',
-    style: { top: '20rem' },
-    visible: addExpenseModalVisiable,
-    footer: null,
-  };
   const popoverContent = data => {
     return (
       <div className="list">
@@ -115,6 +107,15 @@ const ExpenseDetail = props => {
     );
   };
 
+  //分摊 数据处理
+  const getBxbmName = id => {
+    let arr = bxbmData.origin.filter(x => x.ID === id);
+    if (arr.length > 0) {
+      return arr[0].NAME;
+    }
+    return '';
+  };
+
   return (
     <>
       <div className="expense-detail-box">
@@ -136,6 +137,8 @@ const ExpenseDetail = props => {
           handleAddExpenseSuccess={handleAddExpenseSuccess}
           updateExpense={updateExpense}
           setUpdateExpense={setUpdateExpense}
+          bxbmData={bxbmData}
+          setBxbmData={setBxbmData}
         />
         <Spin
           spinning={isExpenseSpinning}
@@ -172,7 +175,6 @@ const ExpenseDetail = props => {
                 setUpdateExpense({
                   ...item,
                 });
-                // console.log('🚀 ~ 修改数据回显 ~ updateExpense:', item);
               }}
             >
               <div className="expense-info">
@@ -225,6 +227,28 @@ const ExpenseDetail = props => {
                   </div>
                 </div>
               </div>
+              {item.apportions?.length > 0 && (
+                <div className="expense-apportions">
+                  <div className="title">根据「报销部门分摊」分摊</div>
+                  {item.apportions?.slice(0, 5).map((x, i) => (
+                    <div className="apportion-item" key={i}>
+                      <div className="point"></div>
+                      <span>{getBxbmName(x['BXBM' + x.ID])}</span>
+                      <span>（{x['FTBL' + x.ID]}%）</span>
+                      <span className="amount-cny">
+                        本位币&nbsp;CNY&nbsp;{getJeFormat(x['FTJE' + x.ID])}
+                      </span>
+                    </div>
+                  ))}
+                  {item.apportions.length > 5 && (
+                    <div className="more">
+                      <div className="point"></div>
+                      更多 <i className="iconfont icon-right" />
+                    </div>
+                  )}
+                  <div className="total">总计：{item.apportions?.length}条</div>
+                </div>
+              )}
               <div
                 className="icon-delete"
                 style={item.isHover ? {} : { visibility: 'hidden' }}

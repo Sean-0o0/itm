@@ -613,4 +613,10 @@ export default [
     url: '/projectManage/completeReport',
     dis: '报告填写完结',
   },
+  {
+    code: '',
+    key: 'queryApportionsInfo',
+    url: '/projectManage/queryApportionsInfo',
+    dis: '查询创建单据时所需的分摊信息',
+  },
 ];

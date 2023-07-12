@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Input, Tooltip } from 'antd';
+import { Form, Input, InputNumber, Select, Tooltip, TreeSelect } from 'antd';
 
 const EditableContext = React.createContext();
 
@@ -10,46 +10,29 @@ const EditableRow = Form.create()(({ form, index, ...props }) => {
     </EditableContext.Provider>
   );
 });
+
 const EditableCell = props => {
-  const [editing, setEditing] = useState(false); //正在编辑
   const inputRef = useRef(null);
   const {
     editable,
     dataIndex,
-    title,
+    title = '',
     record,
     index,
     handleSave,
     formdecorate,
+    bxbmdata = [],
     children,
     ...restProps
   } = props;
 
-  useEffect(() => {
-    // console.log('🚀 ~ file: index.js:28 ~ EditableCell ~ props:', props);
-    return () => {};
-  }, []);
-
   const save = e => {
     formdecorate.validateFields(
       [
-        // 'LXR' + record['ID'], 'ZW' + record['ID'],
-        // 'DH' + record['ID'], 'BZ' + record['ID'],
-        // 'QTLXFS' + record['ID'], 'YWSX' + record['ID'],
         e.currentTarget.id, //只校验当前编辑项
       ],
       (error, values) => {
-        // if (error && error[e.currentTarget.id]) {
-        //   //出错时不保存
-        //   return;
-        // }
-        // 暂时注释 -- 非编辑态时不触发表单校验
-        // setEditing(!editing);
-        // setTimeout(() => {
-        //   if (!editing) inputRef.current?.focus();
-        // });
-
-        console.log('🚀 ~ file: index.js:55 ~ save ~ values:', values);
+        // console.log('🚀 ~ save ~ values:', values);
         handleSave({ ...record, ...values });
       },
     );
@@ -57,82 +40,115 @@ const EditableCell = props => {
 
   const getDecotator = () => {
     const recIndex = dataIndex + record['ID'];
-    let maxLength = 100;
-    if (dataIndex === 'DH' || dataIndex === 'SJ') maxLength = 33;
-    if (dataIndex === 'BZ') maxLength = 166;
     switch (dataIndex) {
-      case 'LXR':
-      case 'ZW':
-      case 'DH':
+      case 'BXBM':
         return (
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
-              rules: [
-                {
-                  required: true,
-                  message: `${title}不能为空`,
-                },
-              ],
-              initialValue: String(record[recIndex] || ''),
-            })(<Input ref={inputRef} maxLength={maxLength} onPressEnter={save} onBlur={save} />)}
+              initialValue: record[recIndex],
+              rules: [{ required: true, message: title + '不允许空值' }],
+            })(
+              <TreeSelect
+                allowClear
+                showArrow
+                className="item-selector"
+                showSearch
+                showCheckedStrategy={TreeSelect.SHOW_PARENT}
+                treeNodeFilterProp="title"
+                placeholder="请选择"
+                dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                style={{ width: '100%', borderRadius: '8px !important' }}
+                onChange={(v, txt, node) => {
+                  // console.log('🚀 ~ BXBM:', node?.triggerNode?.props?.YKBID);
+                  formdecorate.validateFields(
+                    [
+                      recIndex, //只校验当前编辑项
+                    ],
+                    (error, values) => {
+                      handleSave({
+                        ...record,
+                        [recIndex]: v,
+                        ['BXBMYKBID' + record.ID]: node?.triggerNode?.props?.YKBID,
+                      });
+                    },
+                  );
+                }}
+                treeData={bxbmdata}
+              />,
+            )}
+          </Form.Item>
+        );
+      case 'FTBL':
+        return (
+          <Form.Item style={{ margin: 0 }}>
+            {formdecorate.getFieldDecorator(recIndex, {
+              initialValue: record[recIndex],
+              rules: [{ required: true, message: '分摊比例不允许空值' }],
+            })(
+              <InputNumber
+                style={{ width: '100%' }}
+                ref={inputRef}
+                max={100}
+                precision={2}
+                step={0.01}
+                min={0}
+                onPressEnter={save}
+                onBlur={save}
+                formatter={value => `${value}%`}
+                parser={value => value.replace('%', '')}
+              />,
+            )}
+          </Form.Item>
+        );
+      case 'FTJE':
+        return (
+          <Form.Item style={{ margin: 0 }}>
+            {formdecorate.getFieldDecorator(recIndex, {
+              initialValue: record[recIndex],
+              rules: [{ required: true, message: '分摊金额不允许空值' }],
+            })(
+              <InputNumber
+                style={{ width: '100%' }}
+                ref={inputRef}
+                max={1000000000}
+                precision={2}
+                step={0.01}
+                min={0}
+                onPressEnter={save}
+                onBlur={save}
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+              />,
+            )}
           </Form.Item>
         );
       default:
         return (
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
-              initialValue: String(record[recIndex] || ''),
+              initialValue: record[recIndex],
+              rules: [{ required: true, message: title + '不允许空值' }],
             })(
-              <Input
+              <InputNumber
+                style={{ width: '100%' }}
                 ref={inputRef}
-                maxLength={maxLength}
+                max={1000000000.0}
+                precision={2}
+                step={0.01}
+                min={0}
                 onPressEnter={save}
                 onBlur={save}
-                style={dataIndex === 'YWSX' ? { color: '#3361ff' } : {}}
+                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                parser={value => value.replace(/\$\s?|(,*)/g, '')}
               />,
             )}
           </Form.Item>
         );
     }
   };
-
-  const renderCell = () => {
-    return getDecotator();
-    // return editing ? ( // 暂时注释 -- 非编辑态时不触发表单校验
-    //   getDecotator()
-    // ) : ['BZ', 'QTLXFS'].includes(dataIndex) ? (
-    //   <Tooltip title={record[dataIndex + record['ID']]} placement="topLeft">
-    //     <div
-    //       className="editable-cell-value-wrap"
-    //       style={{ textAlign: 'left' }}
-    //       onClick={() => {
-    //         setEditing(!editing);
-    //         setTimeout(() => {
-    //           if (!editing) inputRef.current?.focus();
-    //         });
-    //       }}
-    //     >
-    //       {record[dataIndex + record['ID']]}
-    //     </div>
-    //   </Tooltip>
-    // ) : (
-    //   <div
-    //     className="editable-cell-value-wrap"
-    //     style={{ textAlign: 'left' }}
-    //     onClick={() => {
-    //       setEditing(!editing);
-    //       setTimeout(() => {
-    //         if (!editing) inputRef.current?.focus();
-    //       });
-    //     }}
-    //   >
-    //     {record[dataIndex + record['ID']]}
-    //   </div>
-    // );
-  };
   return (
     <td {...restProps}>
-      {editable ? <EditableContext.Consumer>{renderCell}</EditableContext.Consumer> : children}
+      {editable ? <EditableContext.Consumer>{getDecotator}</EditableContext.Consumer> : children}
     </td>
   );
 };

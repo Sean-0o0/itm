@@ -47,6 +47,11 @@ const PaymentProcess = props => {
   const [isXzTurnRed, setIsXzTurnRed] = useState(false);
   const [expenseDetail, setExpenseDetail] = useState([]); //费用详情数据
   const [fklx, setFklx] = useState(1); //单独采购金额-付款类型，为硬件付款 2 时出现关联设备...
+  const [bxbmData, setBxbmData] = useState({
+    selectorData: [],
+    mb: '',
+    origin: [], //非树型的原数据
+  }); //报销部门 下拉框数据、分摊模板
 
   const {
     paymentModalVisible,
@@ -159,6 +164,24 @@ const PaymentProcess = props => {
               code64: x.base64.split(',')[1],
             };
           });
+          let apportionsArr = item.apportions.map(x => ({
+            apportionForm: {
+              //费用分摊明细
+              apportionMoney: {
+                //分摊金额，分摊比例是负数的话，分摊金额必须也是负数
+                standard: String(x['FTJE' + x.ID]),
+                standardStrCode: 'CNY',
+                standardNumCode: '156',
+                standardSymbol: '¥',
+                standardUnit: '元',
+                standardScale: 2,
+              },
+              apportionPercent: String(x['FTBL' + x.ID]), //分摊比例，允许设置负数
+              expenseDepartment: String(x['BXBMYKBID' + x.ID]), //报销部门
+              项目: '', //分摊项目ID - 暂时用空串
+            },
+            specificationId: bxbmData.mb, //费用分摊模板ID
+          }));
           let detailItem = {
             detailInfo,
             invoice,
@@ -174,7 +197,7 @@ const PaymentProcess = props => {
             consumptionReasons: item.consumptionReasons,
             date: item.date,
             taxAmount: String(item.taxAmount),
-            apportions: [], //分摊明细
+            apportions: apportionsArr, //分摊明细
           };
           details.push(detailItem);
         });
@@ -234,7 +257,7 @@ const PaymentProcess = props => {
               .catch(e => {
                 setIsSpinning(false);
                 console.error(' ~ e:', e);
-                message.error(`付款流程${operateType === 'send' ? '发起' : '草稿暂存'}失败`, 1);
+                message.error(e.note, 1);
               });
           },
         });
@@ -371,6 +394,8 @@ const PaymentProcess = props => {
             userykbid={userykbid}
             expenseDetail={expenseDetail}
             setExpenseDetail={setExpenseDetail}
+            bxbmData={bxbmData}
+            setBxbmData={setBxbmData}
           />
         </Spin>
       </Modal>

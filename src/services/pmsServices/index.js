@@ -110,6 +110,7 @@ const {
     configureCustomReport,
     editCustomReport,
     completeReport,
+    queryApportionsInfo,
   },
 } = api;
 
@@ -1165,6 +1166,16 @@ export async function EditCustomReport(payload) {
 export async function CompleteReport(payload) {
   const option = {
     url: completeReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询创建单据时所需的分摊信息
+export async function QueryApportionsInfo(payload) {
+  const option = {
+    url: queryApportionsInfo,
     method: 'post',
     data: payload,
   };

@@ -22,7 +22,11 @@ import moment from 'moment';
 import InputReceipt from './InputReceipt';
 import UploadReceipt from './UploadReceipt';
 import SelectReceipt from './SelectReceipt';
-import { CheckInvoice, QueryCreatePaymentInfo } from '../../../../../../services/pmsServices';
+import {
+  CheckInvoice,
+  QueryApportionsInfo,
+  QueryCreatePaymentInfo,
+} from '../../../../../../services/pmsServices';
 import TreeUtils from '../../../../../../utils/treeUtils';
 import ApportionDetail from './ApportionDetail';
 const { TextArea } = Input;
@@ -44,6 +48,8 @@ const AddExpense = props => {
     currentXmid,
     updateExpense,
     setUpdateExpense,
+    bxbmData,
+    setBxbmData,
   } = props;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
   const [formData, setFormData] = useState({
@@ -114,27 +120,18 @@ const AddExpense = props => {
   const [receiptDisplay, setReceiptDisplay] = useState([]); //发票数据-展示用
   const [oaData, setOaData] = useState([]); //oa数据
   const [otherData, setOtherData] = useState([]); //其他附件数据
+  const [apportionErrors, setApportionErrors] = useState([]); //分摊报错信息
 
   //防抖定时器
   let timer = null;
 
   useEffect(() => {
     getSelectorData();
+    getApportionsInfo();
     return () => {
       clearTimeout(timer);
     };
   }, []);
-
-  //防抖
-  const debounce = (fn, waits) => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
-    }
-    timer = setTimeout(() => {
-      fn(...arguments);
-    }, waits);
-  };
 
   useEffect(() => {
     if (updateExpense !== undefined) {
@@ -203,76 +200,138 @@ const AddExpense = props => {
             : [],
         OAProcessFileList: [...handledOAData],
         otherFileList: [...handledOtherData],
+        isApportion: updateExpense.isApportion,
+        apportionmentData: [...updateExpense.apportions],
       }));
     }
     return () => {};
   }, [updateExpense]);
+
+  //防抖
+  const debounce = (fn, waits) => {
+    if (timer) {
+      clearTimeout(timer);
+      timer = null;
+    }
+    timer = setTimeout(() => {
+      fn(...arguments);
+    }, waits);
+  };
 
   //提交数据 - 确定
   const handleSubmit = () => {
     console.log(selectorData?.fklcData);
     validateFields(err => {
       if (!err) {
-        // let oaArr = oaData?.map(x => {
-        //   return {
-        //     name: x.name,
-        //     base64: x.base64,
-        //   };
-        // });
-        let attachmentArr = [...oaData];
-        formData?.contractFileUrl !== '' &&
-          attachmentArr.push({
-            base64: formData?.contractFileUrl,
-            name: formData?.contractFileName,
+        //总分摊金额
+        const zftje = () => {
+          let sum = 0;
+          formData.apportionmentData.forEach(x => {
+            sum += x['FTJE' + x.ID];
           });
-        formData?.checkFileUrl !== '' &&
-          attachmentArr.push({
-            base64: formData?.checkFileUrl,
-            name: formData?.checkFileName,
-          });
-        attachmentArr = attachmentArr.concat([...otherData]);
-        let submitData = {
-          id: updateExpense?.id ?? getUUID(),
-          consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
-          date: moment().format('YYYYMMDD'),
-          taxAmount: getFieldValue('se') === '' ? 0 : getFieldValue('se'),
-          je: getFieldValue('je') === '' ? 0 : getFieldValue('je'),
-          fylxInfo,
-          fplxInfo,
-          ysxmInfo,
-          receiptFileInfo: [...receiptDisplay],
-          OAProcessFileInfo: [...oaData],
-          contractFileInfo:
-            formData?.contractFileUrl === ''
-              ? {
-                  base64: '无',
-                  name: '无',
-                }
-              : {
-                  base64: formData?.contractFileUrl,
-                  name: formData?.contractFileName,
-                },
-          checkFileInfo:
-            formData?.checkFileUrl === ''
-              ? {
-                  base64: '无',
-                  name: '无',
-                }
-              : {
-                  base64: formData?.checkFileUrl,
-                  name: formData?.checkFileName,
-                },
-          attachmentLength: attachmentArr.length,
-          attachmentArr,
-          isFinalPay,
-          lcid: selectorData?.fklcData[0]?.ID || -1,
-          otherFileInfo: [...otherData],
+          return parseFloat(sum.toFixed(2));
         };
-        handleAddExpenseSuccess(submitData);
-        console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
-        //
-        handleClose();
-        // console.log('确定了');
+        //总金额比例
+        const zjebl = () => {
+          let sum = 0;
+          formData.apportionmentData.forEach(x => {
+            sum += x['FTBL' + x.ID];
+            // console.log("🚀 ~ file: index.js:271 ~ zjebl ~ x['FTBL' + x.ID]:", x['FTBL' + x.ID]);
+          });
+          return parseFloat(sum.toFixed(2));
+        };
+        //存在费用金额*分摊比例 ≠ 分摊金额的数据
+        const czsjyc = () => {
+          let bool = false;
+          formData.apportionmentData.forEach(x => {
+            // console.log(
+            //   parseFloat(((getFieldValue('je') * x['FTBL' + x.ID]) / 100).toFixed(2)),
+            //   x['FTJE' + x.ID],
+            // );
+            if (
+              parseFloat((getFieldValue('je') * x['FTBL' + x.ID]).toFixed(2) / 100) !==
+              x['FTJE' + x.ID]
+            ) {
+              bool = true;
+            }
+          });
+          return bool;
+        };
+        let apportionErrorsArr = [];
+        const jexd = zftje() === getFieldValue('je'); //费用金额 = 总分摊金额
+        const blxd = zjebl() === 100; //分摊比例 = 100%
+        if (!jexd) {
+          apportionErrorsArr.push('ftje');
+        }
+        if (!blxd) {
+          apportionErrorsArr.push('ftbl');
+        }
+        console.log('🚀 ~ file: index.js:264 ~ handleSubmit ~ czsjyc():', czsjyc());
+        if (czsjyc()) {
+          apportionErrorsArr.push('sjyc'); //数据异常
+        }
+        //校验变红
+        setApportionErrors(apportionErrorsArr);
+        if (formData.isApportion && formData.apportionmentData.length === 0) {
+          message.error('分摊明细不允许空值', 1);
+        } else if (jexd && blxd && !czsjyc()) {
+          let attachmentArr = [...oaData];
+          formData?.contractFileUrl !== '' &&
+            attachmentArr.push({
+              base64: formData?.contractFileUrl,
+              name: formData?.contractFileName,
+            });
+          formData?.checkFileUrl !== '' &&
+            attachmentArr.push({
+              base64: formData?.checkFileUrl,
+              name: formData?.checkFileName,
+            });
+          attachmentArr = attachmentArr.concat([...otherData]);
+
+          let submitData = {
+            id: updateExpense?.id ?? getUUID(),
+            consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
+            date: moment().format('YYYYMMDD'),
+            taxAmount: getFieldValue('se'),
+            je: getFieldValue('je'),
+            fylxInfo,
+            fplxInfo,
+            ysxmInfo,
+            receiptFileInfo: [...receiptDisplay],
+            OAProcessFileInfo: [...oaData],
+            contractFileInfo:
+              formData?.contractFileUrl === ''
+                ? {
+                    base64: '无',
+                    name: '无',
+                  }
+                : {
+                    base64: formData?.contractFileUrl,
+                    name: formData?.contractFileName,
+                  },
+            checkFileInfo:
+              formData?.checkFileUrl === ''
+                ? {
+                    base64: '无',
+                    name: '无',
+                  }
+                : {
+                    base64: formData?.checkFileUrl,
+                    name: formData?.checkFileName,
+                  },
+            attachmentLength: attachmentArr.length,
+            attachmentArr,
+            isFinalPay,
+            lcid: selectorData?.fklcData[0]?.ID || -1,
+            otherFileInfo: [...otherData],
+            apportions: formData.apportionmentData,
+            isApportion: formData.isApportion,
+          };
+          handleAddExpenseSuccess(submitData);
+          console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
+          //
+          handleClose();
+        }
       }
     });
   };
@@ -318,6 +377,71 @@ const AddExpense = props => {
       });
   };
 
+  //转树结构
+  function buildTree(list, label = 'title', value = 'value') {
+    let map = {};
+    let treeData = [];
+
+    list.forEach(item => {
+      map[item.ID] = item;
+      item[value] = item.ID;
+      item[label] = item.NAME;
+      item.children = [];
+    });
+
+    // 递归遍历树，处理没有子节点的元素
+    const traverse = node => {
+      if (node.children && node.children.length > 0) {
+        node.children.forEach(child => {
+          traverse(child);
+        });
+      } else {
+        // 删除空的 children 数组
+        delete node.children;
+      }
+    };
+
+    list.forEach(item => {
+      let parent = map[item.FID];
+      if (!parent) {
+        treeData.push(item);
+      } else {
+        parent.children.push(item);
+        item.fid = parent.ID;
+      }
+    });
+
+    // 处理没有子节点的元素
+    treeData.forEach(node => {
+      traverse(node);
+    });
+
+    return treeData;
+  }
+
+  //查询创建单据时所需的分摊信息 - 报销部门下拉框数据
+  const getApportionsInfo = () => {
+    QueryApportionsInfo({
+      queryType: 'ALL',
+    })
+      .then(res => {
+        if (res?.success) {
+          console.log('🚀 ~ QueryApportionsInfo ~ res', JSON.parse(res.orgInfo));
+          let orgTree = buildTree(JSON.parse(res.orgInfo));
+          console.log('🚀 ~ file: index.js:342 ~ orgTree ~ orgTree:', orgTree);
+          setBxbmData(p => ({
+            selectorData: [...orgTree],
+            mb: JSON.parse(res.typeInfo)[0]?.YKBID,
+            origin: JSON.parse(res.orgInfo),
+          }));
+        }
+      })
+      .catch(e => {
+        console.error('🚀分摊信息', e);
+        message.error('分摊信息获取失败', 1);
+      });
+  };
+
   //关闭弹窗
   const handleClose = () => {
     setVisible(false);
@@ -360,6 +484,8 @@ const AddExpense = props => {
       p.otherFileUrl = '';
       p.otherFileName = '';
       p.otherFileList = [];
+      p.isApportion = false;
+      p.apportionmentData = [];
       return {
         ...p,
       };
@@ -794,7 +920,12 @@ const AddExpense = props => {
     labelCol: 3,
     wrapperCol: 21,
     dataIndex: 'je',
-    initialValue: updateExpense?.je ?? getAmountSum().jesum,
+    initialValue:
+      updateExpense?.je === undefined
+        ? getAmountSum().jesum === 0
+          ? undefined
+          : getAmountSum().jesum
+        : updateExpense?.je,
     rules: [
       {
         required: true,
@@ -804,11 +935,11 @@ const AddExpense = props => {
     node: (
       <InputNumber
         style={{ width: '100%' }}
-        max={99999999999.99}
-        min={0}
+        max={1000000000}
+        min={0.01}
         step={0.01}
         precision={2}
-        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
         parser={value => value.replace(/\$\s?|(,*)/g, '')}
       />
     ),
@@ -916,7 +1047,12 @@ const AddExpense = props => {
           setReceiptData={setReceiptData}
           setReceiptDisplay={setReceiptDisplay}
         />
-        <Form.Item label="费用类型" labelCol={{ span: 3 }} wrapperCol={{ span: 21 }}>
+        <Form.Item
+          label="费用类型"
+          labelCol={{ span: 3 }}
+          wrapperCol={{ span: 21 }}
+          style={{ marginTop: 24 }}
+        >
           {getFieldDecorator('fylx', {
             initialValue: fylxInfo.ID === '-1' ? undefined : fylxInfo.ID,
             rules: [
@@ -996,9 +1132,16 @@ const AddExpense = props => {
         <Row>
           {getRadio('是否尾款', isFinalPay, e => setIsFinalPay(e.target.value), '是', '否')}
         </Row>
-        <ApportionDetail dataProps={{
-          formData
-        }} funcProps={{setFormData, getFieldDecorator}} />
+        <ApportionDetail
+          dataProps={{
+            formData,
+            form,
+            bxbmData: bxbmData.selectorData,
+            bxbmOrigin: bxbmData.origin,
+            apportionErrors,
+          }}
+          funcProps={{ setFormData, setApportionErrors }}
+        />
         <div className="footer-btn">
           <Button onClick={handleClose} className="btn-cancel">
             关闭
