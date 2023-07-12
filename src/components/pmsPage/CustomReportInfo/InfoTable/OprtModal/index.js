@@ -1,7 +1,5 @@
 import React, {useEffect, useState, useRef, Fragment} from 'react';
 import {Modal, Form, message, Spin, Input, Button, Table, Steps, Select, Radio} from 'antd';
-import Handsontable from 'handsontable';
-import 'handsontable/dist/handsontable.full.css';
 import EditCusRepTable from "./EditCusRepTable";
 import PresetTable from "./PresetTable";
 import {FetchQueryProjectInfoAll} from "../../../../../services/projectManage";
