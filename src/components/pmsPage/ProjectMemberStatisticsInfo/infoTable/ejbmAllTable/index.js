@@ -179,15 +179,21 @@ export default function EjbmAllTable(props) {
 
   const getRadarChatBM = (item) => {
     console.log("雷达数据", item)
+    // tableDataBM
+    let maxtemp = item.XMZS;
+    tableDataBM.map(item => {
+      if (item.XMZS >= maxtemp) {
+        maxtemp = item.XMZS;
+      }
+    })
     //获取雷达图数据
     // let max = item.XMZS;
-    let maxtemp = item.XMZS;
     let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : Math.ceil(Math.log(maxtemp)))
-    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : Math.ceil(Math.log(item.XMZS)))
-    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : Math.ceil(Math.log(item.HJXM)))
-    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : Math.ceil(Math.log(item.KTXM)))
-    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : Math.ceil(Math.log(item.ZBXM)))
-    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : Math.ceil(Math.log(item.XCXM)))
+    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : Math.log(item.XMZS) + 1))
+    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : (item.HJXM === maxtemp ? max : Math.log(item.HJXM) + 1))
+    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : (item.KTXM === maxtemp ? max : Math.log(item.KTXM) + 1))
+    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : Math.log(item.ZBXM) + 1))
+    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.XCXM === maxtemp ? max : Math.log(item.XCXM) + 1))
     let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
     let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM];
     let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
