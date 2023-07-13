@@ -611,7 +611,7 @@ export default [
     code: '',
     key: 'completeReport',
     url: '/projectManage/completeReport',
-    dis: '报告填写完结',
+    dis: '报告填写完成',
   },
   {
     code: '',

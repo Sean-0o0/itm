@@ -24,6 +24,7 @@ const TableBox = props => {
     monthData,
     isAdministrator,
     isFinish,
+    txzt,
   } = dataProps;
   const { setEdited, setTableData, setTableLoading, setMonthData, getData } = funcProps;
   const [isSaved, setIsSaved] = useState(false);
@@ -120,10 +121,7 @@ const TableBox = props => {
               } else if (originalKey === 'GLXM') {
                 restoredObj[originalKey] = notNullStr(obj['GLXMID' + obj.ID]);
               } else {
-                restoredObj[originalKey] = notNullStr(obj[key])
-                  .replace(/\r\n/g, '<br>')
-                  .replace(/\n/g, '<br>')
-                  .replace(/\s/g, ' ');
+                restoredObj[originalKey] = notNullStr(obj[key]);
               }
             }
           }
@@ -230,10 +228,10 @@ const TableBox = props => {
     setDltData(p => [...p.filter(x => x.ID !== row.ID)]);
   };
 
-  //完结
+  //完成
   const handleFinish = () => {
     setTableLoading(true);
-    //完结
+    //完成
     CompleteReport({
       operateType: 'WJ',
       reportId: Number(bgid),
@@ -245,7 +243,7 @@ const TableBox = props => {
         }
       })
       .catch(e => {
-        console.error('🚀完结', e);
+        console.error('🚀完成', e);
         message.error('操作失败', 1);
       });
   };
@@ -267,7 +265,6 @@ const TableBox = props => {
           let tableArr = JSON.parse(res.nrxx);
           let columnsArr = JSON.parse(res.zdxx);
           console.log('🚀 ~ 本月', tableArr, columnsArr);
-          let mergeData = []; //本月上月数据合并
           let filteredArr = columnsArr.filter(item => item.ZDLX === '1'); //分类字段信息
           let otherArr = columnsArr.filter(item => item.ZDLX !== '1'); //填写字段信息
           tableArr = tableArr.map(obj => {
@@ -327,11 +324,12 @@ const TableBox = props => {
             let temp = {};
             dataIndexArr.forEach(dataIndex => {
               let title = finalColumns.find(item => item.QZZD === dataIndex)?.ZDMC;
-              temp[title] = obj[dataIndex + obj.ID];
+              temp[title] = obj[dataIndex + obj.ID].replace(/\n/g, String.fromCharCode(10));
               delete obj[dataIndex];
             });
             finalArr.push(temp);
           });
+          console.log('🚀 ~ file: index.js:330 ~ handleExport ~ finalArr:', finalArr);
           exportExcelFile(finalArr, 'Sheet1', bgmc + '.xlsx');
           setTableLoading(false);
         }
@@ -517,7 +515,7 @@ const TableBox = props => {
       time = monthData.add(1, 'month');
     } else if (txt === 'current') {
       //当前
-      time = stillLastMonth ? moment().subtract(1, 'month') : moment();
+      time = moment();
     } else {
       return;
     }
@@ -589,12 +587,14 @@ const TableBox = props => {
               </>
             ) : (
               <Fragment>
-                {!isFinish && (
+                {(!isFinish || isAdministrator) && (
                   <Fragment>
-                    {allowEdit && <Button onClick={handleEdit}>修改</Button>}
-                    {isAdministrator && (
-                      <Popconfirm title="确定要完结吗?" onConfirm={handleFinish}>
-                        <Button style={{ marginLeft: '8px' }}>完结</Button>
+                    {((txzt && allowEdit) || isAdministrator) && (
+                      <Button onClick={handleEdit}>修改</Button>
+                    )}
+                    {isAdministrator && !isFinish && (
+                      <Popconfirm title="确定要完成吗?" onConfirm={handleFinish}>
+                        <Button style={{ marginLeft: '8px' }}>完成</Button>
                       </Popconfirm>
                     )}
                   </Fragment>
@@ -610,6 +610,7 @@ const TableBox = props => {
         <div className="table-content">
           <Table
             onRow={record => {
+              console.log('uuuu');
               return {
                 onClick: () => {
                   if (editing) {
@@ -632,7 +633,10 @@ const TableBox = props => {
             rowKey={'ID'}
             rowClassName={() => 'editable-row'}
             dataSource={tableData.data}
-            scroll={{ y: 'calc(100vh - 253px)', x: 'auto' }}
+            scroll={{
+              y: 'calc(100vh - 253px)',
+              x: tableData.tableWidth || 'auto', //若不设置固定宽度且包含fixed，safari浏览器 表格列会不对齐
+            }}
             pagination={false}
             bordered
           />

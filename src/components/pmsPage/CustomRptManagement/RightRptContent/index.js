@@ -661,7 +661,7 @@ export default function RightRptContent(props) {
             if (res?.success) {
               message.success('保存成功', 1);
               getRptList(); //刷新数据
-              setStatus('normal');
+              // setStatus('normal');
               setIsSpinning(false);
             }
           })

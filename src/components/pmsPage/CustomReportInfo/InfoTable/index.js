@@ -107,6 +107,7 @@ export default function InfoTable(props) {
                   JSON.stringify({
                     bgid: row.ID,
                     bgmc: txt,
+                    txzt: row.ZT === '1',
                     routes: [{ name: '自定义报告', pathname: location.pathname }],
                   }),
                 )}`,
@@ -267,15 +268,21 @@ export default function InfoTable(props) {
         setVisible={setNewRptVisible}
         BGLX={BGLX}
       />
-      <div className="btn-add-prj-box">
-        <Button type="primary" className="btn-add-prj" onClick={() => {
-          setBgInfo({ID: '', BGMC: ''});
-          setTitle("新增报告")
-          setNewRptVisible(true)
-        }}>
-          新增
-        </Button>
-      </div>
+      {isAdministrator && (
+        <div className="btn-add-prj-box">
+          <Button
+            type="primary"
+            className="btn-add-prj"
+            onClick={() => {
+              setBgInfo({ ID: '' });
+              setTitle('新增报告');
+              setNewRptVisible(true);
+            }}
+          >
+            新增
+          </Button>
+        </div>
+      )}
       <div className="project-info-table-box">
         <Table
           loading={tableLoading}

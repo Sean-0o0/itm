@@ -1162,7 +1162,7 @@ export async function EditCustomReport(payload) {
   return request(option);
 }
 
-// 报告填写完结
+// 报告填写完成
 export async function CompleteReport(payload) {
   const option = {
     url: completeReport,

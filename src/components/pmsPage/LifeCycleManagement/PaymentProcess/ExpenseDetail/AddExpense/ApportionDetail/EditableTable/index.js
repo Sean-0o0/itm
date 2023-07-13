@@ -94,8 +94,8 @@ const EditableCell = props => {
                 min={0}
                 onPressEnter={save}
                 onBlur={save}
-                formatter={value => `${value}%`}
-                parser={value => value.replace('%', '')}
+                // formatter={value => `${value}%`}
+                // parser={value => value.replace('%', '')}
               />,
             )}
           </Form.Item>
@@ -116,8 +116,8 @@ const EditableCell = props => {
                 min={0}
                 onPressEnter={save}
                 onBlur={save}
-                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                // parser={value => value.replace(/\$\s?|(,*)/g, '')}
               />,
             )}
           </Form.Item>
@@ -138,8 +138,8 @@ const EditableCell = props => {
                 min={0}
                 onPressEnter={save}
                 onBlur={save}
-                formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-                parser={value => value.replace(/\$\s?|(,*)/g, '')}
+                formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+                // parser={value => value.replace(/\$\s?|(,*)/g, '')}
               />,
             )}
           </Form.Item>

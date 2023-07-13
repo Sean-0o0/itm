@@ -102,7 +102,7 @@ export default function UpdateModal(props) {
 
   //报销部门 - 单选
   const getOrgNode = () => (
-    <Form.Item label="报销部门" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+    <Form.Item label="报销部门" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       {getFieldDecorator('org', {
         initialValue: undefined,
         rules: [{ required: true, message: '报销部门不允许空值' }],
@@ -129,7 +129,7 @@ export default function UpdateModal(props) {
   //报销部门 - 多选
   const getMulOrgNode = () => (
     <div className="bxbm-multiple-row">
-      <Form.Item label="报销部门" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+      <Form.Item label="报销部门" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
         {getFieldDecorator('org-multiple', {
           initialValue: [],
           rules: [{ required: true, message: '报销部门不允许空值' }],
@@ -162,7 +162,7 @@ export default function UpdateModal(props) {
 
   //分摊金额
   const getAmountNode = () => (
-    <Form.Item label="分摊金额" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+    <Form.Item label="分摊金额(￥)" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       {getFieldDecorator('amount', {
         initialValue: undefined,
         rules: [{ required: true, message: '分摊金额不允许空值' }],
@@ -173,15 +173,15 @@ export default function UpdateModal(props) {
           precision={2}
           step={0.01}
           min={0}
-          formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-          parser={value => value.replace(/\$\s?|(,*)/g, '')}
+          formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+          // parser={value => value.replace(/\$\s?|(,*)/g, '')}
         />,
       )}
     </Form.Item>
   );
   //分摊比例
   const getRateNode = () => (
-    <Form.Item label="分摊比例" labelCol={{ span: 4 }} wrapperCol={{ span: 20 }}>
+    <Form.Item label="分摊比例(%)" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       {getFieldDecorator('rate', {
         initialValue: undefined,
         rules: [{ required: true, message: '分摊比例不允许空值' }],
@@ -192,8 +192,8 @@ export default function UpdateModal(props) {
           precision={2}
           step={0.01}
           min={0}
-          formatter={value => `${value}%`}
-          parser={value => value.replace('%', '')}
+          // formatter={value => `${value}%`}
+          // parser={value => value.replace('%', '')}
         />,
       )}
     </Form.Item>
@@ -255,7 +255,7 @@ export default function UpdateModal(props) {
       <div className="body-title-box">
         <strong>{getTitle(type)}</strong>
       </div>
-      <div className="upload-receipt-modal-content" style={{ padding: '24px 24px 0 24px' }}>
+      <div className="upload-receipt-modal-content">
         {getFormContent(type)}
       </div>
     </Modal>

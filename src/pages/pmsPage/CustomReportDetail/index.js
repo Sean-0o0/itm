@@ -9,13 +9,15 @@ const CustomReportDetail = props => {
     },
     dictionary,
   } = props;
-  let bgmc = '';
-  let bgid = -2;
+  let bgmc = ''; //报告名称
+  let bgid = -2; //报告id
+  let txzt = false; //填写状态
   let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
     bgid = obj.bgid;
     bgmc = obj.bgmc;
+    txzt = obj.txzt;
     obj.routes &&
       (routes2 = obj.routes?.concat({
         name: '报告内容',
@@ -37,7 +39,7 @@ const CustomReportDetail = props => {
 
   return (
     <Fragment>
-      <CustomReportDetailTab dictionary={dictionary} routes={newArr} bgid={bgid} bgmc={bgmc} />
+      <CustomReportDetailTab dictionary={dictionary} routes={newArr} bgid={bgid} bgmc={bgmc} txzt={txzt}/>
     </Fragment>
   );
 };

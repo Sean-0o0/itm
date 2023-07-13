@@ -66,6 +66,7 @@ const EditableCell = props => {
       </Form.Item>
     );
   };
+  // console.log(record[dataIndex + record.ID]);
 
   return (
     <>
@@ -82,9 +83,7 @@ const EditableCell = props => {
             className="normal-cell-value-wrap"
             style={{ textDecoration: 'line-through', color: 'red' }}
           >
-            {dataIndex === 'OPRT'
-              ? children
-              : record[dataIndex + record.ID]?.replace(/<br>/g, '\n')}
+            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]}
           </div>
         ) : editingindex === record.ID &&
           editable &&
@@ -92,7 +91,7 @@ const EditableCell = props => {
           <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
         ) : (
           <div className="normal-cell-value-wrap">
-            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]?.replace(/<br>/g, '')}
+            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]}
           </div>
         )}
       </td>

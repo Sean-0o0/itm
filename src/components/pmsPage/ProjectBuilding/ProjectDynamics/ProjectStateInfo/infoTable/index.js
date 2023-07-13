@@ -1,11 +1,11 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip, Modal, Tabs} from 'antd';
-import {EncryptBase64} from '../../../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
-import moment from "moment";
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip, Modal, Tabs } from 'antd';
+import { EncryptBase64 } from '../../../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
+import moment from 'moment';
 
-const {TabPane} = Tabs;
+const { TabPane } = Tabs;
 
 export default function InfoTable(props) {
   const [sortedInfo, setSortedInfo] = useState({}); //金额排序
@@ -30,8 +30,7 @@ export default function InfoTable(props) {
   // console.log("🚀 ~ file: index.js:15 ~ InfoTable ~ location:", location)
 
   useEffect(() => {
-    return () => {
-    };
+    return () => {};
   }, [queryType, tableData]);
 
   //获取项目标签数据
@@ -68,7 +67,7 @@ export default function InfoTable(props) {
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
     console.log('handleTableChange', pagination, filters, sorter, extra);
-    const {current = 1, pageSize = 20} = pagination;
+    const { current = 1, pageSize = 20 } = pagination;
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
         handleSearch(current, pageSize, queryType);
@@ -94,7 +93,7 @@ export default function InfoTable(props) {
         return (
           <Tooltip title={text} placement="topLeft">
             <Link
-              style={{color: '#3361ff'}}
+              style={{ color: '#3361ff' }}
               to={{
                 pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                   JSON.stringify({
@@ -123,7 +122,7 @@ export default function InfoTable(props) {
       render: (text, row, index) => {
         return (
           <Link
-            style={{color: '#3361ff'}}
+            style={{ color: '#3361ff' }}
             to={{
               pathname: `/pms/manage/staffDetail/${EncryptBase64(
                 JSON.stringify({
@@ -149,7 +148,9 @@ export default function InfoTable(props) {
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">
-          <span style={{cursor: 'default'}}>{text ? moment(text, 'YYYY-MM-DD').format('YYYY-MM-DD') : '-'}</span>
+          <span style={{ cursor: 'default' }}>
+            {text ? moment(text, 'YYYY-MM-DD').format('YYYY-MM-DD') : '-'}
+          </span>
         </Tooltip>
       ),
     },
@@ -162,9 +163,7 @@ export default function InfoTable(props) {
       ellipsis: true,
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => (
-        <span style={{marginRight: 20}}>{text}%</span>
-      ),
+      render: text => <span style={{ marginRight: 20 }}>{text}%</span>,
     },
     {
       title: '项目金额（元）',
@@ -174,7 +173,7 @@ export default function InfoTable(props) {
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">
-          <span style={{cursor: 'default'}}>{text}</span>
+          <span style={{ cursor: 'default' }}>{text}</span>
         </Tooltip>
       ),
     },
@@ -194,7 +193,7 @@ export default function InfoTable(props) {
                   .map(x => (
                     <div key={x.id} className="tag-item">
                       <Link
-                        style={{color: '#3361ff'}}
+                        style={{ color: '#3361ff' }}
                         to={{
                           pathname: `/pms/manage/labelDetail/${EncryptBase64(
                             JSON.stringify({
@@ -221,7 +220,7 @@ export default function InfoTable(props) {
                           .map(x => (
                             <div key={x.id} className="tag-item">
                               <Link
-                                style={{color: '#3361ff'}}
+                                style={{ color: '#3361ff' }}
                                 to={{
                                   pathname: `/pms/manage/labelDetail/${EncryptBase64(
                                     JSON.stringify({
@@ -242,9 +241,7 @@ export default function InfoTable(props) {
                     }
                     title={null}
                   >
-                    <div className="tag-item">
-                      {getTagData(text, row.XMBQID)?.length - 2}+
-                    </div>
+                    <div className="tag-item">{getTagData(text, row.XMBQID)?.length - 2}+</div>
                   </Popover>
                 )}
               </>
@@ -255,16 +252,16 @@ export default function InfoTable(props) {
     },
   ];
 
-  const handleTabsKeyChange = (activeKey) => {
-    console.log("activeKey", activeKey)
-    setQueryType(activeKey)
+  const handleTabsKeyChange = activeKey => {
+    console.log('activeKey', activeKey);
+    setQueryType(activeKey);
     setPrjName(undefined); //项目名称
     setPrjMnger(undefined); //项目经理
     getTableData(activeKey);
-  }
+  };
 
-  console.log("queryTypequeryType", queryType)
-  console.log("tabledata", tableData)
+  console.log('queryTypequeryType', queryType);
+  console.log('tabledata', tableData);
 
   return (
     <div className="info-table">
@@ -408,7 +405,7 @@ export default function InfoTable(props) {
             />
           </div>
         </TabPane>
-        <TabPane tab="完结项目" key="WJXM">
+        <TabPane tab="完成项目" key="WJXM">
           <div className="project-info-table-box">
             <Table
               loading={tableLoading}

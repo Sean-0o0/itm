@@ -939,8 +939,8 @@ const AddExpense = props => {
         min={0.01}
         step={0.01}
         precision={2}
-        formatter={value => `$ ${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
-        parser={value => value.replace(/\$\s?|(,*)/g, '')}
+        formatter={value => `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',')}
+        // parser={value => value.replace(/\$\s?|(,*)/g, '')}
       />
     ),
   };

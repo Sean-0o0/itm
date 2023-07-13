@@ -6,7 +6,7 @@ import TableBox from './TableBox';
 import { Link } from 'react-router-dom';
 
 export default function CustomReportDetail(props) {
-  const { bgid = -2, routes = [], bgmc = '' } = props;
+  const { bgid = -2, routes = [], bgmc = '', txzt=false } = props;
   const [tableData, setTableData] = useState({
     data: [],
     origin: [], //编辑前的数据
@@ -16,7 +16,6 @@ export default function CustomReportDetail(props) {
   const [edited, setEdited] = useState(false);
   const [monthData, setMonthData] = useState(null); //月份下拉框数据
   const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
-  // const [isFinish, setIsFinish] = useState(false); //完结状态
   const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   useEffect(() => {
@@ -242,6 +241,7 @@ export default function CustomReportDetail(props) {
             edited,
             monthData,
             isAdministrator,
+            txzt,
             isFinish:
               tableData.data.length > 0
                 ? tableData.data[0]['WJZT' + tableData.data[0].ID] === '1'

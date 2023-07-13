@@ -86,7 +86,7 @@ export default function ApportionDetail(props) {
     {
       title: (
         <div className="table-header-diy">
-          分摊比例
+          分摊比例(%)
           <Tooltip
             title="根据分摊金额，自动调整费用金额、分摊比例"
             overlayStyle={{ maxWidth: 300 }}
@@ -149,7 +149,7 @@ export default function ApportionDetail(props) {
     {
       title: (
         <div className="table-header-diy">
-          分摊金额
+          分摊金额(￥)
           <Tooltip
             title="根据费用金额、分摊比例，自动调整分摊金额"
             overlayStyle={{ maxWidth: 300 }}
@@ -376,13 +376,32 @@ export default function ApportionDetail(props) {
     }, 200);
   };
 
+  //勾选
+  const handleApportionCheck = e => {
+    if (!e.target.checked) {
+      Modal.confirm({
+        title: '关闭费用分摊',
+        content: '关闭费用分摊填写的分摊明细会被清空，是否关闭？',
+        onOk: () => {
+          setFormData(p => ({
+            ...p,
+            isApportion: e.target.checked,
+            apportionmentData: [],
+          }));
+          resetFields(['org', 'rate', 'amount', 'org-multiple']);
+          setSelectedRowIds([]);
+          setApportionErrors([]);
+        },
+      });
+    } else {
+      setFormData(p => ({ ...p, isApportion: e.target.checked }));
+    }
+  };
+
   return (
     <div className="apportion-detail-box">
       <div className="top-check-row">
-        <Checkbox
-          checked={isApportion}
-          onChange={e => setFormData(p => ({ ...p, isApportion: e.target.checked }))}
-        >
+        <Checkbox checked={isApportion} onChange={handleApportionCheck}>
           分摊明细
         </Checkbox>
         <div className="check-tip">若本明细的费用由多部门共同承担，请勾选</div>
