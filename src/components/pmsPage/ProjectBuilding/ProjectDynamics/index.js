@@ -38,6 +38,7 @@ export default function ProjectDynamics(props) {
     //项目动态信息-总办会信息
     prjDynamicsZBHInfo = [],
     totalrowsZBH = 0,
+    routes = [],
   } = props;
   const location = useLocation();
 
@@ -84,7 +85,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -126,7 +127,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"
@@ -177,7 +178,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -219,7 +220,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"
@@ -270,7 +271,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -312,7 +313,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"
@@ -363,7 +364,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -406,7 +407,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"
@@ -457,7 +458,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -500,7 +501,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"
@@ -551,7 +552,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -594,7 +595,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"
@@ -645,7 +646,7 @@ export default function ProjectDynamics(props) {
                         }),
                       )}`,
                       state: {
-                        routes: [{name: '项目建设情况', pathname: location.pathname}],
+                        routes: routes,
                       },
                     }}
                     className="table-link-strong"
@@ -688,7 +689,7 @@ export default function ProjectDynamics(props) {
                       }),
                     )}`,
                     state: {
-                      routes: [{name: '项目建设情况', pathname: location.pathname}],
+                      routes: routes,
                     },
                   }}
                   className="table-link-strong"

@@ -94,8 +94,17 @@ export default function YjbmAllTable(props) {
   const getRadarChat = (item) => {
     // console.log("雷达数据",item)
     //获取雷达图数据
-    let max = item.XMZS;
-    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
+    // let max = item.XMZS;
+    let maxtemp = item.XMZS;
+    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : Math.ceil(Math.log(maxtemp)))
+    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : Math.ceil(Math.log(item.XMZS)))
+    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : Math.ceil(Math.log(item.HJXM)))
+    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : Math.ceil(Math.log(item.KTXM)))
+    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : Math.ceil(Math.log(item.ZBXM)))
+    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : Math.ceil(Math.log(item.XCXM)))
+    let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
+    let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM];
+    // let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
     let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
@@ -134,7 +143,7 @@ export default function YjbmAllTable(props) {
           },
           formatter: (a, b) => {
             i++;
-            return `{a|${a}}\n{b|${datavalue[i]}}`
+            return `{a|${a}}\n{b|${totalArr[i]}}`
           }
         },
         indicator: [

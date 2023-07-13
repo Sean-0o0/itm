@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef, Fragment} from 'react';
-import {Modal, Form, message, Spin, Input, Button, Table, Steps, Select, Radio} from 'antd';
+import {Modal, Form, message, Spin, Input, Button, Table, Steps, Select, Radio, Tooltip, Popover} from 'antd';
 import EditCusRepTable from "./EditCusRepTable";
 import PresetTable from "./PresetTable";
 import {FetchQueryProjectInfoAll} from "../../../../../services/projectManage";
@@ -22,15 +22,18 @@ function OprtModal(props) {
     setBgInfo,
     title = ''
   } = props;
+  // console.log("ZDYBGMB",ZDYBGMB);
   const {validateFields, getFieldValue, resetFields, getFieldDecorator} = form;
   const [isSpinning, setIsSpinning] = useState(false); //
   const [curStep, setCurStep] = useState(0); //当前tab ID
   const [fieldData, setFieldData] = useState([]); //传给后端的字段数据
-  const [columnsData, setColumnsData] = useState([]); //字段数据
+  const [columnsData, setColumnsData] = useState([]); //字段数据-不包括填写字段
+  const [allColumnsData, setAllColumnsData] = useState([]); //字段数据-所有
   const [tableData, setTableData] = useState([]); //默认数据
   const [presetData, setPresetData] = useState([]); //预设数据
   const [moduleId, setModuleId] = useState('-1'); //使用模版
   const [moduleFlag, setModuleFlag] = useState(false); //是否使用模版
+  const [popoverVisible, setPopoverVisible] = useState(false); //是否使用模版
   // const [ZDLX, setZDLX] = useState(['分类字段', '填写字段']); //字段类型
   // const [bgDataTemp, setBgDataTemp] = useState([]); //字段类型
 
@@ -74,16 +77,16 @@ function OprtModal(props) {
           return;
         }
       } else {
-        configureCustomReport()
-        setBgInfo({ID: '-1', ...bgInfo});
-        setModuleFlag(false);
-        getBasicData();
+        configureCustomReport().then(() => {
+          form.resetFields('bgmc')
+        })
       }
     });
   };
 
   // 新建自定义报告
-  const configureCustomReport = () => {
+  const configureCustomReport = async () => {
+    setIsSpinning(true);
     const payload = {
       fieldCount: fieldData.length,
       fieldInfo: JSON.stringify(fieldData),
@@ -99,24 +102,31 @@ function OprtModal(props) {
       payload.reportId = bgInfo.ID
     }
     console.log("payloadpayload", payload)
+    // return;
     ConfigureCustomReport({...payload})
       .then(res => {
         if (res?.success) {
           message.success('新增成功', 1);
+          setIsSpinning(false);
           setVisible(false)
+          setBgInfo({ID: '-1', BGMC: ''});
+          setModuleFlag(false);
+          setCurStep(0);
+          getBasicData();
         }
       })
       .catch(e => {
         console.error('🚀自定义报告新增失败', e);
         message.error('新增失败', 1);
-        setTableLoading(false);
+        setIsSpinning(false);
       });
   }
 
   const handleCancel = () => {
     resetFields();
     setModuleFlag(false);
-    setBgInfo({ID: '-1', ...bgInfo});
+    setBgInfo({ID: '-1', BGMC: ''});
+    setCurStep(0);
     setVisible(false);
   };
 
@@ -164,12 +174,81 @@ function OprtModal(props) {
       width: 200,
       render: () => (
         <Fragment>
-          <a style={{color: '#3361ff'}}>查看</a>
+          <Popover
+            title={null}
+            placement="rightTop"
+            trigger="click"
+            visible={popoverVisible}
+            onVisibleChange={getCusRepExp}
+            getPopupContainer={triggerNode => triggerNode.parentNode}
+            autoAdjustOverflow={true}
+            content={getToDoItem()}
+            overlayClassName="cusreport-card-content-popover"
+          >
+            <a style={{color: '#3361ff'}}>查看</a>
+          </Popover>
           <a style={{color: '#3361ff', marginLeft: 6}} onClick={userCusRepExp}>使用</a>
         </Fragment>
       ),
     },
   ];
+
+  //使用模版
+  const getCusRepExp = (visable) => {
+    setPopoverVisible(visable);
+  }
+
+  //待办块
+  const getToDoItem = () => {
+    const mb = JSON.parse(ZDYBGMB[0].note)
+    // console.log("mbmbmbm",mb)
+    return (
+      <>
+        <div style={{
+          fontFamily: 'PingFangSC-Medium, PingFang SC',
+          fontWeight: 'bold',
+          borderRadius: '8px',
+          color: '#606266',
+          display: 'flex',
+          textAlign: 'center',
+          padding: '12px 0',
+          backgroundColor: '#fafafa'
+        }}>
+          <div style={{width: '50%'}}>字段名称</div>
+          <div style={{width: '50%'}}>字段类型</div>
+        </div>
+        <div style={{
+          display: 'flex', maxHeight: '250px',
+          overflowY: 'auto', height: '250px'
+        }}>
+          <div style={{width: '50%', display: 'grid', justifyContent: 'center', padding: '0 24px 16px 24px'}}>
+            {mb.length > 0 && mb.map(item => (
+              <div className="todo-card-box">
+                <div className="todo-card-title">
+                  <div className="todo-card-zdmc" style={{
+                    fontFamily: 'Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC', fontWeight: 400,
+                    color: '#303133'
+                  }}>{item.ZDMC}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+          <div style={{width: '50%', display: 'grid', justifyContent: 'center', padding: '0 24px 16px 24px'}}>
+            {mb.length > 0 && mb.map(item => (
+              <div className="todo-card-box">
+                <div className="todo-card-title">
+                  <div className="todo-card-zdlx" style={{
+                    fontFamily: 'Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC', fontWeight: 400,
+                    color: '#303133'
+                  }}>{item.ZDLX === '1' ? '分类字段' : '填写字段'}</div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </>
+    );
+  };
 
   //使用模版
   const userCusRepExp = () => {
@@ -182,30 +261,41 @@ function OprtModal(props) {
     console.log("datadatadata-asdad", data)
     //处理预设数据
     const columns = [];
+    const allColumns = [];
     const fieldData = [];
     data.map(item => {
-      const c = {
+      if (item.ZDLX === '1') {
+        const c = {
+          title: item.ZDMC,
+          dataIndex: flag ? item.QZZD : 'ZD' + item.ID,
+          editable: true,
+          ZDLX: item.ZDLX,
+        };
+        columns.push(c)
+      }
+      const ac = {
         title: item.ZDMC,
         dataIndex: flag ? item.QZZD : 'ZD' + item.ID,
         editable: true,
         ZDLX: item.ZDLX,
       };
+      allColumns.push(ac)
       const f = {
         ZDLX: item.ZDLX,
         ZDMC: item.ZDMC,
       };
-      columns.push(c)
       fieldData.push(f)
     })
     // console.log("columnscolumns-ccc",columns)
     setFieldData([...fieldData])
     setColumnsData([...columns])
+    setAllColumnsData([...allColumns])
     const keysArr = [];
-    columns.map(c => {
+    allColumns.map(c => {
       keysArr.push(c.dataIndex)
     })
     //bgdata bgmb
-    console.log("keysArrkeysArr-ccc", keysArr)
+    // console.log("keysArrkeysArr-ccc", keysArr)
     if (bgInfo.ID === '-1' || bgInfo.ID === '') {
       const newData = {}
       newData.ID = Date.now();
@@ -237,6 +327,50 @@ function OprtModal(props) {
       })
       console.log("newDataArr-ccc", newDataArr)
       setTableData([...newDataArr])
+
+      //处理默认数据
+      //处理预设数据
+      let newObj = null
+      const newDataSource = [];
+      newDataArr.map((item) => {
+        let keysArr = Object.keys(item)
+        newObj = JSON.parse(JSON.stringify(item));
+        keysArr.map(i => {
+          //处理字段ZD
+          if (i !== 'key' && i !== 'ID' && i !== 'YF' && i !== 'GXZT' && i !== 'SYJL' && !i.includes('GLXM') && !i.includes('TXR') && i !== 'newDataFlag') {
+            let index = i.indexOf("Z");//获取第一个"Z"的位置
+            let after1 = i.substring(index + 1);
+            newObj["Z" + after1] = item[i];
+            delete newObj[i];
+          }
+          if (i !== 'key' || i !== 'ID') {
+            delete newObj['key'];
+            delete newObj['ID'];
+          }
+          if (i.includes('GLXM')) {
+            newObj["GLXM"] = item[i];
+            delete newObj[i];
+          }
+          if (i.includes('TXR')) {
+            newObj["TXR"] = item[i];
+            delete newObj[i];
+          }
+          if (i === 'YF') {
+            newObj["YF"] = item[i];
+            delete item[i];
+          }
+          if (i === 'GXZT') {
+            newObj["GXZT"] = item[i];
+            delete item[i];
+          }
+          if (i === 'SYJL') {
+            newObj["SYJL"] = item[i];
+            delete item[i];
+          }
+        })
+        newDataSource.push(newObj)
+      })
+      setPresetData([...newDataSource])
     }
   }
 
@@ -323,7 +457,7 @@ function OprtModal(props) {
             </Form.Item>
             <Form.Item label="报告类型" labelCol={{span: 3}} wrapperCol={{span: 21}}>
               {getFieldDecorator('bglx', {
-                initialValue: bgInfo.LX || '',
+                initialValue: bgInfo.LX || '1',
                 rules: [
                   {
                     required: true,
@@ -332,11 +466,14 @@ function OprtModal(props) {
                 ],
               })(
                 <Radio.Group className="item-component">
-                  {BGLX.map(x => (
-                    <Radio key={x.ibm} value={x.ibm}>
-                      {x.note}
-                    </Radio>
-                  ))}
+                  {/*{BGLX.map(x => (*/}
+                  {/*  <Radio key={x.ibm} value={x.ibm}>*/}
+                  {/*    {x.note}*/}
+                  {/*  </Radio>*/}
+                  {/*))}*/}
+                  <Radio key='1' value='1'>
+                    月报
+                  </Radio>
                 </Radio.Group>,
               )}
             </Form.Item>
@@ -346,7 +483,7 @@ function OprtModal(props) {
                 rowKey={'MBMC'}
                 dataSource={[
                   {
-                    MBMC: 'xxxx模板名称',
+                    MBMC: ZDYBGMB[0]?.cbm,
                   },
                 ]}
                 pagination={false}
@@ -379,6 +516,7 @@ function OprtModal(props) {
               tableData={tableData}
               setTableData={setTableData}
               columns={columnsData}
+              allColumnsData={allColumnsData}
               presetTablDataSourceCallback={presetTablDataSourceCallback}
             />
           </Form.Item>

@@ -127,6 +127,7 @@ export default function ProjectStatisticsInfo(props) {
         })}
       </Breadcrumb>
       <TopConsole
+        orgID={orgID}
         dictionary={props.dictionary}
         setTableData={setTableData}
         setTotal={setTotal}

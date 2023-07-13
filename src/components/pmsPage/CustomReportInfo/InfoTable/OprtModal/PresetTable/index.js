@@ -1,6 +1,6 @@
 import {Form, Input, message, Popconfirm, Select, Table} from 'antd';
 import React from "react";
-import {QueryMemberInfo, QueryProjectListPara} from "../../../../../../services/pmsServices";
+import {QueryMemberInfo, QueryProjectListInfo, QueryProjectListPara} from "../../../../../../services/pmsServices";
 
 const {Option} = Select;
 
@@ -130,6 +130,7 @@ class PresetTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      isLoading: false,
       staffData: [],
       prjNameData: [],//关联项目
     };
@@ -193,15 +194,17 @@ class PresetTable extends React.Component {
   };
 
   handleAdd = (index, record) => {
-    const {setTableData, columns} = this.props;
+    const {setTableData, allColumnsData} = this.props;
     const arrData = [...this.props.tableData];
     const keysArr = [];
-    columns.map(c => {
+    allColumnsData.map(c => {
       keysArr.push(c.dataIndex)
     })
-    console.log("keysArrkeysArr", keysArr)
-    console.log("keysArrkeysArr", keysArr)
-    console.log("arrDataarrData", arrData)
+    keysArr.push('GLXM')
+    keysArr.push('TXR')
+    // console.log("keysArrkeysArr", keysArr)
+    // console.log("keysArrkeysArr", keysArr)
+    // console.log("arrDataarrData", arrData)
     const newData = {}
     newData.ID = Date.now();
     newData.key = Date.now();
@@ -213,11 +216,11 @@ class PresetTable extends React.Component {
       if (i === 'GLXM' || i === 'TXR') {
         newData[i + newData.ID] = record[i + record.ID]
       } else {
-        Object.assign(newData, {[newData.ID + i]: record[record.ID + i]})
+        Object.assign(newData, {[newData.ID + i]: record[record.ID + i] ? record[record.ID + i] : 'undefined'})
       }
     })
     arrData.splice(index + 1, 0, newData)
-    // console.log("arrDataarrData",arrData)
+    console.log("arrDataarrData", arrData)
     setTableData([...arrData])
     this.callbackData([...arrData]);
   };
@@ -226,7 +229,7 @@ class PresetTable extends React.Component {
   callbackData = (tableData) => {
     const {presetTablDataSourceCallback} = this.props;
     const arr = JSON.parse(JSON.stringify(tableData));
-    console.log("arrarr", arr)
+    // console.log("arrarr", arr)
     //处理预设数据
     let newObj = null
     const newDataSource = [];
@@ -275,37 +278,87 @@ class PresetTable extends React.Component {
   handleSave = row => {
     const {presetTablDataSourceCallback, tableData, setTableData} = this.props;
     const newData = [...tableData];
-    console.log("newDatanewData", newData)
+    // console.log("newDatanewData", newData)
     const index = newData.findIndex(item => row.ID === item.ID);
     const item = newData[index];
-    console.log("rowrow", row)
-    console.log("itemitem", item)
+    // console.log("rowrow", row)
+    // console.log("itemitem", item)
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    console.log("newDatanewData2222", newData)
+    // console.log("newDatanewData2222", newData)
     setTableData([...newData]);
     this.callbackData([...newData]);
   };
 
   ZDLXChange = (e, record, index, key) => {
-    console.log("e record, index", e, record, index)
     const {presetTablDataSourceCallback, tableData, setTableData} = this.props;
     let arr = JSON.parse(JSON.stringify(tableData));
-    console.log("arrarr", arr)
-    arr.map(item => {
-      if (item.ID === record.ID) {
-        item[key + item.ID] = e;
-      }
+    // console.log("arrarr", arr)
+    let prjmanage = ''
+    if (key === 'GLXM') {
+      this.getPrjManage(e).then((res) => {
+        if (res?.success) {
+          const rec = JSON.parse(res.record)
+          prjmanage = rec[0].projectManagerId;
+        }
+      }).finally(() => {
+        arr.map(item => {
+          if (item.ID === record.ID) {
+            item[key + item.ID] = e;
+            item['TXR' + item.ID] = prjmanage;
+          }
+        })
+        // console.log("arr", arr)
+        setTableData([...arr])
+        this.callbackData([...arr]);
+      });
+    } else {
+      arr.map(item => {
+        if (item.ID === record.ID) {
+          item[key + item.ID] = e;
+        }
+      })
+      // console.log("arr", arr)
+      setTableData([...arr])
+      this.callbackData([...arr]);
+    }
+  }
+
+  getPrjManage = async (id) => {
+    this.setState({
+      isLoading: true,
     })
-    console.log("arr", arr)
-    setTableData([...arr])
-    this.callbackData([...arr]);
+    const payload = {
+      current: 1,
+      pageSize: 20,
+      paging: -1,
+      sort: "XH DESC,ID DESC",
+      total: -1,
+      queryType: "ALL",
+      projectId: id
+    }
+    return QueryProjectListInfo({...payload})
+      .then(res => {
+        if (res?.success) {
+          this.setState({
+            isLoading: false,
+          })
+          return res;
+        }
+      })
+      .catch(e => {
+        this.setState({
+          isLoading: false,
+        })
+        console.error('handleSearch', e);
+        message.error('查询失败', 1);
+      });
   }
 
   render() {
-    const {staffData = [], prjNameData = []} = this.state;
+    const {staffData = [], prjNameData = [], isLoading = false} = this.state;
     const {columns, tableData} = this.props;
     const components = {
       body: {
@@ -318,11 +371,15 @@ class PresetTable extends React.Component {
       columns.push({
         title: '关联项目',
         dataIndex: 'GLXM',
+        width: '15%',
         // editable: true,
-        ellipsis: true,
+        // ellipsis: true,
         ZDLX: '1',
         render(text, record, index) {
-          return (<Select style={{width: '100%'}} defaultValue={record['GLXM' + record.ID]}
+          return (<Select filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                          showSearch allowClear style={{width: '100%'}} value={record['GLXM' + record.ID]}
+                          defaultValue={record['GLXM' + record.ID]}
                           onChange={(e) => _this.ZDLXChange(e, record, index, 'GLXM')}>
               {prjNameData.map((x, i) => (
                 <Option key={i} value={x.XMID}>
@@ -338,10 +395,13 @@ class PresetTable extends React.Component {
       columns.push({
         title: '填写人',
         dataIndex: 'TXR',
-        ellipsis: true,
+        // ellipsis: true,
         ZDLX: '1',
         render(text, record, index) {
-          return (<Select style={{width: '100%'}} defaultValue={record['TXR' + record.ID]}
+          return (<Select filterOption={(input, option) =>
+              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0}
+                          showSearch allowClear style={{width: '100%'}} value={record['TXR' + record.ID]}
+                          defaultValue={record['TXR' + record.ID]}
                           onChange={(e) => _this.ZDLXChange(e, record, index, 'TXR')}>
               {staffData.map((x, i) => (
                 <Option key={i} value={x.id}>
@@ -354,6 +414,23 @@ class PresetTable extends React.Component {
       })
     }
     ;
+    if (columns.filter(item => item.title === '操作').length === 0) {
+      columns.push({
+        title: '操作',
+        dataIndex: 'operation',
+        width: '140px',
+        fixed: 'right',
+        // ellipsis: true,
+        render: (text, record, index) =>
+          this.props.tableData.length >= 1 ? (
+            <div style={{width: '100%'}}>
+              <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
+                <a style={{color: '#3361ff'}}>删除</a>
+              </Popconfirm>
+              <a style={{color: '#3361ff', marginLeft: 6}} onClick={() => this.handleAdd(index, record)}>下方插入行</a></div>
+          ) : null,
+      })
+    }
     let column = columns?.map(col => {
       if (!col.editable) {
         return col;
@@ -371,25 +448,10 @@ class PresetTable extends React.Component {
         }),
       };
     });
-    //操作列
-    const ext = [
-      {
-        title: '操作',
-        dataIndex: 'operation',
-        width: '10%',
-        render: (text, record, index) =>
-          this.props.tableData.length >= 1 ? (
-            <>
-              <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
-                <a style={{color: '#3361ff'}}>删除</a>
-              </Popconfirm>
-              <a style={{color: '#3361ff', marginLeft: 6}} onClick={() => this.handleAdd(index, record)}>下方插入行</a></>
-          ) : null,
-      }]
-    column = [...column, ...ext];
     return (
       <div>
         <Table
+          loading={isLoading}
           components={components}
           rowKey={record => record.ID}
           rowClassName={() => 'editable-row'}

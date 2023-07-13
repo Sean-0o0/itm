@@ -23,18 +23,18 @@ export default function InfoTable(props) {
     ZDYBGMB = [],
     isAdministrator,
   } = dataProps;
-  const { getBasicData, getTableData, setTableLoading, setTableData } = funcProps;
+  const {getBasicData, getTableData, setTableLoading, setTableData} = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
   const [switchLoading, setSwitchLoading] = useState(false); //禁用调接口加载状态
   const [bgmb, setBgmb] = useState([]); //编辑时查出来的报告模版
   const [bgdata, setBgdata] = useState([]); //编辑时查出来的报告数据
-  const [bgInfo, setBgInfo] = useState({ ID: '' }); //当前编辑的报告基本信息
+  const [bgInfo, setBgInfo] = useState({ID: '', BGMC: ''}); //当前编辑的报告基本信息
   const [title, setTitle] = useState(''); //当前编辑的报告基本信息
   const location = useLocation();
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
-    const { current = 1, pageSize = 20 } = pagination;
+    const {current = 1, pageSize = 20} = pagination;
     setTableData(p => ({
       ...p,
       current,
@@ -184,17 +184,18 @@ export default function InfoTable(props) {
     {
       title: '操作',
       dataIndex: 'OPRT',
-      width: isAdministrator ? '12%' : 0,
+      // width: isAdministrator ? '12%' : 0,
+      width: '12%',
       align: 'center',
       key: 'OPRT',
       ellipsis: true,
       render: (txt, row) => (
         <Fragment>
-          <a style={{ color: '#3361ff' }} onClick={() => handleEditCusRep(row)}>
+          <a style={{color: '#3361ff'}} onClick={() => handleEditCusRep(row)}>
             修改
           </a>
           <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row.ID)}>
-            <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
+            <a style={{color: '#3361ff', marginLeft: 6}}>删除</a>
           </Popconfirm>
         </Fragment>
       ),
@@ -267,15 +268,11 @@ export default function InfoTable(props) {
         BGLX={BGLX}
       />
       <div className="btn-add-prj-box">
-        <Button
-          type="primary"
-          className="btn-add-prj"
-          onClick={() => {
-            setBgInfo({ ID: '' });
-            setTitle('新增报告');
-            setNewRptVisible(true);
-          }}
-        >
+        <Button type="primary" className="btn-add-prj" onClick={() => {
+          setBgInfo({ID: '', BGMC: ''});
+          setTitle("新增报告")
+          setNewRptVisible(true)
+        }}>
           新增
         </Button>
       </div>

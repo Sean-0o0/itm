@@ -123,6 +123,7 @@ class EditCusRepTable extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
+      columns: [],
       dataSource: [],
       count: 0,
     };
@@ -132,7 +133,7 @@ class EditCusRepTable extends React.Component {
     const {ZDYBGMB = [], bgid = '-1',} = this.props;
     let data = []
     const dataSource = [];
-    console.log("bgidbgid", bgid)
+    // console.log("bgidbgid", bgid)
     if (bgid && bgid === '-1') {
       data = JSON.parse(ZDYBGMB[0].note);
     }
@@ -155,7 +156,7 @@ class EditCusRepTable extends React.Component {
 
   componentDidUpdate(prevProps, prevState, snapshot) {
     const {ZDYBGMB = [], bgid = '-1', bgmb = [],} = this.props;
-    console.log("bgidbgid222", bgid)
+    // console.log("bgidbgid222", bgid)
     if (prevProps.bgid !== bgid || prevProps.bgmb !== bgmb) {
       let data = []
       let dataSource = [];
@@ -240,7 +241,7 @@ class EditCusRepTable extends React.Component {
       };
       newArr.push(obj);
     });
-    console.log("newArrnewArr", newArr)
+    // console.log("newArrnewArr-CCC", newArr)
     dataSourceCallback([...newArr]);
   }
 
@@ -262,6 +263,8 @@ class EditCusRepTable extends React.Component {
   render() {
     const {dataSource} = this.state;
     const _this = this;
+    //分类字段最多3个
+    let ZDLXflag = dataSource.filter(item => item['ZDLX' + item.ID] === '1').length > 2;
     let columns = [
       {
         title: '字段名称',
@@ -275,14 +278,19 @@ class EditCusRepTable extends React.Component {
         ellipsis: true,
         render(text, record, index) {
           const ZDLX = [{ibm: '1', note: '分类字段'}, {ibm: '2', note: '填写字段'}]
+          const ZDLX2 = [{ibm: '2', note: '填写字段'}]
           return (<Select style={{width: '100%'}} defaultValue={record['ZDLX' + record.ID]}
                           onChange={(e) => _this.ZDLXChange(e, record, index)}>
               {
-                ZDLX.length > 0 && ZDLX.map((item, index) => {
+                ZDLXflag ? (ZDLX2.length > 0 && ZDLX2.map((item, index) => {
                   return (
                     <Option key={item.ibm} value={item.ibm}>{item.note}</Option>
                   )
-                })
+                })) : (ZDLX.length > 0 && ZDLX.map((item, index) => {
+                  return (
+                    <Option key={item.ibm} value={item.ibm}>{item.note}</Option>
+                  )
+                }))
               }
             </Select>
           )

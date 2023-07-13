@@ -395,6 +395,7 @@ class ProjectBuilding extends Component {
               radioKeys === "项目动态" &&
               <ProjectDynamics
                 //项目动态信息-付款信息
+                routes={routes}
                 prjDynamicsFKInfo={prjDynamicsFKInfo}
                 totalrowsFK={totalrowsFK}
                 //项目动态信息-合同信息

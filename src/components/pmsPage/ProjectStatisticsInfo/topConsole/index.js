@@ -51,6 +51,7 @@ export default forwardRef(function TopConsole(props, ref) {
     prjType,
     setPrjType,
     tabsKey,
+    orgID,
   } = props;
 
   useEffect(() => {
@@ -255,7 +256,7 @@ export default forwardRef(function TopConsole(props, ref) {
       sort,
       total: -1,
       queryType,
-      orgID: 11167,
+      orgID,
     };
     if (prjName !== undefined && prjName !== '') {
       params.projectID = Number(prjName);

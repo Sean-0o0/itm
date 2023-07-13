@@ -271,11 +271,10 @@ export default function DataComparisonRY(props) {
             totalHJXM = item.HJXM;
           }
         })
-        let tooltipData = [{xmlx: '发起项目', data: tooltipDataXMZS}, {xmlx: '获奖项目', data: tooltipDataHJXM},
-          {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '专班项目', data: tooltipDataZBXM}, {
-            xmlx: '参与项目',
-            data: tooltipDataCYXM
-          }]
+        let tooltipData = [{xmlx: '发起项目', data: tooltipDataXMZS}, {xmlx: '参与项目', data: tooltipDataCYXM}, {
+          xmlx: '专班项目',
+          data: tooltipDataZBXM
+        }, {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '获奖项目', data: tooltipDataHJXM}]
         setTooltipData(tooltipData);
         setRadardata(radardata);
         setTotalXMZS(totalXMZS);

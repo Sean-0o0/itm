@@ -19973,7 +19973,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     padding: 0 24px 16px 1px;
     overflow: hidden;
     overflow-y: auto;
-    max-height: 550px;
+    max-height: 580px;
 
     &::-webkit-scrollbar {
       width: 10px;
@@ -20182,6 +20182,49 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       &:focus {
         border-color: #3361ff;
         box-shadow: 0 0 0 2px #3361ff33;
+      }
+    }
+  }
+}
+
+//自定义报告模版popover
+.cusreport-card-content-popover .ant-popover-inner-content {
+  padding: 0;
+  max-height: 300px;
+  //overflow-y: auto;
+  width: 300px;
+  height: 300px;
+  background: #ffffff;
+  border-radius: 8px;
+  box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
+  0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+
+  .todo-card-box:hover {
+    //background: #f5f7fa;
+  }
+
+  .todo-card-box {
+    padding: 16px 0;
+
+    .todo-card-title {
+      width: 100%;
+      display: flex;
+      align-items: center;
+
+      .todo-card-zdmc {
+        //width: 70%;
+        font-size: 14px;
+        font-weight: bold;
+        color: #909399;
+        line-height: 22px;
+      }
+
+      .todo-card-zdlx {
+        //width: 70%;
+        font-size: 14px;
+        font-weight: bold;
+        color: #909399;
+        line-height: 22px;
       }
     }
   }
