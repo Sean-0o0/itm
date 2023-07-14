@@ -760,6 +760,7 @@ class ContractInfoUpdate extends React.Component {
                         allowClear
                         onChange={this.handleGysChange}
                         open={isSelectorOpen}
+                        className="contrast-update-gys-selector"
                         onDropdownVisibleChange={visible =>
                           this.setState({ isSelectorOpen: visible })
                         }
@@ -789,7 +790,7 @@ class ContractInfoUpdate extends React.Component {
                   ></div>
                   <i
                     className="iconfont circle-add"
-                    onClick={() => this.setState({ addSkzhModalVisible: true })}
+                    onClick={() => this.setState({ addGysModalVisible: true })}
                     style={{
                       marginTop: '6px',
                       cursor: 'pointer',
