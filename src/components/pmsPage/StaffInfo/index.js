@@ -254,7 +254,13 @@ export default function StaffInfo(props) {
         <div className="top-name">{data.title || '--'}</div>
         {data.children?.length === 0 ? (
           <div className="item-empty">
-            <Empty description="暂无数据..." />
+            <Empty
+              description="暂无数据..."
+              style={{
+                fontFamily: 'PingFangSC-regular, PingFang SC',
+                fontWeight: 'normal',
+              }}
+            />
           </div>
         ) : (
           <div className="bottom-box">
@@ -299,7 +305,12 @@ export default function StaffInfo(props) {
                       <Empty
                         description="暂无数据..."
                         image={Empty.PRESENTED_IMAGE_SIMPLE}
-                        style={{ width: '100%', margin: 0 }}
+                        style={{
+                          width: '100%',
+                          margin: 0,
+                          fontFamily: 'PingFangSC-regular, PingFang SC',
+                          fontWeight: 'normal',
+                        }}
                       />
                     )}
                     {getAfterItem(itemWidth)}

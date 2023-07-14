@@ -568,6 +568,7 @@ const TableBox = props => {
             </Button>
           </div>
           <MonthPicker
+            allowClear={false}
             value={monthData}
             onChange={handleDateChange}
             style={{ margin: '0 10px', width: '110px', marginRight: 'auto' }}
@@ -586,23 +587,25 @@ const TableBox = props => {
                 </Popconfirm>
               </>
             ) : (
-              <Fragment>
-                {(!isFinish || isAdministrator) && (
-                  <Fragment>
-                    {((txzt && allowEdit) || isAdministrator) && (
-                      <Button onClick={handleEdit}>修改</Button>
-                    )}
-                    {isAdministrator && !isFinish && (
-                      <Popconfirm title="确定要完成吗?" onConfirm={handleFinish}>
-                        <Button style={{ marginLeft: '8px' }}>完成</Button>
-                      </Popconfirm>
-                    )}
-                  </Fragment>
-                )}
-                <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
-                  <Button style={{ marginLeft: '8px' }}>导出</Button>
-                </Popconfirm>
-              </Fragment>
+              tableData.data.length > 0 && (
+                <Fragment>
+                  {(!isFinish || isAdministrator) && (
+                    <Fragment>
+                      {((txzt && allowEdit) || isAdministrator) && (
+                        <Button onClick={handleEdit}>修改</Button>
+                      )}
+                      {isAdministrator && !isFinish && (
+                        <Popconfirm title="是否完成填写?" onConfirm={handleFinish}>
+                          <Button style={{ marginLeft: '8px' }}>完成</Button>
+                        </Popconfirm>
+                      )}
+                    </Fragment>
+                  )}
+                  <Popconfirm title="确定要导出吗?" onConfirm={handleExport}>
+                    <Button style={{ marginLeft: '8px' }}>导出</Button>
+                  </Popconfirm>
+                </Fragment>
+              )
             )}
             {isFinish && <img className="img-finish" src={iconCompleted} alt="" />}
           </div>
@@ -610,7 +613,6 @@ const TableBox = props => {
         <div className="table-content">
           <Table
             onRow={record => {
-              console.log('uuuu');
               return {
                 onClick: () => {
                   if (editing) {

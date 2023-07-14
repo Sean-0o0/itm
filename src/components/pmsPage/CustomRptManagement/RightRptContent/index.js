@@ -12,6 +12,7 @@ import {
   Modal,
   Select,
   Timeline,
+  TreeSelect,
 } from 'antd';
 import {
   SaveCustomReportSetting,
@@ -22,6 +23,10 @@ import {
 } from '../../../../services/pmsServices/index';
 import ConditionFilter from '../ConditionFilter';
 import emptyImg from '../../../../assets/homePage/img_no data@2x.png';
+import { FetchQueryOrganizationInfo } from '../../../../services/projectManage';
+import TreeUtils from '../../../../utils/treeUtils';
+
+const { TreeNode } = TreeSelect;
 
 export default function RightRptContent(props) {
   const { dataProps = {}, funcProps = {} } = props;
@@ -90,16 +95,128 @@ export default function RightRptContent(props) {
 
   //分享人员下拉数据
   const getShareRyData = () => {
-    QueryMemberInfo({
+    FetchQueryOrganizationInfo({
       type: 'XXJS',
     })
       .then(res => {
-        if (res.success) {
-          setShareRyData({ selector: [...JSON.parse(res.record)], value: [] });
+        if (res?.success) {
+          //转树结构
+          function toTreeData(list, label = 'title', value = 'value') {
+            let map = {};
+            let treeData = [];
+
+            list.forEach(item => {
+              map[item.orgId] = item;
+              item[value] = item.orgId;
+              item[label] = item.orgName;
+              item.children = [];
+            });
+
+            // 递归遍历树，处理没有子节点的元素
+            const traverse = node => {
+              if (node.children && node.children.length > 0) {
+                node.children.forEach(child => {
+                  traverse(child);
+                });
+              } else {
+                // 删除空的 children 数组
+                delete node.children;
+              }
+            };
+
+            list.forEach(item => {
+              let parent = map[item.orgFid];
+              if (!parent) {
+                treeData.push(item);
+              } else {
+                parent.children.push(item);
+                item.orgFid = parent.orgId;
+              }
+            });
+
+            // 处理没有子节点的元素
+            treeData.forEach(node => {
+              traverse(node);
+            });
+
+            return treeData;
+          }
+          let data = toTreeData(res.record)[0].children[0].children;
+          console.log('🚀 ~ file: index.js:106 ~ getShareRyData ~ data:', data);
+          QueryMemberInfo({
+            type: 'XXJS',
+          })
+            .then(res => {
+              if (res.success) {
+                let finalData = JSON.parse(JSON.stringify(data));
+                let memberArr = JSON.parse(res.record).map(x => ({
+                  ...x,
+                  title: x.name,
+                  value: x.id,
+                }));
+                finalData.forEach(item => {
+                  let parentArr = [];
+                  memberArr.forEach(y => {
+                    if (y.orgId === item.value) parentArr.push(y);
+                  });
+                  item.children = [
+                    ...parentArr,
+                    ...(item.children || []).filter(x => {
+                      let childArr = [];
+                      memberArr.forEach(y => {
+                        if (y.orgId === x.value) childArr.push(y);
+                      });
+                      return childArr.length > 0;
+                    }),
+                  ];
+                  if (item.value === '11168') {
+                    item.children?.unshift({
+                      gw: '总经理',
+                      value: '1852',
+                      title: '黄玉锋',
+                      orgId: '11168',
+                      orgName: '信息技术开发部',
+                      xb: '男',
+                      xh: '1',
+                    });
+                  }
+                  item.children?.forEach(x => {
+                    let childArr = [];
+                    memberArr.forEach(y => {
+                      if (y.orgId === x.value) childArr.push(y);
+                    });
+                    x.children = [
+                      ...childArr,
+                      ...(x.children || []).filter(m => {
+                        let childArr2 = [];
+                        memberArr.forEach(n => {
+                          if (n.orgId === m.value) childArr2.push(n);
+                        });
+                        return childArr2.length > 0;
+                      }),
+                    ];
+                  });
+                });
+                finalData = finalData.filter(item => {
+                  let parentArr = [];
+                  memberArr.forEach(y => {
+                    if (y.orgId === item.value) parentArr.push(y);
+                  });
+                  return parentArr.length > 0;
+                });
+                console.log('🚀 ~ file: index.js:155 ~ getStaffData ~ finalData:', finalData);
+                setShareRyData({ selector: [...finalData], value: [] });
+              }
+            })
+            .catch(e => {
+              console.log('🚀 ~ file: index.js:152 ~ getShareRyData ~ e:', e);
+              message.error('分享人员下拉数据查询失败', 1);
+            });
         }
       })
       .catch(e => {
-        message.error('分享人员下拉数据查询失败', 1);
+        console.error('🚀部门信息', e);
+        message.error('部门信息获取失败', 1);
       });
   };
 
@@ -239,8 +356,7 @@ export default function RightRptContent(props) {
   //分享浮窗
   const shareContent = () => {
     const onChange = (v, nodeArr) => {
-      let nameArr = nodeArr.map(x => x.props?.name);
-      setShareRyData(p => ({ ...p, value: v, name: nameArr, turnRed: v.length === 0 }));
+      setShareRyData(p => ({ ...p, value: v, name: nodeArr, turnRed: v.length === 0 }));
     };
     const onBlur = () => {
       setShareRyData(p => ({ ...p, turnRed: p.value.length === 0 }));
@@ -301,28 +417,25 @@ export default function RightRptContent(props) {
           help={shareRyData.turnRed ? '分享人员不能为空' : null}
           validateStatus={shareRyData.turnRed ? 'error' : 'success'}
         >
-          <Select
+          <TreeSelect
             style={{ width: '100%' }}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
-            mode="multiple"
             maxTagCount={3}
             maxTagPlaceholder={extraArr => {
               return `等${extraArr.length + 3}个`;
             }}
+            multiple
+            treeDefaultExpandedKeys={['357', '11168']}
             showSearch
+            treeCheckable
+            dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+            dropdownClassName="newproject-treeselect"
             allowClear
             value={shareRyData.value}
+            treeNodeFilterProp="title"
+            showCheckedStrategy="SHOW_CHILD"
             onChange={onChange}
-            placeholder="请选择"
-          >
-            {shareRyData.selector?.map(x => (
-              <Select.Option key={x.id} value={x.id} name={x.name}>
-                {x.name}
-              </Select.Option>
-            ))}
-          </Select>
+            treeData={shareRyData.selector}
+          />
         </Form.Item>
         <div className="footer-btn">
           <Button className="btn-cancel" onClick={onCancel}>
@@ -720,7 +833,10 @@ export default function RightRptContent(props) {
               title={null}
               trigger="click"
               visible={popoverVisible.share}
-              onVisibleChange={v => setPopoverVisible(p => ({ ...p, share: v }))}
+              onVisibleChange={v => {
+                setPopoverVisible(p => ({ ...p, share: v }));
+                setShareRyData(p => ({ ...p, value: [], turnRed: false }));
+              }}
               arrowPointAtCenter
             >
               <Button className="btn-share" type="primary">

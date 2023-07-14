@@ -166,6 +166,7 @@ export default function CustomRptInfo(props) {
                 },
               };
               setData(finalObj);
+              console.log("🚀 ~ file: index.js:169 ~ .then ~ finalObj:", finalObj)
               getSQL({}, finalObj);
             })
             .catch(e => {

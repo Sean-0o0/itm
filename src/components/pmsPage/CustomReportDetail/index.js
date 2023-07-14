@@ -6,7 +6,7 @@ import TableBox from './TableBox';
 import { Link } from 'react-router-dom';
 
 export default function CustomReportDetail(props) {
-  const { bgid = -2, routes = [], bgmc = '', txzt=false } = props;
+  const { bgid = -2, routes = [], bgmc = '' } = props;
   const [tableData, setTableData] = useState({
     data: [],
     origin: [], //编辑前的数据
@@ -29,6 +29,7 @@ export default function CustomReportDetail(props) {
 
   //获取数据
   const getData = (reportID, month) => {
+    setTableLoading(true);
     QueryCustomReportContent({
       current: 1,
       pageSize: 20,
@@ -120,7 +121,7 @@ export default function CustomReportDetail(props) {
                     QZZD: 'TXR',
                   },
                   //上月字段
-                  ...otherArr.map(x => ({
+                  ...(tableArrLast.length === 0 ? [] : otherArr).map(x => ({
                     ZDMC: x.ZDMC + '(上期)',
                     ZDLX: '3', //非分类、非填写
                     QZZD: x.QZZD + '_LAST',
@@ -241,7 +242,10 @@ export default function CustomReportDetail(props) {
             edited,
             monthData,
             isAdministrator,
-            txzt,
+            txzt:
+              tableData.data.length > 0
+                ? tableData.data[0]['BGZT' + tableData.data[0].ID] === '1'
+                : false,
             isFinish:
               tableData.data.length > 0
                 ? tableData.data[0]['WJZT' + tableData.data[0].ID] === '1'

@@ -164,7 +164,7 @@ export default function RepInfos(props) {
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report2"/>
-                      <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                      <Tooltip title={i.BBMC}><div className="rep-infos-bbmc">{i.BBMC}</div></Tooltip>
                       <Popconfirm
                         title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
                         onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
@@ -219,7 +219,7 @@ export default function RepInfos(props) {
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report2"/>
-                      <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                      <Tooltip title={i.BBMC}><div className="rep-infos-bbmc">{i.BBMC}</div></Tooltip>
                       <Popconfirm
                         title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
                         onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}
@@ -327,7 +327,7 @@ export default function RepInfos(props) {
                       <div className="rep-infos-content-box">
                         <div className="rep-infos-name">
                           <i className="rep-infos-icon iconfont icon-report2"/>
-                          <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                         <Tooltip title={i.BBMC}><div className="rep-infos-bbmc">{i.BBMC}</div></Tooltip>
                           <Popconfirm
                             title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
                             onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}

@@ -366,6 +366,7 @@ export default function TopConsole(props) {
     arr.forEach(x => {
       if (x.TJBCXLX === 'YSXM') haveYSXM = true;
     });
+    // console.log("🚀 ~ haveYSXM:", haveYSXM, arr)
     if (haveYSXM) return arr.length + 1;
     return arr.length;
   };
