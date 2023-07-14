@@ -51,7 +51,7 @@ const AddExpense = props => {
     bxbmData,
     setBxbmData,
   } = props;
-  const { getFieldDecorator, getFieldValue, validateFields, resetFields } = form;
+  const { getFieldDecorator, getFieldValue, validateFieldsAndScroll, resetFields } = form;
   const [formData, setFormData] = useState({
     date: '',
     expenseType: 0,
@@ -221,117 +221,124 @@ const AddExpense = props => {
   //提交数据 - 确定
   const handleSubmit = () => {
     console.log(selectorData?.fklcData);
-    validateFields(err => {
+    validateFieldsAndScroll(err => {
+      console.log('🚀 ~ file: index.js:225 ~ handleSubmit ~ err:', err);
       if (!err) {
-        //总分摊金额
-        const zftje = () => {
-          let sum = 0;
-          formData.apportionmentData.forEach(x => {
-            sum += x['FTJE' + x.ID];
-          });
-          return parseFloat(sum.toFixed(2));
-        };
-        //总金额比例
-        const zjebl = () => {
-          let sum = 0;
-          formData.apportionmentData.forEach(x => {
-            sum += x['FTBL' + x.ID];
-            // console.log("🚀 ~ file: index.js:271 ~ zjebl ~ x['FTBL' + x.ID]:", x['FTBL' + x.ID]);
-          });
-          return parseFloat(sum.toFixed(2));
-        };
-        //存在费用金额*分摊比例 ≠ 分摊金额的数据
-        const czsjyc = () => {
-          let bool = false;
-          formData.apportionmentData.forEach(x => {
-            // console.log(
-            //   parseFloat(((getFieldValue('je') * x['FTBL' + x.ID]) / 100).toFixed(2)),
-            //   x['FTJE' + x.ID],
-            // );
-            if (
-              parseFloat((getFieldValue('je') * x['FTBL' + x.ID]).toFixed(2) / 100) !==
-              x['FTJE' + x.ID]
-            ) {
-              bool = true;
-            }
-          });
-          return bool;
-        };
-        let apportionErrorsArr = [];
-        const jexd = zftje() === getFieldValue('je'); //费用金额 = 总分摊金额
-        const blxd = zjebl() === 100; //分摊比例 = 100%
-        if (!jexd) {
-          apportionErrorsArr.push('ftje');
-        }
-        if (!blxd) {
-          apportionErrorsArr.push('ftbl');
-        }
-        console.log('🚀 ~ file: index.js:264 ~ handleSubmit ~ czsjyc():', czsjyc());
-        if (czsjyc()) {
-          apportionErrorsArr.push('sjyc'); //数据异常
-        }
-        //校验变红
-        setApportionErrors(apportionErrorsArr);
-        if (formData.isApportion && formData.apportionmentData.length === 0) {
-          message.error('分摊明细不允许空值', 1);
-        } else if (jexd && blxd && !czsjyc()) {
-          let attachmentArr = [...oaData];
-          formData?.contractFileUrl !== '' &&
-            attachmentArr.push({
-              base64: formData?.contractFileUrl,
-              name: formData?.contractFileName,
+        //校验
+        if (formData.isApportion) {
+          //总分摊金额
+          const zftje = () => {
+            let sum = 0;
+            formData.apportionmentData.forEach(x => {
+              sum += x['FTJE' + x.ID];
             });
-          formData?.checkFileUrl !== '' &&
-            attachmentArr.push({
-              base64: formData?.checkFileUrl,
-              name: formData?.checkFileName,
-            });
-          attachmentArr = attachmentArr.concat([...otherData]);
-
-          let submitData = {
-            id: updateExpense?.id ?? getUUID(),
-            consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
-            date: moment().format('YYYYMMDD'),
-            taxAmount: getFieldValue('se'),
-            je: getFieldValue('je'),
-            fylxInfo,
-            fplxInfo,
-            ysxmInfo,
-            receiptFileInfo: [...receiptDisplay],
-            OAProcessFileInfo: [...oaData],
-            contractFileInfo:
-              formData?.contractFileUrl === ''
-                ? {
-                    base64: '无',
-                    name: '无',
-                  }
-                : {
-                    base64: formData?.contractFileUrl,
-                    name: formData?.contractFileName,
-                  },
-            checkFileInfo:
-              formData?.checkFileUrl === ''
-                ? {
-                    base64: '无',
-                    name: '无',
-                  }
-                : {
-                    base64: formData?.checkFileUrl,
-                    name: formData?.checkFileName,
-                  },
-            attachmentLength: attachmentArr.length,
-            attachmentArr,
-            isFinalPay,
-            lcid: selectorData?.fklcData[0]?.ID || -1,
-            otherFileInfo: [...otherData],
-            apportions: formData.apportionmentData,
-            isApportion: formData.isApportion,
+            return parseFloat(sum.toFixed(2));
           };
-          handleAddExpenseSuccess(submitData);
-          console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
-          //
-          handleClose();
+          //总金额比例
+          const zjebl = () => {
+            let sum = 0;
+            formData.apportionmentData.forEach(x => {
+              sum += x['FTBL' + x.ID];
+              // console.log("🚀 ~ file: index.js:271 ~ zjebl ~ x['FTBL' + x.ID]:", x['FTBL' + x.ID]);
+            });
+            return parseFloat(sum.toFixed(2));
+          };
+          //存在费用金额*分摊比例 ≠ 分摊金额的数据
+          const czsjyc = () => {
+            let bool = false;
+            formData.apportionmentData.forEach(x => {
+              if (
+                parseFloat((getFieldValue('je') * x['FTBL' + x.ID]).toFixed(2) / 100) !==
+                x['FTJE' + x.ID]
+              ) {
+                bool = true;
+              }
+            });
+            return bool;
+          };
+          let apportionErrorsArr = [];
+          const jexd = zftje() === getFieldValue('je'); //费用金额 = 总分摊金额
+          const blxd = zjebl() === 100; //分摊比例 = 100%
+          if (!jexd) {
+            apportionErrorsArr.push('ftje');
+          }
+          if (!blxd) {
+            apportionErrorsArr.push('ftbl');
+          }
+          if (czsjyc()) {
+            apportionErrorsArr.push('sjyc'); //数据异常
+          }
+          setApportionErrors(apportionErrorsArr);
+          if (formData.apportionmentData.length === 0) {
+            message.error('分摊明细不允许空值', 1);
+            return;
+          } else if (!jexd) {
+            message.error('费用金额 ≠ 总分摊金额，请修改后重新提交', 1);
+            return;
+          } else if (!blxd) {
+            message.error('分摊比例 ≠ 100%，请修改后重新提交', 1);
+            return;
+          } else if (czsjyc()) {
+            message.error('存在费用金额*分摊比例 ≠ 分摊金额的数据，请修正', 1);
+            return;
+          }
         }
+        let attachmentArr = [...oaData];
+        formData?.contractFileUrl !== '' &&
+          attachmentArr.push({
+            base64: formData?.contractFileUrl,
+            name: formData?.contractFileName,
+          });
+        formData?.checkFileUrl !== '' &&
+          attachmentArr.push({
+            base64: formData?.checkFileUrl,
+            name: formData?.checkFileName,
+          });
+        attachmentArr = attachmentArr.concat([...otherData]);
+
+        let submitData = {
+          id: updateExpense?.id ?? getUUID(),
+          consumptionReasons: getFieldValue('xfsy') === '' ? '无' : getFieldValue('xfsy'),
+          date: moment().format('YYYYMMDD'),
+          taxAmount: getFieldValue('se'),
+          je: getFieldValue('je'),
+          fylxInfo,
+          fplxInfo,
+          ysxmInfo,
+          receiptFileInfo: [...receiptDisplay],
+          OAProcessFileInfo: [...oaData],
+          contractFileInfo:
+            formData?.contractFileUrl === ''
+              ? {
+                  base64: '无',
+                  name: '无',
+                }
+              : {
+                  base64: formData?.contractFileUrl,
+                  name: formData?.contractFileName,
+                },
+          checkFileInfo:
+            formData?.checkFileUrl === ''
+              ? {
+                  base64: '无',
+                  name: '无',
+                }
+              : {
+                  base64: formData?.checkFileUrl,
+                  name: formData?.checkFileName,
+                },
+          attachmentLength: attachmentArr.length,
+          attachmentArr,
+          isFinalPay,
+          lcid: selectorData?.fklcData[0]?.ID || -1,
+          otherFileInfo: [...otherData],
+          apportions: formData.apportionmentData,
+          isApportion: formData.isApportion,
+        };
+        handleAddExpenseSuccess(submitData);
+        console.log('🚀 ~ file: index.js ~ line 135 ~ handleSubmit ~ submitData', submitData);
+        //
+        handleClose();
       }
     });
   };
@@ -391,8 +398,8 @@ const AddExpense = props => {
 
     // 递归遍历树，处理没有子节点的元素
     const traverse = node => {
-      if (node.children && node.children.length > 0) {
-        node.children.forEach(child => {
+      if (node?.children && node?.children.length > 0) {
+        node?.children.forEach(child => {
           traverse(child);
         });
       } else {
@@ -508,14 +515,14 @@ const AddExpense = props => {
   // const handleDateChange = () => {};
 
   const handleFylxChange = id => {
-    let obj = fylxData?.filter(x => x.ID === id)[0];
+    let obj = fylxData?.filter(x => x.ID === id)[0] || {};
     setFylxInfo(obj);
     // console.log('🚀 ~ file: index.js ~ line 156 ~ handleFylxChange ~ obj', obj);
     // setIsBudget(obj.FID === '20'); //劳务费类型的id 20
     setIsBudget(false); //劳务费类型的id 20
   };
   const handleFplxChange = (id, node) => {
-    setFplxInfo({ ID: id, NAME: node.props.children, BM: node.props.bm });
+    setFplxInfo({ ID: id, NAME: node?.props?.children, BM: node?.props?.bm });
   };
   const handleYsxmChange = id => {
     setYsxmInfo(ysxmData?.filter(x => x.ID === id)[0]);

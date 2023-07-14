@@ -225,6 +225,7 @@ export default function ApportionDetail(props) {
               ...p,
               apportionmentData: dataSource.filter(item => item.ID !== record.ID),
             }));
+            setSelectedRowIds(p => p.filter(item => item.ID !== record.ID));
           }}
         >
           <a style={{ color: '#3361ff' }}>删除</a>
@@ -349,6 +350,7 @@ export default function ApportionDetail(props) {
       ...p,
       apportionmentData: dataSource.filter(item => !selectedRowIds.includes(item.ID)),
     }));
+    setSelectedRowIds([]);
   };
 
   //添加分摊
@@ -450,7 +452,7 @@ export default function ApportionDetail(props) {
               </div>
             )}
           </div>
-          <div className="apportion-errors">
+          {/* <div className="apportion-errors">
             {apportionErrors.includes('ftje')
               ? '费用金额 ≠ 总分摊金额，请修改后重新提交'
               : apportionErrors.includes('ftbl')
@@ -458,7 +460,7 @@ export default function ApportionDetail(props) {
               : apportionErrors.includes('sjyc')
               ? '存在费用金额*分摊比例 ≠ 分摊金额的数据，请修正'
               : ''}
-          </div>
+          </div> */}
           <Form.Item className="apportion-table-box">
             <Table
               columns={columns}

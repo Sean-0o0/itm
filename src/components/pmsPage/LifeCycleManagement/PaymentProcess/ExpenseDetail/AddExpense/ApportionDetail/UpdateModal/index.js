@@ -105,7 +105,7 @@ export default function UpdateModal(props) {
     <Form.Item label="报销部门" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       {getFieldDecorator('org', {
         initialValue: undefined,
-        rules: [{ required: true, message: '报销部门不允许空值' }],
+        rules: !visible ? [] : [{ required: true, message: '报销部门不允许空值' }],
       })(
         <TreeSelect
           allowClear
@@ -118,6 +118,7 @@ export default function UpdateModal(props) {
           dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
           style={{ width: '100%', borderRadius: '8px !important' }}
           treeData={bxbmData}
+          treeDefaultExpandedKeys={['1']}
           onChange={(v, txt, node) =>
             setBxbmObj(p => ({ ...p, ykbid: node?.triggerNode?.props?.YKBID }))
           }
@@ -132,7 +133,7 @@ export default function UpdateModal(props) {
       <Form.Item label="报销部门" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
         {getFieldDecorator('org-multiple', {
           initialValue: [],
-          rules: [{ required: true, message: '报销部门不允许空值' }],
+          rules: !visible ? [] : [{ required: true, message: '报销部门不允许空值' }],
         })(
           <TreeSelect
             allowClear
@@ -149,6 +150,7 @@ export default function UpdateModal(props) {
             style={{ width: '100%', borderRadius: '8px !important' }}
             treeData={bxbmData}
             open={bxbmObj.open}
+            treeDefaultExpandedKeys={['1']}
             onDropdownVisibleChange={v => setBxbmObj(p => ({ ...p, open: v }))}
           />,
         )}
@@ -165,7 +167,7 @@ export default function UpdateModal(props) {
     <Form.Item label="分摊金额(￥)" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       {getFieldDecorator('amount', {
         initialValue: undefined,
-        rules: [{ required: true, message: '分摊金额不允许空值' }],
+        rules: !visible ? [] : [{ required: true, message: '分摊金额不允许空值' }],
       })(
         <InputNumber
           style={{ width: '100%' }}
@@ -184,7 +186,7 @@ export default function UpdateModal(props) {
     <Form.Item label="分摊比例(%)" labelCol={{ span: 5 }} wrapperCol={{ span: 19 }}>
       {getFieldDecorator('rate', {
         initialValue: undefined,
-        rules: [{ required: true, message: '分摊比例不允许空值' }],
+        rules: !visible ? [] : [{ required: true, message: '分摊比例不允许空值' }],
       })(
         <InputNumber
           style={{ width: '100%' }}
@@ -255,9 +257,7 @@ export default function UpdateModal(props) {
       <div className="body-title-box">
         <strong>{getTitle(type)}</strong>
       </div>
-      <div className="upload-receipt-modal-content">
-        {getFormContent(type)}
-      </div>
+      <div className="upload-receipt-modal-content">{getFormContent(type)}</div>
     </Modal>
   );
 }

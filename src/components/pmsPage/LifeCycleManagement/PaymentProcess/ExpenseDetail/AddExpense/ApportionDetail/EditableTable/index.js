@@ -57,6 +57,7 @@ const EditableCell = props => {
                 treeNodeFilterProp="title"
                 placeholder="请选择"
                 dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
+                treeDefaultExpandedKeys={['1']}
                 style={{ width: '100%', borderRadius: '8px !important' }}
                 onChange={(v, txt, node) => {
                   // console.log('🚀 ~ BXBM:', node?.triggerNode?.props?.YKBID);
