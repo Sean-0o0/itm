@@ -320,7 +320,7 @@ const TableBox = props => {
           console.log('🚀 ~ 导出 finalColumns:', finalColumns);
           let dataIndexArr = finalColumns.map(item => item.QZZD);
           let finalArr = [];
-          tableData.data.forEach(obj => {
+          tableArr.forEach(obj => {
             let temp = {};
             dataIndexArr.forEach(dataIndex => {
               let title = finalColumns.find(item => item.QZZD === dataIndex)?.ZDMC;
@@ -595,7 +595,7 @@ const TableBox = props => {
                         <Button onClick={handleEdit}>修改</Button>
                       )}
                       {isAdministrator && !isFinish && (
-                        <Popconfirm title="是否完成填写?" onConfirm={handleFinish}>
+                        <Popconfirm title="该操作无法撤回，是否完成填写?" onConfirm={handleFinish}>
                           <Button style={{ marginLeft: '8px' }}>完成</Button>
                         </Popconfirm>
                       )}

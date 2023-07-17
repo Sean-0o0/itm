@@ -94,7 +94,7 @@ export default function InfoTable(props) {
     {
       title: '报告名称',
       dataIndex: 'BGMC',
-      width: '22%',
+      width: '26%',
       key: 'BGMC',
       ellipsis: true,
       render: (txt, row) => {
@@ -147,16 +147,16 @@ export default function InfoTable(props) {
     },
     {
       title: '最近更新时间',
-      dataIndex: 'ZJGXSJ',
-      width: '12%',
-      key: 'ZJGXSJ',
+      dataIndex: 'XGSJ',
+      width: '14%',
+      key: 'XGSJ',
       ellipsis: true,
-      render: txt => (txt && moment(txt).format('YYYY-MM-DD')) || '',
+      render: txt => (txt && moment(txt).format('YYYY-MM-DD HH:mm:ss')) || '',
     },
     {
       title: '创建日期',
       dataIndex: 'CJRQ',
-      width: '12%',
+      width: '10%',
       key: 'CJRQ',
       ellipsis: true,
       render: txt => (txt && moment(txt).format('YYYY-MM-DD')) || '',
@@ -164,7 +164,7 @@ export default function InfoTable(props) {
     {
       title: '填写状态',
       dataIndex: 'ZT',
-      width: '12%',
+      width: '10%',
       align: 'center',
       key: 'ZT',
       ellipsis: true,
@@ -186,7 +186,7 @@ export default function InfoTable(props) {
       title: '操作',
       dataIndex: 'OPRT',
       // width: isAdministrator ? '12%' : 0,
-      width: '12%',
+      width: '10%',
       align: 'center',
       key: 'OPRT',
       ellipsis: true,

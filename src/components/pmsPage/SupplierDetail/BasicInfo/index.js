@@ -1,5 +1,4 @@
 import { Popover, Tooltip } from 'antd';
-import { node } from 'prop-types';
 import React, { useEffect, useState, useLayoutEffect } from 'react';
 
 export default function BasicInfo(props) {
