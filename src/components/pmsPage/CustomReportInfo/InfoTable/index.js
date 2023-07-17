@@ -185,8 +185,8 @@ export default function InfoTable(props) {
     {
       title: '操作',
       dataIndex: 'OPRT',
-      // width: isAdministrator ? '12%' : 0,
-      width: '10%',
+      width: isAdministrator ? '10%' : 0,
+      // width: '10%',
       align: 'center',
       key: 'OPRT',
       ellipsis: true,
