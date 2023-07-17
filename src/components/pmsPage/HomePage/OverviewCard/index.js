@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import { message, Modal, Popover, Tooltip } from 'antd';
+import { Dropdown, Menu, message, Modal, Popover, Tooltip } from 'antd';
 import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services/pmsServices';
 import InterviewScoreModal from '../../DemandDetail/ProjectItems/InterviewScoreModal';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
@@ -497,6 +497,15 @@ export default function OverviewCard(props) {
     );
   };
 
+  //统计年份
+  const menu = (
+    <Menu>
+      <Menu.Item>2023</Menu.Item>
+      <Menu.Item>2024</Menu.Item>
+      <Menu.Item>2025</Menu.Item>
+    </Menu>
+  );
+
   return (
     <div className="overview-card-box">
       {/* 外包人员面试评分 */}
@@ -611,7 +620,15 @@ export default function OverviewCard(props) {
           <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
         </div>
         <div className="title">
-          <span>{getGreeting()}</span>
+          <div className="title-top">
+            <span>{getGreeting()}</span>
+            <div className="statistic-year">
+              统计年份：
+              <Dropdown overlay={menu}>
+               <span> 2023 <i className="iconfont icon-fill-down" /></span>
+              </Dropdown>
+            </div>
+          </div>
           <div className="desc">
             {overviewInfo?.sm}
             {overviewInfo?.sm && '，'}这是你在****的第

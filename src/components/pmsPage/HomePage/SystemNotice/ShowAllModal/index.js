@@ -110,7 +110,7 @@ export default function ShowAllModal(props) {
   return (
     <Modal
       wrapClassName="editMessage-modify system-notice-all-modal"
-      width={750}
+      width={1000}
       maskClosable={false}
       style={{ top: 60 }}
       maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
