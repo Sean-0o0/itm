@@ -224,7 +224,7 @@ function OprtModal(props) {
     columnsData.forEach(e => {
       filedClounm.push(e.dataIndex)
     })
-    console.log("tableData", tableData)
+    console.log("filedClounmfiledClounm", filedClounm)
     tableData.map((item, index) => {
       let zdArr = [];
       zdArr = Object.keys(item)
@@ -241,7 +241,7 @@ function OprtModal(props) {
         filedClounm.map((z, ind) => {
           if (z.includes('ZD') && zd.includes('ZD') && aczd === z) {
             //console.log("1111-sss",item[zd])
-            if (item[zd] === undefined) {
+            if (item[zd] === undefined || item[zd] === '') {
               //console.log("1111")
               fieldFlag = true;
             }
@@ -337,6 +337,13 @@ function OprtModal(props) {
   };
 
   const handleNext = () => {
+    console.log("1111", allColumnsData)
+    let flag = false;
+    allColumnsData.map(item => {
+      if (item.title === '' || item.title === undefined || item.ZDLX === '' || item.ZDLX === undefined || item.dataIndex === '' || item.dataIndex === undefined) {
+        flag = true;
+      }
+    })
     form.validateFields((err, values) => {
       if (err) {
         const errs = Object.keys(err);
@@ -351,6 +358,10 @@ function OprtModal(props) {
       } else if (columnsData.filter(item => item.ZDLX === '1').length < 1) {
         //至少要有一个分类字段
         message.warn('请至少添加一个分类字段！');
+        return;
+      } else if (flag) {
+        //allColumnsData
+        message.warn('请将预设数据填写完整！');
         return;
       } else {
         setCurStep(1);

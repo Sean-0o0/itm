@@ -203,7 +203,12 @@ class EditCusRepTable extends React.Component {
     const _this = this;
     let columns = [
       {
-        title: '字段名称',
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>字段名称</span>,
         dataIndex: 'ZDMC',
         editable: true,
         render(text, record, index) {
@@ -211,7 +216,12 @@ class EditCusRepTable extends React.Component {
         }
       },
       {
-        title: '字段类型',
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>字段类型</span>,
         dataIndex: 'ZDLX',
         width: '30%',
         ellipsis: true,

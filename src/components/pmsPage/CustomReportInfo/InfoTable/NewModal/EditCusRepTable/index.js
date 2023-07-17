@@ -66,10 +66,10 @@ class EditableCell extends React.Component {
     switch (dataIndex) {
       case 'ZDMC':
         return form.getFieldDecorator(dataIndex + record['ID'], {
-          rules: [{
-            required: true,
-            message: '请输入字段名称'
-          }],
+          // rules: [{
+          //   required: true,
+          //   message: '请输入字段名称'
+          // }],
           initialValue: String(record[dataIndex + record['ID']]),
         })(<Input style={{textAlign: 'center'}}
                   ref={node => (this.input = node)}
@@ -77,10 +77,10 @@ class EditableCell extends React.Component {
                   onBlur={this.save}/>);
       case 'ZDLX':
         return form.getFieldDecorator(dataIndex + record['ID'], {
-          rules: [{
-            required: true,
-            message: '请选择字段类型'
-          }],
+          // rules: [{
+          //   required: true,
+          //   message: '请选择字段类型'
+          // }],
           initialValue: String(record[dataIndex + record['ID']]),
         })(<Select style={{textAlign: 'center'}}
                    ref={node => (this.input = node)}
@@ -210,7 +210,12 @@ class EditCusRepTable extends React.Component {
     const _this = this;
     let columns = [
       {
-        title: '字段名称',
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>字段名称</span>,
         dataIndex: 'ZDMC',
         editable: true,
         render(text, record, index) {
@@ -218,7 +223,12 @@ class EditCusRepTable extends React.Component {
         }
       },
       {
-        title: '字段类型',
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>字段类型</span>,
         dataIndex: 'ZDLX',
         width: '30%',
         ellipsis: true,

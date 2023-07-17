@@ -31,6 +31,7 @@ export default function YjbmAllTable(props) {
     loading = true,
     setLoading,
     getTableData,
+    tabsKeyCallback,
   } = props; //表格数据
   const location = useLocation();
 
@@ -193,10 +194,11 @@ export default function YjbmAllTable(props) {
   }
 
   const toDetail = (item) => {
-    setMemberLoading(true);
-    setDetailVisable(true);
-    setBMMC(item.ORGNAME)
-    getTableDataMember('EJBM_ALL', item.ORGID)
+    tabsKeyCallback(String(item.ORGID))
+    // setMemberLoading(true);
+    // setDetailVisable(true);
+    // setBMMC(item.ORGNAME)
+    // getTableDataMember('EJBM_ALL', item.ORGID)
   }
 
   const handleBack = () => {
@@ -245,7 +247,7 @@ export default function YjbmAllTable(props) {
     })
   }
 
-  // console.log("tableDatatableData",tableData)
+  console.log("tableDatatableData", tableData)
 
   return (
     !detailVisable ? (tableData.length > 0 ?

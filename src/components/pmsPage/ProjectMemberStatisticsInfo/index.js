@@ -35,6 +35,7 @@ export default function ProjectMemberStatisticsInfo(props) {
     setActiveKeyFlag(true)
     setActiveKey(key);
     setLoading(true);
+    console.log("keykeykeykeykey", key)
     if (key === "YJBM_ALL") {
       getTableData(key);
     } else {
@@ -147,6 +148,7 @@ export default function ProjectMemberStatisticsInfo(props) {
             loading={loading}
             tableData={tableData}
             total={total}
+            tabsKeyCallback={tabsKeyCallback}
             getTableData={getTableData}
           /> : <EjbmAllTable
             // 二级部门
