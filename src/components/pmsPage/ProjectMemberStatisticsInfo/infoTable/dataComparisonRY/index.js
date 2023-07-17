@@ -107,7 +107,7 @@ export default function DataComparisonRY(props) {
         }
       },
       radar: [{
-        center: ['50%', '50%'],
+        center: ['50%', '55%'],
         // shape: 'circle',
         radius: 135.5,
         name: {
@@ -409,7 +409,7 @@ export default function DataComparisonRY(props) {
                   option={getRadarChat()}
                   notMerge
                   lazyUpdate
-                  style={{height: '450px'}}
+                  style={{height: '424px'}}
                   theme=""
                 />
               </div>

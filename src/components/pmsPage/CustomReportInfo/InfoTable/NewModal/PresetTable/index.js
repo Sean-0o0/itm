@@ -213,7 +213,6 @@ class PresetTable extends React.Component {
     newData.ID = Date.now();
     newData.key = Date.now();
     newData.SYJL = '-1';
-    ;
     keysArr.map(i => {
       if (i === 'GLXM' || i === 'TXR') {
         //项目和填写人不复制
@@ -288,7 +287,7 @@ class PresetTable extends React.Component {
     // //console.log("itemitem", item)
     newData.splice(index, 1, {
       ...item,
-      // ...row,
+      ...row,
     });
     // //console.log("newDatanewData2222", newData)
     tableDataCallback([...newData]);
@@ -298,8 +297,8 @@ class PresetTable extends React.Component {
   ZDLXChange = (e, record, index, key) => {
     const {tableData, tableDataCallback} = this.props;
     let arr = JSON.parse(JSON.stringify(tableData));
-    //console.log("arrarr-cccc", arr)
-    //console.log("arrarr-c-eeeee", e)
+    console.log("arrarr-cccc", arr)
+    console.log("arrarr-c-eeeee", e)
     let prjmanage = ''
     if (key === 'GLXM') {
       this.getPrjManage(e).then((res) => {

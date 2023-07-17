@@ -422,6 +422,20 @@ function OprtModal(props) {
         newDataArr.push(newData)
       })
       setTableData([...newDataArr])
+    } else {
+      //console.log("tableDatatableData", tableData)
+      const newDataArr = []
+      //初始需要默认有一条空数据
+      const newData = {}
+      newData.ID = Date.now();
+      newData.key = Date.now();
+      newData['GLXM' + newData.ID] = '';
+      newData['TXR' + newData.ID] = '';
+      keysArr.map(i => {
+        Object.assign(newData, {[newData.ID + i]: ''})
+      })
+      newDataArr.push(newData)
+      setTableData([...newDataArr])
     }
 
   }

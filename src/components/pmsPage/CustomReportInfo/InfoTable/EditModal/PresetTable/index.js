@@ -293,7 +293,7 @@ class PresetTable extends React.Component {
     console.log("itemitem", item)
     newData.splice(index, 1, {
       ...item,
-      // ...row,
+      ...row,
     });
     console.log("newDatanewData2222", newData)
     tableDataCallback([...newData]);

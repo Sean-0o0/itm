@@ -124,7 +124,7 @@ export default function YjbmAllTable(props) {
         show: false,
       },
       radar: [{
-        center: ['50%', '50%'],
+        center: ['50%', '55%'],
         // shape: 'circle',
         radius: 68,
         name: {
