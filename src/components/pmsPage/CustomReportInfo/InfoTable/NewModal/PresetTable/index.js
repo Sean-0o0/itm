@@ -60,17 +60,17 @@ class EditableCell extends React.Component {
 
   renderItem = (form, dataIndex, record) => {
     switch (dataIndex) {
-      case 'ZD1':
-        return form.getFieldDecorator(record['ID'] + dataIndex, {
-          // rules: [{
-          //   required: true,
-          //   message: '请输入字段名称'
-          // }],
-          initialValue: String(record[record['ID'] + dataIndex]),
-        })(<Input style={{textAlign: 'center'}}
-                  ref={node => (this.input = node)}
-                  onPressEnter={this.save}
-                  onBlur={this.save}/>);
+      // case dataIndex.includes('ZD'):
+      //   return form.getFieldDecorator(record['ID'] + dataIndex, {
+      //     rules: [{
+      //       required: true,
+      //       message: '请将数据填写完整!'
+      //     }],
+      //     initialValue: String(record[record['ID'] + dataIndex]),
+      //   })(<Input style={{textAlign: 'center'}}
+      //             ref={node => (this.input = node)}
+      //             onPressEnter={this.save}
+      //             onBlur={this.save}/>);
       case 'GLXM':
         return form.getFieldDecorator(record['ID'] + dataIndex, {
           // rules: [{
@@ -82,17 +82,17 @@ class EditableCell extends React.Component {
                    ref={node => (this.input = node)}
                    onPressEnter={this.save}
                    onBlur={this.save}/>);
-      // case 'TXR':
-      //   return form.getFieldDecorator(record['ID'] + dataIndex, {
-      //     // rules: [{
-      //     //   required: true,
-      //     //   message: '请选择字段类型'
-      //     // }],
-      //     initialValue: String(record[record['ID'] + dataIndex]),
-      //   })(<Select style={{textAlign: 'center'}}
-      //              ref={node => (this.input = node)}
-      //              onPressEnter={this.save}
-      //              onBlur={this.save}/>);
+      case 'TXR':
+        return form.getFieldDecorator(record['ID'] + dataIndex, {
+          rules: [{
+            required: true,
+            message: '请选择填写人！'
+          }],
+          initialValue: String(record[record['ID'] + dataIndex]),
+        })(<Select style={{textAlign: 'center'}}
+                   ref={node => (this.input = node)}
+                   onPressEnter={this.save}
+                   onBlur={this.save}/>);
       default:
         return form.getFieldDecorator(record['ID'] + dataIndex, {
           initialValue: String(record[record['ID'] + dataIndex]),
@@ -133,8 +133,15 @@ class PresetTable extends React.Component {
       isLoading: false,
       staffData: [],
       prjNameData: [],//关联项目
+      dataSource: [],
     };
   }
+
+  // componentWillReceiveProps(nextProps){
+  //   this.setState({
+  //     dataSource:[...nextProps.tableData],
+  //   })
+  // }
 
   componentDidMount() {
     //人员信息
@@ -188,45 +195,36 @@ class PresetTable extends React.Component {
   };
 
   handleDelete = key => {
-    const {setTableData} = this.props;
-    const tableData = [...this.props.tableData];
-    setTableData([...tableData.filter(item => item.key !== key)]);
+    const {tableDataCallback, tableData} = this.props;
+    const newtableData = JSON.parse(JSON.stringify(tableData));
+    tableDataCallback([...newtableData.filter(item => item.key !== key)]);
   };
 
   handleAdd = (index, record) => {
-    const {setTableData, allColumnsData} = this.props;
-    const arrData = [...this.props.tableData];
+    const {tableDataCallback, allColumnsData, tableData} = this.props;
+    const arrData = JSON.parse(JSON.stringify(tableData))
     const keysArr = [];
-    console.log("allColumnsData", allColumnsData)
-    console.log("arrData", arrData)
     allColumnsData.map(c => {
       keysArr.push(c.dataIndex)
     })
     keysArr.push('GLXM')
     keysArr.push('TXR')
-    keysArr.push('YF')
-    keysArr.push('GXZT')
-    keysArr.push('SYJL')
-    // console.log("keysArrkeysArr", keysArr)
-    // console.log("keysArrkeysArr", keysArr)
-    // console.log("arrDataarrData", arrData)
     const newData = {}
     newData.ID = Date.now();
     newData.key = Date.now();
-    // newData.SYJL = '-1';
-    // newData.GLXM = '';
-    // newData.TXR = '';
-    // newData.newDataFlag = true;
+    newData.SYJL = '-1';
+    ;
     keysArr.map(i => {
-      if (i === 'YF' || i === 'GXZT' || i === 'SYJL' || i === 'GLXM' || i === 'TXR') {
-        newData[i + newData.ID] = record[i + record.ID]
+      if (i === 'GLXM' || i === 'TXR') {
+        //项目和填写人不复制
+        // newData[i + newData.ID] = record[i + record.ID]
       } else {
-        Object.assign(newData, {[newData.ID + i]: record[record.ID + i] ? record[record.ID + i] : 'undefined'})
+        Object.assign(newData, {[newData.ID + i]: record[record.ID + i] ? record[record.ID + i] : ''})
       }
     })
     arrData.splice(index + 1, 0, newData)
-    console.log("arrDataarrData", arrData)
-    setTableData([...arrData])
+    //console.log("arrDataarrData", arrData)
+    tableDataCallback([...arrData])
     this.callbackData([...arrData]);
   };
 
@@ -234,7 +232,7 @@ class PresetTable extends React.Component {
   callbackData = (tableData) => {
     const {presetTablDataSourceCallback} = this.props;
     const arr = JSON.parse(JSON.stringify(tableData));
-    console.log("arrarr", arr)
+    //console.log("arrarr", arr)
     //处理预设数据
     let newObj = null
     const newDataSource = [];
@@ -281,26 +279,27 @@ class PresetTable extends React.Component {
 
 
   handleSave = row => {
-    const {presetTablDataSourceCallback, tableData, setTableData} = this.props;
-    const newData = [...tableData];
-    // console.log("newDatanewData", newData)
+    const {presetTablDataSourceCallback, tableData, tableDataCallback} = this.props;
+    const newData = JSON.parse(JSON.stringify(tableData))
+    // //console.log("newDatanewData", newData)
     const index = newData.findIndex(item => row.ID === item.ID);
     const item = newData[index];
-    // console.log("rowrow", row)
-    // console.log("itemitem", item)
+    // //console.log("rowrow", row)
+    // //console.log("itemitem", item)
     newData.splice(index, 1, {
       ...item,
-      ...row,
+      // ...row,
     });
-    // console.log("newDatanewData2222", newData)
-    setTableData([...newData]);
+    // //console.log("newDatanewData2222", newData)
+    tableDataCallback([...newData]);
     this.callbackData([...newData]);
   };
 
   ZDLXChange = (e, record, index, key) => {
-    const {presetTablDataSourceCallback, tableData, setTableData} = this.props;
+    const {tableData, tableDataCallback} = this.props;
     let arr = JSON.parse(JSON.stringify(tableData));
-    // console.log("arrarr", arr)
+    //console.log("arrarr-cccc", arr)
+    //console.log("arrarr-c-eeeee", e)
     let prjmanage = ''
     if (key === 'GLXM') {
       this.getPrjManage(e).then((res) => {
@@ -310,13 +309,16 @@ class PresetTable extends React.Component {
         }
       }).finally(() => {
         arr.map(item => {
-          if (item.ID === record.ID) {
+          if (item.ID === record.ID && e !== undefined) {
             item[key + item.ID] = e;
             item['TXR' + item.ID] = prjmanage;
+          } else if (item.ID === record.ID && e === undefined) {
+            item[key + item.ID] = '';
+            item['TXR' + item.ID] = '';
           }
         })
-        // console.log("arr", arr)
-        setTableData([...arr])
+        // //console.log("arr", arr)
+        tableDataCallback([...arr])
         this.callbackData([...arr]);
       });
     } else {
@@ -325,8 +327,8 @@ class PresetTable extends React.Component {
           item[key + item.ID] = e;
         }
       })
-      // console.log("arr", arr)
-      setTableData([...arr])
+      // //console.log("arr", arr)
+      tableDataCallback([...arr])
       this.callbackData([...arr]);
     }
   }
@@ -363,8 +365,10 @@ class PresetTable extends React.Component {
   }
 
   render() {
-    const {staffData = [], prjNameData = [], isLoading = false} = this.state;
+    const {staffData = [], prjNameData = [], isLoading = false,} = this.state;
     const {columns, tableData} = this.props;
+    //console.log("tableDatatableData", tableData)
+    //console.log("columns", columns)
     const components = {
       body: {
         row: EditableFormRow,
@@ -372,11 +376,11 @@ class PresetTable extends React.Component {
       },
     };
     const _this = this;
-    if (columns.filter(item => item.title === '关联项目').length === 0) {
+    if (columns.filter(item => item.dataIndex === 'TXR').length === 0) {
       columns.push({
         title: '关联项目',
         dataIndex: 'GLXM',
-        width: '15%',
+        // width: '15%',
         // editable: true,
         // ellipsis: true,
         ZDLX: '1',
@@ -396,11 +400,17 @@ class PresetTable extends React.Component {
         }
       })
     }
-    if (columns.filter(item => item.title === '填写人').length === 0) {
+    if (columns.filter(item => item.dataIndex === 'TXR').length === 0) {
       columns.push({
-        title: '填写人',
+        title: <span style={{color: '#606266', fontWeight: 500}}><span style={{
+          fontFamily: 'SimSun, sans-serif',
+          color: '#f5222d',
+          marginRight: '4px',
+          lineHeight: 1
+        }}>*</span>填写人</span>,
         dataIndex: 'TXR',
         // ellipsis: true,
+        width: '140px',
         ZDLX: '1',
         render(text, record, index) {
           return (<Select filterOption={(input, option) =>
@@ -418,8 +428,7 @@ class PresetTable extends React.Component {
         }
       })
     }
-    ;
-    if (columns.filter(item => item.title === '操作').length === 0) {
+    if (columns.filter(item => item.dataIndex === 'operation').length === 0) {
       columns.push({
         title: '操作',
         dataIndex: 'operation',
@@ -427,7 +436,7 @@ class PresetTable extends React.Component {
         fixed: 'right',
         // ellipsis: true,
         render: (text, record, index) =>
-          this.props.tableData.length >= 1 ? (
+          tableData.length >= 1 ? (
             <div style={{width: '100%'}}>
               <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
                 <a style={{color: '#3361ff'}}>删除</a>
@@ -463,7 +472,7 @@ class PresetTable extends React.Component {
           bordered
           dataSource={tableData}
           columns={column}
-          scroll={{x: 1500}}
+          scroll={{x: columns.length * 180}}
           pagination={false}
         />
       </div>

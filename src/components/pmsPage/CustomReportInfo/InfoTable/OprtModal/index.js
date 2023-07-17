@@ -106,7 +106,7 @@ function OprtModal(props) {
     ConfigureCustomReport({...payload})
       .then(res => {
         if (res?.success) {
-          message.success('新增成功', 1);
+          message.success(payload.operateType === "UPDATE" ? '编辑成功！' : '新增成功！', 1);
           setIsSpinning(false);
           setVisible(false)
           setBgInfo({ID: '-1', BGMC: ''});
@@ -306,18 +306,19 @@ function OprtModal(props) {
       keysArr.map(i => {
         Object.assign(newData, {[newData.ID + i]: ''})
       })
+      console.log("newDataArr-ccc", newData)
       setTableData([newData])
     } else {
       const newDataArr = [];
-      // console.log("bgdata-ccc",bgdata)
-      // console.log("keysArr",keysArr)
+      console.log("bgdata-ccc", bgdata)
+      console.log("keysArr", keysArr)
       bgdata.map((item, index) => {
-        const newData = {}
+        let newData = {}
         newData.ID = item.ID;
         newData.key = item.ID;
-        newData.YF = item.YF;
-        newData.GXZT = item.GXZT
-        newData.SYJL = item.SYJL;
+        newData['YF' + newData.ID] = item.YF;
+        newData['GXZT' + newData.ID] = item.GXZT
+        newData['SYJL' + newData.ID] = item.SYJL;
         newData['GLXM' + newData.ID] = item.GLXMID;
         newData['TXR' + newData.ID] = item.TXRID;
         keysArr.map(i => {
@@ -325,7 +326,7 @@ function OprtModal(props) {
         })
         newDataArr.push(newData)
       })
-      console.log("newDataArr-ccc", newDataArr)
+      console.log("newDataArr-ccc111", newDataArr)
       setTableData([...newDataArr])
 
       //处理默认数据
@@ -337,7 +338,7 @@ function OprtModal(props) {
         newObj = JSON.parse(JSON.stringify(item));
         keysArr.map(i => {
           //处理字段ZD
-          if (i !== 'key' && i !== 'ID' && i !== 'YF' && i !== 'GXZT' && i !== 'SYJL' && !i.includes('GLXM') && !i.includes('TXR') && i !== 'newDataFlag') {
+          if (i !== 'key' && i !== 'ID' && !i.includes('YF') && !i.includes('GXZT') && !i.includes('SYJL') && !i.includes('GLXM') && !i.includes('TXR') && i !== 'newDataFlag') {
             let index = i.indexOf("Z");//获取第一个"Z"的位置
             let after1 = i.substring(index + 1);
             newObj["Z" + after1] = item[i];
@@ -355,17 +356,17 @@ function OprtModal(props) {
             newObj["TXR"] = item[i];
             delete newObj[i];
           }
-          if (i === 'YF') {
+          if (i.includes('YF')) {
             newObj["YF"] = item[i];
-            delete item[i];
+            delete newObj[i];
           }
-          if (i === 'GXZT') {
+          if (i.includes('GXZT')) {
             newObj["GXZT"] = item[i];
-            delete item[i];
+            delete newObj[i];
           }
-          if (i === 'SYJL') {
+          if (i.includes('SYJL')) {
             newObj["SYJL"] = item[i];
-            delete item[i];
+            delete newObj[i];
           }
         })
         newDataSource.push(newObj)
@@ -497,6 +498,7 @@ function OprtModal(props) {
               wrapperCol={{span: 21}}
               style={{marginBottom: 0}}
             >
+              {/*新增/编辑报告字段*/}
               <EditCusRepTable
                 ZDYBGMB={ZDYBGMB}
                 bgid={moduleFlag ? moduleId : bgInfo.ID}

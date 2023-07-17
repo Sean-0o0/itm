@@ -1,15 +1,17 @@
-import React, { Fragment, useEffect, useRef, useState } from 'react';
-import { Button, Table, Popover, message, Tooltip, Switch, Popconfirm } from 'antd';
-import { EncryptBase64 } from '../../../Common/Encrypt';
-import { Link } from 'react-router-dom';
-import { useLocation } from 'react-router';
+import React, {Fragment, useEffect, useRef, useState} from 'react';
+import {Button, Table, Popover, message, Tooltip, Switch, Popconfirm} from 'antd';
+import {EncryptBase64} from '../../../Common/Encrypt';
+import {Link} from 'react-router-dom';
+import {useLocation} from 'react-router';
 import moment from 'moment';
-import OprtModal from './OprtModal';
-import { ConfigureCustomReport, QueryCustomReportContent } from '../../../../services/pmsServices';
+import OprtModal from './NewModal/index';
+import OprtEditModal from './EditModal/index';
+// import OprtModal from './OprtModal';
+import {ConfigureCustomReport, QueryCustomReportContent} from '../../../../services/pmsServices';
 import EditCusRepTable from './OprtModal/EditCusRepTable';
 
 export default function InfoTable(props) {
-  const { dataProps = {}, funcProps = {} } = props;
+  const {dataProps = {}, funcProps = {}} = props;
   const {
     tableLoading,
     tableData = {
@@ -25,6 +27,7 @@ export default function InfoTable(props) {
   } = dataProps;
   const {getBasicData, getTableData, setTableLoading, setTableData} = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
+  const [editRptVisible, setEditRptVisible] = useState(false); //编辑报告显隐
   const [switchLoading, setSwitchLoading] = useState(false); //禁用调接口加载状态
   const [bgmb, setBgmb] = useState([]); //编辑时查出来的报告模版
   const [bgdata, setBgdata] = useState([]); //编辑时查出来的报告数据
@@ -210,7 +213,7 @@ export default function InfoTable(props) {
     queryCustomReportContent(row.ID)
       .then()
       .finally(r => {
-        setNewRptVisible(true);
+        setEditRptVisible(true);
       });
   };
 
@@ -268,13 +271,26 @@ export default function InfoTable(props) {
         setVisible={setNewRptVisible}
         BGLX={BGLX}
       />
+      <OprtEditModal
+        title={title}
+        getBasicData={getBasicData}
+        setBgInfo={setBgInfo}
+        bgInfo={bgInfo}
+        bgmb={bgmb}
+        bgdata={bgdata}
+        ZDYBGMB={ZDYBGMB}
+        basicInfo={tableData.data}
+        visible={editRptVisible}
+        setVisible={setEditRptVisible}
+        BGLX={BGLX}
+      />
       {isAdministrator && (
         <div className="btn-add-prj-box">
           <Button
             type="primary"
             className="btn-add-prj"
             onClick={() => {
-              setBgInfo({ ID: '' });
+              setBgInfo({ID: ''});
               setTitle('新增报告');
               setNewRptVisible(true);
             }}

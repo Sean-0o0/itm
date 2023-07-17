@@ -119,6 +119,9 @@ class EditableCell extends React.Component {
   }
 }
 
+const ZDLX = [{ibm: '1', note: '分类字段'}, {ibm: '2', note: '填写字段'}]
+const ZDLX2 = [{ibm: '2', note: '填写字段'}]
+
 class EditCusRepTable extends React.Component {
   constructor(props) {
     super(props);
@@ -130,108 +133,45 @@ class EditCusRepTable extends React.Component {
     };
   }
 
-  componentDidMount() {
-    const {ZDYBGMB = [], bgid = '-1',} = this.props;
-    let data = []
-    const dataSource = [];
-    // console.log("bgidbgid", bgid)
-    if (bgid && bgid === '-1') {
-      data = JSON.parse(ZDYBGMB[0].note);
-    }
-    data.map((item, index) => {
-      const num = Number(index) + 1
-      dataSource.push({
-        key: num,
-        ID: num,
-        ['ZDMC' + num]: item.ZDMC,
-        ['ZDLX' + num]: item.ZDLX,
-      })
-    })
-    this.setState({
-      dataSource,
-      count: data.length
-    }, () => {
-      this.callbackData()
-    })
-  }
-
-  componentDidUpdate(prevProps, prevState, snapshot) {
-    const {ZDYBGMB = [], bgid = '-1', bgmb = [],} = this.props;
-    // console.log("bgidbgid222", bgid)
-    if (prevProps.bgid !== bgid || prevProps.bgmb !== bgmb) {
-      let data = []
-      let dataSource = [];
-      if (bgid !== '-1') {
-        data = bgmb;
-      } else {
-        data = JSON.parse(ZDYBGMB[0].note);
-      }
-      let count = data.length;
-      data.map((item, index) => {
-        const num = Number(index) + 1
-        dataSource.push({
-          key: num,
-          ID: num,
-          ['ZDMC' + num]: item.ZDMC,
-          ['ZDLX' + num]: item.ZDLX,
-        })
-      })
-      if (bgid === '') {
-        dataSource = []
-        count = 0
-      }
-      this.setState({
-        dataSource,
-        count,
-      }, () => {
-        this.callbackData()
-      })
-    }
-  }
-
   handleDelete = key => {
-    const {dataSourceCallback} = this.props;
-    const dataSource = [...this.state.dataSource];
-    this.setState({dataSource: dataSource.filter(item => item.key !== key)}, () => {
-      this.callbackData()
-    });
+    //console.log("keykey-cc",key)
+    const {presetFieldData, presetFieldDataCallback} = this.props;
+    const dataSource = JSON.parse(JSON.stringify(presetFieldData));
+    presetFieldDataCallback([...dataSource.filter(item => item.key !== key)]);
   };
 
   handleAdd = () => {
-    const {count, dataSource} = this.state;
-    let num = Number(count) + 1
+    const {presetFieldData, presetFieldDataCallback, count} = this.props;
+    let arrnew = [];
+    presetFieldData.forEach(e => {
+      arrnew.push(e.ID)
+    })
+    let num = Number(Math.max(...arrnew)) + 1
     const newData = {
       key: num,
       ID: num,
       ['ZDMC' + num]: '',
       ['ZDLX' + num]: '',
     };
-    this.setState({
-      dataSource: [...dataSource, newData],
-      count: num,
-    }, () => {
-      this.callbackData()
-    });
+    presetFieldDataCallback([...presetFieldData, newData]);
   };
 
   handleSave = row => {
-    const newData = [...this.state.dataSource];
+    const {presetFieldData, presetFieldDataCallback} = this.props;
+    const newData = JSON.parse(JSON.stringify(presetFieldData));
     const index = newData.findIndex(item => row.key === item.key);
     const item = newData[index];
     newData.splice(index, 1, {
       ...item,
       ...row,
     });
-    this.setState({dataSource: newData}, () => {
-      this.callbackData();
-    });
+    presetFieldDataCallback([...newData]);
   };
 
   //表格数据变化回调方法
   callbackData = () => {
-    const {dataSourceCallback} = this.props;
-    const {dataSource} = this.state;
-    const arr = JSON.parse(JSON.stringify(dataSource));
+    const {presetFieldData, presetFieldDataCallback} = this.props;
+    const arr = JSON.parse(JSON.stringify(presetFieldData));
     let newArr = [];
     arr.map((item) => {
       let obj = {
@@ -242,35 +182,33 @@ class EditCusRepTable extends React.Component {
       };
       newArr.push(obj);
     });
-    // console.log("newArrnewArr-CCC", newArr)
-    dataSourceCallback([...newArr]);
+    presetFieldDataCallback([...newArr]);
   }
 
   ZDLXChange = (e, record, index) => {
-    // console.log("e record, index",e, record, index)
-    const {dataSource} = this.state;
-    const arr = JSON.parse(JSON.stringify(dataSource));
-    // console.log("tableData",tableData)
+    // //console.log("e record, index",e, record, index)
+    const {presetFieldData, presetFieldDataCallback} = this.props;
+    const arr = JSON.parse(JSON.stringify(presetFieldData));
+    // //console.log("tableData",tableData)
     arr.map(item => {
       if (item.ID === record.ID) {
         item['ZDLX' + item.ID] = e;
       }
     })
-    this.setState({dataSource: [...arr]}, () => {
-      this.callbackData();
-    })
+    presetFieldDataCallback([...arr])
   }
 
   render() {
-    const {dataSource} = this.state;
+    const {presetFieldData = [], ZDLXflag = false} = this.props;
     const _this = this;
-    //分类字段最多3个
-    let ZDLXflag = dataSource.filter(item => item['ZDLX' + item.ID] === '1').length > 2;
     let columns = [
       {
         title: '字段名称',
         dataIndex: 'ZDMC',
         editable: true,
+        render(text, record, index) {
+          return (<span>{text}</span>)
+        }
       },
       {
         title: '字段类型',
@@ -278,8 +216,6 @@ class EditCusRepTable extends React.Component {
         width: '30%',
         ellipsis: true,
         render(text, record, index) {
-          const ZDLX = [{ibm: '1', note: '分类字段'}, {ibm: '2', note: '填写字段'}]
-          const ZDLX2 = [{ibm: '2', note: '填写字段'}]
           return (<Select style={{width: '100%'}} defaultValue={record['ZDLX' + record.ID]}
                           onChange={(e) => _this.ZDLXChange(e, record, index)}>
               {
@@ -302,7 +238,7 @@ class EditCusRepTable extends React.Component {
         dataIndex: 'operation',
         width: '8%',
         render: (text, record) =>
-          this.state.dataSource.length >= 1 ? (
+          presetFieldData.length >= 1 ? (
             <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
               <a style={{color: '#3361ff'}}>删除</a>
             </Popconfirm>
@@ -338,7 +274,7 @@ class EditCusRepTable extends React.Component {
           components={components}
           rowClassName={() => 'editable-row'}
           bordered
-          dataSource={dataSource}
+          dataSource={presetFieldData}
           columns={columns}
           pagination={false}
         />
