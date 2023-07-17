@@ -121,7 +121,7 @@ export default function InfoDisplay(props) {
         <div className="payment-plan">
           {arr.map((x, i) => (
             <div key={x.ID}>
-              第{toChinesNum(i + 1)}期付款{x.FKJE}万，占总金额{Number(x.BFB || 0) * 100}%，{x.FKZT}
+              第{toChinesNum(i + 1)}期付款{x.FKJE}元，占总金额{Number(x.BFB || 0) * 100}%，{x.FKZT}
             </div>
           ))}
         </div>
