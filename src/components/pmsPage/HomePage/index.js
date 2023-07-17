@@ -1,5 +1,5 @@
 import { message, Spin } from 'antd';
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import {
   QueryBudgetOverviewInfo,
   QueryMemberOverviewInfo,
@@ -9,7 +9,8 @@ import {
   QueryUserRole,
   FetchQueryOwnerMessage,
   FetchQueryOwnerWorkflow,
-  FetchQueryOwnerProjectList, FetchQueryCustomReportList,
+  FetchQueryOwnerProjectList,
+  FetchQueryCustomReportList,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -21,17 +22,18 @@ import SupplierCard from './SupplierCard';
 import TeamCard from './TeamCard';
 import ToDoCard from './ToDoCard';
 import moment from 'moment';
-import AnalyzeRepsCard from "./AnalyzeRepsCard";
-import PrjTracking from "./PrjTracking";
+import AnalyzeRepsCard from './AnalyzeRepsCard';
+import PrjTracking from './PrjTracking';
+import SystemNotice from './SystemNotice';
 
 //金额格式化
 const getAmountFormat = value => {
   if ([undefined, null, '', ' ', NaN].includes(value)) return '';
   return `${value}`.replace(/\B(?=(\d{3})+(?!\d))/g, ',');
 };
-export {getAmountFormat};
+export { getAmountFormat };
 export default function HomePage(props) {
-  const {cacheLifecycles, dictionary} = props;
+  const { cacheLifecycles, dictionary } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [leftWidth, setLeftWidth] = useState('65.48%'); //左侧功能块宽度
   const [itemWidth, setItemWidth] = useState('32%'); //待办、项目每小块宽度
@@ -43,6 +45,7 @@ export default function HomePage(props) {
   const [supplierData, setSupplierData] = useState({}); //供应商情况
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [processData, setProcessData] = useState([]); //流程情况
+  const [noticeData, setNoticeData] = useState([]); //系统公告数据
   const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
   const [total, setTotal] = useState({
     todo: 0,
@@ -159,11 +162,12 @@ export default function HomePage(props) {
       })
         .then(res => {
           if (res?.code === 1) {
-            const {role = ''} = res;
+            const { role = '' } = res;
             setUserRole(role);
             getBudgetData(role);
+            getToDoData(); //公告都要调用
             if (['二级部门领导', '普通人员'].includes(role)) {
-              reflush ? getToDoData() : getProcessData(); //待办刷新时不用刷新流程数据
+              !reflush && getProcessData(); //待办刷新时不用刷新流程数据
             } else {
               getTeamData(role);
             }
@@ -341,7 +345,7 @@ export default function HomePage(props) {
       });
   };
 
-  //获取待办数据
+  //获取待办、系统公告数据
   const getToDoData = () => {
     FetchQueryOwnerMessage({
       cxlx: 'ALL',
@@ -355,7 +359,8 @@ export default function HomePage(props) {
       .then(res => {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
-          setToDoData(p => [...res.record]);
+          setToDoData([...res.record].filter(x => x.xxlx === '1'));
+          setNoticeData([...res.record].filter(x => x.xxlx === '3' || x.xxlx === '4').slice(0, 3));
           setTotal(p => {
             return {
               ...p,
@@ -389,7 +394,6 @@ export default function HomePage(props) {
               process: res.totalrows,
             };
           });
-          getToDoData();
         }
       })
       .catch(e => {
@@ -397,7 +401,6 @@ export default function HomePage(props) {
         message.error('流程情况信息查询失败', 1);
       });
   };
-
 
   return (
     <Spin
@@ -408,7 +411,7 @@ export default function HomePage(props) {
     >
       <div className="home-page-box">
         <div className="row-box">
-          <div className="col-left" style={{width: leftWidth}}>
+          <div className="col-left" style={{ width: leftWidth }}>
             <OverviewCard
               width={leftWidth}
               overviewInfo={overviewInfo}
@@ -418,23 +421,21 @@ export default function HomePage(props) {
               dictionary={dictionary}
               toDoDataNum={total.todo}
             />
-            {['二级部门领导', '普通人员'].includes(userRole) ? (
-              // <ToDoCard
-              //   itemWidth={itemWidth}
-              //   getAfterItem={getAfterItem}
-              //   toDoData={toDoData}
-              //   reflush={() => getUserRole(true)}
-              //   total={total.todo}
-              //   dictionary={dictionary}
-              // />
-              <AnalyzeRepsCard/>
-            ) : (
+            {['二级部门领导', '普通人员'].includes(userRole) ? //   itemWidth={itemWidth} // <ToDoCard
+            //   getAfterItem={getAfterItem}
+            //   toDoData={toDoData}
+            //   reflush={() => getUserRole(true)}
+            //   total={total.todo}
+            //   dictionary={dictionary}
+            // />
+            null : (
               <CptBudgetCard
                 userRole={userRole}
                 budgetData={budgetData}
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
               />
             )}
+            <AnalyzeRepsCard />
             <ProjectCard
               itemWidth={itemWidth}
               getAfterItem={getAfterItem}
@@ -451,26 +452,30 @@ export default function HomePage(props) {
             {/*/>*/}
           </div>
           <div className="col-right">
-            <GuideCard/>
-            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo}/>
+            <GuideCard />
+            <SystemNotice noticeData={noticeData} />
+            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <CptBudgetCard
-                isVertical={true}
-                userRole={userRole}
-                budgetData={budgetData}
-                time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
-              />
+              <Fragment>
+                <CptBudgetCard
+                  isVertical={true}
+                  userRole={userRole}
+                  budgetData={budgetData}
+                  time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                />
+                <ProcessCard processData={processData} total={total.process} />
+              </Fragment>
             ) : (
-              <TeamCard teamData={teamData} />
+              <Fragment>
+                <TeamCard teamData={teamData} />
+                {supplierData.item?.length > 1 ? (
+                  <SupplierCard
+                    supplierData={supplierData}
+                    time={moment(overviewInfo?.gysgxsj).format('YYYY-MM-DD')}
+                  />
+                ) : null}
+              </Fragment>
             )}
-            {['二级部门领导', '普通人员'].includes(userRole) ? (
-              <ProcessCard processData={processData} total={total.process} />
-            ) : supplierData.item?.length > 1 ? (
-              <SupplierCard
-                supplierData={supplierData}
-                time={moment(overviewInfo?.gysgxsj).format('YYYY-MM-DD')}
-              />
-            ) : null}
           </div>
         </div>
       </div>

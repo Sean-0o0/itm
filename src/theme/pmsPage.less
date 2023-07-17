@@ -2546,12 +2546,13 @@
 
 //信息修改弹窗
 .editMessage-modify {
-  .contrast-update-gys-selector{
-    .ant-select-selection__rendered{
+  .contrast-update-gys-selector {
+    .ant-select-selection__rendered {
       margin-right: 66px;
     }
-    .ant-select-selection__clear, .ant-select-arrow{
-      right: 50px
+    .ant-select-selection__clear,
+    .ant-select-arrow {
+      right: 50px;
     }
   }
 
@@ -8958,7 +8959,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .project-info-table-box {
-      .ants-table-adaptation();
+      .antd-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -9242,7 +9243,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .history-attach-modal {
   .history-attach-body {
     .table-box {
-      .ants-table-adaptation();
+      .antd-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -9585,7 +9586,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     .shortcut-card-box,
     .supplier-card-box,
     .team-card-box,
-    .todo-card-box {
+    .todo-card-box,
+    .system-notice-card-box {
       .function-block();
       padding: 16px 24px 24px 24px;
     }
@@ -10369,6 +10371,80 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
 
+      & > .system-notice-card-box {
+        margin-bottom: 16px;
+
+        & > .notice-box {
+          overflow: hidden;
+          & > .notice-item,
+          & > .notice-item-unclick {
+            display: flex;
+            flex-direction: row;
+            align-items: flex-start;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #333333;
+            line-height: 24px;
+            cursor: pointer;
+
+            .icon-notice-fill {
+              color: #3361ff;
+              font-size: 14px;
+              margin-right: 10px;
+              width: max-content;
+              flex-shrink: 0;
+            }
+
+            .item-title {
+              flex-grow: 1;
+              word-wrap: break-word;
+              overflow: hidden; //溢出内容隐藏
+              text-overflow: ellipsis; //文本溢出部分用省略号表示
+              display: -webkit-box; //特别显示模式
+              -webkit-line-clamp: 2; //行数
+              line-clamp: 2;
+              margin-right: 24px;
+
+              &:before {
+                content: '';
+                float: right;
+                height: 24px;
+              }
+
+              .icon-right {
+                font-size: 14px;
+                float: right;
+                clear: both;
+                // padding-left: 4px;
+              }
+            }
+
+            .item-date {
+              width: max-content;
+              flex-shrink: 0;
+              color: #858585;
+            }
+          }
+          & > .notice-item-unclick {
+            cursor: default;
+            .item-title {
+              &:hover {
+                color: unset;
+                i {
+                  color: unset;
+                }
+              }
+            }
+          }
+          & > .notice-item:hover {
+            .item-title {
+              color: #3361ff;
+            }
+          }
+        }
+      }
+
       & > .shortcut-card-box {
         margin-bottom: 16px;
         padding-bottom: 20px;
@@ -10582,6 +10658,119 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
         }
       }
+    }
+  }
+}
+
+//系统公告 - 全部
+.system-notice-all-modal {
+  .ant-modal-body {
+    padding: 0;
+    overflow: hidden;
+  }
+
+  .content-box {
+    padding: 0 24px 16px 24px;
+    margin-top: 16px;
+    overflow: hidden;
+    overflow-y: auto;
+    height: 450px;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      background-color: #fafafa;
+      border-radius: 5px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 5px;
+      width: 10px;
+    }
+  }
+
+  //日期选择器样式
+  .ant-calendar-picker:hover .ant-calendar-picker-input:not(.ant-input-disabled),
+  .ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled),
+  .ant-input:hover,
+  .ant-input:focus {
+    border-color: #3361ff;
+  }
+
+  .ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled) {
+    box-shadow: 0 0 0 2px #3361ff33;
+  }
+
+  .notice-date {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    margin-bottom: 16px;
+  }
+
+  .antd-table-adaptation();
+  .ant-table {
+    th,
+    td {
+      text-align: left;
+    }
+
+    td {
+      padding: 9.17px !important;
+      font-size: 14px;
+      font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      color: #303133;
+    }
+
+    th {
+      padding: 9.17px !important;
+      font-size: 14px;
+      background-color: #f5f7fa;
+      font-family: PingFangSC-Medium, PingFang SC;
+      font-weight: bold;
+      color: #606266;
+    }
+
+    .ant-table-row-cell-ellipsis {
+      white-space: pre-wrap;
+    }
+
+    .ant-table-body {
+      // min-height: 560px;
+      &::-webkit-scrollbar {
+        width: 10px;
+        background-color: #fafafa;
+        border-radius: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 5px;
+        width: 10px;
+      }
+      table {
+        border: 1px solid #e8e8e8;
+      }
+    }
+
+    .ant-table-scroll .ant-table-header {
+      margin-bottom: -16.5px !important; //表格表头底部边框
+      background-color: #f5f7fa;
+    }
+
+    .ant-table-placeholder {
+      border-bottom: 0;
+
+      .ant-empty-description {
+        font-size: 14px;
+      }
+    }
+
+    .ant-table-thead {
+      position: sticky;
+      top: 0;
+      z-index: 1;
     }
   }
 }
@@ -10863,7 +11052,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .project-info-table-box {
-      .ants-table-adaptation();
+      .antd-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -11347,7 +11536,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .project-info-table-box {
-      .ants-table-adaptation();
+      .antd-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -11945,7 +12134,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         overflow: hidden;
         overflow-y: auto;
         padding-right: 4px;
-        .ants-table-adaptation();
+        .antd-table-adaptation();
 
         .opr-btn-box {
           white-space: nowrap;
@@ -12192,7 +12381,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         overflow: hidden;
         overflow-y: auto;
         padding-right: 4px;
-        .ants-table-adaptation();
+        .antd-table-adaptation();
 
         //项目标签
         .prj-tags {
@@ -12806,7 +12995,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         overflow: hidden;
         overflow-y: auto;
         padding-right: 4px;
-        .ants-table-adaptation();
+        .antd-table-adaptation();
 
         tr.ant-table-expanded-row td > .ant-table-wrapper {
           margin: -10px -10px -10px;
@@ -14935,7 +15124,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .member-detail-table-box {
-      .ants-table-adaptation();
+      .antd-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -16550,7 +16739,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
 
     .project-info-table-box {
-      .ants-table-adaptation();
+      .antd-table-adaptation();
       flex-grow: 1;
       overflow: hidden;
       overflow-y: auto;
@@ -20206,7 +20395,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   background: #ffffff;
   border-radius: 8px;
   box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-  0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
 
   .todo-card-box:hover {
     //background: #f5f7fa;
@@ -20236,5 +20425,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         line-height: 22px;
       }
     }
+  }
+}
+
+.ant-spin-spinning {
+  width: 100%;
+  color: #3361ff !important;
+  .ant-spin-dot-item {
+    background-color: #3361ff;
   }
 }
