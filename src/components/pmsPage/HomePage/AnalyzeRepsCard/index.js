@@ -126,7 +126,8 @@ export default function AnalyzeRepsCard(props) {
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report"/>
-                      <div className="rep-infos-bbmc"><Tooltip title={i.BBMC}>{i.BBMC}</Tooltip></div>
+                      <div className="rep-infos-bbmc"><Tooltip placement="topLeft" title={i.BBMC}>{i.BBMC}</Tooltip>
+                      </div>
                       <Popconfirm
                         title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
                         onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.BBID)}

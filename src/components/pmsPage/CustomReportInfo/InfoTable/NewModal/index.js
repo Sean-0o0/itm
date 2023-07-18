@@ -108,6 +108,7 @@ function OprtModal(props) {
       filedClounm.push({ZDMC: e.ZDMC, dataIndex: e.dataIndex})
     })
     console.log("filedClounmfiledClounm", filedClounm)
+    console.log("tableDatatableData", tableData)
     tableData.map((item, index) => {
       let zdArr = [];
       zdArr = Object.keys(item)
@@ -126,21 +127,23 @@ function OprtModal(props) {
         let after1 = zd.substring(index + 1);
         const aczd = 'Z' + after1
         //校验必填项
-        filedClounmReverse.map((z, ind) => {
-          if (z.dataIndex.includes('ZD') && zd.includes('ZD') && aczd === z.dataIndex) {
-            //console.log("1111-sss",item[zd])
-            if (item[zd] === undefined || item[zd] === '') {
-              fieldFlag = true;
-              fieldName = z.ZDMC;
+        if (zd.includes(item.ID)) {
+          filedClounm.map((z, ind) => {
+            if (z.dataIndex.includes('ZD') && zd.includes('ZD') && aczd === z.dataIndex) {
+              console.log("1111-sss", item[zd])
+              if (item[zd] === undefined || item[zd] === '') {
+                fieldFlag = true;
+                fieldName = z.ZDMC;
+              }
             }
+          })
+          //第几个字段
+          if (zd.includes('ZD')) {
+            let ID = ind + 1;
+            // tab.ID = ind + 1;
+            // tab.key = ind + 1;
+            tab['ZD' + ID] = item[zd] || 'undefined';
           }
-        })
-        //第几个字段
-        if (zd.includes('ZD')) {
-          let ID = ind + 1;
-          // tab.ID = ind + 1;
-          // tab.key = ind + 1;
-          tab['ZD' + ID] = item[zd] || 'undefined';
         }
       })
       tab['GLXM'] = item['GLXM' + item.ID] || '-1';
@@ -192,7 +195,7 @@ function OprtModal(props) {
       })
       .catch(e => {
         console.error('🚀自定义报告新增失败', e);
-        message.error('新增失败', 1);
+        message.error('新增自定义报告失败！', 1);
         setIsSpinning(false);
       });
   }
@@ -243,7 +246,7 @@ function OprtModal(props) {
         return;
       } else if (flag) {
         //allColumnsData
-        message.warn('请将预设数据填写完整！');
+        message.warn('请将报告字段数据填写完整！');
         return;
       } else {
         setCurStep(1);
@@ -298,7 +301,7 @@ function OprtModal(props) {
   //模版查看
   const getMBItem = () => {
     const mb = JSON.parse(ZDYBGMB[0].note)
-    console.log("mbmbmbm", mb)
+    // console.log("mbmbmbm", mb)
     const columns = []
     mb.map(item => {
       columns.push({
@@ -323,8 +326,9 @@ function OprtModal(props) {
     //ZDYBGMB-新增时使用该模版
     const dataSource = [];
     const data = JSON.parse(ZDYBGMB[0].note);
+    //使用模版id从200开始----id没有变动表格数据没有实时更新
     data.map((item, index) => {
-      const num = Number(index) + 1
+      const num = Number(index) + 200
       dataSource.push({
         key: num,
         ID: num,
@@ -407,7 +411,7 @@ function OprtModal(props) {
     })
     //  当前表格内的数据-tableData
     if (tableData.length > 0) {
-      //console.log("tableDatatableData", tableData)
+      console.log("tableDatatableData-ssss", tableData)
       const newDataArr = []
       tableData.map(item => {
         //初始需要默认有一条空数据
@@ -421,6 +425,7 @@ function OprtModal(props) {
         })
         newDataArr.push(newData)
       })
+      console.log("newDataArrnewDataArr-ssss", newDataArr)
       setTableData([...newDataArr])
     } else {
       //console.log("tableDatatableData", tableData)

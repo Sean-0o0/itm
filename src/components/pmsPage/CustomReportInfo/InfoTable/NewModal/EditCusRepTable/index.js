@@ -146,7 +146,7 @@ class EditCusRepTable extends React.Component {
     presetFieldData.forEach(e => {
       arrnew.push(e.ID)
     })
-    console.log("arrnewarrnew", arrnew)
+    // console.log("arrnewarrnew", arrnew)
     let num = 0;
     if (arrnew.length > 0) {
       num = Number(Math.max(...arrnew)) + 1
@@ -159,6 +159,7 @@ class EditCusRepTable extends React.Component {
       ['ZDMC' + num]: '',
       ['ZDLX' + num]: '',
     };
+    console.log("arrnewarrnew", [...presetFieldData, newData])
     presetFieldDataCallback([...presetFieldData, newData]);
   };
 

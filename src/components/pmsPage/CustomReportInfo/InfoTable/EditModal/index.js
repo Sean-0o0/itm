@@ -246,21 +246,23 @@ function OprtModal(props) {
         let after1 = zd.substring(index + 1);
         const aczd = 'Z' + after1
         //校验必填项
-        filedClounm.map((z, ind) => {
-          if (z.dataIndex.includes('ZD') && zd.includes('ZD') && aczd === z.dataIndex) {
-            //console.log("1111-sss",item[zd])
-            if (item[zd] === undefined || item[zd] === '') {
-              fieldFlag = true;
-              fieldName = z.ZDMC;
+        if (zd.includes(item.ID)) {
+          filedClounm.map((z, ind) => {
+            if (z.dataIndex.includes('ZD') && zd.includes('ZD') && aczd === z.dataIndex) {
+              //console.log("1111-sss",item[zd])
+              if (item[zd] === undefined || item[zd] === '') {
+                fieldFlag = true;
+                fieldName = z.ZDMC;
+              }
             }
+          })
+          //第几个字段
+          if (zd.includes('ZD')) {
+            let ID = ind + 1;
+            // tab.ID = ind + 1;
+            // tab.key = ind + 1;
+            tab['ZD' + ID] = item[zd] || 'undefined';
           }
-        })
-        //第几个字段
-        if (zd.includes('ZD')) {
-          let ID = ind + 1;
-          // tab.ID = ind + 1;
-          // tab.key = ind + 1;
-          tab['ZD' + ID] = item[zd] || 'undefined';
         }
       })
       tab['GLXM'] = item['GLXM' + item.ID] || '-1';
@@ -319,7 +321,7 @@ function OprtModal(props) {
       })
       .catch(e => {
         console.error('🚀自定义报告新增失败', e);
-        message.error('新增失败', 1);
+        message.error('编辑自定义报告失败！', 1);
         setIsSpinning(false);
       });
   }
@@ -369,7 +371,7 @@ function OprtModal(props) {
         return;
       } else if (flag) {
         //allColumnsData
-        message.warn('请将预设数据填写完整！');
+        message.warn('请将报告字段数据填写完整！');
         return;
       } else {
         setCurStep(1);
@@ -424,7 +426,7 @@ function OprtModal(props) {
   //模版查看
   const getMBItem = () => {
     const mb = JSON.parse(ZDYBGMB[0].note)
-    console.log("mbmbmbm", mb)
+    // console.log("mbmbmbm", mb)
     const columns = []
     mb.map(item => {
       columns.push({
@@ -449,8 +451,9 @@ function OprtModal(props) {
     //ZDYBGMB-新增时使用该模版
     const dataSource = [];
     const data = JSON.parse(ZDYBGMB[0].note);
+    //使用模版id从200开始----id没有变动表格数据没有实时更新
     data.map((item, index) => {
-      const num = Number(index) + 1
+      const num = Number(index) + 200
       dataSource.push({
         key: num,
         ID: num,

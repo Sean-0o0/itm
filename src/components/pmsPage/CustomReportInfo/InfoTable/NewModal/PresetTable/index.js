@@ -197,7 +197,11 @@ class PresetTable extends React.Component {
   handleDelete = key => {
     const {tableDataCallback, tableData} = this.props;
     const newtableData = JSON.parse(JSON.stringify(tableData));
-    tableDataCallback([...newtableData.filter(item => item.key !== key)]);
+    if (newtableData.length === 1) {
+      message.warn("至少保留一条预设数据!")
+    } else {
+      tableDataCallback([...newtableData.filter(item => item.key !== key)]);
+    }
   };
 
   handleAdd = (index, record) => {
