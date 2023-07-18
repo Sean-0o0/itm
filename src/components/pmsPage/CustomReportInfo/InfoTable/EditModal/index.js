@@ -546,7 +546,7 @@ function OprtModal(props) {
         newData['GLXM' + newData.ID] = item['GLXM' + newData.ID] || '';
         newData['TXR' + newData.ID] = item['TXR' + newData.ID] || '';
         keysArr.map(i => {
-          Object.assign(newData, {[newData.ID + i]: item[newData.ID + i] || ''})
+          Object.assign(newData, {[newData.ID + i]: item[newData.ID + i] ? (item[newData.ID + i] === 'undefined' ? '' : item[newData.ID + i]) : ''})
         })
         newDataArr.push(newData)
       })
