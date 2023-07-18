@@ -7,6 +7,7 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { CreateOperateHyperLink } from '../../../../services/pmsServices';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
+import PaymentModal from './PaymentModal';
 
 const { Item } = Breadcrumb;
 const { SubMenu } = Menu;
@@ -29,10 +30,11 @@ export default function TopConsole(props) {
     xwhfj: false,
     qt: false,
     blgys: false, //补录供应商
+    fklcbl: false,
     title: '',
     url: '#',
-  }); //livebos弹窗显隐
-  const { prjBasic = {}, member = [] } = prjData;
+  }); //livebos弹窗、付款流程补录弹窗显隐
+  const { prjBasic = {}, member = [], payment = [] } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
@@ -323,17 +325,6 @@ export default function TopConsole(props) {
     }));
   };
 
-  // const btnMoreContent = (
-  //   <div className="list">
-  //     <div className="item" onClick={() => handleSqModal()}>
-  //       申请餐券
-  //     </div>
-  //     <div className="item" onClick={() => handleSqModal('申请权限')}>
-  //       申请权限
-  //     </div>
-  //   </div>
-  // );
-
   const btnMoreContent = (
     <Menu>
       {/* <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
@@ -359,14 +350,7 @@ export default function TopConsole(props) {
         <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
         <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
       </SubMenu> */}
-      {/* <SubMenu
-        title={<span style={{ marginLeft: 20 }}>付款补录</span>}
-        arrow-icon={<Icon type="left" />}
-      >
-        <Menu.Item>软件费用审批-有合同流程</Menu.Item>
-        <Menu.Item>设备采购有合同流程信息</Menu.Item>
-        <Menu.Item>设备采购无合同流程</Menu.Item>
-      </SubMenu> */}
+      {/* <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款流程补录</Menu.Item> */}
       {!haveSpl && <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>补录供应商</Menu.Item>}
       <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
       <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
@@ -736,7 +720,10 @@ export default function TopConsole(props) {
           src={lbmodal.url}
         />
       )}
-
+      {/* <PaymentModal
+        dataProps={{ visible: lbmodal.fklcbl, paymentPlan: payment }}
+        funcProps={{ setVisible: v => setLbModal(p => ({ ...p, fklcbl: v })) }}
+      /> */}
       <Breadcrumb separator=">">
         {routes?.map((item, index) => {
           const { name = item, pathname = '' } = item;

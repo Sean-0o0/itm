@@ -66,7 +66,27 @@ const EditableCell = props => {
       </Form.Item>
     );
   };
-  // console.log(record[dataIndex + record.ID]);
+
+  const getTxt = () => {
+    const rec = ['-1', '', ' ', 'undefined'].includes(record[dataIndex + record.ID])
+      ? ''
+      : record[dataIndex + record.ID];
+    switch (dataIndex) {
+      case 'GLXM':
+        if (record['GXZT' + record.ID] === '2')
+          return (
+            <div className="update-col">
+              <span>{rec}</span>
+              <div className="update-tag">已更新</div>
+            </div>
+          );
+        return rec;
+      case 'JHSXSJ':
+        return rec === '' ? '' : moment(rec).format('YYYY-MM-DD');
+      default:
+        return rec;
+    }
+  };
 
   return (
     <>
@@ -83,16 +103,14 @@ const EditableCell = props => {
             className="normal-cell-value-wrap"
             style={{ textDecoration: 'line-through', color: 'red' }}
           >
-            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]}
+            {dataIndex === 'OPRT' ? children : getTxt()}
           </div>
         ) : editingindex === record.ID &&
           editable &&
           (isadministrator || String(record['TXRID' + record.ID]) === LOGIN_USER_ID) ? (
           <EditableContext.Consumer>{renderCell}</EditableContext.Consumer>
         ) : (
-          <div className="normal-cell-value-wrap">
-            {dataIndex === 'OPRT' ? children : record[dataIndex + record.ID]}
-          </div>
+          <div className="normal-cell-value-wrap">{dataIndex === 'OPRT' ? children : getTxt()}</div>
         )}
       </td>
     </>

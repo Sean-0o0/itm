@@ -46,6 +46,10 @@ export default function HomePage(props) {
   const [toDoData, setToDoData] = useState([]); //待办数据
   const [processData, setProcessData] = useState([]); //流程情况
   const [noticeData, setNoticeData] = useState([]); //系统公告数据
+  const [statisticYearData, setStatisticYearData] = useState({
+    dropdown: [], //下拉菜单数据
+    currentYear: moment().year(), //当前年份
+  }); //统计年份数据
   const [placement, setPlacement] = useState('rightTop'); //参与人popover位置
   const [total, setTotal] = useState({
     todo: 0,
@@ -191,6 +195,7 @@ export default function HomePage(props) {
         if (res?.success) {
           // console.log('🚀 ~ QueryBudgetOverviewInfo ~ res', JSON.parse(res?.ysglxx));
           setBudgetData(JSON.parse(res?.ysglxx)[0]);
+          // setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(res.ysqs) }));
           getPrjInfo(role);
         }
       })
@@ -420,11 +425,12 @@ export default function HomePage(props) {
               reflush={() => getUserRole(true)}
               dictionary={dictionary}
               toDoDataNum={total.todo}
+              statisticYearData={statisticYearData}
+              setStatisticYearData={setStatisticYearData}
             />
-            {['二级部门领导', '普通人员'].includes(userRole) ? //   itemWidth={itemWidth} // <ToDoCard
-            //   getAfterItem={getAfterItem}
-            //   toDoData={toDoData}
-            //   reflush={() => getUserRole(true)}
+            {['二级部门领导', '普通人员'].includes(
+              userRole,
+            ) ? //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
             //   total={total.todo}
             //   dictionary={dictionary}
             // />

@@ -39,7 +39,15 @@ export default function ShowAllModal(props) {
   useEffect(() => {
     if (visible) {
       //开启时加载数据
-      getTableData(Number(moment().format('YYYYMMDD')), undefined);
+      getTableData(
+        Number(
+          moment()
+            .subtract(30, 'days')
+            .format('YYYYMMDD'),
+        ),
+        Number(moment().format('YYYYMMDD')),
+      );
+      setDate([moment().subtract(30, 'days'), moment()])
     } else {
       //关闭时重置数据
       setTableData(p => ({

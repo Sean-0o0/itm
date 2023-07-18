@@ -404,10 +404,7 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width:
-              tableData.tableWidth < document.body.clientWidth - 296
-                ? undefined
-                : x.ZDMC?.length * 25,
+            width: x.ZDMC?.length * 25,
             ellipsis: true,
           };
         if (x.ZDLX === '2')
@@ -425,7 +422,7 @@ const TableBox = props => {
             title: x.ZDMC,
             dataIndex: x.QZZD,
             key: x.QZZD,
-            width: 80,
+            width: tableData.tableWidth < document.body.clientWidth - 296 ? undefined : 80,
             ellipsis: true,
           };
         return {

@@ -27,7 +27,7 @@ export default function SystemNotice(props) {
       </div>
     );
   };
-
+  if (noticeData.length === 0) return null;
   return (
     <div className="system-notice-card-box">
       <div className="home-card-title-box" style={{ marginBottom: 9 }}>

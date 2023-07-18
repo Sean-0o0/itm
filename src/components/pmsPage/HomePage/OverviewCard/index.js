@@ -22,6 +22,8 @@ export default function OverviewCard(props) {
     toDoDataNum = 0,
     reflush,
     dictionary,
+    statisticYearData = {},
+    setStatisticYearData,
   } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
@@ -498,13 +500,23 @@ export default function OverviewCard(props) {
   };
 
   //统计年份
-  const menu = (
-    <Menu>
-      <Menu.Item>2023</Menu.Item>
-      <Menu.Item>2024</Menu.Item>
-      <Menu.Item>2025</Menu.Item>
-    </Menu>
-  );
+  // const menu = (
+  //   <Menu>
+  //     {statisticYearData.dropdown?.map(x => (
+  //       <Menu.Item
+  //         key={x.NF}
+  //         onClick={() =>
+  //           setStatisticYearData(p => ({
+  //             ...p,
+  //             currentYear: Number(x.NF),
+  //           }))
+  //         }
+  //       >
+  //         {x.NF}
+  //       </Menu.Item>
+  //     ))}
+  //   </Menu>
+  // );
 
   return (
     <div className="overview-card-box">
@@ -622,12 +634,15 @@ export default function OverviewCard(props) {
         <div className="title">
           <div className="title-top">
             <span>{getGreeting()}</span>
-            <div className="statistic-year">
+            {/* <div className="statistic-year">
               统计年份：
               <Dropdown overlay={menu}>
-               <span> 2023 <i className="iconfont icon-fill-down" /></span>
+                <span>
+                  {' '}
+                  2023 <i className="iconfont icon-fill-down" />
+                </span>
               </Dropdown>
-            </div>
+            </div> */}
           </div>
           <div className="desc">
             {overviewInfo?.sm}
