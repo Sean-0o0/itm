@@ -81,6 +81,7 @@ function OprtModal(props) {
             dataIndex: 'ZD' + item.ID,
             editable: true,
             ZDLX: item['ZDLX' + item.ID],
+            ZDMC: item['ZDMC' + item.ID],
           };
           columns.push(c)
         }
@@ -204,6 +205,8 @@ function OprtModal(props) {
     const dataArr = []
     //字段必填校验-关联项目非必填 其他必填
     let fieldFlag = false;
+    //记录为空的字段
+    let fieldName = '';
     presetFieldData.map((item, index) => {
       // //console.log("indexindex",index)
       let data = {}
@@ -222,7 +225,7 @@ function OprtModal(props) {
     //取出要校验必填的字段-只需校验分类字段和填写人
     let filedClounm = [];
     columnsData.forEach(e => {
-      filedClounm.push(e.dataIndex)
+      filedClounm.push({ZDMC: e.ZDMC, dataIndex: e.dataIndex})
     })
     console.log("filedClounmfiledClounm", filedClounm)
     tableData.map((item, index) => {
@@ -231,7 +234,12 @@ function OprtModal(props) {
       let tab = {}
       let newzdArr = [];
       newzdArr = zdArr.filter(item => item.includes("ZD"));
-      //console.log("zdArrzdArr",newzdArr)
+      console.log("zdArrzdArr", newzdArr)
+      //console.log("2222-sss",item['TXR'+ item.ID])
+      if (!item['TXR' + item.ID] || item['TXR' + item.ID] === undefined) {
+        fieldName = "填写人";
+        fieldFlag = true;
+      }
       newzdArr.map((zd, ind) => {
         // 真实字段名-去除id
         let index = zd.indexOf("Z");//获取第一个"Z"的位置
@@ -239,11 +247,11 @@ function OprtModal(props) {
         const aczd = 'Z' + after1
         //校验必填项
         filedClounm.map((z, ind) => {
-          if (z.includes('ZD') && zd.includes('ZD') && aczd === z) {
+          if (z.dataIndex.includes('ZD') && zd.includes('ZD') && aczd === z.dataIndex) {
             //console.log("1111-sss",item[zd])
             if (item[zd] === undefined || item[zd] === '') {
-              //console.log("1111")
               fieldFlag = true;
+              fieldName = z.ZDMC;
             }
           }
         })
@@ -269,7 +277,7 @@ function OprtModal(props) {
     //console.log("tableArrtableArr",tableArr)
     setPresetDataBack([...tableArr])
     if (fieldFlag) {
-      message.warn("请将数据填写完整！")
+      message.warn("请将" + fieldName + "数据填写完整！")
       return;
     }
     configureCustomReport([...dataArr], [...tableArr]);
@@ -355,7 +363,7 @@ function OprtModal(props) {
           message.warn('请选择报告类型！');
           return;
         }
-      } else if (columnsData.filter(item => item.ZDLX === '1').length < 1) {
+      } else if (columnsData.filter(item => item.dataIndex !== 'GLXM' && item.dataIndex !== 'TXR' && item.ZDLX === '1').length < 1) {
         //至少要有一个分类字段
         message.warn('请至少添加一个分类字段！');
         return;
@@ -413,37 +421,24 @@ function OprtModal(props) {
     setPopoverVisible(visable);
   }
 
-  //查看模版
+  //模版查看
   const getMBItem = () => {
     const mb = JSON.parse(ZDYBGMB[0].note)
-    // //console.log("mbmbmbm",mb)
+    console.log("mbmbmbm", mb)
+    const columns = []
+    mb.map(item => {
+      columns.push({
+        align: 'center',
+        title: item.ZDMC,
+        dataIndex: 'XQBT',
+        width: 80,
+        key: 'XQBT',
+      })
+    })
     return (
-      <>
-        <div style={{
-          fontFamily: 'PingFangSC-Medium, PingFang SC',
-          fontWeight: 'bold',
-          borderRadius: '8px',
-          color: '#606266',
-          display: 'flex',
-          textAlign: 'center',
-        }}>
-          <div className="todo-card-box">
-            <div className="todo-card-title">
-              {mb.length > 0 && mb.map(item => (
-                <div className="todo-card-zdmc" style={{
-                  width: '70px',
-                  fontFamily: 'Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC', fontWeight: 400,
-                  color: '#303133'
-                }}>
-                  <Tooltip title={item.ZDMC} placement="topLeft">
-                    {item.ZDMC}
-                  </Tooltip>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      </>
+      <div className="table-box">
+        <Table columns={columns} rowKey={'id'} dataSource={[]} size="middle" pagination={false}/>
+      </div>
     );
   };
 
@@ -512,6 +507,7 @@ function OprtModal(props) {
           dataIndex: 'ZD' + item.ID,
           editable: true,
           ZDLX: item['ZDLX' + item.ID],
+          ZDMC: item['ZDMC' + item.ID],
         };
         columns.push(c)
       }
@@ -590,6 +586,7 @@ function OprtModal(props) {
           dataIndex: 'ZD' + item.ID,
           editable: true,
           ZDLX: item['ZDLX' + item.ID],
+          ZDMC: item['ZDMC' + item.ID],
         };
         columns.push(c)
       }

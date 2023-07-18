@@ -409,7 +409,7 @@ class PresetTable extends React.Component {
         }}>*</span>填写人</span>,
         dataIndex: 'TXR',
         // ellipsis: true,
-        width: '140px',
+        width: '100px',
         ZDLX: '1',
         render(text, record, index) {
           return (<Select filterOption={(input, option) =>

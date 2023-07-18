@@ -415,7 +415,7 @@ class PresetTable extends React.Component {
           lineHeight: 1
         }}>*</span>填写人</span>,
         dataIndex: 'TXR',
-        width: '140px',
+        width: '100px',
         // ellipsis: true,
         ZDLX: '1',
         render(text, record, index) {
