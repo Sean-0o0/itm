@@ -39,15 +39,7 @@ class ContractSigning extends React.Component {
     associatedFileVisible: false,
     pbbgTurnRed: true,
     fileList: [],
-    uploadFileParams: {
-      columnName: '',
-      documentData: '',
-      fileLength: '',
-      fileName: '',
-      filePath: '',
-      id: 0,
-      objectName: '',
-    },
+    uploadFileParams: [],
     // 基本信息是否折叠
     basicInfoCollapse: false,
     //合同信息是否折叠
@@ -268,15 +260,17 @@ class ContractSigning extends React.Component {
     //附件数据
     const attachments = [];
     let att = {};
-    if (uploadFileParams !== {} && uploadFileParams !== undefined) {
-      att = {
-        content: uploadFileParams.documentData,
-        nrtitle: uploadFileParams.fileName,
-        nrtype: '1',
-        filetype: '合同',
-      };
+    if (uploadFileParams.length > 0) {
+      uploadFileParams.map(item => {
+        att = {
+          content: item.base64,
+          nrtitle: item.name,
+          nrtype: '1',
+          filetype: '合同',
+        };
+        attachments.push(att);
+      });
     }
-    attachments.push(att);
     const flowdata = {
       zt: currentXmmc + '合同签署流程', // 主题，格式为：项目名称+合同签署流程
       xmmc: String(currentXmid), //项目的id
@@ -806,13 +800,30 @@ class ContractSigning extends React.Component {
                                   showRemoveIcon: true,
                                   showPreviewIcon: true,
                                 }}
+                                multiple={true}
                                 onChange={info => {
                                   let fileList = [...info.fileList];
-                                  console.log('fileList', fileList);
-                                  console.log('uploadFileParams', this.state.uploadFileParams);
-                                  fileList = fileList.slice(-1);
-                                  this.setState({ fileList }, () => {
-                                    // console.log('目前fileList', this.state.fileList);
+                                  this.setState({fileList: [...fileList]}, () => {
+                                    console.log('目前fileList', this.state.fileList);
+                                    let arr = [];
+                                    console.log('目前fileList2222', fileList);
+                                    fileList.forEach(item => {
+                                      let reader = new FileReader(); //实例化文件读取对象
+                                      reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                                      reader.onload = e => {
+                                        let urlArr = e.target.result.split(',');
+                                        arr.push({
+                                          name: item.name,
+                                          base64: urlArr[1],
+                                        });
+                                        console.log('arrarr', arr);
+                                        if (arr.length === fileList.length) {
+                                          this.setState({
+                                            uploadFileParams: [...arr],
+                                          });
+                                        }
+                                      };
+                                    });
                                   });
                                   if (fileList.length === 0) {
                                     this.setState({
@@ -825,21 +836,25 @@ class ContractSigning extends React.Component {
                                   }
                                 }}
                                 beforeUpload={(file, fileList) => {
-                                  // console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
-                                  let reader = new FileReader(); //实例化文件读取对象
-                                  reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                                  reader.onload = e => {
-                                    //文件读取成功完成时触发
-                                    // console.log('文件读取成功完成时触发', e.target.result.split(','));
-                                    let urlArr = e.target.result.split(',');
-                                    this.setState({
-                                      uploadFileParams: {
-                                        ...this.state.uploadFileParams,
-                                        documentData: urlArr[1], //获得文件读取成功后的DataURL,也就是base64编码
-                                        fileName: file.name,
-                                      },
-                                    });
-                                  };
+                                  let arr = [];
+                                  console.log('目前fileList2222', fileList);
+                                  fileList.forEach(item => {
+                                    let reader = new FileReader(); //实例化文件读取对象
+                                    reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                                    reader.onload = e => {
+                                      let urlArr = e.target.result.split(',');
+                                      arr.push({
+                                        name: item.name,
+                                        base64: urlArr[1],
+                                      });
+                                      if (arr.length === fileList.length) {
+                                        this.setState({
+                                          uploadFileParams: [...arr],
+                                        });
+                                      }
+                                    };
+                                  });
+                                  console.log('uploadFileParams-cccc', this.state.uploadFileParams);
                                 }}
                                 accept={
                                   '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'

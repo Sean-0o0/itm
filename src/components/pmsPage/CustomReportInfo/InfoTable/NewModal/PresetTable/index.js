@@ -209,20 +209,25 @@ class PresetTable extends React.Component {
     const arrData = JSON.parse(JSON.stringify(tableData))
     const keysArr = [];
     allColumnsData.map(c => {
-      keysArr.push(c.dataIndex)
+      keysArr.push({ZDLX: c.ZDLX, dataIndex: c.dataIndex})
     })
-    keysArr.push('GLXM')
-    keysArr.push('TXR')
+    // keysArr.push('GLXM')
+    // keysArr.push('TXR')
     const newData = {}
     newData.ID = Date.now();
     newData.key = Date.now();
     newData.SYJL = '-1';
     keysArr.map(i => {
-      if (i === 'GLXM' || i === 'TXR') {
-        //项目和填写人不复制
-        // newData[i + newData.ID] = record[i + record.ID]
+      // if (i === 'GLXM' || i === 'TXR') {
+      //   //项目和填写人不复制
+      //   // newData[i + newData.ID] = record[i + record.ID]
+      // } else {
+      //   Object.assign(newData, {[newData.ID + i]: record[record.ID + i] ? record[record.ID + i] : ''})
+      // }
+      if (i.ZDLX === '1') {
+        Object.assign(newData, {[newData.ID + i.dataIndex]: record[record.ID + i.dataIndex] ? record[record.ID + i.dataIndex] : ''})
       } else {
-        Object.assign(newData, {[newData.ID + i]: record[record.ID + i] ? record[record.ID + i] : ''})
+        Object.assign(newData, {[newData.ID + i.dataIndex]: 'undefined'})
       }
     })
     arrData.splice(index + 1, 0, newData)
