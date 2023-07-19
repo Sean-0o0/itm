@@ -40,9 +40,6 @@ export default forwardRef(function TopConsole(props, ref) {
           <Select
             className="item-selector"
             dropdownClassName={'item-selector-dropdown'}
-            filterOption={(input, option) =>
-              option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-            }
             showSearch
             allowClear
             onChange={handleBgmcChange}

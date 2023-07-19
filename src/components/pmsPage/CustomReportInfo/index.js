@@ -131,6 +131,7 @@ export default function CustomReportInfo(props) {
           setTableLoading,
           getBasicData,
           setTableData,
+          setFilterData,
         }}
       />
     </div>

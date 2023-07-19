@@ -1,17 +1,17 @@
-import React, {Fragment, useEffect, useRef, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip, Switch, Popconfirm} from 'antd';
-import {EncryptBase64} from '../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
+import React, { Fragment, useEffect, useRef, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip, Switch, Popconfirm } from 'antd';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import moment from 'moment';
 import OprtModal from './NewModal/index';
 import OprtEditModal from './EditModal/index';
 // import OprtModal from './OprtModal';
-import {ConfigureCustomReport, QueryCustomReportContent} from '../../../../services/pmsServices';
+import { ConfigureCustomReport, QueryCustomReportContent } from '../../../../services/pmsServices';
 import EditCusRepTable from './OprtModal/EditCusRepTable';
 
 export default function InfoTable(props) {
-  const {dataProps = {}, funcProps = {}} = props;
+  const { dataProps = {}, funcProps = {} } = props;
   const {
     tableLoading,
     tableData = {
@@ -25,19 +25,19 @@ export default function InfoTable(props) {
     ZDYBGMB = [],
     isAdministrator,
   } = dataProps;
-  const {getBasicData, getTableData, setTableLoading, setTableData} = funcProps;
+  const { getBasicData, setTableLoading, setTableData, setFilterData } = funcProps;
   const [newRptVisible, setNewRptVisible] = useState(false); //新增报告显隐
   const [editRptVisible, setEditRptVisible] = useState(false); //编辑报告显隐
   const [switchLoading, setSwitchLoading] = useState(false); //禁用调接口加载状态
   const [bgmb, setBgmb] = useState([]); //编辑时查出来的报告模版
   const [bgdata, setBgdata] = useState([]); //编辑时查出来的报告数据
-  const [bgInfo, setBgInfo] = useState({ID: '', BGMC: ''}); //当前编辑的报告基本信息
+  const [bgInfo, setBgInfo] = useState({ ID: '', BGMC: '' }); //当前编辑的报告基本信息
   const [title, setTitle] = useState(''); //当前编辑的报告基本信息
   const location = useLocation();
 
   //表格操作后更新数据
   const handleTableChange = (pagination, filters, sorter, extra) => {
-    const {current = 1, pageSize = 20} = pagination;
+    const { current = 1, pageSize = 20 } = pagination;
     setTableData(p => ({
       ...p,
       current,
@@ -82,6 +82,12 @@ export default function InfoTable(props) {
       .then(res => {
         if (res?.success) {
           getBasicData();
+          setFilterData(p => ({ ...p, value: undefined }));
+          setTableData(p => ({
+            ...p,
+            current: 1,
+            pageSize: 20,
+          }));
           message.success('操作成功', 1);
         }
       })
@@ -195,11 +201,11 @@ export default function InfoTable(props) {
       ellipsis: true,
       render: (txt, row) => (
         <Fragment>
-          <a style={{color: '#3361ff'}} onClick={() => handleEditCusRep(row)}>
+          <a style={{ color: '#3361ff' }} onClick={() => handleEditCusRep(row)}>
             修改
           </a>
           <Popconfirm title={`确定删除吗?`} onConfirm={() => handleDelete(row.ID)}>
-            <a style={{color: '#3361ff', marginLeft: 6}}>删除</a>
+            <a style={{ color: '#3361ff', marginLeft: 6 }}>删除</a>
           </Popconfirm>
         </Fragment>
       ),
@@ -290,7 +296,7 @@ export default function InfoTable(props) {
             type="primary"
             className="btn-add-prj"
             onClick={() => {
-              setBgInfo({ID: ''});
+              setBgInfo({ ID: '' });
               setTitle('新增报告');
               setNewRptVisible(true);
             }}
