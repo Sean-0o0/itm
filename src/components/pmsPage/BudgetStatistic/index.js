@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { message, Spin, Tabs } from 'antd';
 import TableBox from './TableBox';
-import { QueryBudgetStatistics } from '../../../services/pmsServices';
+import { QueryBudgetStatistics, QueryUserRole } from '../../../services/pmsServices';
 import moment from 'moment';
 import { FetchQueryBudgetProjects } from '../../../services/projectManage';
 const { TabPane } = Tabs;
@@ -25,10 +25,31 @@ export default function BudgetStatistic(props) {
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('ZB');
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const [allowExport, setAllowExport] = useState(false); //是否允许导出
+  const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
 
   useEffect(() => {
     queryTableData({});
+    getUserRole();
   }, []);
+
+  //获取用户角色
+  const getUserRole = () => {
+    QueryUserRole({
+      userId: CUR_USER_ID,
+    })
+      .then(res => {
+        if (res?.code === 1) {
+          const { role = '' } = res;
+          console.log(['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(role));
+          setAllowExport(['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(role));
+        }
+      })
+      .catch(e => {
+        console.error('QueryUserRole', e);
+        message.error('用户角色信息查询失败', 1);
+      });
+  };
 
   const queryTableData = ({
     budgetType = 'ZB',
@@ -143,8 +164,8 @@ export default function BudgetStatistic(props) {
           </Tabs>
         </div>
         <TableBox
-          dataProps={{ tableData, filterData }}
-          funcProps={{ setTableData, setFilterData, queryTableData }}
+          dataProps={{ tableData, filterData, allowExport }}
+          funcProps={{ setFilterData, queryTableData }}
         />
       </Spin>
     </div>

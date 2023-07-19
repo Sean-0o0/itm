@@ -11,20 +11,17 @@ import {
   TreeSelect,
   Drawer,
 } from 'antd';
-import { QueryBudgetStatistics } from '../../../../services/pmsServices';
+import { QueryBudgetStatistics} from '../../../../services/pmsServices';
 import moment from 'moment';
 import { Link, useLocation } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import ExportModal from './ExportModal';
 const { Option } = Select;
 
-const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
-
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
-  const { tableData = {}, filterData = {} } = dataProps;
+  const { tableData = {}, filterData = {}, allowExport } = dataProps;
   const {
-    setTableData = () => {},
     setFilterData = () => {},
     queryTableData = () => {},
   } = funcProps;
@@ -36,7 +33,6 @@ const TableBox = props => {
   const [exportModalVisible, setExportModalVisible] = useState(false); //导出弹窗显隐
   const location = useLocation();
 
-  useEffect(() => {}, []);
   //列配置
   const columns = [
     {
@@ -373,9 +369,11 @@ const TableBox = props => {
         </div>
         <div className="export-row">
           <span className="table-unit">单位：万元</span>
-          <Button type="primary" onClick={() => setExportModalVisible(true)}>
-            导出
-          </Button>
+          {allowExport && (
+            <Button type="primary" onClick={() => setExportModalVisible(true)}>
+              导出
+            </Button>
+          )}
         </div>
         <div className="project-info-table-box">
           <Table
