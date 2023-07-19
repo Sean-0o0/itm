@@ -11,11 +11,12 @@ import {
   TreeSelect,
   Drawer,
 } from 'antd';
-import { QueryBudgetStatistics} from '../../../../services/pmsServices';
+import { QueryBudgetStatistics } from '../../../../services/pmsServices';
 import moment from 'moment';
 import { Link, useLocation } from 'react-router-dom';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import ExportModal from './ExportModal';
+import { FetchQueryBudgetProjects } from '../../../../services/projectManage';
 const { Option } = Select;
 
 const TableBox = props => {
@@ -24,6 +25,7 @@ const TableBox = props => {
   const {
     setFilterData = () => {},
     queryTableData = () => {},
+    setIsSpinning = () => {},
   } = funcProps;
   const [drawerData, setDrawerData] = useState({
     data: [],
@@ -216,12 +218,32 @@ const TableBox = props => {
     // getTableData({ current, pageSize });
     if (sorter.order !== undefined) {
       if (sorter.order === 'ascend') {
-        queryTableData({ current, pageSize, sort: sorter.field + ' ASC,YSID ASC' });
+        queryTableData({
+          current,
+          pageSize,
+          sort: sorter.field + ' ASC,YSID ASC',
+          budgetCategory:
+            filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
+          budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+        });
       } else {
-        queryTableData({ current, pageSize, sort: sorter.field + ' DESC,YSID DESC' });
+        queryTableData({
+          current,
+          pageSize,
+          sort: sorter.field + ' DESC,YSID DESC',
+          budgetCategory:
+            filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
+          budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+        });
       }
     } else {
-      queryTableData({ current, pageSize });
+      queryTableData({
+        current,
+        pageSize,
+        budgetCategory:
+          filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
+        budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+      });
     }
     return;
   };
@@ -303,6 +325,57 @@ const TableBox = props => {
     },
   ];
 
+  const handleYearChange = d => {
+    setFilterData(p => ({ ...p, year: d, yearOpen: false }));
+    setIsSpinning(true);
+    FetchQueryBudgetProjects({
+      type: 'NF',
+      year: d.year(),
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryBudgetProjects ~ res', res);
+          let ysxmArr = (
+            res.record?.filter(x => x.ysLXID === (budgetType === 'ZB' ? '1' : '2')) || []
+          ).reduce((acc, cur) => {
+            const index = acc.findIndex(item => item.value === cur.zdbm && item.title === cur.ysLB);
+            if (index === -1) {
+              acc.push({
+                title: cur.ysLB,
+                value: cur.zdbm,
+                children: [
+                  {
+                    ...cur,
+                    title: cur.ysName,
+                    value: cur.ysID,
+                  },
+                ],
+              });
+            } else {
+              acc[index].children.push({
+                ...cur,
+                title: cur.ysName,
+                value: cur.ysID,
+              });
+            }
+            return acc;
+          }, []);
+          // console.log(ysxmArr);
+          setFilterData(p => ({
+            ...p,
+            budgetPrj: undefined,
+            budgetPrjSlt: ysxmArr,
+          }));
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('🚀预算项目信息', e);
+        message.error('预算项目获取失败', 1);
+        setIsSpinning(false);
+      });
+  };
+
   return (
     <>
       <div className="table-box">
@@ -319,7 +392,7 @@ const TableBox = props => {
               allowClear={false}
               onChange={v => setFilterData(p => ({ ...p, year: v }))}
               onOpenChange={v => setFilterData(p => ({ ...p, yearOpen: v }))}
-              onPanelChange={d => setFilterData(p => ({ ...p, year: d, yearOpen: false }))}
+              onPanelChange={handleYearChange}
             />
           </div>
           <div className="console-item">
@@ -360,7 +433,20 @@ const TableBox = props => {
               treeDefaultExpandAll
             />
           </div>
-          <Button className="btn-search" type="primary" onClick={() => queryTableData({})}>
+          <Button
+            className="btn-search"
+            type="primary"
+            onClick={() =>
+              queryTableData({
+                budgetCategory:
+                  filterData.budgetCategory !== undefined
+                    ? Number(filterData.budgetCategory)
+                    : undefined,
+                budgetId:
+                  filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+              })
+            }
+          >
             查询
           </Button>
           <Button className="btn-reset" onClick={() => handleReset()}>

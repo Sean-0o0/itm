@@ -41,7 +41,7 @@ export default function BudgetStatistic(props) {
       .then(res => {
         if (res?.code === 1) {
           const { role = '' } = res;
-          console.log(['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(role));
+          // console.log(['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(role));
           setAllowExport(['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(role));
         }
       })
@@ -52,17 +52,18 @@ export default function BudgetStatistic(props) {
   };
 
   const queryTableData = ({
-    budgetType = 'ZB',
+    budgetType = activeKey,
     current = 1,
     pageSize = 20,
     sort = 'YSID DESC',
+    budgetCategory,
+    budgetId,
   }) => {
     setIsSpinning(true);
     //预算统计信息
     QueryBudgetStatistics({
-      budgetCategory:
-        filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
-      budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
+      budgetCategory,
+      budgetId,
       budgetType,
       current,
       pageSize,
@@ -74,7 +75,7 @@ export default function BudgetStatistic(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ QueryBudgetStatistics ~ res', JSON.parse(res.budgetInfo));
+          // console.log('🚀 ~ QueryBudgetStatistics ~ res', JSON.parse(res.budgetInfo));
           setTableData(p => ({
             ...p,
             current,
@@ -119,8 +120,12 @@ export default function BudgetStatistic(props) {
                 // console.log(ysxmArr);
                 setFilterData(p => ({
                   ...p,
-                  budgetCategorySlt: YSLB.filter(x => Number(x.ibm) <= 6),
+                  budgetCategorySlt: YSLB.filter(x =>
+                    budgetType === 'ZB' ? Number(x.ibm) <= 6 : Number(x.ibm) > 6,
+                  ),
                   budgetPrjSlt: ysxmArr,
+                  budgetCategory: undefined,
+                  budgetPrj: undefined,
                 }));
                 setIsSpinning(false);
               }
@@ -140,13 +145,9 @@ export default function BudgetStatistic(props) {
   };
 
   const handleTabsChange = key => {
+    queryTableData({ budgetType: key, budgetCategory: undefined, budgetId: undefined });
+    // console.log('🚀 ~ file: index.js:146 ~ handleTabsChange ~ key:', key);
     setActiveKey(key);
-    queryTableData({ budgetType: key });
-    if (key === 'ZB') {
-      setFilterData(p => ({ ...p, budgetCategorySlt: YSLB.filter(x => Number(x.ibm) <= 6) }));
-    } else {
-      setFilterData(p => ({ ...p, budgetCategorySlt: YSLB.filter(x => Number(x.ibm) > 6) }));
-    }
   };
 
   return (
@@ -165,7 +166,7 @@ export default function BudgetStatistic(props) {
         </div>
         <TableBox
           dataProps={{ tableData, filterData, allowExport }}
-          funcProps={{ setFilterData, queryTableData }}
+          funcProps={{ setFilterData, queryTableData, setIsSpinning }}
         />
       </Spin>
     </div>
