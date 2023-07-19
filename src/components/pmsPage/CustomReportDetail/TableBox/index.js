@@ -75,7 +75,7 @@ const TableBox = props => {
     const item = newData[index];
     newData.splice(index, 1, {
       ...item, //old row data
-      ...row, //new row data
+      ...{ ...row, isEdited: true }, //new row data
     });
 
     let newEdit = [...editData];
@@ -483,11 +483,12 @@ const TableBox = props => {
           handleSave: handleTableSave,
           key: col.key,
           formdecorate: form,
-          issaved: isSaved,
+          editing: editing,
           editingindex: editingIndex,
           dltdata: dltData,
           borderleft: col.borderLeft || false,
           isadministrator: isAdministrator,
+          settabledata: setTableData,
         };
       },
     };

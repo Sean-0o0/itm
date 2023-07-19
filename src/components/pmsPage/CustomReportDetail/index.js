@@ -23,7 +23,6 @@ export default function CustomReportDetail(props) {
       setMonthData(moment());
       getUserRole();
     }
-
     return () => {};
   }, [bgid, LOGIN_USER_ID]);
 
@@ -34,7 +33,7 @@ export default function CustomReportDetail(props) {
       current: 1,
       pageSize: 20,
       paging: -1,
-      queryType: 'TXR',
+      queryType: 'NR',
       reportID,
       sort: '',
       total: -1,
@@ -101,6 +100,7 @@ export default function CustomReportDetail(props) {
                       // }
                     }
                   }
+                  // newObj.isEdited = false; //左上编辑图标显隐
                   return newObj;
                 });
                 console.log('🚀 ~ mergeData:', mergeData);

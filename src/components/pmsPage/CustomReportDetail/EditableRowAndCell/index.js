@@ -20,18 +20,19 @@ const EditableCell = props => {
   const targetNode = useRef(null);
   const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const {
-    issaved,
     editable,
     dataIndex,
     record,
     handleSave,
     children,
+    editing,
     editingindex,
     dltdata = [],
     title,
     borderleft,
     formdecorate,
     isadministrator,
+    settabledata,
     ...restProps
   } = props;
 
@@ -83,15 +84,23 @@ const EditableCell = props => {
         return rec;
       case 'JHSXSJ':
         return rec === '' ? '' : moment(rec).format('YYYY-MM-DD');
+      case 'TXR':
+        return String(record['TXRID' + record.ID]) === LOGIN_USER_ID ? (
+          <div className="current-login-user">
+            <div className="blue-point"></div>
+            {rec}
+          </div>
+        ) : (
+          rec
+        );
       default:
         return rec;
     }
   };
-
   return (
     <>
       <td style={borderleft ? { borderLeft: '1px solid #e8e8e8' } : {}} {...restProps}>
-        {!issaved && edited && (
+        {edited && editing && (
           <img
             className="edited-img"
             src={require('../../../../image/pms/WeeklyReportDetail/edited.png')}
