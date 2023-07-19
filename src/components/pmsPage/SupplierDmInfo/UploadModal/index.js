@@ -33,7 +33,8 @@ function UploadModal(props) {
         number: x[0],
       })) ?? [];
     setFileList(jlArr);
-    setNextId(Number(jldata.JLXX?.nextId));
+    setNextId(Number(jldata.JLXX?.nextId || 0));
+
     return () => {
       clearTimeout(timer);
     };
@@ -44,6 +45,7 @@ function UploadModal(props) {
       setIsTurenRed(true);
     } else if (!isTurnRed) {
       setIsSpinning(true);
+      console.log(nextId);
       let newAdd = [...newAddData].map((x, i) => ({
         number: String(nextId + i),
         fileName: x.fileName,
