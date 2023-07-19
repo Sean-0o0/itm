@@ -24,6 +24,7 @@ export default function OverviewCard(props) {
     dictionary,
     statisticYearData = {},
     setStatisticYearData,
+    handleCurYearChange,
   } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
@@ -319,6 +320,7 @@ export default function OverviewCard(props) {
         return handleWbrymspf(item);
       case '提交录用申请':
       case '简历分发':
+      case '外包需求简历更新':
         return jumpToDemandDetail(item);
       case '创建需求':
         return handleCjxq(item);
@@ -499,24 +501,27 @@ export default function OverviewCard(props) {
     );
   };
 
-  //统计年份
-  // const menu = (
-  //   <Menu>
-  //     {statisticYearData.dropdown?.map(x => (
-  //       <Menu.Item
-  //         key={x.NF}
-  //         onClick={() =>
-  //           setStatisticYearData(p => ({
-  //             ...p,
-  //             currentYear: Number(x.NF),
-  //           }))
-  //         }
-  //       >
-  //         {x.NF}
-  //       </Menu.Item>
-  //     ))}
-  //   </Menu>
-  // );
+  // 统计年份
+  const menu = (
+    <Menu>
+      {statisticYearData.dropdown?.map(x => (
+        <Menu.Item
+          key={x.NF}
+          onClick={() => {
+            if (Number(x.NF) !== statisticYearData.currentYear) {
+              setStatisticYearData(p => ({
+                ...p,
+                currentYear: Number(x.NF),
+              }));
+              handleCurYearChange(Number(x.NF));
+            }
+          }}
+        >
+          {x.NF}
+        </Menu.Item>
+      ))}
+    </Menu>
+  );
 
   return (
     <div className="overview-card-box">
@@ -634,15 +639,17 @@ export default function OverviewCard(props) {
         <div className="title">
           <div className="title-top">
             <span>{getGreeting()}</span>
-            {/* <div className="statistic-year">
-              统计年份：
-              <Dropdown overlay={menu}>
-                <span>
-                  {' '}
-                  2023 <i className="iconfont icon-fill-down" />
-                </span>
-              </Dropdown>
-            </div> */}
+            {['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(userRole) && (
+              <div className="statistic-year">
+                统计年份：
+                <Dropdown overlay={menu} trigger="click">
+                  <span>
+                    {statisticYearData.currentYear}
+                    <i className="iconfont icon-fill-down" />
+                  </span>
+                </Dropdown>
+              </div>
+            )}
           </div>
           <div className="desc">
             {overviewInfo?.sm}

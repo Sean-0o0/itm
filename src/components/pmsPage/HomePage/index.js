@@ -185,18 +185,19 @@ export default function HomePage(props) {
   };
 
   //获取预算执行情况
-  const getBudgetData = role => {
+  const getBudgetData = (role, year = moment().year()) => {
     QueryBudgetOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType: 'SY',
       role,
+      year,
     })
       .then(res => {
         if (res?.success) {
           // console.log('🚀 ~ QueryBudgetOverviewInfo ~ res', JSON.parse(res?.ysglxx));
           setBudgetData(JSON.parse(res?.ysglxx)[0]);
-          // setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(res.ysqs) }));
-          getPrjInfo(role);
+          setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(res.ysqs) }));
+          getPrjInfo(role, year);
         }
       })
       .catch(e => {
@@ -206,10 +207,11 @@ export default function HomePage(props) {
   };
 
   //获取项目概览信息
-  const getOverviewInfo = role => {
+  const getOverviewInfo = (role, year = moment().year()) => {
     QueryStagingOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       role,
+      year,
     })
       .then(res => {
         if (res?.success) {
@@ -224,7 +226,7 @@ export default function HomePage(props) {
   };
 
   //项目信息
-  const getPrjInfo = role => {
+  const getPrjInfo = (role, year = moment().year()) => {
     QueryProjectGeneralInfo({
       queryType: 'SY',
       role,
@@ -234,6 +236,7 @@ export default function HomePage(props) {
       pageSize: 9,
       total: -1,
       sort: '',
+      year,
     })
       .then(res => {
         if (res?.success) {
@@ -271,7 +274,7 @@ export default function HomePage(props) {
   };
 
   //队伍建设
-  const getTeamData = role => {
+  const getTeamData = (role, year = moment().year()) => {
     QueryMemberOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType: 'SY',
@@ -281,6 +284,7 @@ export default function HomePage(props) {
       // pageSize: 9999,
       // total: -1,
       // sort: '',
+      year,
     })
       .then(res => {
         if (res?.success) {
@@ -292,7 +296,7 @@ export default function HomePage(props) {
             };
           });
           setTeamData(p => [...arr]);
-          getSupplierData(role);
+          getSupplierData(role, year);
           // console.log("🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:", [...arr])
         }
       })
@@ -303,7 +307,7 @@ export default function HomePage(props) {
   };
 
   //供应商情况
-  const getSupplierData = role => {
+  const getSupplierData = (role, year = moment().year()) => {
     QuerySupplierOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType: 'SY',
@@ -313,6 +317,7 @@ export default function HomePage(props) {
       pageSize: 9999,
       total: -1,
       sort: '',
+      year,
     })
       .then(res => {
         if (res?.success) {
@@ -407,6 +412,16 @@ export default function HomePage(props) {
       });
   };
 
+  //统计年份变化
+  const handleCurYearChange = (year = moment().year()) => {
+    setIsSpinning(true);
+    getBudgetData(userRole, year);
+    if (!['二级部门领导', '普通人员'].includes(userRole)) {
+      getTeamData(userRole, year);
+    }
+    getOverviewInfo(userRole, year);
+  };
+
   return (
     <Spin
       spinning={isSpinning}
@@ -427,14 +442,9 @@ export default function HomePage(props) {
               toDoDataNum={total.todo}
               statisticYearData={statisticYearData}
               setStatisticYearData={setStatisticYearData}
+              handleCurYearChange={handleCurYearChange}
             />
-            {['二级部门领导', '普通人员'].includes(
-              userRole,
-            ) ? //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
-            //   total={total.todo}
-            //   dictionary={dictionary}
-            // />
-            null : (
+            {['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
               <CptBudgetCard
                 userRole={userRole}
                 budgetData={budgetData}
