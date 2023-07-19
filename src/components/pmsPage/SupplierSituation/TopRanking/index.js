@@ -36,6 +36,9 @@ export default function TopRanking(props) {
           </div>
         </div>
       ))}
+      {['', '', '', ''].map((x, i) => (
+        <i key={i} style={{ width: '23.427%' }} />
+      ))}
       {data.length === 0 && (
         <div style={{ width: '100%', margin: '0 auto' }}>
           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} />
