@@ -324,7 +324,7 @@ const TableBox = props => {
             let temp = {};
             dataIndexArr.forEach(dataIndex => {
               let title = finalColumns.find(item => item.QZZD === dataIndex)?.ZDMC;
-              temp[title] = obj[dataIndex + obj.ID].replace(/\n/g, String.fromCharCode(10));
+              temp[title] = obj[dataIndex + obj.ID];
               delete obj[dataIndex];
             });
             finalArr.push(temp);

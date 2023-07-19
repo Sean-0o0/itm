@@ -147,6 +147,7 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/CustomRptInfo/,
       /^\/pms\/manage\/CustomReportDetail/,
       /^\/pms\/manage\/CustomReportInfo/,
+      /^\/pms\/manage\/BudgetStatistic/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -258,6 +259,10 @@ function VisitedRoutes(props) {
               {
                 title: '报告详情',
                 urlEnd: 'CustomReportDetail',
+              },
+              {
+                title: '预算统计',
+                urlEnd: 'BudgetStatistic',
               },
             ];
             urlEndArr.forEach(x => {

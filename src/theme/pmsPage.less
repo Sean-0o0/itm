@@ -978,7 +978,218 @@
     }
   }
 
-  & .top-console {
+  //预算统计
+  .budget-statistic-spin-wrapper {
+    height: 100%;
+    .ant-spin-container {
+      height: 100%;
+      & .table-box {
+        margin: 24px;
+        height: calc(100% - 103px);
+        background-color: white;
+        box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
+        border-radius: 8px;
+
+        .table-console {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          width: 100%;
+          height: 64px;
+          padding: 0 24px;
+          position: relative;
+
+          button {
+            .antd-btn-default();
+          }
+
+          .month-slt-btn {
+            button {
+              &:first-child {
+                border-right: 1px solid transparent;
+                border-radius: 4px 0 0 4px;
+
+                &:hover {
+                  border-right: 1px solid #3361ffaf;
+                }
+              }
+
+              &:last-child {
+                border-radius: 0 4px 4px 0;
+              }
+            }
+          }
+
+          & .console-date {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+
+            & .console-icon {
+              height: 24px;
+              margin-right: 8px;
+            }
+
+            & .console-txt {
+              .font-s16();
+              font-family: Roboto-Medium;
+              font-weight: 600;
+              color: #303133;
+            }
+          }
+
+          .img-finish {
+            position: absolute;
+            top: 2px;
+            right: 200px;
+            z-index: 1;
+            width: 100px;
+          }
+        }
+
+        & .table-content {
+          padding: 24px;
+          padding-top: 0;
+          height: calc(100% - 64px);
+          overflow: hidden;
+
+          .update-col {
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+
+            span {
+              // flex-grow: 1;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+            }
+
+            .update-tag {
+              display: inline-block;
+              text-align: center;
+              // flex-shrink: 0;
+              width: 52px;
+              height: 24px;
+              background: #fff5e5;
+              border-radius: 12px;
+              border: 1px solid #ffda9f;
+              font-size: 12px;
+              color: #e58c00;
+              line-height: 24px;
+              margin-left: 6px;
+            }
+          }
+        }
+        & > .filter-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding: 16px 24px;
+          font-size: 14px;
+          //font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: 400;
+          color: #222222;
+
+          &:last-child {
+            margin-bottom: 0;
+          }
+
+          & > .btn-search {
+            .antd-btn-primary();
+            margin-left: auto;
+          }
+
+          & > .btn-reset {
+            .antd-btn-default();
+            margin-left: 8px;
+          }
+
+          & > .console-item {
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            // justify-content: center;
+            // width: 29%;
+            position: relative;
+
+            .item-label {
+              // flex-shrink: 0;
+              width: max-content;
+            }
+
+            .item-selector {
+              margin-left: 8px;
+              margin-right: 24px;
+              width: 250px;
+              // flex-grow: 1;
+              overflow: hidden;
+
+              .ant-select-selection {
+                cursor: pointer;
+              }
+
+              .ant-select-selection-selected-value {
+                color: #303133;
+              }
+
+              .ant-select-selection.ant-select-selection--single {
+                height: 33px;
+              }
+            }
+          }
+        }
+        & > .export-row {
+          padding: 0 24px 16px 24px;
+          display: flex;
+          flex-direction: row;
+          align-items: flex-end;
+          justify-content: space-between;
+          button {
+            .antd-btn-primary();
+          }
+          .table-unit {
+            font-size: 14px;
+            font-weight: normal;
+            color: #909399;
+            font-family: PingFangSC-regular, PingFang SC;
+          }
+        }
+        & > .project-info-table-box {
+          overflow: hidden;
+          overflow-y: auto;
+          height: calc(100% - 129px);
+          border-top: none;
+          padding: 0 24px;
+          padding-right: 4px;
+          margin-right: 20px;
+          margin-bottom: 16px;
+
+          &::-webkit-scrollbar {
+            width: 8px;
+            background-color: #ffffff;
+            border-radius: 4px;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #d8d8d8;
+            border-radius: 4px;
+          }
+
+          .table-link-strong();
+          .antd-table-adaptation();
+          .ant-table-placeholder {
+            border: 0;
+            top: 42px;
+          }
+          .ant-table-wrapper {
+            border: 0;
+          }
+        }
+      }
+    }
+  }
+
+  .top-console {
     height: 55px;
     background-color: white;
     box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);
@@ -1141,38 +1352,8 @@
   }
 
   .ant-table-fixed-right {
-    & ::-webkit-scrollbar {
-      // background-color: #fafafa;
-      // border-radius: 9px;
-    }
-
-    & ::-webkit-scrollbar-thumb {
-      // background-color: #c1c1c1;
-      // border-radius: 9px;
-    }
-
-    // .ant-table-bordered.ant-table-fixed-header
-    //   .ant-table-scroll
-    //   .ant-table-header::-webkit-scrollbar {
-    //   // border: 0;
-    // }
-    // .ant-table-fixed-header .ant-table-scroll .ant-table-header::-webkit-scrollbar {
-    //   // border: 0;
-    // }
     .ant-table-header {
       background-color: #f5f7fa;
-    }
-  }
-
-  .ant-table-scroll {
-    & ::-webkit-scrollbar {
-      // background-color: #fafafa;
-      // border-radius: 9px;
-    }
-
-    & ::-webkit-scrollbar-thumb {
-      // background-color: #c1c1c1;
-      // border-radius: 9px;
     }
   }
 
@@ -1903,6 +2084,37 @@
         margin-bottom: 10px;
       }
     }
+  }
+}
+
+//预算统计-付款详情
+.budget-payment-drawer {
+  .ant-drawer-header {
+    background-color: #3361ff;
+    border-radius: 0;
+    .ant-drawer-title {
+      font-weight: bold;
+      color: white;
+    }
+  }
+
+  .ant-drawer-body {
+    overflow: hidden;
+    overflow-y: auto;
+    height: calc(100vh - 79px);
+    padding-top: 0;
+    margin-top: 24px;
+
+    &::-webkit-scrollbar {
+      width: 10px;
+      background-color: #fafafa;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #c1c1c1;
+      border-radius: 5px;
+    }
+    .antd-table-adaptation();
   }
 }
 
@@ -20432,7 +20644,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   background: #ffffff;
   //border-radius: 8px;
   box-shadow: 0px 3px 6px -4px rgba(0, 0, 0, 0.12), 0px 6px 16px 0px rgba(0, 0, 0, 0.08),
-  0px 9px 28px 8px rgba(0, 0, 0, 0.05);
+    0px 9px 28px 8px rgba(0, 0, 0, 0.05);
 
   .table-box {
     //border: 1px solid #e8e8e8;

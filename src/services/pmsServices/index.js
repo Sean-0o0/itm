@@ -111,6 +111,7 @@ const {
     editCustomReport,
     completeReport,
     queryApportionsInfo,
+    queryBudgetStatistics,
   },
 } = api;
 
@@ -1176,6 +1177,16 @@ export async function CompleteReport(payload) {
 export async function QueryApportionsInfo(payload) {
   const option = {
     url: queryApportionsInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 预算统计查询
+export async function QueryBudgetStatistics(payload) {
+  const option = {
+    url: queryBudgetStatistics,
     method: 'post',
     data: payload,
   };

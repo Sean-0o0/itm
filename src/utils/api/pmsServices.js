@@ -619,4 +619,10 @@ export default [
     url: '/projectManage/queryApportionsInfo',
     dis: '查询创建单据时所需的分摊信息',
   },
+  {
+    code: '',
+    key: 'queryBudgetStatistics',
+    url: '/projectManage/queryBudgetStatistics',
+    dis: '预算统计查询',
+  },
 ];

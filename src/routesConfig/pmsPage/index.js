@@ -313,4 +313,9 @@ exports.routes = [
     path: `${prefix}/ProjectMemberStatisticsInfo`,
     component: './pmsPage/ProjectMemberStatisticsInfo',
   },
+  {
+    // 项目人员/部门统计
+    path: `${prefix}/BudgetStatistic`,
+    component: './pmsPage/BudgetStatistic',
+  },
 ];
