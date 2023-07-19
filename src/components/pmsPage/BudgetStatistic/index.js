@@ -24,6 +24,7 @@ export default function BudgetStatistic(props) {
     budgetPrjSlt: [],
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('ZB');
+  const [curSorter, setCurSorter] = useState('YSID DESC'); //排序
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [allowExport, setAllowExport] = useState(false); //是否允许导出
   const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
@@ -55,7 +56,7 @@ export default function BudgetStatistic(props) {
     budgetType = activeKey,
     current = 1,
     pageSize = 20,
-    sort = 'YSID DESC',
+    sort = curSorter,
     budgetCategory,
     budgetId,
   }) => {
@@ -83,6 +84,7 @@ export default function BudgetStatistic(props) {
             total: res.totalrows,
             data: JSON.parse(res.budgetInfo),
           }));
+          setCurSorter(sort);
           FetchQueryBudgetProjects({
             type: 'NF',
             year: filterData.year?.year(),
