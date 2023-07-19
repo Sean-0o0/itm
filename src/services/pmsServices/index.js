@@ -112,6 +112,8 @@ const {
     completeReport,
     queryApportionsInfo,
     queryBudgetStatistics,
+    queryPaymentByCode,
+    supplyPaymentInfo,
   },
 } = api;
 
@@ -1187,6 +1189,26 @@ export async function QueryApportionsInfo(payload) {
 export async function QueryBudgetStatistics(payload) {
   const option = {
     url: queryBudgetStatistics,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 补录付款流程信息时，根据单据编号查询单据信息
+export async function QueryPaymentByCode(payload) {
+  const option = {
+    url: queryPaymentByCode,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 补录付款流程信息
+export async function SupplyPaymentInfo(payload) {
+  const option = {
+    url: supplyPaymentInfo,
     method: 'post',
     data: payload,
   };

@@ -625,4 +625,16 @@ export default [
     url: '/projectManage/queryBudgetStatistics',
     dis: '预算统计查询',
   },
+  {
+    code: '',
+    key: 'queryPaymentByCode',
+    url: '/EKB/v1/queryPaymentByCode',
+    dis: '补录付款流程信息时，根据单据编号查询单据信息',
+  },
+  {
+    code: '',
+    key: 'supplyPaymentInfo',
+    url: '/EKB/v1/supplyPaymentInfo',
+    dis: '补录付款流程信息',
+  },
 ];

@@ -720,10 +720,10 @@ export default function TopConsole(props) {
           src={lbmodal.url}
         />
       )}
-      {/* <PaymentModal
-        dataProps={{ visible: lbmodal.fklcbl, paymentPlan: payment }}
+      <PaymentModal
+        dataProps={{ visible: lbmodal.fklcbl, paymentPlan: payment, xmid }}
         funcProps={{ setVisible: v => setLbModal(p => ({ ...p, fklcbl: v })) }}
-      /> */}
+      />
       <Breadcrumb separator=">">
         {routes?.map((item, index) => {
           const { name = item, pathname = '' } = item;
