@@ -981,6 +981,9 @@
   //预算统计
   .budget-statistic-spin-wrapper {
     height: 100%;
+    & > div > .ant-spin {
+      max-height: unset;
+    }
     .ant-spin-container {
       height: 100%;
       & .table-box {
@@ -7386,7 +7389,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       & > .info-display-box {
-        margin-bottom: 16px;
+        // margin-bottom: 16px;
         border-radius: 8px;
         background-color: #fff;
         box-shadow: 0px 0px 8px 0px rgba(0, 0, 0, 0.08);

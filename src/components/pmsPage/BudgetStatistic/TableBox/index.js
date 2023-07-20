@@ -21,16 +21,16 @@ const { Option } = Select;
 
 const TableBox = props => {
   const { dataProps = {}, funcProps = {} } = props;
-  const { tableData = {}, filterData = {}, allowExport } = dataProps;
+  const { tableData = {}, filterData = {}, allowExport, activeKey } = dataProps;
   const {
     setFilterData = () => {},
     queryTableData = () => {},
-    setIsSpinning = () => {},
+    setSpinningData = () => {},
   } = funcProps;
   const [drawerData, setDrawerData] = useState({
     data: [],
     visible: false,
-    loading: false,
+    spinning: false,
   }); //项目付款详情抽屉
   const [exportModalVisible, setExportModalVisible] = useState(false); //导出弹窗显隐
   const location = useLocation();
@@ -131,7 +131,7 @@ const TableBox = props => {
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{txt}</span>,
+      render: txt => <span style={{ marginRight: 20 }}>{txt}%</span>,
     },
     {
       title: '合同金额',
@@ -162,8 +162,12 @@ const TableBox = props => {
   ];
 
   const openDrawer = budgetId => {
-    setIsSpinning(true);
+    setSpinningData(p => ({
+      tip: '付款信息加载中',
+      spinning: true,
+    }));
     QueryBudgetStatistics({
+      budgetType: activeKey,
       budgetId,
       current: 1,
       pageSize: 9999,
@@ -179,13 +183,19 @@ const TableBox = props => {
             data: JSON.parse(res.payInfo),
             visible: true,
           });
-          setIsSpinning(false);
+          setSpinningData(p => ({
+            ...p,
+            spinning: false,
+          }));
         }
       })
       .catch(e => {
         console.error('🚀付款详情', e);
         message.error('付款详情信息获取失败', 1);
-        setIsSpinning(false);
+        setSpinningData(p => ({
+          ...p,
+          spinning: false,
+        }));
       });
   };
 
@@ -215,7 +225,7 @@ const TableBox = props => {
         queryTableData({
           current,
           pageSize,
-          sort: sorter.field + ' ASC,YSID ASC',
+          sort: sorter.field + ' ASC',
           budgetCategory:
             filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
           budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
@@ -224,7 +234,7 @@ const TableBox = props => {
         queryTableData({
           current,
           pageSize,
-          sort: sorter.field + ' DESC,YSID DESC',
+          sort: sorter.field + ' DESC',
           budgetCategory:
             filterData.budgetCategory !== undefined ? Number(filterData.budgetCategory) : undefined,
           budgetId: filterData.budgetPrj !== undefined ? Number(filterData.budgetPrj) : undefined,
@@ -315,13 +325,16 @@ const TableBox = props => {
       key: 'FKSJ',
       ellipsis: true,
       render: txt =>
-        ['', ' ', -1, '-1', undefined, null].includes(txt) ? moment(txt).format('YYYY-MM-DD') : '',
+        !['', ' ', -1, '-1', undefined, null].includes(txt) ? moment(txt).format('YYYY-MM-DD') : '',
     },
   ];
 
   const handleYearChange = d => {
     setFilterData(p => ({ ...p, year: d, yearOpen: false }));
-    setIsSpinning(true);
+    setSpinningData(p => ({
+      tip: '预算项目信息加载中',
+      spinning: true,
+    }));
     FetchQueryBudgetProjects({
       type: 'NF',
       year: d.year(),
@@ -330,7 +343,7 @@ const TableBox = props => {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryBudgetProjects ~ res', res);
           let ysxmArr = (
-            res.record?.filter(x => x.ysLXID === (budgetType === 'ZB' ? '1' : '2')) || []
+            res.record?.filter(x => x.ysLXID === (activeKey === 'ZB' ? '1' : '2')) || []
           ).reduce((acc, cur) => {
             const index = acc.findIndex(item => item.value === cur.zdbm && item.title === cur.ysLB);
             if (index === -1) {
@@ -360,13 +373,19 @@ const TableBox = props => {
             budgetPrj: undefined,
             budgetPrjSlt: ysxmArr,
           }));
-          setIsSpinning(false);
+          setSpinningData(p => ({
+            ...p,
+            spinning: false,
+          }));
         }
       })
       .catch(e => {
         console.error('🚀预算项目信息', e);
         message.error('预算项目获取失败', 1);
-        setIsSpinning(false);
+        setSpinningData(p => ({
+          ...p,
+          spinning: false,
+        }));
       });
   };
 

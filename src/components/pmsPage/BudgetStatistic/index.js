@@ -24,8 +24,11 @@ export default function BudgetStatistic(props) {
     budgetPrjSlt: [],
   }); //筛选栏数据
   const [activeKey, setActiveKey] = useState('ZB');
-  const [curSorter, setCurSorter] = useState('YSID DESC'); //排序
-  const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  const [curSorter, setCurSorter] = useState(''); //排序
+  const [spinningData, setSpinningData] = useState({
+    spinning: false,
+    tip: '加载中',
+  }); //加载状态
   const [allowExport, setAllowExport] = useState(false); //是否允许导出
   const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
 
@@ -60,7 +63,10 @@ export default function BudgetStatistic(props) {
     budgetCategory,
     budgetId,
   }) => {
-    setIsSpinning(true);
+    setSpinningData(p => ({
+      tip: '加载中',
+      spinning: true,
+    }));
     //预算统计信息
     QueryBudgetStatistics({
       budgetCategory,
@@ -126,27 +132,39 @@ export default function BudgetStatistic(props) {
                     budgetType === 'ZB' ? Number(x.ibm) <= 6 : Number(x.ibm) > 6,
                   ),
                   budgetPrjSlt: ysxmArr,
-                  budgetCategory: undefined,
-                  budgetPrj: undefined,
                 }));
-                setIsSpinning(false);
+                setSpinningData(p => ({
+                  ...p,
+                  spinning: false,
+                }));
               }
             })
             .catch(e => {
               console.error('🚀预算项目信息', e);
               message.error('预算项目获取失败', 1);
-              setIsSpinning(false);
+              setSpinningData(p => ({
+                ...p,
+                spinning: false,
+              }));
             });
         }
       })
       .catch(e => {
         console.error('🚀预算统计信息', e);
         message.error('预算统计信息获取失败', 1);
-        setIsSpinning(false);
+        setSpinningData(p => ({
+          ...p,
+          spinning: false,
+        }));
       });
   };
 
   const handleTabsChange = key => {
+    setFilterData(p => ({
+      ...p,
+      budgetCategory: undefined,
+      budgetPrj: undefined,
+    }));
     queryTableData({ budgetType: key, budgetCategory: undefined, budgetId: undefined });
     // console.log('🚀 ~ file: index.js:146 ~ handleTabsChange ~ key:', key);
     setActiveKey(key);
@@ -154,7 +172,11 @@ export default function BudgetStatistic(props) {
 
   return (
     <div className="weekly-report-detail">
-      <Spin spinning={isSpinning} tip="加载中" wrapperClassName="budget-statistic-spin-wrapper">
+      <Spin
+        spinning={spinningData.spinning}
+        tip={spinningData.tip}
+        wrapperClassName="budget-statistic-spin-wrapper"
+      >
         <div className="top-console">
           <Tabs
             defaultActiveKey="ZB"
@@ -167,8 +189,8 @@ export default function BudgetStatistic(props) {
           </Tabs>
         </div>
         <TableBox
-          dataProps={{ tableData, filterData, allowExport }}
-          funcProps={{ setFilterData, queryTableData, setIsSpinning }}
+          dataProps={{ tableData, filterData, allowExport, activeKey }}
+          funcProps={{ setFilterData, queryTableData, setSpinningData }}
         />
       </Spin>
     </div>
