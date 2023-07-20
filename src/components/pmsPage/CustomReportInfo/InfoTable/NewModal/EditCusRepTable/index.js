@@ -137,7 +137,11 @@ class EditCusRepTable extends React.Component {
     //console.log("keykey-cc",key)
     const {presetFieldData, presetFieldDataCallback} = this.props;
     const dataSource = JSON.parse(JSON.stringify(presetFieldData));
-    presetFieldDataCallback([...dataSource.filter(item => item.key !== key)]);
+    if (dataSource.length === 1) {
+      message.warn("至少保留一条数据!")
+    } else {
+      presetFieldDataCallback([...dataSource.filter(item => item.key !== key)]);
+    }
   };
 
   handleAdd = (index) => {

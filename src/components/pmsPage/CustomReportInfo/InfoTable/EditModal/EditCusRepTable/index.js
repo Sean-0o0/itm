@@ -137,7 +137,11 @@ class EditCusRepTable extends React.Component {
     //console.log("keykey-cc",key)
     const {presetFieldData, presetFieldDataCallback} = this.props;
     const dataSource = JSON.parse(JSON.stringify(presetFieldData));
-    presetFieldDataCallback([...dataSource.filter(item => item.key !== key)]);
+    if (dataSource.length === 1) {
+      message.warn("至少保留一条数据!")
+    } else {
+      presetFieldDataCallback([...dataSource.filter(item => item.key !== key)]);
+    }
   };
 
   handleAdd = (index) => {
@@ -293,19 +297,19 @@ class EditCusRepTable extends React.Component {
           columns={columns}
           pagination={false}
         />
-        <div style={{
-          textAlign: 'center',
-          border: '1px dashed #e0e0e0',
-          lineHeight: '32px',
-          height: '32px',
-          cursor: 'pointer',
-          marginTop: '8px',
-        }} onClick={() => this.handleAdd()}>
-        <span className='addHover'>
-                  <Icon type="plus" style={{fontSize: '12px'}}/>
-                  <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增项目字段</span>
-                </span>
-        </div>
+        {/*<div style={{*/}
+        {/*  textAlign: 'center',*/}
+        {/*  border: '1px dashed #e0e0e0',*/}
+        {/*  lineHeight: '32px',*/}
+        {/*  height: '32px',*/}
+        {/*  cursor: 'pointer',*/}
+        {/*  marginTop: '8px',*/}
+        {/*}} onClick={() => this.handleAdd()}>*/}
+        {/*<span className='addHover'>*/}
+        {/*          <Icon type="plus" style={{fontSize: '12px'}}/>*/}
+        {/*          <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增项目字段</span>*/}
+        {/*        </span>*/}
+        {/*</div>*/}
       </div>
     );
   }
