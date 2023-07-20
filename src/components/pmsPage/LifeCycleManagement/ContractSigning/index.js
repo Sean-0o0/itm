@@ -141,13 +141,17 @@ class ContractSigning extends React.Component {
   // 保存数据操作
   handleFormValidate = e => {
     e.preventDefault();
-    const { currentXmid, currentXmmc,xmjbxxRecord } = this.props;
+    const { currentXmid, currentXmmc, xmjbxxRecord } = this.props;
     console.log('currentXmid', currentXmid);
     console.log('currentXmmc', currentXmmc);
     const _this = this;
     _this.props.form.validateFields((err, values) => {
       if (err) {
         const errs = Object.keys(err);
+        if (errs.includes('BM')) {
+          message.warn('请选择部门！');
+          return;
+        }
         if (errs.includes('BGRQ')) {
           message.warn('请选择报告日期！');
           return;
@@ -185,28 +189,28 @@ class ContractSigning extends React.Component {
           return;
         }
       } else {
-        console.log("Number(xmjbxxRecord[0]?.lxlcje)",Number(xmjbxxRecord[0]?.LXLCJE))
-        console.log("xmjbxxRecordxmjbxxRecord",xmjbxxRecord)
-        console.log("Number(xmjbxxRecord[0]?.ysje)",Number(xmjbxxRecord[0]?.YSJE))
+        console.log('Number(xmjbxxRecord[0]?.lxlcje)', Number(xmjbxxRecord[0]?.LXLCJE));
+        console.log('xmjbxxRecordxmjbxxRecord', xmjbxxRecord);
+        console.log('Number(xmjbxxRecord[0]?.ysje)', Number(xmjbxxRecord[0]?.YSJE));
         if (_this.state.pbbgTurnRed) {
           message.warn('请上传合同附件！');
           return;
         } else if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) > 0) {
-          console.log("2222")
+          console.log('2222');
           if (Number(values.je) > Number(xmjbxxRecord[0]?.LXLCJE)) {
             message.warn('合同金额不能超过立项流程金额(' + Number(xmjbxxRecord[0]?.LXLCJE) + ')！');
             return;
           }
         } else if (xmjbxxRecord[0]?.LXLCJE && Number(xmjbxxRecord[0]?.LXLCJE) === 0) {
-          console.log("33333333")
+          console.log('33333333');
           if (Number(values.je) > Number(xmjbxxRecord[0]?.YSJE)) {
             message.warn('合同金额不能超过预算金额(' + Number(xmjbxxRecord[0]?.YSJE) + ')！');
             return;
           }
         }
         _this.setState({
-          isSpinning: true
-        })
+          isSpinning: true,
+        });
         _this.individuationGetOAResult(values);
       }
     });
@@ -220,23 +224,23 @@ class ContractSigning extends React.Component {
         const { code = -1, record = [] } = result;
         if (code > 0) {
           this.setState({
-            isSpinning: false
-          })
+            isSpinning: false,
+          });
           this.props.closeContractModal();
           this.props.onSuccess('合同签署');
         }
       })
       .catch(error => {
         this.setState({
-          isSpinning: false
-        })
+          isSpinning: false,
+        });
         message.error(!error.success ? error.message : error.note);
       });
   };
 
   handleParams = values => {
-    const {uploadFileParams, uploadFileParams2, processListData, BM1 = '', BM2 = ''} = this.state;
-    const {currentXmid, currentXmmc} = this.props;
+    const { uploadFileParams, uploadFileParams2, processListData, BM1 = '', BM2 = '' } = this.state;
+    const { currentXmid, currentXmmc } = this.props;
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
     let arr = [];
@@ -322,7 +326,7 @@ class ContractSigning extends React.Component {
   handleProcessItemClick = id => {
     window.open(
       'http://10.52.130.12/ZSZQOA/getURLSyncBPM.do?_BPM_FUNCCODE=C_FormSetFormData&_mode=4&_form_control_design=LABEL&_tf_file_id=' +
-      id,
+        id,
     );
   };
   //关联流程 - 删除
@@ -357,10 +361,10 @@ class ContractSigning extends React.Component {
     const {
       contractSigningVisible,
       xmbh,
-      dictionary: {LCJJCD = [], YZLX = [], CXBM = []},
+      dictionary: { LCJJCD = [], YZLX = [], CXBM = [] },
     } = this.props;
     const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-    const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
+    const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -375,9 +379,9 @@ class ContractSigning extends React.Component {
       isAllWindow: 1,
       // defaultFullScreen: true,
       title: '新增供应商',
-      width: '120rem',
-      height: '90rem',
-      style: { top: '20rem' },
+      width: '800px',
+      height: '600px',
+      style: { top: '10px' },
       visible: addGysModalVisible,
       footer: null,
     };
@@ -406,7 +410,7 @@ class ContractSigning extends React.Component {
         )}
         <Modal
           wrapClassName="editMessage-modify"
-          style={{top: '10px'}}
+          style={{ top: '10px' }}
           width={'860px'}
           title={null}
           zIndex={100}
@@ -416,18 +420,24 @@ class ContractSigning extends React.Component {
           // onOk={e => this.handleFormValidate(e)}
           onCancel={this.props.closeContractModal}
           maskClosable={false}
-          footer={<div className="modal-footer">
-            <Button className="btn-default" onClick={this.props.closeContractModal}>
-              取消
-            </Button>
-            {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
+          footer={
+            <div className="modal-footer">
+              <Button className="btn-default" onClick={this.props.closeContractModal}>
+                取消
+              </Button>
+              {/* <Button className="btn-primary" type="primary" onClick={() => handleSubmit('save')}>
         暂存草稿
       </Button> */}
-            <Button disabled={isSpinning} className="btn-primary" type="primary"
-                    onClick={e => this.handleFormValidate(e)}>
-              确定
-            </Button>
-          </div>}
+              <Button
+                disabled={isSpinning}
+                className="btn-primary"
+                type="primary"
+                onClick={e => this.handleFormValidate(e)}
+              >
+                确定
+              </Button>
+            </div>
+          }
           visible={contractSigningVisible}
         >
           <div
@@ -446,50 +456,62 @@ class ContractSigning extends React.Component {
           >
             <strong>合同签署流程发起</strong>
           </div>
-          <Spin spinning={isSpinning} style={{position: 'fixed'}} tip="加载中" size="large"
-                wrapperClassName="contrast-signing-modal-spin">
-            <div style={{padding: '0 3.5712rem'}}>
+          <Spin
+            spinning={isSpinning}
+            style={{ position: 'fixed' }}
+            tip="加载中"
+            size="large"
+            wrapperClassName="contrast-signing-modal-spin"
+          >
+            <div style={{ padding: '0 24px' }}>
               <div className="steps-content">
                 <React.Fragment>
                   <Form
                     {...basicFormItemLayout}
                     ref={e => (this.basicForm = e)}
-                    style={{width: '98%'}}
+                    style={{ width: '98%' }}
                   >
-                    <div className="title" style={{borderBottom: '1px solid #F1F1F1'}}>
+                    <div className="title" style={{ borderBottom: '1px solid #F1F1F1' }}>
                       <Icon
                         type={basicInfoCollapse ? 'caret-right' : 'caret-down'}
                         onClick={() => this.setState({ basicInfoCollapse: !basicInfoCollapse })}
-                        style={{ fontSize: '2rem', cursor: 'pointer' }}
+                        style={{ fontSize: '14px', cursor: 'pointer' }}
                       />
-                      <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>
+                      <span style={{ paddingLeft: '10px', fontSize: '20px', color: '#3461FF' }}>
                         基本信息
                       </span>
                     </div>
                     {!basicInfoCollapse && (
-                      <div style={{ margin: '2rem 0 0 0' }}>
+                      <div style={{ margin: '14px 0 0 0' }}>
                         <Row gutter={24}>
-                          {
-                            // LOGIN_USER_ID === 12488?
-                            LOGIN_USER_ID === 1884 ?
-                              <Col span={12}>
-                                <Form.Item label="部门">
+                          {// LOGIN_USER_ID === 12488?
+                          LOGIN_USER_ID === 1884 ? (
+                            <Col span={12}>
+                              <Form.Item label="部门">
+                                {getFieldDecorator('BM', {
+                                  rules: [
+                                    {
+                                      required: true,
+                                      message: '部门不允许空值',
+                                    },
+                                  ],
+                                })(
                                   <Select
-                                    style={{width: '100%', borderRadius: '8px !important'}}
+                                    style={{ width: '100%', borderRadius: '8px !important' }}
                                     placeholder="请选择部门"
                                     showSearch
                                     allowClear
                                     onChange={(value, option) => {
-                                      console.log('value', value)
-                                      console.log('option', option)
+                                      console.log('value', value);
+                                      console.log('option', option);
                                       this.setState({
                                         BM1: option.props.value,
                                         BM2: option.props.children,
-                                      })
+                                      });
                                     }}
                                     open={isSelectorBMOpen}
                                     onDropdownVisibleChange={visible =>
-                                      this.setState({isSelectorBMOpen: visible})
+                                      this.setState({ isSelectorBMOpen: visible })
                                     }
                                     filterOption={(input, option) =>
                                       option.props.children
@@ -498,25 +520,28 @@ class ContractSigning extends React.Component {
                                     }
                                   >
                                     {CXBM.length > 0 &&
-                                    CXBM.map((item, index) => {
-                                      return (
-                                        <Option key={index} value={item.ibm}>
-                                          {item.note}
-                                        </Option>
-                                      );
-                                    })}
-                                  </Select>
-                                </Form.Item>
-                              </Col> : <Col span={12}>
-                                <Form.Item label="部门">
-                                  <Input
-                                    placeholder="请输入部门"
-                                    disabled={true}
-                                    value={loginUser.orgName}
-                                  />
-                                </Form.Item>
-                              </Col>
-                          }
+                                      CXBM.map((item, index) => {
+                                        return (
+                                          <Option key={index} value={item.ibm}>
+                                            {item.note}
+                                          </Option>
+                                        );
+                                      })}
+                                  </Select>,
+                                )}
+                              </Form.Item>
+                            </Col>
+                          ) : (
+                            <Col span={12}>
+                              <Form.Item label="部门">
+                                <Input
+                                  placeholder="请输入部门"
+                                  disabled={true}
+                                  value={loginUser.orgName}
+                                />
+                              </Form.Item>
+                            </Col>
+                          )}
                           <Col span={12}>
                             <Form.Item label="报告日期">
                               {getFieldDecorator('BGRQ', {
@@ -590,9 +615,9 @@ class ContractSigning extends React.Component {
                                 // </Select>
                                 <Radio.Group>
                                   {LCJJCD.length > 0 &&
-                                  LCJJCD.map((item, index) => {
-                                    return <Radio value={item.ibm}>{item.note}</Radio>;
-                                  })}
+                                    LCJJCD.map((item, index) => {
+                                      return <Radio value={item.ibm}>{item.note}</Radio>;
+                                    })}
                                 </Radio.Group>,
                               )}
                             </Form.Item>
@@ -609,10 +634,12 @@ class ContractSigning extends React.Component {
                                   },
                                 ],
                                 initialValue: 1,
-                              })(<Radio.Group>
-                                <Radio value={1}>直接送审</Radio>
-                                <Radio value={2}>发送至OA草稿箱</Radio>
-                              </Radio.Group>)}
+                              })(
+                                <Radio.Group>
+                                  <Radio value={1}>直接送审</Radio>
+                                  <Radio value={2}>发送至OA草稿箱</Radio>
+                                </Radio.Group>,
+                              )}
                             </Form.Item>
                           </Col>
                         </Row>
@@ -625,17 +652,17 @@ class ContractSigning extends React.Component {
                         onClick={() =>
                           this.setState({ contractInfoCollapse: !contractInfoCollapse })
                         }
-                        style={{ fontSize: '2rem', cursor: 'pointer' }}
+                        style={{ fontSize: '14px', cursor: 'pointer' }}
                       />
-                      <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>
+                      <span style={{ paddingLeft: '10px', fontSize: '20px', color: '#3461FF' }}>
                         合同信息
                       </span>
                     </div>
                     {!contractInfoCollapse && (
-                      <div style={{ margin: '2rem 0 0 0' }}>
+                      <div style={{ margin: '14px 0 0 0' }}>
                         <Row gutter={24}>
-                          <Col span={12} style={{display: 'flex', position: 'relative'}}>
-                            <Form.Item label="供应商" style={{width: '100%'}}>
+                          <Col span={12} style={{ display: 'flex', position: 'relative' }}>
+                            <Form.Item label="供应商" style={{ width: '100%' }}>
                               {getFieldDecorator('gys', {
                                 // initialValue: '1',
                                 // rules: [
@@ -687,7 +714,7 @@ class ContractSigning extends React.Component {
                             <i
                               className="iconfont circle-add"
                               onClick={() => {
-                                this.setState({addGysModalVisible: true});
+                                this.setState({ addGysModalVisible: true });
                               }}
                               style={{
                                 marginTop: '5px',
@@ -702,7 +729,7 @@ class ContractSigning extends React.Component {
                           </Col>
                           <Col span={12} className="glys">
                             <Form.Item label="合同编号">
-                              <Input placeholder="请输入合同编号" disabled={true}/>
+                              <Input placeholder="请输入合同编号" disabled={true} />
                             </Form.Item>
                           </Col>
                         </Row>
@@ -797,8 +824,8 @@ class ContractSigning extends React.Component {
                           <Col span={24}>
                             <Form.Item
                               label="请示报告内容"
-                              labelCol={{span: 4}}
-                              wrapperCol={{span: 20}}
+                              labelCol={{ span: 4 }}
+                              wrapperCol={{ span: 20 }}
                             >
                               {getFieldDecorator('QSBGNR', {
                                 rules: [
@@ -823,14 +850,14 @@ class ContractSigning extends React.Component {
                         onClick={() =>
                           this.setState({ attachmentInfoCollapse: !attachmentInfoCollapse })
                         }
-                        style={{ fontSize: '2rem', cursor: 'pointer' }}
+                        style={{ fontSize: '14px', cursor: 'pointer' }}
                       />
-                      <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>
+                      <span style={{ paddingLeft: '10px', fontSize: '20px', color: '#3461FF' }}>
                         附件
                       </span>
                     </div>
                     {!attachmentInfoCollapse && (
-                      <div style={{ margin: '2rem 0 0 0' }}>
+                      <div style={{ margin: '14px 0 0 0' }}>
                         <Row gutter={24}>
                           <Col span={12}>
                             <Form.Item
@@ -869,7 +896,7 @@ class ContractSigning extends React.Component {
                                 multiple={true}
                                 onChange={info => {
                                   let fileList = [...info.fileList];
-                                  this.setState({fileList: [...fileList]}, () => {
+                                  this.setState({ fileList: [...fileList] }, () => {
                                     console.log('目前fileList', this.state.fileList);
                                     let arr = [];
                                     console.log('目前fileList2222', fileList);
@@ -928,7 +955,7 @@ class ContractSigning extends React.Component {
                                 fileList={[...fileList]}
                               >
                                 <Button type="dashed">
-                                  <Icon type="upload"/>
+                                  <Icon type="upload" />
                                   点击上传
                                 </Button>
                               </Upload>
@@ -971,7 +998,7 @@ class ContractSigning extends React.Component {
                                 multiple={true}
                                 onChange={info => {
                                   let fileList = [...info.fileList];
-                                  this.setState({fileList2: [...fileList]}, () => {
+                                  this.setState({ fileList2: [...fileList] }, () => {
                                     console.log('目前fileList', this.state.fileList2);
                                     let arr = [];
                                     console.log('目前fileList2222', fileList);
@@ -1022,7 +1049,10 @@ class ContractSigning extends React.Component {
                                       }
                                     };
                                   });
-                                  console.log('uploadFileParams-cccc', this.state.uploadFileParams2);
+                                  console.log(
+                                    'uploadFileParams-cccc',
+                                    this.state.uploadFileParams2,
+                                  );
                                 }}
                                 accept={
                                   '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
@@ -1030,7 +1060,7 @@ class ContractSigning extends React.Component {
                                 fileList={[...fileList2]}
                               >
                                 <Button type="dashed">
-                                  <Icon type="upload"/>
+                                  <Icon type="upload" />
                                   点击上传
                                 </Button>
                               </Upload>
@@ -1044,22 +1074,22 @@ class ContractSigning extends React.Component {
                       <Icon
                         type={flowInfoCollapse ? 'caret-right' : 'caret-down'}
                         onClick={() => this.setState({ flowInfoCollapse: !flowInfoCollapse })}
-                        style={{ fontSize: '2rem', cursor: 'pointer' }}
+                        style={{ fontSize: '14px', cursor: 'pointer' }}
                       />
-                      <span style={{ paddingLeft: '1.5rem', fontSize: '3rem', color: '#3461FF' }}>
+                      <span style={{ paddingLeft: '10px', fontSize: '20px', color: '#3461FF' }}>
                         关联流程
                       </span>
                       <Icon
                         type="plus-circle"
                         theme="filled"
                         onClick={() => this.handleAssociateFileOpen()}
-                        style={{ color: '#3461FF', paddingLeft: '1rem', fontSize: '3rem' }}
+                        style={{ color: '#3461FF', paddingLeft: '7px', fontSize: '20px' }}
                       />
                     </div>
-                    <div style={{ overflow: 'hidden', overflowY: 'auto', maxHeight: '52.08rem' }}>
+                    <div style={{ overflow: 'hidden', overflowY: 'auto', maxHeight: '350px' }}>
                       {!flowInfoCollapse &&
                         processListData.map((item, index) => (
-                          <div style={{ margin: '2rem 7rem' }} key={index}>
+                          <div style={{ margin: '14px 47px' }} key={index}>
                             <Row gutter={24}>
                               <Col
                                 span={24}
@@ -1067,7 +1097,7 @@ class ContractSigning extends React.Component {
                                 style={{ display: 'flex' }}
                               >
                                 <a
-                                  style={{ color: '#3361ff', marginRight: '1.2rem' }}
+                                  style={{ color: '#3361ff', marginRight: '1.14px' }}
                                   F
                                   onClick={() => this.handleProcessItemClick(item.id)}
                                 >
