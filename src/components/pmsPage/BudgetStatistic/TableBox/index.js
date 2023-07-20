@@ -167,7 +167,7 @@ const TableBox = props => {
       loading: true,
     }));
     QueryBudgetStatistics({
-      budgetId: 19,
+      budgetId,
       current: 1,
       pageSize: 9999,
       paging: -1,

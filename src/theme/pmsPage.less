@@ -2105,6 +2105,11 @@
 
 //预算统计-付款详情
 .budget-payment-drawer {
+  .ant-drawer-close,
+  .ant-drawer-close:focus,
+  .ant-drawer-close:hover {
+    color: #fff;
+  }
   .ant-drawer-header {
     background-color: #3361ff;
     border-radius: 0;
@@ -2131,6 +2136,9 @@
       border-radius: 5px;
     }
     .antd-table-adaptation();
+    .ant-table .ant-table-placeholder {
+      border: 0;
+    }
   }
 }
 
