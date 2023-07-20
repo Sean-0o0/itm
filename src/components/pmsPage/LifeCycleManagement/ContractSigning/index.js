@@ -286,7 +286,7 @@ class ContractSigning extends React.Component {
         att = {
           content: item.base64,
           nrtitle: item.name,
-          nrtype: '2',
+          nrtype: '51',
           filetype: '附件',
         };
         attachments.push(att);
