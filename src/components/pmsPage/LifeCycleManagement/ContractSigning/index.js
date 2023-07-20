@@ -35,11 +35,17 @@ class ContractSigning extends React.Component {
   state = {
     isSpinning: false,
     isSelectorOpen: false,
+    isSelectorBMOpen: false,
     addGysModalVisible: false,
     associatedFileVisible: false,
+    //合同附件
     pbbgTurnRed: true,
     fileList: [],
     uploadFileParams: [],
+    //附件
+    pbbgTurnRed2: true,
+    fileList2: [],
+    uploadFileParams2: [],
     // 基本信息是否折叠
     basicInfoCollapse: false,
     //合同信息是否折叠
@@ -48,6 +54,10 @@ class ContractSigning extends React.Component {
     attachmentInfoCollapse: false,
     //关联流程是否折叠
     flowInfoCollapse: false,
+    //部门id-人员是陈欣的时候
+    BM1: '',
+    //部门名称-人员是陈欣的时候
+    BM2: '',
     //紧急程度
     LCJJCD: [],
     //印章类型
@@ -225,8 +235,8 @@ class ContractSigning extends React.Component {
   };
 
   handleParams = values => {
-    const { uploadFileParams, processListData } = this.state;
-    const { currentXmid, currentXmmc } = this.props;
+    const {uploadFileParams, uploadFileParams2, processListData, BM1 = '', BM2 = ''} = this.state;
+    const {currentXmid, currentXmmc} = this.props;
     const loginUser = JSON.parse(window.sessionStorage.getItem('user'));
     loginUser.id = String(loginUser.id);
     let arr = [];
@@ -243,8 +253,8 @@ class ContractSigning extends React.Component {
           HTMBLX: values.HTMBLX, //合同模板类型id
           YZLX: String(values.YZLX), //印章类型字典id，多个用,隔开
           YT: '', //用途
-          BM1: '', //传空
-          BM2: '', //传空
+          BM1, //传空
+          BM2, //传空
           NGR1: '', //传空
           NGR2: '', //传空
         },
@@ -267,6 +277,17 @@ class ContractSigning extends React.Component {
           nrtitle: item.name,
           nrtype: '1',
           filetype: '合同',
+        };
+        attachments.push(att);
+      });
+    }
+    if (uploadFileParams2.length > 0) {
+      uploadFileParams2.map(item => {
+        att = {
+          content: item.base64,
+          nrtitle: item.name,
+          nrtype: '2',
+          filetype: '附件',
         };
         attachments.push(att);
       });
@@ -316,10 +337,15 @@ class ContractSigning extends React.Component {
     const {
       isSpinning = false,
       isSelectorOpen = false,
+      isSelectorBMOpen = false,
       gysData = [],
       addGysModalVisible = false,
+      //合同附件
       pbbgTurnRed = true,
       fileList = [],
+      //附件
+      pbbgTurnRed2 = true,
+      fileList2 = [],
       basicInfoCollapse = false,
       contractInfoCollapse = false,
       attachmentInfoCollapse = false,
@@ -331,9 +357,10 @@ class ContractSigning extends React.Component {
     const {
       contractSigningVisible,
       xmbh,
-      dictionary: { LCJJCD = [], YZLX = [] },
+      dictionary: {LCJJCD = [], YZLX = [], CXBM = []},
     } = this.props;
-    const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
+    const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+    const {getFieldDecorator, getFieldValue, setFieldsValue} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
         xs: { span: 24 },
@@ -442,15 +469,54 @@ class ContractSigning extends React.Component {
                     {!basicInfoCollapse && (
                       <div style={{ margin: '2rem 0 0 0' }}>
                         <Row gutter={24}>
-                          <Col span={12}>
-                            <Form.Item label="部门">
-                              <Input
-                                placeholder="请输入部门"
-                                disabled={true}
-                                value={loginUser.orgName}
-                              />
-                            </Form.Item>
-                          </Col>
+                          {
+                            // LOGIN_USER_ID === 12488?
+                            LOGIN_USER_ID === 1884 ?
+                              <Col span={12}>
+                                <Form.Item label="部门">
+                                  <Select
+                                    style={{width: '100%', borderRadius: '8px !important'}}
+                                    placeholder="请选择部门"
+                                    showSearch
+                                    allowClear
+                                    onChange={(value, option) => {
+                                      console.log('value', value)
+                                      console.log('option', option)
+                                      this.setState({
+                                        BM1: option.props.value,
+                                        BM2: option.props.children,
+                                      })
+                                    }}
+                                    open={isSelectorBMOpen}
+                                    onDropdownVisibleChange={visible =>
+                                      this.setState({isSelectorBMOpen: visible})
+                                    }
+                                    filterOption={(input, option) =>
+                                      option.props.children
+                                        .toLowerCase()
+                                        .indexOf(input.toLowerCase()) >= 0
+                                    }
+                                  >
+                                    {CXBM.length > 0 &&
+                                    CXBM.map((item, index) => {
+                                      return (
+                                        <Option key={index} value={item.ibm}>
+                                          {item.note}
+                                        </Option>
+                                      );
+                                    })}
+                                  </Select>
+                                </Form.Item>
+                              </Col> : <Col span={12}>
+                                <Form.Item label="部门">
+                                  <Input
+                                    placeholder="请输入部门"
+                                    disabled={true}
+                                    value={loginUser.orgName}
+                                  />
+                                </Form.Item>
+                              </Col>
+                          }
                           <Col span={12}>
                             <Form.Item label="报告日期">
                               {getFieldDecorator('BGRQ', {
@@ -862,7 +928,109 @@ class ContractSigning extends React.Component {
                                 fileList={[...fileList]}
                               >
                                 <Button type="dashed">
-                                  <Icon type="upload" />
+                                  <Icon type="upload"/>
+                                  点击上传
+                                </Button>
+                              </Upload>
+                            </Form.Item>
+                          </Col>
+                          <Col span={12}>
+                            <Form.Item
+                              label="附件"
+                              // required
+                              // help={pbbgTurnRed ? '请上传合同附件' : ''}
+                              validateStatus={pbbgTurnRed2 ? 'error' : 'success'}
+                            >
+                              <Upload
+                                action={'/api/projectManage/queryfileOnlyByupload'}
+                                onDownload={file => {
+                                  if (!file.url) {
+                                    let reader = new FileReader();
+                                    reader.readAsDataURL(file.originFileObj);
+                                    reader.onload = e => {
+                                      var link = document.createElement('a');
+                                      link.href = e.target.result;
+                                      link.download = file.name;
+                                      link.click();
+                                      window.URL.revokeObjectURL(link.href);
+                                    };
+                                  } else {
+                                    // window.location.href=file.url;
+                                    var link = document.createElement('a');
+                                    link.href = file.url;
+                                    link.download = file.name;
+                                    link.click();
+                                    window.URL.revokeObjectURL(link.href);
+                                  }
+                                }}
+                                showUploadList={{
+                                  showDownloadIcon: true,
+                                  showRemoveIcon: true,
+                                  showPreviewIcon: true,
+                                }}
+                                multiple={true}
+                                onChange={info => {
+                                  let fileList = [...info.fileList];
+                                  this.setState({fileList2: [...fileList]}, () => {
+                                    console.log('目前fileList', this.state.fileList2);
+                                    let arr = [];
+                                    console.log('目前fileList2222', fileList);
+                                    fileList.forEach(item => {
+                                      let reader = new FileReader(); //实例化文件读取对象
+                                      reader.readAsDataURL(item.originFileObj); //将文件读取为 DataURL,也就是base64编码
+                                      reader.onload = e => {
+                                        let urlArr = e.target.result.split(',');
+                                        arr.push({
+                                          name: item.name,
+                                          base64: urlArr[1],
+                                        });
+                                        console.log('arrarr', arr);
+                                        if (arr.length === fileList.length) {
+                                          this.setState({
+                                            uploadFileParams2: [...arr],
+                                          });
+                                        }
+                                      };
+                                    });
+                                  });
+                                  if (fileList.length === 0) {
+                                    this.setState({
+                                      pbbgTurnRed2: true,
+                                    });
+                                  } else {
+                                    this.setState({
+                                      pbbgTurnRed2: false,
+                                    });
+                                  }
+                                }}
+                                beforeUpload={(file, fileList) => {
+                                  let arr = [];
+                                  console.log('目前fileList2222', fileList);
+                                  fileList.forEach(item => {
+                                    let reader = new FileReader(); //实例化文件读取对象
+                                    reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
+                                    reader.onload = e => {
+                                      let urlArr = e.target.result.split(',');
+                                      arr.push({
+                                        name: item.name,
+                                        base64: urlArr[1],
+                                      });
+                                      if (arr.length === fileList.length) {
+                                        this.setState({
+                                          uploadFileParams2: [...arr],
+                                        });
+                                      }
+                                    };
+                                  });
+                                  console.log('uploadFileParams-cccc', this.state.uploadFileParams2);
+                                }}
+                                accept={
+                                  '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                                }
+                                fileList={[...fileList2]}
+                              >
+                                <Button type="dashed">
+                                  <Icon type="upload"/>
                                   点击上传
                                 </Button>
                               </Upload>

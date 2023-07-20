@@ -140,8 +140,9 @@ class EditCusRepTable extends React.Component {
     presetFieldDataCallback([...dataSource.filter(item => item.key !== key)]);
   };
 
-  handleAdd = () => {
+  handleAdd = (index) => {
     const {presetFieldData, presetFieldDataCallback, count} = this.props;
+    const arrData = JSON.parse(JSON.stringify(presetFieldData))
     let arrnew = [];
     presetFieldData.forEach(e => {
       arrnew.push(e.ID)
@@ -159,8 +160,9 @@ class EditCusRepTable extends React.Component {
       ['ZDMC' + num]: '',
       ['ZDLX' + num]: '',
     };
-    console.log("arrnewarrnew", [...presetFieldData, newData])
-    presetFieldDataCallback([...presetFieldData, newData]);
+    arrData.splice(index + 1, 0, newData)
+    console.log("arrnewarrnew", [...arrData])
+    presetFieldDataCallback([...arrData]);
   };
 
   handleSave = row => {
@@ -231,7 +233,7 @@ class EditCusRepTable extends React.Component {
           lineHeight: 1
         }}>*</span>字段类型</span>,
         dataIndex: 'ZDLX',
-        width: '30%',
+        // width: '30%',
         ellipsis: true,
         render(text, record, index) {
           return (<Select style={{width: '100%'}} defaultValue={record['ZDLX' + record.ID]}
@@ -254,12 +256,14 @@ class EditCusRepTable extends React.Component {
       {
         title: '操作',
         dataIndex: 'operation',
-        width: '8%',
-        render: (text, record) =>
+        width: '140px',
+        render: (text, record, index) =>
           presetFieldData.length >= 1 ? (
-            <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
-              <a style={{color: '#3361ff'}}>删除</a>
-            </Popconfirm>
+            <div style={{width: '100%'}}>
+              <Popconfirm title="确定删除?" onConfirm={() => this.handleDelete(record.key)}>
+                <a style={{color: '#3361ff'}}>删除</a>
+              </Popconfirm>
+              <a style={{color: '#3361ff', marginLeft: 6}} onClick={() => this.handleAdd(index, record)}>下方插入行</a></div>
           ) : null,
       },
     ];
@@ -296,19 +300,19 @@ class EditCusRepTable extends React.Component {
           columns={columns}
           pagination={false}
         />
-        <div style={{
-          textAlign: 'center',
-          border: '1px dashed #e0e0e0',
-          lineHeight: '32px',
-          height: '32px',
-          cursor: 'pointer',
-          marginTop: '8px',
-        }} onClick={() => this.handleAdd()}>
-        <span className='addHover'>
-                  <Icon type="plus" style={{fontSize: '12px'}}/>
-                  <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增项目字段</span>
-                </span>
-        </div>
+        {/*<div style={{*/}
+        {/*  textAlign: 'center',*/}
+        {/*  border: '1px dashed #e0e0e0',*/}
+        {/*  lineHeight: '32px',*/}
+        {/*  height: '32px',*/}
+        {/*  cursor: 'pointer',*/}
+        {/*  marginTop: '8px',*/}
+        {/*}} onClick={() => this.handleAdd()}>*/}
+        {/*<span className='addHover'>*/}
+        {/*          <Icon type="plus" style={{fontSize: '12px'}}/>*/}
+        {/*          <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增项目字段</span>*/}
+        {/*        </span>*/}
+        {/*</div>*/}
       </div>
     );
   }

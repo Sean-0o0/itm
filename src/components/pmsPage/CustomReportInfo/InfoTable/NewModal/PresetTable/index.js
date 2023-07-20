@@ -480,7 +480,7 @@ class PresetTable extends React.Component {
           bordered
           dataSource={tableData}
           columns={column}
-          scroll={{x: columns.length * 180}}
+          scroll={{x: columns.length * 155}}
           pagination={false}
         />
       </div>

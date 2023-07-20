@@ -1,5 +1,5 @@
 import React, {useEffect, useState, useRef, Fragment} from 'react';
-import {Modal, Form, message, Spin, Input, Button, Table, Steps, Select, Radio, Tooltip, Popover} from 'antd';
+import {Modal, Form, message, Spin, Input, Button, Table, Steps, Select, Radio, Tooltip, Popover, Icon} from 'antd';
 import EditCusRepTable from "./EditCusRepTable";
 import PresetTable from "./PresetTable";
 import moment from 'moment';
@@ -635,7 +635,7 @@ function OprtModal(props) {
   return (
     <Modal
       wrapClassName="editMessage-modify custom-report-edit-modal"
-      width={'850px'}
+      width={'1150px'}
       maskClosable={false}
       zIndex={100}
       maskStyle={{backgroundColor: 'rgb(0 0 0 / 30%)'}}
@@ -707,7 +707,16 @@ function OprtModal(props) {
                 ],
               })(<Input className="item-selector" placeholder="请输入报告名称" allowClear/>)}
             </Form.Item>
-            <Form.Item label="报告类型" labelCol={{span: 3}} wrapperCol={{span: 21}}>
+            <Form.Item label={<span>报告类型&nbsp;
+              <Tooltip placement="topRight" overlayClassName='newpcus-bglx-tooltip' title={
+                <span>
+                  月报：<br/>
+                  &nbsp;&nbsp;&nbsp;1、每月月末最后一天生成下月月报<br/>
+                  &nbsp;&nbsp;&nbsp;2、每月月末最后五个工作日，对月报填写人进行提醒<br/>
+                            </span>}>
+                            <Icon type="question-circle-o"/>
+                        </Tooltip>
+                        </span>} labelCol={{span: 3}} wrapperCol={{span: 21}}>
               {getFieldDecorator('bglx', {
                 initialValue: bgInfo.LX || '1',
                 rules: [
