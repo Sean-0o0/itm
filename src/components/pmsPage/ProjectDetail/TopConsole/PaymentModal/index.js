@@ -12,6 +12,7 @@ import {
   Input,
   Radio,
   Button,
+  message,
 } from 'antd';
 import moment from 'moment';
 import {
@@ -25,14 +26,13 @@ const { Step } = Steps;
 
 export default Form.create()(function PaymentModal(props) {
   const { dataProps = {}, funcProps = {}, form } = props;
-  const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
+  const { validateFields, getFieldValue, resetFields, getFieldDecorator, setFieldsValue } = form;
   const { visible = false, paymentPlan = [], xmid } = dataProps;
   const { setVisible } = funcProps;
   const [curStep, setCurStep] = useState(0); //当前tab ID
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [glsbData, setGlsbData] = useState([]); //关联设备下拉框数据
   const [selectedRowQS, setSelectedRowQS] = useState(undefined); //选中行 期数
-  const [turnRed, setTurnRed] = useState(false); //报错
   const [confirmInfo, setConfirmInfo] = useState({}); //付款信息
 
   useEffect(() => {
@@ -93,6 +93,9 @@ export default Form.create()(function PaymentModal(props) {
         .then(res => {
           if (res.code === 1) {
             setConfirmInfo(JSON.parse(res.record));
+            setFieldsValue({
+              sjfksj: JSON.parse(res.record).gxsj ? moment(JSON.parse(res.record).gxsj) : null,
+            });
           } else {
             setConfirmInfo([]);
           }
@@ -107,7 +110,6 @@ export default Form.create()(function PaymentModal(props) {
     return (
       <Form.Item label={'付款单单号'} labelCol={{ span: 6 }} wrapperCol={{ span: 18 }}>
         {getFieldDecorator('fkddh', {
-          initialValue: 'lllll',
           rules: [
             {
               required: true,
@@ -120,12 +122,19 @@ export default Form.create()(function PaymentModal(props) {
   };
 
   //单选框
-  const getRadio = (label, dataIndex, txt1 = '是', txt2 = '否') => {
+  const getRadio = (
+    label,
+    dataIndex,
+    initialValue = 1,
+    onChange = () => {},
+    txt1 = '是',
+    txt2 = '否',
+  ) => {
     return (
       <Col span={12}>
         <Form.Item label={label} labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
           {getFieldDecorator(dataIndex, {
-            initialValue: 1,
+            initialValue,
             rules: [
               {
                 required: true,
@@ -133,7 +142,7 @@ export default Form.create()(function PaymentModal(props) {
               },
             ],
           })(
-            <Radio.Group>
+            <Radio.Group onChange={onChange}>
               <Radio value={1}>{txt1}</Radio>
               <Radio value={2}>{txt2}</Radio>
             </Radio.Group>,
@@ -149,7 +158,7 @@ export default Form.create()(function PaymentModal(props) {
       <Col span={12}>
         <Form.Item label="实际付款时间" labelCol={{ span: 12 }} wrapperCol={{ span: 12 }}>
           {getFieldDecorator('sjfksj', {
-            initialValue: moment(),
+            initialValue: null,
             rules: [
               {
                 required: true,
@@ -165,44 +174,42 @@ export default Form.create()(function PaymentModal(props) {
   //关联设备采购有合同
   const getGlsbcgyhtSelector = () => {
     return (
-      <>
-        <Col span={24}>
-          <Form.Item
-            label={
-              <div style={{ display: 'inline-block', lineHeight: '17px' }}>
-                关联设备采购
-                <br />
-                有合同流程
-              </div>
-            }
-            labelCol={{ span: 6 }}
-            wrapperCol={{ span: 18 }}
-          >
-            {getFieldDecorator('glsb', {
-              // rules: [
-              //   {
-              //     required: true,
-              //     message: '关联设备采购有合同流程不允许空值',
-              //   },
-              // ],
-            })(
-              <Select
-                style={{ width: '100%', borderRadius: '8px !important' }}
-                showSearch
-                placeholder="请选择关联设备采购有合同流程"
-              >
-                {glsbData?.map((item = {}, ind) => {
-                  return (
-                    <Select.Option key={item.ID} value={item.ID}>
-                      {item.BT}
-                    </Select.Option>
-                  );
-                })}
-              </Select>,
-            )}
-          </Form.Item>
-        </Col>
-      </>
+      <Row>
+        <Form.Item
+          label={
+            <div style={{ display: 'inline-block', lineHeight: '17px' }}>
+              关联设备采购
+              <br />
+              有合同流程
+            </div>
+          }
+          labelCol={{ span: 6 }}
+          wrapperCol={{ span: 18 }}
+        >
+          {getFieldDecorator('glsb', {
+            rules: [
+              {
+                required: true,
+                message: '关联设备采购有合同流程不允许空值',
+              },
+            ],
+          })(
+            <Select
+              style={{ width: '100%', borderRadius: '8px !important' }}
+              showSearch
+              placeholder="请选择关联设备采购有合同流程"
+            >
+              {glsbData?.map((item = {}, ind) => {
+                return (
+                  <Select.Option key={item.ID} value={item.ID}>
+                    {item.BT}
+                  </Select.Option>
+                );
+              })}
+            </Select>,
+          )}
+        </Form.Item>
+      </Row>
     );
   };
 
@@ -245,7 +252,7 @@ export default Form.create()(function PaymentModal(props) {
     const rowSelection = {
       type: 'radio',
       onChange: (selectedRowKeys, selectedRows) => {
-        if (selectedRows.length > 0) setSelectedRowQS(selectedRows[0].FKQS);
+        if (selectedRows.length > 0) setSelectedRowQS(Number(selectedRows[0].FKQS));
       },
     };
 
@@ -254,7 +261,6 @@ export default Form.create()(function PaymentModal(props) {
         <Form.Item
           label="选择对应付款计划"
           required
-          help={turnRed ? '付款计划不能为空值' : ''}
           labelCol={{ span: 6 }}
           wrapperCol={{ span: 18 }}
         >
@@ -271,17 +277,53 @@ export default Form.create()(function PaymentModal(props) {
     );
   };
 
+  const handleConfirm = () => {
+    validateFields(err => {
+      if (!err) {
+        if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
+          message.error('请选择对应付款计划', 1);
+        } else {
+          let params = {
+            code: getFieldValue('fkddh'),
+            date: Number(moment(confirmInfo.tjrq).format('YYYYMMDD')),
+            isLast: getFieldValue('yjfk'),
+            payDate: Number(getFieldValue('sjfksj')?.format('YYYYMMDD')),
+            payeeId: Number(confirmInfo.skzh?.id),
+            paymentNumber: selectedRowQS,
+            projectId: Number(xmid),
+            yjyhtid: getFieldValue('glsb'),
+          };
+          setIsSpinning(true);
+          SupplyPaymentInfo(params)
+            .then(res => {
+              if (res?.success) {
+                setIsSpinning(false);
+                handleCancel();
+              }
+            })
+            .catch(e => {
+              console.error('🚀保存', e);
+              message.error('操作失败', 1);
+              setIsSpinning(false);
+            });
+        }
+      }
+    });
+  };
+
   const handleCancel = () => {
     resetFields();
-    setTurnRed(false);
+    setSelectedRowQS(undefined);
+    setCurStep(0);
+    setConfirmInfo({});
     setVisible(false);
   };
 
   const handleNext = () => {
     form.validateFields(err => {
       if (!err) {
-        if (selectedRowQS === undefined) {
-          setTurnRed(true);
+        if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
+          message.error('请选择对应付款计划', 1);
         } else {
           setCurStep(1);
         }
@@ -299,29 +341,10 @@ export default Form.create()(function PaymentModal(props) {
     } else setCurStep(v);
   };
 
-  const handleConfirm = () => {
-    validateFields(err => {
-      if (!err) {
-        if (selectedRowQS === undefined) {
-          setTurnRed(true);
-        } else {
-          SupplyPaymentInfo({
-             
-          })
-          .then(res => {
-              if (res?.success) {
-                console.log('🚀 ~ SupplyPaymentInfo ~ res', res);
-              }
-          })
-          .catch(e => {
-             console.error('🚀接口信息', e);
-             message.error('接口信息获取失败', 1);
-          });
-          
-          handleCancel();
-        }
-      }
-    });
+  const handleRadioChange = e => {
+    if (e.target.value === 2) {
+      setSelectedRowQS(undefined);
+    }
   };
 
   return (
@@ -385,75 +408,81 @@ export default Form.create()(function PaymentModal(props) {
           <Step title="填写流程信息" status={curStep === 0 ? 'process' : 'wait'} />
           <Step title="确认付款信息" status={curStep === 1 ? 'process' : 'wait'} />
         </Steps>
-        {curStep === 0 ? (
-          <div className="content-box">
-            <Form>
-              {getInput()}
-              {getInputDisabled(
-                '说明',
-                '填写易快报中的付款单单号，点击付款单详情中可在顶部查看，如B22000001',
+
+        <div className="content-box" style={curStep === 0 ? {} : { display: 'none' }}>
+          <Form>
+            {getInput()}
+            {getInputDisabled(
+              '说明',
+              '填写易快报中的付款单单号，点击付款单详情中可在顶部查看，如B22000001',
+            )}
+            <Row>
+              {getRadio('是否为硬件付款', 'yjfk')}
+              {getRadio('是否为硬件入围内付款', 'yjrwfk')}
+            </Row>
+            {getFieldValue('yjrwfk') === 1 && getGlsbcgyhtSelector()}
+            <Row>
+              {getRadio(
+                '是否有付款计划',
+                'sfyfkjh',
+                paymentPlan.length > 0 ? 1 : 2,
+                handleRadioChange,
               )}
-              <Row>
-                {getRadio('是否为硬件付款', 'yjfk')}
-                {getRadio('是否为硬件入围内付款', 'yjrwfk')}
-              </Row>
-              {getGlsbcgyhtSelector()}
-              {getRadio('是否有付款计划', 'sfyfkjh')}
-              {getInputDisabled('说明', '只需要补录今年预算内的付款金额')}
-              {getPaymentPlan()}
               {getDatePicker()}
-            </Form>
-          </div>
-        ) : (
-          <div className="confirm-info-box">
-            <Row>
-              <Col span={12}>
-                <div class="info-item">
-                  <span>提交人：</span>
-                  {confirmInfo.tjr}
-                </div>
-              </Col>
-              <Col span={12}>
-                <div class="info-item">
-                  <span>申请日期：</span>
-                  {confirmInfo.tjsj}
-                </div>
-              </Col>
             </Row>
-            <div class="info-item">
-              <span>标题：</span>
-              {confirmInfo.bt}
-            </div>
-            <Row>
-              <Col span={12}>
-                <div class="info-item">
-                  <span>合同金额（CNY）：</span>
-                  {getAmountFormat(confirmInfo.htje)}
-                </div>
-              </Col>
-              <Col span={12}>
-                <div class="info-item">
-                  <span>已付款金额（CNY）：</span>
-                  {getAmountFormat(confirmInfo.yfkje)}
-                </div>
-              </Col>
-            </Row>
-            <div class="info-item">
-              <span>付款总金额（元）：</span>
-              {getAmountFormat(confirmInfo.fkzje)}
-            </div>
-            <div class="info-item">
-              <span>收款账户：</span>
-              {confirmInfo.skzh?.khmc}&nbsp;&nbsp;
-              {confirmInfo.skzh?.yhkh}&nbsp;&nbsp;
-              {confirmInfo.skzh?.wdmc}
-            </div>
-            <div class="info-item">
-              <span>描述：</span>
-              {confirmInfo.ms}
-            </div>
+            {getFieldValue('sfyfkjh') === 1 && getPaymentPlan()}
+            {getFieldValue('sfyfkjh') === 1 &&
+              getInputDisabled('说明', '只需要补录今年预算内的付款金额')}
+          </Form>
+        </div>
+        <div className="confirm-info-box" style={curStep === 1 ? {} : { display: 'none' }}>
+          <Row>
+            <Col span={12}>
+              <div className="info-item">
+                <span>提交人：</span>
+                {confirmInfo.tjr}
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="info-item">
+                <span>申请日期：</span>
+                {confirmInfo.tjrq}
+              </div>
+            </Col>
+          </Row>
+          <div className="info-item">
+            <span>标题：</span>
+            {confirmInfo.bt}
           </div>
-        )}
+          <Row>
+            <Col span={12}>
+              <div className="info-item">
+                <span>合同金额（CNY）：</span>
+                {getAmountFormat(confirmInfo.htje)}
+              </div>
+            </Col>
+            <Col span={12}>
+              <div className="info-item">
+                <span>已付款金额（CNY）：</span>
+                {getAmountFormat(confirmInfo.yfkje)}
+              </div>
+            </Col>
+          </Row>
+          <div className="info-item">
+            <span>付款总金额（元）：</span>
+            {getAmountFormat(confirmInfo.fkzje)}
+          </div>
+          <div className="info-item">
+            <span>收款账户：</span>
+            {confirmInfo.skzh?.khmc}&nbsp;&nbsp;
+            {confirmInfo.skzh?.yhkh}&nbsp;&nbsp;
+            {confirmInfo.skzh?.wdmc}
+          </div>
+          <div className="info-item">
+            <span>描述：</span>
+            {confirmInfo.ms}
+          </div>
+        </div>
       </Spin>
     </Modal>
   );

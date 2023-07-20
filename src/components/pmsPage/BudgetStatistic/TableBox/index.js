@@ -162,10 +162,7 @@ const TableBox = props => {
   ];
 
   const openDrawer = budgetId => {
-    setDrawerData(p => ({
-      ...p,
-      loading: true,
-    }));
+    setIsSpinning(true);
     QueryBudgetStatistics({
       budgetId,
       current: 1,
@@ -181,17 +178,14 @@ const TableBox = props => {
           setDrawerData({
             data: JSON.parse(res.payInfo),
             visible: true,
-            loading: false,
           });
+          setIsSpinning(false);
         }
       })
       .catch(e => {
         console.error('🚀付款详情', e);
         message.error('付款详情信息获取失败', 1);
-        setDrawerData(p => ({
-          ...p,
-          loading: false,
-        }));
+        setIsSpinning(false);
       });
   };
 

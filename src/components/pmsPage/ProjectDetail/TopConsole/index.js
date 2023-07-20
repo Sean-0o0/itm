@@ -325,37 +325,54 @@ export default function TopConsole(props) {
     }));
   };
 
-  const btnMoreContent = (
-    <Menu>
-      {/* <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
-        <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
-          项目立项申请流程
+  const btnMoreContent = () => {
+    if (String(LOGIN_USER_INFO.id) === '0')
+      return (
+        <Menu>
+          <SubMenu title={<span style={{ marginLeft: 20 }}>流程补录</span>}>
+            <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
+            <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
+            <Menu.Item onClick={() => openLbModal('项目立项申请流程', 'xmlxsq')}>
+              项目立项申请流程
+            </Menu.Item>
+            <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
+              软件合同签署流程
+            </Menu.Item>
+            <Menu.Item onClick={() => openLbModal('软件费用审批-有合同流程', 'rjfyspyht')}>
+              软件费用审批-有合同流程
+            </Menu.Item>
+            <Menu.Item onClick={() => openLbModal('软件费用审批-无合同流程', 'rjfyspwht')}>
+              软件费用审批-无合同流程
+            </Menu.Item>
+            <Menu.Item onClick={() => openLbModal('设备采购-有合同流程', 'sbcgyht')}>
+              设备采购-有合同流程
+            </Menu.Item>
+            <Menu.Item onClick={() => openLbModal('设备采购-无合同流程', 'sbcgwht')}>
+              设备采购-无合同流程
+            </Menu.Item>
+            <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
+          </SubMenu>
+          <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>
+            付款补录
+          </Menu.Item>
+          {!haveSpl && (
+            <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
+          )}
+        </Menu>
+      );
+    return (
+      <Menu>
+        <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>
+          付款补录
         </Menu.Item>
-        <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
-          软件合同签署流程
-        </Menu.Item>
-        <Menu.Item onClick={() => openLbModal('总办会流程', 'zbh')}>总办会流程</Menu.Item>
-        <Menu.Item onClick={() => openLbModal('软件费用审批-有合同流程', 'rjfyspyht')}>
-          软件费用审批-有合同流程
-        </Menu.Item>
-        <Menu.Item onClick={() => openLbModal('软件费用审批-无合同流程', 'rjfyspwht')}>
-          软件费用审批-无合同流程
-        </Menu.Item>
-        <Menu.Item onClick={() => openLbModal('设备采购-有合同流程', 'sbcgyht')}>
-          设备采购-有合同流程
-        </Menu.Item>
-        <Menu.Item onClick={() => openLbModal('设备采购-无合同流程', 'sbcgwht')}>
-          设备采购-无合同流程
-        </Menu.Item>
-        <Menu.Item onClick={() => openLbModal('信委会附件', 'xwhfj')}>信委会附件</Menu.Item>
-        <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
-      </SubMenu> */}
-      {/* <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款流程补录</Menu.Item> */}
-      {!haveSpl && <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>补录供应商</Menu.Item>}
-      <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
-      <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
-    </Menu>
-  );
+        {!haveSpl && (
+          <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
+        )}
+        <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
+        <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
+      </Menu>
+    );
+  };
 
   const handlesqModalSuccess = txt => {
     message.success(txt, 1);
@@ -751,7 +768,7 @@ export default function TopConsole(props) {
               <Button className="btn-edit" onClick={handleEditPrjInfo}>
                 编辑
               </Button>
-              <Dropdown overlay={btnMoreContent} overlayClassName="tc-btn-more-content-dropdown">
+              <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
                 <Button className="btn-more">
                   <i className="iconfont icon-more" />
                 </Button>
