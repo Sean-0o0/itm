@@ -34,7 +34,7 @@ export default function BudgetStatistic(props) {
 
   useLayoutEffect(() => {
     queryTableData({});
-    getBudgetPrjSlt();
+    getBudgetPrjSlt(activeKey);
     getUserRole();
   }, []);
 
@@ -123,15 +123,15 @@ export default function BudgetStatistic(props) {
           let ysxmArr = (
             res.record?.filter(x => x.ysLXID === (key === 'ZB' ? '1' : '2')) || []
           ).reduce((acc, cur) => {
-            const index = acc.findIndex(item => item.value === cur.zdbm && item.label === cur.ysLB);
+            const index = acc.findIndex(item => item.value === cur.zdbm && item.title === cur.ysLB);
             if (index === -1) {
               acc.push({
-                label: cur.ysLB,
+                title: cur.ysLB,
                 value: cur.zdbm,
                 children: [
                   {
                     ...cur,
-                    label: cur.ysName,
+                    title: cur.ysName,
                     value: cur.ysID,
                   },
                 ],
@@ -139,7 +139,7 @@ export default function BudgetStatistic(props) {
             } else {
               acc[index].children.push({
                 ...cur,
-                label: cur.ysName,
+                title: cur.ysName,
                 value: cur.ysID,
               });
             }
