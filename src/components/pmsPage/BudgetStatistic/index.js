@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useLayoutEffect } from 'react';
 import { message, Spin, Tabs } from 'antd';
 import TableBox from './TableBox';
 import { QueryBudgetStatistics, QueryUserRole } from '../../../services/pmsServices';
@@ -32,8 +32,9 @@ export default function BudgetStatistic(props) {
   const [allowExport, setAllowExport] = useState(false); //是否允许导出
   const CUR_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     queryTableData({});
+    getBudgetPrjSlt();
     getUserRole();
   }, []);
 
@@ -91,67 +92,76 @@ export default function BudgetStatistic(props) {
             data: JSON.parse(res.budgetInfo),
           }));
           setCurSorter(sort);
-          FetchQueryBudgetProjects({
-            type: 'NF',
-            year: filterData.year?.year(),
-          })
-            .then(res => {
-              if (res?.success) {
-                // console.log('🚀 ~ FetchQueryBudgetProjects ~ res', res);
-                let ysxmArr = (
-                  res.record?.filter(x => x.ysLXID === (budgetType === 'ZB' ? '1' : '2')) || []
-                ).reduce((acc, cur) => {
-                  const index = acc.findIndex(
-                    item => item.value === cur.zdbm && item.label === cur.ysLB,
-                  );
-                  if (index === -1) {
-                    acc.push({
-                      label: cur.ysLB,
-                      value: cur.zdbm,
-                      children: [
-                        {
-                          ...cur,
-                          label: cur.ysName,
-                          value: cur.ysID,
-                        },
-                      ],
-                    });
-                  } else {
-                    acc[index].children.push({
-                      ...cur,
-                      label: cur.ysName,
-                      value: cur.ysID,
-                    });
-                  }
-                  return acc;
-                }, []);
-                // console.log(ysxmArr);
-                setFilterData(p => ({
-                  ...p,
-                  budgetCategorySlt: YSLB.filter(x =>
-                    budgetType === 'ZB' ? Number(x.ibm) <= 6 : Number(x.ibm) > 6,
-                  ),
-                  budgetPrjSlt: ysxmArr,
-                }));
-                setSpinningData(p => ({
-                  ...p,
-                  spinning: false,
-                }));
-              }
-            })
-            .catch(e => {
-              console.error('🚀预算项目信息', e);
-              message.error('预算项目获取失败', 1);
-              setSpinningData(p => ({
-                ...p,
-                spinning: false,
-              }));
-            });
+          setSpinningData(p => ({
+            ...p,
+            spinning: false,
+          }));
         }
       })
       .catch(e => {
-        console.error('🚀预算统计信息', e);
-        message.error('预算统计信息获取失败', 1);
+        console.error('🚀表格数据', e);
+        message.error('表格数据获取失败', 1);
+        setSpinningData(p => ({
+          ...p,
+          spinning: false,
+        }));
+      });
+  };
+
+  const getBudgetPrjSlt = key => {
+    setSpinningData(p => ({
+      tip: '加载中',
+      spinning: true,
+    }));
+    FetchQueryBudgetProjects({
+      type: 'NF',
+      year: filterData.year?.year(),
+    })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryBudgetProjects ~ res', res);
+          let ysxmArr = (
+            res.record?.filter(x => x.ysLXID === (key === 'ZB' ? '1' : '2')) || []
+          ).reduce((acc, cur) => {
+            const index = acc.findIndex(item => item.value === cur.zdbm && item.label === cur.ysLB);
+            if (index === -1) {
+              acc.push({
+                label: cur.ysLB,
+                value: cur.zdbm,
+                children: [
+                  {
+                    ...cur,
+                    label: cur.ysName,
+                    value: cur.ysID,
+                  },
+                ],
+              });
+            } else {
+              acc[index].children.push({
+                ...cur,
+                label: cur.ysName,
+                value: cur.ysID,
+              });
+            }
+            return acc;
+          }, []);
+          // console.log(ysxmArr);
+          setFilterData(p => ({
+            ...p,
+            budgetCategorySlt: YSLB.filter(x =>
+              key === 'ZB' ? Number(x.ibm) <= 6 : Number(x.ibm) > 6,
+            ),
+            budgetPrjSlt: ysxmArr,
+          }));
+          setSpinningData(p => ({
+            ...p,
+            spinning: false,
+          }));
+        }
+      })
+      .catch(e => {
+        console.error('🚀预算项目信息', e);
+        message.error('预算项目信息获取失败', 1);
         setSpinningData(p => ({
           ...p,
           spinning: false,
@@ -166,6 +176,7 @@ export default function BudgetStatistic(props) {
       budgetPrj: undefined,
     }));
     queryTableData({ budgetType: key, budgetCategory: undefined, budgetId: undefined });
+    getBudgetPrjSlt(key);
     // console.log('🚀 ~ file: index.js:146 ~ handleTabsChange ~ key:', key);
     setActiveKey(key);
   };
