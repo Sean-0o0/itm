@@ -530,7 +530,12 @@ const TableBox = props => {
   //修改
   const handleEdit = () => {
     setEditing(true);
-    if (tableData.data.length > 0) setEditingIndex(tableData.data[0]?.ID);
+    if (isAdministrator && tableData.data.length > 0) {
+      setEditingIndex(tableData.data[0].ID);
+    } else {
+      const arr = tableData.data.filter(x => Number(x['TXRID' + x.ID]) === LOGIN_USER_ID);
+      if (arr.length > 0) setEditingIndex(arr[0].ID);
+    }
     // setTableLoading(true);
     setTimeout(() => {
       window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //处理行高不对齐的bug

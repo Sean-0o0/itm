@@ -352,9 +352,7 @@ export default function TopConsole(props) {
             </Menu.Item>
             <Menu.Item onClick={() => openLbModal('其他流程', 'qt')}>其他流程</Menu.Item>
           </SubMenu>
-          <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>
-            付款补录
-          </Menu.Item>
+          <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item>
           {!haveSpl && (
             <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
           )}
@@ -362,9 +360,7 @@ export default function TopConsole(props) {
       );
     return (
       <Menu>
-        <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>
-          付款补录
-        </Menu.Item>
+        <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item>
         {!haveSpl && (
           <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
         )}
@@ -764,17 +760,19 @@ export default function TopConsole(props) {
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* <img src={iconCompleted} className="icon-completed" alt="icon-completed" /> */}
           {isMember() && (
-            <>
-              <Button className="btn-edit" onClick={handleEditPrjInfo}>
-                编辑
-              </Button>
+            <Button className="btn-edit" onClick={handleEditPrjInfo}>
+              编辑
+            </Button>
+          )}
+          {prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
+            isLeader ||
+            (String(LOGIN_USER_INFO.id) === '0' && (
               <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
                 <Button className="btn-more">
                   <i className="iconfont icon-more" />
                 </Button>
               </Dropdown>
-            </>
-          )}
+            ))}
         </div>
       </div>
       <div className="mnger-time">

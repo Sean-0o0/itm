@@ -96,14 +96,16 @@ export default Form.create()(function PaymentModal(props) {
             setFieldsValue({
               sjfksj: JSON.parse(res.record).gxsj ? moment(JSON.parse(res.record).gxsj) : null,
             });
-          } else {
-            setConfirmInfo([]);
+            setIsSpinning(false);
           }
-          setIsSpinning(false);
         })
         .catch(e => {
-          console.error('🚀单据信息', e);
-          message.error('单据信息获取失败', 1);
+          console.error('🚀付款单单号', e);
+          message.error('查询失败，请确认付款单单号是否正确', 2);
+          setConfirmInfo({});
+          // setFieldsValue({
+          //   fkddh: undefined,
+          // });
           setIsSpinning(false);
         });
     };
@@ -282,6 +284,8 @@ export default Form.create()(function PaymentModal(props) {
       if (!err) {
         if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
           message.error('请选择对应付款计划', 1);
+        } else if (JSON.stringify(confirmInfo) === '{}') {
+          message.error('请确认付款单单号是否正确', 1);
         } else {
           let params = {
             code: getFieldValue('fkddh'),
@@ -297,6 +301,7 @@ export default Form.create()(function PaymentModal(props) {
           SupplyPaymentInfo(params)
             .then(res => {
               if (res?.success) {
+                message.success('操作成功', 1);
                 setIsSpinning(false);
                 handleCancel();
               }
@@ -324,6 +329,8 @@ export default Form.create()(function PaymentModal(props) {
       if (!err) {
         if (getFieldValue('sfyfkjh') === 1 && selectedRowQS === undefined) {
           message.error('请选择对应付款计划', 1);
+        } else if (JSON.stringify(confirmInfo) === '{}') {
+          message.error('请确认付款单单号是否正确', 1);
         } else {
           setCurStep(1);
         }
@@ -474,6 +481,7 @@ export default Form.create()(function PaymentModal(props) {
           </div>
           <div className="info-item">
             <span>收款账户：</span>
+            {confirmInfo.skzh?.info !== undefined && '系统中无该收款账户，无法展示'}
             {confirmInfo.skzh?.khmc}&nbsp;&nbsp;
             {confirmInfo.skzh?.yhkh}&nbsp;&nbsp;
             {confirmInfo.skzh?.wdmc}

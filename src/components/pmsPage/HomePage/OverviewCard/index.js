@@ -345,45 +345,6 @@ export default function OverviewCard(props) {
     setFileAddVisible(false);
   };
 
-  //消息通知
-  const getNoticeCard = data => {
-    return (
-      <div className="notice-card-box">
-        <div className="notice-card-title">
-          <div className="notice-card-xmmc">消息通知</div>
-          <div className="notice-deal-box">全部已读</div>
-        </div>
-        {data?.map(item => (
-          <div className="notice-card-content">
-            <div className="notice-card-tx">
-              <img src={true ? avatarFemale : avatarMale} alt="" />
-              {/*未读*/}
-              {/*<div className="notice-card-nr-wd">*/}
-              {/*  <div className="notice-card-top">*/}
-              {/*    <div className="notice-card-name">*/}
-              {/*      朱*路*/}
-              {/*    </div>*/}
-              {/*    <div className="notice-card-time">*/}
-              {/*      2023-05-26 16:54:32*/}
-              {/*    </div>*/}
-              {/*  </div>*/}
-              {/*  <div className="notice-card-detail">{item.txnr}</div>*/}
-              {/*</div>*/}
-              {/*已读*/}
-              <div className="notice-card-nr-yd">
-                <div className="notice-card-top">
-                  <div className="notice-card-name">朱*路</div>
-                  <div className="notice-card-time">2023-05-26 16:54:32</div>
-                </div>
-                <div className="notice-card-detail">{item.txnr}</div>
-              </div>
-            </div>
-          </div>
-        ))}
-      </div>
-    );
-  };
-
   //待办块
   const getToDoItem = data => {
     return (
