@@ -25,6 +25,7 @@ import moment from 'moment';
 import AnalyzeRepsCard from './AnalyzeRepsCard';
 import PrjTracking from './PrjTracking';
 import SystemNotice from './SystemNotice';
+import NonCptBudgetCard from "./NonCptBudgetCard";
 
 //金额格式化
 const getAmountFormat = value => {
@@ -451,7 +452,15 @@ export default function HomePage(props) {
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
               />
             )}
-            <AnalyzeRepsCard />
+            {['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
+              <NonCptBudgetCard
+                isVertical={true}
+                userRole={userRole}
+                budgetData={budgetData}
+                time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+              />
+            )}
+            <AnalyzeRepsCard/>
             <ProjectCard
               itemWidth={itemWidth}
               getAfterItem={getAfterItem}
@@ -479,7 +488,13 @@ export default function HomePage(props) {
                   budgetData={budgetData}
                   time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
                 />
-                <ProcessCard processData={processData} total={total.process} />
+                <NonCptBudgetCard
+                  isVertical={true}
+                  userRole={userRole}
+                  budgetData={budgetData}
+                  time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                />
+                <ProcessCard processData={processData} total={total.process}/>
               </Fragment>
             ) : (
               <Fragment>

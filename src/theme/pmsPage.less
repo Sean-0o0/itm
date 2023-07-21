@@ -12393,7 +12393,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
     .table-box {
       background-color: #fff;
-      padding: 20px 24px;
+      padding: 20px 24px 16px 24px;
       overflow: hidden;
       overflow-y: auto;
       display: flex;
@@ -12402,6 +12402,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       border-top: none;
 
       .project-info-table-box {
+        .ant-table {
+          padding-bottom: 8px;
+        }
+
         flex-grow: 1;
         overflow: hidden;
         overflow-y: auto;
@@ -20125,6 +20129,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   height: 100%;
 
   .top-console {
+    background-color: white;
+
     .ant-tabs-bar {
       margin: 0;
 
@@ -20388,10 +20394,22 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       margin: 16px 24px;
 
       .console-item {
+        .item-selector {
+          .ant-select-selection--multiple {
+            .ant-select-arrow {
+              top: 20px !important;
+            }
+
+            .ant-select-selection__clear {
+              top: 20px !important;
+            }
+          }
+        }
+
         .down {
           .label-selector-arrow {
             position: absolute;
-            top: 50% !important;
+            top: 40% !important;
             right: 12px;
             margin-top: -4px;
             color: rgba(0, 0, 0, 0.25);

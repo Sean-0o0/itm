@@ -77,6 +77,9 @@ export default function DataComparisonRY(props) {
       // },
       legend: {
         data: totalNameArr,
+        itemGap: 24,
+        itemWidth: 10,
+        itemHeight: 10,
       },
       color: ["#1890FF", "#FDC041", '#5470c6', '#91cc75', '#fac858',],
       tooltip: {
@@ -366,7 +369,7 @@ export default function DataComparisonRY(props) {
               showArrow={true}
               mode="multiple"
               className="item-selector"
-              dropdownClassName={'item-selector-dropdown'}
+              dropdownClassName='item-selector-dropdown-radar'
               filterOption={(input, option) =>
                 option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
               }

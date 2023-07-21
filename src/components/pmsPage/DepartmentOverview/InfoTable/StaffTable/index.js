@@ -88,8 +88,8 @@ class StaffTable extends Component {
             ellipsis: true,
             // onCell: (record, index) => { // 传入两个形参，分别为行内容record与行index
             //     const _row = rowspan[index];
-            //     if (_row > 1) { 
-            //         return {
+          //     if (_row > 1) {
+          //         return {
             //             style: {
             //                 borderLeft: '1px solid #e8e8e8', //此处需注意
             //             },
@@ -221,17 +221,18 @@ class StaffTable extends Component {
         }
         ]
 
-        return (<div className='table-box' style={{ height: (role === '信息技术事业部领导' || role === '一级部门领导') ? 'calc(100vh - 375px)' : 'calc(100vh - 235px)' }}>
-            <div className="project-info-table-box">
-                <Table
-                    loading={tableLoading}
-                    columns={columns}
-                    rowKey={'ID'}
-                    dataSource={tableData}
-                    onChange={this.handleChange}
-                    pagination={{
-                        current: current,
-                        pageSize: pageSize,
+      return (<div className='table-box'
+                   style={{height: (role === '信息技术事业部领导' || role === '一级部门领导') ? 'calc(100vh - 375px)' : 'calc(100vh - 250px)'}}>
+        <div className="project-info-table-box">
+          <Table
+            loading={tableLoading}
+            columns={columns}
+            rowKey={'ID'}
+            dataSource={tableData}
+            onChange={this.handleChange}
+            pagination={{
+              current: current,
+              pageSize: pageSize,
                         pageSizeOptions:  ['10', '20', '30', '40'],
                         showSizeChanger:  true,
                         showQuickJumper:  true,
