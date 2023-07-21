@@ -293,7 +293,7 @@ export default Form.create()(function PaymentModal(props) {
             isLast: getFieldValue('yjfk'),
             payDate: Number(getFieldValue('sjfksj')?.format('YYYYMMDD')),
             payeeId: Number(confirmInfo.skzh?.id),
-            paymentNumber: selectedRowQS,
+            paymentNumber: selectedRowQS || 0,
             projectId: Number(xmid),
             yjyhtid: getFieldValue('glsb'),
           };
@@ -481,7 +481,7 @@ export default Form.create()(function PaymentModal(props) {
           </div>
           <div className="info-item">
             <span>收款账户：</span>
-            {confirmInfo.skzh?.info !== undefined && '系统中无该收款账户，无法展示'}
+            {confirmInfo.skzh?.info !== '匹配成功' && '系统中无该收款账户，无法展示'}
             {confirmInfo.skzh?.khmc}&nbsp;&nbsp;
             {confirmInfo.skzh?.yhkh}&nbsp;&nbsp;
             {confirmInfo.skzh?.wdmc}
