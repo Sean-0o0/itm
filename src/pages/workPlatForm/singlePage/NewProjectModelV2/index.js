@@ -1290,7 +1290,7 @@ class NewProjectModelV2 extends React.Component {
         });
         this.setState({
           staffList: result,
-          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0)
+          organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), '1')
         });
       }
     }).catch((error) => {
