@@ -64,7 +64,6 @@ const TableBox = props => {
     {
       title: '负责人',
       dataIndex: 'FZR',
-      // width: 90,
       width: '7%',
       key: 'FZR',
       ellipsis: true,
@@ -261,27 +260,67 @@ const TableBox = props => {
     {
       title: '项目名称',
       dataIndex: 'XMMC',
-      // width: 90,
       // width: '20%',
       key: 'XMMC',
       ellipsis: true,
-      render: txt => (
-        <Tooltip title={txt} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{txt}</span>
-        </Tooltip>
-      ),
+      render: (txt, row, index) => {
+        return (
+          <Tooltip title={txt} placement="topLeft">
+            <Link
+              style={{ color: '#3361ff' }}
+              onClick={() =>
+                setDrawerData(p => ({
+                  ...p,
+                  visible: false,
+                }))
+              }
+              to={{
+                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                  JSON.stringify({
+                    xmid: row.XMID,
+                  }),
+                )}`,
+                state: {
+                  routes: [{ name: '预算统计', pathname: location.pathname }],
+                },
+              }}
+              className="table-link-strong"
+            >
+              {txt}
+            </Link>
+          </Tooltip>
+        );
+      },
     },
     {
-      title: '项目阶段',
-      dataIndex: 'XMJD',
-      // width: 90,
-      width: '12%',
-      key: 'XMJD',
+      title: '项目经理',
+      dataIndex: 'XMJL',
+      width: '10%',
+      key: 'XMJL',
       ellipsis: true,
-      render: txt => (
-        <Tooltip title={txt} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{txt}</span>
-        </Tooltip>
+      render: (txt, row) => (
+        <Link
+          style={{ color: '#3361ff' }}
+          onClick={() =>
+            setDrawerData(p => ({
+              ...p,
+              visible: false,
+            }))
+          }
+          to={{
+            pathname: `/pms/manage/staffDetail/${EncryptBase64(
+              JSON.stringify({
+                ryid: row.XMJLID,
+              }),
+            )}`,
+            state: {
+              routes: [{ name: '预算统计', pathname: location.pathname }],
+            },
+          }}
+          className="table-link-strong"
+        >
+          {txt}
+        </Link>
       ),
     },
     {
@@ -291,39 +330,40 @@ const TableBox = props => {
       align: 'right',
       key: 'HTJE',
       ellipsis: true,
-      sorter: (a, b) => Number(a.HTJE) - Number(b.HTJE),
+      sorter: (a, b) => Number(a.HTJE || 0) - Number(b.HTJE || 0),
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
     {
       title: '已付款金额(元)',
       dataIndex: 'YFKJE',
-      width: '20%',
+      width: '17%',
       align: 'right',
       key: 'YFKJE',
       ellipsis: true,
-      sorter: (a, b) => Number(a.YFKJE) - Number(b.YFKJE),
+      sorter: (a, b) => Number(a.YFKJE || 0) - Number(b.YFKJE || 0),
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
     {
       title: '未付款金额(元)',
       dataIndex: 'WFKJE',
-      width: '20%',
+      width: '17%',
       align: 'right',
       key: 'WFKJE',
       ellipsis: true,
-      sorter: (a, b) => Number(a.WFKJE) - Number(b.WFKJE),
+      sorter: (a, b) => Number(a.WFKJE || 0) - Number(b.WFKJE || 0),
       sortDirections: ['descend', 'ascend'],
       render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
     },
     {
       title: '付款时间',
       dataIndex: 'FKSJ',
-      // width: 90,
       width: '15%',
       key: 'FKSJ',
       ellipsis: true,
+      sorter: (a, b) => Number(a.FKSJ || 0) - Number(b.FKSJ || 0),
+      sortDirections: ['descend', 'ascend'],
       render: txt =>
         !['', ' ', -1, '-1', undefined, null].includes(txt) ? moment(txt).format('YYYY-MM-DD') : '',
     },
@@ -496,7 +536,7 @@ const TableBox = props => {
         </div>
         <Drawer
           title="项目付款详情"
-          width={800}
+          width={850}
           onClose={() =>
             setDrawerData({
               visible: false,
