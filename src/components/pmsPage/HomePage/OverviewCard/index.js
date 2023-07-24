@@ -47,6 +47,17 @@ export default function OverviewCard(props) {
     wbrymspf: false, //外包人员面试评分
   }); //弹窗显隐
 
+  //人员新增提醒弹窗配置
+  const ryxztxModalProps = {
+    isAllWindow: 1,
+    width: '720px',
+    height: '300px',
+    title: '人员新增提醒',
+    style: { top: '60px' },
+    visible: ryxztxModalVisible,
+    footer: null,
+  };
+
   //获取招呼语
   const getGreeting = () => {
     let h = new Date().getHours();
