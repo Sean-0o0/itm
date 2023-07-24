@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip} from 'antd';
-import {EncryptBase64} from '../../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip } from 'antd';
+import { EncryptBase64 } from '../../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 
 export default function InfoTable(props) {
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目详情弹窗显示
-  const {tableData, tableLoading, getTableData, total, params, callBackParams,FRQData} = props; //表格数据
+  const { tableData, tableLoading, getTableData, total, params, callBackParams, FRQData } = props; //表格数据
   const location = useLocation();
   // console.log("🚀 tableDatatableData:", tableData)
 
@@ -62,8 +62,8 @@ export default function InfoTable(props) {
   //表格操作后更新数据
   const handleTableChange = obj => {
     // console.log('handleTableChange', obj);
-    const {current = 1, pageSize = 10} = obj;
-    callBackParams({...params, current, pageSize})
+    const { current = 1, pageSize = 10 } = obj;
+    callBackParams({ ...params, current, pageSize });
   };
 
   const openVisible = () => {
@@ -81,7 +81,13 @@ export default function InfoTable(props) {
       // width: 200,
       width: '20%',
       key: 'XQ',
-      // ellipsis: true,
+      render: (text, row, index) => {
+        return (
+          <a style={{ color: '#3361ff' }} target="_blank" href={row.URL}>
+            {text}
+          </a>
+        );
+      },
     },
     {
       title: '发起人',
@@ -91,10 +97,8 @@ export default function InfoTable(props) {
       key: 'FQR',
       // ellipsis: true,
       render: (text, row, index) => {
-        return (
-          <span>{FRQData?.filter(item =>item.FQR == text)[0]?.NAME}</span>
-        )
-      }
+        return <span>{FRQData?.filter(item => item.FQR == text)[0]?.NAME}</span>;
+      },
     },
     {
       title: '发起日期',
@@ -103,8 +107,8 @@ export default function InfoTable(props) {
       width: '10%',
       key: 'FQRQ',
       render: (text, record) => {
-        return <span>{text.slice(0, 4) + "-" + text.slice(4, 6) + "-" + text.slice(6, 8)}</span>
-      }
+        return <span>{text.slice(0, 4) + '-' + text.slice(4, 6) + '-' + text.slice(6, 8)}</span>;
+      },
     },
     {
       title: '请示报告内容',
@@ -113,10 +117,24 @@ export default function InfoTable(props) {
       width: '10%',
       key: 'YHTBT',
       render: (text, record) => {
-        return <Tooltip title={text}>
-          <a style={{color: '#3361ff'}}>查看详情</a>
-        </Tooltip>
-      }
+        return (
+          <Popover
+            title={null}
+            content={
+              <div
+                className="content"
+                style={{ maxWidth: 800 }}
+                dangerouslySetInnerHTML={{ __html: text }}
+              ></div>
+            }
+            placement="bottom"
+            trigger="click"
+            overlayClassName="supplier-detail-basic-info-popover"
+          >
+            <a style={{ color: '#3361ff' }}>查看详情</a>
+          </Popover>
+        );
+      },
     },
     {
       title: '关联系统设备采购合同流程',
@@ -135,10 +153,8 @@ export default function InfoTable(props) {
       // width: 100,
       // ellipsis: true,
       render: (text, row, index) => {
-        return (
-          text == '0' ? <span>未发起</span> : <span>已发起</span>
-        )
-      }
+        return text == '0' ? <span>未发起</span> : <span>已发起</span>;
+      },
     },
   ];
 
@@ -151,7 +167,7 @@ export default function InfoTable(props) {
           rowKey={'XQID'}
           dataSource={tableData}
           onChange={handleTableChange}
-          scroll={{y: 407}}
+          scroll={{ y: 407 }}
           pagination={{
             pageSizeOptions: ['10', '20', '30', '40'],
             showSizeChanger: true,
