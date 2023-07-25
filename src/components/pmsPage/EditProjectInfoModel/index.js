@@ -2658,7 +2658,7 @@ class EditProjectInfoModel extends React.Component {
     } = this.state;
     let arr = [...tableData];
     console.log('staticSkzhData', staticSkzhData);
-    //console.log("tableDatatableData", tableData)
+    console.log("tableDatatableData", tableData)
     if (purchaseInfo.lxje < purchaseInfo.contractValue) {
       message.warn("合同金额不能超过本项目立项金额(" + purchaseInfo.lxje + "元),请修改！")
       return;
@@ -2671,7 +2671,7 @@ class EditProjectInfoModel extends React.Component {
           } else {
             item[i] = '-1';
           }
-        } else {
+        } else if (i !== 'id') {
           item[i] = String(item[i]);
         }
       }
@@ -2679,7 +2679,7 @@ class EditProjectInfoModel extends React.Component {
     let newArr = [];
     arr.map(item => {
       let obj = {
-        ID: item.id,
+        ID: typeof (item.id) === "number" ? "-1" : item.id,
         FKQS: item['fkqs' + item.id],
         BFB: item['bfb' + item.id],
         FKJE: item['fkje' + item.id],
@@ -3494,7 +3494,7 @@ class EditProjectInfoModel extends React.Component {
           for (let i = 0; i < htxxRec.length; i++) {
             if (htxxRec[i]?.fkxqid !== '') {
               arr.push({
-                id: htxxRec[i]?.fkxqid,
+                id: String(htxxRec[i]?.fkxqid),
                 ['fkqs' + htxxRec[i]?.fkxqid]: Number(htxxRec[i]?.fkqs),
                 ['bfb' + htxxRec[i]?.fkxqid]: Number(htxxRec[i]?.bfb),
                 ['fkje' + htxxRec[i]?.fkxqid]: Number(htxxRec[i]?.fkje),
@@ -3515,6 +3515,7 @@ class EditProjectInfoModel extends React.Component {
                 : moment(new Date()).format('YYYY-MM-DD'),
               paymentInfos: arr,
               ZT: htxxRec[0]?.ZT,
+              biddingSupplier: htxxRec[0]?.gys,
             },
             tableData: [...this.state.tableData, ...arr],
             htxxCzlx: htxxRec.length > 0 ? 'UPDATE' : 'ADD',
@@ -7385,7 +7386,7 @@ class EditProjectInfoModel extends React.Component {
                                     let arrData = tableData;
                                     //console.log("nullnullnull",moment(null))
                                     arrData.push({
-                                      id: Date.now(),
+                                      id: Number(Date.now()),
                                       ['fkqs' + Date.now()]: tableData.length + 1,
                                       ['bfb' + Date.now()]: 0.5,
                                       ['fkje' + Date.now()]: Number(
