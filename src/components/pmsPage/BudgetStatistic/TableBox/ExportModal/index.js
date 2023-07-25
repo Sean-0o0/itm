@@ -10,6 +10,52 @@ function ExportModal(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [yearOpen, setYearOpen] = useState(false); //年份选择器展开收起
   const [curYear, setCurYear] = useState(moment()); //当前年份
+  const columnsForALL = [
+    {
+      title: '预算类别',
+      dataIndex: 'YSLB',
+    },
+    {
+      title: '预算项目',
+      dataIndex: 'YSXM',
+    },
+    {
+      title: '负责人',
+      dataIndex: 'FZR',
+    },
+    {
+      title: '资本总预算',
+      dataIndex: 'ZBZTZ',
+    },
+    {
+      title: '资本可执行预算',
+      dataIndex: 'ZBSHHBNZF',
+    },
+    {
+      title: '非资本总预算',
+      dataIndex: 'FZBZTZ',
+    },
+    {
+      title: '非资本可执行预算',
+      dataIndex: 'FZBSHHBNZF',
+    },
+    {
+      title: '预算执行金额',
+      dataIndex: 'YSZXJE',
+    },
+    {
+      title: '预算执行率',
+      dataIndex: 'YSZXL',
+    },
+    {
+      title: '合同金额',
+      dataIndex: 'HTJE',
+    },
+    {
+      title: '涉及项目数',
+      dataIndex: 'SJXMS',
+    },
+  ];
 
   useEffect(() => {
     return () => {};
@@ -18,7 +64,7 @@ function ExportModal(props) {
   const handleOk = () => {
     validateFields(err => {
       if (!err) {
-        console.log(getFieldValue('budgetType'), curYear.year());
+        // console.log(getFieldValue('budgetType'), curYear.year());
         setIsSpinning(true);
         //预算统计信息
         QueryBudgetStatistics({
@@ -38,18 +84,17 @@ function ExportModal(props) {
                 getFieldValue('budgetType') === 'ALL'
                   ? JSON.parse(res.allBudgetInfo)
                   : JSON.parse(res.budgetInfo);
-              let dataIndexArr = columns.map(item => item.dataIndex);
+              let columnsArr = getFieldValue('budgetType') === 'ALL' ? columnsForALL : columns;
               let finalArr = [];
               tableArr.forEach(obj => {
                 let temp = {};
-                dataIndexArr.forEach(dataIndex => {
-                  let title = columns.find(item => item.dataIndex === dataIndex)?.title;
-                  temp[title] = obj[dataIndex];
-                  delete obj[dataIndex];
+                columnsArr.forEach(x => {
+                  temp[x.title] = obj[x.dataIndex];
+                  delete obj[x.dataIndex];
                 });
                 finalArr.push(temp);
               });
-              console.log('🚀 ~ 导出信息:', finalArr);
+              // console.log('🚀 ~ 导出信息:', finalArr);
               let fileName =
                 (getFieldValue('budgetType') === 'ZB'
                   ? '资本性'

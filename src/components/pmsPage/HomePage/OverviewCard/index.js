@@ -133,6 +133,10 @@ export default function OverviewCard(props) {
           name: 'RYMC',
           value: String(LOGIN_USER_INFO.id),
         },
+        {
+          name: 'GW',
+          value: JSON.parse(item.kzzd)?.GW,
+        },
       ],
       userId: String(LOGIN_USER_INFO.loginName),
     };
