@@ -764,15 +764,15 @@ export default function TopConsole(props) {
               编辑
             </Button>
           )}
-          {prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
+          {(prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
             isLeader ||
-            (String(LOGIN_USER_INFO.id) === '0' && (
-              <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
-                <Button className="btn-more">
-                  <i className="iconfont icon-more" />
-                </Button>
-              </Dropdown>
-            ))}
+            String(LOGIN_USER_INFO.id) === '0') && (
+            <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
+              <Button className="btn-more">
+                <i className="iconfont icon-more" />
+              </Button>
+            </Dropdown>
+          )}
         </div>
       </div>
       <div className="mnger-time">
