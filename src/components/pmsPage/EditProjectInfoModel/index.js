@@ -4111,7 +4111,7 @@ class EditProjectInfoModel extends React.Component {
         editable: true,
       },
       {
-        title: <span style={{ color: '#606266', fontWeight: 500 }}>付款金额(万元)</span>,
+        title: <span style={{ color: '#606266', fontWeight: 500 }}>付款金额(元)</span>,
         dataIndex: 'fkje',
         width: '22%',
         key: 'fkje',
