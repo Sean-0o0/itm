@@ -1,5 +1,5 @@
-import { message, Spin } from 'antd';
-import React, { Fragment, useEffect, useState } from 'react';
+import {Carousel, message, Spin} from 'antd';
+import React, {Fragment, useEffect, useState} from 'react';
 import {
   QueryBudgetOverviewInfo,
   QueryMemberOverviewInfo,
@@ -423,6 +423,8 @@ export default function HomePage(props) {
     getOverviewInfo(userRole, year);
   };
 
+
+  console.log("bbbbbbb", budgetData)
   return (
     <Spin
       spinning={isSpinning}
@@ -432,7 +434,7 @@ export default function HomePage(props) {
     >
       <div className="home-page-box">
         <div className="row-box">
-          <div className="col-left" style={{ width: leftWidth }}>
+          <div className="col-left" style={{width: leftWidth}}>
             <OverviewCard
               width={leftWidth}
               overviewInfo={overviewInfo}
@@ -445,21 +447,46 @@ export default function HomePage(props) {
               setStatisticYearData={setStatisticYearData}
               handleCurYearChange={handleCurYearChange}
             />
-            {['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
-              <CptBudgetCard
-                userRole={userRole}
-                budgetData={budgetData}
-                time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
-              />
-            )}
-            {['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
-              <NonCptBudgetCard
-                isVertical={true}
-                userRole={userRole}
-                budgetData={budgetData}
-                time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
-              />
-            )}
+            {
+              (Number(budgetData.FZBWCZ) !== 0 || Number(budgetData.FZBWCL) !== 0 || Number(budgetData.FZBMBZ) !== 0 || Number(budgetData.FZBSYZ) !== 0) ?
+                ['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
+                  <Carousel style={{
+                    boxShadow: '0px 4px 24px -4px rgba(0, 0, 0, 0.06)',
+                    borderRadius: '8px',
+                    border: '1px solid #fafafb',
+                    overflow: 'hidden',
+                    backgroundColor: 'white',
+                    marginBottom: '16px',
+                  }}>
+                    {/*autoplay*/}
+                    {['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
+                      <CptBudgetCard
+                        boxShadow={'none'}
+                        border={'none'}
+                        userRole={userRole}
+                        budgetData={budgetData}
+                        time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                      />
+                    )}
+                    {['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
+                      <NonCptBudgetCard
+                        boxShadow={'none'}
+                        border={'none'}
+                        width={'50%'}
+                        isVertical={true}
+                        userRole={userRole}
+                        budgetData={budgetData}
+                        time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                      />
+                    )}
+                  </Carousel>) : <CptBudgetCard
+                  boxShadow={'none'}
+                  border={'none'}
+                  userRole={userRole}
+                  budgetData={budgetData}
+                  time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                />
+            }
             <AnalyzeRepsCard/>
             <ProjectCard
               itemWidth={itemWidth}
@@ -483,17 +510,25 @@ export default function HomePage(props) {
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <Fragment>
                 <CptBudgetCard
+                  boxShadow={'0px 4px 24px -4px rgba(0, 0, 0, 0.06)'}
+                  border={'1px solid #fafafb'}
+                  marginBottom={'16px'}
                   isVertical={true}
                   userRole={userRole}
                   budgetData={budgetData}
                   time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
                 />
-                <NonCptBudgetCard
-                  isVertical={true}
-                  userRole={userRole}
-                  budgetData={budgetData}
-                  time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
-                />
+                {
+                  <NonCptBudgetCard
+                    boxShadow={'0px 4px 24px -4px rgba(0, 0, 0, 0.06)'}
+                    border={'1px solid #fafafb'}
+                    marginBottom={'16px'}
+                    isVertical={true}
+                    userRole={userRole}
+                    budgetData={budgetData}
+                    time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                  />
+                }
                 <ProcessCard processData={processData} total={total.process}/>
               </Fragment>
             ) : (
