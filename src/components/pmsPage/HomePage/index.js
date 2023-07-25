@@ -479,13 +479,15 @@ export default function HomePage(props) {
                         time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
                       />
                     )}
-                  </Carousel>) : <CptBudgetCard
-                  boxShadow={'none'}
-                  border={'none'}
-                  userRole={userRole}
-                  budgetData={budgetData}
-                  time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
-                />
+                  </Carousel>) : ['二级部门领导', '普通人员'].includes(userRole) ? null : ( // /> //   dictionary={dictionary} //   total={total.todo} //   reflush={() => getUserRole(true)} //   toDoData={toDoData} //   getAfterItem={getAfterItem} //   itemWidth={itemWidth} // <ToDoCard
+                  <CptBudgetCard
+                    boxShadow={'none'}
+                    border={'none'}
+                    userRole={userRole}
+                    budgetData={budgetData}
+                    time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
+                  />
+                )
             }
             <AnalyzeRepsCard/>
             <ProjectCard

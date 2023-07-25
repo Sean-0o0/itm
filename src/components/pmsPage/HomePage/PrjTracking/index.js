@@ -289,7 +289,7 @@ export default function PrjTracking(props) {
                         {
                           <div className="prj-tracking-infos-detail-row2-lev1">
                             <Progress strokeColor="#3361FF" percent={i.BZJD} successPercent={i.SZJD} size="small"
-                                      status="active"/>
+                                      status="active" showInfo={false}/>
                           </div>
                         }
                         {/*正常项目*/}
@@ -305,6 +305,11 @@ export default function PrjTracking(props) {
                         {/*  </div>*/}
                         {/*}*/}
                         <div className="prj-tracking-infos-detail-row3">
+                          {/*icon-reloadtime 延期 - rgba(255,47,49,0.1) #FF2F31  */}
+                          {/*circle-check 已完成 - rgba(51,97,255,0.1) #3361ff  */}
+                          {/*innovation -e7da 高风险 - rgba(255,47,49,0.1) #FF2F31  */}
+                          {/*circle-check 中风险 - rgba(249,168,18,0.1) #F9A812  */}
+                          {/*circle-check 低风险 - rgba(5,190,254,0.1) #05BEFE  */}
                           <div
                             className="prj-tracking-infos-detail-row3-risk">{i.SZZT && i.SZZT > 0 ? <>{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
                           {i.BZZT && <><i className="iconfont icon-rise"/>

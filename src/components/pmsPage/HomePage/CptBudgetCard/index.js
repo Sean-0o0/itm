@@ -5,7 +5,7 @@ import { useLocation } from 'react-router';
 import { Link } from 'react-router-dom';
 
 export default function CptBudgetCard(props) {
-  const { isVertical = false, userRole, budgetData = {}, time } = props;
+  const {isVertical = false, userRole, budgetData = {}, time, marginBottom = '', border = '', boxShadow = ''} = props;
   const location = useLocation();
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
@@ -70,8 +70,8 @@ export default function CptBudgetCard(props) {
   kzxsyz = !isNaN(kzxsyz) ? kzxsyz.toFixed(2) : 0;
   kzxwcl = !isNaN(kzxwcl) ? kzxwcl.toFixed(2) : 0;
   return (
-    <div className="cptbudget-card-box">
-      <div className="home-card-title-box" style={{ marginBottom: 9 }}>
+    <div className="cptbudget-card-box" style={{marginBottom, border, boxShadow}}>
+      <div className="home-card-title-box" style={{marginBottom: 9}}>
         <div>资本性预算执行情况</div>
         {userRole !== '普通人员' && (
           <span>
@@ -79,33 +79,33 @@ export default function CptBudgetCard(props) {
               to={{
                 pathname: `/pms/manage/BudgetExcute`,
                 state: {
-                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                  routes: [{name: '个人工作台', pathname: location.pathname}],
                 },
               }}
             >
               全部
-              <i className="iconfont icon-right" />
+              <i className="iconfont icon-right"/>
             </Link>
           </span>
         )}
       </div>
-      <div style={{ color: '#b7b3b3', fontSize: '12px', marginBottom: '16px' }}>
+      <div style={{textAlign: 'left', color: '#b7b3b3', fontSize: '12px', marginBottom: '16px'}}>
         {time + ' 更新'}
       </div>
       <div
         className="budget-box"
         style={
-          isVertical ? { flexDirection: 'column', marginBottom: '-16px' } : { marginRight: '-16px' }
+          isVertical ? {flexDirection: 'column', marginBottom: '-16px'} : {marginRight: '-16px'}
         }
       >
         {userRole !== '普通人员' &&
-          getBudgetItem({
-            title: '总预算(万元)',
-            amount: zyswcz,
-            rate: zyswcl,
-            target: Number(budgetData.ZBRJZYS).toFixed(2),
-            remain: Number(budgetData.ZBRJSYZ).toFixed(2),
-          })}
+        getBudgetItem({
+          title: '总预算(万元)',
+          amount: zyswcz,
+          rate: zyswcl,
+          target: Number(budgetData.ZBRJZYS).toFixed(2),
+          remain: Number(budgetData.ZBRJSYZ).toFixed(2),
+        })}
         {getBudgetItem({
           title: '可执行总预算(万元)',
           amount: Number(budgetData.ZBRJWCZ).toFixed(2),
