@@ -87,12 +87,14 @@ class EditableCell extends React.Component {
   save = e => {
     const { record, handleSave, formdecorate } = this.props;
     formdecorate.validateFields(
-      ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id']],
+      ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id'], 'fksj' + record['id']],
       (error, values) => {
+        console.log("valuesvalues", values)
+        console.log("errorerror", error)
         if (error && error[e.currentTarget.id]) {
           return;
         }
-        handleSave({ ...record, ...values });
+        handleSave({...record, ...values});
       },
     );
   };
@@ -125,6 +127,12 @@ class EditableCell extends React.Component {
     switch (dataIndex) {
       case 'fksj':
         return form.getFieldDecorator(dataIndex + record['id'], {
+          rules: [
+            {
+              required: true,
+              message: `${this.getTitle(dataIndex)}不允许空值`,
+            },
+          ],
           initialValue:
             record[dataIndex + record['id']] !== null
               ? moment(record[dataIndex + record['id']])
@@ -135,14 +143,15 @@ class EditableCell extends React.Component {
             onChange={(data, dataString) => {
               const { record, handleSave } = this.props;
               form.validateFields(
-                ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id']],
+                ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id'], 'fksj' + record['id']],
                 (error, values) => {
-                  // //console.log('values', values);
+                  console.log('values', values);
                   if (error && error[e.currentTarget.id]) {
                     return;
                   }
                   let newValues = {};
-                  newValues = { ...values };
+                  newValues = {...values};
+                  console.log('dataString', dataString);
                   for (let i in newValues) {
                     if (i === 'fksj' + record['id']) {
                       newValues[i] = dataString;
@@ -157,6 +166,12 @@ class EditableCell extends React.Component {
         );
       case 'bfb':
         return form.getFieldDecorator(dataIndex + record['id'], {
+          rules: [
+            {
+              required: true,
+              message: `${this.getTitle(dataIndex)}不允许空值`,
+            },
+          ],
           initialValue: String(record[dataIndex + record['id']]),
         })(
           <Input
@@ -168,6 +183,12 @@ class EditableCell extends React.Component {
         );
       case 'fkje':
         return form.getFieldDecorator(dataIndex + record['id'], {
+          rules: [
+            {
+              required: true,
+              message: `${this.getTitle(dataIndex)}不允许空值`,
+            },
+          ],
           initialValue: String(record[dataIndex + record['id']]),
         })(
           <Input
@@ -179,6 +200,12 @@ class EditableCell extends React.Component {
         );
       default:
         return form.getFieldDecorator(dataIndex + record['id'], {
+          rules: [
+            {
+              required: true,
+              message: `${this.getTitle(dataIndex)}不允许空值`,
+            },
+          ],
           initialValue: String(record[dataIndex + record['id']]),
         })(
           <Input

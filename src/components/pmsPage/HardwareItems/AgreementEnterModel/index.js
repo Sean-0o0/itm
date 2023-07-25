@@ -208,7 +208,7 @@ class AgreementEnterModel extends React.Component {
       date: Number(moment(contractInfo.date).format('YYYYMMDD')),
       supplierId: Number(contractInfo.supplierId),
       flow: Number(contractInfo.flow),
-      payDate: Number(moment(contractInfo.payDate).format('YYYYMMDD')),
+      payDate: contractInfo.payDate === '-1' ? '-1' : Number(moment(contractInfo.payDate).format('YYYYMMDD')),
       type: operateType,
     };
     console.log('🚀submitdata', submitdata);

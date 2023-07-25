@@ -6,6 +6,9 @@ import ProjectTracking from "../index";
 import PollResultModel from "../../HardwareItems/PollResultModel";
 import hisPrjInfo from "../hisPrjInfo";
 import HisPrjInfo from "../hisPrjInfo";
+import {EncryptBase64} from "../../../Common/Encrypt";
+import {Link} from "react-router-dom";
+import moment from 'moment';
 
 export default function InfoTable(props) {
   const [xmid, setXmid] = useState(0);
@@ -63,7 +66,7 @@ export default function InfoTable(props) {
       width: 60,
       render: (text, record) => (
         <span>
-        <a>修改</a>
+        <a style={{color: '#3361ff', cursor: 'pointer'}}>修改</a>
       </span>
       ),
     },
@@ -129,6 +132,16 @@ export default function InfoTable(props) {
 
   //项目内表格数据-本周/上周
   const getDetailData = (val, XMZQ) => {
+    // 上周一到这周末
+    let start = moment().week(moment().week()).startOf('week').format('YYYYMMDD');
+    let end = moment().week(moment().week()).endOf('week').format('YYYYMMDD');
+    let weekOfday = parseInt(moment().format('d'))
+    let laststart = moment().subtract(weekOfday + 6, 'days').format('YYYYMMDD')
+    let lastend = moment().subtract(weekOfday, 'days').format('YYYYMMDD')
+    console.log("start", start)
+    console.log("end", end)
+    console.log("laststart", laststart)
+    console.log("lastend", lastend)
     QueryProjectTracking({
       current: 1,
       cycle: XMZQ,
@@ -194,7 +207,23 @@ export default function InfoTable(props) {
             {/*项目名称*/}
             <div className="prj-basic-info">
               <div className="prj-name"><i onClick={() => changeExtends(item)}
-                                           className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>{item.XMMC}
+                                           className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
+                <Link
+                  style={{paddingLeft: '8px', color: '#3361ff'}}
+                  to={{
+                    pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                      JSON.stringify({
+                        xmid: item.XMID,
+                      }),
+                    )}`,
+                    state: {
+                      routes: [{name: '项目跟踪', pathname: location.pathname}],
+                    },
+                  }}
+                  className="table-link-strong"
+                >
+                  {item.XMMC}
+                </Link>
               </div>
               <div className="prj-manage">
                 <span className="title">项目经理：</span>
