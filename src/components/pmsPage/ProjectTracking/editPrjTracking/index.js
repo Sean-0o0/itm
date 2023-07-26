@@ -4,35 +4,21 @@
 import {
   Row,
   Col,
-  Popconfirm,
   Modal,
   Form,
   Input,
-  Table,
-  DatePicker,
   message,
   Select,
   Spin,
-  Radio,
-  TreeSelect,
-  InputNumber,
-  Upload,
   Button,
-  Icon,
 } from 'antd';
 
 const {Option} = Select;
 import React from 'react';
 import {connect} from 'dva';
 import {
-  FetchQueryGysInZbxx,
-  IndividuationGetOAResult,
   WriteProjectTrackingReport
 } from '../../../../services/pmsServices';
-import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import moment from 'moment';
-import RichTextEditor from './RichTextEditor';
-import {FetchQueryOrganizationInfo} from '../../../../services/projectManage';
 
 class EditPrjTracking extends React.Component {
   state = {
