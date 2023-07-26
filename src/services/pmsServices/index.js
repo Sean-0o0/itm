@@ -114,6 +114,7 @@ const {
     queryBudgetStatistics,
     queryPaymentByCode,
     supplyPaymentInfo,
+    writeProjectTrackingReport,
   },
 } = api;
 
@@ -1209,6 +1210,16 @@ export async function QueryPaymentByCode(payload) {
 export async function SupplyPaymentInfo(payload) {
   const option = {
     url: supplyPaymentInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 填写项目周报
+export async function WriteProjectTrackingReport(payload) {
+  const option = {
+    url: writeProjectTrackingReport,
     method: 'post',
     data: payload,
   };

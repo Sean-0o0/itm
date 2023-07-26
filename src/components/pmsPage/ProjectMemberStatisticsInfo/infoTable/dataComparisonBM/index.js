@@ -72,7 +72,7 @@ export default function DataComparisonBM(props) {
     let i = -1;
     let arr = [totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM]
     let maxtemp = Math.max(...arr)
-    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : Math.ceil(Math.log(maxtemp)))
+    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
     let flag = totalXMZS === 0 && totalHJXM === 0 && totalKTXM === 0 && totalZBXM === 0 && totalCYXM === 0;
     return {
       // title: {
@@ -262,11 +262,11 @@ export default function DataComparisonBM(props) {
           const KTXM = {name: item.ORGNAME, value: item.KTXM};
           const CYXM = {name: item.ORGNAME, value: item.XCXM};
           const HJXM = {name: item.ORGNAME, value: item.HJXM};
-          let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : Math.ceil(Math.log(item.XMZS)))
-          let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : Math.ceil(Math.log(item.HJXM)))
-          let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : Math.ceil(Math.log(item.KTXM)))
-          let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : Math.ceil(Math.log(item.ZBXM)))
-          let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : Math.ceil(Math.log(item.XCXM)))
+          let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1))
+          let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1))
+          let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1))
+          let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1))
+          let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : ((Math.log(item.XCXM) / Math.log(Math.E)) + 1))
           const radar = {name: item.ORGNAME, value: [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep]};
           tooltipDataXMZS.push(XMZS);
           tooltipDataZBXM.push(ZBXM);

@@ -637,4 +637,10 @@ export default [
     url: '/EKB/v1/supplyPaymentInfo',
     dis: '补录付款流程信息',
   },
+  {
+    code: '',
+    key: 'writeProjectTrackingReport',
+    url: '/projectManage/writeProjectTrackingReport',
+    dis: '填写项目周报',
+  },
 ];

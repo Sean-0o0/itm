@@ -3,6 +3,7 @@ import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
 import {QueryProjectListInfo, QueryProjectTracking} from '../../../services/pmsServices';
 import {message, Progress} from 'antd';
+import moment from "moment";
 
 export default function ProjectTracking(props) {
   const [isSpinning, setIsSpinning] = useState(false);
@@ -77,39 +78,50 @@ export default function ProjectTracking(props) {
   };
 
   const getInitData = async (val, track) => {
-    //本周数据
+    //本周和上周数据
     await getDetailData(val, val.XMZQ, track)
-    //上周数据
-    await getDetailData(val, -1, track)
   }
 
   //项目内表格数据-本周/上周
   const getDetailData = (val, XMZQ, trackold) => {
+    // 上周一到这周末
+    let start = moment().week(moment().week()).startOf('week').format('YYYYMMDD');
+    let end = moment().week(moment().week()).endOf('week').format('YYYYMMDD');
+    let weekOfday = parseInt(moment().format('d'))
+    let laststart = moment().subtract(weekOfday + 6, 'days').format('YYYYMMDD')
+    let lastend = moment().subtract(weekOfday, 'days').format('YYYYMMDD')
+    console.log("start", start)
+    console.log("end", end)
+    console.log("laststart", laststart)
+    console.log("lastend", lastend)
     QueryProjectTracking({
       current: 1,
-      cycle: XMZQ,
-      // endTime: 0,
-      // org: 0,
+      // cycle: XMZQ,
+      endTime: end,
       pageSize: 5,
       paging: 1,
       projectId: val.XMID,
-      // projectManager: 0,
-      // projectType: 0,
       queryType: "GZZB",
       sort: "",
-      // startTime: 0,
+      startTime: laststart,
       total: -1
     })
       .then(res => {
         if (res?.success) {
           const track = JSON.parse(res.result)
           console.log("track", track)
-          if (track.length > 0) {
-            track[0].SJ = XMZQ === -1 ? "上周" : "本周";
-            trackold[0].tableInfo.push(track[0]);
+          let thisweek = track.filter(item => item.XMZQ === XMZQ)
+          let lastweek = track.filter(item => item.XMZQ !== XMZQ)
+          if (thisweek.length > 0) {
+            thisweek[0].SJ = "本周";
+            trackold[0].tableInfo.push(thisweek[0]);
+          }
+          if (lastweek.length > 0) {
+            lastweek[0].SJ = "上周";
+            trackold[0].tableInfo.push(lastweek[0]);
           }
           setTrackingData([...trackold])
-          XMZQ === -1 && setIsSpinning(false)
+          setIsSpinning(false)
           console.log("trackingDataNew", trackold)
         }
       })

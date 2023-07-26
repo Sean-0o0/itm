@@ -88,8 +88,22 @@ export default function MemberAllTable(props) {
   const getRadarChat = (item) => {
     // console.log("雷达数据",item)
     //获取雷达图数据
-    let max = item.CYXM;
-    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.CYXM];
+    // let max = item.CYXM;
+    let maxtemp = item.CYXM;
+    tableData.map(item => {
+      if (item.CYXM >= maxtemp) {
+        maxtemp = item.CYXM;
+      }
+    })
+    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
+    //1等于1  2计算后用实际值+1
+    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1)))
+    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : (item.HJXM === maxtemp ? max : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1)))
+    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : (item.KTXM === maxtemp ? max : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1)))
+    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1)))
+    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.CYXM === maxtemp ? max : ((Math.log(item.CYXM) / Math.log(Math.E)) + 1)))
+    let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
+    let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.CYXM];
     let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.CYXM === 0 && item.HJXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
@@ -128,7 +142,7 @@ export default function MemberAllTable(props) {
           },
           formatter: (a, b) => {
             i++;
-            return `{a|${a}}\n{b|${datavalue[i]}}`
+            return `{a|${a}}\n{b|${totalArr[i]}}`
           }
         },
         indicator: [

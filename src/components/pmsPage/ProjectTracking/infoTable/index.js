@@ -9,9 +9,13 @@ import HisPrjInfo from "../hisPrjInfo";
 import {EncryptBase64} from "../../../Common/Encrypt";
 import {Link} from "react-router-dom";
 import moment from 'moment';
+import EditPrjTracking from "../editPrjTracking";
 
 export default function InfoTable(props) {
   const [xmid, setXmid] = useState(0);
+  const [record, setRecord] = useState(0);
+  const [cycle, setCycle] = useState('');
+  const [editPrjVisible, setEditPrjVisible] = useState(false);
 
   const [hisPrjInfoModalVisible, setHisPrjInfoModalVisible] = useState(false);
   const {
@@ -66,7 +70,15 @@ export default function InfoTable(props) {
       width: 60,
       render: (text, record) => (
         <span>
-        <a style={{color: '#3361ff', cursor: 'pointer'}}>修改</a>
+        <a style={{color: '#3361ff', cursor: 'pointer'}} onClick={() => {
+          setRecord(record)
+          if (record.SJ === '本周') {
+            setCycle(record.XMZQ)
+          } else if (record.SJ === '上周') {
+            setCycle('-1')
+          }
+          setEditPrjVisible(true)
+        }}>修改</a>
       </span>
       ),
     },
@@ -124,10 +136,8 @@ export default function InfoTable(props) {
 
   const changeExtends = async (val) => {
     setIsSpinning(true);
-    //本周数据
+    //本周和上周数据
     await getDetailData(val, val.XMZQ)
-    //上周数据
-    await getDetailData(val, -1)
   }
 
   //项目内表格数据-本周/上周
@@ -144,36 +154,39 @@ export default function InfoTable(props) {
     console.log("lastend", lastend)
     QueryProjectTracking({
       current: 1,
-      cycle: XMZQ,
-      // endTime: 0,
-      // org: 0,
+      // cycle: XMZQ,
+      endTime: end,
       pageSize: 5,
       paging: 1,
       projectId: val.XMID,
-      // projectManager: 0,
-      // projectType: 0,
       queryType: "GZZB",
       sort: "",
-      // startTime: 0,
+      startTime: laststart,
       total: -1
     })
       .then(res => {
         if (res?.success) {
           const track = JSON.parse(res.result)
           console.log("track", track)
+          let thisweek = track.filter(item => item.XMZQ === XMZQ)
+          let lastweek = track.filter(item => item.XMZQ !== XMZQ)
           trackingData.map(item => {
-            if (track.length > 0 && val.XMID === item.XMID && !item.extends) {
-              track[0].SJ = XMZQ === -1 ? "上周" : "本周";
-              item.tableInfo.push(track[0]);
+            if (thisweek.length > 0 && val.XMID === item.XMID && !item.extends) {
+              thisweek[0].SJ = "本周";
+              item.tableInfo.push(thisweek[0]);
+            }
+            if (lastweek.length > 0 && val.XMID === item.XMID && !item.extends) {
+              lastweek[0].SJ = "上周";
+              item.tableInfo.push(lastweek[0]);
             } else if (val.XMID === item.XMID && item.extends) {
               item.tableInfo = [];
             }
-            if (XMZQ === -1 && val.XMID === item.XMID) {
+            if (val.XMID === item.XMID) {
               item.extends = !item.extends;
             }
           })
           setTrackingData([...trackingData])
-          XMZQ === -1 && setIsSpinning(false)
+          setIsSpinning(false)
           console.log("trackingDataNew", trackingData)
         }
       })
@@ -201,6 +214,16 @@ export default function InfoTable(props) {
 
   return (
     <Spin spinning={isSpinning} tip="加载中" size="small">
+      {/*编辑项目跟踪信息弹窗*/}
+      {editPrjVisible && <EditPrjTracking
+        record={record}
+        cycle={cycle}
+        params={params}
+        getTableData={getTableData}
+        contractSigningVisible={editPrjVisible}
+        closeContractModal={() => setEditPrjVisible(false)}
+        onSuccess={() => this.onSuccess("合同签署")}
+      />}
       {
         trackingData?.length > 0 && trackingData?.map((item, index) => {
           return <div className="info-table">

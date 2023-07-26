@@ -104,12 +104,14 @@ export default function YjbmAllTable(props) {
     })
     // let max = item.XMZS;
     // let maxtemp = item.XMZS;
-    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : Math.ceil(Math.log(maxtemp)))
-    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : Math.log(item.XMZS) + 1))
-    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : (item.HJXM === maxtemp ? max : Math.log(item.HJXM) + 1))
-    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : (item.KTXM === maxtemp ? max : Math.log(item.KTXM) + 1))
-    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : Math.log(item.ZBXM) + 1))
-    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.XCXM === maxtemp ? max : Math.log(item.XCXM) + 1))
+    // let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : Math.ceil(Math.log(maxtemp)))
+    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
+    //1等于1  2计算后用实际值+1
+    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1)))
+    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : (item.HJXM === maxtemp ? max : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1)))
+    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : (item.KTXM === maxtemp ? max : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1)))
+    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1)))
+    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.XCXM === maxtemp ? max : ((Math.log(item.XCXM) / Math.log(Math.E)) + 1)))
     let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
     let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM];
     // let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];

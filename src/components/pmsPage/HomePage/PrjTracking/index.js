@@ -282,7 +282,7 @@ export default function PrjTracking(props) {
                           </div>
                           <div
                             className="prj-tracking-infos-detail-row1-percent">{i.SZJD && i.SZJD > 0 ? <>{i.SZJD}%</> : '0%'}
-                            {i.BZJD && <><i className="iconfont icon-rise"/>{i.BZJD}%</>}
+                            {i.BZJD > 0 && <><i className="iconfont icon-rise"/>{i.BZJD}%</>}
                           </div>
                         </div>
                         {/*延期项目*/}

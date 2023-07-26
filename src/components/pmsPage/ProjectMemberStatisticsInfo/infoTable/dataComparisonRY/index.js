@@ -69,7 +69,8 @@ export default function DataComparisonRY(props) {
     //获取雷达图数据
     let i = -1;
     let arr = [totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM]
-    let max = Math.max(...arr)
+    let maxtemp = Math.max(...arr)
+    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
     let flag = totalXMZS === 0 && totalHJXM === 0 && totalKTXM === 0 && totalZBXM === 0 && totalCYXM === 0;
     return {
       // title: {
@@ -250,7 +251,13 @@ export default function DataComparisonRY(props) {
           const KTXM = {name: item.NAME, value: item.KTXM};
           const CYXM = {name: item.NAME, value: item.CYXM};
           const HJXM = {name: item.NAME, value: item.HJXM};
-          const radar = {name: item.NAME, value: [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.CYXM]};
+          let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1))
+          let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1))
+          let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1))
+          let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1))
+          let xcxmtep = item.CYXM === 0 ? 0 : (item.CYXM === 1 ? 1 : ((Math.log(item.CYXM) / Math.log(Math.E)) + 1))
+          const radar = {name: item.NAME, value: [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep]};
+          // const radar = {name: item.NAME, value: [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.CYXM]};
           tooltipDataXMZS.push(XMZS);
           tooltipDataZBXM.push(ZBXM);
           tooltipDataKTXM.push(KTXM);
