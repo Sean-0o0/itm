@@ -490,25 +490,25 @@ export default function HomePage(props) {
                 )
             }
             <AnalyzeRepsCard/>
-            <ProjectCard
-              itemWidth={itemWidth}
-              getAfterItem={getAfterItem}
-              userRole={userRole}
-              prjInfo={prjInfo}
-              getPrjInfo={getPrjInfo}
-              total={total.project}
-              placement={placement}
-              setPlacement={setPlacement}
-            />
-            {/*项目跟踪*/}
-            {/*<PrjTracking*/}
-            {/*  dictionary={dictionary}*/}
+            {/*<ProjectCard*/}
+            {/*  itemWidth={itemWidth}*/}
+            {/*  getAfterItem={getAfterItem}*/}
+            {/*  userRole={userRole}*/}
+            {/*  prjInfo={prjInfo}*/}
+            {/*  getPrjInfo={getPrjInfo}*/}
+            {/*  total={total.project}*/}
+            {/*  placement={placement}*/}
+            {/*  setPlacement={setPlacement}*/}
             {/*/>*/}
+            {/*项目跟踪*/}
+            <PrjTracking
+              dictionary={dictionary}
+            />
           </div>
           <div className="col-right">
-            <GuideCard />
-            <SystemNotice noticeData={noticeData} />
-            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
+            <GuideCard/>
+            <SystemNotice noticeData={noticeData}/>
+            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo}/>
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <Fragment>
                 <CptBudgetCard

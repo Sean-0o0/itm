@@ -1,5 +1,19 @@
 import React, {useEffect, useState, useRef} from 'react';
-import {Button, Divider, Empty, Icon, message, Popover, Progress, Rate, Select, Spin, Tabs, Tooltip} from 'antd';
+import {
+  Button,
+  Divider,
+  Empty,
+  Icon,
+  message,
+  Popconfirm,
+  Popover,
+  Progress,
+  Rate,
+  Select,
+  Spin,
+  Tabs,
+  Tooltip
+} from 'antd';
 import styles from "../../../Common/TagSelect/index.less";
 import {FetchQueryCustomReportList, ProjectCollect, QueryProjectTracking} from "../../../../services/pmsServices";
 import {Link} from "react-router-dom";
@@ -122,7 +136,8 @@ export default function PrjTracking(props) {
     setShowExtends(!flag)
   }
 
-  const handleProjectCollect = (flag, id) => {
+  const handleProjectCollect = (e, flag, id) => {
+    e.preventDefault();
     let payload = {}
     if (flag) {
       payload.operateType = 'SCXM'
@@ -249,76 +264,103 @@ export default function PrjTracking(props) {
               trackingData.map(i => {
                 return <div className="prj-tracking-infos-content">
                   <div className="prj-tracking-infos-content-box">
-                    <div
-                      className={i.DQZT === "进度正常" ? "prj-tracking-infos-name level-2" : "prj-tracking-infos-name level-1"}>
-                      {/*<i className="prj-tracking-infos-icon iconfont icon-report"/>*/}
-                      <div className="prj-tracking-infos-left-flex">
-                        <div className="prj-tracking-infos-left">
-                          <Tooltip title={i.XMMC}>
-                            {i.XMMC}
-                          </Tooltip>
-                        </div>
-                      </div>
-                      <div className="prj-tracking-infos-week">
-                        <i onClick={() => handleProjectCollect(i.SFSC === 0, i.XMID)}
-                           className={i.SFSC === 0 ? "prj-tracking-infos-icon2 iconfont icon-star" : "prj-tracking-infos-icon2 iconfont icon-fill-star"}/>
-                        Week{i.XMZQ}
-                      </div>
-                    </div>
-                    {
-                      <div className="prj-tracking-infos-detail">
-                        <div className="prj-tracking-infos-detail-row1">
-                          <div className="prj-tracking-infos-detail-row1-name">项目概况
-                            <Popover
-                              title={null}
-                              placement="rightTop"
-                              trigger="click"
-                              getPopupContainer={triggerNode => triggerNode.parentNode}
-                              autoAdjustOverflow={true}
-                              content={getPrjDetail(i.XMID)}
-                              overlayClassName="prj-tracking-detail-popover"
-                            ><i onClick={() => getDetailData(i.XMID)} className="iconfont icon-detail"/>
-                            </Popover>
-                          </div>
-                          <div
-                            className="prj-tracking-infos-detail-row1-percent">{i.SZJD && i.SZJD > 0 ? <>{i.SZJD}%</> : '0%'}
-                            {i.BZJD > 0 && <><i className="iconfont icon-rise"/>{i.BZJD}%</>}
+                    <Link
+                      style={{color: '#3361ff'}}
+                      to={{
+                        pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                          JSON.stringify({
+                            xmid: i.XMID,
+                          }),
+                        )}`,
+                        state: {
+                          routes: [{name: '个人工作台', pathname: location.pathname}],
+                        },
+                      }}
+                      className="table-link-strong"
+                    >
+                      <div
+                        className={i.DQZT === "进度正常" ? "prj-tracking-infos-name level-2" : "prj-tracking-infos-name level-1"}>
+                        {/*<i className="prj-tracking-infos-icon iconfont icon-report"/>*/}
+                        <div className="prj-tracking-infos-left-flex">
+                          <div className="prj-tracking-infos-left">
+                            <Tooltip title={i.XMMC}>
+                              {i.XMMC}
+                            </Tooltip>
                           </div>
                         </div>
-                        {/*延期项目*/}
-                        {
-                          <div className="prj-tracking-infos-detail-row2-lev1">
-                            <Progress strokeColor="#3361FF" percent={i.BZJD} successPercent={i.SZJD} size="small"
-                                      status="active" showInfo={false}/>
-                          </div>
-                        }
-                        {/*正常项目*/}
-                        {/*{*/}
-                        {/*  i.BZZT && i.BZZT == '1' || i.BZZT == '4' && <div className="prj-tracking-infos-detail-row2-lev2">*/}
-                        {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
-                        {/*  </div>*/}
-                        {/*}*/}
-                        {/*低风险项目*/}
-                        {/*{*/}
-                        {/*  i.BZZT && i.BZZT == '6' && <div className="prj-tracking-infos-detail-row2-lev3">*/}
-                        {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
-                        {/*  </div>*/}
-                        {/*}*/}
-                        <div className="prj-tracking-infos-detail-row3">
-                          {/*icon-reloadtime 延期 - rgba(255,47,49,0.1) #FF2F31  */}
-                          {/*circle-check 已完成 - rgba(51,97,255,0.1) #3361ff  */}
-                          {/*innovation -e7da 高风险 - rgba(255,47,49,0.1) #FF2F31  */}
-                          {/*circle-check 中风险 - rgba(249,168,18,0.1) #F9A812  */}
-                          {/*circle-check 低风险 - rgba(5,190,254,0.1) #05BEFE  */}
-                          <div
-                            className="prj-tracking-infos-detail-row3-risk">{i.SZZT && i.SZZT > 0 ? <>{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
-                          {i.BZZT && <><i className="iconfont icon-rise"/>
+                        <div className="prj-tracking-infos-week">
+                          <Popconfirm
+                            title={i.SFSC === 0 ? "确定收藏？" : "确定取消收藏？"}
+                            onConfirm={(e) => handleProjectCollect(e, i.SFSC === 0, i.XMID)}
+                            onCancel={(e) => {
+                              e.stopPropagation()
+                            }}
+                            okText="确认"
+                            cancelText="取消"
+                          >
+                            <i onClick={(e) => {
+                              e.stopPropagation()
+                            }}
+                               className={i.SFSC === 0 ? "prj-tracking-infos-icon2 iconfont icon-star" : "prj-tracking-infos-icon2 iconfont icon-fill-star"}/>
+                          </Popconfirm>
+                          Week{i.XMZQ}
+                        </div>
+                      </div>
+                      {
+                        <div className="prj-tracking-infos-detail">
+                          <div className="prj-tracking-infos-detail-row1">
+                            <div className="prj-tracking-infos-detail-row1-name">项目概况
+                              <Popover
+                                title={null}
+                                placement="rightTop"
+                                trigger="hover"
+                                getPopupContainer={triggerNode => triggerNode.parentNode}
+                                autoAdjustOverflow={true}
+                                content={getPrjDetail(i.XMID)}
+                                overlayClassName="prj-tracking-detail-popover"
+                              ><i onMouseEnter={() => getDetailData(i.XMID)} className="iconfont icon-detail"/>
+                              </Popover>
+                            </div>
                             <div
-                              className="prj-tracking-infos-detail-row3-risk">{XMJDZT.filter(item => item.ibm == i.BZZT)[0]?.note}</div>
-                          </>}
+                              className="prj-tracking-infos-detail-row1-percent">{i.SZJD && i.SZJD > 0 ? <>{i.SZJD}%</> : '0%'}
+                              {i.BZJD > 0 && <><i className="iconfont icon-rise"/>{i.BZJD}%</>}
+                            </div>
+                          </div>
+                          {/*延期项目*/}
+                          {
+                            <div className="prj-tracking-infos-detail-row2-lev1">
+                              <Progress strokeColor="#3361FF" percent={i.BZJD} successPercent={i.SZJD} size="small"
+                                        status="active" showInfo={false}/>
+                            </div>
+                          }
+                          {/*正常项目*/}
+                          {/*{*/}
+                          {/*  i.BZZT && i.BZZT == '1' || i.BZZT == '4' && <div className="prj-tracking-infos-detail-row2-lev2">*/}
+                          {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
+                          {/*  </div>*/}
+                          {/*}*/}
+                          {/*低风险项目*/}
+                          {/*{*/}
+                          {/*  i.BZZT && i.BZZT == '6' && <div className="prj-tracking-infos-detail-row2-lev3">*/}
+                          {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
+                          {/*  </div>*/}
+                          {/*}*/}
+                          <div className="prj-tracking-infos-detail-row3">
+                            {/*icon-reloadtime 延期 - rgba(255,47,49,0.1) #FF2F31  */}
+                            {/*circle-check 已完成 - rgba(51,97,255,0.1) #3361ff  */}
+                            {/*innovation -e7da 高风险 - rgba(255,47,49,0.1) #FF2F31  */}
+                            {/*circle-check 中风险 - rgba(249,168,18,0.1) #F9A812  */}
+                            {/*circle-check 低风险 - rgba(5,190,254,0.1) #05BEFE  */}
+                            <div
+                              className="prj-tracking-infos-detail-row3-risk">{i.SZZT && i.SZZT > 0 ? <>{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
+                            {i.BZZT && <><i className="iconfont icon-rise"/>
+                              <div
+                                className="prj-tracking-infos-detail-row3-risk">{XMJDZT.filter(item => item.ibm == i.BZZT)[0]?.note}</div>
+                            </>}
+                          </div>
                         </div>
-                      </div>
-                    }
+                      }
+                    </Link>
                   </div>
                 </div>
               })

@@ -103,9 +103,38 @@ export default function EjbmAllTable(props) {
   const getRadarChatLD = (item) => {
     // console.log("雷达数据",item)
     //获取雷达图数据
-    let max = item.XMZS;
-    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
-    let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
+    // let max = item.XMZS;
+    let max = 0;
+    let hjxmtep = 0
+    let ktxmtep = 0
+    let zbxmtep = 0
+    let xcxmtep = 0
+    let zyxmtep = 0
+    let wcxmtep = 0
+    tableDataLD.map(item => {
+      if (item.HJXM >= hjxmtep) {
+        hjxmtep = item.HJXM;
+      }
+      if (item.KTXM >= ktxmtep) {
+        ktxmtep = item.KTXM;
+      }
+      if (item.ZBXM >= zbxmtep) {
+        zbxmtep = item.ZBXM;
+      }
+      if (item.XCXM >= xcxmtep) {
+        xcxmtep = item.XCXM;
+      }
+      if (item.ZYXM >= zyxmtep) {
+        zyxmtep = item.ZYXM;
+      }
+      if (item.WCXM >= wcxmtep) {
+        wcxmtep = item.WCXM;
+      }
+    })
+    max = Math.max(hjxmtep, ktxmtep, zbxmtep, xcxmtep, zyxmtep, wcxmtep)
+    console.log("maxmaxmax", max)
+    let datavalue = [item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
+    let flag = item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0 && item.ZYXM === 0 && item.WCXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
     let i = -1;
     return {
@@ -117,7 +146,7 @@ export default function EjbmAllTable(props) {
         show: false,
       },
       radar: [{
-        center: ['50%', '55%'],
+        center: ['50%', '50%'],
         // shape: 'circle',
         radius: 68,
         name: {
@@ -147,11 +176,12 @@ export default function EjbmAllTable(props) {
           }
         },
         indicator: [
-          {name: '负责项目', max: max},
           {name: '获奖项目', max: max},
           {name: '课题项目', max: max},
           {name: '专班项目', max: max},
           {name: '信创项目', max: max},
+          {name: '自研项目', max: max},
+          {name: '外采项目', max: max},
         ],
         splitArea: {
           show: true,
@@ -180,24 +210,48 @@ export default function EjbmAllTable(props) {
   const getRadarChatBM = (item) => {
     // console.log("雷达数据", item)
     // tableDataBM
-    let maxtemp = item.XMZS;
+    //获取雷达图数据
+    let max = 0;
+    let hjxmtep = 0
+    let ktxmtep = 0
+    let zbxmtep = 0
+    let xcxmtep = 0
+    let zyxmtep = 0
+    let wcxmtep = 0
     tableDataBM.map(item => {
-      if (item.XMZS >= maxtemp) {
-        maxtemp = item.XMZS;
+      if (item.HJXM >= hjxmtep) {
+        hjxmtep = item.HJXM;
+      }
+      if (item.KTXM >= ktxmtep) {
+        ktxmtep = item.KTXM;
+      }
+      if (item.ZBXM >= zbxmtep) {
+        zbxmtep = item.ZBXM;
+      }
+      if (item.XCXM >= xcxmtep) {
+        xcxmtep = item.XCXM;
+      }
+      if (item.ZYXM >= zyxmtep) {
+        zyxmtep = item.ZYXM;
+      }
+      if (item.WCXM >= wcxmtep) {
+        wcxmtep = item.WCXM;
       }
     })
-    //获取雷达图数据
-    // let max = item.XMZS;
-    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
+    max = Math.max(hjxmtep, ktxmtep, zbxmtep, xcxmtep, zyxmtep, wcxmtep)
+    console.log("maxmaxmax", max)
+    // let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
     //1等于1  2计算后用实际值+1
-    let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1)))
-    let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : (item.HJXM === maxtemp ? max : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1)))
-    let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : (item.KTXM === maxtemp ? max : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1)))
-    let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1)))
-    let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.XCXM === maxtemp ? max : ((Math.log(item.XCXM) / Math.log(Math.E)) + 1)))
-    let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
-    let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM];
-    let flag = item.XMZS === 0 && item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0
+    // let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1)))
+    // let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : (item.HJXM === maxtemp ? max : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1)))
+    // let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : (item.KTXM === maxtemp ? max : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1)))
+    // let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1)))
+    // let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.XCXM === maxtemp ? max : ((Math.log(item.XCXM) / Math.log(Math.E)) + 1)))
+    // let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
+    // let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM];
+    let datavalue = [item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
+    let totalArr = [item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
+    let flag = item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0 && item.ZYXM === 0 && item.WCXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,}]
     let i = -1;
     return {
@@ -209,7 +263,7 @@ export default function EjbmAllTable(props) {
         show: false,
       },
       radar: [{
-        center: ['50%', '55%'],
+        center: ['50%', '50%'],
         // shape: 'circle',
         radius: 68,
         name: {
@@ -239,11 +293,13 @@ export default function EjbmAllTable(props) {
           }
         },
         indicator: [
-          {name: '所有项目', max: max},
+          // {name: '所有项目', max: max},
           {name: '获奖项目', max: max},
           {name: '课题项目', max: max},
           {name: '专班项目', max: max},
           {name: '信创项目', max: max},
+          {name: '自研项目', max: max},
+          {name: '外采项目', max: max},
         ],
         splitArea: {
           show: true,
@@ -415,6 +471,12 @@ export default function EjbmAllTable(props) {
                     }}
                     className="table-link-strong"
                   >
+                    <span style={{
+                      float: 'left',
+                      margin: '7px 24px',
+                      fontSize: '14px',
+                      color: '#ff2f31'
+                    }}>负责项目:&nbsp;&nbsp;{item.XMZS}</span>
                     <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
                          onMouseLeave={hiddenFooterLD}>
                       <ReactEchartsCore
@@ -480,6 +542,12 @@ export default function EjbmAllTable(props) {
                       <i className="iconfont icon-vs" onClick={() => getCompareBMModel(item)}/>数据对比
                     </div>
                   </div>
+                  <span style={{
+                    float: 'left',
+                    margin: '7px 24px',
+                    fontSize: '14px',
+                    color: '#ff2f31'
+                  }}>所有项目:&nbsp;&nbsp;{item.XMZS}</span>
                   <div className="info-table-content-box-radar" onMouseEnter={() => getFooterBM(item.ORGID)}
                        onMouseLeave={hiddenFooterBM}>
                     <Link
@@ -598,6 +666,12 @@ export default function EjbmAllTable(props) {
                     }}
                     className="table-link-strong"
                   >
+                    <span style={{
+                      float: 'left',
+                      margin: '7px 24px',
+                      fontSize: '14px',
+                      color: '#ff2f31'
+                    }}>负责项目:&nbsp;&nbsp;{item.XMZS}</span>
                     <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
                          onMouseLeave={hiddenFooterLD}>
                       <ReactEchartsCore
@@ -663,6 +737,12 @@ export default function EjbmAllTable(props) {
                       <i className="iconfont icon-vs" onClick={() => getCompareBMModel(item)}/>数据对比
                     </div>
                   </div>
+                  <span style={{
+                    float: 'left',
+                    margin: '7px 24px',
+                    fontSize: '14px',
+                    color: '#ff2f31'
+                  }}>所有项目:&nbsp;&nbsp;{item.XMZS}</span>
                   <div className="info-table-content-box-radar" onMouseEnter={() => getFooterBM(item.ORGID)}
                        onMouseLeave={hiddenFooterBM}>
                     <Link
