@@ -45,9 +45,9 @@ class EditableCell extends React.Component {
                          const {record, handleSave} = this.props;
                          form.validateFields(['XQBT' + record['KTID'], 'XQNR' + record['KTID'], 'XQRQ' + record['KTID'],], (error, values) => {
                            // console.log('values', values);
-                           if (error && error[e.currentTarget.KTID]) {
-                             return;
-                           }
+                           // if (error && error[e.currentTarget.KTID]) {
+                           //   return;
+                           // }
                            let newValues = {};
                            newValues = {...values};
                            for (let i in newValues) {

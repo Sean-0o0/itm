@@ -113,18 +113,18 @@ class EditableCell extends React.Component {
                 ],
                 (error, values) => {
                   // console.log('values', values);
-                  if (error && error[e.currentTarget.id]) {
-                    return;
-                  }
+                  // if (error && error[e.currentTarget.id]) {
+                  //   return;
+                  // }
                   let newValues = {};
-                  newValues = { ...values };
+                  newValues = {...values};
                   for (let i in newValues) {
                     if (i === 'fksj' + record['id']) {
                       newValues[i] = dataString;
                     }
                   }
                   // this.toggleEdit();
-                  handleSave({ ...record, ...newValues });
+                  handleSave({...record, ...newValues});
                 },
               );
             }}

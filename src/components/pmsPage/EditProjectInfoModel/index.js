@@ -145,10 +145,11 @@ class EditableCell extends React.Component {
               form.validateFields(
                 ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id'], 'fksj' + record['id']],
                 (error, values) => {
-                  console.log('values', values);
-                  if (error && error[e.currentTarget.id]) {
-                    return;
-                  }
+                  // console.log('values-ccc', values);
+                  // console.log('error-ccc', error);
+                  // if (error && error[e.currentTarget.id]) {
+                  //   return;
+                  // }
                   let newValues = {};
                   newValues = {...values};
                   console.log('dataString', dataString);
@@ -157,8 +158,10 @@ class EditableCell extends React.Component {
                       newValues[i] = dataString;
                     }
                   }
+                  // console.log('save1111-ccc', newValues);
+                  // console.log('save-ccc', {...record, ...newValues});
                   // this.toggleEdit();
-                  handleSave({ ...record, ...newValues });
+                  handleSave({...record, ...newValues});
                 },
               );
             }}

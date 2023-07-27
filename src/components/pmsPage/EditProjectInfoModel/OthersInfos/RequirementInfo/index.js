@@ -46,12 +46,15 @@ class EditableCell extends React.Component {
           initialValue: moment(record[dataIndex + record['XQID']]) || null,
         })(<DatePicker ref={node => (this.input = node)}
                        onChange={(data, dataString) => {
+                         console.log('datadatadata-ccc', data);
+                         console.log('dataStringdataStringdataString-ccc', dataString);
                          const {record, handleSave} = this.props;
                          form.validateFields(['XQBT' + record['XQID'], 'XQNR' + record['XQID'], 'XQRQ' + record['XQID'],], (error, values) => {
-                           // console.log('values', values);
-                           if (error && error[e.currentTarget.XQID]) {
-                             return;
-                           }
+                           // console.log('values-ccc', values);
+                           // console.log('error-ccc', error);
+                           // if (error && error[e.currentTarget.XQID]) {
+                           //   return;
+                           // }
                            let newValues = {};
                            newValues = {...values};
                            for (let i in newValues) {
@@ -60,6 +63,8 @@ class EditableCell extends React.Component {
                              }
                            }
                            // this.toggleEdit();
+                           // console.log('save1111-ccc', newValues);
+                           // console.log('save-ccc', {...record, ...newValues});
                            handleSave({...record, ...newValues});
                          });
                        }}
@@ -205,6 +210,7 @@ class RequirementInfo extends Component {
     const {xqxxRecordCallback} = this.props;
     const {tableData, xqxxRecordFlag} = this.state;
     let newArr = [];
+    console.log("tableDatatableData", tableData)
     tableData.map((item) => {
       let obj = {
         XQID: String(item.XQID),
@@ -214,6 +220,7 @@ class RequirementInfo extends Component {
       };
       newArr.push(obj);
     });
+    console.log("newArrnewArr", newArr)
     xqxxRecordCallback(newArr, xqxxRecordFlag)
   }
 
@@ -292,6 +299,9 @@ class RequirementInfo extends Component {
         key: 'XQRQ',
         ellipsis: true,
         editable: true,
+        render: (text, record) => {
+          return <DatePicker/>;
+        },
       },
       {
         title: <span style={{color: '#606266', fontWeight: 500}}>操作</span>,
