@@ -132,7 +132,7 @@ export default function EjbmAllTable(props) {
       }
     })
     max = Math.max(hjxmtep, ktxmtep, zbxmtep, xcxmtep, zyxmtep, wcxmtep)
-    console.log("maxmaxmax", max)
+    // console.log("maxmaxmax", max)
     let datavalue = [item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
     let flag = item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0 && item.ZYXM === 0 && item.WCXM === 0
     let data = [{value: datavalue, name: item.ORGNAME,},]
@@ -239,7 +239,7 @@ export default function EjbmAllTable(props) {
       }
     })
     max = Math.max(hjxmtep, ktxmtep, zbxmtep, xcxmtep, zyxmtep, wcxmtep)
-    console.log("maxmaxmax", max)
+    // console.log("maxmaxmax", max)
     // let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
     //1等于1  2计算后用实际值+1
     // let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : (item.XMZS === maxtemp ? max : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1)))
@@ -456,6 +456,12 @@ export default function EjbmAllTable(props) {
                       <i className="iconfont icon-vs" onClick={() => getCompareRYModel(item)}/>数据对比
                     </div>
                   </div>
+                  <span style={{
+                    float: 'left',
+                    margin: '0px 16px',
+                    fontSize: '14px',
+                    color: '#999999'
+                  }}>负责项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <Link
                     style={{color: '#3361ff', width: '100%'}}
                     to={{
@@ -471,12 +477,6 @@ export default function EjbmAllTable(props) {
                     }}
                     className="table-link-strong"
                   >
-                    <span style={{
-                      float: 'left',
-                      margin: '7px 24px',
-                      fontSize: '14px',
-                      color: '#ff2f31'
-                    }}>负责项目:&nbsp;&nbsp;{item.XMZS}</span>
                     <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
                          onMouseLeave={hiddenFooterLD}>
                       <ReactEchartsCore
@@ -544,10 +544,10 @@ export default function EjbmAllTable(props) {
                   </div>
                   <span style={{
                     float: 'left',
-                    margin: '7px 24px',
+                    margin: '8px 16px',
                     fontSize: '14px',
-                    color: '#ff2f31'
-                  }}>所有项目:&nbsp;&nbsp;{item.XMZS}</span>
+                    color: '#999999'
+                  }}>所有项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <div className="info-table-content-box-radar" onMouseEnter={() => getFooterBM(item.ORGID)}
                        onMouseLeave={hiddenFooterBM}>
                     <Link
@@ -651,6 +651,12 @@ export default function EjbmAllTable(props) {
                       <i className="iconfont icon-vs" onClick={() => getCompareRYModel(item)}/>数据对比
                     </div>
                   </div>
+                  <span style={{
+                    float: 'left',
+                    margin: '0px 16px',
+                    fontSize: '14px',
+                    color: '#999999'
+                  }}>负责项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <Link
                     style={{color: '#3361ff', width: '100%'}}
                     to={{
@@ -666,12 +672,6 @@ export default function EjbmAllTable(props) {
                     }}
                     className="table-link-strong"
                   >
-                    <span style={{
-                      float: 'left',
-                      margin: '7px 24px',
-                      fontSize: '14px',
-                      color: '#ff2f31'
-                    }}>负责项目:&nbsp;&nbsp;{item.XMZS}</span>
                     <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
                          onMouseLeave={hiddenFooterLD}>
                       <ReactEchartsCore
@@ -739,10 +739,10 @@ export default function EjbmAllTable(props) {
                   </div>
                   <span style={{
                     float: 'left',
-                    margin: '7px 24px',
+                    margin: '8px 16px',
                     fontSize: '14px',
-                    color: '#ff2f31'
-                  }}>所有项目:&nbsp;&nbsp;{item.XMZS}</span>
+                    color: '#999999'
+                  }}>所有项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <div className="info-table-content-box-radar" onMouseEnter={() => getFooterBM(item.ORGID)}
                        onMouseLeave={hiddenFooterBM}>
                     <Link

@@ -2009,6 +2009,7 @@ class EditProjectInfoModel extends React.Component {
       requirementInfoRecord = [],
       prizeInfoRecord = [],
       subItemFlag,
+      tableData = [],
     } = this.state;
     //校验基础信息
     let basicflag;
@@ -2248,6 +2249,41 @@ class EditProjectInfoModel extends React.Component {
         message.warn('招采信息未填写完整！');
         return;
       }
+    }
+    if (Number(purchaseInfo.lxje) < Number(purchaseInfo.contractValue)) {
+      message.warn("合同金额不能超过本项目立项金额(" + purchaseInfo.lxje + "元),请修改！")
+      return;
+    }
+    //付款金额总数
+    let fkjeTotal = 0;
+    //百分比
+    let bfbTotal = 0;
+    let arr = [...tableData];
+    arr.forEach(item => {
+      for (let i in item) {
+        if (i === 'fksj' + item.id) {
+          if (item[i] !== null) {
+            item[i] = moment(item[i]).format('YYYYMMDD');
+          } else {
+            item[i] = '-1';
+          }
+        } else if (i !== 'id') {
+          item[i] = String(item[i]);
+        }
+      }
+    });
+    arr.map(item => {
+      //付款金额总数
+      fkjeTotal = fkjeTotal + Number(item['fkje' + item.id])
+      bfbTotal = bfbTotal + Number(item['bfb' + item.id])
+    });
+    if (Number(purchaseInfo.contractValue) < Number(fkjeTotal)) {
+      message.warn("子表格付款详情中总金额不能超过本项目的合同金额(" + purchaseInfo.contractValue + "元),请修改！")
+      return;
+    }
+    if (Number(bfbTotal) > 1) {
+      message.warn("子表格付款详情中占比不能超过1,请修改！")
+      return;
     }
     if (zbxxVisiable) {
       if (
@@ -2689,10 +2725,6 @@ class EditProjectInfoModel extends React.Component {
     let arr = [...tableData];
     console.log('staticSkzhData', staticSkzhData);
     console.log("tableDatatableData", tableData)
-    if (purchaseInfo.lxje < purchaseInfo.contractValue) {
-      message.warn("合同金额不能超过本项目立项金额(" + purchaseInfo.lxje + "元),请修改！")
-      return;
-    }
     arr.forEach(item => {
       for (let i in item) {
         if (i === 'fksj' + item.id) {

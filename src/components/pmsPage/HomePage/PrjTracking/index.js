@@ -327,6 +327,10 @@ export default function PrjTracking(props) {
                             </div>
                           </div>
                           {/*延期项目*/}
+                          {/*<div className={record.DQZT === '高风险' || record.DQZT === '延期'?'prj-tracking-infos-detail-row2-lev1':(record.DQZT === '中风险' || record.DQZT === '低风险'?'prj-tracking-infos-detail-row2-lev2':'prj-tracking-infos-detail-row2-lev3')}>*/}
+                          {/*  <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"*/}
+                          {/*            status="active"/>*/}
+                          {/*</div>*/}
                           {
                             <div className="prj-tracking-infos-detail-row2-lev1">
                               <Progress strokeColor="#3361FF" percent={i.BZJD} successPercent={i.SZJD} size="small"
@@ -351,11 +355,61 @@ export default function PrjTracking(props) {
                             {/*innovation -e7da 高风险 - rgba(255,47,49,0.1) #FF2F31  */}
                             {/*circle-check 中风险 - rgba(249,168,18,0.1) #F9A812  */}
                             {/*circle-check 低风险 - rgba(5,190,254,0.1) #05BEFE  */}
-                            <div
-                              className="prj-tracking-infos-detail-row3-risk">{i.SZZT && i.SZZT > 0 ? <>{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
+                            <div className="prj-tracking-infos-detail-row3-risk"
+                                 style={{alignItems: 'center', display: 'flex'}}>
+                              {i.SZZT === 1 ?
+                                <div className='prj-status-icon-lv1'><i className="iconfont icon-hourglass"/></div> : (
+                                  i.SZZT === 2 ?
+                                    <div className='prj-status-icon-lv2'><i className="iconfont icon-alarm"/></div> : (
+                                      i.SZZT === 3 ?
+                                        <div className='prj-status-icon-lv3'><i className="iconfont icon-alarm"/>
+                                        </div> : (
+                                          i.SZZT === 4 ?
+                                            <div className='prj-status-icon-lv4'><i className="iconfont icon-alarm"/>
+                                            </div> : (
+                                              i.SZZT === 5 ?
+                                                <div className='prj-status-icon-lv5'><i className="iconfont icon-delay"/>
+                                                </div> : (
+                                                  i.SZZT === 6 &&
+                                                  <div className='prj-status-icon-lv6'><i className="iconfont circle-check"/>
+                                                  </div>
+                                                )
+                                            )
+                                        )
+                                    )
+                                )
+                              }
+                              {i.SZZT && i.SZZT > 0 ? <>&nbsp;{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
                             {i.BZZT && <><i className="iconfont icon-rise"/>
                               <div
-                                className="prj-tracking-infos-detail-row3-risk">{XMJDZT.filter(item => item.ibm == i.BZZT)[0]?.note}</div>
+                                className="prj-tracking-infos-detail-row3-risk"
+                                style={{alignItems: 'center', display: 'flex'}}>
+                                {i.BZZT === 1 ?
+                                  <div className='prj-status-icon-lv1'><i className="iconfont icon-hourglass"/>
+                                  </div> : (
+                                    i.BZZT === 2 ?
+                                      <div className='prj-status-icon-lv2'><i className="iconfont icon-alarm"/>
+                                      </div> : (
+                                        i.BZZT === 3 ?
+                                          <div className='prj-status-icon-lv3'><i className="iconfont icon-alarm"/>
+                                          </div> : (
+                                            i.BZZT === 4 ?
+                                              <div className='prj-status-icon-lv4'><i className="iconfont icon-alarm"/>
+                                              </div> : (
+                                                i.BZZT === 5 ?
+                                                  <div className='prj-status-icon-lv5'><i className="iconfont icon-delay"/>
+                                                  </div> : (
+                                                    i.BZZT === 6 &&
+                                                    <div className='prj-status-icon-lv6'><i className="iconfont circle-check"/>
+                                                    </div>
+                                                  )
+                                              )
+                                          )
+                                      )
+                                  )
+                                }
+                                &nbsp;{XMJDZT.filter(item => item.ibm == i.BZZT)[0]?.note}
+                              </div>
                             </>}
                           </div>
                         </div>

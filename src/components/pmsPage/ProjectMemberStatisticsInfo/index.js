@@ -23,7 +23,7 @@ export default function ProjectMemberStatisticsInfo(props) {
   const [totalBM, setTotalBM] = useState(0); //
   const [loading, setLoading] = useState(true); //表格数据-项目列表
   const [bmid, setBMID] = useState('-1');
-  const {handleRadioChange} = props;
+  const {handleRadioChange, isRouter = false} = props;
 
   useEffect(() => {
     getTableData(activeKey);
@@ -138,7 +138,8 @@ export default function ProjectMemberStatisticsInfo(props) {
 
   return (
     <div className="project-member-statistics-info-box">
-      <TopConsole tabsData={tabsData} handleRadioChange={handleRadioChange} tabsKeyCallback={tabsKeyCallback}
+      <TopConsole isRouter={isRouter} tabsData={tabsData} handleRadioChange={handleRadioChange}
+                  tabsKeyCallback={tabsKeyCallback}
                   activeKey={activeKey}
                   setActiveKey={setActiveKey}/>
       {

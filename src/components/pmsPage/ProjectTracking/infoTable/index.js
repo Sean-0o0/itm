@@ -41,13 +41,46 @@ export default function InfoTable(props) {
       title: '当前进度',
       dataIndex: 'DQJD',
       key: 'DQJD',
-      width: 220,
+      // width: 220,
+      render(text, record, index) {
+        // console.log("recordrecord",record)
+        return (
+          <div
+            className={record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : (record.DQZT === '中风险' || record.DQZT === '低风险' ? 'prj-tracking-infos-detail-row2-lev2' : 'prj-tracking-infos-detail-row2-lev3')}>
+            <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
+                      status="active"/>
+          </div>
+        )
+      }
     },
     {
       title: '当前状态',
       dataIndex: 'DQZT',
       key: 'DQZT',
-      width: 104,
+      // width: 104,
+      render(text, record, index) {
+        // console.log("recordrecord",record)
+        return (
+          <>{record.DQZT === '进度正常' ?
+            <div className='prj-status-icon-lv1'><i className="iconfont icon-hourglass"/></div> : (
+              record.DQZT === '高风险' ?
+                <div className='prj-status-icon-lv2'><i className="iconfont icon-alarm"/></div> : (
+                  record.DQZT === '中风险' ?
+                    <div className='prj-status-icon-lv3'><i className="iconfont icon-alarm"/></div> : (
+                      record.DQZT === '低风险' ?
+                        <div className='prj-status-icon-lv4'><i className="iconfont icon-alarm"/></div> : (
+                          record.DQZT === '延期' ?
+                            <div className='prj-status-icon-lv5'><i className="iconfont icon-delay"/></div> : (
+                              record.DQZT === '已完成' &&
+                              <div className='prj-status-icon-lv6'><i className="iconfont circle-check"/></div>
+                            )
+                        )
+                    )
+                )
+            )
+          }&nbsp;&nbsp;{text}</>
+        )
+      }
     },
     {
       title: '重要事项说明',

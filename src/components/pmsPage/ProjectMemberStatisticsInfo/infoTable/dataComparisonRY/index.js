@@ -35,6 +35,7 @@ export default function DataComparisonRY(props) {
   // const [tooltipDataCYXM, setTooltipDataCYXM] = useState([]); //参与项目
   // const [tooltipDataHJXM, setTooltipDataHJXM] = useState([]); //获奖项目
   const [tooltipData, setTooltipData] = useState([]); //tooltip展示数据
+  const [tooltipleftData, setTooltipleftData] = useState([]); //tooltip展示数据
   const [radardata, setRadardata] = useState([]); //雷达数据
   //各项目类型总数
   const [totalXMZS, setTotalXMZS] = useState(0); //发起项目总数
@@ -42,6 +43,8 @@ export default function DataComparisonRY(props) {
   const [totalKTXM, setTotalKTXM] = useState(0); //课题项目总数
   const [totalCYXM, setTotalCYXM] = useState(0); //参与项目总数
   const [totalHJXM, setTotalHJXM] = useState(0); //获奖项目总数
+  const [totalZYXM, setTotalZYXM] = useState(0); //获奖项目总数
+  const [totalWCXM, setTotalWCXM] = useState(0); //获奖项目总数
   const [totalArr, setTotalArr] = useState([0, 0, 0, 0, 0]); //获奖项目总数组成的数组
   const [totalNameArr, setTotalNameArr] = useState(['', '', '', '', '']); //人名组成的数组-legend
 
@@ -68,10 +71,10 @@ export default function DataComparisonRY(props) {
     // console.log("雷达数据",item)
     //获取雷达图数据
     let i = -1;
-    let arr = [totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM]
-    let maxtemp = Math.max(...arr)
-    let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
-    let flag = totalXMZS === 0 && totalHJXM === 0 && totalKTXM === 0 && totalZBXM === 0 && totalCYXM === 0;
+    let arr = [totalHJXM, totalKTXM, totalZBXM, totalZYXM, totalWCXM]
+    let max = Math.max(...arr)
+    // let max = maxtemp === 0 ? 0 : (maxtemp === 1 ? 1 : ((Math.log(maxtemp) / Math.log(Math.E)) + 1))
+    let flag = totalHJXM === 0 && totalKTXM === 0 && totalZBXM === 0 && totalZYXM === 0 && totalWCXM === 0;
     return {
       // title: {
       //   text: '基础雷达图'
@@ -82,7 +85,7 @@ export default function DataComparisonRY(props) {
         itemWidth: 10,
         itemHeight: 10,
       },
-      color: ["#1890FF", "#FDC041", '#5470c6', '#91cc75', '#fac858',],
+      color: ['rgba(91,143,249,1)', 'rgba(90,216,166,1)', 'rgba(93,112,146,1)', 'rgba(246,189,22,1)', 'rgba(232,104,74,1)'],
       tooltip: {
         extraCssText: 'padding:12px;height: 240px;background-color:#ffffff;color:#ffffff;box-shadow: 0px 3px 6px -4px rgba(0,0,0,0.12), 0px 6px 16px 0px rgba(0,0,0,0.08), 0px 9px 28px 8px rgba(0,0,0,0.05);',
         formatter: (params) => {
@@ -141,11 +144,11 @@ export default function DataComparisonRY(props) {
           }
         },
         indicator: [
-          {name: '发起项目', max},
           {name: '获奖项目', max},
           {name: '课题项目', max},
           {name: '专班项目', max},
-          {name: '参与项目', max},
+          {name: '自研项目', max},
+          {name: '外采项目', max},
         ],
         splitArea: {
           show: true,
@@ -158,14 +161,12 @@ export default function DataComparisonRY(props) {
       series: [{
         name: '',
         type: 'radar',
-        // areaStyle: {normal: {}},
-        // itemStyle: {     //此属性的颜色和下面areaStyle属性的颜色都设置成相同色即可实现
-        //   color: '#5B8FF9',
-        //   borderColor: '#5B8FF9',
-        // },
-        // areaStyle: {
-        //   color: '#5B8FF9',
-        // },
+        lineStyle: {
+          width: 2.5,
+        },
+        areaStyle: {
+          opacity: 0.2,
+        },
         data: flag ? [] : radardata,
       }]
     };
@@ -193,6 +194,7 @@ export default function DataComparisonRY(props) {
 
   const getTableData = (queryType = 'DRY', v) => {
     setMemberLoading(true);
+    console.log("String(v)", String(v))
     // YJBM_ALL|全部一级部门（部门id和人员id都不用传）;
     // YJBM_LD|查询对应一级部门下的部门领导数据（传一级部门的id）;
     // YJBM_BM|查询对应一级部门下的二级部门数据（传一级部门的id）;
@@ -231,6 +233,10 @@ export default function DataComparisonRY(props) {
         let tooltipDataCYXM = [];
         //获奖项目
         let tooltipDataHJXM = [];
+        //自研项目
+        let tooltipDataZYXM = [];
+        //外采项目
+        let tooltipDataWCXM = [];
         //雷达数据
         let radardata = [];
         //各项目类型总数
@@ -244,6 +250,10 @@ export default function DataComparisonRY(props) {
         let totalCYXM = 0;
         //获奖项目总数
         let totalHJXM = 0;
+        //自研项目总数
+        let totalZYXM = 0;
+        //外采项目总数
+        let totalWCXM = 0;
         let name = []
         resdata.length > 0 && resdata.map(item => {
           const XMZS = {name: item.NAME, value: item.XMZS};
@@ -251,18 +261,22 @@ export default function DataComparisonRY(props) {
           const KTXM = {name: item.NAME, value: item.KTXM};
           const CYXM = {name: item.NAME, value: item.CYXM};
           const HJXM = {name: item.NAME, value: item.HJXM};
-          let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1))
-          let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1))
-          let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1))
-          let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1))
-          let xcxmtep = item.CYXM === 0 ? 0 : (item.CYXM === 1 ? 1 : ((Math.log(item.CYXM) / Math.log(Math.E)) + 1))
-          const radar = {name: item.NAME, value: [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep]};
-          // const radar = {name: item.NAME, value: [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.CYXM]};
+          const ZYXM = {name: item.NAME, value: item.ZYXM};
+          const WCXM = {name: item.NAME, value: item.WCXM};
+          // let xmzstep = item.XMZS === 0 ? 0 : (item.XMZS === 1 ? 1 : ((Math.log(item.XMZS) / Math.log(Math.E)) + 1))
+          // let hjxmtep = item.HJXM === 0 ? 0 : (item.HJXM === 1 ? 1 : ((Math.log(item.HJXM) / Math.log(Math.E)) + 1))
+          // let ktxmtep = item.KTXM === 0 ? 0 : (item.KTXM === 1 ? 1 : ((Math.log(item.KTXM) / Math.log(Math.E)) + 1))
+          // let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1))
+          // let xcxmtep = item.CYXM === 0 ? 0 : (item.CYXM === 1 ? 1 : ((Math.log(item.CYXM) / Math.log(Math.E)) + 1))
+          // const radar = {id:item.USERID,name: item.NAME, value: [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep]};
+          const radar = {name: item.NAME, value: [item.HJXM, item.KTXM, item.ZBXM, item.ZYXM, item.WCXM]};
           tooltipDataXMZS.push(XMZS);
           tooltipDataZBXM.push(ZBXM);
           tooltipDataKTXM.push(KTXM);
           tooltipDataCYXM.push(CYXM);
           tooltipDataHJXM.push(HJXM);
+          tooltipDataZYXM.push(ZYXM);
+          tooltipDataWCXM.push(WCXM);
           radardata.push(radar)
           name.push(item.NAME);
           if (item.XMZS > totalXMZS) {
@@ -280,19 +294,31 @@ export default function DataComparisonRY(props) {
           if (item.HJXM > totalHJXM) {
             totalHJXM = item.HJXM;
           }
+          if (item.ZYXM > totalZYXM) {
+            totalZYXM = item.ZYXM;
+          }
+          if (item.WCXM > totalWCXM) {
+            totalWCXM = item.WCXM;
+          }
         })
-        let tooltipData = [{xmlx: '发起项目', data: tooltipDataXMZS}, {xmlx: '参与项目', data: tooltipDataCYXM}, {
+        let tooltipData = [{xmlx: '获奖项目', data: tooltipDataHJXM}, {xmlx: '课题项目', data: tooltipDataKTXM}, {
           xmlx: '专班项目',
           data: tooltipDataZBXM
-        }, {xmlx: '课题项目', data: tooltipDataKTXM}, {xmlx: '获奖项目', data: tooltipDataHJXM}]
+        }, {xmlx: '自研项目', data: tooltipDataZYXM}, {xmlx: '外采项目', data: tooltipDataWCXM}]
+        let tooltipleftData = [{xmlx: '发起项目', data: tooltipDataXMZS}, {xmlx: '参与项目', data: tooltipDataCYXM}]
         setTooltipData(tooltipData);
+        setTooltipleftData(tooltipleftData);
         setRadardata(radardata);
         setTotalXMZS(totalXMZS);
         setTotalZBXM(totalZBXM);
         setTotalKTXM(totalKTXM);
         setTotalCYXM(totalCYXM);
         setTotalHJXM(totalHJXM);
-        setTotalArr([totalXMZS, totalHJXM, totalKTXM, totalZBXM, totalCYXM])
+        setTotalZYXM(totalZYXM);
+        setTotalWCXM(totalWCXM);
+        setTotalArr([totalHJXM, totalKTXM, totalZBXM, totalZYXM, totalWCXM])
+        console.log("namename", name)
+        console.log("radardata", radardata)
         setTotalNameArr(name);
         setMemberLoading(false);
       } else {
@@ -315,12 +341,15 @@ export default function DataComparisonRY(props) {
       getTableData('DRY', v);
     } else {
       setTooltipData([]);
+      setTooltipleftData([]);
       setRadardata([]);
       setTotalXMZS(0);
       setTotalZBXM(0);
       setTotalKTXM(0);
       setTotalCYXM(0);
       setTotalHJXM(0);
+      setTotalZYXM(0);
+      setTotalWCXM(0);
       setTotalArr([0, 0, 0, 0, 0])
       setTotalNameArr(['暂无']);
     }
@@ -413,7 +442,27 @@ export default function DataComparisonRY(props) {
                 {/*  <i className="iconfont icon-vs"/>数据对比*/}
                 {/*</div>*/}
               </div>
-              <div className="info-table-content-box-radar">
+              <div style={{float: 'left', margin: '10px 0',}}>
+                {
+                  tooltipleftData.map(item => {
+                    return <div style={{
+                      fontSize: '14px',
+                      marginBottom: '10px',
+                      color: '#303133',
+                      fontWeight: 500,
+                    }}>
+                      <div style={{marginBottom: '6px'}}>{item.xmlx}:</div>
+                      {
+                        item.data.map(i => {
+                          return <div style={{marginBottom: '6px'}}><span
+                            style={{fontWeight: 400, color: '#999999'}}>{i.name}:</span><span
+                            style={{fontWeight: 500, color: '#303133'}}>&nbsp;&nbsp;{i.value}</span><br/></div>
+                        })
+                      }</div>
+                  })
+                }
+              </div>
+              <div className="info-table-content-box-radar" style={{padding: '16px 0'}}>
                 <ReactEchartsCore
                   echarts={echarts}
                   option={getRadarChat()}

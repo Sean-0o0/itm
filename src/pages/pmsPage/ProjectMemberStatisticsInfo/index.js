@@ -20,7 +20,7 @@ const ProjectMemberStatisticsInfo = props => {
   }, [props]);
   return (
     <Fragment>
-      <ProjectMemberStatisticsInfoTab dictionary={props.dictionary}
+      <ProjectMemberStatisticsInfoTab isRouter={true} dictionary={props.dictionary}
                                       params={params} {...props}></ProjectMemberStatisticsInfoTab>
     </Fragment>
   );

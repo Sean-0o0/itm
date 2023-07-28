@@ -305,10 +305,10 @@ export default function YjbmAllTable(props) {
                   </div>
                   <span style={{
                     float: 'left',
-                    margin: '7px 24px',
+                    margin: '8px 16px',
                     fontSize: '14px',
-                    color: '#ff2f31'
-                  }}>项目总数:&nbsp;&nbsp;{item.XMZS}</span>
+                    color: '#999999'
+                  }}>项目总数:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <div className="info-table-content-box-radar" onMouseEnter={() => getFooter(item.ORGID)}
                        onMouseLeave={hiddenFooter}>
                     <Link

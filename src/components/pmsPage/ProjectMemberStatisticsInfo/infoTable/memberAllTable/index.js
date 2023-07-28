@@ -280,10 +280,10 @@ export default function MemberAllTable(props) {
                   >
                     <span style={{
                       float: 'left',
-                      margin: '7px 24px',
+                      margin: '0px 16px',
                       fontSize: '14px',
-                      color: '#ff2f31'
-                    }}>参与项目:&nbsp;&nbsp;{item.CYXM}</span>
+                      color: '#999999'
+                    }}>参与项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.CYXM}</span></span>
                     <div className="info-table-content-box-radar"
                       // onMouseEnter={() =>getFooter(item.USERID)} onMouseLeave={hiddenFooter}
                     >

@@ -286,6 +286,7 @@ class EditPrjTracking extends React.Component {
                               // initialValue: "外采项目"
                             })(
                               <Input.TextArea
+                                autoSize={{minRows: 3,}}
                                 placeholder="请输入本周工作内容"
                               />,
                             )}
@@ -309,6 +310,7 @@ class EditPrjTracking extends React.Component {
                               // initialValue: "外采项目"
                             })(
                               <Input.TextArea
+                                autoSize={{minRows: 3,}}
                                 placeholder="请输入下周工作计划"
                               />,
                             )}
@@ -332,6 +334,7 @@ class EditPrjTracking extends React.Component {
                               // initialValue: "外采项目"
                             })(
                               <Input.TextArea
+                                autoSize={{minRows: 3,}}
                                 placeholder="请输入重要事项说明"
                               />,
                             )}
