@@ -276,7 +276,7 @@ class BudgetExcute extends Component {
               '非资本性预算',
               'time',
               { rate: ysglxx.FZBWCL, executed: ysglxx.FZBWCZ, executable: ysglxx.FZBMBZ },
-              { rate: ysglxx.FZBLXL, executed: ysglxx.FZBLXZ, executable: ysglxx.KYMBZ },
+              { rate: ysglxx.FZBLXL, executed: ysglxx.FZBLXZ, executable: ysglxx.FZBZYS },
             )}
             {getNewBgItem(
               '科研预算',
