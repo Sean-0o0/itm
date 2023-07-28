@@ -40,8 +40,7 @@ export default function BasicInfo(props) {
           style={
             bool
               ? {
-                  WebkitBoxOrient: 'vertical',
-                  WebkitLineClamp: '2',
+                  maxHeight: 44,
                 }
               : {}
           }

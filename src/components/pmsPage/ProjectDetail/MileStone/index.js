@@ -16,23 +16,38 @@ import Tool from '../../../../utils/api/tool';
 const { Step } = Steps;
 
 export default function MileStone(props) {
-  const { xmid = -1, prjData = {}, getPrjDtlData, setIsSpinning, isLeader, isHwSltPrj } = props;
+  const {
+    xmid = -1,
+    prjData = {},
+    getPrjDtlData,
+    setIsSpinning,
+    isLeader,
+    isHwSltPrj,
+    stateProps = {},
+  } = props;
+  const {
+    currentStep,
+    setCurrentStep,
+    mileStoneData,
+    initIndex,
+    setInitIndex,
+    lastBtnVisible,
+    setLastBtnVisible,
+    nextBtnVisible,
+    setNextBtnVisible,
+    startIndex,
+    setStartIndex,
+    endIndex,
+    setEndIndex,
+  } = stateProps;
   const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
   // console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
-  const [currentStep, setCurrentStep] = useState(0); //当前步骤
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
-  const [mileStoneData, setMileStoneData] = useState([]); //里程碑数据-全部数据
-  const [initIndex, setInitIndex] = useState(0); //初始当前里程碑index
-  const [lastBtnVisible, setLastBtnVisible] = useState(false); //上一个按钮显示
-  const [nextBtnVisible, setNextBtnVisible] = useState(false); //下一个按钮显示
-  const [startIndex, setStartIndex] = useState(0); //切割开始index
-  const [endIndex, setEndIndex] = useState(5); //切割结束index
   const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
   const [riskTxt, setRiskTxt] = useState(''); //风险弹窗
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
-  const [noCurStep, setNoCurStep] = useState(false); //初次加载跳，后续操作不跳当前里程碑
 
   //防抖定时器
   let timer = null;
@@ -66,7 +81,6 @@ export default function MileStone(props) {
   useEffect(() => {
     // console.log('里程碑更新了', xmid, prjBasic);
     if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
-      getMileStoneData(false);
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};
@@ -75,151 +89,6 @@ export default function MileStone(props) {
   //展开、收起
   const handleUnfold = bool => {
     setIsUnfold(bool);
-  };
-
-  //获取里程碑数据
-  const getMileStoneData = () => {
-    //所有里程碑
-    FetchQueryLiftcycleMilestone({
-      xmmc: Number(xmid),
-      cxlx: 'ALL',
-    })
-      .then(res => {
-        if (res?.success) {
-          let data = [...res.record];
-          if (prjBasic.SFBHZXM && Number(prjBasic.SFBHZXM) > 0) {
-            data = [...res.record].filter(
-              x => x.lcbmc === '项目立项' || x.lcbmc === '市场及需求分析',
-            );
-          }
-          let currentIndex = -1;
-          //当前里程碑 - 添加 isCurrent，判断是否为当前里程碑
-          FetchQueryLiftcycleMilestone({
-            xmmc: Number(xmid),
-            cxlx: 'SINGLE',
-          })
-            .then(r => {
-              if (r?.success) {
-                data.forEach((x, i) => {
-                  x.isCurrent = x.lcbid === r.record[0].lcbid;
-                  if (x.lcbid === r.record[0].lcbid) {
-                    currentIndex = i;
-                  }
-                });
-                //里程碑事项数据 - 事项分类到各个里程碑的 itemData中
-                FetchQueryLifecycleStuff({
-                  xmmc: Number(xmid),
-                  cxlx: 'ALL',
-                })
-                  .then(res => {
-                    if (res?.success) {
-                      data.forEach(item => {
-                        let arr = [];
-                        res.record?.forEach(x => {
-                          if (item.lcbid === x.lcbid) {
-                            arr.push(x);
-                          }
-                        });
-                        const groupBy = arr => {
-                          let dataArr = [];
-                          arr.map(mapItem => {
-                            if (dataArr.length === 0) {
-                              dataArr.push({ swlx: mapItem.swlx, swItem: [mapItem] });
-                            } else {
-                              let res = dataArr.some(item => {
-                                //判断相同swlx，有就添加到当前项
-                                if (item.swlx === mapItem.swlx) {
-                                  item.swItem.push(mapItem);
-                                  return true;
-                                }
-                              });
-                              if (!res) {
-                                //如果没找相同swlx添加一个新对象
-                                dataArr.push({ swlx: mapItem.swlx, swItem: [mapItem] });
-                              }
-                            }
-                          });
-                          return dataArr;
-                        };
-                        item.itemData = groupBy(arr);
-                      });
-                      // console.log('🚀 ~ file: index.js ~ line 69 ~ getData ~ data', data);
-                      setMileStoneData(p => [...data]);
-                      if (!noCurStep) {
-                        setNoCurStep(true);
-                        //初次刷新，自动选择当前里程碑
-                        setCurrentStep(currentIndex);
-                        if (prjBasic.SFBHZXM && Number(prjBasic.SFBHZXM) > 0) {
-                          let xmlxIndex = 0;
-                          data.forEach((y, i) => {
-                            if (y.lcbmc === '项目立项') xmlxIndex = i;
-                          });
-                          setCurrentStep(xmlxIndex);
-                        }
-                        if (data.length >= 3) {
-                          if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {
-                            setStartIndex(currentIndex - 1);
-                            setInitIndex(currentIndex - 1);
-                            setEndIndex(currentIndex + 2); //不包含
-                          } else if (currentIndex < 1) {
-                            setStartIndex(0);
-                            setInitIndex(0);
-                            setEndIndex(3);
-                          } else {
-                            setInitIndex(data.length - 3);
-                            setStartIndex(data.length - 3);
-                            setEndIndex(data.length);
-                          }
-                        } else {
-                          setInitIndex(0);
-                          setStartIndex(0);
-                          setEndIndex(data.length);
-                        }
-                        if (data.length > 3) {
-                          if (currentIndex - 1 >= 0 && currentIndex < data.length - 1) {
-                            setLastBtnVisible(true);
-                            setNextBtnVisible(true);
-                          } else if (currentIndex < 1) {
-                            setLastBtnVisible(false);
-                            setNextBtnVisible(true);
-                          } else {
-                            setNextBtnVisible(false);
-                            setLastBtnVisible(true);
-                          }
-                        } else {
-                          setLastBtnVisible(false);
-                          setNextBtnVisible(false);
-                        }
-                        if (currentIndex - 1 === 0) {
-                          setLastBtnVisible(false);
-                        }
-                        if (currentIndex === data.length - 1) {
-                          setNextBtnVisible(false);
-                        }
-                        if (currentIndex >= data.length - 2) {
-                          setNextBtnVisible(false);
-                        }
-                      }
-                      setIsSpinning(false);
-                      // console.log('我被调用了');
-                    }
-                  })
-                  .catch(e => {
-                    console.error('FetchQueryLifecycleStuff', e);
-                    message.error('里程碑事项信息查询失败', 1);
-                  });
-              }
-            })
-            .catch(e => {
-              console.error('FetchQueryLiftcycleMilestone', e);
-              message.error('里程碑信息查询失败', 1);
-            });
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryLiftcycleMilestone', e);
-        message.error('里程碑信息查询失败', 1);
-      });
   };
 
   // 防抖
@@ -323,7 +192,6 @@ export default function MileStone(props) {
 
   //刷新数据
   const refresh = () => {
-    getMileStoneData(true);
     getPrjDtlData();
   };
 

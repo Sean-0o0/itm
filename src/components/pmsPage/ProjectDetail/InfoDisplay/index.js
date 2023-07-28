@@ -572,22 +572,22 @@ export default function InfoDisplay(props) {
         <div className="info-box" key="ysxx">
           <div className="top-title">预算信息</div>
           <div className="info-row-box">
-            {getInfoItem('项目预算：', getAmountFormat(prjBasic.YSJE) + '元')}
-            <div
-              className="info-item"
-              key="关联预算项目："
-              style={{ display: 'flex', height: 'unset' }}
-            >
-              <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
-              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
+            {getInfoItem('项目预算：', getAmountFormat(prjBasic.YSJE || 0) + '元')}
+            <div className="info-item" key="项目预算已执行预算">
+              <span>已执行预算：</span>
+              {getAmountFormat(prjBasic.XMFKJE || 0) + '元'}
+            </div>
+            <div className="info-item" key="项目预算执行率">
+              <span>执行率：</span>
+              {getAmountFormat(Number(prjBasic.XMYSZXL || 0).toFixed(2)) + '%'}
             </div>
             {prjBasic.SFBHYJ === '1' &&
-              getInfoItem('本项目软件金额：', getAmountFormat(prjBasic.RJYSJE) + '元')}
+              getInfoItem('本项目软件金额：', getAmountFormat(prjBasic.RJYSJE || 0) + '元')}
             {prjBasic.SFBHYJ === '1' &&
-              getInfoItem('框架采购金额：', getAmountFormat(prjBasic.KJCGJE) + '元')}
+              getInfoItem('框架采购金额：', getAmountFormat(prjBasic.KJCGJE || 0) + '元')}
             {prjBasic.SFBHYJ === '1' &&
-              getInfoItem('单独采购金额：', getAmountFormat(prjBasic.DDCGJE) + '元')}
-            <div className="info-item" style={{ height: '44px' }}>
+              getInfoItem('单独采购金额：', getAmountFormat(prjBasic.DDCGJE || 0) + '元')}
+            {/* <div className="info-item" style={{ height: '44px' }}>
               <div className="item-top">
                 <span>已执行预算</span>
                 {getAmountFormat(prjBasic.YSYYS)}元
@@ -596,6 +596,22 @@ export default function InfoDisplay(props) {
                 <span>/执行率：</span>
                 {((Number(prjBasic.YSYYS || 0) * 100) / Number(prjBasic.KZXYS || 0)).toFixed(2)}%
               </div>
+            </div> */}
+            <div
+              className="info-item"
+              key="关联预算项目："
+              style={{ display: 'flex', height: 'unset' }}
+            >
+              <div style={{ flexShrink: 0, color: '#909399' }}>关联预算项目：</div>
+              <div style={{ whiteSpace: 'break-spaces' }}>{notNull(prjBasic.YSXMMC)}</div>
+            </div>
+            <div className="info-item" key="关联预算项目已执行预算">
+              <span>已执行预算：</span>
+              {getAmountFormat(prjBasic.YSYYS || 0) + '元'}
+            </div>
+            <div className="info-item" key="关联预算项目执行率">
+              <span>执行率：</span>
+              {((Number(prjBasic.YSYYS || 0) * 100) / Number(prjBasic.KZXYS || 0)).toFixed(2) + '%'}
             </div>
           </div>
         </div>

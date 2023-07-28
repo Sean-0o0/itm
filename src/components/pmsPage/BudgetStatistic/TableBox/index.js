@@ -119,7 +119,11 @@ const TableBox = props => {
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+      render: txt => (
+        <span style={{ marginRight: 20 }}>
+          {!allowExport && txt === '-1' ? '***' : getAmountFormat(txt)}
+        </span>
+      ),
     },
     {
       title: '预算执行率',
@@ -141,7 +145,11 @@ const TableBox = props => {
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+      render: txt => (
+        <span style={{ marginRight: 20 }}>
+          {!allowExport && txt === '-1' ? '***' : getAmountFormat(txt)}
+        </span>
+      ),
     },
     {
       title: '涉及项目数',
@@ -332,7 +340,9 @@ const TableBox = props => {
       ellipsis: true,
       sorter: (a, b) => Number(a.HTJE || 0) - Number(b.HTJE || 0),
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+      render: txt => (
+        <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
+      ),
     },
     {
       title: '已付款金额(元)',
@@ -343,7 +353,9 @@ const TableBox = props => {
       ellipsis: true,
       sorter: (a, b) => Number(a.YFKJE || 0) - Number(b.YFKJE || 0),
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+      render: txt => (
+        <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
+      ),
     },
     {
       title: '未付款金额(元)',
@@ -354,7 +366,9 @@ const TableBox = props => {
       ellipsis: true,
       sorter: (a, b) => Number(a.WFKJE || 0) - Number(b.WFKJE || 0),
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+      render: txt => (
+        <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
+      ),
     },
     {
       title: '付款时间',

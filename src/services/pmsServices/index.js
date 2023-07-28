@@ -115,6 +115,10 @@ const {
     queryPaymentByCode,
     supplyPaymentInfo,
     writeProjectTrackingReport,
+    queryProjectFiles,
+    insertFileDownloadRecord,
+    finishProject,
+    inviteMemberAgain,
   },
 } = api;
 
@@ -1220,6 +1224,46 @@ export async function SupplyPaymentInfo(payload) {
 export async function WriteProjectTrackingReport(payload) {
   const option = {
     url: writeProjectTrackingReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目文档
+export async function QueryProjectFiles(payload) {
+  const option = {
+    url: queryProjectFiles,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 插入项目文档下载记录
+export async function InsertFileDownloadRecord(payload) {
+  const option = {
+    url: insertFileDownloadRecord,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 完结项目
+export async function FinishProject(payload) {
+  const option = {
+    url: finishProject,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 再次邀请人员
+export async function InviteMemberAgain(payload) {
+  const option = {
+    url: inviteMemberAgain,
     method: 'post',
     data: payload,
   };

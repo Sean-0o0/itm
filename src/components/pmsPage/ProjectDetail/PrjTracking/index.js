@@ -59,13 +59,14 @@ export default function PrjTracking(props) {
   const getTrackingItem = (
     { XMZQ = '--', DQZT = '--', DQJD = '--', KSSJ, JSSJ },
     isActive = false,
+    index,
   ) => {
     return (
       <div
         className="tracking-item"
         key={XMZQ}
         style={isActive ? { borderColor: '#3361ff' } : {}}
-        onClick={() => setActiveKey(XMZQ)}
+        onClick={() => handleStepChange(XMZQ, index)}
       >
         <div className="top">
           项目第{XMZQ}周
@@ -105,17 +106,21 @@ export default function PrjTracking(props) {
         </div>
         <div className="content">
           <div className="content-top">
-            <div className="label">当前进度：</div>
-            <div className="value">
-              <Progress
-                percent={Number(DQJD?.replace('%', '') ?? 0)}
-                strokeColor="#3361ff"
-                format={p => <span style={{ color: '#3361ff' }}>{p}%</span>}
-                strokeWidth={12}
-              />
+            <div className="info-item-col">
+              <div className="label">当前进度：</div>
+              <div className="value">
+                <Progress
+                  percent={Number(DQJD?.replace('%', '') ?? 0)}
+                  strokeColor="#3361ff"
+                  format={p => <span style={{ color: '#3361ff' }}>{p}%</span>}
+                  strokeWidth={12}
+                />
+              </div>
             </div>
-            <div className="label">当前状态：</div>
-            <div className="value">{DQZT}</div>
+            <div className="info-item-col">
+              <div className="label">当前状态：</div>
+              <div className="value">{DQZT}</div>
+            </div>
           </div>
           <div className="info-item">
             <div className="label">重要事项说明：</div>
@@ -167,20 +172,90 @@ export default function PrjTracking(props) {
     setEndIndex(ed);
   };
 
+  //切换 - 自动触发 - 选中尽量居中
+  const handleStepChange = v => {
+    setActiveKey(v);
+    let data = [...trackingData];
+    let currentIndex = Number(v) - 1;
+    if (data.length >= 3) {
+      if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {
+        console.log('8888', currentIndex - 1, currentIndex + 2, startIndex, endIndex);
+        setStartIndex(currentIndex - 1);
+        setEndIndex(currentIndex + 2); //不包含
+      } else if (currentIndex < 1) {
+        setStartIndex(0);
+        setEndIndex(3);
+      } else {
+        setStartIndex(data.length - 3);
+        setEndIndex(data.length);
+      }
+    } else {
+      setStartIndex(0);
+      setEndIndex(data.length);
+    }
+    if (data.length > 3) {
+      if (currentIndex - 1 >= 0 && currentIndex < data.length - 1) {
+        setBtnVisible({
+          last: true,
+          next: true,
+        });
+      } else if (currentIndex < 1) {
+        setBtnVisible({
+          last: false,
+          next: true,
+        });
+      } else {
+        setBtnVisible({
+          last: true,
+          next: false,
+        });
+      }
+    } else {
+      setBtnVisible({
+        last: false,
+        next: false,
+      });
+    }
+    if (currentIndex - 1 === 0) {
+      setBtnVisible(p => ({
+        ...p,
+        last: false,
+      }));
+    }
+    if (currentIndex >= data.length - 2) {
+      setBtnVisible(p => ({
+        ...p,
+        next: false,
+      }));
+    }
+  };
+
   const popoverContent = (
     <div className="list">
-      <div className="item" onClick={() => {}} key="1">
+      <div
+        className="item"
+        onClick={() => (window.location.href = `/#/pms/manage/ProjectTracking`)}
+        key="1"
+      >
         填写项目进度
       </div>
-      <div className="item" onClick={() => {}} key="2">
+      <div
+        className="item"
+        onClick={() => (window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`)}
+        key="2"
+      >
         填写数字化专班月报
       </div>
-      <div className="item" onClick={() => {}} key="3">
+      <div
+        className="item"
+        onClick={() => (window.location.href = `/#/UIProcessor?Table=ZBYBTX&hideTitlebar=true`)}
+        key="3"
+      >
         填写金控周报
       </div>
     </div>
   );
-
+  if (trackingData.length === 0) return null;
   return (
     <div className="prj-tracking-box">
       <div className="top-box">

@@ -7,25 +7,23 @@ const { TextArea } = Input;
 
 export default function PrjMessage(props) {
   const [drawerVisible, setDrawerVisible] = useState(false); //编辑
-  const [msgData, setMsgData] = useState([]); //留言信息
   const [editingIndex, setEditingIndex] = useState(-1); //正在编辑的留言id
   const [editContent, setEditContent] = useState(''); //编辑的留言内容
   const [newMsg, setNewMsg] = useState(false); //是否位新增留言
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [updatePage, setUpdatePage] = useState(-1); //刷新数据
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-  const { xmid } = props;
+  const { xmid, msgData = [], setMsgData } = props;
   const nodeArr = document.getElementsByClassName('content msg-node');
   //防抖定时器
   let timer = null;
 
   useEffect(() => {
-    getMsgData();
     return () => {
       setEditingIndex(-1);
       clearTimeout(timer);
     };
-  }, [xmid]);
+  }, []);
 
   useEffect(() => {
     if (nodeArr.length !== 0) {
@@ -88,6 +86,7 @@ export default function PrjMessage(props) {
         message.error('留言信息查询失败', 1);
       });
   };
+
   //防抖
   const debounce = (fn, waits) => {
     if (timer) {

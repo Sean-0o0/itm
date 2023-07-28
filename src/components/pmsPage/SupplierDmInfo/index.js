@@ -325,8 +325,7 @@ export default function SupplierDmInfo(props) {
                 style={
                   SHOWDTL
                     ? {
-                        WebkitBoxOrient: 'vertical',
-                        WebkitLineClamp: '2',
+                        maxHeight: 44,
                       }
                     : {}
                 }

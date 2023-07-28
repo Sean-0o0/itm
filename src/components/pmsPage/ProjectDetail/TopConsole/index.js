@@ -1,10 +1,20 @@
-import { Breadcrumb, Button, message, Modal, Popover, Menu, Dropdown, Icon } from 'antd';
+import {
+  Breadcrumb,
+  Button,
+  message,
+  Modal,
+  Popover,
+  Menu,
+  Dropdown,
+  Icon,
+  Popconfirm,
+} from 'antd';
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { CreateOperateHyperLink } from '../../../../services/pmsServices';
+import { CreateOperateHyperLink, ProjectCollect } from '../../../../services/pmsServices';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import iconCompleted from '../../../../assets/projectDetail/icon_completed.png';
 import PaymentModal from './PaymentModal';
@@ -13,7 +23,16 @@ const { Item } = Breadcrumb;
 const { SubMenu } = Menu;
 
 export default function TopConsole(props) {
-  const { routes = [], prjData = {}, xmid = -1, getPrjDtlData, isLeader, haveSpl = false } = props;
+  const {
+    routes = [],
+    prjData = {},
+    xmid = -1,
+    getPrjDtlData,
+    isLeader,
+    haveSpl = false,
+    setIsSpinning,
+    getMileStoneData,
+  } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
@@ -37,33 +56,15 @@ export default function TopConsole(props) {
   const { prjBasic = {}, member = [], payment = [] } = prjData;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
-  useEffect(() => {
-    window.addEventListener('message', handleIframePostMessage);
-    return () => {
-      window.removeEventListener('message', handleIframePostMessage);
-    };
-  }, []);
-
-  //是否为项目成员或领导
-  const isMember = () => {
+  //项目经理
+  const allowEdit = () => {
     // const arr = [];
     // console.log(prjBasic);
     // member.forEach(x => {
     //   arr.push(x.RYID);
     // });
-    return prjBasic.XMJLID === String(LOGIN_USER_INFO.id) || isLeader;
-  };
-
-  //监听新建项目弹窗状态
-  const handleIframePostMessage = event => {
-    if (typeof event.data !== 'string' && event.data.operate === 'close') {
-      closeFileAddModal();
-    }
-    if (typeof event.data !== 'string' && event.data.operate === 'success') {
-      closeFileAddModal();
-
-      // message.success('保存成功');
-    }
+    // return prjBasic.XMJLID === String(LOGIN_USER_INFO.id) || isLeader;
+    return prjBasic.XMJLID === String(LOGIN_USER_INFO.id);
   };
 
   const closeFileAddModal = () => {
@@ -75,6 +76,7 @@ export default function TopConsole(props) {
     closeFileAddModal();
     //刷新数据
     getPrjDtlData();
+    getMileStoneData();
   };
 
   //获取项目标签
@@ -360,7 +362,7 @@ export default function TopConsole(props) {
       );
     return (
       <Menu>
-        <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item>
+        {/* <Menu.Item onClick={() => setLbModal(p => ({ ...p, fklcbl: true }))}>付款补录</Menu.Item> */}
         {!haveSpl && (
           <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
         )}
@@ -368,6 +370,30 @@ export default function TopConsole(props) {
         <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
       </Menu>
     );
+  };
+
+  //收藏、取消收藏
+  const handlePrjCollect = operateType => {
+    const oprTxt = operateType === 'SCXM' ? '收藏' : '取消收藏';
+    setIsSpinning(true);
+    ProjectCollect({
+      operateType,
+      projectId: Number(xmid),
+    })
+      .then(res => {
+        if (res?.success) {
+          console.log('🚀 ~ ProjectCollect ~ res', res);
+          getPrjDtlData();
+        }
+      })
+      .then(() => {
+        // message.success(oprTxt + '成功', 1);
+      })
+      .catch(e => {
+        console.error('🚀' + oprTxt, e);
+        message.error(oprTxt + '失败', 1);
+        setIsSpinning(false);
+      });
   };
 
   const handlesqModalSuccess = txt => {
@@ -755,18 +781,26 @@ export default function TopConsole(props) {
       <div className="prj-info-row">
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
-          {/* <i className="iconfont icon-star-fill" /> */}
-          {/* <i className="iconfont icon-star" /> */}
+          {/* {prjBasic.SFSC === '0' ? (
+            <Popconfirm title="确定收藏吗？" onConfirm={() => handlePrjCollect('SCXM')}>
+              <i className="iconfont icon-star" />
+            </Popconfirm>
+          ) : (
+            <Popconfirm title="确定取消收藏吗？" onConfirm={() => handlePrjCollect('QXXM')}>
+              <i className="iconfont icon-star-fill" />
+            </Popconfirm>
+          )} */}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
-          {/* <img src={iconCompleted} className="icon-completed" alt="icon-completed" /> */}
-          {isMember() && (
+          {/* 1已完结2未完结 */}
+          {/* {prjBasic.WJZT === '1' && (
+            <img src={iconCompleted} className="icon-completed" alt="图片：已完成" />
+          )} */}
+          {allowEdit() && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑
             </Button>
           )}
-          {(prjBasic.XMJLID === String(LOGIN_USER_INFO.id) ||
-            isLeader ||
-            String(LOGIN_USER_INFO.id) === '0') && (
+          {(allowEdit() || String(LOGIN_USER_INFO.id) === '0') && (
             <Dropdown overlay={btnMoreContent()} overlayClassName="tc-btn-more-content-dropdown">
               <Button className="btn-more">
                 <i className="iconfont icon-more" />

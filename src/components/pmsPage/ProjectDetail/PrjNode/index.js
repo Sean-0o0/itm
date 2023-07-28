@@ -37,6 +37,7 @@ export default function PrjNode(props) {
     return '';
   };
 
+  if (nodeData.length === 0) return null;
   return (
     <div className="prj-node-box">
       <div className="top-title">项目节点</div>

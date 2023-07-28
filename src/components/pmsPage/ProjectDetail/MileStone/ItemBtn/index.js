@@ -804,6 +804,14 @@ class ItemBtn extends React.Component {
             });
         }
       };
+      //单据编号
+      const getDJBH = url => {
+        if (url.includes('YKB:')) {
+          const arr = url?.split(',') || [];
+          if (arr.length > 2) return arr[2];
+        }
+        return '';
+      };
       return (
         <Spin tip="跳转中" spinning={this.state.jumpLoading} size="small">
           <Spin tip="加载中" spinning={this.state.fklcLoading} size="small">
@@ -812,11 +820,23 @@ class ItemBtn extends React.Component {
               style={this.state.jumpLoading || this.state.fklcLoading ? { minHeight: 40 } : {}}
             >
               {this.state.currentFklcList.map(x => (
-                <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
-                  <div className="item" key={x.subject} onClick={() => jumpToYKB(x.url)}>
-                    {x.subject}
-                  </div>
-                </Tooltip>
+                <div
+                  className="item"
+                  key={x.subject}
+                  onClick={() => jumpToYKB(x.url)}
+                  style={{
+                    height: 'unset',
+                    lineHeight: 'unset',
+                    marginBottom: 0,
+                    paddingTop: 4,
+                    paddingBottom: 4,
+                  }}
+                >
+                  <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
+                    <div className="subject">{x.subject}</div>
+                  </Tooltip>
+                  {getDJBH(x.url) !== '' && <div className="djbh">{getDJBH(x.url)}</div>}
+                </div>
               ))}
             </div>
           </Spin>
@@ -1372,7 +1392,7 @@ class ItemBtn extends React.Component {
 
         {/* 付款流程发起弹窗 */}
         {paymentModalVisible && (
-        // {true && (
+          // {true && (
           <PaymentProcess
             paymentModalVisible={paymentModalVisible}
             // paymentModalVisible={true}

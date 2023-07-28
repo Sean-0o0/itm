@@ -22,13 +22,13 @@ const ProjecDetail = props => {
     // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes', routes);
     routes2 = [...routes].concat({
       name: '项目详情',
-      pathname: props?.pathname,
+      pathname: props?.pathname || props?.location?.pathname,
     });
     if (routes.length === 0) {
       obj.routes &&
         (routes2 = obj.routes?.concat({
           name: '项目详情',
-          pathname: props?.pathname,
+          pathname: props?.pathname || props?.location?.pathname,
         }));
       // console.log('🚀 ~ file: index.js:29 ~ ProjecDetail ~ routes2:', routes2);
     }
@@ -44,7 +44,7 @@ const ProjecDetail = props => {
       newArr.push(routes2[i]);
     }
   }
-  // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes2', newArr);
+  console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes2', newArr);
 
   return (
     <Fragment>

@@ -643,4 +643,28 @@ export default [
     url: '/projectManage/writeProjectTrackingReport',
     dis: '填写项目周报',
   },
+  {
+    code: '',
+    key: 'queryProjectFiles',
+    url: '/projectManage/queryProjectFiles',
+    dis: '查询项目文档',
+  },
+  {
+    code: '',
+    key: 'insertFileDownloadRecord',
+    url: '/projectManage/insertFileDownloadRecord',
+    dis: '插入项目文档下载记录',
+  },
+  {
+    code: '',
+    key: 'finishProject',
+    url: '/projectManage/finishProject',
+    dis: '完结项目',
+  },
+  {
+    code: '',
+    key: 'inviteMemberAgain',
+    url: '/projectManage/inviteMemberAgain',
+    dis: '再次邀请人员',
+  },
 ];

@@ -5,11 +5,49 @@ import { QueryBudgetStatistics } from '../../../../../services/pmsServices';
 import * as XLSX from 'xlsx';
 
 function ExportModal(props) {
-  const { visible, setVisible, columns, form } = props;
+  const { visible, setVisible, form } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [yearOpen, setYearOpen] = useState(false); //年份选择器展开收起
   const [curYear, setCurYear] = useState(moment()); //当前年份
+  const columns = [
+    {
+      title: '预算类别',
+      dataIndex: 'YSLB',
+    },
+    {
+      title: '预算项目',
+      dataIndex: 'YSXM',
+    },
+    {
+      title: '负责人',
+      dataIndex: 'FZR',
+    },
+    {
+      title: '总预算（万元）',
+      dataIndex: 'ZTZ',
+    },
+    {
+      title: '可执行预算（万元）',
+      dataIndex: 'SHHBNZF',
+    },
+    {
+      title: '预算执行金额（万元）',
+      dataIndex: 'YSZXJE',
+    },
+    {
+      title: '预算执行率（%）',
+      dataIndex: 'YSZXL',
+    },
+    {
+      title: '合同金额（万元）',
+      dataIndex: 'HTJE',
+    },
+    {
+      title: '涉及项目数',
+      dataIndex: 'SJXMS',
+    },
+  ];
   const columnsForALL = [
     {
       title: '预算类别',
@@ -24,35 +62,35 @@ function ExportModal(props) {
       dataIndex: 'FZR',
     },
     {
-      title: '资本总预算',
+      title: '资本总预算（万元）',
       dataIndex: 'ZBZTZ',
     },
     {
-      title: '资本可执行预算',
+      title: '资本可执行预算（万元）',
       dataIndex: 'ZBSHHBNZF',
     },
     {
-      title: '非资本总预算',
+      title: '非资本总预算（万元）',
       dataIndex: 'FZBZTZ',
     },
     {
-      title: '非资本可执行预算',
+      title: '非资本可执行预算（万元）',
       dataIndex: 'FZBSHHBNZF',
     },
     {
-      title: '预算执行金额',
+      title: '预算执行金额（万元）',
       dataIndex: 'YSZXJE',
     },
     {
-      title: '预算执行率',
+      title: '预算执行率（%）',
       dataIndex: 'YSZXL',
     },
     {
-      title: '合同金额',
+      title: '合同金额（万元）',
       dataIndex: 'HTJE',
     },
     {
-      title: '涉及项目数',
+      title: '涉及项目数（万元）',
       dataIndex: 'SJXMS',
     },
   ];

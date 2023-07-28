@@ -21,7 +21,7 @@ export default function SystemNotice(props) {
             WebkitLineClamp: '2',
           }}
         >
-          {xxlx === '4' ? <i className="iconfont icon-right" /> : ''} {txnr}
+          {xxlx === '4' ? <span className='icon-wrapper'><i className="iconfont icon-right" /></span> : ''} {txnr}
         </div>
         <div className="item-date">{moment(txrq).format('YYYY-MM-DD')}</div>
       </div>

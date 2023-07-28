@@ -69,7 +69,7 @@ export default function InfoTable(props) {
                       align: 'left',
                       ellipsis: true,
                       render: txt =>
-                        ['', null, undefined, ' '].includes ? '' : moment(txt).format('YYYY-MM-DD'),
+                        ['', null, undefined, ' '].includes(txt) ? '' : moment(txt).format('YYYY-MM-DD'),
                     };
                   //跳转类型
                   case 'XMMC':
