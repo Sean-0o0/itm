@@ -8862,25 +8862,36 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 22px;
               word-wrap: break-word;
               overflow: hidden; //溢出内容隐藏
-              text-overflow: ellipsis; //文本溢出部分用省略号表示
-              display: -webkit-box; //特别显示模式
-              -webkit-line-clamp: 2; //行数
-              line-clamp: 2;
+              // text-overflow: ellipsis; //文本溢出部分用省略号表示
+              // display: -webkit-box; //特别显示模式
+              // -webkit-line-clamp: 2; //行数
+              // line-clamp: 2;
               overflow: hidden;
+              // max-height: 44px;
+              position: relative;
 
               &:before {
                 content: '';
                 float: right;
                 height: 22px;
               }
-
               .float {
+                position: relative;
                 font-size: 12px;
                 color: #3361ff;
                 cursor: pointer;
                 float: right;
                 clear: both;
                 padding-left: 4px;
+                margin-left: 10px;
+
+                &::before {
+                  content: '...';
+                  position: absolute;
+                  left: -2px;
+                  color: #333;
+                  transform: translateX(-90%);
+                }
 
                 &:hover {
                   color: #3361ffa3;
@@ -15037,31 +15048,41 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         line-height: 22px;
         flex-shrink: 0;
       }
-
       .detail {
         flex-grow: 1;
         line-height: 22px;
         word-wrap: break-word;
         overflow: hidden; //溢出内容隐藏
-        text-overflow: ellipsis; //文本溢出部分用省略号表示
-        display: -webkit-box; //特别显示模式
-        -webkit-line-clamp: 2; //行数
-        line-clamp: 2;
+        // text-overflow: ellipsis; //文本溢出部分用省略号表示
+        // display: -webkit-box; //特别显示模式
+        // -webkit-line-clamp: 2; //行数
+        // line-clamp: 2;
         overflow: hidden;
+        // max-height: 44px;
+        position: relative;
 
         &:before {
           content: '';
           float: right;
           height: 22px;
         }
-
         .float {
+          position: relative;
           font-size: 12px;
           color: #3361ff;
           cursor: pointer;
           float: right;
           clear: both;
           padding-left: 4px;
+          margin-left: 10px;
+
+          &::before {
+            content: '...';
+            position: absolute;
+            left: -2px;
+            color: #333;
+            transform: translateX(-90%);
+          }
 
           &:hover {
             color: #3361ffa3;
@@ -16443,27 +16464,37 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               flex-grow: 1;
               font-size: 14px;
               line-height: 22px;
-              word-wrap: break-word;
-              overflow: hidden; //溢出内容隐藏
-              text-overflow: ellipsis; //文本溢出部分用省略号表示
-              display: -webkit-box; //特别显示模式
-              -webkit-line-clamp: 2; //行数
-              line-clamp: 2;
+              // word-wrap: break-word;
+              // overflow: hidden; //溢出内容隐藏
+              // text-overflow: ellipsis; //文本溢出部分用省略号表示
+              // display: -webkit-box; //特别显示模式
+              // -webkit-line-clamp: 2; //行数
+              // line-clamp: 2;
               overflow: hidden;
+              position: relative;
 
               &:before {
                 content: '';
                 float: right;
                 height: 22px;
               }
-
               .float {
+                position: relative;
                 font-size: 12px;
                 color: #3361ff;
                 cursor: pointer;
                 float: right;
                 clear: both;
                 padding-left: 4px;
+                margin-left: 10px;
+
+                &::before {
+                  content: '...';
+                  position: absolute;
+                  left: -2px;
+                  color: #333;
+                  transform: translateX(-90%);
+                }
 
                 &:hover {
                   color: #3361ffa3;
