@@ -142,8 +142,8 @@ export default function YjbmAllTable(props) {
     // let zbxmtep = item.ZBXM === 0 ? 0 : (item.ZBXM === 1 ? 1 : (item.ZBXM === maxtemp ? max : ((Math.log(item.ZBXM) / Math.log(Math.E)) + 1)))
     // let xcxmtep = item.XCXM === 0 ? 0 : (item.XCXM === 1 ? 1 : (item.XCXM === maxtemp ? max : ((Math.log(item.XCXM) / Math.log(Math.E)) + 1)))
     // let datavalue = [xmzstep, hjxmtep, ktxmtep, zbxmtep, xcxmtep];
-    let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
-    let totalArr = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
+    let datavalue = [item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
+    let totalArr = [item.HJXM, item.KTXM, item.ZBXM, item.XCXM, item.ZYXM, item.WCXM];
 
     // let datavalue = [item.XMZS, item.HJXM, item.KTXM, item.ZBXM, item.XCXM,];
     let flag = item.ZBXM === 0 && item.KTXM === 0 && item.XCXM === 0 && item.HJXM === 0 && item.ZYXM === 0 && item.WCXM === 0
