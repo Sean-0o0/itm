@@ -541,23 +541,27 @@ class RealtivePicturePage extends Component {
             if (ele === 'XMMC') {
               nodes.push({
                 name: item[ele],
-                symbolSize: 20,
+                symbolSize: 40,
                 category: 0,
-                itemStyle: name === item[ele] ? itemStyle : {}
+                itemStyle: name === item[ele] ? itemStyle : {},
+                label:{
+                  show: true,
+                }
               })
             } else if (ele === 'YSMC') {
               nodes.push({
                 name: item[ele],
                 category: 1,
-                symbolSize: 20,
-                itemStyle: name === item[ele] ? itemStyle : {}
+                symbolSize: 40,
+                itemStyle: name === item[ele] ? itemStyle : {},
+                
               })
             } else if (ele === 'GYS') {
               nodes.push({
                 name: item[ele],
-                symbolSize: 20,
+                symbolSize: 40,
                 category: 3,
-                itemStyle: name === item[ele] ? itemStyle : {}
+                itemStyle: name === item[ele] ? itemStyle : {},
               })
             }
           }
@@ -567,23 +571,23 @@ class RealtivePicturePage extends Component {
             link.target = item[ele];
             links.push(link)
             const index = nodeNm.indexOf(item[ele]);
-            if (nodes[index].symbolSize < 60) {
+            if (nodes[index].symbolSize < 80) {
               nodes[index].symbolSize += 5;
             }
             const xmIndex = nodeNm.indexOf(item.XMMC);
-            if (nodes[xmIndex].symbolSize < 60) {
+            if (nodes[xmIndex].symbolSize < 80) {
               nodes[xmIndex].symbolSize += 5;
             }
-            if (nodes[index].symbolSize > 40) {
-              nodes[index].label = {
-                show: true,
-              };
-            }
-            if (nodes[xmIndex].symbolSize > 40) {
-              nodes[xmIndex].label = {
-                show: true,
-              };
-            }
+            // if (nodes[index].symbolSize > 60) {
+            //   nodes[index].label = {
+            //     show: true,
+            //   };
+            // }
+            // if (nodes[xmIndex].symbolSize > 60) {
+            //   nodes[xmIndex].label = {
+            //     show: true,
+            //   };
+            // }
           }
         } else {
           const rys = item[ele].split(',');
@@ -593,8 +597,12 @@ class RealtivePicturePage extends Component {
               nodes.push({
                 name: li,
                 category: 2,
-                symbolSize: 20,
-                itemStyle: name === li ? itemStyle : {}
+                symbolSize: 40,
+                itemStyle: name === li ? itemStyle : {},
+                label:{
+                  show: true,
+
+                }
               })
             }
             let link = {};
@@ -602,23 +610,23 @@ class RealtivePicturePage extends Component {
             link.target = li;
             links.push(link);
             const index = nodeNm.indexOf(li);
-            if (nodes[index].symbolSize < 60) {
+            if (nodes[index].symbolSize < 80) {
               nodes[index].symbolSize += 5;
             }
             const xmIndex = nodeNm.indexOf(item.XMMC);
             if (nodes[xmIndex].symbolSize < 60) {
               nodes[xmIndex].symbolSize += 5;
             }
-            if (nodes[index].symbolSize > 40) {
-              nodes[index].label = {
-                show: true,
-              };
-            }
-            if (nodes[xmIndex].symbolSize > 40) {
-              nodes[xmIndex].label = {
-                show: true,
-              };
-            }
+            // if (nodes[index].symbolSize > 80) {
+            //   nodes[index].label = {
+            //     show: true,
+            //   };
+            // }
+            // if (nodes[xmIndex].symbolSize > 60) {
+            //   nodes[xmIndex].label = {
+            //     show: true,
+            //   };
+            // }
           });
         }
       });
@@ -816,7 +824,7 @@ class RealtivePicturePage extends Component {
                 return "<div style='width: 0;height:0; opacity: 0'></div>"
             }
           },
-          color: ['rgb(85, 121, 214)', 'rgb(254, 167, 87)', 'rgb(214, 216, 225)', 'rgb(213, 58, 53)'],
+          color: ['#56a9f8', 'rgb(254, 167, 87)', 'rgb(214, 216, 225)', '#b883f8'],
           series: [
             {
               type: 'graph',
@@ -838,20 +846,38 @@ class RealtivePicturePage extends Component {
                 }
               },
               label: {
-                position: "bottom",
+                show: true,
+                position: "inside",
                 distance: 5,
                 align: "center",
                 color: '#333',
                 formatter: (params) => {
-                  const { name } = params;
-                  if (name.length > 16) {
-                    return name.slice(0, 8) + '\n' + name.slice(8, 16) + '...'
-                  } else if (name.length > 8) {
-                    const length = Math.floor(name.length / 2)
-                    return name.slice(0, length) + '\n' + name.slice(length)
-                  } else {
-                    return name
+                  const { data:{category} } = params;
+                  let name = ''
+                  switch(category){
+                    case 0:
+                      name = '项目';
+                      break;
+                    case 1:
+                      name = '预算';
+                      break;
+                    case 2:
+                      name = '人员';
+                      break;
+                    case 3:
+                      name = '供应商';
+                      break;
+                    default:
+                      break;  
                   }
+                  // if (name.length > 16) {
+                  //   return name.slice(0, 8) + '\n' + name.slice(8, 16) + '...'
+                  // } else if (name.length > 8) {
+                  //   const length = Math.floor(name.length / 2)
+                  //   return name.slice(0, length) + '\n' + name.slice(length)
+                  // } else {
+                    return name
+                  // }
                 }
               },
               force: { //力引导图基本配置
