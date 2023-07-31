@@ -350,13 +350,28 @@ class StaffTable extends Component {
               ),
             },
             {
-              title: '合同金额(元)',
+              title: '合同金额(万元)',
               dataIndex: 'HTJE',
-              width: '15%',
+              width: '13%',
               align: 'right',
               key: 'HTJE',
               ellipsis: true,
-              sorter: (a, b) => Number(a.HTJE || 0) - Number(b.HTJE || 0),
+              sorter: true,
+              sortDirections: ['descend', 'ascend'],
+              render: txt => (
+                <span style={{ marginRight: 20 }}>
+                  {txt === '-1' ? '***' : getAmountFormat(txt)}
+                </span>
+              ),
+            },
+            {
+              title: '已付款金额(万元)',
+              dataIndex: 'FKJE',
+              width: '15%',
+              align: 'right',
+              key: 'FKJE',
+              ellipsis: true,
+              sorter: true,
               sortDirections: ['descend', 'ascend'],
               render: txt => (
                 <span style={{ marginRight: 20 }}>
@@ -367,14 +382,19 @@ class StaffTable extends Component {
             {
               title: '关联预算项目',
               dataIndex: 'YSXM',
-              width: '25%',
+              width: '15%',
               key: 'YSXM',
               ellipsis: true,
+              render: txt => (
+                <Tooltip title={txt} placement="topLeft">
+                  <span style={{ cursor: 'default' }}>{txt}</span>
+                </Tooltip>
+              ),
             },
             {
               title: '预算项目负责人',
               dataIndex: 'YSXMFZR',
-              width: '14%',
+              width: '12%',
               key: 'YSXMFZR',
               ellipsis: true,
               render: (txt, row) => (
@@ -399,7 +419,7 @@ class StaffTable extends Component {
             {
               title: '可执行预算(万元)',
               dataIndex: 'KZXYS',
-              width: '17%',
+              width: '14%',
               key: 'KZXYS',
               ellipsis: true,
               align: 'right',
@@ -425,22 +445,43 @@ class StaffTable extends Component {
             {
               title: '预算项目名称',
               dataIndex: 'YSXMMC',
-              width: '21%',
               key: 'YSXMMC',
               ellipsis: true,
-              render: (txt, row) =>
-                ['MX_ZB', 'MX_FZB'].includes(this.props.queryType) ? (
-                  <a style={{ color: '#3361ff' }} onClick={() => this.openDrawer(Number(row.YSID))}>
-                    {txt}
-                  </a>
-                ) : (
-                  txt
-                ),
+              render: (txt, row) => (
+                <Tooltip title={txt} placement="topLeft">
+                  {['MX_ZB', 'MX_FZB'].includes(this.props.queryType) ? (
+                    <a
+                      style={{ color: '#3361ff' }}
+                      onClick={() => this.openDrawer(Number(row.YSID))}
+                    >
+                      {txt}
+                    </a>
+                  ) : (
+                    txt
+                  )}
+                </Tooltip>
+              ),
+            },
+            {
+              title: '预算类别',
+              dataIndex: 'YSLB',
+              key: 'YSLB',
+              ellipsis: true,
+              render: txt => (
+                <Tooltip
+                  title={txt ? this.props.YSLB?.find(x => x.ibm === txt)?.note : ''}
+                  placement="topLeft"
+                >
+                  <span style={{ cursor: 'default' }}>
+                    {txt ? this.props.YSLB?.find(x => x.ibm === txt)?.note : ''}
+                  </span>
+                </Tooltip>
+              ),
             },
             {
               title: queryType === 'MX_KY' ? '预算项目负责部门' : '预算项目负责人',
               dataIndex: 'YSXMFZR',
-              width: '14%',
+              width: '12%',
               key: 'YSXMFZR',
               ellipsis: true,
               render: (txt, row) =>
@@ -468,7 +509,7 @@ class StaffTable extends Component {
             {
               title: '总预算(万元)',
               dataIndex: 'ZYS',
-              width: '17%',
+              width: '11%',
               key: 'ZYS',
               ellipsis: true,
               align: 'right',
@@ -481,7 +522,7 @@ class StaffTable extends Component {
             {
               title: '可执行预算(万元)',
               dataIndex: 'KZXYS',
-              width: '17%',
+              width: '14%',
               key: 'KZXYS',
               ellipsis: true,
               align: 'right',
@@ -494,7 +535,7 @@ class StaffTable extends Component {
             {
               title: '已执行预算(万元)',
               dataIndex: 'YZXYS',
-              width: '17%',
+              width: '14%',
               key: 'YZXYS',
               ellipsis: true,
               align: 'right',
@@ -507,7 +548,7 @@ class StaffTable extends Component {
             {
               title: '预算执行率',
               dataIndex: 'YJZXL',
-              width: '17%',
+              width: '10%',
               key: 'YJZXL',
               align: 'right',
               ellipsis: true,
@@ -639,14 +680,20 @@ class StaffTable extends Component {
     const tableFooter = () => {
       let columnArr = [
         {
-          width: '40%',
+          width: '51%',
           key: 'GJ',
           value: '合计：',
           align: 'center',
-          borderRight: true,
+          style: {
+            backgroundColor: '#f5f7fa',
+            fontFamily: 'PingFangSC-Regular, PingFang SC',
+            fontWeight: 'bold',
+            color: '#606266',
+            borderRight: '1px solid #e8e8e8',
+          },
         },
         {
-          width: '17%',
+          width: '11%',
           key: 'ZYS',
           value:
             queryType === 'MX_FZB'
@@ -657,7 +704,7 @@ class StaffTable extends Component {
           align: 'right',
         },
         {
-          width: '17%',
+          width: '14%',
           key: 'KZXYS',
           align: 'right',
           value:
@@ -668,7 +715,7 @@ class StaffTable extends Component {
               : getAmountFormat(Number(ysglxx.ZBRJMBZ)),
         },
         {
-          width: '17%',
+          width: '14%',
           key: 'YZXYS',
           align: 'right',
           value:
@@ -679,7 +726,7 @@ class StaffTable extends Component {
               : getAmountFormat(Number(ysglxx.ZBRJWCZ)),
         },
         {
-          width: '17%',
+          width: '10%',
           key: 'YJZXL',
           align: 'right',
           value:
@@ -695,7 +742,7 @@ class StaffTable extends Component {
               style={{
                 width: x.width,
                 textAlign: x.align,
-                borderRight: x.borderRight ? '1px solid #e8e8e8' : '',
+                ...(x.style ?? {}),
               }}
             >
               {x.value}

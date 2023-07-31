@@ -167,7 +167,7 @@ class BudgetExcute extends Component {
       ZBRJZYS = '',
       ZBRJKZX = 0,
     } = ysglxx;
-    console.log('🚀 ~ file: index.js:170 ~ BudgetExcute ~ render ~ ysglxx:', ysglxx);
+    // console.log('🚀 ~ file: index.js:170 ~ BudgetExcute ~ render ~ ysglxx:', ysglxx);
 
     let zyswcz = Number.parseFloat(ZBRJZYS) - Number.parseFloat(ZBRJSYZ);
     let zyswcl = (Number.parseFloat(zyswcz) * 100) / Number.parseFloat(ZBRJZYS);
@@ -245,7 +245,6 @@ class BudgetExcute extends Component {
         </div>
       );
     };
-
     return (
       <Spin spinning={loading} wrapperClassName="spin" tip="正在努力的加载中..." size="large">
         <div className="buget-excute-box cont-box" style={{ height: 'auto' }}>
@@ -295,6 +294,7 @@ class BudgetExcute extends Component {
             data={data}
             fetchData={this.queryBudgetOverviewInfo}
             ysglxx={ysglxx}
+            YSLB={this.props.dictionary?.YSLB}
           />
         </div>
       </Spin>

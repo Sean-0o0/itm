@@ -46,6 +46,7 @@ class InfoTable extends Component {
               tableLoading={tableLoading}
               pageParam={pageParam}
               ysglxx={ysglxx}
+              YSLB={this.props.YSLB}
             />
           </TabPane>
           <TabPane tab="非资本性预算" key="MX_FZB">
@@ -59,6 +60,7 @@ class InfoTable extends Component {
               tableLoading={tableLoading}
               pageParam={pageParam}
               ysglxx={ysglxx}
+              YSLB={this.props.YSLB}
             />
           </TabPane>
           <TabPane tab="科研预算" key="MX_KY">
@@ -72,6 +74,7 @@ class InfoTable extends Component {
               tableLoading={tableLoading}
               pageParam={pageParam}
               ysglxx={ysglxx}
+              YSLB={this.props.YSLB}
             />
           </TabPane>
           {role === '二级部门领导' && (
