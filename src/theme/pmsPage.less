@@ -11074,22 +11074,40 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               flex-grow: 1;
               word-wrap: break-word;
               overflow: hidden; //溢出内容隐藏
-              // text-overflow: ellipsis; //文本溢出部分用省略号表示
-              // display: -webkit-box; //特别显示模式
-              // -webkit-line-clamp: 2; //行数
-              // line-clamp: 2;
               line-height: 22px;
               max-height: 48px;
               margin-right: 24px;
               position: relative;
 
-              &:before {
+              .icon-wrapper {
+                margin-left: 2px;
+                .icon-right {
+                  font-size: 14px;
+                  transform: translateY(-1px);
+                }
+              }
+            }
+
+            .item-title-xxlx3 {
+              &::before {
+                content: '...';
+                float: right;
+                position: absolute;
+                left: -2px;
+                color: #333;
+                transform: translateX(-90%);
+              }
+            }
+
+            .item-title-before {
+              &::before {
                 content: '';
                 float: right;
                 height: 24px;
               }
 
-              .icon-wrapper {
+              .icon-wrapper,
+              .icon-wrapper-xxlx3 {
                 float: right;
                 clear: both;
                 position: relative;
@@ -11102,11 +11120,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   color: #333;
                   transform: translateX(-90%);
                 }
+                .icon-right {
+                  font-size: 14px;
+                  transform: translateY(-1px);
+                }
               }
-              .icon-right {
-                font-size: 14px;
-                transform: translateY(-1px);
-                // padding-left: 4px;
+              .icon-wrapper-xxlx3 {
+                &::before {
+                  transform: translate(-15px, -1px);
+                }
               }
             }
 
@@ -11128,7 +11150,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
           & > .notice-item:hover {
-            .item-title {
+            .item-title,
+            .item-title-before {
               color: #3361ff;
               .icon-wrapper::before {
                 color: #3361ff;
@@ -21853,7 +21876,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
   .iconfont {
     font-size: 15px;
-    color: #FF2F31;
+    color: #ff2f31;
   }
 }
 
@@ -21869,7 +21892,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
   .iconfont {
     font-size: 15px;
-    color: #F9A812
+    color: #f9a812;
   }
 }
 
@@ -21885,7 +21908,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
   .iconfont {
     font-size: 15px;
-    color: #05BEFE;
+    color: #05befe;
   }
 }
 
@@ -21901,7 +21924,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
   .iconfont {
     font-size: 15px;
-    color: #FF2F31;
+    color: #ff2f31;
   }
 }
 

@@ -5,28 +5,57 @@ import { Link } from 'react-router-dom';
 import ShowAllModal from './ShowAllModal';
 
 export default function SystemNotice(props) {
-  const { noticeData = [] } = props;
+  const { noticeData = [], setNoticeData } = props;
   const [modalVisible, setModalVisible] = useState(false); //弹窗需要
   const location = useLocation();
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
-  const getNoticeItem = ({ txnr = '--', xxlx = '3', txrq = '', xxid }) => {
+  useEffect(() => {
+    const nodeArr = document.querySelectorAll('.notice-item, .notice-item-unclick > .item-title');
+    if (nodeArr.length !== 0 && noticeData.length !== 0) {
+      let data = [...noticeData];
+      for (let i = 0; i < nodeArr.length; i++) {
+        let x = nodeArr[i];
+        data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
+      }
+      setNoticeData([...data]);
+    }
+    console.log(noticeData);
+    return () => {};
+  }, [JSON.stringify(noticeData)]);
+
+  const getNoticeItem = ({ txnr = '--', xxlx = '3', txrq = '', xxid, textHide = false }) => {
     return (
       <div className={xxlx === '4' ? 'notice-item' : 'notice-item-unclick'} key={xxid}>
         <i className="iconfont icon-notice-fill" />
-        <div
-          className="item-title"
-          style={{
-            WebkitBoxOrient: 'vertical',
-            WebkitLineClamp: '2',
-          }}
-        >
-          {xxlx === '4' ? <span className='icon-wrapper'><i className="iconfont icon-right" /></span> : ''} {txnr}
-        </div>
+        {textHide ? (
+          <div className={'item-title item-title-before'}>
+            {xxlx === '4' ? (
+              <span className={'icon-wrapper'}>
+                <i className="iconfont icon-right" />
+              </span>
+            ) : (
+              <span className={'icon-wrapper-xxlx3'}></span>
+            )}
+            {txnr}
+          </div>
+        ) : (
+          <div className="item-title">
+            {txnr}
+            {xxlx === '4' ? (
+              <span className={'icon-wrapper'}>
+                <i className="iconfont icon-right" />
+              </span>
+            ) : (
+              ''
+            )}
+          </div>
+        )}
         <div className="item-date">{moment(txrq).format('YYYY-MM-DD')}</div>
       </div>
     );
   };
+
   if (noticeData.length === 0) return null;
   return (
     <div className="system-notice-card-box">
