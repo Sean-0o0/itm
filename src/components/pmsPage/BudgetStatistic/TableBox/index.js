@@ -134,7 +134,9 @@ const TableBox = props => {
       ellipsis: true,
       sorter: true,
       sortDirections: ['descend', 'ascend'],
-      render: txt => <span style={{ marginRight: 20 }}>{txt}%</span>,
+      render: txt => (
+        <span style={{ marginRight: 20 }}>{!allowExport && txt === '-1' ? '***' : txt + '%'}</span>
+      ),
     },
     {
       title: '合同金额',

@@ -249,7 +249,7 @@ export default function ProjectDetail(props) {
         const prjBasic = JSON.parse(infoData.xmjbxxRecord)[0] || {};
         //集合项目的时候，隐藏其他里程碑
         if (prjBasic.SFBHZXM && Number(prjBasic.SFBHZXM) > 0) {
-          allMsArr = [...res.record].filter(
+          allMsArr = [...allMsData.record].filter(
             x => x.lcbmc === '项目立项' || x.lcbmc === '市场及需求分析',
           );
         }
@@ -534,7 +534,7 @@ export default function ProjectDetail(props) {
         let allMsArr = [...allMsData.record];
         //集合项目的时候，隐藏其他里程碑
         if (prjData.prjBasic?.SFBHZXM && Number(prjData.prjBasic?.SFBHZXM) > 0) {
-          allMsArr = [...res.record].filter(
+          allMsArr = [...allMsData.record].filter(
             x => x.lcbmc === '项目立项' || x.lcbmc === '市场及需求分析',
           );
         }
@@ -615,7 +615,7 @@ export default function ProjectDetail(props) {
               getPrjDtlData={() => {
                 getPrjDtlData();
                 getMileStoneData();
-                getPrjDocData();
+                // getPrjDocData();
               }}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}
