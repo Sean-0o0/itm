@@ -52,7 +52,7 @@ export default function HisPrjInfo(props) {
         if (res?.success) {
           setTableLoading(false)
           setTotal(res.totalrows)
-          setTableData([...JSON.parse(res.result), ...JSON.parse(res.result)])
+          setTableData([...JSON.parse(res.result)])
         }
       })
       .catch(e => {
