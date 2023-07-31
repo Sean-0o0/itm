@@ -27,7 +27,7 @@ class EditPrjTracking extends React.Component {
   };
 
   componentDidMount() {
-    const {record, dictionary: {XMJDZT = []},} = this.props
+    const {record} = this.props
     console.log("recordrecord22", record)
     const {setFieldsValue} = this.props.form;
     setFieldsValue({
@@ -35,7 +35,7 @@ class EditPrjTracking extends React.Component {
       progress: record.DQJD?.replace('%', ''),
       importantNotes: record.ZYSXSM,
       nextWeek: record.XZGZAP,
-      status: XMJDZT.filter(item => item.note === record.DQZT)[0]?.ibm,
+      status: record.KXZT && JSON.parse(record.KXZT).filter(item => item.note === record.DQZT)[0]?.ibm,
       thisWeek: record.BZGZNR
     })
   }
@@ -124,12 +124,9 @@ class EditPrjTracking extends React.Component {
     } = this.state;
     const {
       contractSigningVisible,
-      dictionary: {XMJDZT = []},
       record,
     } = this.props;
     const time = moment(record.KSSJ, 'YYYY.MM.DD').format('YYYY.MM.DD') + '-' + moment(record.JSSJ, 'YYYY.MM.DD').format('YYYY.MM.DD')
-    console.log("recordrecord", record)
-    console.log("timetimetime", time)
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
@@ -245,7 +242,7 @@ class EditPrjTracking extends React.Component {
                                   option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                                 }>
                                 {
-                                  XMJDZT.length > 0 && XMJDZT.map((item, index) => {
+                                  record.KXZT && JSON.parse(record.KXZT).map((item, index) => {
                                     return (
                                       <Option key={item.ibm} value={item.ibm}>{item.note}</Option>
                                     )
