@@ -19,6 +19,7 @@ import {connect} from 'dva';
 import {
   WriteProjectTrackingReport
 } from '../../../../services/pmsServices';
+import moment from "moment";
 
 class EditPrjTracking extends React.Component {
   state = {
@@ -30,6 +31,7 @@ class EditPrjTracking extends React.Component {
     console.log("recordrecord22", record)
     const {setFieldsValue} = this.props.form;
     setFieldsValue({
+
       progress: record.DQJD?.replace('%', ''),
       importantNotes: record.ZYSXSM,
       nextWeek: record.XZGZAP,
@@ -125,8 +127,9 @@ class EditPrjTracking extends React.Component {
       dictionary: {XMJDZT = []},
       record,
     } = this.props;
+    const time = moment(record.KSSJ, 'YYYY.MM.DD').format('YYYY.MM.DD') + '-' + moment(record.JSSJ, 'YYYY.MM.DD').format('YYYY.MM.DD')
     console.log("recordrecord", record)
-    console.log("XMJDZTXMJDZT", XMJDZT)
+    console.log("timetimetime", time)
     const {getFieldDecorator} = this.props.form;
     const basicFormItemLayout = {
       labelCol: {
@@ -210,6 +213,7 @@ class EditPrjTracking extends React.Component {
                             <Input
                               placeholder="请输入报告日期"
                               disabled={true}
+                              value={time}
                             />
                           </Form.Item>
                         </Col>
@@ -218,6 +222,7 @@ class EditPrjTracking extends React.Component {
                             <Input
                               placeholder="请输入当前里程碑"
                               disabled={true}
+                              value={record?.DQLCB}
                             />
                           </Form.Item>
                         </Col>

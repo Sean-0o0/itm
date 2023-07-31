@@ -456,12 +456,6 @@ export default function EjbmAllTable(props) {
                       <i className="iconfont icon-vs" onClick={() => getCompareRYModel(item)}/>数据对比
                     </div>
                   </div>
-                  <span style={{
-                    float: 'left',
-                    margin: '0px 16px',
-                    fontSize: '14px',
-                    color: '#999999'
-                  }}>负责项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <Link
                     style={{color: '#3361ff', width: '100%'}}
                     to={{
@@ -479,6 +473,12 @@ export default function EjbmAllTable(props) {
                   >
                     <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
                          onMouseLeave={hiddenFooterLD}>
+                      <span style={{
+                        float: 'left',
+                        margin: '0px 16px',
+                        fontSize: '14px',
+                        color: '#999999'
+                      }}>负责项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                       <ReactEchartsCore
                         echarts={echarts}
                         option={getRadarChatLD(item)}
@@ -544,7 +544,7 @@ export default function EjbmAllTable(props) {
                   </div>
                   <span style={{
                     float: 'left',
-                    margin: '8px 16px',
+                    margin: '16px',
                     fontSize: '14px',
                     color: '#999999'
                   }}>所有项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
@@ -651,12 +651,6 @@ export default function EjbmAllTable(props) {
                       <i className="iconfont icon-vs" onClick={() => getCompareRYModel(item)}/>数据对比
                     </div>
                   </div>
-                  <span style={{
-                    float: 'left',
-                    margin: '0px 16px',
-                    fontSize: '14px',
-                    color: '#999999'
-                  }}>负责项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                   <Link
                     style={{color: '#3361ff', width: '100%'}}
                     to={{
@@ -674,6 +668,12 @@ export default function EjbmAllTable(props) {
                   >
                     <div className="info-table-content-box-radar" onMouseEnter={() => getFooterLD(item.USERID)}
                          onMouseLeave={hiddenFooterLD}>
+                      <span style={{
+                        float: 'left',
+                        margin: '0px 16px',
+                        fontSize: '14px',
+                        color: '#999999'
+                      }}>负责项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>
                       <ReactEchartsCore
                         echarts={echarts}
                         option={getRadarChatLD(item)}
@@ -739,7 +739,7 @@ export default function EjbmAllTable(props) {
                   </div>
                   <span style={{
                     float: 'left',
-                    margin: '8px 16px',
+                    margin: '16px',
                     fontSize: '14px',
                     color: '#999999'
                   }}>所有项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>

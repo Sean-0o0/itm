@@ -305,7 +305,7 @@ export default function YjbmAllTable(props) {
                   </div>
                   <span style={{
                     float: 'left',
-                    margin: '8px 16px',
+                    margin: '16px',
                     fontSize: '14px',
                     color: '#999999'
                   }}>项目总数:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.XMZS}</span></span>

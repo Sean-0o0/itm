@@ -278,15 +278,15 @@ export default function MemberAllTable(props) {
                     }}
                     className="table-link-strong"
                   >
-                    <span style={{
-                      float: 'left',
-                      margin: '0px 16px',
-                      fontSize: '14px',
-                      color: '#999999'
-                    }}>参与项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.CYXM}</span></span>
                     <div className="info-table-content-box-radar"
                       // onMouseEnter={() =>getFooter(item.USERID)} onMouseLeave={hiddenFooter}
                     >
+                      <span style={{
+                        float: 'left',
+                        margin: '0px 16px',
+                        fontSize: '14px',
+                        color: '#999999'
+                      }}>参与项目:&nbsp;&nbsp;<span style={{color: '#303133', fontWeight: 500}}>{item.CYXM}</span></span>
                       <ReactEchartsCore
                         echarts={echarts}
                         option={getRadarChat(item)}

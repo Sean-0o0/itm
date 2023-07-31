@@ -35,17 +35,18 @@ export default function InfoTable(props) {
       title: '时间',
       dataIndex: 'SJ',
       key: 'SJ',
-      width: 60,
+      // width: 60,
     },
     {
       title: '当前进度',
       dataIndex: 'DQJD',
       key: 'DQJD',
-      // width: 220,
+      width: 170,
       render(text, record, index) {
         // console.log("recordrecord",record)
         return (
           <div
+            style={{display: 'flex'}}
             className={record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : (record.DQZT === '中风险' || record.DQZT === '低风险' ? 'prj-tracking-infos-detail-row2-lev2' : 'prj-tracking-infos-detail-row2-lev3')}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
@@ -61,7 +62,7 @@ export default function InfoTable(props) {
       render(text, record, index) {
         // console.log("recordrecord",record)
         return (
-          <>{record.DQZT === '进度正常' ?
+          <span style={{display: 'flex'}}>{record.DQZT === '进度正常' ?
             <div className='prj-status-icon-lv1'><i className="iconfont icon-hourglass"/></div> : (
               record.DQZT === '高风险' ?
                 <div className='prj-status-icon-lv2'><i className="iconfont icon-alarm"/></div> : (
@@ -78,7 +79,7 @@ export default function InfoTable(props) {
                     )
                 )
             )
-          }&nbsp;&nbsp;{text}</>
+          }&nbsp;&nbsp;{text}</span>
         )
       }
     },
@@ -100,16 +101,13 @@ export default function InfoTable(props) {
     {
       title: '操作',
       key: 'action',
-      width: 60,
+      // width: 60,
       render: (text, record) => (
         <span>
         <a style={{color: '#3361ff', cursor: 'pointer'}} onClick={() => {
+          console.log("recordrecord", record)
           setRecord(record)
-          if (record.SJ === '本周') {
-            setCycle(record.XMZQ)
-          } else if (record.SJ === '上周') {
-            setCycle('-1')
-          }
+          setCycle(record.XMZQ)
           setEditPrjVisible(true)
         }}>修改</a>
       </span>
