@@ -17269,7 +17269,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                       border-radius: 6px;
 
                       .ant-progress-bg {
-                        background-color: rgba(255, 47, 49, 0.3) !important;
+                        background-color: #ff2f31 !important;
                         height: 12px !important;
                         border-radius: 6px;
                       }
@@ -17319,7 +17319,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                       border-radius: 6px;
 
                       .ant-progress-bg {
-                        background-color: rgba(51, 97, 255, 0.3) !important;
+                        background-color: #3361ff !important;
                         height: 12px !important;
                         border-radius: 6px;
                       }
@@ -17369,7 +17369,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                       border-radius: 6px;
 
                       .ant-progress-bg {
-                        background-color: rgba(114, 147, 153, 0.3) !important;
+                        background-color: #909399 !important;
                         height: 12px !important;
                         border-radius: 6px;
                       }
@@ -17857,149 +17857,225 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .info-table {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
-    border-radius: 8;
-    overflow: hidden;
+    .prj-progress-info {
+      display: flex;
 
-    & > .btn-add-prj-box {
-      margin-bottom: 16px;
+      .ant-progress-show-info .ant-progress-outer {
+        padding-right: 8px;
+      }
 
-      .btn-add-prj {
-        .antd-btn-primary();
+      .ant-progress-line {
+        width: 80%;
+      }
+
+      .ant-progress-inner {
+        background-color: #f0f2f5 !important;
+
+        .ant-progress-bg {
+          height: 12px !important;
+        }
+      }
+
+      .ant-progress-text {
+        display: none;
       }
     }
 
-    .project-info-table-box {
-      .antd-table-adaptation();
-      flex-grow: 1;
-      overflow: hidden;
-      overflow-y: auto;
-      // padding-right: 4px;
-
-      .opr-btn-box {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+    .ant-table {
+      td {
+        padding: 9.17px;
+        font-size: 14px;
+        font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #303133;
       }
 
-      .opr-btn {
-        color: #3361ff;
-        cursor: pointer;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+      th {
+        padding: 9.17px;
+        font-size: 14px;
+        background-color: #f5f7fa;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #606266;
       }
 
-      .opr-btn:hover {
-        opacity: 0.7;
-      }
-
-      .ant-table {
-        td {
-          padding: 9.17px;
-          font-size: 14px;
-          font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
-          font-weight: 400;
-          color: #303133;
+      .ant-table-body {
+        // min-height: 560px;
+        table {
+          border: 1px solid #e8e8e8;
         }
 
-        th {
-          padding: 9.17px;
-          font-size: 14px;
-          background-color: #f5f7fa;
-          font-family: PingFangSC-Medium, PingFang SC;
-          font-weight: bold;
-          color: #606266;
-        }
+        tr {
+          td {
+            //高风险
+            .prj-tracking-infos-detail-row2-lev1 {
+              padding: 8px 0;
 
-        tr.ant-table-expanded-row td > .ant-table-wrapper {
-          margin: -10px -16px -10px;
-        }
+              .ant-progress-show-info .ant-progress-outer {
+                width: 80%;
+                padding-right: 0;
+              }
 
-        .ant-table-body {
-          // min-height: 560px;
-          table {
-            border: 1px solid #e8e8e8;
-          }
-        }
+              .ant-progress-small.ant-progress-line {
+                div {
+                  display: flex;
+                }
 
-        .ant-table-scroll .ant-table-header {
-          margin-bottom: -16.5px !important; //表格表头底部边框
-          background-color: #f5f7fa;
-        }
+                .ant-progress-outer {
+                  display: flex;
+                  align-items: center;
 
-        .ant-table-placeholder {
-          border-bottom: 0;
+                  .ant-progress-inner {
+                    height: 12px;
+                    border-radius: 6px;
 
-          .ant-empty-description {
-            font-size: 14px;
-          }
-        }
+                    .ant-progress-bg {
+                      background-color: #ff2f31 !important;
+                      height: 12px !important;
+                      border-radius: 6px;
+                    }
 
-        .ant-table-thead {
-          position: sticky;
-          top: 0;
-        }
+                    .ant-progress-success-bg {
+                      height: 12px !important;
+                      background-color: #ff2f31;
+                      border-radius: 6px;
+                    }
+                  }
+                }
 
-        //项目标签
-        .prj-tags {
-          width: 100%;
-          color: #606266;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
+                .ant-progress-text {
+                  width: 34px;
+                  height: 14px;
+                  font-size: 14px;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  font-weight: 500;
+                  color: #ff2f31;
+                  line-height: 17px;
+                  margin-left: 40px;
+                  //display: none;
+                }
+              }
+            }
 
-          .tag-item {
-            color: #3361ff;
-            font-size: 12px;
-            border: 1px solid rgba(51, 97, 255, 0.3);
-            border-radius: 4px;
-            background-color: #3363ff14;
-            padding: 1px 8px 2px 8px;
-            margin-right: 8px;
-            max-width: 38%;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            line-height: initial;
-            flex-shrink: 0;
-            cursor: pointer;
+            //中风险
+            .prj-tracking-infos-detail-row2-lev2 {
+              padding: 8px 0;
 
-            &:last-child {
-              margin-right: 0;
+              .ant-progress-show-info .ant-progress-outer {
+                width: 80%;
+                padding-right: 0;
+              }
+
+              .ant-progress-small.ant-progress-line {
+                div {
+                  display: flex;
+                }
+
+                .ant-progress-outer {
+                  display: flex;
+                  align-items: center;
+
+                  .ant-progress-inner {
+                    height: 12px;
+                    border-radius: 6px;
+
+                    .ant-progress-bg {
+                      background-color: #3361ff !important;
+                      height: 12px !important;
+                      border-radius: 6px;
+                    }
+
+                    .ant-progress-success-bg {
+                      height: 12px !important;
+                      background-color: #3361ff;
+                      border-radius: 6px;
+                    }
+                  }
+                }
+
+                .ant-progress-text {
+                  width: 34px;
+                  height: 14px;
+                  font-size: 14px;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  font-weight: 500;
+                  color: #3361ff;
+                  line-height: 17px;
+                  margin-left: 40px;
+                  //display: none;
+                }
+              }
+            }
+
+            //低风险
+            .prj-tracking-infos-detail-row2-lev3 {
+              padding: 8px 0;
+
+              .ant-progress-show-info .ant-progress-outer {
+                width: 80%;
+                padding-right: 0;
+              }
+
+              .ant-progress-small.ant-progress-line {
+                div {
+                  display: flex;
+                }
+
+                .ant-progress-outer {
+                  display: flex;
+                  align-items: center;
+
+                  .ant-progress-inner {
+                    height: 12px;
+                    border-radius: 6px;
+
+                    .ant-progress-bg {
+                      background-color: #909399 !important;
+                      height: 12px !important;
+                      border-radius: 6px;
+                    }
+
+                    .ant-progress-success-bg {
+                      height: 12px !important;
+                      background: #909399;
+                      border-radius: 6px;
+                    }
+                  }
+                }
+
+                .ant-progress-text {
+                  width: 34px;
+                  height: 14px;
+                  font-size: 14px;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  font-weight: 500;
+                  color: #909399;
+                  line-height: 17px;
+                  margin-left: 40px;
+                  //display: none;
+                }
+              }
             }
           }
         }
+      }
 
-        .ant-table-body {
-          // min-height: 560px;
-          table {
-            border: 1px solid #e8e8e8;
-          }
+      .ant-table-scroll .ant-table-header {
+        margin-bottom: -16.5px !important; //表格表头底部边框
+        background-color: #f5f7fa;
+      }
+
+      .ant-table-placeholder {
+        border-bottom: 0;
+
+        .ant-empty-description {
+          font-size: 14px;
         }
+      }
 
-        .ant-table-scroll .ant-table-header {
-          margin-bottom: -16.5px !important; //表格表头底部边框
-          background-color: #f5f7fa;
-        }
-
-        .ant-table-placeholder {
-          border-bottom: 0;
-
-          .ant-empty-description {
-            font-size: 14px;
-          }
-        }
-
-        .ant-table-thead {
-          position: sticky;
-          top: 0;
-          z-index: 1;
-        }
+      .ant-table-thead {
+        position: sticky;
+        top: 0;
       }
     }
   }
@@ -21977,5 +22053,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   .iconfont {
     font-size: 15px;
     color: #3361ff;
+  }
+}
+
+.prjTrackingTip {
+  .ant-tooltip-inner {
+    width: 350px;
   }
 }

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router';
-import {Divider, message, Pagination, Progress, Spin, Table, Tag} from "antd";
+import {Divider, message, Pagination, Progress, Spin, Table, Tag, Tooltip} from "antd";
 import {QueryProjectTracking} from "../../../../services/pmsServices";
 import ProjectTracking from "../index";
 import PollResultModel from "../../HardwareItems/PollResultModel";
@@ -37,19 +37,21 @@ export default function InfoTable(props) {
       title: '时间',
       dataIndex: 'SJ',
       key: 'SJ',
+      align: 'left',
       width: 60,
     },
     {
       title: '当前进度',
       dataIndex: 'DQJD',
       key: 'DQJD',
+      align: 'left',
       width: 170,
       render(text, record, index) {
         // console.log("recordrecord",record)
         return (
           <div
             style={{display: 'flex'}}
-            className={record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : (record.DQZT === '中风险' || record.DQZT === '低风险' ? 'prj-tracking-infos-detail-row2-lev2' : 'prj-tracking-infos-detail-row2-lev3')}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev2'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -60,6 +62,7 @@ export default function InfoTable(props) {
       title: '当前状态',
       dataIndex: 'DQZT',
       key: 'DQZT',
+      align: 'left',
       width: 104,
       render(text, record, index) {
         // console.log("recordrecord",record)
@@ -89,16 +92,64 @@ export default function InfoTable(props) {
       title: '重要事项说明',
       dataIndex: 'ZYSXSM',
       key: 'ZYSXSM',
+      align: 'left',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 192,
+          }
+        };
+      },
+      render: (text, record) => (
+        <span>
+          {text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+        </span>
+      )
     },
     {
       title: '本周工作内容',
       dataIndex: 'BZGZNR',
       key: 'BZGZNR',
+      align: 'left',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 252,
+          }
+        };
+      },
+      render: (text, record) => (
+        <span>
+          {text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+        </span>
+      )
     },
     {
       title: '下周工作安排',
       dataIndex: 'XZGZAP',
       key: 'XZGZAP',
+      align: 'left',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 252,
+          }
+        };
+      },
+      render: (text, record) => (
+        <span>
+          {text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+        </span>
+      )
     },
   ];
 
@@ -107,19 +158,21 @@ export default function InfoTable(props) {
       title: '时间',
       dataIndex: 'SJ',
       key: 'SJ',
+      align: 'left',
       width: 60,
     },
     {
       title: '当前进度',
       dataIndex: 'DQJD',
       key: 'DQJD',
+      align: 'left',
       width: 170,
       render(text, record, index) {
         // console.log("recordrecord",record)
         return (
           <div
             style={{display: 'flex'}}
-            className={record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : (record.DQZT === '中风险' || record.DQZT === '低风险' ? 'prj-tracking-infos-detail-row2-lev2' : 'prj-tracking-infos-detail-row2-lev3')}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev2'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -130,6 +183,7 @@ export default function InfoTable(props) {
       title: '当前状态',
       dataIndex: 'DQZT',
       key: 'DQZT',
+      align: 'left',
       width: 104,
       render(text, record, index) {
         // console.log("recordrecord",record)
@@ -159,19 +213,68 @@ export default function InfoTable(props) {
       title: '重要事项说明',
       dataIndex: 'ZYSXSM',
       key: 'ZYSXSM',
+      align: 'left',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 192,
+          }
+        };
+      },
+      render: (text, record) => (
+        <span>
+          {text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+        </span>
+      )
     },
     {
       title: '本周工作内容',
       dataIndex: 'BZGZNR',
       key: 'BZGZNR',
+      align: 'left',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 252,
+          }
+        };
+      },
+      render: (text, record) => (
+        <span>
+          {text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+        </span>
+      )
     },
     {
       title: '下周工作安排',
       dataIndex: 'XZGZAP',
       key: 'XZGZAP',
+      align: 'left',
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 252,
+          }
+        };
+      },
+      render: (text, record) => (
+        <span>
+          {text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+        </span>
+      )
     }, {
       title: '操作',
       key: 'action',
+      align: 'left',
       width: 60,
       render: (text, record) => (
         <span>
