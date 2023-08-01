@@ -7369,6 +7369,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 margin-right: 2%;
                 font-family: PingFangSC-Regular, PingFang SC;
 
+                .value {
+                  flex-grow: 1;
+                  font-size: 14px;
+                  font-family: PingFangSC-Regular, PingFang SC;
+                  font-weight: 400;
+                  color: #303133;
+                  line-height: 22px;
+                }
+
                 &:last-child {
                   margin-bottom: 0;
                 }
@@ -8182,6 +8191,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       color: #3361ff;
       cursor: pointer;
 
+      //付款流程名称
       .subject {
         max-width: 324px;
         text-overflow: ellipsis;
@@ -8190,12 +8200,37 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         color: #3361ff;
         line-height: 16px;
       }
-
+      //付款流程单据编号
       .djbh {
         color: #909399;
         font-size: 12px;
         line-height: 14px;
         margin-top: 4px;
+      }
+      //oa流程查看 - 后边加 状态填写按钮
+      .oalcmc {
+        flex-grow: 1;
+      }
+
+      .opr-btn {
+        flex-shrink: 0;
+        color: #3361ff;
+        font-size: 14px;
+        padding: 0 6px;
+        // width: 36px;
+        height: 24px;
+        background: rgba(51, 97, 255, 0.1);
+        border-radius: 4px;
+        // background-color: #3363ff14;
+        line-height: 24px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-left: 6px;
+
+        &:hover {
+          background-color: #3361ff;
+          color: #fff;
+        }
       }
 
       &:hover {
@@ -10712,6 +10747,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       & > .project-card-box {
         padding-bottom: 12px;
+        margin-bottom: 16px;
 
         & > .more-item {
           .font-size-14();
@@ -11390,7 +11426,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     margin-top: 16px;
     overflow: hidden;
     overflow-y: auto;
-    height: 450px;
+    height: 451px;
 
     &::-webkit-scrollbar {
       width: 10px;
@@ -19975,7 +20011,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 //首页项目跟踪
 .prj-tracking-box-homePage {
   .prj-tracking-infos {
-    margin: 0 0 16px 0;
+    margin: 0;
     //max-height: 378px;
     background: #ffffff;
     box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);

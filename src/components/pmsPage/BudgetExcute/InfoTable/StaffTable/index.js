@@ -367,7 +367,7 @@ class StaffTable extends Component {
             {
               title: '已付款金额(万元)',
               dataIndex: 'FKJE',
-              width: '15%',
+              width: '14%',
               align: 'right',
               key: 'FKJE',
               ellipsis: true,
@@ -382,7 +382,7 @@ class StaffTable extends Component {
             {
               title: '关联预算项目',
               dataIndex: 'YSXM',
-              width: '15%',
+              width: '20%',
               key: 'YSXM',
               ellipsis: true,
               render: txt => (
@@ -733,7 +733,52 @@ class StaffTable extends Component {
             queryType === 'MX_FZB' ? Number(ysglxx.FZBWCL) + '%' : Number(ysglxx.KYYSZXL) + '%',
         },
       ];
-      if (queryType === 'MX_QT') return null;
+      if (queryType === 'MX_QT' && tableData.length > 0)
+        columnArr = [
+          {
+            width: '27%',
+            key: 'HTJ',
+            value: '合计：',
+            align: 'center',
+            style: {
+              backgroundColor: '#f5f7fa',
+              fontFamily: 'PingFangSC-Regular, PingFang SC',
+              fontWeight: 'bold',
+              color: '#606266',
+              borderRight: '1px solid #e8e8e8',
+            },
+          },
+          {
+            width: '13%',
+            key: 'HTJE',
+            value: getAmountFormat(Number(tableData[0].HTJEZJE)),
+            align: 'right',
+          },
+          {
+            width: '14%',
+            key: 'YFKJE',
+            align: 'right',
+            value: getAmountFormat(Number(tableData[0].FKZJE)),
+          },
+          {
+            width: '20%',
+            key: 'BLANK',
+            value: '',
+            align: 'right',
+          },
+          {
+            width: '12%',
+            key: 'BLANK2',
+            value: '',
+            align: 'right',
+          },
+          {
+            width: '14%',
+            key: 'KZXYS',
+            align: 'right',
+            value: getAmountFormat(Number(tableData[0].KZXYSZJE)),
+          },
+        ];
       return (
         <div className="budget-excute-table-footer">
           {columnArr.map(x => (
