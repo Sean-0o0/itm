@@ -4,6 +4,7 @@ import {QueryProjectListPara, QueryProjectListInfo} from '../../../../services/p
 import TreeUtils from '../../../../utils/treeUtils';
 import {set} from 'store';
 import {connect} from "dva";
+import {FetchQueryOrganizationInfo} from "../../../../services/projectManage";
 
 const InputGroup = Input.Group;
 const {Option} = Select;
@@ -29,9 +30,39 @@ export default forwardRef(function TopConsole(props, ref) {
 
   useEffect(() => {
     getFilterData();
+    getOrgData();
     return () => {
     };
   }, []);
+
+  //获取部门数据
+  const getOrgData = () => {
+    FetchQueryOrganizationInfo({
+      type: 'XXJS',
+    })
+      .then(res => {
+        if (res?.success) {
+          let data = TreeUtils.toTreeData(res.record, {
+            keyName: 'orgId',
+            pKeyName: 'orgFid',
+            titleName: 'orgName',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          })[0].children[0].children[0].children;
+          // data.push({
+          //   value: 'szyyzx',
+          //   title: '数字应用中心',
+          //   fid: '11167',
+          //   children: [],
+          // });
+          setOrgData([...data]);
+        }
+      })
+      .catch(e => {
+        message.error('部门信息查询失败', 1);
+        console.error('FetchQueryOrganizationInfo', e);
+      });
+  };
 
   //顶部下拉框查询数据
   const getFilterData = () => {
@@ -53,7 +84,7 @@ export default forwardRef(function TopConsole(props, ref) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
-          setOrgData(p => [...[orgTree]]);
+          // setOrgData(p => [...[orgTree]]);
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
         }

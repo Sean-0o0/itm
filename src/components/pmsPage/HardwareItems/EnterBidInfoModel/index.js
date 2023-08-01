@@ -906,7 +906,7 @@ class EnterBidInfoModel extends React.Component {
                         };
                       }}
                       accept={
-                        '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
+                        '.zip,.rar,.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                       }
                       fileList={[...fileList]}
                     >
