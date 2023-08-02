@@ -75,6 +75,7 @@ export default function HomePage(props) {
   }); //表格数据-项目列表
   const [trackingData, setTrackingData] = useState([{ tableInfo: [] }]);
   const [isTrackingSpinning, setIsTrackingSpinning] = useState(false);
+  const [showExtends, setShowExtends] = useState(false);
   var s = 0;
   var e = 0;
 
@@ -446,7 +447,7 @@ export default function HomePage(props) {
   };
 
   //获取项目跟踪数据 - 后续刷新数据
-  const getTrackingData = params => {
+  const getTrackingData = (params, flag) => {
     setIsTrackingSpinning(true);
     const payload = {
       current: params.current,
@@ -481,7 +482,11 @@ export default function HomePage(props) {
           setIsTrackingSpinning(false);
           const track = JSON.parse(res.result);
           setTrackingData(track);
-          setTotal(res.totalrows);
+          setTotal(p => ({
+            ...p,
+            tracking: res.totalrows,
+          }));
+          setShowExtends(!flag);
         }
       })
       .catch(e => {
@@ -622,6 +627,8 @@ export default function HomePage(props) {
                 trackingData,
                 isTrackingSpinning,
                 setIsTrackingSpinning,
+                showExtends,
+                setShowExtends,
               }}
             />
           </div>
