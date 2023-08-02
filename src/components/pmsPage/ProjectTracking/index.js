@@ -75,7 +75,7 @@ export default function ProjectTracking(props) {
         if (res?.success) {
           setIsSpinning(false)
           const track = JSON.parse(res.result)
-          if (trackingData.length > 0) {
+          if (track.length > 0) {
             track.map((item, index) => {
               item.extends = index === 0;
               item.tableInfo = [];
@@ -83,6 +83,8 @@ export default function ProjectTracking(props) {
             track.map((item, index) => {
               index === 0 && getInitData(item, track)
             })
+          } else {
+            setTrackingData([])
           }
           setTotal(res.totalrows)
         }

@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router';
-import {Divider, message, Pagination, Progress, Spin, Table, Tag, Tooltip} from "antd";
+import {Divider, Empty, message, Pagination, Progress, Spin, Table, Tag, Tooltip} from "antd";
 import {QueryProjectTracking} from "../../../../services/pmsServices";
 import ProjectTracking from "../index";
 import PollResultModel from "../../HardwareItems/PollResultModel";
@@ -380,7 +380,7 @@ export default function InfoTable(props) {
         onSuccess={() => this.onSuccess("合同签署")}
       />}
       {
-        trackingData?.length > 0 && trackingData?.map((item, index) => {
+        trackingData?.length > 0 ? trackingData?.map((item, index) => {
           const thisweek = item.tableInfo.filter(i => i.SJ === "本周")
           return <div className="info-table">
             {/*项目名称*/}
@@ -427,7 +427,11 @@ export default function InfoTable(props) {
               <a className="his-icon" onClick={() => toHisPrjInfoModal(item.XMID)}><i className="iconfont icon-right"/></a>
             </div>
           </div>
-        })
+        }) : <Empty
+          description="暂无数据"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{width: '100%'}}
+        />
       }
       {hisPrjInfoModalVisible && (
         <HisPrjInfo xmid={xmid} closeModal={closeHisPrjInfoModal} visible={hisPrjInfoModalVisible}/>

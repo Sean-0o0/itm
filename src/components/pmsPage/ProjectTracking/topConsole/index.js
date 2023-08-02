@@ -106,6 +106,14 @@ export default forwardRef(function TopConsole(props, ref) {
     setPrjMnger(undefined); //项目经理
     setOrg([]); //应用部门
     setPrjStat(undefined);//状态
+    callBackParams({
+      current: 1,
+      pageSize: 5,
+      org: '',
+      projectId: '',
+      projectManager: '',
+      projectType: ''
+    })
   };
 
   // onChange-start
@@ -234,7 +242,7 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(1, 5, prjMnger, 'ALL')}
+          onClick={handleSearch}
         >
           查询
         </Button>
