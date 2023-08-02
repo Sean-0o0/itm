@@ -93,13 +93,7 @@ export default function InfoTable(props) {
       dataIndex: 'ZYSXSM',
       key: 'ZYSXSM',
       align: 'left',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: 192,
-          }
-        };
-      },
+      width: 192,
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -114,13 +108,7 @@ export default function InfoTable(props) {
       dataIndex: 'BZGZNR',
       key: 'BZGZNR',
       align: 'left',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: 252,
-          }
-        };
-      },
+      width: 252,
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -135,13 +123,7 @@ export default function InfoTable(props) {
       dataIndex: 'XZGZAP',
       key: 'XZGZAP',
       align: 'left',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: 252,
-          }
-        };
-      },
+      width: 252,
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -214,13 +196,7 @@ export default function InfoTable(props) {
       dataIndex: 'ZYSXSM',
       key: 'ZYSXSM',
       align: 'left',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: 192,
-          }
-        };
-      },
+      width: 192,
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -235,13 +211,7 @@ export default function InfoTable(props) {
       dataIndex: 'BZGZNR',
       key: 'BZGZNR',
       align: 'left',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: 252,
-          }
-        };
-      },
+      width: 252,
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -256,13 +226,7 @@ export default function InfoTable(props) {
       dataIndex: 'XZGZAP',
       key: 'XZGZAP',
       align: 'left',
-      onCell: () => {
-        return {
-          style: {
-            maxWidth: 252,
-          }
-        };
-      },
+      width: 252,
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (

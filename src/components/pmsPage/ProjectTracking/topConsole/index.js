@@ -122,24 +122,24 @@ export default forwardRef(function TopConsole(props, ref) {
     // console.log('handlePrjMngerChange', v);
     // if (v === undefined) v = '';
     setPrjMnger(v);
-    callBackParams({...params, projectManager: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, projectManager: Number(v),})
   };
   //项目名称
   const handlePrjNameChange = v => {
     setPrjName(v);
-    callBackParams({...params, projectId: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, projectId: Number(v),})
   };
   //应用部门
   const handleOrgChange = v => {
     // console.log('handleOrgChange', v);
     setOrg(v);
-    callBackParams({...params, org: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, org: Number(v),})
   };
   //应用部门
   const handlePrjStatChange = v => {
     // console.log('handlePrjStatChange', v);
     setPrjStat(v);
-    callBackParams({...params, projectType: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, projectType: Number(v),})
   };
   // onChange-end
 
