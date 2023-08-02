@@ -10,7 +10,6 @@ export default function SupplierInfo(props) {
   const [gysData, setGysData] = useState([]); //供应商下拉框数据
   const [lxrData, setLxrData] = useState([]); //联系人下拉框数据
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量

@@ -25,81 +25,33 @@ const {TabPane} = Tabs;
 export default function PrjTracking(props) {
   const [filterResName, setFilterResName] = useState("全部");
   const [filterVisible, setFilterVisible] = useState(false);
-  const [isSpinning, setIsSpinning] = useState(false);
   const [showExtends, setShowExtends] = useState(false);
-  const [params, setParams] = useState({
-    current: 1,
-    pageSize: 9,
-    org: '',
-    projectId: '',
-    projectManager: '',
-    projectType: ''
-  }); //表格数据-项目列表
-  const [trackingData, setTrackingData] = useState([{tableInfo: []}]);
   const [trackingDetail, setTrackingDetail] = useState({});
-  const [total, setTotal] = useState(0);
   const {
-    dictionary
+    dictionary,
+    getTrackingData,
+    stateProps={}
   } = props;
+  const {
+    total,
+    params,
+    setParams,
+    trackingData,
+    isTrackingSpinning,
+    setIsTrackingSpinning,
+  } = stateProps
   const {XMGZSX, XMJDZT} = dictionary; //字典
   const location = useLocation();
 
   useEffect(() => {
-    getTableData(params);
+    // getTrackingData(params);
     return () => {
     };
   }, [XMGZSX, XMJDZT]);
 
-  //项目数据
-  const getTableData = (params, flag = true) => {
-    setIsSpinning(true);
-    const payload = {
-      current: params.current,
-      // cycle: 0,
-      // endTime: 0,
-      // org: 0,
-      pageSize: params.pageSize,
-      paging: 1,
-      // projectId: 0,
-      // projectManager: 0,
-      // projectType: 0,
-      queryType: "XM",
-      sort: "",
-      // startTime: 0,
-      total: -1
-    }
-    if (params.org !== '') {
-      payload.org = params.org;
-    }
-    if (params.projectId !== '') {
-      payload.projectId = params.projectId;
-    }
-    if (params.projectManager !== '') {
-      payload.projectManager = params.projectManager;
-    }
-    if (params.projectType !== '') {
-      payload.projectType = params.projectType;
-    }
-    QueryProjectTracking({...payload})
-      .then(res => {
-        if (res?.success) {
-          setIsSpinning(false)
-          setShowExtends(!flag)
-          const track = JSON.parse(res.result)
-          setTrackingData(track)
-          setTotal(res.totalrows)
-        }
-      })
-      .catch(e => {
-        setIsSpinning(false)
-        setShowExtends(!flag)
-        message.error('接口信息获取失败', 1);
-      });
-  };
-
   //项目内表格数据-本周/上周
   const getDetailData = (xmid) => {
-    setIsSpinning(true);
+    setIsTrackingSpinning(true);
     QueryProjectTracking({
       current: 1,
       cycle: 1,
@@ -119,11 +71,11 @@ export default function PrjTracking(props) {
         if (res?.success) {
           const track = JSON.parse(res.result)
           setTrackingDetail({...track[0]})
-          setIsSpinning(false);
+          setIsTrackingSpinning(false);
         }
       })
       .catch(e => {
-        setIsSpinning(false)
+        setIsTrackingSpinning(false)
         message.error('接口信息获取失败', e);
       });
   };
@@ -131,9 +83,9 @@ export default function PrjTracking(props) {
 
   const handleExtends = (flag) => {
     if (!flag) {
-      getTableData({...params, pageSize: 99999}, flag);
+      getTrackingData({...params, pageSize: 99999}, flag);
     } else {
-      getTableData({...params, pageSize: 9}, flag);
+      getTrackingData({...params, pageSize: 9}, flag);
     }
   }
 
@@ -150,9 +102,9 @@ export default function PrjTracking(props) {
       .then(res => {
         if (res?.success) {
           if (showExtends) {
-            getTableData({...params, pageSize: 99999});
+            getTrackingData({...params, pageSize: 99999});
           } else {
-            getTableData({...params, pageSize: 9});
+            getTrackingData({...params, pageSize: 9});
           }
         }
       })
@@ -165,7 +117,7 @@ export default function PrjTracking(props) {
   const getPrjDetail = () => {
     return (
       <div>
-        {trackingDetail && <Spin className='prj-detail-spin' spinning={isSpinning}>
+        {trackingDetail && <Spin className='prj-detail-spin' spinning={isTrackingSpinning}>
           <div className="prj-detail-bzgz">
             <div className="prj-detail-bzgz-title">本周工作内容:</div>
             {
@@ -209,7 +161,7 @@ export default function PrjTracking(props) {
             setFilterVisible(false)
             setFilterResName(x.note)
             setParams({...params, projectType: Number(x.ibm)})
-            getTableData({...params, projectType: Number(x.ibm)});
+            getTrackingData({...params, projectType: Number(x.ibm)});
           }} id={x.ibm} className="filter-box">
             {x.note}
           </div>
@@ -414,7 +366,7 @@ export default function PrjTracking(props) {
               />
             }
             {
-              total > 9 &&
+               total.tracking > 9 &&
               (showExtends ? (
                 <div className="prj-tracking-infos-foot" onClick={() => handleExtends(true)}>
                   收起
@@ -423,7 +375,7 @@ export default function PrjTracking(props) {
               ) : (
                 <div className="prj-tracking-infos-foot" onClick={() => handleExtends(false)}>
                   展开
-                  {isSpinning ? <Icon type="loading"/> : <i className="iconfont icon-down"/>}
+                  {isTrackingSpinning ? <Icon type="loading"/> : <i className="iconfont icon-down"/>}
                 </div>
               ))
             }

@@ -3,6 +3,7 @@ import { useLocation } from 'react-router';
 import moment from 'moment';
 import { Link } from 'react-router-dom';
 import ShowAllModal from './ShowAllModal';
+import { Tooltip } from 'antd';
 
 export default function SystemNotice(props) {
   const { noticeData = [], setNoticeData } = props;
@@ -37,11 +38,15 @@ export default function SystemNotice(props) {
             ) : (
               <span className={'icon-wrapper-xxlx3'}></span>
             )}
-            {txnr}
+            <Tooltip placement="topLeft" title={txnr}>
+              {txnr}
+            </Tooltip>
           </div>
         ) : (
           <div className="item-title">
-            {txnr}
+            <Tooltip placement="topLeft" title={txnr}>
+              {txnr}
+            </Tooltip>
             {xxlx === '4' ? (
               <span className={'icon-wrapper'}>
                 <i className="iconfont icon-right" />

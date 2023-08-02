@@ -101,7 +101,7 @@ export default function ProcessCard(props) {
               });
           } else {
             //OA流程
-            window.open(url);
+            window.open(JSON.parse(url).url);
           }
         }}
       >
