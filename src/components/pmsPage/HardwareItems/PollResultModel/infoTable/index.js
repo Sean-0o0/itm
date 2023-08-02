@@ -140,7 +140,7 @@ export default function InfoTable(props) {
       // flowId: newFlowId,
       // flowMc: newFlowMc,
       flowId: row?.GLXQ,
-      flowMc: row?.GLXQMC,
+      flowMc: row?.GLXQ === '' ? [] : row?.GLXQ.split(','),
       // XBBG: rec?.XBBG,
       ID: row?.ID,
     });
