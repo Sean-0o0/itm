@@ -14,6 +14,7 @@ export default function HisPrjInfo(props) {
 
   const {
     xmid,
+    xmzq,
     visible,
     closeModal,
   } = props;
@@ -110,6 +111,7 @@ export default function HisPrjInfo(props) {
       >
         <TopConsole params={params} handleSearch={handleSearch} callBackParams={callBackParams}/>
         <InfoTable
+          xmzq={xmzq}
           params={params}
           tableData={tableData}
           tableLoading={tableLoading}

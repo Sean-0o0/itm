@@ -13,6 +13,7 @@ import EditPrjTracking from "../editPrjTracking";
 
 export default function InfoTable(props) {
   const [xmid, setXmid] = useState(0);
+  const [xmzq, setXmzq] = useState(0);
   const [record, setRecord] = useState(0);
   const [cycle, setCycle] = useState('');
   const [editPrjVisible, setEditPrjVisible] = useState(false);
@@ -51,7 +52,7 @@ export default function InfoTable(props) {
         return (
           <div
             style={{display: 'flex'}}
-            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -315,8 +316,9 @@ export default function InfoTable(props) {
       });
   };
 
-  const toHisPrjInfoModal = (xmid) => {
+  const toHisPrjInfoModal = (xmid, xmzq) => {
     setXmid(xmid);
+    setXmzq(xmzq);
     setHisPrjInfoModalVisible(true)
   }
 
@@ -387,18 +389,18 @@ export default function InfoTable(props) {
             </div>
             {/*底部数据*/}
             <div className="prj-his-info" style={{display: item.extends ? '' : 'none'}}>
-              <a className="title" onClick={() => toHisPrjInfoModal(item.XMID)}>历史概况</a>
+              <a className="title" onClick={() => toHisPrjInfoModal(item.XMID, item.XMZQ)}>历史概况</a>
               <a className="his-icon" onClick={() => toHisPrjInfoModal(item.XMID)}><i className="iconfont icon-right"/></a>
             </div>
           </div>
-        }) : <Empty
+        }) : <div className="info-table"><Empty
           description="暂无数据"
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           style={{width: '100%'}}
-        />
+        /></div>
       }
       {hisPrjInfoModalVisible && (
-        <HisPrjInfo xmid={xmid} closeModal={closeHisPrjInfoModal} visible={hisPrjInfoModalVisible}/>
+        <HisPrjInfo xmid={xmid} xmzq={xmzq} closeModal={closeHisPrjInfoModal} visible={hisPrjInfoModalVisible}/>
       )
       }
       <div className='page-individual-prjTracking' style={{margin: '24px', backgroundColor: '#f7f8fa'}}>

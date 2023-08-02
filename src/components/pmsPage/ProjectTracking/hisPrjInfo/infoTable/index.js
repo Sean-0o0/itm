@@ -10,6 +10,7 @@ export default function InfoTable(props) {
     tableLoading,
     params,
     callBackParams,
+    xmzq,
   } = props; //表格数据
   const location = useLocation();
   console.log('🚀 ~ tableData:', tableData);
@@ -47,7 +48,7 @@ export default function InfoTable(props) {
         return (
           <div
             style={{display: 'flex'}}
-            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
+            className={record.XMZQ === xmzq ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -89,7 +90,13 @@ export default function InfoTable(props) {
       dataIndex: 'ZYSXSM',
       key: 'ZYSXSM',
       align: 'left',
-      width: 192,
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 192,
+          }
+        };
+      },
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -104,7 +111,13 @@ export default function InfoTable(props) {
       dataIndex: 'BZGZNR',
       key: 'BZGZNR',
       align: 'left',
-      width: 252,
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 252,
+          }
+        };
+      },
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (
@@ -119,7 +132,13 @@ export default function InfoTable(props) {
       dataIndex: 'XZGZAP',
       key: 'XZGZAP',
       align: 'left',
-      width: 252,
+      onCell: () => {
+        return {
+          style: {
+            maxWidth: 252,
+          }
+        };
+      },
       render: (text, record) => (
         <span>
           {text && text.length > 60 ? (

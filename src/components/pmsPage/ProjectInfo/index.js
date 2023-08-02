@@ -96,6 +96,7 @@ export default function ProjectInfo(props) {
         cxlx={params?.cxlx}
         total={total}
         handleSearch={topConsoleRef?.current?.handleSearch}
+        handleReset={topConsoleRef?.current?.handleReset}
         curPage={curPage}
         curPageSize={curPageSize}
         queryType={queryType}
