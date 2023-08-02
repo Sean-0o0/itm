@@ -51,7 +51,7 @@ export default function PrjTracking(props) {
   }, [XMGZSX, XMJDZT]);
 
   //项目数据
-  const getTableData = (params) => {
+  const getTableData = (params, flag = true) => {
     setIsSpinning(true);
     const payload = {
       current: params.current,
@@ -84,6 +84,7 @@ export default function PrjTracking(props) {
       .then(res => {
         if (res?.success) {
           setIsSpinning(false)
+          setShowExtends(!flag)
           const track = JSON.parse(res.result)
           setTrackingData(track)
           setTotal(res.totalrows)
@@ -91,6 +92,7 @@ export default function PrjTracking(props) {
       })
       .catch(e => {
         setIsSpinning(false)
+        setShowExtends(!flag)
         message.error('接口信息获取失败', 1);
       });
   };
@@ -129,11 +131,10 @@ export default function PrjTracking(props) {
 
   const handleExtends = (flag) => {
     if (!flag) {
-      getTableData({...params, pageSize: 99999});
+      getTableData({...params, pageSize: 99999}, flag);
     } else {
-      getTableData({...params, pageSize: 9});
+      getTableData({...params, pageSize: 9}, flag);
     }
-    setShowExtends(!flag)
   }
 
   const handleProjectCollect = (e, flag, id) => {
@@ -204,6 +205,7 @@ export default function PrjTracking(props) {
       <div>
         {data && data.map(x => (
           <div onClick={() => {
+            setShowExtends(false)
             setFilterVisible(false)
             setFilterResName(x.note)
             setParams({...params, projectType: Number(x.ibm)})
@@ -234,7 +236,7 @@ export default function PrjTracking(props) {
   return (
     <div className="prj-tracking-box-homePage">
       {
-        trackingData.length > 0 && <div className="prj-tracking-infos">
+        <div className="prj-tracking-infos">
           <div className="prj-tracking-infos-title">
             <div className="prj-tracking-infos-left">
               项目跟踪
@@ -261,7 +263,7 @@ export default function PrjTracking(props) {
           </div>
           <div className="prj-tracking-infos-box">
             {
-              trackingData.map(i => {
+              trackingData.length > 0 ? trackingData.map(i => {
                 return <div className="prj-tracking-infos-content">
                   <div className="prj-tracking-infos-content-box">
                     <Link
@@ -279,7 +281,7 @@ export default function PrjTracking(props) {
                       className="table-link-strong"
                     >
                       <div
-                        className={i.DQZT === "进度正常" ? "prj-tracking-infos-name level-2" : "prj-tracking-infos-name level-1"}>
+                        className={i.BZZT === 2 || i.BZZT === 3 || i.BZZT === 5 ? "prj-tracking-infos-name level-1" : "prj-tracking-infos-name level-2"}>
                         {/*<i className="prj-tracking-infos-icon iconfont icon-report"/>*/}
                         <div className="prj-tracking-infos-left-flex">
                           <div className="prj-tracking-infos-left">
@@ -303,7 +305,7 @@ export default function PrjTracking(props) {
                             }}
                                className={i.SFSC === 0 ? "prj-tracking-infos-icon2 iconfont icon-star" : "prj-tracking-infos-icon2 iconfont icon-fill-star"}/>
                           </Popconfirm>
-                          Week{i.XMZQ}
+                          Week&nbsp;{i.XMZQ}
                         </div>
                       </div>
                       {
@@ -322,33 +324,19 @@ export default function PrjTracking(props) {
                               </Popover>
                             </div>
                             <div
-                              className="prj-tracking-infos-detail-row1-percent">{i.SZJD && i.SZJD > 0 ? <>{i.SZJD}%</> : '0%'}
-                              {i.BZJD > 0 && <><i className="iconfont icon-rise"/>{i.BZJD}%</>}
+                              className="prj-tracking-infos-detail-row1-percent">{i.SZJD >= 0 && <>{i.SZJD}%<i
+                              className="iconfont icon-rise"/></>}
+                              {i.BZJD >= 0 && <span
+                                className={i.BZZT === 2 || i.BZZT === 3 || i.BZZT === 5 ? 'font-color-lv1' : 'font-color-lv2'}>{i.BZJD}%</span>}
                             </div>
                           </div>
-                          {/*延期项目*/}
-                          {/*<div className={record.DQZT === '高风险' || record.DQZT === '延期'?'prj-tracking-infos-detail-row2-lev1':(record.DQZT === '中风险' || record.DQZT === '低风险'?'prj-tracking-infos-detail-row2-lev2':'prj-tracking-infos-detail-row2-lev3')}>*/}
-                          {/*  <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"*/}
-                          {/*            status="active"/>*/}
-                          {/*</div>*/}
                           {
-                            <div className="prj-tracking-infos-detail-row2-lev1">
+                            <div
+                              className={i.BZZT === 2 || i.BZZT === 3 || i.BZZT === 5 ? "prj-tracking-infos-detail-row2-lev1" : "prj-tracking-infos-detail-row2-lev2"}>
                               <Progress strokeColor="#3361FF" percent={i.BZJD} successPercent={i.SZJD} size="small"
                                         status="active" showInfo={false}/>
                             </div>
                           }
-                          {/*正常项目*/}
-                          {/*{*/}
-                          {/*  i.BZZT && i.BZZT == '1' || i.BZZT == '4' && <div className="prj-tracking-infos-detail-row2-lev2">*/}
-                          {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
-                          {/*  </div>*/}
-                          {/*}*/}
-                          {/*低风险项目*/}
-                          {/*{*/}
-                          {/*  i.BZZT && i.BZZT == '6' && <div className="prj-tracking-infos-detail-row2-lev3">*/}
-                          {/*    <Progress strokeColor="#3361FF" percent={60} successPercent={50} size="small" status="active" />*/}
-                          {/*  </div>*/}
-                          {/*}*/}
                           <div className="prj-tracking-infos-detail-row3">
                             {/*icon-reloadtime 延期 - rgba(255,47,49,0.1) #FF2F31  */}
                             {/*circle-check 已完成 - rgba(51,97,255,0.1) #3361ff  */}
@@ -371,7 +359,8 @@ export default function PrjTracking(props) {
                                                 <div className='prj-status-icon-lv5'><i className="iconfont icon-delay"/>
                                                 </div> : (
                                                   i.SZZT === 6 &&
-                                                  <div className='prj-status-icon-lv6'><i className="iconfont circle-check"/>
+                                                  <div className='prj-status-icon-lv6'><i
+                                                    className="iconfont circle-check"/>
                                                   </div>
                                                 )
                                             )
@@ -379,8 +368,9 @@ export default function PrjTracking(props) {
                                     )
                                 )
                               }
-                              {i.SZZT && i.SZZT > 0 ? <>&nbsp;{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}</> : '暂无状态'}</div>
-                            {i.BZZT && <><i className="iconfont icon-rise"/>
+                              {i.SZZT && i.SZZT > 0 && <>&nbsp;{XMJDZT.filter(item => item.ibm == i.SZZT)[0]?.note}<i
+                                className="iconfont icon-rise"/></>}</div>
+                            {i.BZZT && <>
                               <div
                                 className="prj-tracking-infos-detail-row3-risk"
                                 style={{alignItems: 'center', display: 'flex'}}>
@@ -417,14 +407,25 @@ export default function PrjTracking(props) {
                     </Link>
                   </div>
                 </div>
-              })
+              }) : <Empty
+                description="暂无数据"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{width: '100%'}}
+              />
             }
             {
-              total > 9 && (
-                <div className='prj-tracking-infos-foot' onClick={() => handleExtends(showExtends)}>
-                  {showExtends ? '收起' : '展开'} <Icon type={showExtends ? 'up' : 'down'}/>
+              total > 9 &&
+              (showExtends ? (
+                <div className="prj-tracking-infos-foot" onClick={() => handleExtends(true)}>
+                  收起
+                  <i className="iconfont icon-up"/>
                 </div>
-              )
+              ) : (
+                <div className="prj-tracking-infos-foot" onClick={() => handleExtends(false)}>
+                  展开
+                  {isSpinning ? <Icon type="loading"/> : <i className="iconfont icon-down"/>}
+                </div>
+              ))
             }
           </div>
         </div>

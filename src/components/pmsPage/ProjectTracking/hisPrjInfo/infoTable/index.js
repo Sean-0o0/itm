@@ -47,7 +47,7 @@ export default function InfoTable(props) {
         return (
           <div
             style={{display: 'flex'}}
-            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev2'}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -98,10 +98,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -119,10 +119,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -140,10 +140,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },

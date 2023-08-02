@@ -51,7 +51,7 @@ export default function InfoTable(props) {
         return (
           <div
             style={{display: 'flex'}}
-            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev2'}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -102,10 +102,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -123,10 +123,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -144,10 +144,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -172,7 +172,7 @@ export default function InfoTable(props) {
         return (
           <div
             style={{display: 'flex'}}
-            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev2'}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -223,10 +223,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -244,10 +244,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     },
@@ -265,10 +265,10 @@ export default function InfoTable(props) {
       },
       render: (text, record) => (
         <span>
-          {text.length > 60 ? (
+          {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text}
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
         </span>
       )
     }, {
@@ -381,11 +381,14 @@ export default function InfoTable(props) {
       />}
       {
         trackingData?.length > 0 && trackingData?.map((item, index) => {
+          const thisweek = item.tableInfo.filter(i => i.SJ === "本周")
           return <div className="info-table">
             {/*项目名称*/}
             <div className="prj-basic-info">
-              <div className="prj-name"><i onClick={() => changeExtends(item)}
-                                           className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
+              <div
+                className={thisweek.length > 0 ? (thisweek[0].DQZT === '高风险' || thisweek[0].DQZT === '延期' || thisweek[0].DQZT === '中风险' ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2") : "prj-name prj-name-lv2"}>
+                <i onClick={() => changeExtends(item)}
+                   className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
                 <Link
                   style={{paddingLeft: '8px', color: '#3361ff'}}
                   to={{
