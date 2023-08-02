@@ -12,11 +12,11 @@ export default function PrjMember(props) {
   const { prjData, routes, xmid, getPrjDtlData, isLeader } = props;
   const { member = [], prjBasic = {} } = prjData;
   const history = useHistory();
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-  const isXMJL = LOGIN_USER_ID === Number(prjBasic.XMJLID);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let isXMJL = LOGIN_USER_ID === Number(prjBasic.XMJLID);
 
   const getMemberData = () => {
-    return member;
+    // return member; //生产
     if (isLeader || isXMJL) return member;
     return member.filter(x => x.RYZT === '1'); //只有项目经理和领导看得到非正常状态的人员
   };
@@ -81,11 +81,11 @@ export default function PrjMember(props) {
         <div className="bottom">
           <div className="bottom-left">
             <img src={gender === '男' ? avatarMale : avatarFemale} alt="" />
-            {/* {status === '5' && <img src={iconRefuse} alt="" className="member-status-img" />}
-            {status === '4' && <img src={iconQuestion} alt="" className="member-status-img" />} */}
+            {status === '5' && <img src={iconRefuse} alt="" className="member-status-img" />}
+            {status === '4' && <img src={iconQuestion} alt="" className="member-status-img" />}
           </div>
           <span>{name}</span>
-          {/* <div
+          <div
             onClick={e => {
               e.stopPropagation();
             }}
@@ -101,7 +101,7 @@ export default function PrjMember(props) {
                 <i className="iconfont icon-more2" />
               </Popover>
             )}
-          </div> */}
+          </div>
         </div>
       </div>
     );

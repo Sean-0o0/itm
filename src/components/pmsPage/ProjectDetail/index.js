@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from 'react';
-import { useLocation } from 'react-router';
 import InfoDisplay from './InfoDisplay';
 import MileStone from './MileStone';
 import PrjMember from './PrjMember';
@@ -16,11 +15,10 @@ import {
   QueryUserRole,
 } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
-import moment from 'moment';
 import { FetchQueryProjectLabel } from '../../../services/projectManage';
-// import PrjTracking from './PrjTracking';
-// import PrjNode from './PrjNode';
-// import PrjDoc from './PrjDoc';
+import PrjTracking from './PrjTracking';
+import PrjNode from './PrjNode';
+import PrjDoc from './PrjDoc';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
@@ -49,6 +47,7 @@ export default function ProjectDetail(props) {
   const [nextBtnVisible, setNextBtnVisible] = useState(false); //下一个按钮显示
   const [startIndex, setStartIndex] = useState(0); //切割开始index
   const [endIndex, setEndIndex] = useState(5); //切割结束index
+  const [isBdgtMnger, setIsBdgtMnger] = useState(false); //是否预算管理人
   // var s = 0;
   // var e = 0;
 
@@ -96,35 +95,45 @@ export default function ProjectDetail(props) {
         xmmc: Number(xmid),
         cxlx: 'ALL',
       });
-      // //获取项目节点数据
-      // const nodePromise = QueryProjectNode({
-      //   projectId: Number(xmid),
-      // });
-      // //获取项目跟踪数据
-      // const trackingPromise = QueryProjectTracking({
-      //   projectId: Number(xmid),
-      //   // projectManager
-      //   // org
-      //   // startTime
-      //   // endTime
-      //   // cycle
-      //   queryType: 'GZZB',
-      //   // projectType
-      //   sort: 'XMZQ ASC',
-      // });
-      // //项目文档数据
-      // const docPromise = QueryProjectFiles({
-      //   current: 1,
-      //   // fileId: 0,
-      //   // matterId: 0,
-      //   // milestoneId: 0,
-      //   pageSize: 5,
-      //   paging: 1,
-      //   projectId: Number(xmid),
-      //   queryType: 'XMWD',
-      //   sort: '',
-      //   total: -1,
-      // });
+      //获取项目节点数据
+      const nodePromise = QueryProjectNode({
+        projectId: Number(xmid),
+      });
+      //获取项目跟踪数据
+      const trackingPromise = QueryProjectTracking({
+        projectId: Number(xmid),
+        // projectManager
+        // org
+        // startTime
+        // endTime
+        // cycle
+        queryType: 'GZZB',
+        // projectType
+        sort: 'XMZQ ASC',
+      });
+      //项目文档数据
+      const docPromise = QueryProjectFiles({
+        current: 1,
+        // fileId: 0,
+        // matterId: 0,
+        // milestoneId: 0,
+        pageSize: 5,
+        paging: 1,
+        projectId: Number(xmid),
+        queryType: 'XMWD',
+        sort: '',
+        total: -1,
+      });
+      //项目文档 - 里程碑数据
+      const docLcbPromise = QueryProjectFiles({
+        current: 1,
+        pageSize: 99,
+        paging: -1,
+        projectId: Number(xmid),
+        queryType: 'LCBTJ',
+        sort: '',
+        total: -1,
+      });
       //获取留言数据
       const msgPromise = QueryProjectMessages({
         current: 1,
@@ -141,9 +150,10 @@ export default function ProjectDetail(props) {
         xmlxRes,
         roleRes,
         infoRes,
-        // nodeRes,
-        // trackingRes,
-        // docRes,
+        nodeRes,
+        trackingRes,
+        docRes,
+        docLcbRes,
         msgRes,
         allMsRes,
         curMsRes,
@@ -152,20 +162,23 @@ export default function ProjectDetail(props) {
         xmlxPromise,
         rolePromise,
         infoPromise,
-        // nodePromise,
-        // trackingPromise,
-        // docPromise,
+        nodePromise,
+        trackingPromise,
+        docPromise,
+        docLcbPromise,
         msgPromise,
         allMsPromise,
         curMsPromise,
         msItemPromise,
       ]);
+
       const xmlxData = (await xmlxRes) || {};
       const roleData = (await roleRes) || {};
       const infoData = (await infoRes) || {};
-      // const nodeData = (await nodeRes) || {};
-      // const trackingData = (await trackingRes) || {};
-      // const docData = (await docRes) || {};
+      const nodeData = (await nodeRes) || {};
+      const trackingData = (await trackingRes) || {};
+      const docData = (await docRes) || {};
+      const docLcbData = (await docLcbRes) || {};
       const msgData = (await msgRes) || {};
       const allMsData = (await allMsRes) || {};
       const curMsData = (await curMsRes) || {};
@@ -182,6 +195,7 @@ export default function ProjectDetail(props) {
       }
       if (roleData.success) {
         setIsLeader(roleData.role !== '普通人员');
+        setIsBdgtMnger(roleData.zyrole === '预算管理人');
       }
       if (infoData.success) {
         const p = (str, isArr = true) => {
@@ -241,7 +255,7 @@ export default function ProjectDetail(props) {
           xmjbxxRecord: p(infoData.xmjbxxRecord),
         };
         console.log('🚀 ~ file: index.js:229 ~ handlePromiseAll ~ obj:', obj);
-        setPrjData(obj);
+        setPrjData(p => ({ ...p, ...obj }));
       }
       if (allMsData.success) {
         //里程碑数据
@@ -353,30 +367,50 @@ export default function ProjectDetail(props) {
           }
         }
       }
-      // if (nodeData.success) {
-      //   let nodeArr = JSON.parse(nodeData.result).reverse();
-      //   setPrjData(p => ({
-      //     ...p,
-      //     nodeData: nodeArr,
-      //   }));
-      // }
-      // if (trackingData.success) {
-      //   let trackingArr = JSON.parse(trackingData.result);
-      //   setPrjData(p => ({
-      //     ...p,
-      //     trackingData: trackingArr,
-      //   }));
-      // }
-      // if (docData.success) {
-      //   setPrjDocData(p => ({
-      //     ...p,
-      //     data: JSON.parse(docData.wdResult),
-      //     total: docData.totalrows,
-      //     current: 1,
-      //     pageSize: 5,
-      //     loading: false,
-      //   }));
-      // }
+      if (nodeData.success) {
+        let nodeArr = JSON.parse(nodeData.result).reverse();
+        setPrjData(p => ({
+          ...p,
+          nodeData: nodeArr,
+        }));
+      }
+      if (trackingData.success) {
+        let trackingArr = JSON.parse(trackingData.result);
+        setPrjData(p => ({
+          ...p,
+          trackingData: trackingArr,
+        }));
+      }
+      if (docData.success) {
+        setPrjDocData(p => ({
+          ...p,
+          data: JSON.parse(docData.wdResult),
+          // total: docData.totalrows,
+          current: 1,
+          pageSize: 5,
+          loading: false,
+        }));
+      }
+      if (docLcbData.success) {
+        const wdsl = JSON.parse(docLcbData.lcbResult).reduce(
+          (total, item) => total + parseInt(item.WDSL),
+          0,
+        );
+        const lcbArr = JSON.parse(docLcbData.lcbResult);
+        lcbArr.unshift({
+          LCB: '全部',
+          LCBID: 'qb',
+          WDSL: wdsl,
+        });
+        setPrjDocData(p => ({
+          ...p,
+          loading: false,
+          lcbOrigin: lcbArr,
+          lcb: lcbArr.filter(x => x.LCBID !== 'qb'),
+          total: wdsl,
+          curLcb: lcbArr[0],
+        }));
+      }
       if (msgData.success) {
         //最初获取数据
         setMsgData([...JSON.parse(msgData.result)]);
@@ -455,7 +489,7 @@ export default function ProjectDetail(props) {
             supplier: supplierArr,
             xmjbxxRecord: p(res.xmjbxxRecord),
           };
-          setPrjData(obj);
+          setPrjData(p => ({ ...p, ...obj }));
           setIsSpinning(false);
         }
       })
@@ -467,13 +501,13 @@ export default function ProjectDetail(props) {
   };
 
   //项目文档信息 - 后续刷新数据
-  const getPrjDocData = (current = 1, pageSize = 5) => {
+  const getPrjDocData = ({ current = 1, pageSize = 5, LCBID = undefined, totalChange = false }) => {
     setPrjDocData(p => ({ ...p, loading: true }));
     QueryProjectFiles({
       current,
       // fileId: 0,
       // matterId: 0,
-      // milestoneId: 0,
+      milestoneId: LCBID ? Number(LCBID) : undefined,
       pageSize,
       paging: 1,
       projectId: Number(xmid),
@@ -500,6 +534,46 @@ export default function ProjectDetail(props) {
         setIsSpinning(false);
         setPrjDocData(p => ({ ...p, loading: false }));
       });
+    //项目文档-里程碑 - totalChange文档数量会改变时调用
+    totalChange &&
+      QueryProjectFiles({
+        current: 1,
+        pageSize: 99,
+        paging: -1,
+        projectId: Number(xmid),
+        queryType: 'LCBTJ',
+        sort: '',
+        total: -1,
+      })
+        .then(res => {
+          if (res?.success) {
+            const wdsl = JSON.parse(res.lcbResult).reduce(
+              (total, item) => total + parseInt(item.WDSL),
+              0,
+            );
+            const lcbArr = JSON.parse(res.lcbResult);
+            lcbArr.unshift({
+              LCB: '全部',
+              LCBID: 'qb',
+              WDSL: wdsl,
+            });
+            setPrjDocData(p => ({
+              ...p,
+              loading: false,
+              lcbOrigin: lcbArr,
+              lcb: lcbArr.filter(x => x.LCBID !== 'qb'),
+              total: wdsl,
+              curLcb: lcbArr[0],
+            }));
+            setIsSpinning(false);
+          }
+        })
+        .catch(e => {
+          console.error('🚀项目文档-里程碑信息', e);
+          message.error('项目文档-里程碑信息获取失败', 1);
+          setIsSpinning(false);
+          setPrjDocData(p => ({ ...p, loading: false }));
+        });
   };
 
   //获取里程碑数据 - 后续刷新数据
@@ -589,6 +663,23 @@ export default function ProjectDetail(props) {
     }
   };
 
+  //获取项目跟踪数据
+  const getTrackingData = () => {
+    QueryProjectTracking({
+      projectId: Number(xmid),
+      queryType: 'GZZB',
+      sort: 'XMZQ ASC',
+    })
+      .then(res => {
+        if (res?.success) {
+          setPrjData(p => ({ ...p, trackingData: JSON.parse(res.result) }));
+        }
+      })
+      .catch(e => {
+        message.error('接口信息获取失败', 1);
+      });
+  };
+
   return (
     <Spin
       spinning={isSpinning}
@@ -613,9 +704,9 @@ export default function ProjectDetail(props) {
               xmid={xmid}
               prjData={prjData}
               getPrjDtlData={() => {
-                getPrjDtlData();
+                // getPrjDtlData();
                 getMileStoneData();
-                // getPrjDocData();
+                // getPrjDocData({ totalChange: true });
               }}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}
@@ -636,24 +727,32 @@ export default function ProjectDetail(props) {
                 setEndIndex,
               }}
             />
-            {/* <PrjTracking xmid={xmid} prjData={prjData} /> */}
+            <PrjTracking xmid={xmid} prjData={prjData} getTrackingData={getTrackingData} isLeader={isLeader}/>
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
               prjData={prjData}
               routes={routes}
               xmid={xmid}
               isLeader={isLeader}
+              isBdgtMnger={isBdgtMnger}
             />
           </div>
           <div className="col-right">
-            <PrjMember routes={routes} prjData={prjData} xmid={xmid}  getPrjDtlData={getPrjDtlData} isLeader={isLeader} />
-            {/* <PrjNode prjData={prjData} /> */}
-            {/* <PrjDoc
+            <PrjMember
+              routes={routes}
+              prjData={prjData}
+              xmid={xmid}
+              getPrjDtlData={getPrjDtlData}
+              isLeader={isLeader}
+            />
+            <PrjNode prjData={prjData} />
+            <PrjDoc
               prjDocData={prjDocData}
               setPrjDocData={setPrjDocData}
               getPrjDocData={getPrjDocData}
-              xmid={xmid}
-            /> */}
+              prjData={prjData}
+              isLeader={isLeader}
+            />
             <PrjMessage xmid={xmid} msgData={msgData} setMsgData={setMsgData} />
           </div>
         </div>
