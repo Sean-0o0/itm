@@ -27,7 +27,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 const { TabPane } = Tabs;
 
 export default function PrjTracking(props) {
-  const [filterResName, setFilterResName] = useState('全部');
+  const [filterResName, setFilterResName] = useState('查看全部');
   const [filterVisible, setFilterVisible] = useState(false);
   const [trackingDetail, setTrackingDetail] = useState({});
   const { dictionary, getTrackingData, stateProps = {} } = props;
@@ -224,7 +224,7 @@ export default function PrjTracking(props) {
             </div>
             <Link to={linkTo} style={{ display: 'contents' }}>
               <div className="prj-tracking-infos-right">
-                全部 <i className="iconfont icon-right" />
+                查看全部 <i className="iconfont icon-right"/>
               </div>
             </Link>
           </div>
@@ -250,7 +250,7 @@ export default function PrjTracking(props) {
                       >
                         <div
                           className={
-                            i.BZZT === 2 || i.BZZT === 3 || i.BZZT === 5
+                            i.BZZT === 1 || i.BZZT === 2 || i.BZZT === 4
                               ? 'prj-tracking-infos-name level-1'
                               : 'prj-tracking-infos-name level-2'
                           }
@@ -314,7 +314,7 @@ export default function PrjTracking(props) {
                                 {i.BZJD >= 0 && (
                                   <span
                                     className={
-                                      i.BZZT === 2 || i.BZZT === 3 || i.BZZT === 5
+                                      i.BZZT === 1 || i.BZZT === 2 || i.BZZT === 4
                                         ? 'font-color-lv1'
                                         : 'font-color-lv2'
                                     }
@@ -327,7 +327,7 @@ export default function PrjTracking(props) {
                             {
                               <div
                                 className={
-                                  i.BZZT === 2 || i.BZZT === 3 || i.BZZT === 5
+                                  i.BZZT === 1 || i.BZZT === 2 || i.BZZT === 4
                                     ? 'prj-tracking-infos-detail-row2-lev1'
                                     : 'prj-tracking-infos-detail-row2-lev2'
                                 }
@@ -352,30 +352,30 @@ export default function PrjTracking(props) {
                                 className="prj-tracking-infos-detail-row3-risk"
                                 style={{ alignItems: 'center', display: 'flex' }}
                               >
-                                {i.SZZT === 1 ? (
+                                {i.SZZT === 5 ? (
                                   <div className="prj-status-icon-lv1">
-                                    <i className="iconfont icon-hourglass" />
+                                    <i className="iconfont icon-hourglass"/>
+                                  </div>
+                                ) : i.SZZT === 1 ? (
+                                  <div className="prj-status-icon-lv2">
+                                    <i className="iconfont icon-alarm"/>
                                   </div>
                                 ) : i.SZZT === 2 ? (
-                                  <div className="prj-status-icon-lv2">
-                                    <i className="iconfont icon-alarm" />
+                                  <div className="prj-status-icon-lv3">
+                                    <i className="iconfont icon-alarm"/>
                                   </div>
                                 ) : i.SZZT === 3 ? (
-                                  <div className="prj-status-icon-lv3">
-                                    <i className="iconfont icon-alarm" />
+                                  <div className="prj-status-icon-lv4">
+                                    <i className="iconfont icon-alarm"/>
                                   </div>
                                 ) : i.SZZT === 4 ? (
-                                  <div className="prj-status-icon-lv4">
-                                    <i className="iconfont icon-alarm" />
-                                  </div>
-                                ) : i.SZZT === 5 ? (
                                   <div className="prj-status-icon-lv5">
-                                    <i className="iconfont icon-delay" />
+                                    <i className="iconfont icon-delay"/>
                                   </div>
                                 ) : (
                                   i.SZZT === 6 && (
                                     <div className="prj-status-icon-lv6">
-                                      <i className="iconfont circle-check" />
+                                      <i className="iconfont circle-check"/>
                                     </div>
                                   )
                                 )}
@@ -392,30 +392,30 @@ export default function PrjTracking(props) {
                                     className="prj-tracking-infos-detail-row3-risk"
                                     style={{ alignItems: 'center', display: 'flex' }}
                                   >
-                                    {i.BZZT === 1 ? (
+                                    {i.BZZT === 5 ? (
                                       <div className="prj-status-icon-lv1">
-                                        <i className="iconfont icon-hourglass" />
+                                        <i className="iconfont icon-hourglass"/>
+                                      </div>
+                                    ) : i.BZZT === 1 ? (
+                                      <div className="prj-status-icon-lv2">
+                                        <i className="iconfont icon-alarm"/>
                                       </div>
                                     ) : i.BZZT === 2 ? (
-                                      <div className="prj-status-icon-lv2">
-                                        <i className="iconfont icon-alarm" />
+                                      <div className="prj-status-icon-lv3">
+                                        <i className="iconfont icon-alarm"/>
                                       </div>
                                     ) : i.BZZT === 3 ? (
-                                      <div className="prj-status-icon-lv3">
-                                        <i className="iconfont icon-alarm" />
+                                      <div className="prj-status-icon-lv4">
+                                        <i className="iconfont icon-alarm"/>
                                       </div>
                                     ) : i.BZZT === 4 ? (
-                                      <div className="prj-status-icon-lv4">
-                                        <i className="iconfont icon-alarm" />
-                                      </div>
-                                    ) : i.BZZT === 5 ? (
                                       <div className="prj-status-icon-lv5">
-                                        <i className="iconfont icon-delay" />
+                                        <i className="iconfont icon-delay"/>
                                       </div>
                                     ) : (
                                       i.BZZT === 6 && (
                                         <div className="prj-status-icon-lv6">
-                                          <i className="iconfont circle-check" />
+                                          <i className="iconfont circle-check"/>
                                         </div>
                                       )
                                     )}

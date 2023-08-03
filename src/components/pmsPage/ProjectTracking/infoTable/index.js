@@ -403,8 +403,9 @@ export default function InfoTable(props) {
         <HisPrjInfo xmid={xmid} xmzq={xmzq} closeModal={closeHisPrjInfoModal} visible={hisPrjInfoModalVisible}/>
       )
       }
+      {(total !== -1 && total !== 0) &&
       <div className='page-individual-prjTracking' style={{margin: '24px', backgroundColor: '#f7f8fa'}}>
-        {(total !== -1 && total !== 0) && <Pagination
+        <Pagination
           onChange={handleTableChange}
           onShowSizeChange={handleTableChange}
           pageSize={params.pageSize}
@@ -415,8 +416,8 @@ export default function InfoTable(props) {
           // hideOnSinglePage={true}
           showQuickJumper={true}
           showTotal={total => `共 ${total} 条数据`}
-        />}
-      </div>
+        />
+      </div>}
     </Spin>
   );
 }
