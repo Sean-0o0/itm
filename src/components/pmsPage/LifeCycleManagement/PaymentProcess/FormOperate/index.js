@@ -551,10 +551,9 @@ export default function FormOperate(props) {
     ],
     maxLength: 13,
   };
-  const LOGIN_USER = JSON.parse(sessionStorage.getItem('user'));
-  const LOGIN_USER_ID = LOGIN_USER.id;
-  const LOGIN_USER_NAME = LOGIN_USER.name;
-  const LOGIN_USER_ORG_NAME = localStorage.getItem('orgName');
+  let LOGIN_USER = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_NAME = LOGIN_USER.name;
+  let LOGIN_USER_ORG_NAME = localStorage.getItem('orgName');
   return (
     <Form style={{ padding: '0 24px' }}>
       <div className="basic-info-title">基本信息</div>

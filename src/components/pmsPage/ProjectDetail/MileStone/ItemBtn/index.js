@@ -70,6 +70,7 @@ class ItemBtn extends React.Component {
     currentFklcList: [], //查看的付款流程列表
     oackzttxVisible: false, //oa流程查看-状态填写弹窗
     oackzttxPopoverVisible: false, //oa流程查看-Popover弹窗
+    fklcPopoverVisible: false, //oa流程查看-Popover弹窗
   };
   // timer = null;
 
@@ -897,6 +898,7 @@ class ItemBtn extends React.Component {
             .then(res => {
               this.setState({
                 jumpLoading: false,
+                fklcPopoverVisible: false,
               });
               window.open(res.url);
             })
@@ -1016,9 +1018,11 @@ class ItemBtn extends React.Component {
               content={isFklc ? fklcNameListContent() : oaCKListContent()}
               overlayClassName="document-list-content-popover"
               trigger="click"
-              visible={isFklc ? undefined : this.state.oackzttxPopoverVisible}
+              visible={isFklc ? this.state.fklcPopoverVisible : this.state.oackzttxPopoverVisible}
               onVisibleChange={
-                isFklc ? undefined : v => this.setState({ oackzttxPopoverVisible: v })
+                isFklc
+                  ? v => this.setState({ fklcPopoverVisible: v })
+                  : v => this.setState({ oackzttxPopoverVisible: v })
               }
             >
               <div className="reopr-btn" onClick={() => lcck(item)}>
