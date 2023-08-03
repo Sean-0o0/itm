@@ -393,7 +393,8 @@ export default function InfoTable(props) {
               <a className="his-icon" onClick={() => toHisPrjInfoModal(item.XMID)}><i className="iconfont icon-right"/></a>
             </div>
           </div>
-        }) : <div className="info-table"><Empty
+        }) : <div className="info-table"
+                  style={{height: 'calc(100vh - 168px)', margin: '16px 24px', maxHeight: 'calc(100vh - 168px)'}}><Empty
           description="暂无数据"
           image={Empty.PRESENTED_IMAGE_SIMPLE}
           style={{width: '100%'}}
@@ -404,7 +405,7 @@ export default function InfoTable(props) {
       )
       }
       {(total !== -1 && total !== 0) &&
-      <div className='page-individual-prjTracking' style={{margin: '24px', backgroundColor: '#f7f8fa'}}>
+      <div className='page-individual-prjTracking' style={{margin: '0 24px', backgroundColor: '#f7f8fa'}}>
         <Pagination
           onChange={handleTableChange}
           onShowSizeChange={handleTableChange}
