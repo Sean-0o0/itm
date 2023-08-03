@@ -606,16 +606,16 @@ export default function HomePage(props) {
                 isLoading,
               }}
             />
-            <ProjectCard
-              itemWidth={itemWidth}
-              getAfterItem={getAfterItem}
-              userRole={userRole}
-              prjInfo={prjInfo}
-              getPrjInfo={getPrjInfo}
-              total={total.project}
-              placement={placement}
-              setPlacement={setPlacement}
-            />
+            {/*<ProjectCard*/}
+            {/*  itemWidth={itemWidth}*/}
+            {/*  getAfterItem={getAfterItem}*/}
+            {/*  userRole={userRole}*/}
+            {/*  prjInfo={prjInfo}*/}
+            {/*  getPrjInfo={getPrjInfo}*/}
+            {/*  total={total.project}*/}
+            {/*  placement={placement}*/}
+            {/*  setPlacement={setPlacement}*/}
+            {/*/>*/}
             {/*项目跟踪*/}
             <PrjTracking
               dictionary={dictionary}
