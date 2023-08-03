@@ -704,7 +704,7 @@ export default function ProjectDetail(props) {
               xmid={xmid}
               prjData={prjData}
               getPrjDtlData={() => {
-                // getPrjDtlData();
+                getPrjDtlData();
                 getMileStoneData();
                 // getPrjDocData({ totalChange: true });
               }}

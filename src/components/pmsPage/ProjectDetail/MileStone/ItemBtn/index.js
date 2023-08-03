@@ -526,7 +526,7 @@ class ItemBtn extends React.Component {
         case '软件费用审批流程-无合同':
           return 'ZSZQ_RJGM';
         case '项目立项申请':
-          return 'ZSZQ_XMLXSQZB';
+          return ['ZSZQ_XMLXSQ', 'ZSZQ_XMLXSQXX', 'ZSZQ_XMLXSQZB'];
         case '软件合同签署流程':
           return 'ZSZQ_XXJSBRCHT';
         case '设备采购有合同':
@@ -615,9 +615,19 @@ class ItemBtn extends React.Component {
           .then(ret => {
             const { code = 0, record = [] } = ret;
             if (code === 1) {
-              let arr = record
-                .map(x => ({ ...x, url: JSON.parse(x.url) }))
-                .filter(x => x.type === 'OA流程' && x.url.lclx === getLclx(item.sxmc));
+              let arr = [];
+              if (item.sxmc === '项目立项申请') {
+                arr = record
+                  .filter(x => x.type === 'OA流程')
+                  .map(x => ({ ...x, url: JSON.parse(x.url) }))
+                  .filter(x => getLclx(item.sxmc).includes(x.url.lclx));
+              } else {
+                arr = record
+                  .filter(x => x.type === 'OA流程')
+                  .map(x => ({ ...x, url: JSON.parse(x.url) }))
+                  .filter(x => x.url.lclx === getLclx(item.sxmc));
+              }
+
               this.setState({
                 fklcLoading: false,
                 currentFklcList: arr,
@@ -835,15 +845,19 @@ class ItemBtn extends React.Component {
       });
     };
     //状态填写
-    const zttx = lcid => {
+    const zttx = (lcid, lclx) => {
       //operate=TLC_OALCXX_ZTBG&Table=TLC_OALCXX&OALCID=
       const params = this.getParams(
         'TLC_OALCXX',
         'TLC_OALCXX_ZTBG',
         [
           {
-            name: 'OALCID',
+            name: 'XTLCID',
             value: Number(lcid),
+          },
+          {
+            name: 'LCLX',
+            value: lclx,
           },
         ],
         Loginname,
@@ -962,7 +976,7 @@ class ItemBtn extends React.Component {
                     {x.subject}
                   </div>
                 </Tooltip>
-                <div className="opr-btn" onClick={() => zttx(x.url?.lcid)}>
+                <div className="opr-btn" onClick={() => zttx(x.url?.lcid, x.url?.lclx)}>
                   状态填写
                 </div>
               </div>
