@@ -486,7 +486,7 @@ export default function HomePage(props) {
             ...p,
             tracking: res.totalrows,
           }));
-          setShowExtends(!flag);
+          params.pageSize === 9 ? setShowExtends(false) : setShowExtends(true);
         }
       })
       .catch(e => {

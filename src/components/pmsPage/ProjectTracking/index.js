@@ -75,6 +75,7 @@ export default function ProjectTracking(props) {
         if (res?.success) {
           setIsSpinning(false)
           const track = JSON.parse(res.result)
+          console.log("tracktracktrack-ccc", track)
           if (track.length > 0) {
             track.map((item, index) => {
               item.extends = index === 0;
@@ -138,6 +139,7 @@ export default function ProjectTracking(props) {
             lastweek[0].SJ = "上周";
             trackold[0].tableInfo.push(lastweek[0]);
           }
+          console.log("trackoldtrackold-ccc", trackold)
           setTrackingData([...trackold])
           setIsSpinning(false)
           console.log("trackingDataNew", trackold)

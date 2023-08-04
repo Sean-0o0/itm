@@ -352,7 +352,7 @@ export default function InfoTable(props) {
             {/*项目名称*/}
             <div className="prj-basic-info">
               <div
-                className={thisweek.length > 0 ? (thisweek[0].DQZT === '高风险' || thisweek[0].DQZT === '延期' || thisweek[0].DQZT === '中风险' ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2") : "prj-name prj-name-lv2"}>
+                className={thisweek.length > 0 ? (thisweek[0].DQZT === '高风险' || thisweek[0].DQZT === '延期' || thisweek[0].DQZT === '中风险' ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2") : (item.BZZT === 1 || item.BZZT === 2 || item.BZZT === 4 ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2")}>
                 <i onClick={() => changeExtends(item)}
                    className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
                 <Link
