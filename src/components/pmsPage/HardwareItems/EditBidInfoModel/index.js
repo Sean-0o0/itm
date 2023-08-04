@@ -315,8 +315,8 @@ class EditBidInfoModel extends React.Component {
               base64: item.data,
             });
             arrTemp2.push({
-              documentData: item.data,
-              fileName: item.fileName,
+              base64: item.data,
+              name: item.fileName,
             });
           })
         }
