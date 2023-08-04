@@ -85,13 +85,6 @@ export default function OverviewCard(props) {
     return greeting;
   };
 
-  //弹窗操作成功
-  const handleOperateSuccess = txt => {
-    txt && message.success(txt, 1);
-    //刷新数据
-    reflush();
-  };
-
   //跳转livebos页面
   const jumpToLBPage = tableName => {
     // console.log('openLiveBosModal', tableName);
@@ -609,7 +602,8 @@ export default function OverviewCard(props) {
         <BridgeModel
           modalProps={ryxztxModalProps}
           onSucess={() => {
-            handleOperateSuccess('人员新增操作');
+            message.success('操作成功', 1);
+            reflush();
             setRyxztxModalVisible(false);
           }}
           onCancel={() => setRyxztxModalVisible(false)}
