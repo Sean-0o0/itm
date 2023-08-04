@@ -25,6 +25,7 @@ const { projectManage: {
   getDocumentByLiveBos,
   insertSubProjects,
   querySubProjectsInfo,
+  queryHWTenderFile,
 } } = api;
 
 // 查询软件清单
@@ -244,6 +245,16 @@ export async function InsertSubProjects(payload, configObj) {
 export async function FetchQuerySubProjectsInfo(payload, configObj) {
   const option = {
     url: querySubProjectsInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option, configObj);
+}
+
+//硬件项目-查询硬件标段信息的附件
+export async function FetchQueryHWTenderFile(payload, configObj) {
+  const option = {
+    url: queryHWTenderFile,
     method: 'post',
     data: payload,
   };

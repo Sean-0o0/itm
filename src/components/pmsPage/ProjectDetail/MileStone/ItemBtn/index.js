@@ -21,6 +21,7 @@ import EnterBidInfoModel from '../../../HardwareItems/EnterBidInfoModel';
 import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
+import EditBidInfoModel from "../../../HardwareItems/EditBidInfoModel";
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -1430,9 +1431,9 @@ class ItemBtn extends React.Component {
 
         {/* 硬件中标信息录入 */}
         {hardWareBidModalVisible && (
-          <EnterBidInfoModel
+          lbModalUrl === 'ADD' ? <EnterBidInfoModel
             xmid={Number(item.xmid)}
-            operateType={lbModalUrl} //type
+            // operateType={lbModalUrl} //type
             visible={hardWareBidModalVisible}
             closeModal={() =>
               this.setState({
@@ -1440,7 +1441,18 @@ class ItemBtn extends React.Component {
               })
             }
             onSuccess={() => this.onSuccess(lbModalTitle)}
-          ></EnterBidInfoModel>
+          /> : <EditBidInfoModel
+            xmid={Number(item.xmid)}
+            // operateType={lbModalUrl} //type
+            visible={hardWareBidModalVisible}
+            closeModal={() =>
+              this.setState({
+                hardWareBidModalVisible: false,
+              })
+            }
+            onSuccess={() => this.onSuccess(lbModalTitle)}
+          />
+
         )}
 
         {/* 硬件询比结果录入 */}
