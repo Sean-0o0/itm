@@ -690,6 +690,54 @@ class RealtivePicturePage extends Component {
     return echartsInstance.getOption().series[0].zoom;
   };
 
+  getTooltipCont = (dataType,data) =>{
+    if (dataType === 'node') {
+      const { name } = data
+      return "<div class='tooltip-content'>"
+        + "<div class='top-header'>"
+        + "<div class='header-title'>"+name+"</div>"
+        + "<a class='header-link' href='https://www.baidu.com/' target='_blank'>详情 ＞</a>"
+        + "</div>"
+        + "<div class='label-box'>"
+        + "<div class='label-item'>自研项目</div>"
+        + "<div class='label-item'>专班项目</div>"
+        + "<div class='label-item'>迭代项目</div>"
+        + "</div>"
+        + "<div class='detail-box'>"
+        + "<div class='detail-item'>"
+        + "<div class='item-label'>项目经理：</div>"
+        + "<div class='item-value'>郑潜</div>"
+        + "</div>"
+        + "<div class='detail-item'>"
+        + "<div class='item-label'>创建时间：</div>"
+        + "<div class='item-value'>2023/03/03</div>"
+        + "</div>"
+        + "<div class='detail-item'>"
+        + "<div class='item-label'>属性2：</div>"
+        + "<div class='item-value'>外采部门</div>"
+        + "</div>"
+        + "<div class='detail-item'>"
+        + "<div class='item-label'>应用部门：</div>"
+        + "<div class='item-value'>项目管理部门</div>"
+        + "</div>"
+        + "</div>"
+        + "<div class='lcb-box'>"
+        + "<div class='lcb-header'>"
+        + "<div class='dot'></div>"
+        + "⌜项目立项⌟ 阶段"
+        + "<div class='value'>16.7%</div>"
+        + "</div>"
+        + "<div class='lcb-process'>"
+        + "<div class='lcb-process-percent' style='width: 16.7%'></div>"
+        + "</div>"
+        + "</div>"
+        + "</div>"
+    } else if (dataType === 'edge'){
+      return "<div style='width: 0;height:0; opacity: 0'></div>"
+    }
+
+  }
+
   render() {
     const { zoom, dataSource = [], nodeNm, nodes, links } = this.state;
 
@@ -780,48 +828,7 @@ class RealtivePicturePage extends Component {
             renderMode: 'html',
             formatter: (params) => {
               const { data = {}, dataType } = params
-              if (dataType === 'node') {
-                return "<div class='tooltip-content'>"
-                  + "<div class='top-header'>"
-                  + "<div class='header-title'>投研平台建设</div>"
-                  + "<a class='header-link' href='https://www.baidu.com/' target='_blank'>详情 ＞</a>"
-                  + "</div>"
-                  + "<div class='label-box'>"
-                  + "<div class='label-item'>自研项目</div>"
-                  + "<div class='label-item'>专班项目</div>"
-                  + "<div class='label-item'>迭代项目</div>"
-                  + "</div>"
-                  + "<div class='detail-box'>"
-                  + "<div class='detail-item'>"
-                  + "<div class='item-label'>项目经理：</div>"
-                  + "<div class='item-value'>郑潜</div>"
-                  + "</div>"
-                  + "<div class='detail-item'>"
-                  + "<div class='item-label'>创建时间：</div>"
-                  + "<div class='item-value'>2023/03/03</div>"
-                  + "</div>"
-                  + "<div class='detail-item'>"
-                  + "<div class='item-label'>属性2：</div>"
-                  + "<div class='item-value'>外采部门</div>"
-                  + "</div>"
-                  + "<div class='detail-item'>"
-                  + "<div class='item-label'>应用部门：</div>"
-                  + "<div class='item-value'>项目管理部门</div>"
-                  + "</div>"
-                  + "</div>"
-                  + "<div class='lcb-box'>"
-                  + "<div class='lcb-header'>"
-                  + "<div class='dot'></div>"
-                  + "⌜项目立项⌟ 阶段"
-                  + "<div class='value'>16.7%</div>"
-                  + "</div>"
-                  + "<div class='lcb-process'>"
-                  + "<div class='lcb-process-percent' style='width: 16.7%'></div>"
-                  + "</div>"
-                  + "</div>"
-                  + "</div>"
-              } else if (dataType === 'edge')
-                return "<div style='width: 0;height:0; opacity: 0'></div>"
+              return this.getTooltipCont(dataType,data);
             }
           },
           color: ['#56a9f8', 'rgb(254, 167, 87)', 'rgb(214, 216, 225)', '#b883f8'],
