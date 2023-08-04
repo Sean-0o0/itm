@@ -33,10 +33,11 @@ export default function SystemNotice(props) {
           <div className={'item-title item-title-before'}>
             {xxlx === '4' ? (
               <span className={'icon-wrapper'}>
+                ...
                 <i className="iconfont icon-right" />
               </span>
             ) : (
-              <span className={'icon-wrapper-xxlx3'}></span>
+              <span className={'icon-wrapper-xxlx3'}>...</span>
             )}
             <Tooltip placement="topLeft" title={txnr}>
               {txnr}

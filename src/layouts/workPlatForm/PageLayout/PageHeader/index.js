@@ -1,5 +1,5 @@
 import React from 'react';
-import {Input, message, Tooltip} from 'antd';
+import { Input, message, Tooltip } from 'antd';
 // import SwitchTheme from './switchTheme';
 import UserDrop from './userDrop';
 import VisitedRoutes from './VisitedRoutes';
@@ -9,15 +9,16 @@ import { Scrollbars } from 'react-custom-scrollbars';
 import SwitchMenu from './SwitchMenu';
 import styles from './index.less';
 import LocalPathUtils from '../../../../utils/localPathUtils';
-import {GlobalSearch, QueryUserRole} from "../../../../services/pmsServices";
+import { GlobalSearch, QueryUserRole } from '../../../../services/pmsServices';
+import MsgNoticeDrawer from './msgNoticeDrawer';
 
-const {Search} = Input;
+const { Search } = Input;
 export default class PageHeader extends React.PureComponent {
   constructor(props) {
     super(props);
     this.state = {
       searchModalVisible: false,
-    }
+    };
   }
 
   componentWillUnmount() {
@@ -25,7 +26,7 @@ export default class PageHeader extends React.PureComponent {
   }
 
   render() {
-    const {searchModalVisible} = this.state
+    const { searchModalVisible } = this.state;
     const {
       menuTree,
       authorities = {},
@@ -41,7 +42,7 @@ export default class PageHeader extends React.PureComponent {
       projectName,
       theme,
     } = this.props;
-    const {globalSearch, TGYS_GYSRYQX, V_GYSRYQX} = authorities;
+    const { globalSearch, TGYS_GYSRYQX, V_GYSRYQX } = authorities;
     // console.log("ccccc-cc-ccc-c-c",authorities)
     // 引导
     const guidesRecords = [
@@ -66,8 +67,8 @@ export default class PageHeader extends React.PureComponent {
     const sysName = localStorage.getItem('sysName');
     return (
       <div className="zj-header" style={{ width: '100%', height: '100%' }}>
-        <div style={{ width: '200px', borderBottom: '1px solid #eeeff1', textAlign: 'center'}}>
-          <span >
+        <div style={{ width: '200px', borderBottom: '1px solid #eeeff1', textAlign: 'center' }}>
+          <span>
             <img
               className="logo"
               style={{ width: '118px' }}
@@ -79,7 +80,7 @@ export default class PageHeader extends React.PureComponent {
         {/*菜单栏*/}
         <div
           id="visited_routes_container"
-          style={{flex: 1, overflow: 'hidden', backgroundColor: 'white'}}
+          style={{ flex: 1, overflow: 'hidden', backgroundColor: 'white' }}
           className={`${styles.historyContainer}`}
         >
           <span>
@@ -89,34 +90,53 @@ export default class PageHeader extends React.PureComponent {
               menuTree={menuTree}
               routerList={routerList}
               projectName={projectName}
+              authorities={authorities}
             />
           </span>
         </div>
         {/*搜索框 */}
-        <div style={{display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : '', borderBottom: '1px solid rgb(238, 239, 241)'}}>
-          {
-            searchModalVisible && <SearchModal closeModal={() => {
-              this.setState({
-                searchModalVisible: false,
-              })
-            }} visible={searchModalVisible}/>
-          }
-          <div className='pobtop'>
-            <Input type="text" suffix={<i className="iconfont icon-search-name icon-personal"/>}
-                   onFocus={() => this.setState({
-                     searchModalVisible: true,
-                   })} placeholder='可查询项目、预算、文档、供应商、人员'/>
+        <div
+          style={{
+            display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : '',
+            borderBottom: '1px solid rgb(238, 239, 241)',
+          }}
+        >
+          {searchModalVisible && (
+            <SearchModal
+              closeModal={() => {
+                this.setState({
+                  searchModalVisible: false,
+                });
+              }}
+              visible={searchModalVisible}
+            />
+          )}
+          <div className="pobtop">
+            <Input
+              type="text"
+              suffix={<i className="iconfont icon-search-name icon-personal" />}
+              onFocus={() =>
+                this.setState({
+                  searchModalVisible: true,
+                })
+              }
+              placeholder="可查询项目、预算、文档、供应商、人员"
+            />
           </div>
         </div>
+        {/* 全局消息通知 */}
+        {/* {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined && (
+          <MsgNoticeDrawer authorities={authorities} />
+        )} */}
         {/*用户名*/}
         <div
           id="fma_opertion_drops"
           className="dis-fx"
-          style={{width: 'auto', borderBottom: '1px solid #eeeff1'}}
+          style={{ width: 'auto', borderBottom: '1px solid #eeeff1' }}
         >
           {Object.keys(authorities).includes('remindBell') && (
             <div id="guideTrigger_messageDrop">
-              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch}/>
+              <MessagesDrop {...messageDrop} dictionary={dictionary} dispatch={dispatch} />
             </div>
           )}
           {

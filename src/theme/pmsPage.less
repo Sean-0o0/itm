@@ -2720,6 +2720,145 @@
       }
     }
   }
+
+  //付款流程发起弹窗 - 关联申请
+  .connect-applay-box {
+    margin: 20px 24px;
+    margin-top: 0;
+    & > .connect-applay-title {
+      .font-s18();
+      border-bottom: 1px solid #e5e5e5;
+      color: #333;
+      height: 40px;
+    }
+
+    & > .connect-applay-btn {
+      margin: 16px 0;
+      transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+      .antd-btn-default();
+      margin-left: 0;
+    }
+  }
+}
+
+//付款流程发起弹窗 - 关联申请
+.payment-connect-apply-modal {
+  .ant-modal-body {
+    padding: 0;
+    overflow: hidden;
+    height: 646px;
+  }
+
+  .content-box {
+    padding: 16px 24px 16px 24px;
+
+    & > .input-search {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    & > .selector-type,
+    & > .selector-sort {
+      width: 120px;
+    }
+    & > .selector-sort {
+      margin-left: 16px;
+    }
+    & > .radio-list {
+      margin-top: 16px;
+      display: block;
+      height: 472px;
+      overflow: hidden;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+        background-color: #fafafa;
+        border-radius: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 5px;
+        width: 10px;
+      }
+
+      & > .radio-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        // margin-bottom: 6px;
+        cursor: pointer;
+
+        & > span:nth-child(2) {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          flex-grow: 1;
+          // border-radius: 5px;
+          transition: background-color 0.3s;
+          padding: 12px 8px;
+          border-bottom: 1px solid #e3e3e3;
+
+          &:hover {
+            background-color: #eaeaea66;
+          }
+
+          & > .radio-left {
+            font-size: 14px;
+            font-weight: bold;
+            color: #303133;
+            flex-grow: 1;
+            line-height: 22px;
+            margin-right: 8px;
+
+            .code-date {
+              font-size: 12px;
+              font-weight: normal;
+              color: #909399;
+              line-height: 16px;
+              margin-top: 4px;
+            }
+          }
+          & > .radio-right {
+            width: max-content;
+            flex-shrink: 0;
+            margin-left: auto;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: normal;
+            color: #c2c3c5;
+            .amount-label {
+              color: #909399;
+              margin-top: 2px;
+            }
+          }
+
+          & > .radio-detail {
+            border-left: 1px solid #e3e3e3;
+            line-height: 34px;
+            padding: 4px 8px 4px 16px;
+            margin-left: 16px;
+            color: #3361ff;
+            &:hover {
+              color: #3361ffaf;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //日期选择器样式
+  .ant-calendar-picker:hover .ant-calendar-picker-input:not(.ant-input-disabled),
+  .ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled),
+  .ant-input:hover,
+  .ant-input:focus {
+    border-color: #3361ff;
+  }
+
+  .ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled) {
+    box-shadow: 0 0 0 2px #3361ff33;
+  }
 }
 
 .payment-full-screen {
@@ -11125,17 +11264,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
             }
 
-            .item-title-xxlx3 {
-              &::before {
-                content: '...';
-                float: right;
-                position: absolute;
-                left: -2px;
-                color: #333;
-                transform: translateX(-90%);
-              }
-            }
-
             .item-title-before {
               &::before {
                 content: '';
@@ -11143,29 +11271,33 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 height: 24px;
               }
 
-              .icon-wrapper,
-              .icon-wrapper-xxlx3 {
+              .icon-wrapper {
                 float: right;
                 clear: both;
                 position: relative;
-                margin-left: 10px;
+                left: -3px;
+                bottom: 2px;
 
-                &::before {
-                  content: '...';
-                  position: absolute;
-                  left: -2px;
-                  color: #333;
-                  transform: translateX(-90%);
-                }
+                // &::before {
+                //   content: '...';
+                //   position: absolute;
+                //   left: -2px;
+                //   color: #333;
+                //   transform: translateX(-90%);
+                // }
                 .icon-right {
                   font-size: 14px;
                   transform: translateY(-1px);
                 }
               }
+
               .icon-wrapper-xxlx3 {
-                &::before {
-                  transform: translate(-15px, -1px);
-                }
+                float: right;
+                clear: both;
+                position: relative;
+                // margin-left: 10px;
+                left: -6px;
+                bottom: 2px;
               }
             }
 
@@ -17123,7 +17255,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       line-height: 24px;
 
       .prj-name-lv1 {
-        background: linear-gradient(270deg, rgba(255, 47, 49, 0) 0%, rgba(255, 47, 49, 0.1) 100%);;
+        background: linear-gradient(270deg, rgba(255, 47, 49, 0) 0%, rgba(255, 47, 49, 0.1) 100%);
       }
 
       .prj-name-lv2 {
@@ -20211,7 +20343,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
           //中风险/低风险
           .level-2 {
-            background: linear-gradient(270deg, rgba(51, 97, 255, 0) 0%, rgba(51, 97, 255, 0.1) 100%);
+            background: linear-gradient(
+              270deg,
+              rgba(51, 97, 255, 0) 0%,
+              rgba(51, 97, 255, 0.1) 100%
+            );
             border-radius: 1px;
           }
 

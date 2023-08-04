@@ -25,7 +25,7 @@ function treeToArrayData(treeData, childrenName) {
 const { TabPane } = Tabs;
 function VisitedRoutes(props) {
   // props
-  const { menuTree, history, routerList = [], projectName } = props;
+  const { menuTree, history, routerList = [], projectName, authorities } = props;
   // state
   const [urls, setUrls] = useState([]);
   // const [isFixedMore, setIsFixedMore] = useState(false);
@@ -156,6 +156,7 @@ function VisitedRoutes(props) {
   };
 
   let tabCount = 0;
+  const { TGYS_GYSRYQX, V_GYSRYQX } = authorities;
 
   return (
     <div className={'clearfix top-tabs-box'} id="visited-scroll">
@@ -167,11 +168,19 @@ function VisitedRoutes(props) {
         }}
         activeKey={newPathname}
       >
-        <TabPane
-          tab={<Link to="/pms/manage/HomePage">个人工作台</Link>}
-          closable={false}
-          key="/pms/manage/HomePage"
-        ></TabPane>
+        {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined ? (
+          <TabPane
+            tab={<Link to="/pms/manage/HomePage">个人工作台</Link>}
+            closable={false}
+            key="/pms/manage/HomePage"
+          ></TabPane>
+        ) : (
+          <TabPane
+            tab={<Link to="/pms/manage/SupplierDmInfo">外包需求列表</Link>}
+            closable={false}
+            key="/pms/manage/SupplierDmInfo"
+          ></TabPane>
+        )}
         {handleUrls(urls).length > 0 &&
           handleUrls(urls).map(item => {
             let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
@@ -272,6 +281,9 @@ function VisitedRoutes(props) {
               }
             });
             if (item.includes('/pms/manage/HomePage')) {
+              return null;
+            }
+            if ((TGYS_GYSRYQX || V_GYSRYQX) && item.includes('/pms/manage/SupplierDmInfo')) {
               return null;
             }
             if (title === '' && routerList.length > 0) {

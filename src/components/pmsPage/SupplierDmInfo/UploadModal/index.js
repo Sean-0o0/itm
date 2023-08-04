@@ -216,11 +216,6 @@ function UploadModal(props) {
                           ];
                           return arr;
                         });
-                        // setFileList(p => {
-                        //   p.forEach(x => {
-                        //     x.status === 'uploading' ? 'done' : x.status;
-                        //   });
-                        // });
                       } else {
                         setFileList(p => {
                           let arr = p.filter(x => x.status !== 'removed');
@@ -241,6 +236,8 @@ function UploadModal(props) {
                             'application/pdf',
                             'application/msword',
                             'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                            'application/wps-office.docx',
+                            'application/wps-office.doc',
                           ].includes(x.type)
                         ) {
                           const reader = new FileReader();
@@ -263,7 +260,7 @@ function UploadModal(props) {
                     });
                   }}
                   beforeUpload={async (file, fileList) => {
-                    console.log('🚀 ~ file: index.js:253 ~ beforeUpload={ ~ file:', file);
+                    console.log('🚀 ~ file: index.js:253 ~ beforeUpload:', file);
                     function readFile(file) {
                       return new Promise((resolve, reject) => {
                         const reader = new FileReader();
@@ -274,6 +271,10 @@ function UploadModal(props) {
                             .map(byte => byte.toString(16).padStart(2, '0'))
                             .join('')
                             .slice(0, 8);
+                          console.log(
+                            "🚀 ~ '504b0304', '25504446', 'd0cf11e0' ~ headerInfoHex:",
+                            headerInfoHex,
+                          );
                           if (!['504b0304', '25504446', 'd0cf11e0'].includes(headerInfoHex)) {
                             resolve(false);
                           } else {
@@ -292,6 +293,8 @@ function UploadModal(props) {
                         'application/pdf',
                         'application/msword',
                         'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                        'application/wps-office.docx',
+                        'application/wps-office.doc',
                       ].includes(file.type)
                     ) {
                       message.error('仅支持doc、docx、pdf格式文件', 1);
@@ -301,30 +304,6 @@ function UploadModal(props) {
                       message.error('仅支持doc、docx、pdf格式文件', 1);
                       return false;
                     }
-                    let arr = [];
-                    // fileList.forEach((item, index) => {
-                    // let reader = new FileReader(); //实例化文件读取对象
-                    // reader.readAsDataURL(item); //将文件读取为 DataURL,也就是base64编码
-                    // reader.onload = e => {
-                    //   //文件读取成功完成时触发
-                    //   let urlArr = e.target.result.split(',');
-                    //   arr.push({
-                    //     number: String(index),
-                    //     uid: item.uid,
-                    //     fileName: item.name,
-                    //     data: urlArr[1],
-                    //     // new: true,
-                    //   });
-                    //   if (arr.length === fileList.length) {
-                    //     debounce(() => {
-                    //       setNewAddData(p => {
-                    //         console.log('newAddData: ', [...p, ...arr]);
-                    //         return [...p, ...arr];
-                    //       });
-                    //     }, 500);
-                    //   }
-                    // };
-                    // });
                     let reader = new FileReader(); //实例化文件读取对象
                     reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
                     reader.onload = e => {
