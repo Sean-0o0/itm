@@ -358,11 +358,7 @@ class StaffTable extends Component {
               ellipsis: true,
               sorter: true,
               sortDirections: ['descend', 'ascend'],
-              render: txt => (
-                <span style={{ marginRight: 20 }}>
-                  {txt === '-1' ? '***' : getAmountFormat(txt)}
-                </span>
-              ),
+              render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
             },
             {
               title: '已付款金额(万元)',
@@ -373,11 +369,7 @@ class StaffTable extends Component {
               ellipsis: true,
               sorter: true,
               sortDirections: ['descend', 'ascend'],
-              render: txt => (
-                <span style={{ marginRight: 20 }}>
-                  {txt === '-1' ? '***' : getAmountFormat(txt)}
-                </span>
-              ),
+              render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
             },
             {
               title: '关联预算项目',
@@ -633,9 +625,7 @@ class StaffTable extends Component {
         ellipsis: true,
         sorter: (a, b) => Number(a.HTJE || 0) - Number(b.HTJE || 0),
         sortDirections: ['descend', 'ascend'],
-        render: txt => (
-          <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-        ),
+        render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
       },
       {
         title: '已付款金额(元)',
@@ -646,9 +636,7 @@ class StaffTable extends Component {
         ellipsis: true,
         sorter: (a, b) => Number(a.YFKJE || 0) - Number(b.YFKJE || 0),
         sortDirections: ['descend', 'ascend'],
-        render: txt => (
-          <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-        ),
+        render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
       },
       {
         title: '未付款金额(元)',
@@ -659,9 +647,7 @@ class StaffTable extends Component {
         ellipsis: true,
         sorter: (a, b) => Number(a.WFKJE || 0) - Number(b.WFKJE || 0),
         sortDirections: ['descend', 'ascend'],
-        render: txt => (
-          <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-        ),
+        render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
       },
       {
         title: '付款时间',
@@ -730,7 +716,11 @@ class StaffTable extends Component {
           key: 'YJZXL',
           align: 'right',
           value:
-            queryType === 'MX_FZB' ? Number(ysglxx.FZBWCL) + '%' : Number(ysglxx.KYYSZXL) + '%',
+            queryType === 'MX_FZB'
+              ? Number(ysglxx.FZBWCL) + '%'
+              : queryType === 'MX_KY'
+              ? Number(ysglxx.KYYSZXL) + '%'
+              : Number(ysglxx.ZBRJWCL) + '%',
         },
       ];
       if (queryType === 'MX_QT' && tableData.length > 0)
