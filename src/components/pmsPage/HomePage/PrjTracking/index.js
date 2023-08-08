@@ -260,8 +260,6 @@ export default function PrjTracking(props) {
                             <div className="prj-tracking-infos-left">
                               <Tooltip title={i.XMMC}>{i.XMMC}</Tooltip>
                             </div>
-                          </div>
-                          <div className="prj-tracking-infos-week">
                             <Popconfirm
                               title={i.SFSC === 0 ? '确定收藏？' : '确定取消收藏？'}
                               onConfirm={e => handleProjectCollect(e, i.SFSC === 0, i.XMID)}
@@ -282,6 +280,8 @@ export default function PrjTracking(props) {
                                 }
                               />
                             </Popconfirm>
+                          </div>
+                          <div className="prj-tracking-infos-week">
                             Week&nbsp;{i.XMZQ}
                           </div>
                         </div>

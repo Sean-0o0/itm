@@ -101,8 +101,8 @@ export default function InfoTable(props) {
         <span>
           {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text || ''}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
         </span>
       )
     },
@@ -122,8 +122,8 @@ export default function InfoTable(props) {
         <span>
           {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text || ''}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
         </span>
       )
     },
@@ -143,8 +143,8 @@ export default function InfoTable(props) {
         <span>
           {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text || ''}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
         </span>
       )
     },

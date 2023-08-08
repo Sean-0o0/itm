@@ -202,8 +202,8 @@ export default function InfoTable(props) {
         <span>
           {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text || ''}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
         </span>
       )
     },
@@ -217,8 +217,8 @@ export default function InfoTable(props) {
         <span>
           {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text || ''}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
         </span>
       )
     },
@@ -232,8 +232,8 @@ export default function InfoTable(props) {
         <span>
           {text && text.length > 60 ? (
             <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
-                                                      title={text || ''}><span
-              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
         </span>
       )
     }, {
@@ -352,11 +352,23 @@ export default function InfoTable(props) {
             {/*项目名称*/}
             <div className="prj-basic-info">
               <div
+                style={{borderRadius: item.extends ? '8px 1px 1px 1px' : '8px'}}
                 className={thisweek.length > 0 ? (thisweek[0].DQZT === '高风险' || thisweek[0].DQZT === '延期' || thisweek[0].DQZT === '中风险' ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2") : (item.BZZT === 1 || item.BZZT === 2 || item.BZZT === 4 ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2")}>
                 <i onClick={() => changeExtends(item)}
                    className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
+                {item.XMMC}
+              </div>
+              <div className="prj-manage">
+                <span className="title">项目经理：</span>
+                <span className="label">{item.XMJL}</span>
+              </div>
+              <div className="prj-week">
+                <span className="title">周期：</span>
+                <span className="label">第{item.XMZQ}周</span>
+              </div>
+              <div className="prj-detail">
                 <Link
-                  style={{paddingLeft: '8px', color: '#3361ff'}}
+                  style={{color: '#3361ff'}}
                   to={{
                     pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                       JSON.stringify({
@@ -369,16 +381,9 @@ export default function InfoTable(props) {
                   }}
                   className="table-link-strong"
                 >
-                  {item.XMMC}
+                  项目详情
+                  <i className="iconfont icon-right"/>
                 </Link>
-              </div>
-              <div className="prj-manage">
-                <span className="title">项目经理：</span>
-                <span className="label">{item.XMJL}</span>
-              </div>
-              <div className="prj-week">
-                <span className="title">周期：</span>
-                <span className="label">第{item.XMZQ}周</span>
               </div>
             </div>
             {/*表格内容*/}

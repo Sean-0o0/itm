@@ -17264,7 +17264,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .prj-name {
-        border-radius: 8px 1px 1px 1px;
         border: 2px solid #ffffff;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
@@ -17275,6 +17274,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         width: 33.5%;
         height: 56px;
         .iconfont {
+          padding-right: 8px;
           color: #909399;
         }
       }
@@ -17302,7 +17302,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .prj-week {
-        width: 40%;
+        width: 20%;
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
@@ -17314,6 +17314,23 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .label {
           color: #303133;
+        }
+      }
+
+      .prj-detail {
+        cursor: pointer;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: end;
+        width: 20%;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        line-height: 22px;
+
+        .iconfont {
+          padding-left: 4px;
+          font-size: 14px;
         }
       }
     }
@@ -19593,6 +19610,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .rep-infos-right {
+        font-family: PingFangSC-Regular, PingFang SC;
         width: 50%;
         cursor: pointer;
         text-align: end;
@@ -19655,6 +19673,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
             .rep-infos-icon2 {
               //width: 10%;
+              line-height: 20px;
               color: #f9a812;
               font-size: 16px;
               padding-left: 6px;
@@ -20297,6 +20316,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .prj-tracking-infos-right {
+        font-family: PingFangSC-Regular, PingFang SC;
         width: 50%;
         cursor: pointer;
         text-align: end;
@@ -20358,6 +20378,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             height: 40px;
 
             .prj-tracking-infos-left-flex {
+              display: flex;
               flex: 1; //在可用的空间内100%填充
               width: 0;
 
@@ -20373,11 +20394,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 line-height: 22px;
                 font-family: PingFangSC-Medium, PingFang SC;
               }
+
+              .prj-tracking-infos-icon2 {
+                padding-left: 10px;
+                line-height: 20px;
+                color: #f9a812;
+                font-size: 16px;
+                //padding-right: 19px;
+              }
             }
 
             .prj-tracking-infos-week {
               text-align: end;
-              width: 95px;
+              width: 65px;
               height: 22px;
               font-size: 12px;
               font-family: PingFangSC-Regular, PingFang SC;
