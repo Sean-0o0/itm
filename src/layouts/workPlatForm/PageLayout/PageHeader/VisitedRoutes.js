@@ -182,6 +182,8 @@ function VisitedRoutes(props) {
           ></TabPane>
         )}
         {handleUrls(urls).length > 0 &&
+          TGYS_GYSRYQX === undefined &&
+          V_GYSRYQX === undefined &&
           handleUrls(urls).map(item => {
             let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
             let urlEndArr = [

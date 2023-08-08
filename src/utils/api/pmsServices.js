@@ -667,4 +667,16 @@ export default [
     url: '/projectManage/inviteMemberAgain',
     dis: '再次邀请人员',
   },
+  {
+    code: '',
+    key: 'queryRequisitionData',
+    url: '/EKB/v1/queryRequisitionData',
+    dis: '查询关联申请信息',
+  },
+  {
+    code: '',
+    key: 'queryUnreadInfo',
+    url: '/projectManage/queryUnreadInfo',
+    dis: '前端轮询获取未读信息数量',
+  },
 ];

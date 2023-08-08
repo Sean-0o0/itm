@@ -2738,6 +2738,90 @@
       .antd-btn-default();
       margin-left: 0;
     }
+
+    & > .selected-radio-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      flex-grow: 1;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      padding: 12px 8px;
+      border-bottom: 1px solid #e3e3e3;
+      border-radius: 8px;
+      // box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+      background-color: rgba(246, 245, 245, 0.5);
+      transition: all 0.3 ease;
+      position: relative;
+      margin-bottom: 16px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: aliceblue;
+      }
+
+      & > .radio-left {
+        font-size: 14px;
+        font-weight: bold;
+        color: #303133;
+        flex-grow: 1;
+        line-height: 22px;
+        margin-right: 8px;
+
+        .code-date {
+          font-size: 12px;
+          font-weight: normal;
+          color: #909399;
+          line-height: 16px;
+          margin-top: 4px;
+        }
+      }
+      & > .radio-right {
+        width: max-content;
+        flex-shrink: 0;
+        margin-left: auto;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: normal;
+        color: #c2c3c5;
+        .amount-label {
+          color: #909399;
+          margin-top: 2px;
+        }
+      }
+
+      & > .hover-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 1em;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 0 8px 0 0;
+        -webkit-box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+        box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+        background-color: hsla(0, 0%, 100%, 0.6);
+        transition: all 0.3 ease;
+        padding: 0 8px;
+        cursor: pointer;
+        display: none;
+
+        i {
+          color: #333;
+          font-size: 14px;
+
+          &:hover {
+            color: rgb(250, 37, 37);
+          }
+        }
+      }
+
+      &:hover {
+        & > .hover-close {
+          display: block;
+        }
+      }
+    }
   }
 }
 
@@ -2748,7 +2832,9 @@
     overflow: hidden;
     height: 646px;
   }
-
+  .ant-spin-nested-loading > div > .ant-spin {
+    max-height: unset;
+  }
   .content-box {
     padding: 16px 24px 16px 24px;
 
@@ -7406,7 +7492,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   font-size: 13px;
                 }
                 .icon-alarm {
-                  color: #05befe;
+                  color: #ff2f31;
+                  font-size: 13px;
+                }
+                .icon-delay {
+                  color: #ff2f31;
                   font-size: 13px;
                 }
               }
@@ -22075,8 +22165,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       background-color: #c1c1c1;
       border-radius: 5px;
     }
+    .ant-spin-nested-loading {
+      position: unset;
+    }
+    .ant-spin-nested-loading > div > .ant-spin {
+      max-height: unset;
+      height: calc(100vh - 55px);
+    }
 
-    & > .msg-item {
+    .msg-item {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
@@ -22127,6 +22224,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
         }
       }
+    }
+
+    .no-more-data {
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      font-size: 14px;
+      color: #909399;
+      margin-bottom: 16px;
     }
   }
 }
@@ -22241,5 +22347,21 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 .prjTrackingTip {
   .ant-tooltip-inner {
     width: 350px;
+  }
+}
+
+
+//无权限用户 查看页面样式
+.no-auth-page-wrapper {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: PingFangSC-regular, PingFang SC;
+  color: #909399;
+
+  .no-auth-img {
+    width: 400px;
   }
 }
