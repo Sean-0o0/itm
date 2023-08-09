@@ -7486,6 +7486,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 margin-left: auto;
                 justify-content: center;
                 margin-right: 4px;
+                font-weight: 400;
+                font-family: PingFangSC-regular, PingFang SC;
 
                 .icon-hourglass {
                   color: #3361ff;
@@ -7503,6 +7505,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               span {
                 font-size: 12px;
                 font-weight: 400;
+                font-family: PingFangSC-regular, PingFang SC;
                 color: #606266;
               }
             }
@@ -7515,9 +7518,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 18px;
               margin-bottom: 4px;
               span {
-                font-size: 14px;
+                font-size: 16px;
                 color: #909399;
                 font-weight: bold;
+                font-family: PingFangSC-Medium, PingFang SC;
               }
             }
             .date {
@@ -16014,8 +16018,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .sj,
         .xj,
-        i {
+        a {
           color: #3361ff;
+          margin-right: 6px;
+          &:last-child {
+            margin-right: 0px;
+          }
 
           &:hover {
             color: #3361ffaf;
@@ -22349,7 +22357,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     width: 350px;
   }
 }
-
 
 //无权限用户 查看页面样式
 .no-auth-page-wrapper {

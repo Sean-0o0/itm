@@ -204,7 +204,7 @@ export default function InfoTable(props) {
       {
         title: '需求名称',
         dataIndex: 'XQMC',
-        width: '29%',
+        width: '34%',
         key: 'XQMC',
         ellipsis: true,
         render: (text, row, index) => {
@@ -259,7 +259,7 @@ export default function InfoTable(props) {
       {
         title: '预估金额(元)',
         dataIndex: 'XQYGJE',
-        width: '12%',
+        width: '14%',
         align: 'right',
         key: 'XQYGJE',
         ellipsis: true,
@@ -271,14 +271,14 @@ export default function InfoTable(props) {
         title: '开发商反馈期限',
         dataIndex: 'KFSFKQX',
         key: 'KFSFKQX',
-        width: '27%',
+        width: '13%',
         ellipsis: true,
         render: text => <span>{text === undefined ? '' : moment(text).format('YYYY-MM-DD')}</span>,
       },
       {
         title: '预计综合评测日期',
         dataIndex: 'YJZHPCRQ',
-        width: '13%',
+        width: '14%',
         key: 'YJZHPCRQ',
         ellipsis: true,
         render: text => <span>{text === undefined ? '' : moment(text).format('YYYY-MM-DD')}</span>,
@@ -288,146 +288,91 @@ export default function InfoTable(props) {
         dataIndex: 'operation',
         key: 'operation',
         align: 'center',
-        width: '12%',
+        width: '18%',
         render: (text, row, index) => {
           // 1|未上架;2|上架中;3|下架 SJZT
           return (
             <div className="opr-colomn">
-              {row.SJZT === '1' && (
+              {row.SJZT === '1' && isDock && (
                 <a
                   className="sj"
                   onClick={() => {
-                    if (isDock) {
-                      setDemandPublishVisible(true);
-                      setCurrentXqid(Number(row.XQID));
-                      setCurrentXmid(Number(row.XMID));
-                    } else {
-                      message.info('只有外包项目对接人可以操作');
-                    }
+                    setDemandPublishVisible(true);
+                    setCurrentXqid(Number(row.XQID));
+                    setCurrentXmid(Number(row.XMID));
                   }}
                 >
                   上架
                 </a>
               )}
-              {row.SJZT === '2' && (
+              {row.SJZT === '2' && isDock && (
                 <Popconfirm
                   title="确定要下架吗?"
                   onConfirm={() => {
-                    if (isDock) {
-                      OperateOutsourceRequirements({
-                        xqid: Number(row.XQID),
-                        czlx: 'XJ',
+                    OperateOutsourceRequirements({
+                      xqid: Number(row.XQID),
+                      czlx: 'XJ',
+                    })
+                      .then(res => {
+                        if (res?.success) {
+                          message.success('下架成功', 1);
+                          getSubTableData(Number(row.XMID)); //刷新
+                        }
                       })
-                        .then(res => {
-                          if (res?.success) {
-                            message.success('下架成功', 1);
-                            getSubTableData(Number(row.XMID)); //刷新
-                          }
-                        })
-                        .catch(e => {
-                          message.error('下架失败', 1);
-                        });
-                    } else {
-                      message.info('只有外包项目对接人可以操作');
-                    }
+                      .catch(e => {
+                        message.error('下架失败', 1);
+                      });
                   }}
                 >
                   <a className="xj">下架</a>
                 </Popconfirm>
               )}
-              {/* {row.SJZT === '3' && (
+              {/* {row.SJZT === '3' && isDock && (
                 <a
                   className="xj"
                   onClick={() => {
-                    if (isDock) {
                       setSendMailVisible(true);
                       setCurrentXmid(Number(row.XMID));
-                    } else {
-                      message.info('只有外包项目对接人可以操作');
-                    }
                   }}
                 >
                   发送邮件
                 </a>
               )} */}
-              {row.SJZT === '3' ? (
+              {row.SJZT !== '3' && (LOGIN_USER_ID === Number(row.FQRID) || isDock) && (
                 <a
-                  className="xj"
+                  style={{ color: '#3361ff' }}
                   onClick={() => {
-                    if (LOGIN_USER_ID === Number(row.FQRID)) {
-                      setVisible(p => {
-                        return {
-                          ...p,
-                          relaunch: true,
-                        };
-                      });
-                      setCurrentXqid(Number(row.XQID));
-                      setCurrentXmid(Number(row.XMID));
-                      setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
-                    } else {
-                      message.info('只有需求发起人可以操作');
-                    }
+                    setVisible(p => {
+                      return {
+                        ...p,
+                        update: true,
+                      };
+                    });
+                    setCurrentXqid(Number(row.XQID));
+                    setCurrentXmid(Number(row.XMID));
+                    setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
+                  }}
+                >
+                  修改
+                </a>
+              )}
+              {LOGIN_USER_ID === Number(row.FQRID) && (
+                <a
+                  style={{ color: '#3361ff' }}
+                  onClick={() => {
+                    setVisible(p => {
+                      return {
+                        ...p,
+                        relaunch: true,
+                      };
+                    });
+                    setCurrentXqid(Number(row.XQID));
+                    setCurrentXmid(Number(row.XMID));
+                    setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
                   }}
                 >
                   重新发起
                 </a>
-              ) : (
-                <Popover
-                  placement="bottomRight"
-                  title={null}
-                  arrowPointAtCenter
-                  content={
-                    <div className="list">
-                      {row.SJZT !== '3' && (
-                        <div
-                          className="item"
-                          style={{ color: '#3361ff' }}
-                          onClick={() => {
-                            if (LOGIN_USER_ID === Number(row.FQRID) || isDock) {
-                              setVisible(p => {
-                                return {
-                                  ...p,
-                                  update: true,
-                                };
-                              });
-                              setCurrentXqid(Number(row.XQID));
-                              setCurrentXmid(Number(row.XMID));
-                              setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
-                            } else {
-                              message.info('只有外包项目对接人和需求发起人可以操作');
-                            }
-                          }}
-                        >
-                          修改
-                        </div>
-                      )}
-                      <div
-                        className="item"
-                        style={{ color: '#3361ff' }}
-                        onClick={() => {
-                          if (LOGIN_USER_ID === Number(row.FQRID)) {
-                            setVisible(p => {
-                              return {
-                                ...p,
-                                relaunch: true,
-                              };
-                            });
-                            setCurrentXqid(Number(row.XQID));
-                            setCurrentXmid(Number(row.XMID));
-                            setCurrentXmmc(tableData.filter(x => x.XMID === row.XMID)[0]?.XMMC);
-                          } else {
-                            message.info('只有需求发起人可以操作');
-                          }
-                        }}
-                      >
-                        重新发起
-                      </div>
-                    </div>
-                  }
-                  overlayClassName="tc-btn-more-content-popover"
-                >
-                  <Icon type="ellipsis" rotate={90} />
-                </Popover>
               )}
             </div>
           );
