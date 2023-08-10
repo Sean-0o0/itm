@@ -11,6 +11,7 @@ import {
   FetchQueryOwnerWorkflow,
   FetchQueryOwnerProjectList,
   FetchQueryCustomReportList,
+  QueryProjectTracking,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -25,7 +26,6 @@ import moment from 'moment';
 import AnalyzeRepsCard from './AnalyzeRepsCard';
 import PrjTracking from './PrjTracking';
 import SystemNotice from './SystemNotice';
-import NonCptBudgetCard from './NonCptBudgetCard';
 
 //金额格式化
 const getAmountFormat = value => {
@@ -56,8 +56,28 @@ export default function HomePage(props) {
     todo: 0,
     project: 0,
     process: 0,
+    tracking: 0,
   }); //数据总数
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
+  //以下：报表状态
+  const [showExtendsWD, setShowExtendsWD] = useState(false);
+  const [totalWD, setWDTotal] = useState(0); //分析报表数据总条数
+  const [cusRepDataWD, setCusRepDataWD] = useState([]); //分析报表数据
+  const [isLoading, setIsLoading] = useState(false); //加载状态
+  //以下：跟踪状态
+  const [params, setParams] = useState({
+    current: 1,
+    pageSize: 9,
+    org: '',
+    projectId: '',
+    projectManager: '',
+    projectType: '',
+  }); //表格数据-项目列表
+  const [trackingData, setTrackingData] = useState([{ tableInfo: [] }]);
+  const [isTrackingSpinning, setIsTrackingSpinning] = useState(false);
+  const [showExtends, setShowExtends] = useState(false);
+  var s = 0;
+  var e = 0;
 
   //防抖定时器
   let timer = null;
@@ -74,8 +94,6 @@ export default function HomePage(props) {
   });
 
   useEffect(() => {
-    setIsSpinning(true);
-    getUserRole();
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
@@ -86,6 +104,396 @@ export default function HomePage(props) {
       clearTimeout(timer);
     };
   }, []);
+
+  useEffect(() => {
+    if (LOGIN_USER_INFO.id !== undefined) {
+      // getUserRole();
+      s = performance.now();
+      handlePromiseAll();
+    }
+    return () => {};
+  }, [LOGIN_USER_INFO.id]);
+
+  //初次加载
+  const handlePromiseAll = async (year = moment().year()) => {
+    try {
+      setIsSpinning(true);
+      //获取用户角色
+      const roleData =
+        (await QueryUserRole({
+          userId: String(LOGIN_USER_INFO.id),
+        })) || {};
+      if (roleData.code === 1) {
+        const ROLE = roleData.role;
+        setUserRole(ROLE);
+        //获取预算执行情况
+        const budgetPromise = QueryBudgetOverviewInfo({
+          org: Number(LOGIN_USER_INFO.org),
+          queryType: 'SY',
+          role: ROLE,
+          year,
+        });
+        //项目信息
+        const prjPromise = QueryProjectGeneralInfo({
+          queryType: 'SY',
+          role: ROLE,
+          org: Number(LOGIN_USER_INFO.org),
+          paging: 1,
+          current: 1,
+          pageSize: 9,
+          total: -1,
+          sort: '',
+          year,
+        });
+        //获取待办、系统公告数据
+        const todoPromise = FetchQueryOwnerMessage({
+          cxlx: 'ALL',
+          date: Number(new moment().format('YYYYMMDD')),
+          paging: 1,
+          current: 1,
+          pageSize: 99999,
+          total: -1,
+          sort: '',
+        });
+        //获取项目概览信息
+        const overviewPromise = QueryStagingOverviewInfo({
+          org: Number(LOGIN_USER_INFO.org),
+          role: ROLE,
+          year,
+        });
+        //获取我的报表数据
+        const rptPromise = FetchQueryCustomReportList({
+          current: 1,
+          //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
+          cxlx: 'WD',
+          pageSize: 3,
+          paging: 1,
+          sort: '',
+          total: -1,
+        });
+        //获取项目跟踪数据
+        const trackingPromise = QueryProjectTracking({
+          current: 1,
+          pageSize: 9,
+          paging: 1,
+          queryType: 'XM',
+          sort: '',
+          total: -1,
+        });
+
+        const PROMISE = [
+          budgetPromise,
+          prjPromise,
+          todoPromise,
+          overviewPromise,
+          rptPromise,
+          trackingPromise,
+          // processPromise,
+          // teamPromise,
+          // supplierPromise,
+        ];
+        if (['二级部门领导', '普通人员'].includes(ROLE)) {
+          //获取流程情况
+          const processPromise = FetchQueryOwnerWorkflow({
+            paging: 1,
+            current: 1,
+            pageSize: 3,
+            total: -1,
+            sort: '',
+          });
+
+          PROMISE.push(processPromise);
+        } else {
+          //队伍建设
+          const teamPromise = QueryMemberOverviewInfo({
+            org: Number(LOGIN_USER_INFO.org),
+            queryType: 'SY',
+            role: ROLE,
+            year,
+          });
+          //供应商情况
+          const supplierPromise = QuerySupplierOverviewInfo({
+            org: Number(LOGIN_USER_INFO.org),
+            queryType: 'SY',
+            paging: -1,
+            current: 1,
+            pageSize: 9999,
+            total: -1,
+            sort: '',
+            role: ROLE,
+            year,
+          });
+          PROMISE.push(teamPromise);
+          PROMISE.push(supplierPromise);
+        }
+        const RESULT = await Promise.all(PROMISE);
+        const [budgetRes, prjRes, todoRes, overviewRes, rptRes, trackingRes] = RESULT;
+
+        const budgetResData = (await budgetRes) || {};
+        const prjResData = (await prjRes) || {};
+        const todoResData = (await todoRes) || {};
+        const overviewResData = (await overviewRes) || {};
+        const rptResData = (await rptRes) || {};
+        const trackingResData = (await trackingRes) || {};
+
+        if (budgetResData.success) {
+          setBudgetData(JSON.parse(budgetResData.ysglxx)[0]);
+          setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(budgetResData.ysqs) }));
+        }
+        if (prjResData.success) {
+          let arr = JSON.parse(prjResData.xmxx); //项目信息
+          arr?.forEach(item => {
+            let riskArr = []; //风险信息
+            let participantArr = []; //人员信息
+            JSON.parse(prjResData.fxxx).forEach(x => {
+              if (x.XMID === item.XMID) {
+                riskArr.push(x);
+              }
+            });
+            JSON.parse(prjResData.ryxx).forEach(x => {
+              if (x.XMID === item.XMID) {
+                participantArr.push(x);
+              }
+            });
+            item.riskData = [...riskArr];
+            item.participantData = [...participantArr];
+          });
+          setPrjInfo(p => [...arr]);
+          setTotal(p => {
+            return {
+              ...p,
+              project: prjResData.totalrows,
+            };
+          });
+        }
+        if (todoResData.success) {
+          setToDoData([...todoResData.record].filter(x => x.xxlx === '1'));
+          setNoticeData(
+            [...todoResData.record].filter(x => x.xxlx === '3' || x.xxlx === '4').slice(0, 3),
+          );
+          setTotal(p => {
+            return {
+              ...p,
+              todo: todoResData.totalrows,
+            };
+          });
+        }
+        if (overviewResData.success) {
+          setOverviewInfo(overviewResData.record[0]);
+        }
+        if (rptResData.success) {
+          setCusRepDataWD(p => [...JSON.parse(rptResData.result)]);
+          setWDTotal(rptResData.totalrows);
+          setIsLoading(false);
+          setShowExtendsWD(false);
+        }
+        if (trackingResData.success) {
+          const track = JSON.parse(trackingResData.result);
+          setTrackingData(track);
+          setTotal(p => {
+            return {
+              ...p,
+              tracking: trackingResData.totalrows,
+            };
+          });
+        }
+        if (['二级部门领导', '普通人员'].includes(ROLE)) {
+          const processResData = (await RESULT[6]) || {};
+          if (processResData.success) {
+            setProcessData(p => [...processResData.record]);
+            setTotal(p => {
+              return {
+                ...p,
+                process: processResData.totalrows,
+              };
+            });
+          }
+        } else {
+          const teamResData = (await RESULT[6]) || {};
+          const supplierResData = (await RESULT[7]) || {};
+          if (teamResData.success) {
+            let arr = JSON.parse(teamResData.bmry).map(x => {
+              return {
+                value: Number(x.BMRS),
+                name: x.BMMC,
+              };
+            });
+            setTeamData(p => [...arr]);
+          }
+          if (supplierResData.success) {
+            let obj = {
+              cgje: [],
+              cgsl: [],
+              gysmc: [],
+              item: [],
+            };
+            let maxJe = 100;
+            JSON.parse(supplierResData.gysxx)?.forEach(item => {
+              obj.cgje.push(Number(item.CGJE));
+              obj.cgsl.push(Number(item.CGSL));
+              obj.item.push(item);
+            });
+            maxJe = Math.max(...obj.cgje);
+            JSON.parse(supplierResData.gysxx)?.forEach(item => {
+              obj.gysmc.push({
+                name: item.GYSMC,
+                max: maxJe * 1.1,
+              });
+            });
+            setSupplierData(obj);
+          }
+        }
+
+        e = performance.now();
+        console.log(`Request time: ${e - s} milliseconds`, s, e);
+        setIsSpinning(false);
+      }
+    } catch (error) {
+      console.log('🚀 ~ handlePromiseAll ~ error:', error);
+      message.error('个人工作台信息获取失败', 1);
+      setIsSpinning(false);
+    }
+  };
+
+  //统计年份变化
+  const handleCurYearChange = (year = moment().year()) => {
+    // getBudgetData(userRole, year);
+    // if (!['二级部门领导', '普通人员'].includes(userRole)) {
+    //   getTeamData(userRole, year);
+    // }
+    // getOverviewInfo(userRole, year);
+    handlePromiseAll(year);
+  };
+
+  //项目信息 - 后续刷新数据
+  const getPrjInfo = (role, year = moment().year()) => {
+    setIsSpinning(true);
+    QueryProjectGeneralInfo({
+      queryType: 'SY',
+      role,
+      org: Number(LOGIN_USER_INFO.org),
+      paging: 1,
+      current: 1,
+      pageSize: 9,
+      total: -1,
+      sort: '',
+      year,
+    })
+      .then(res => {
+        if (res?.success) {
+          let arr = JSON.parse(res?.xmxx); //项目信息
+          arr?.forEach(item => {
+            let riskArr = []; //风险信息
+            let participantArr = []; //人员信息
+            JSON.parse(res?.fxxx).forEach(x => {
+              if (x.XMID === item.XMID) {
+                riskArr.push(x);
+              }
+            });
+            JSON.parse(res?.ryxx).forEach(x => {
+              if (x.XMID === item.XMID) {
+                participantArr.push(x);
+              }
+            });
+            item.riskData = [...riskArr];
+            item.participantData = [...participantArr];
+          });
+          setPrjInfo(p => [...arr]);
+          setTotal(p => {
+            return {
+              ...p,
+              project: res.totalrows,
+            };
+          });
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('QueryProjectGeneralInfo', e);
+        message.error('项目信息查询失败', 1);
+        setIsSpinning(false);
+      });
+  };
+
+  //获取报表数据 - 后续刷新数据
+  const getCusRepData = (cxlx = 'WD', pageSize = '3', flag = true, col = '') => {
+    col === '' && setIsLoading(true);
+    const payload = {
+      current: 1,
+      //SC|收藏的报表;WD|我的报表;GX|共享报表;CJ|我创建的报表;CJR|查询创建人;KJBB|可见报表
+      cxlx,
+      pageSize,
+      paging: 1,
+      sort: '',
+      total: -1,
+    };
+    FetchQueryCustomReportList({ ...payload })
+      .then(res => {
+        if (res?.success) {
+          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
+          if (cxlx === 'WD') {
+            setCusRepDataWD(p => [...JSON.parse(res.result)]);
+            setWDTotal(res.totalrows);
+            col === '' && setIsLoading(false);
+            setShowExtendsWD(!flag);
+          }
+        }
+      })
+      .catch(e => {
+        col === '' && setIsLoading(false);
+        setShowExtendsWD(!flag);
+        message.error('报表信息查询失败', 1);
+      });
+  };
+
+  //获取项目跟踪数据 - 后续刷新数据
+  const getTrackingData = (params, flag) => {
+    setIsTrackingSpinning(true);
+    const payload = {
+      current: params.current,
+      // cycle: 0,
+      // endTime: 0,
+      // org: 0,
+      pageSize: params.pageSize,
+      paging: 1,
+      // projectId: 0,
+      // projectManager: 0,
+      // projectType: 0,
+      queryType: 'XM',
+      sort: '',
+      // startTime: 0,
+      total: -1,
+    };
+    if (params.org !== '') {
+      payload.org = params.org;
+    }
+    if (params.projectId !== '') {
+      payload.projectId = params.projectId;
+    }
+    if (params.projectManager !== '') {
+      payload.projectManager = params.projectManager;
+    }
+    if (params.projectType !== '') {
+      payload.projectType = params.projectType;
+    }
+    QueryProjectTracking({ ...payload })
+      .then(res => {
+        if (res?.success) {
+          setIsTrackingSpinning(false);
+          const track = JSON.parse(res.result);
+          setTrackingData(track);
+          setTotal(p => ({
+            ...p,
+            tracking: res.totalrows,
+          }));
+          params.pageSize === 9 ? setShowExtends(false) : setShowExtends(true);
+        }
+      })
+      .catch(e => {
+        setIsTrackingSpinning(false);
+        message.error('项目跟踪信息获取失败', 1);
+      });
+  };
 
   //防抖
   const debounce = (fn, waits) => {
@@ -102,7 +510,6 @@ export default function HomePage(props) {
   const resizeUpdate = e => {
     const fn = () => {
       let w = e.target.innerWidth; //屏幕宽度
-      // console.log('🚀 ~ file: index.js ~ line 21 ~ resizeUpdate ~ w', w);
       if (w < 1500) {
         setLeftWidth('65.48%');
       } else if (w < 1650) {
@@ -159,270 +566,6 @@ export default function HomePage(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
-  //获取用户角色
-  const getUserRole = (reflush = false) => {
-    LOGIN_USER_INFO.id !== undefined &&
-      QueryUserRole({
-        userId: String(LOGIN_USER_INFO.id),
-      })
-        .then(res => {
-          if (res?.code === 1) {
-            const { role = '' } = res;
-            setUserRole(role);
-            getBudgetData(role);
-            getToDoData(); //公告都要调用
-            if (['二级部门领导', '普通人员'].includes(role)) {
-              !reflush && getProcessData(); //待办刷新时不用刷新流程数据
-            } else {
-              getTeamData(role);
-            }
-            getOverviewInfo(role);
-          }
-        })
-        .catch(e => {
-          console.error('HomePage-QueryUserRole', e);
-          message.error('用户角色信息查询失败', 1);
-        });
-  };
-
-  //获取预算执行情况
-  const getBudgetData = (role, year = moment().year()) => {
-    QueryBudgetOverviewInfo({
-      org: Number(LOGIN_USER_INFO.org),
-      queryType: 'SY',
-      role,
-      year,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ QueryBudgetOverviewInfo ~ res', JSON.parse(res?.ysglxx));
-          setBudgetData(JSON.parse(res?.ysglxx)[0]);
-          setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(res.ysqs) }));
-          getPrjInfo(role, year);
-        }
-      })
-      .catch(e => {
-        console.error('QueryBudgetOverviewInfo', e);
-        message.error('预算执行情况查询失败', 1);
-      });
-  };
-
-  //获取项目概览信息
-  const getOverviewInfo = (role, year = moment().year()) => {
-    QueryStagingOverviewInfo({
-      org: Number(LOGIN_USER_INFO.org),
-      role,
-      year,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ getOverviewInfo ~ res', res);
-          setOverviewInfo(res?.record[0]);
-        }
-      })
-      .catch(e => {
-        console.error('QueryStagingOverviewInfo', e);
-        message.error('项目概览信息查询失败', 1);
-      });
-  };
-
-  //项目信息
-  const getPrjInfo = (role, year = moment().year()) => {
-    QueryProjectGeneralInfo({
-      queryType: 'SY',
-      role,
-      org: Number(LOGIN_USER_INFO.org),
-      paging: 1,
-      current: 1,
-      pageSize: 9,
-      total: -1,
-      sort: '',
-      year,
-    })
-      .then(res => {
-        if (res?.success) {
-          let arr = JSON.parse(res?.xmxx); //项目信息
-          arr?.forEach(item => {
-            let riskArr = []; //风险信息
-            let participantArr = []; //人员信息
-            JSON.parse(res?.fxxx).forEach(x => {
-              if (x.XMID === item.XMID) {
-                riskArr.push(x);
-              }
-            });
-            JSON.parse(res?.ryxx).forEach(x => {
-              if (x.XMID === item.XMID) {
-                participantArr.push(x);
-              }
-            });
-            item.riskData = [...riskArr];
-            item.participantData = [...participantArr];
-          });
-          setPrjInfo(p => [...arr]);
-          setTotal(p => {
-            return {
-              ...p,
-              project: res.totalrows,
-            };
-          });
-          setIsSpinning(false);
-        }
-      })
-      .catch(e => {
-        console.error('QueryProjectGeneralInfo', e);
-        message.error('项目信息查询失败', 1);
-      });
-  };
-
-  //队伍建设
-  const getTeamData = (role, year = moment().year()) => {
-    QueryMemberOverviewInfo({
-      org: Number(LOGIN_USER_INFO.org),
-      queryType: 'SY',
-      role,
-      // paging: -1,
-      // current: 1,
-      // pageSize: 9999,
-      // total: -1,
-      // sort: '',
-      year,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ QueryMemberOverviewInfo ~ res', JSON.parse(res?.bmry));
-          let arr = JSON.parse(res?.bmry).map(x => {
-            return {
-              value: Number(x.BMRS),
-              name: x.BMMC,
-            };
-          });
-          setTeamData(p => [...arr]);
-          getSupplierData(role, year);
-          // console.log("🚀 ~ file: index.js:284 ~ getTeamData ~ [...arr]:", [...arr])
-        }
-      })
-      .catch(e => {
-        console.error('QueryMemberOverviewInfo', e);
-        message.error('队伍建设信息查询失败', 1);
-      });
-  };
-
-  //供应商情况
-  const getSupplierData = (role, year = moment().year()) => {
-    QuerySupplierOverviewInfo({
-      org: Number(LOGIN_USER_INFO.org),
-      queryType: 'SY',
-      role,
-      paging: -1,
-      current: 1,
-      pageSize: 9999,
-      total: -1,
-      sort: '',
-      year,
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ QuerySupplierOverviewInfo ~ res', JSON.parse(res?.gysxx));
-          let obj = {
-            cgje: [],
-            cgsl: [],
-            gysmc: [],
-            item: [],
-          };
-          let maxJe = 100;
-          JSON.parse(res?.gysxx)?.forEach(item => {
-            obj.cgje.push(Number(item.CGJE));
-            obj.cgsl.push(Number(item.CGSL));
-            obj.item.push(item);
-          });
-          maxJe = Math.max(...obj.cgje);
-          // console.log("🚀 ~ file: index.js:316 ~ getSupplierData ~ maxJe:", maxJe)
-          JSON.parse(res?.gysxx)?.forEach(item => {
-            obj.gysmc.push({
-              name: item.GYSMC,
-              max: maxJe * 1.1,
-            });
-          });
-          // console.log(
-          //   '🚀 ~ file: index.js ~ line 234 ~ getSupplierData ~ obj',
-          //   obj,
-          // );
-          setSupplierData(obj);
-        }
-      })
-      .catch(e => {
-        console.error('QuerySupplierOverviewInfo', e);
-        message.error('供应商情况信息查询失败', 1);
-      });
-  };
-
-  //获取待办、系统公告数据
-  const getToDoData = () => {
-    FetchQueryOwnerMessage({
-      cxlx: 'ALL',
-      date: Number(new moment().format('YYYYMMDD')),
-      paging: 1,
-      current: 1,
-      pageSize: 99999,
-      total: -1,
-      sort: '',
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', res.record);
-          setToDoData([...res.record].filter(x => x.xxlx === '1'));
-          setNoticeData([...res.record].filter(x => x.xxlx === '3' || x.xxlx === '4').slice(0, 3));
-          setTotal(p => {
-            return {
-              ...p,
-              todo: res.totalrows,
-            };
-          });
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerMessage', e);
-        message.error('待办信息查询失败', 1);
-      });
-  };
-
-  //获取流程情况
-  const getProcessData = () => {
-    FetchQueryOwnerWorkflow({
-      paging: 1,
-      current: 1,
-      pageSize: 3,
-      total: -1,
-      sort: '',
-    })
-      .then(res => {
-        if (res?.success) {
-          // console.log('🚀 ~ FetchQueryOwnerWorkflow ~ res', res?.record);
-          setProcessData(p => [...res?.record]);
-          setTotal(p => {
-            return {
-              ...p,
-              process: res.totalrows,
-            };
-          });
-        }
-      })
-      .catch(e => {
-        console.error('FetchQueryOwnerWorkflow', e);
-        message.error('流程情况信息查询失败', 1);
-      });
-  };
-
-  //统计年份变化
-  const handleCurYearChange = (year = moment().year()) => {
-    setIsSpinning(true);
-    getBudgetData(userRole, year);
-    if (!['二级部门领导', '普通人员'].includes(userRole)) {
-      getTeamData(userRole, year);
-    }
-    getOverviewInfo(userRole, year);
-  };
-
   return (
     <Spin
       spinning={isSpinning}
@@ -438,7 +581,7 @@ export default function HomePage(props) {
               overviewInfo={overviewInfo}
               userRole={userRole}
               toDoData={toDoData}
-              reflush={() => getUserRole(true)}
+              reflush={handlePromiseAll}
               dictionary={dictionary}
               toDoDataNum={total.todo}
               statisticYearData={statisticYearData}
@@ -454,30 +597,45 @@ export default function HomePage(props) {
                 time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
               />
             )}
-            <AnalyzeRepsCard />
-            <ProjectCard
-              itemWidth={itemWidth}
-              getAfterItem={getAfterItem}
-              userRole={userRole}
-              prjInfo={prjInfo}
-              getPrjInfo={getPrjInfo}
-              total={total.project}
-              placement={placement}
-              setPlacement={setPlacement}
+            <AnalyzeRepsCard
+              getCusRepData={getCusRepData}
+              stateProps={{
+                showExtendsWD,
+                totalWD,
+                cusRepDataWD,
+                isLoading,
+              }}
             />
-            {/*项目跟踪*/}
-            {/*<PrjTracking*/}
-            {/*  dictionary={dictionary}*/}
+            {/*<ProjectCard*/}
+            {/*  itemWidth={itemWidth}*/}
+            {/*  getAfterItem={getAfterItem}*/}
+            {/*  userRole={userRole}*/}
+            {/*  prjInfo={prjInfo}*/}
+            {/*  getPrjInfo={getPrjInfo}*/}
+            {/*  total={total.project}*/}
+            {/*  placement={placement}*/}
+            {/*  setPlacement={setPlacement}*/}
             {/*/>*/}
             {/*项目跟踪*/}
-            {/* <PrjTracking
+            <PrjTracking
               dictionary={dictionary}
-            /> */}
+              getTrackingData={getTrackingData}
+              stateProps={{
+                total,
+                params,
+                setParams,
+                trackingData,
+                isTrackingSpinning,
+                setIsTrackingSpinning,
+                showExtends,
+                setShowExtends,
+              }}
+            />
           </div>
           <div className="col-right">
-            <GuideCard/>
-            <SystemNotice noticeData={noticeData}/>
-            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo}/>
+            <GuideCard />
+            <SystemNotice noticeData={noticeData} setNoticeData={setNoticeData} />
+            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <Fragment>
                 <CptBudgetCard
@@ -489,15 +647,6 @@ export default function HomePage(props) {
                   budgetData={budgetData}
                   time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
                 />
-                {/* <NonCptBudgetCard
-                    boxShadow={'0px 4px 24px -4px rgba(0, 0, 0, 0.06)'}
-                    border={'1px solid #fafafb'}
-                    marginBottom={'16px'}
-                    isVertical={true}
-                    userRole={userRole}
-                    budgetData={budgetData}
-                    time={moment(overviewInfo?.ysgxsj).format('YYYY-MM-DD')}
-                  /> */}
                 <ProcessCard processData={processData} total={total.process} />
               </Fragment>
             ) : (

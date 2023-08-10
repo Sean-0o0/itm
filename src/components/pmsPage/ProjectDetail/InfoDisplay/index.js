@@ -13,7 +13,7 @@ const {
 } = api;
 
 export default function InfoDisplay(props) {
-  const { prjData, xmid, routes, isLeader, isHwSltPrj } = props;
+  const { prjData, xmid, routes, isLeader, isHwSltPrj, isBdgtMnger } = props;
   const {
     prjBasic = {},
     award = [],
@@ -568,7 +568,7 @@ export default function InfoDisplay(props) {
         </div>
       </div>
       {/* 预算信息 */}
-      {isMember() ? (
+      {isMember() || isBdgtMnger ? (
         <div className="info-box" key="ysxx">
           <div className="top-title">预算信息</div>
           <div className="info-row-box">

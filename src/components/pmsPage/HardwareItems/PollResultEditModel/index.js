@@ -106,21 +106,27 @@ class PollResultEditModel extends React.Component {
               <Col span={11}>
                 <Form.Item label="关联需求" required className="formItem">
                   {getFieldDecorator('flowId', {
-                    initialValue: pollInfo?.flowMc ? pollInfo.flowMc : null,
+                    initialValue: pollInfo.flowMc,
                   })(
                     <Select
-                      style={{ borderRadius: '8px !important' }}
+                      style={{borderRadius: '8px !important'}}
                       placeholder="请选择关联设备采购无合同流程"
-                      // mode='multiple'
+                      mode='multiple'
+                      maxTagCount={3}
+                      maxTagTextLength={42}
+                      maxTagPlaceholder={extraArr => {
+                        return `等${extraArr.length + 3}个`;
+                      }}
                       showArrow={true}
                       // className="skzh-box"
                       showSearch
                       allowClear
-                      dropdownMenuStyle={{ height: 100 }}
+                      value={pollInfo.flowId}
+                      dropdownMenuStyle={{height: 100}}
                       onPopupScroll={this.props.handleReachBottom}
                       onChange={e => {
                         console.log('请选择关联设备采购无合同流程', e);
-                        this.handleDataCallback({ flowId: e });
+                        this.handleDataCallback({flowId: e});
                         // this.setState({pollInfo: {...pollInfo, flowId: e}});
                       }}
                       onSearch={this.props.handleSltSearch}

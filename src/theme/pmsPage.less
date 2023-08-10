@@ -2720,6 +2720,231 @@
       }
     }
   }
+
+  //付款流程发起弹窗 - 关联申请
+  .connect-applay-box {
+    margin: 20px 24px;
+    margin-top: 0;
+    & > .connect-applay-title {
+      .font-s18();
+      border-bottom: 1px solid #e5e5e5;
+      color: #333;
+      height: 40px;
+    }
+
+    & > .connect-applay-btn {
+      margin: 16px 0;
+      transition: all 0.3s cubic-bezier(0.215, 0.61, 0.355, 1);
+      .antd-btn-default();
+      margin-left: 0;
+    }
+
+    & > .selected-radio-wrapper {
+      display: flex;
+      flex-direction: row;
+      align-items: flex-start;
+      flex-grow: 1;
+      border-radius: 5px;
+      transition: background-color 0.3s;
+      padding: 12px 8px;
+      border-bottom: 1px solid #e3e3e3;
+      border-radius: 8px;
+      // box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+      background-color: rgba(246, 245, 245, 0.5);
+      transition: all 0.3 ease;
+      position: relative;
+      margin-bottom: 16px;
+      cursor: pointer;
+
+      &:hover {
+        background-color: aliceblue;
+      }
+
+      & > .radio-left {
+        font-size: 14px;
+        font-weight: bold;
+        color: #303133;
+        flex-grow: 1;
+        line-height: 22px;
+        margin-right: 8px;
+
+        .code-date {
+          font-size: 12px;
+          font-weight: normal;
+          color: #909399;
+          line-height: 16px;
+          margin-top: 4px;
+        }
+      }
+      & > .radio-right {
+        width: max-content;
+        flex-shrink: 0;
+        margin-left: auto;
+        font-size: 12px;
+        line-height: 16px;
+        font-weight: normal;
+        color: #c2c3c5;
+        .amount-label {
+          color: #909399;
+          margin-top: 2px;
+        }
+      }
+
+      & > .hover-close {
+        position: absolute;
+        top: 0;
+        right: 0;
+        font-size: 1em;
+        height: 22px;
+        line-height: 22px;
+        border-radius: 0 8px 0 0;
+        -webkit-box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+        box-shadow: 0 1px 8px 0 rgba(29, 43, 61, 0.16);
+        background-color: hsla(0, 0%, 100%, 0.6);
+        transition: all 0.3 ease;
+        padding: 0 8px;
+        cursor: pointer;
+        display: none;
+
+        i {
+          color: #333;
+          font-size: 14px;
+
+          &:hover {
+            color: rgb(250, 37, 37);
+          }
+        }
+      }
+
+      &:hover {
+        & > .hover-close {
+          display: block;
+        }
+      }
+    }
+  }
+}
+
+//付款流程发起弹窗 - 关联申请
+.payment-connect-apply-modal {
+  .ant-modal-body {
+    padding: 0;
+    overflow: hidden;
+    height: 646px;
+  }
+  .ant-spin-nested-loading > div > .ant-spin {
+    max-height: unset;
+  }
+  .content-box {
+    padding: 16px 24px 16px 24px;
+
+    & > .input-search {
+      width: 100%;
+      margin-bottom: 16px;
+    }
+    & > .selector-type,
+    & > .selector-sort {
+      width: 120px;
+    }
+    & > .selector-sort {
+      margin-left: 16px;
+    }
+    & > .radio-list {
+      margin-top: 16px;
+      display: block;
+      height: 472px;
+      overflow: hidden;
+      overflow-y: auto;
+
+      &::-webkit-scrollbar {
+        width: 10px;
+        background-color: #fafafa;
+        border-radius: 5px;
+      }
+
+      &::-webkit-scrollbar-thumb {
+        background-color: #c1c1c1;
+        border-radius: 5px;
+        width: 10px;
+      }
+
+      & > .radio-item {
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        // margin-bottom: 6px;
+        cursor: pointer;
+
+        & > span:nth-child(2) {
+          display: flex;
+          flex-direction: row;
+          align-items: flex-start;
+          flex-grow: 1;
+          // border-radius: 5px;
+          transition: background-color 0.3s;
+          padding: 12px 8px;
+          border-bottom: 1px solid #e3e3e3;
+
+          &:hover {
+            background-color: #eaeaea66;
+          }
+
+          & > .radio-left {
+            font-size: 14px;
+            font-weight: bold;
+            color: #303133;
+            flex-grow: 1;
+            line-height: 22px;
+            margin-right: 8px;
+
+            .code-date {
+              font-size: 12px;
+              font-weight: normal;
+              color: #909399;
+              line-height: 16px;
+              margin-top: 4px;
+            }
+          }
+          & > .radio-right {
+            width: max-content;
+            flex-shrink: 0;
+            margin-left: auto;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: normal;
+            color: #c2c3c5;
+            .amount-label {
+              color: #909399;
+              margin-top: 2px;
+            }
+          }
+
+          & > .radio-detail {
+            border-left: 1px solid #e3e3e3;
+            line-height: 34px;
+            padding: 4px 8px 4px 16px;
+            margin-left: 16px;
+            color: #3361ff;
+            &:hover {
+              color: #3361ffaf;
+            }
+          }
+        }
+      }
+    }
+  }
+
+  //日期选择器样式
+  .ant-calendar-picker:hover .ant-calendar-picker-input:not(.ant-input-disabled),
+  .ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled),
+  .ant-input:hover,
+  .ant-input:focus {
+    border-color: #3361ff;
+  }
+
+  .ant-calendar-picker:focus .ant-calendar-picker-input:not(.ant-input-disabled) {
+    box-shadow: 0 0 0 2px #3361ff33;
+  }
 }
 
 .payment-full-screen {
@@ -7261,19 +7486,26 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 margin-left: auto;
                 justify-content: center;
                 margin-right: 4px;
+                font-weight: 400;
+                font-family: PingFangSC-regular, PingFang SC;
 
                 .icon-hourglass {
                   color: #3361ff;
                   font-size: 13px;
                 }
                 .icon-alarm {
-                  color: #05befe;
+                  color: #ff2f31;
+                  font-size: 13px;
+                }
+                .icon-delay {
+                  color: #ff2f31;
                   font-size: 13px;
                 }
               }
               span {
                 font-size: 12px;
                 font-weight: 400;
+                font-family: PingFangSC-regular, PingFang SC;
                 color: #606266;
               }
             }
@@ -7286,9 +7518,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 18px;
               margin-bottom: 4px;
               span {
-                font-size: 14px;
+                font-size: 16px;
                 color: #909399;
                 font-weight: bold;
+                font-family: PingFangSC-Medium, PingFang SC;
               }
             }
             .date {
@@ -7369,6 +7602,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 margin-right: 2%;
                 font-family: PingFangSC-Regular, PingFang SC;
 
+                .value {
+                  flex-grow: 1;
+                  font-size: 14px;
+                  font-family: PingFangSC-Regular, PingFang SC;
+                  font-weight: 400;
+                  color: #303133;
+                  line-height: 22px;
+                }
+
                 &:last-child {
                   margin-bottom: 0;
                 }
@@ -7402,6 +7644,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 color: #303133;
                 line-height: 22px;
                 flex-grow: 1;
+                white-space: pre-wrap;
               }
             }
           }
@@ -8182,6 +8425,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       color: #3361ff;
       cursor: pointer;
 
+      //付款流程名称
       .subject {
         max-width: 324px;
         text-overflow: ellipsis;
@@ -8190,12 +8434,37 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         color: #3361ff;
         line-height: 16px;
       }
-
+      //付款流程单据编号
       .djbh {
         color: #909399;
         font-size: 12px;
         line-height: 14px;
         margin-top: 4px;
+      }
+      //oa流程查看 - 后边加 状态填写按钮
+      .oalcmc {
+        flex-grow: 1;
+      }
+
+      .opr-btn {
+        flex-shrink: 0;
+        color: #3361ff;
+        font-size: 14px;
+        padding: 0 6px;
+        // width: 36px;
+        height: 24px;
+        background: rgba(51, 97, 255, 0.1);
+        border-radius: 4px;
+        // background-color: #3363ff14;
+        line-height: 24px;
+        cursor: pointer;
+        transition: all 0.3s;
+        margin-left: 6px;
+
+        &:hover {
+          background-color: #3361ff;
+          color: #fff;
+        }
       }
 
       &:hover {
@@ -10712,6 +10981,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       & > .project-card-box {
         padding-bottom: 12px;
+        margin-bottom: 16px;
 
         & > .more-item {
           .font-size-14();
@@ -11088,17 +11358,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
             }
 
-            .item-title-xxlx3 {
-              &::before {
-                content: '...';
-                float: right;
-                position: absolute;
-                left: -2px;
-                color: #333;
-                transform: translateX(-90%);
-              }
-            }
-
             .item-title-before {
               &::before {
                 content: '';
@@ -11106,29 +11365,33 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 height: 24px;
               }
 
-              .icon-wrapper,
-              .icon-wrapper-xxlx3 {
+              .icon-wrapper {
                 float: right;
                 clear: both;
                 position: relative;
-                margin-left: 10px;
+                left: -3px;
+                bottom: 2px;
 
-                &::before {
-                  content: '...';
-                  position: absolute;
-                  left: -2px;
-                  color: #333;
-                  transform: translateX(-90%);
-                }
+                // &::before {
+                //   content: '...';
+                //   position: absolute;
+                //   left: -2px;
+                //   color: #333;
+                //   transform: translateX(-90%);
+                // }
                 .icon-right {
                   font-size: 14px;
                   transform: translateY(-1px);
                 }
               }
+
               .icon-wrapper-xxlx3 {
-                &::before {
-                  transform: translate(-15px, -1px);
-                }
+                float: right;
+                clear: both;
+                position: relative;
+                // margin-left: 10px;
+                left: -6px;
+                bottom: 2px;
               }
             }
 
@@ -11390,7 +11653,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     margin-top: 16px;
     overflow: hidden;
     overflow-y: auto;
-    height: 450px;
+    height: 451px;
 
     &::-webkit-scrollbar {
       width: 10px;
@@ -12881,7 +13144,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
 //硬件中标信息编辑/录入
 .enterBid-box-style {
-  height: 670px;
+  overflow-y: auto;
+  height: 605px;
 
   .ant-form-item-label {
     color: #d70e19;
@@ -15754,8 +16018,12 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .sj,
         .xj,
-        i {
+        a {
           color: #3361ff;
+          margin-right: 6px;
+          &:last-child {
+            margin-right: 0px;
+          }
 
           &:hover {
             color: #3361ffaf;
@@ -17071,7 +17339,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   .info-table {
     padding: 0;
     margin: 16px 24px 0 24px;
-    // height: calc(100vh - 235px);
+    //height: calc(100vh - 168px);
     max-height: 393px;
     flex-grow: 1;
     display: flex;
@@ -17085,8 +17353,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       font-size: 14px;
       line-height: 24px;
 
+      .prj-name-lv1 {
+        background: linear-gradient(270deg, rgba(255, 47, 49, 0) 0%, rgba(255, 47, 49, 0.1) 100%);
+      }
+
+      .prj-name-lv2 {
+        background: linear-gradient(270deg, rgba(51, 97, 255, 0) 0%, rgba(51, 97, 255, 0.1) 100%);
+      }
+
       .prj-name {
-        border-radius: 8px 1px 1px 1px;
         border: 2px solid #ffffff;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
@@ -17096,9 +17371,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         align-items: center;
         width: 33.5%;
         height: 56px;
-        background: linear-gradient(270deg, rgba(51, 97, 255, 0) 0%, rgba(51, 97, 255, 0.1) 100%);
-
         .iconfont {
+          padding-right: 8px;
           color: #909399;
         }
       }
@@ -17126,7 +17400,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .prj-week {
-        width: 40%;
+        width: 20%;
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
@@ -17138,6 +17412,23 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
         .label {
           color: #303133;
+        }
+      }
+
+      .prj-detail {
+        cursor: pointer;
+        padding: 16px 24px;
+        display: flex;
+        justify-content: end;
+        width: 20%;
+        font-size: 14px;
+        font-family: PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        line-height: 22px;
+
+        .iconfont {
+          padding-left: 4px;
+          font-size: 14px;
         }
       }
     }
@@ -17233,7 +17524,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                       border-radius: 6px;
 
                       .ant-progress-bg {
-                        background-color: rgba(255, 47, 49, 0.3) !important;
+                        background-color: #ff2f31 !important;
                         height: 12px !important;
                         border-radius: 6px;
                       }
@@ -17283,7 +17574,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                       border-radius: 6px;
 
                       .ant-progress-bg {
-                        background-color: rgba(51, 97, 255, 0.3) !important;
+                        background-color: #3361ff !important;
                         height: 12px !important;
                         border-radius: 6px;
                       }
@@ -17333,7 +17624,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                       border-radius: 6px;
 
                       .ant-progress-bg {
-                        background-color: rgba(114, 147, 153, 0.3) !important;
+                        background-color: #909399 !important;
                         height: 12px !important;
                         border-radius: 6px;
                       }
@@ -17821,149 +18112,225 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .info-table {
-    flex-grow: 1;
-    display: flex;
-    flex-direction: column;
-    background-color: #fff;
-    box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
-    border-radius: 8;
-    overflow: hidden;
+    .prj-progress-info {
+      display: flex;
 
-    & > .btn-add-prj-box {
-      margin-bottom: 16px;
+      .ant-progress-show-info .ant-progress-outer {
+        padding-right: 8px;
+      }
 
-      .btn-add-prj {
-        .antd-btn-primary();
+      .ant-progress-line {
+        width: 80%;
+      }
+
+      .ant-progress-inner {
+        background-color: #f0f2f5 !important;
+
+        .ant-progress-bg {
+          height: 12px !important;
+        }
+      }
+
+      .ant-progress-text {
+        display: none;
       }
     }
 
-    .project-info-table-box {
-      .antd-table-adaptation();
-      flex-grow: 1;
-      overflow: hidden;
-      overflow-y: auto;
-      // padding-right: 4px;
-
-      .opr-btn-box {
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+    .ant-table {
+      td {
+        padding: 9.17px;
+        font-size: 14px;
+        font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
+        font-weight: 400;
+        color: #303133;
       }
 
-      .opr-btn {
-        color: #3361ff;
-        cursor: pointer;
-        white-space: nowrap;
-        text-overflow: ellipsis;
-        overflow: hidden;
+      th {
+        padding: 9.17px;
+        font-size: 14px;
+        background-color: #f5f7fa;
+        font-family: PingFangSC-Medium, PingFang SC;
+        font-weight: bold;
+        color: #606266;
       }
 
-      .opr-btn:hover {
-        opacity: 0.7;
-      }
-
-      .ant-table {
-        td {
-          padding: 9.17px;
-          font-size: 14px;
-          font-family: Roboto-Regular, Roboto, PingFangSC-Regular, PingFang SC;
-          font-weight: 400;
-          color: #303133;
+      .ant-table-body {
+        // min-height: 560px;
+        table {
+          border: 1px solid #e8e8e8;
         }
 
-        th {
-          padding: 9.17px;
-          font-size: 14px;
-          background-color: #f5f7fa;
-          font-family: PingFangSC-Medium, PingFang SC;
-          font-weight: bold;
-          color: #606266;
-        }
+        tr {
+          td {
+            //高风险
+            .prj-tracking-infos-detail-row2-lev1 {
+              padding: 8px 0;
 
-        tr.ant-table-expanded-row td > .ant-table-wrapper {
-          margin: -10px -16px -10px;
-        }
+              .ant-progress-show-info .ant-progress-outer {
+                width: 80%;
+                padding-right: 0;
+              }
 
-        .ant-table-body {
-          // min-height: 560px;
-          table {
-            border: 1px solid #e8e8e8;
-          }
-        }
+              .ant-progress-small.ant-progress-line {
+                div {
+                  display: flex;
+                }
 
-        .ant-table-scroll .ant-table-header {
-          margin-bottom: -16.5px !important; //表格表头底部边框
-          background-color: #f5f7fa;
-        }
+                .ant-progress-outer {
+                  display: flex;
+                  align-items: center;
 
-        .ant-table-placeholder {
-          border-bottom: 0;
+                  .ant-progress-inner {
+                    height: 12px;
+                    border-radius: 6px;
 
-          .ant-empty-description {
-            font-size: 14px;
-          }
-        }
+                    .ant-progress-bg {
+                      background-color: #ff2f31 !important;
+                      height: 12px !important;
+                      border-radius: 6px;
+                    }
 
-        .ant-table-thead {
-          position: sticky;
-          top: 0;
-        }
+                    .ant-progress-success-bg {
+                      height: 12px !important;
+                      background-color: #ff2f31;
+                      border-radius: 6px;
+                    }
+                  }
+                }
 
-        //项目标签
-        .prj-tags {
-          width: 100%;
-          color: #606266;
-          display: flex;
-          flex-direction: row;
-          align-items: center;
+                .ant-progress-text {
+                  width: 34px;
+                  height: 14px;
+                  font-size: 14px;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  font-weight: 500;
+                  color: #ff2f31;
+                  line-height: 17px;
+                  margin-left: 40px;
+                  //display: none;
+                }
+              }
+            }
 
-          .tag-item {
-            color: #3361ff;
-            font-size: 12px;
-            border: 1px solid rgba(51, 97, 255, 0.3);
-            border-radius: 4px;
-            background-color: #3363ff14;
-            padding: 1px 8px 2px 8px;
-            margin-right: 8px;
-            max-width: 38%;
-            text-overflow: ellipsis;
-            overflow: hidden;
-            white-space: nowrap;
-            line-height: initial;
-            flex-shrink: 0;
-            cursor: pointer;
+            //中风险
+            .prj-tracking-infos-detail-row2-lev2 {
+              padding: 8px 0;
 
-            &:last-child {
-              margin-right: 0;
+              .ant-progress-show-info .ant-progress-outer {
+                width: 80%;
+                padding-right: 0;
+              }
+
+              .ant-progress-small.ant-progress-line {
+                div {
+                  display: flex;
+                }
+
+                .ant-progress-outer {
+                  display: flex;
+                  align-items: center;
+
+                  .ant-progress-inner {
+                    height: 12px;
+                    border-radius: 6px;
+
+                    .ant-progress-bg {
+                      background-color: #3361ff !important;
+                      height: 12px !important;
+                      border-radius: 6px;
+                    }
+
+                    .ant-progress-success-bg {
+                      height: 12px !important;
+                      background-color: #3361ff;
+                      border-radius: 6px;
+                    }
+                  }
+                }
+
+                .ant-progress-text {
+                  width: 34px;
+                  height: 14px;
+                  font-size: 14px;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  font-weight: 500;
+                  color: #3361ff;
+                  line-height: 17px;
+                  margin-left: 40px;
+                  //display: none;
+                }
+              }
+            }
+
+            //低风险
+            .prj-tracking-infos-detail-row2-lev3 {
+              padding: 8px 0;
+
+              .ant-progress-show-info .ant-progress-outer {
+                width: 80%;
+                padding-right: 0;
+              }
+
+              .ant-progress-small.ant-progress-line {
+                div {
+                  display: flex;
+                }
+
+                .ant-progress-outer {
+                  display: flex;
+                  align-items: center;
+
+                  .ant-progress-inner {
+                    height: 12px;
+                    border-radius: 6px;
+
+                    .ant-progress-bg {
+                      background-color: #909399 !important;
+                      height: 12px !important;
+                      border-radius: 6px;
+                    }
+
+                    .ant-progress-success-bg {
+                      height: 12px !important;
+                      background: #909399;
+                      border-radius: 6px;
+                    }
+                  }
+                }
+
+                .ant-progress-text {
+                  width: 34px;
+                  height: 14px;
+                  font-size: 14px;
+                  font-family: THSMoneyfont-Medium, THSMoneyfont;
+                  font-weight: 500;
+                  color: #909399;
+                  line-height: 17px;
+                  margin-left: 40px;
+                  //display: none;
+                }
+              }
             }
           }
         }
+      }
 
-        .ant-table-body {
-          // min-height: 560px;
-          table {
-            border: 1px solid #e8e8e8;
-          }
+      .ant-table-scroll .ant-table-header {
+        margin-bottom: -16.5px !important; //表格表头底部边框
+        background-color: #f5f7fa;
+      }
+
+      .ant-table-placeholder {
+        border-bottom: 0;
+
+        .ant-empty-description {
+          font-size: 14px;
         }
+      }
 
-        .ant-table-scroll .ant-table-header {
-          margin-bottom: -16.5px !important; //表格表头底部边框
-          background-color: #f5f7fa;
-        }
-
-        .ant-table-placeholder {
-          border-bottom: 0;
-
-          .ant-empty-description {
-            font-size: 14px;
-          }
-        }
-
-        .ant-table-thead {
-          position: sticky;
-          top: 0;
-          z-index: 1;
-        }
+      .ant-table-thead {
+        position: sticky;
+        top: 0;
       }
     }
   }
@@ -19341,6 +19708,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .rep-infos-right {
+        font-family: PingFangSC-Regular, PingFang SC;
         width: 50%;
         cursor: pointer;
         text-align: end;
@@ -19403,6 +19771,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
             .rep-infos-icon2 {
               //width: 10%;
+              line-height: 20px;
               color: #f9a812;
               font-size: 16px;
               padding-left: 6px;
@@ -19975,7 +20344,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 //首页项目跟踪
 .prj-tracking-box-homePage {
   .prj-tracking-infos {
-    margin: 0 0 16px 0;
+    margin: 0;
     //max-height: 378px;
     background: #ffffff;
     box-shadow: 0px 1px 4px 0px rgba(20, 38, 98, 0.04);
@@ -20045,6 +20414,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
 
       .prj-tracking-infos-right {
+        font-family: PingFangSC-Regular, PingFang SC;
         width: 50%;
         cursor: pointer;
         text-align: end;
@@ -20094,8 +20464,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           .level-2 {
             background: linear-gradient(
               270deg,
-              rgba(144, 147, 153, 0) 0%,
-              rgba(144, 147, 153, 0.1) 100%
+              rgba(51, 97, 255, 0) 0%,
+              rgba(51, 97, 255, 0.1) 100%
             );
             border-radius: 1px;
           }
@@ -20106,6 +20476,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             height: 40px;
 
             .prj-tracking-infos-left-flex {
+              display: flex;
               flex: 1; //在可用的空间内100%填充
               width: 0;
 
@@ -20121,11 +20492,19 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 line-height: 22px;
                 font-family: PingFangSC-Medium, PingFang SC;
               }
+
+              .prj-tracking-infos-icon2 {
+                padding-left: 10px;
+                line-height: 20px;
+                color: #f9a812;
+                font-size: 16px;
+                //padding-right: 19px;
+              }
             }
 
             .prj-tracking-infos-week {
               text-align: end;
-              width: 95px;
+              width: 65px;
               height: 22px;
               font-size: 12px;
               font-family: PingFangSC-Regular, PingFang SC;
@@ -20323,6 +20702,14 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                   color: #dbdfe6;
                   transform: rotate(90deg);
                 }
+
+                .font-color-lv1 {
+                  color: #ff2f31;
+                }
+
+                .font-color-lv2 {
+                  color: #3361ff;
+                }
               }
             }
 
@@ -20454,6 +20841,11 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         font-weight: 400;
         color: #606266;
         line-height: 20px;
+
+        .iconfont {
+          padding-left: 4px;
+          font-size: 14px;
+        }
       }
     }
   }
@@ -21781,8 +22173,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       background-color: #c1c1c1;
       border-radius: 5px;
     }
+    .ant-spin-nested-loading {
+      position: unset;
+    }
+    .ant-spin-nested-loading > div > .ant-spin {
+      max-height: unset;
+      height: calc(100vh - 55px);
+    }
 
-    & > .msg-item {
+    .msg-item {
       display: flex;
       flex-direction: row;
       align-items: flex-start;
@@ -21833,6 +22232,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           }
         }
       }
+    }
+
+    .no-more-data {
+      height: 20px;
+      text-align: center;
+      line-height: 20px;
+      font-size: 14px;
+      color: #909399;
+      margin-bottom: 16px;
     }
   }
 }
@@ -21941,5 +22349,26 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   .iconfont {
     font-size: 15px;
     color: #3361ff;
+  }
+}
+
+.prjTrackingTip {
+  .ant-tooltip-inner {
+    width: 350px;
+  }
+}
+
+//无权限用户 查看页面样式
+.no-auth-page-wrapper {
+  font-size: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  font-family: PingFangSC-regular, PingFang SC;
+  color: #909399;
+
+  .no-auth-img {
+    width: 400px;
   }
 }

@@ -367,13 +367,18 @@ class PollResultEnterModel extends React.Component {
                       initialValue: pollInfo.flowId ? pollInfo.flowId : null,
                     })(
                       <Select
-                        style={{ borderRadius: '8px !important' }}
+                        style={{borderRadius: '8px !important'}}
                         placeholder="请选择关联设备采购无合同流程"
-                        // mode='multiple'
+                        mode='multiple'
+                        maxTagCount={3}
+                        maxTagTextLength={42}
+                        maxTagPlaceholder={extraArr => {
+                          return `等${extraArr.length + 3}个`;
+                        }}
                         showArrow={true}
                         // className="skzh-box"
                         showSearch
-                        dropdownMenuStyle={{ height: 100 }}
+                        dropdownMenuStyle={{height: 100}}
                         onPopupScroll={this.handleReachBottom}
                         onSearch={this.handleSltSearch}
                         onBlur={this.handleSltBlur}

@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useRef} from 'react';
 import InfoTable from './InfoTable';
 import TopConsole from './TopConsole';
-import {QueryProjectListInfo, QueryProjectTracking} from '../../../services/pmsServices';
+import {QueryProjectListInfo, QueryProjectTracking, QueryUserRole} from '../../../services/pmsServices';
 import {message, Progress} from 'antd';
 import moment from "moment";
 
@@ -16,13 +16,29 @@ export default function ProjectTracking(props) {
     projectType: ''
   }); //表格数据-项目列表
   const [trackingData, setTrackingData] = useState([{tableInfo: []}]);
+  const [prjRepManage, setPrjRepManage] = useState('');
+  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0);
 
   useEffect(() => {
     getTableData(params);
+    queryUserRole();
     return () => {
     };
   }, []);
+  const queryUserRole = () => {
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          setPrjRepManage(res.zyrole);
+        }
+      })
+      .catch(e => {
+        message.error('用户信息查询失败', 1);
+      });
+  }
 
   //项目数据
   const getTableData = (params) => {
@@ -59,7 +75,8 @@ export default function ProjectTracking(props) {
         if (res?.success) {
           setIsSpinning(false)
           const track = JSON.parse(res.result)
-          if (trackingData.length > 0) {
+          console.log("tracktracktrack-ccc", track)
+          if (track.length > 0) {
             track.map((item, index) => {
               item.extends = index === 0;
               item.tableInfo = [];
@@ -67,6 +84,8 @@ export default function ProjectTracking(props) {
             track.map((item, index) => {
               index === 0 && getInitData(item, track)
             })
+          } else {
+            setTrackingData([])
           }
           setTotal(res.totalrows)
         }
@@ -120,6 +139,7 @@ export default function ProjectTracking(props) {
             lastweek[0].SJ = "上周";
             trackold[0].tableInfo.push(lastweek[0]);
           }
+          console.log("trackoldtrackold-ccc", trackold)
           setTrackingData([...trackold])
           setIsSpinning(false)
           console.log("trackingDataNew", trackold)
@@ -144,7 +164,7 @@ export default function ProjectTracking(props) {
                   dictionary={props.dictionary}/>
       <InfoTable getTableData={getTableData} isSpinning={isSpinning} setIsSpinning={setIsSpinning} total={total}
                  trackingData={trackingData} setTrackingData={setTrackingData} params={params}
-                 callBackParams={callBackParams}/>
+                 callBackParams={callBackParams} prjRepManage={prjRepManage}/>
     </div>
   );
 }

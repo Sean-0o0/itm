@@ -44,7 +44,7 @@ const ProjecDetail = props => {
       newArr.push(routes2[i]);
     }
   }
-  console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes2', newArr);
+  // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes2', newArr);
 
   return (
     <Fragment>

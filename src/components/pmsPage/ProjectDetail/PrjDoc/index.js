@@ -1,9 +1,10 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useCallback } from 'react';
 import {
-  Button,
   Collapse,
+  Dropdown,
   Empty,
   Icon,
+  Menu,
   message,
   Pagination,
   Popover,
@@ -15,19 +16,49 @@ import moment from 'moment';
 import config from '../../../../utils/config';
 import axios from 'axios';
 import { InsertFileDownloadRecord, QueryProjectFiles } from '../../../../services/pmsServices';
-import { Link } from 'react-router-dom';
 
 const { api } = config;
 const {
   pmsServices: { queryFileStream },
 } = api;
-const LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).name;
+const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+let LOGIN_USER_NAME = LOGIN_USER_INFO.name;     //用const的话数据不会主动刷新
+let LOGIN_USER_ID = String(LOGIN_USER_INFO.id); //用const的话数据不会主动刷新
 
 export default function PrjDoc(props) {
-  const { prjDocData = {}, getPrjDocData, setPrjDocData, xmid } = props;
+  const { prjDocData = {}, getPrjDocData, setPrjDocData, prjData = {}, isLeader } = props;
+
   useEffect(() => {
     return () => {};
   }, []);
+
+  //允许下载
+  const allowDownload = useCallback(() => {
+    const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
+    // console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
+    return arr.includes(LOGIN_USER_ID) || isLeader;
+  }, [isLeader, JSON.stringify(prjData.member ?? [])], prjData.member);
+
+  //里程碑下拉菜单
+  const lcbContent = () => {
+    const onLcbChange = (obj = {}) => {
+      setPrjDocData(p => ({
+        ...p,
+        curLcb: obj,
+        lcb: p.lcbOrigin.filter(x => x.LCBID !== obj.LCBID),
+      }));
+      getPrjDocData({ LCBID: obj.LCBID });
+    };
+    return (
+      <Menu>
+        {prjDocData.lcb?.map(x => (
+          <Menu.Item style={{ textAlign: 'left' }} onClick={() => onLcbChange(x)} key={x.LCBID}>
+            {x.LCB}（{x.WDSL}）
+          </Menu.Item>
+        ))}
+      </Menu>
+    );
+  };
 
   //操作记录浮窗
   const historyContent = () => {
@@ -60,6 +91,7 @@ export default function PrjDoc(props) {
     );
   };
 
+  //页面切换
   const handlePageChange = (current, pageSize) => {
     getPrjDocData(current, pageSize);
   };
@@ -101,6 +133,7 @@ export default function PrjDoc(props) {
           .catch(e => {
             console.error('🚀文档下载记录保存失败', e);
             message.error('文档下载记录保存失败', 1);
+            setPrjDocData(p => ({ ...p, loading: false }));
           });
       })
       .catch(err => {
@@ -143,20 +176,20 @@ export default function PrjDoc(props) {
     <div className="prj-doc-box">
       <div className="top-title">
         项目文档
-        <Link
-          to={{
-            pathname: '/pms/manage/attachLibrary',
-            query: {
-              xmid,
-            },
-          }}
-          style={{ color: '#3361ff' }}
+        <Dropdown
+          overlay={lcbContent()}
+          placement="bottomRight"
+          overlayClassName="tc-btn-more-content-dropdown"
         >
-          <span>
-            全部({prjDocData.total})
-            <i className="iconfont icon-down" />
+          <span style={prjDocData.loading ? { pointerEvents: 'none' } : {}}>
+            {prjDocData.curLcb?.LCB}（{prjDocData.curLcb?.WDSL}）
+            {prjDocData.loading ? (
+              <Icon type="loading" className="iconfont icon-down" />
+            ) : (
+              <i className="iconfont icon-down" />
+            )}
           </span>
-        </Link>
+        </Dropdown>
       </div>
       <div className="doc-list">
         <Spin spinning={prjDocData.loading} tip="加载中">
@@ -169,11 +202,15 @@ export default function PrjDoc(props) {
             {prjDocData.data.map(x => (
               <Collapse.Panel header={x.WDLX} key={x.WDID}>
                 {JSON.parse(x.WDFJ)?.items?.map(y => (
-                  <div className="doc-item" key={y[0]}>
+                  <div
+                    className="doc-item"
+                    key={y[0]}
+                    style={allowDownload() ? {} : { color: '#303133', cursor: 'default' }}
+                  >
                     <Tooltip
                       title={y[1]}
                       placement="topLeft"
-                      onClick={() => handleFilePreview(x.WDID, y[1], y[0])}
+                      onClick={() => (allowDownload() ? handleFilePreview(x.WDID, y[1], y[0]) : {})}
                     >
                       {y[1]}
                     </Tooltip>

@@ -119,6 +119,8 @@ const {
     insertFileDownloadRecord,
     finishProject,
     inviteMemberAgain,
+    queryRequisitionData,
+    queryUnreadInfo,
   },
 } = api;
 
@@ -1264,6 +1266,26 @@ export async function FinishProject(payload) {
 export async function InviteMemberAgain(payload) {
   const option = {
     url: inviteMemberAgain,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询关联申请信息
+export async function QueryRequisitionData(payload) {
+  const option = {
+    url: queryRequisitionData,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 前端轮询获取未读信息数量
+export async function QueryUnreadInfo(payload) {
+  const option = {
+    url: queryUnreadInfo,
     method: 'post',
     data: payload,
   };

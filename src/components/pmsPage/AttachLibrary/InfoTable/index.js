@@ -6,10 +6,10 @@ import config from '../../../../utils/config';
 import moment from 'moment';
 import { EncryptBase64 } from "../../../Common/Encrypt";
 import { Link } from 'react-router-dom';
-import { QueryAttachLibraryList } from '../../../../services/pmsServices'
+import { InsertFileDownloadRecord, QueryAttachLibraryList } from '../../../../services/pmsServices'
 const { api } = config;
 const { pmsServices: { queryFileStream, zipLivebosFilesRowsPost } } = api;
-
+const LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).name;
 
 
 class InfoTable extends Component {
@@ -77,6 +77,8 @@ class InfoTable extends Component {
             a.download = title
             a.href = href
             a.click()
+            //记录下载历史
+            this.inSertHistorySingle(wdid);
         }).catch(err => {
             message.error(err)
         })
@@ -102,11 +104,41 @@ class InfoTable extends Component {
                 a.download = title
                 a.href = href
                 a.click()
+                //记录下载历史
+                this.inSertHistorySingle(wdid);
             }).catch(err => {
                 message.error(err)
             })
         });
     }
+
+    //批量插入项目文档下载记录
+    inSertHistoryBatch = (idArr = []) => {
+      try {
+        const promiseArr = idArr.map(x =>
+          InsertFileDownloadRecord({
+            fileId: Number(x),
+            userName: LOGIN_USER_NAME,
+          }),
+        );
+        Promise.all(promiseArr) 
+      } catch (e) {
+        console.error('🚀文档下载记录保存失败', e);
+        message.error('文档下载记录保存失败', 1);
+      }
+    };
+
+    //单个插入项目文档下载记录
+    inSertHistorySingle = id => {
+      InsertFileDownloadRecord({
+        fileId: Number(id),
+        userName: LOGIN_USER_NAME,
+      }).catch(e => {
+        console.error('🚀文档下载记录保存失败', e);
+        message.error('文档下载记录保存失败', 1);
+      });
+    };
+
 
     downlownRows = () => {
         const { selectedRows } = this.state
@@ -144,6 +176,8 @@ class InfoTable extends Component {
                 a.download = '文档库-' + moment().format('YYYYMMDD') + '.zip'
                 a.href = href
                 a.click()
+                //批量记录下载历史
+                this.inSertHistoryBatch(selectedRows.map(x => x.wdid));
             }).catch(err => {
                 message.error(err)
             })

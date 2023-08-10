@@ -4,6 +4,7 @@ import {QueryProjectListPara, QueryProjectListInfo} from '../../../../services/p
 import TreeUtils from '../../../../utils/treeUtils';
 import {set} from 'store';
 import {connect} from "dva";
+import {FetchQueryOrganizationInfo} from "../../../../services/projectManage";
 
 const InputGroup = Input.Group;
 const {Option} = Select;
@@ -29,9 +30,39 @@ export default forwardRef(function TopConsole(props, ref) {
 
   useEffect(() => {
     getFilterData();
+    getOrgData();
     return () => {
     };
   }, []);
+
+  //获取部门数据
+  const getOrgData = () => {
+    FetchQueryOrganizationInfo({
+      type: 'XXJS',
+    })
+      .then(res => {
+        if (res?.success) {
+          let data = TreeUtils.toTreeData(res.record, {
+            keyName: 'orgId',
+            pKeyName: 'orgFid',
+            titleName: 'orgName',
+            normalizeTitleName: 'title',
+            normalizeKeyName: 'value',
+          })[0].children[0].children[0].children;
+          // data.push({
+          //   value: 'szyyzx',
+          //   title: '数字应用中心',
+          //   fid: '11167',
+          //   children: [],
+          // });
+          setOrgData([...data]);
+        }
+      })
+      .catch(e => {
+        message.error('部门信息查询失败', 1);
+        console.error('FetchQueryOrganizationInfo', e);
+      });
+  };
 
   //顶部下拉框查询数据
   const getFilterData = () => {
@@ -53,7 +84,7 @@ export default forwardRef(function TopConsole(props, ref) {
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
           })[0].children[0];
-          setOrgData(p => [...[orgTree]]);
+          // setOrgData(p => [...[orgTree]]);
           setPrjMngerData(p => [...JSON.parse(res.projectManagerRecord)]);
           setPrjNameData(p => [...JSON.parse(res.projectRecord)]);
         }
@@ -75,6 +106,14 @@ export default forwardRef(function TopConsole(props, ref) {
     setPrjMnger(undefined); //项目经理
     setOrg([]); //应用部门
     setPrjStat(undefined);//状态
+    callBackParams({
+      current: 1,
+      pageSize: 5,
+      org: '',
+      projectId: '',
+      projectManager: '',
+      projectType: ''
+    })
   };
 
   // onChange-start
@@ -83,24 +122,24 @@ export default forwardRef(function TopConsole(props, ref) {
     // console.log('handlePrjMngerChange', v);
     // if (v === undefined) v = '';
     setPrjMnger(v);
-    callBackParams({...params, projectManager: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, projectManager: Number(v),})
   };
   //项目名称
   const handlePrjNameChange = v => {
     setPrjName(v);
-    callBackParams({...params, projectId: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, projectId: Number(v),})
   };
   //应用部门
   const handleOrgChange = v => {
     // console.log('handleOrgChange', v);
     setOrg(v);
-    callBackParams({...params, org: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, org: Number(v),})
   };
   //应用部门
   const handlePrjStatChange = v => {
     // console.log('handlePrjStatChange', v);
     setPrjStat(v);
-    callBackParams({...params, projectType: Number(v), current: 1, pageSize: 5,})
+    callBackParams({...params, projectType: Number(v),})
   };
   // onChange-end
 
@@ -203,7 +242,7 @@ export default forwardRef(function TopConsole(props, ref) {
         <Button
           className="btn-search"
           type="primary"
-          onClick={() => handleSearch(1, 5, prjMnger, 'ALL')}
+          onClick={handleSearch}
         >
           查询
         </Button>

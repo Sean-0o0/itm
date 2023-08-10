@@ -1,17 +1,25 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Carousel, message, Popover, Progress } from 'antd';
 import moment from 'moment';
+import EditPrjTracking from '../../ProjectTracking/editPrjTracking/index.js';
 
 export default function PrjTracking(props) {
-  const { xmid = -2, prjData = {} } = props;
+  const { xmid = -2, prjData = {}, getTrackingData } = props;
   const { trackingData = [] } = prjData;
   const [activeKey, setActiveKey] = useState('');
   const [btnVisible, setBtnVisible] = useState({
     last: false,
     next: false,
   }); //切换按钮显隐
+  const [editModal, setEditModal] = useState({
+    visible: false,
+    record: {},
+    cycle: 0,
+  }); //编辑弹窗
   const [startIndex, setStartIndex] = useState(0); //切割开始index
   const [endIndex, setEndIndex] = useState(3); //切割结束index
+  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user')).id);
+  let isXMJL = LOGIN_USER_ID === String(prjData.prjBasic?.XMJLID);
 
   //初始化按钮状态
   useEffect(() => {
@@ -88,21 +96,24 @@ export default function PrjTracking(props) {
   };
 
   //底部信息盒子
-  const getBottomBox = ({
-    DQJD = '0%',
-    DQZT = '--',
-    ZYSXSM = '--',
-    BZGZNR = '--',
-    XZGZAP = '--',
-  }) => {
+  const getBottomBox = x => {
+    // console.log('🚀 ~ file: index.js:94 ~ getBottomBox ~  x:', x);
+    const { DQJD = '0%', DQZT = '--', ZYSXSM = '--', BZGZNR = '--', XZGZAP = '--', XMZQ } = x;
+    const lateOrHighRisk = DQZT === '延期' || DQZT === '高风险';
+    const latestWeek = XMZQ === trackingData[trackingData.length - 1].XMZQ;
     return (
       <div className="bottom-box">
         <div className="title">
           项目进度概况
-          <div className="icon-box">
-            <i className="iconfont icon-edit" />
-            <span>编辑</span>
-          </div>
+          {isXMJL && (
+            <div
+              className="icon-box"
+              onClick={() => setEditModal({ visible: true, record: x, cycle: XMZQ })}
+            >
+              <i className="iconfont icon-edit" />
+              <span>编辑</span>
+            </div>
+          )}
         </div>
         <div className="content">
           <div className="content-top">
@@ -111,15 +122,29 @@ export default function PrjTracking(props) {
               <div className="value">
                 <Progress
                   percent={Number(DQJD?.replace('%', '') ?? 0)}
-                  strokeColor="#3361ff"
-                  format={p => <span style={{ color: '#3361ff' }}>{p}%</span>}
+                  strokeColor={!latestWeek ? '#909399' : lateOrHighRisk ? '#ff3030' : '#3361ff'}
+                  format={p => (
+                    <span
+                      style={{
+                        color: !latestWeek ? '#909399' : lateOrHighRisk ? '#ff3030' : '#3361ff',
+                      }}
+                    >
+                      {p}%
+                    </span>
+                  )}
                   strokeWidth={12}
+                  style={{ width: '75%' }}
                 />
               </div>
             </div>
             <div className="info-item-col">
               <div className="label">当前状态：</div>
-              <div className="value">{DQZT}</div>
+              <div
+                className="value"
+                style={{ color: !latestWeek ? '#909399' : lateOrHighRisk ? '#ff3030' : '#3361ff' }}
+              >
+                {DQZT}
+              </div>
             </div>
           </div>
           <div className="info-item">
@@ -258,6 +283,16 @@ export default function PrjTracking(props) {
   if (trackingData.length === 0) return null;
   return (
     <div className="prj-tracking-box">
+      {/*编辑项目跟踪信息弹窗*/}
+      {editModal.visible && (
+        <EditPrjTracking
+          record={editModal.record}
+          cycle={editModal.cycle}
+          getTableData={getTrackingData}
+          contractSigningVisible={editModal.visible}
+          closeContractModal={() => setEditModal(p => ({ ...p, visible: false }))}
+        />
+      )}
       <div className="top-box">
         项目跟踪
         <Popover

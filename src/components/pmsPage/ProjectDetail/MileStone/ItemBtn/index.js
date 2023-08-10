@@ -21,8 +21,7 @@ import EnterBidInfoModel from '../../../HardwareItems/EnterBidInfoModel';
 import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
-import { is } from 'immutable';
-import Tool from '../../../../../utils/api/tool';
+import EditBidInfoModel from "../../../HardwareItems/EditBidInfoModel";
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -70,6 +69,9 @@ class ItemBtn extends React.Component {
     fklcLoading: false, //获取付款流程列表的加载状态
     jumpLoading: false, //付款流程列表跳转加载状态
     currentFklcList: [], //查看的付款流程列表
+    oackzttxVisible: false, //oa流程查看-状态填写弹窗
+    oackzttxPopoverVisible: false, //oa流程查看-Popover弹窗
+    fklcPopoverVisible: false, //oa流程查看-Popover弹窗
   };
   // timer = null;
 
@@ -506,6 +508,41 @@ class ItemBtn extends React.Component {
   getLcfqck = (done, item) => {
     //是否付款流程
     const isFklc = item.sxmc === '付款流程';
+    //是否 OA流程查看 - 状态填写
+    const isOACK = [
+      '软件费用审批流程-有合同',
+      '软件费用审批流程-无合同',
+      '项目立项申请',
+      '软件合同签署流程',
+      '设备采购有合同',
+      '设备采购无合同',
+      '框架内硬件采购流程',
+      '框架外硬件采购流程',
+      '总办会流程',
+    ].includes(item.sxmc);
+    //流程类型
+    const getLclx = sxmc => {
+      switch (sxmc) {
+        case '软件费用审批流程-有合同':
+          return 'ZSZQ_RJGMHT';
+        case '软件费用审批流程-无合同':
+          return 'ZSZQ_RJGM';
+        case '项目立项申请':
+          return ['ZSZQ_XMLXSQ', 'ZSZQ_XMLXSQXX', 'ZSZQ_XMLXSQZB'];
+        case '软件合同签署流程':
+          return 'ZSZQ_XXJSBRCHT';
+        case '设备采购有合同':
+        case '框架外硬件采购流程':
+          return 'ZSZQ_SBCGHT';
+        case '设备采购无合同':
+        case '框架内硬件采购流程':
+          return 'ZSZQ_SBCGWHT';
+        case '总办会流程':
+          return 'ZSZQ_HYYA';
+        default:
+          return '';
+      }
+    };
     //查看
     const lcck = item => {
       if (isFklc) {
@@ -518,13 +555,14 @@ class ItemBtn extends React.Component {
           pageSize: 9999,
           total: -1,
           sort: 'XQ',
+          xmid: Number(item.xmid),
         })
           .then(ret => {
             const { code = 0, record = [] } = ret;
             if (code === 1) {
               this.setState({
                 fklcLoading: false,
-                currentFklcList: record.filter(x => x.xmid === item.xmid),
+                currentFklcList: record.filter(x => x.type === '易快报流程'),
               });
             }
           })
@@ -561,6 +599,50 @@ class ItemBtn extends React.Component {
         // window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
         //   JSON.stringify({ a:2,c: 3 })
         // )}`;
+        return;
+      }
+      //查看流程 - 状态填写
+      if (isOACK) {
+        this.setState({
+          fklcLoading: true,
+        });
+        FetchQueryOwnerWorkflow({
+          paging: -1,
+          current: 1,
+          pageSize: 9999,
+          total: -1,
+          sort: 'XQ',
+          xmid: Number(item.xmid),
+        })
+          .then(ret => {
+            const { code = 0, record = [] } = ret;
+            if (code === 1) {
+              let arr = [];
+              if (item.sxmc === '项目立项申请') {
+                arr = record
+                  .filter(x => x.type === 'OA流程')
+                  .map(x => ({ ...x, url: JSON.parse(x.url) }))
+                  .filter(x => getLclx(item.sxmc).includes(x.url.lclx));
+              } else {
+                arr = record
+                  .filter(x => x.type === 'OA流程')
+                  .map(x => ({ ...x, url: JSON.parse(x.url) }))
+                  .filter(x => x.url.lclx === getLclx(item.sxmc));
+              }
+
+              this.setState({
+                fklcLoading: false,
+                currentFklcList: arr,
+              });
+            }
+          })
+          .catch(error => {
+            message.error('流程信息获取失败', 1);
+            this.setState({
+              fklcLoading: false,
+            });
+            console.error(!error.success ? error.message : error.note);
+          });
         return;
       }
       FetchQueryOAUrl({
@@ -764,6 +846,31 @@ class ItemBtn extends React.Component {
         },
       });
     };
+    //状态填写
+    const zttx = (lcid, lclx) => {
+      //operate=TLC_OALCXX_ZTBG&Table=TLC_OALCXX&OALCID=
+      const params = this.getParams(
+        'TLC_OALCXX',
+        'TLC_OALCXX_ZTBG',
+        [
+          {
+            name: 'XTLCID',
+            value: Number(lcid),
+          },
+          {
+            name: 'LCLX',
+            value: lclx,
+          },
+        ],
+        Loginname,
+      );
+      this.setState({
+        lbModalTitle: '状态填写',
+        oackzttxVisible: true,
+        oackzttxPopoverVisible: false,
+      });
+      this.getLink(params, 'lbModalUrl');
+    };
     const reoprMoreCotent = (
       <div className="list">
         <div className="item" onClick={() => lcfq(item)} key="再次发起">
@@ -792,6 +899,7 @@ class ItemBtn extends React.Component {
             .then(res => {
               this.setState({
                 jumpLoading: false,
+                fklcPopoverVisible: false,
               });
               window.open(res.url);
             })
@@ -843,6 +951,43 @@ class ItemBtn extends React.Component {
         </Spin>
       );
     };
+    const oaCKListContent = () => {
+      const jumpToOA = url => {
+        if (url) {
+          window.open(url);
+        }
+      };
+      return (
+        <Spin tip="加载中" spinning={this.state.fklcLoading} size="small">
+          <div className="list" style={this.state.fklcLoading ? { minHeight: 40 } : {}}>
+            {this.state.currentFklcList.map(x => (
+              <div
+                className="item"
+                key={x.subject}
+                style={{
+                  height: 'unset',
+                  lineHeight: 'unset',
+                  marginBottom: 0,
+                  paddingTop: 4,
+                  paddingBottom: 4,
+                  display: 'flex',
+                  alignItems: 'center',
+                }}
+              >
+                <Tooltip title={x.subject} placement="topLeft" key={x.subject}>
+                  <div className="subject" onClick={() => jumpToOA(x.url?.url)}>
+                    {x.subject}
+                  </div>
+                </Tooltip>
+                <div className="opr-btn" onClick={() => zttx(x.url?.lcid, x.url?.lclx)}>
+                  状态填写
+                </div>
+              </div>
+            ))}
+          </div>
+        </Spin>
+      );
+    };
     //权限控制
     const { isLeader = false, isMember = false, isMnger = false } = this.props.auth;
     if (isLeader && !isMnger) {
@@ -867,13 +1012,19 @@ class ItemBtn extends React.Component {
     if (done)
       return (
         <div className="opr-more">
-          {isFklc ? (
+          {isFklc || isOACK ? (
             <Popover
               placement="bottomRight"
               title={null}
-              content={fklcNameListContent()}
+              content={isFklc ? fklcNameListContent() : oaCKListContent()}
               overlayClassName="document-list-content-popover"
               trigger="click"
+              visible={isFklc ? this.state.fklcPopoverVisible : this.state.oackzttxPopoverVisible}
+              onVisibleChange={
+                isFklc
+                  ? v => this.setState({ fklcPopoverVisible: v })
+                  : v => this.setState({ oackzttxPopoverVisible: v })
+              }
             >
               <div className="reopr-btn" onClick={() => lcck(item)}>
                 查看
@@ -1179,6 +1330,7 @@ class ItemBtn extends React.Component {
       hardWareContrastModalVisible,
       xbjglrModalVisible,
       xqfqModalVisible,
+      oackzttxVisible,
     } = this.state;
     const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
@@ -1242,6 +1394,17 @@ class ItemBtn extends React.Component {
       footer: null,
     };
 
+    //oa流程查看 - 状态填写
+    const oackzttxModalProps = {
+      isAllWindow: 1,
+      title: '状态填写',
+      width: '800px',
+      height: '300px',
+      style: { top: '60px' },
+      visible: oackzttxVisible,
+      footer: null,
+    };
+
     return (
       <>
         {this.getItemBtn(item.sxmc, item.zxqk !== ' ', item, auth)}
@@ -1268,9 +1431,9 @@ class ItemBtn extends React.Component {
 
         {/* 硬件中标信息录入 */}
         {hardWareBidModalVisible && (
-          <EnterBidInfoModel
+          lbModalUrl === 'ADD' ? <EnterBidInfoModel
             xmid={Number(item.xmid)}
-            operateType={lbModalUrl} //type
+            // operateType={lbModalUrl} //type
             visible={hardWareBidModalVisible}
             closeModal={() =>
               this.setState({
@@ -1278,7 +1441,18 @@ class ItemBtn extends React.Component {
               })
             }
             onSuccess={() => this.onSuccess(lbModalTitle)}
-          ></EnterBidInfoModel>
+          /> : <EditBidInfoModel
+            xmid={Number(item.xmid)}
+            // operateType={lbModalUrl} //type
+            visible={hardWareBidModalVisible}
+            closeModal={() =>
+              this.setState({
+                hardWareBidModalVisible: false,
+              })
+            }
+            onSuccess={() => this.onSuccess(lbModalTitle)}
+          />
+
         )}
 
         {/* 硬件询比结果录入 */}
@@ -1386,6 +1560,19 @@ class ItemBtn extends React.Component {
             modalProps={xwhyaModalProps}
             onCancel={() => this.setState({ xwhyaModalVisible: false })}
             // onSucess={this.OnSuccess}
+            src={lbModalUrl}
+          />
+        )}
+
+        {/* oa流程查看 - 状态填写 */}
+        {oackzttxVisible && (
+          <BridgeModel
+            modalProps={oackzttxModalProps}
+            onCancel={() => this.setState({ oackzttxVisible: false })}
+            onSucess={() => {
+              this.onSuccess('操作');
+              this.setState({ ygpjVisible: false });
+            }}
             src={lbModalUrl}
           />
         )}

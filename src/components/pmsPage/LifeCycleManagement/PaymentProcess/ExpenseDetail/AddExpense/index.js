@@ -243,12 +243,39 @@ const AddExpense = props => {
             });
             return parseFloat(sum.toFixed(2));
           };
-          //存在费用金额*分摊比例 ≠ 分摊金额的数据
+          //存在分摊金额 / 费用金额 ≠ 分摊比例的数据
           const czsjyc = () => {
             let bool = false;
             formData.apportionmentData.forEach(x => {
+              // console.log(
+              //   '🚀 ~ file: index.js:254 ~ czsjyc',
+              //   parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)) !==
+              //     x['FTBL' + x.ID],
+              //   parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)),
+              //   x['FTBL' + x.ID],
+              // );
               if (
-                parseFloat((getFieldValue('je') * x['FTBL' + x.ID]).toFixed(2) / 100) !==
+                parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)) !==
+                x['FTBL' + x.ID]
+              ) {
+                bool = true;
+              }
+            });
+            return bool;
+          };
+          //存在费用金额*分摊比例 ≠ 分摊金额的数据
+          const czsjyc2 = () => {
+            let bool = false;
+            formData.apportionmentData.forEach(x => {
+              // console.log(
+              //   '🚀 ~ file: index.js:254 ~ czsjyc2',
+              //   parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)) !==
+              //     x['FTJE' + x.ID],
+              //   parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)),
+              //   x['FTJE' + x.ID],
+              // );
+              if (
+                parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)) !==
                 x['FTJE' + x.ID]
               ) {
                 bool = true;
@@ -256,6 +283,7 @@ const AddExpense = props => {
             });
             return bool;
           };
+          console.log('czsjyc() && czsjyc2()', czsjyc(), czsjyc2());
           let apportionErrorsArr = [];
           const jexd = zftje() === getFieldValue('je'); //费用金额 = 总分摊金额
           const blxd = zjebl() === 100; //分摊比例 = 100%
@@ -265,7 +293,7 @@ const AddExpense = props => {
           if (!blxd) {
             apportionErrorsArr.push('ftbl');
           }
-          if (czsjyc()) {
+          if (czsjyc() && czsjyc2()) {
             apportionErrorsArr.push('sjyc'); //数据异常
           }
           setApportionErrors(apportionErrorsArr);
@@ -278,7 +306,7 @@ const AddExpense = props => {
           } else if (!blxd) {
             message.error('分摊比例 ≠ 100%，请修改后重新提交', 1);
             return;
-          } else if (czsjyc()) {
+          } else if (czsjyc() && czsjyc2()) {
             message.error('存在费用金额*分摊比例 ≠ 分摊金额的数据，请修正', 1);
             return;
           }

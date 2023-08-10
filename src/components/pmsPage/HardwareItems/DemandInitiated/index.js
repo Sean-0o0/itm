@@ -701,6 +701,7 @@ class DemandInitiated extends React.Component {
                                 tableDataInit={this.state.tableDataInit}
                                 recordCallback={this.recordCallback}
                                 dataOK={this.state.dataOK}
+                                isXqfq={this.state.xqid === -1 || this.state.xqid === 'undefined'} //是否需求发起
                               />,
                             )}
                           </Form.Item>

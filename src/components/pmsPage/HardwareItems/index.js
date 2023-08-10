@@ -8,6 +8,7 @@ import BidSectionModel from "./BidSectionModel";
 import DemandInitiated from "./DemandInitiated";
 import SendMailModal from "../SendMailModal";
 import EditMemberInfoModel from "../MemberDetailPage/EditMemberInfoModel";
+import EditBidInfoModel from "./EditBidInfoModel";
 
 //首页
 export default function HardwareItems(props) {
@@ -48,7 +49,7 @@ export default function HardwareItems(props) {
       )
       }
       {pollResultVisible && (
-        <PollResultModel closeModal={closePollResultModal} visible={pollResultVisible}/>
+        <EditBidInfoModel closeModal={closePollResultModal} visible={pollResultVisible}/>
       )
       }
       {pollResultEnterVisible && (

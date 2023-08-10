@@ -35,7 +35,7 @@ class ToConsole extends Component {
 
   componentDidMount() {
     const { cxlx } = this.props;
-    if(cxlx){
+    if (cxlx) {
       this.getFilterData(this.props);
     }
   }
@@ -43,8 +43,11 @@ class ToConsole extends Component {
   UNSAFE_componentWillReceiveProps(nextprops) {
     const { xmid: newid, cxlx } = nextprops;
     const { cxlx: newCxlx } = this.props;
-    const { params: {xmid} } = this.state;
-    if (xmid !== newid) {
+    const {
+      params: { xmid },
+    } = this.state;
+    // console.log("🚀 ~ file: index.js:48 ~ ToConsole ~ UNSAFE_componentWillReceiveProps ~ xmid:", xmid, newid)
+    if (newid !== undefined) {
       this.setState({
         params: {
           ...this.state.params,
@@ -53,21 +56,21 @@ class ToConsole extends Component {
       });
     }
     if (newCxlx !== cxlx) {
-      this.getFilterData(nextprops)
+      this.getFilterData(nextprops);
     }
   }
 
   //顶部下拉框查询数据
-  getFilterData = (props) => {
+  getFilterData = props => {
     const { cxlx } = props;
-    this.props.setSpin(true)
+    this.props.setSpin(true);
     QueryProjectListPara({
       paging: -1,
       cxlx: cxlx === 'FQCY' ? 'WDLBPT' : 'WDLBLD',
     })
       .then(res => {
         const { code = 0 } = res;
-        this.props.setSpin(false)
+        this.props.setSpin(false);
         if (code > 0) {
           const wdlx = JSON.parse(res.fileTypeRecord);
           const label = JSON.parse(res.labelRecord);
@@ -111,7 +114,7 @@ class ToConsole extends Component {
         }
       })
       .catch(error => {
-        this.props.setSpin(false)
+        this.props.setSpin(false);
         message.error(!error.success ? error.message : error.note);
       });
   };
@@ -375,6 +378,7 @@ class ToConsole extends Component {
       glysOpen = false,
       params: { xmid, xmbq, xmlx, wdlx, xmjl, yssxlx, ysje1, ysje2 },
     } = this.state;
+    console.log("🚀 ~ file: index.js:379 ~ ToConsole ~ render ~ xmid:", xmid)
     const { dictionary = {} } = this.props;
     const { XMLX: xmlxList = [] } = dictionary;
 
@@ -400,7 +404,7 @@ class ToConsole extends Component {
               }}
               mode="multiple"
               onChange={this.handleXmid}
-              value={xmid ? xmid.split(';') : []}
+              value={xmid ? String(xmid).split(';') : []}
             >
               {xmlist.map((x, i) => (
                 <Select.Option key={i} value={x.XMID}>
@@ -431,9 +435,11 @@ class ToConsole extends Component {
               value={xmlx ? xmlx.split(';') : []}
               treeDefaultExpandAll
               open={xmlxOpen}
-              onDropdownVisibleChange={v => this.setState({
-                xmlxOpen: v
-              })}
+              onDropdownVisibleChange={v =>
+                this.setState({
+                  xmlxOpen: v,
+                })
+              }
             />
             <Icon
               type="down"
@@ -462,9 +468,11 @@ class ToConsole extends Component {
               onChange={this.handleXmbq}
               value={xmbq ? xmbq.split(';') : []}
               open={xmbqOpen}
-              onDropdownVisibleChange={v => this.setState({
-                xmbqOpen: v
-              })}
+              onDropdownVisibleChange={v =>
+                this.setState({
+                  xmbqOpen: v,
+                })
+              }
             />
             <Icon
               type="down"
@@ -500,9 +508,11 @@ class ToConsole extends Component {
               onChange={this.handleWdlx}
               value={wdlx ? wdlx.split(';') : []}
               open={wdlxOpen}
-              onDropdownVisibleChange={v => this.setState({
-                wdlxOpen: v
-              })}
+              onDropdownVisibleChange={v =>
+                this.setState({
+                  wdlxOpen: v,
+                })
+              }
             />
             <Icon
               type="down"
@@ -558,9 +568,11 @@ class ToConsole extends Component {
               onChange={this.handleGlys}
               value={glysid}
               open={glysOpen}
-              onDropdownVisibleChange={v => this.setState({
-                glysOpen: v
-              })}
+              onDropdownVisibleChange={v =>
+                this.setState({
+                  glysOpen: v,
+                })
+              }
             />
             <Icon
               type="down"

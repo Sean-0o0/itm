@@ -23,6 +23,7 @@ export default function InfoTable(props) {
     queryType = 'ALL',
     total,
     handleSearch,
+    handleReset,
     curPage,
     curPageSize,
     prjMnger,
@@ -99,9 +100,10 @@ export default function InfoTable(props) {
   const closeFileAddModal = () => {
     setFileAddVisible(false);
   };
-  //新建项目成功后，刷新数据
+  //新建项目成功后，刷新数据 重置查询条件
   const handleFileAddSuccess = () => {
     closeFileAddModal();
+    handleReset();
     getTableData({}); //刷新数据
   };
 

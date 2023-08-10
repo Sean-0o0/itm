@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {useLocation} from 'react-router';
-import {Divider, message, Pagination, Progress, Spin, Table, Tag} from "antd";
+import {Divider, Empty, message, Pagination, Progress, Spin, Table, Tag, Tooltip} from "antd";
 import {QueryProjectTracking} from "../../../../services/pmsServices";
 import ProjectTracking from "../index";
 import PollResultModel from "../../HardwareItems/PollResultModel";
@@ -13,9 +13,11 @@ import EditPrjTracking from "../editPrjTracking";
 
 export default function InfoTable(props) {
   const [xmid, setXmid] = useState(0);
+  const [xmzq, setXmzq] = useState(0);
   const [record, setRecord] = useState(0);
   const [cycle, setCycle] = useState('');
   const [editPrjVisible, setEditPrjVisible] = useState(false);
+  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   const [hisPrjInfoModalVisible, setHisPrjInfoModalVisible] = useState(false);
   const {
@@ -27,6 +29,7 @@ export default function InfoTable(props) {
     trackingData,
     setTrackingData,
     getTableData,
+    prjRepManage,//报告管理员
   } = props; //表格数据
   const location = useLocation();
 
@@ -35,19 +38,21 @@ export default function InfoTable(props) {
       title: '时间',
       dataIndex: 'SJ',
       key: 'SJ',
-      // width: 60,
+      align: 'left',
+      width: 60,
     },
     {
       title: '当前进度',
       dataIndex: 'DQJD',
       key: 'DQJD',
+      align: 'left',
       width: 170,
       render(text, record, index) {
         // console.log("recordrecord",record)
         return (
           <div
             style={{display: 'flex'}}
-            className={record.DQZT === '高风险' || record.DQZT === '延期' ? 'prj-tracking-infos-detail-row2-lev1' : (record.DQZT === '中风险' || record.DQZT === '低风险' ? 'prj-tracking-infos-detail-row2-lev2' : 'prj-tracking-infos-detail-row2-lev3')}>
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
             <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
                       status="active"/>
           </div>
@@ -58,7 +63,8 @@ export default function InfoTable(props) {
       title: '当前状态',
       dataIndex: 'DQZT',
       key: 'DQZT',
-      // width: 104,
+      align: 'left',
+      width: 104,
       render(text, record, index) {
         // console.log("recordrecord",record)
         return (
@@ -87,21 +93,154 @@ export default function InfoTable(props) {
       title: '重要事项说明',
       dataIndex: 'ZYSXSM',
       key: 'ZYSXSM',
+      align: 'left',
+      width: 192,
+      render: (text, record) => (
+        <span>
+          {text && text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+        </span>
+      )
     },
     {
       title: '本周工作内容',
       dataIndex: 'BZGZNR',
       key: 'BZGZNR',
+      align: 'left',
+      width: 252,
+      render: (text, record) => (
+        <span>
+          {text && text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+        </span>
+      )
     },
     {
       title: '下周工作安排',
       dataIndex: 'XZGZAP',
       key: 'XZGZAP',
+      align: 'left',
+      width: 252,
+      render: (text, record) => (
+        <span>
+          {text && text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text || ''}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || ''}
+        </span>
+      )
+    },
+  ];
+
+  const columnsopr = [
+    {
+      title: '时间',
+      dataIndex: 'SJ',
+      key: 'SJ',
+      align: 'left',
+      width: 60,
     },
     {
+      title: '当前进度',
+      dataIndex: 'DQJD',
+      key: 'DQJD',
+      align: 'left',
+      width: 170,
+      render(text, record, index) {
+        // console.log("recordrecord",record)
+        return (
+          <div
+            style={{display: 'flex'}}
+            className={record.SJ === '本周' ? (record.DQZT === '高风险' || record.DQZT === '延期' || record.DQZT === '中风险' ? 'prj-tracking-infos-detail-row2-lev1' : 'prj-tracking-infos-detail-row2-lev2') : 'prj-tracking-infos-detail-row2-lev3'}>
+            <Progress strokeColor="#3361FF" percent={record.DQJD?.replace('%', '')} size="small"
+                      status="active"/>
+          </div>
+        )
+      }
+    },
+    {
+      title: '当前状态',
+      dataIndex: 'DQZT',
+      key: 'DQZT',
+      align: 'left',
+      width: 104,
+      render(text, record, index) {
+        // console.log("recordrecord",record)
+        return (
+          <span style={{display: 'flex'}}>{record.DQZT === '进度正常' ?
+            <div className='prj-status-icon-lv1'><i className="iconfont icon-hourglass"/></div> : (
+              record.DQZT === '高风险' ?
+                <div className='prj-status-icon-lv2'><i className="iconfont icon-alarm"/></div> : (
+                  record.DQZT === '中风险' ?
+                    <div className='prj-status-icon-lv3'><i className="iconfont icon-alarm"/></div> : (
+                      record.DQZT === '低风险' ?
+                        <div className='prj-status-icon-lv4'><i className="iconfont icon-alarm"/></div> : (
+                          record.DQZT === '延期' ?
+                            <div className='prj-status-icon-lv5'><i className="iconfont icon-delay"/></div> : (
+                              record.DQZT === '已完成' &&
+                              <div className='prj-status-icon-lv6'><i className="iconfont circle-check"/></div>
+                            )
+                        )
+                    )
+                )
+            )
+          }&nbsp;&nbsp;{text}</span>
+        )
+      }
+    },
+    {
+      title: '重要事项说明',
+      dataIndex: 'ZYSXSM',
+      key: 'ZYSXSM',
+      align: 'left',
+      width: 192,
+      render: (text, record) => (
+        <span>
+          {text && text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
+        </span>
+      )
+    },
+    {
+      title: '本周工作内容',
+      dataIndex: 'BZGZNR',
+      key: 'BZGZNR',
+      align: 'left',
+      width: 252,
+      render: (text, record) => (
+        <span>
+          {text && text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
+        </span>
+      )
+    },
+    {
+      title: '下周工作安排',
+      dataIndex: 'XZGZAP',
+      key: 'XZGZAP',
+      align: 'left',
+      width: 252,
+      render: (text, record) => (
+        <span>
+          {text && text.length > 60 ? (
+            <span>{text.slice(0, 60) + '...'}<Tooltip overlayClassName="prjTrackingTip" placement='topLeft'
+                                                      title={text || '--'}><span
+              style={{cursor: "pointer", color: '#3361ff'}}>详情</span></Tooltip></span>) : text || '--'}
+        </span>
+      )
+    }, {
       title: '操作',
       key: 'action',
-      // width: 60,
+      align: 'left',
+      width: 60,
       render: (text, record) => (
         <span>
         <a style={{color: '#3361ff', cursor: 'pointer'}} onClick={() => {
@@ -112,58 +251,8 @@ export default function InfoTable(props) {
         }}>修改</a>
       </span>
       ),
-    },
+    }
   ];
-
-  // const trackingData = [{
-  //   XMID: 1,
-  //   XMMC: "项目1",
-  //   XMJL: "张三",
-  //   XMJLID: 1,
-  //   XMZQ: 2,
-  //   tableInfo:[{
-  //     key: '1',
-  //     SJ: '本周',
-  //     DQJD: <span className="prj-progress-info"><Progress strokeColor="#3361FF" percent={90} size="small" status="active" />90%</span>,
-  //     DQZT: '低风险',
-  //     ZYSXSM: '-',
-  //     BZGZNR: '1.按照交易所要求紧急开发可转债适当性功能； 2.按照苹果公司应用市场要求开发用户注销功能；',
-  //     XZGZAP: '1.可转债适当性及用户注销功能测试； 2.条件单版本测试； 3.整理汇金谷交易模块需求；',
-  //   },
-  //     {
-  //       key: '2',
-  //       SJ: '上周',
-  //       DQJD: <span className="prj-progress-info"><Progress strokeColor="#909399" percent={50} size="small"/>50%</span>,
-  //       DQZT: '进度正常',
-  //       ZYSXSM: '条件单版本一直在延期，一方面由于交易所和应用市场突发事件较多，另一方面目前开发商效率较慢',
-  //       BZGZNR: '1.按照交易所要求紧急开发可转债适当性功能； 2.按照苹果公司应用市场要求开发用户注销功能；',
-  //       XZGZAP: '1.可转债适当性及用户注销功能测试； 2.条件单版本测试； 3.整理汇金谷交易模块需求；',
-  //     }]
-  // },{
-  //   XMID: 2,
-  //   XMMC: "项目2",
-  //   XMJL: "李四",
-  //   XMJLID: 2,
-  //   XMZQ: 15,
-  //   tableInfo:[{
-  //     key: '1',
-  //     SJ: '本周',
-  //     DQJD: <span className="prj-progress-info"><Progress strokeColor="#3361FF" percent={90} size="small" status="active" />90%</span>,
-  //     DQZT: '低风险',
-  //     ZYSXSM: '-',
-  //     BZGZNR: '1.按照交易所要求紧急开发可转债适当性功能； 2.按照苹果公司应用市场要求开发用户注销功能；',
-  //     XZGZAP: '1.可转债适当性及用户注销功能测试； 2.条件单版本测试； 3.整理汇金谷交易模块需求；',
-  //   },
-  //     {
-  //       key: '2',
-  //       SJ: '上周',
-  //       DQJD: <span className="prj-progress-info"><Progress strokeColor="#909399" percent={50} size="small"/>50%</span>,
-  //       DQZT: '进度正常',
-  //       ZYSXSM: '条件单版本一直在延期，一方面由于交易所和应用市场突发事件较多，另一方面目前开发商效率较慢',
-  //       BZGZNR: '1.按照交易所要求紧急开发可转债适当性功能； 2.按照苹果公司应用市场要求开发用户注销功能；',
-  //       XZGZAP: '1.可转债适当性及用户注销功能测试； 2.条件单版本测试； 3.整理汇金谷交易模块需求；',
-  //     }]
-  // }];
 
   const changeExtends = async (val) => {
     setIsSpinning(true);
@@ -218,7 +307,7 @@ export default function InfoTable(props) {
           })
           setTrackingData([...trackingData])
           setIsSpinning(false)
-          console.log("trackingDataNew", trackingData)
+          console.log("trackingDataNew222", trackingData)
         }
       })
       .catch(e => {
@@ -227,8 +316,9 @@ export default function InfoTable(props) {
       });
   };
 
-  const toHisPrjInfoModal = (xmid) => {
+  const toHisPrjInfoModal = (xmid, xmzq) => {
     setXmid(xmid);
+    setXmzq(xmzq);
     setHisPrjInfoModalVisible(true)
   }
 
@@ -256,14 +346,29 @@ export default function InfoTable(props) {
         onSuccess={() => this.onSuccess("合同签署")}
       />}
       {
-        trackingData?.length > 0 && trackingData?.map((item, index) => {
+        trackingData?.length > 0 ? trackingData?.map((item, index) => {
+          const thisweek = item.tableInfo.filter(i => i.SJ === "本周")
           return <div className="info-table">
             {/*项目名称*/}
             <div className="prj-basic-info">
-              <div className="prj-name"><i onClick={() => changeExtends(item)}
-                                           className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
+              <div
+                style={{borderRadius: item.extends ? '8px 1px 1px 1px' : '8px'}}
+                className={thisweek.length > 0 ? (thisweek[0].DQZT === '高风险' || thisweek[0].DQZT === '延期' || thisweek[0].DQZT === '中风险' ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2") : (item.BZZT === 1 || item.BZZT === 2 || item.BZZT === 4 ? "prj-name prj-name-lv1" : "prj-name prj-name-lv2")}>
+                <i onClick={() => changeExtends(item)}
+                   className={item.extends ? 'iconfont icon-fill-down head-icon' : 'iconfont icon-fill-right head-icon'}/>
+                {item.XMMC}
+              </div>
+              <div className="prj-manage">
+                <span className="title">项目经理：</span>
+                <span className="label">{item.XMJL}</span>
+              </div>
+              <div className="prj-week">
+                <span className="title">周期：</span>
+                <span className="label">第{item.XMZQ}周</span>
+              </div>
+              <div className="prj-detail">
                 <Link
-                  style={{paddingLeft: '8px', color: '#3361ff'}}
+                  style={{color: '#3361ff'}}
                   to={{
                     pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                       JSON.stringify({
@@ -276,36 +381,37 @@ export default function InfoTable(props) {
                   }}
                   className="table-link-strong"
                 >
-                  {item.XMMC}
+                  项目详情
+                  <i className="iconfont icon-right"/>
                 </Link>
-              </div>
-              <div className="prj-manage">
-                <span className="title">项目经理：</span>
-                <span className="label">{item.XMJL}</span>
-              </div>
-              <div className="prj-week">
-                <span className="title">周期：</span>
-                <span className="label">第{item.XMZQ}周</span>
               </div>
             </div>
             {/*表格内容*/}
             <div className="prj-table-info" style={{display: item.extends ? '' : 'none'}}>
-              <Table columns={columns} dataSource={item.tableInfo} pagination={false}/>
+              <Table
+                columns={String(item.XMJLID) === String(LOGIN_USER_INFO.id) || prjRepManage === '自定义报告管理员' ? columnsopr : columns}
+                dataSource={item.tableInfo} pagination={false}/>
             </div>
             {/*底部数据*/}
             <div className="prj-his-info" style={{display: item.extends ? '' : 'none'}}>
-              <a className="title" onClick={() => toHisPrjInfoModal(item.XMID)}>历史概况</a>
+              <a className="title" onClick={() => toHisPrjInfoModal(item.XMID, item.XMZQ)}>历史概况</a>
               <a className="his-icon" onClick={() => toHisPrjInfoModal(item.XMID)}><i className="iconfont icon-right"/></a>
             </div>
           </div>
-        })
+        }) : <div className="info-table"
+                  style={{height: 'calc(100vh - 168px)', margin: '16px 24px', maxHeight: 'calc(100vh - 168px)'}}><Empty
+          description="暂无数据"
+          image={Empty.PRESENTED_IMAGE_SIMPLE}
+          style={{width: '100%'}}
+        /></div>
       }
       {hisPrjInfoModalVisible && (
-        <HisPrjInfo xmid={xmid} closeModal={closeHisPrjInfoModal} visible={hisPrjInfoModalVisible}/>
+        <HisPrjInfo xmid={xmid} xmzq={xmzq} closeModal={closeHisPrjInfoModal} visible={hisPrjInfoModalVisible}/>
       )
       }
-      <div className='page-individual-prjTracking' style={{margin: '24px', backgroundColor: '#f7f8fa'}}>
-        {(total !== -1 && total !== 0) && <Pagination
+      {(total !== -1 && total !== 0) &&
+      <div className='page-individual-prjTracking' style={{margin: '0 24px', backgroundColor: '#f7f8fa'}}>
+        <Pagination
           onChange={handleTableChange}
           onShowSizeChange={handleTableChange}
           pageSize={params.pageSize}
@@ -316,8 +422,8 @@ export default function InfoTable(props) {
           // hideOnSinglePage={true}
           showQuickJumper={true}
           showTotal={total => `共 ${total} 条数据`}
-        />}
-      </div>
+        />
+      </div>}
     </Spin>
   );
 }

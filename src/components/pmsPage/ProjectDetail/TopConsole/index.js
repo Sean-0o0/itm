@@ -781,7 +781,7 @@ export default function TopConsole(props) {
       <div className="prj-info-row">
         <div className="prj-name">{prjBasic?.XMMC}</div>
         <div className="tag-row">
-          {/* {prjBasic.SFSC === '0' ? (
+          {prjBasic.SFSC === '0' ? (
             <Popconfirm title="确定收藏吗？" onConfirm={() => handlePrjCollect('SCXM')}>
               <i className="iconfont icon-star" />
             </Popconfirm>
@@ -789,12 +789,12 @@ export default function TopConsole(props) {
             <Popconfirm title="确定取消收藏吗？" onConfirm={() => handlePrjCollect('QXXM')}>
               <i className="iconfont icon-star-fill" />
             </Popconfirm>
-          )} */}
+          )}
           {getTags(prjBasic.XMBQ, prjBasic.XMBQID)}
           {/* 1已完结2未完结 */}
-          {/* {prjBasic.WJZT === '1' && (
+          {prjBasic.WJZT === '1' && (
             <img src={iconCompleted} className="icon-completed" alt="图片：已完成" />
-          )} */}
+          )}
           {allowEdit() && (
             <Button className="btn-edit" onClick={handleEditPrjInfo}>
               编辑

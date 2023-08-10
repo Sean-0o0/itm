@@ -17,9 +17,7 @@ import SpecialUrl from './specialUrl';
 import styles from './index.less';
 import ViewFile from '../../../components/pmsPage/ViewFile';
 import WpsUrl from './WpsUrl';
-import HomePage from '../../../pages/pmsPage/HomePage';
-import { translate } from '@antv/g6/lib/util/math';
-// import { fetchUserTodoWorkflowNum } from '../../../services/commonbase/workFlowNavigation';
+import noAuthImg from '../../../assets/img_l_no permission@2x.png';
 
 const { Header, Sider, Content } = Layout;
 const prefix = '';
@@ -426,6 +424,7 @@ class MainPageLayout extends React.PureComponent {
       dictionary,
       authUserInfo,
     } = this.props;
+    const { TGYS_GYSRYQX, V_GYSRYQX } = authorities;
     const routes = lodash.get(route, 'routes', []);
     const { hasAuthed } = this.props;
     const {
@@ -435,6 +434,12 @@ class MainPageLayout extends React.PureComponent {
       userTodoWorkflowNum,
       name: projectName,
     } = this.state;
+    const NoAuthPage = () => (
+      <div className="no-auth-page-wrapper">
+        抱歉，您没有权限查看该页面
+        <img className="no-auth-img" src={noAuthImg} alt="抱歉，您没有权限查看该页面" />
+      </div>
+    );
     if (!hasAuthed) {
       return null;
     }
@@ -577,6 +582,25 @@ class MainPageLayout extends React.PureComponent {
                   {// 路由
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
                     if (
+                      path &&
+                      !path.includes('/pms/manage/SupplierDmInfo') &&
+                      TGYS_GYSRYQX !== undefined &&
+                      V_GYSRYQX !== undefined
+                    ) {
+                      return (
+                        <Route
+                          key={index}
+                          when={() => {
+                            return keepAlive;
+                          }}
+                          cacheKey={key || path}
+                          path={path}
+                          unmount={false}
+                          component={NoAuthPage}
+                        />
+                      );
+                    }
+                    if (
                       //取消路由缓存
                       (path && path.includes('/pms/manage/CustomReportDetail')) ||
                       (path && path.includes('/pms/manage/CustomReportInfo')) ||
@@ -601,7 +625,7 @@ class MainPageLayout extends React.PureComponent {
                           />
                         )
                       );
-                    } else if (path && !path.includes('/index')) {
+                    } else {
                       return (
                         path && (
                           <CacheRoute
@@ -618,19 +642,6 @@ class MainPageLayout extends React.PureComponent {
                         )
                       );
                     }
-                    return (
-                      <CacheRoute
-                        key={index}
-                        when={() => {
-                          return keepAlive;
-                        }}
-                        cacheKey={key || path}
-                        path={path}
-                        unmount={false}
-                        // saveScrollPosition
-                        render={p => <HomePage {...p}></HomePage>}
-                      />
-                    );
                   })}
                   <Redirect exact from={`${prefix}/`} to={`${prefix}/loading`} />
                   {menuTree && menuTree.length > 0 && (

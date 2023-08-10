@@ -7,11 +7,16 @@ import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
 import { Dropdown, Menu, message, Modal, Popover, Tooltip } from 'antd';
-import { CreateOperateHyperLink, UpdateMessageState } from '../../../../services/pmsServices';
+import {
+  CreateOperateHyperLink,
+  QueryProjectTracking,
+  UpdateMessageState,
+} from '../../../../services/pmsServices';
 import InterviewScoreModal from '../../DemandDetail/ProjectItems/InterviewScoreModal';
 import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
+import EditPrjTracking from '../../ProjectTracking/editPrjTracking';
 
 export default function OverviewCard(props) {
   const [hovered, setHovered] = useState(false);
@@ -46,6 +51,12 @@ export default function OverviewCard(props) {
   const [modalVisible, setModalVisible] = useState({
     wbrymspf: false, //外包人员面试评分
   }); //弹窗显隐
+  const [trackingModal, setTrackingModal] = useState({
+    visible: false,
+    record: {},
+    cycle: 0,
+    xxid: -1,
+  }); //example
 
   //人员新增提醒弹窗配置
   const ryxztxModalProps = {
@@ -72,13 +83,6 @@ export default function OverviewCard(props) {
     else txt = '夜里';
     let greeting = txt + '好！' + LOGIN_USER_INFO.name;
     return greeting;
-  };
-
-  //弹窗操作成功
-  const handleOperateSuccess = txt => {
-    txt && message.success(txt, 1);
-    //刷新数据
-    reflush();
   };
 
   //跳转livebos页面
@@ -270,6 +274,47 @@ export default function OverviewCard(props) {
     }
   };
 
+  //打开跟踪信息编辑弹窗
+  const openTrackingEditModal = item => {
+    if (item.kzzd && item.kzzd !== '') {
+      //获取项目跟踪数据
+      QueryProjectTracking({
+        projectId: Number(item.xmid),
+        queryType: 'GZZB',
+        sort: 'XMZQ ASC',
+      })
+        .then(res => {
+          if (res?.success) {
+            const obj = JSON.parse(res.result)?.find(x => x.XMZQ === JSON.parse(item.kzzd).XMZQ);
+            setTrackingModal({
+              visible: true,
+              record: obj,
+              cycle: Number(obj.XMZQ),
+              xxid: item.xxid,
+            });
+          }
+        })
+        .catch(e => {
+          message.error('项目跟踪信息获取失败', 1);
+        });
+    }
+  };
+  const onTrackingEditModalSuccess = () => {
+    UpdateMessageState({
+      zxlx: 'EXECUTE',
+      xxid: trackingModal.xxid,
+    })
+      .then((ret = {}) => {
+        const { code = 0, note = '', record = [] } = ret;
+        if (code === 1) {
+          reflush();
+        }
+      })
+      .catch(error => {
+        message.error('操作失败', 1);
+      });
+  };
+
   //获取操作按钮文本
   const getBtnTxt = (txt, sxmc) => {
     if (sxmc === '信委会会议结果') return '确认';
@@ -341,6 +386,8 @@ export default function OverviewCard(props) {
         return handleCjxq(item);
       case '自定义月报填写':
         return jumpToCustomReportDetail(item);
+      case '项目概况信息未填写':
+        return openTrackingEditModal(item);
 
       //暂不处理
       case '外包人员录用信息提交':
@@ -555,7 +602,8 @@ export default function OverviewCard(props) {
         <BridgeModel
           modalProps={ryxztxModalProps}
           onSucess={() => {
-            handleOperateSuccess('人员新增操作');
+            message.success('操作成功', 1);
+            reflush();
             setRyxztxModalVisible(false);
           }}
           onCancel={() => setRyxztxModalVisible(false)}
@@ -607,6 +655,16 @@ export default function OverviewCard(props) {
             projectStatus={src_fileAdd.projectStatus}
           />
         </Modal>
+      )}
+      {/*编辑项目跟踪信息弹窗*/}
+      {trackingModal.visible && (
+        <EditPrjTracking
+          record={trackingModal.record}
+          cycle={trackingModal.cycle}
+          getTableData={onTrackingEditModalSuccess}
+          contractSigningVisible={trackingModal.visible}
+          closeContractModal={() => setTrackingModal(p => ({ ...p, visible: false }))}
+        />
       )}
       <div className="avatar-card-box">
         <div className="avatar">

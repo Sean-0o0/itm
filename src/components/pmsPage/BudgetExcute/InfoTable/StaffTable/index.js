@@ -358,31 +358,23 @@ class StaffTable extends Component {
               ellipsis: true,
               sorter: true,
               sortDirections: ['descend', 'ascend'],
-              render: txt => (
-                <span style={{ marginRight: 20 }}>
-                  {txt === '-1' ? '***' : getAmountFormat(txt)}
-                </span>
-              ),
+              render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
             },
             {
               title: '已付款金额(万元)',
               dataIndex: 'FKJE',
-              width: '15%',
+              width: '14%',
               align: 'right',
               key: 'FKJE',
               ellipsis: true,
               sorter: true,
               sortDirections: ['descend', 'ascend'],
-              render: txt => (
-                <span style={{ marginRight: 20 }}>
-                  {txt === '-1' ? '***' : getAmountFormat(txt)}
-                </span>
-              ),
+              render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
             },
             {
               title: '关联预算项目',
               dataIndex: 'YSXM',
-              width: '15%',
+              width: '20%',
               key: 'YSXM',
               ellipsis: true,
               render: txt => (
@@ -633,9 +625,7 @@ class StaffTable extends Component {
         ellipsis: true,
         sorter: (a, b) => Number(a.HTJE || 0) - Number(b.HTJE || 0),
         sortDirections: ['descend', 'ascend'],
-        render: txt => (
-          <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-        ),
+        render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
       },
       {
         title: '已付款金额(元)',
@@ -646,9 +636,7 @@ class StaffTable extends Component {
         ellipsis: true,
         sorter: (a, b) => Number(a.YFKJE || 0) - Number(b.YFKJE || 0),
         sortDirections: ['descend', 'ascend'],
-        render: txt => (
-          <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-        ),
+        render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
       },
       {
         title: '未付款金额(元)',
@@ -659,9 +647,7 @@ class StaffTable extends Component {
         ellipsis: true,
         sorter: (a, b) => Number(a.WFKJE || 0) - Number(b.WFKJE || 0),
         sortDirections: ['descend', 'ascend'],
-        render: txt => (
-          <span style={{ marginRight: 20 }}>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>
-        ),
+        render: txt => <span>{txt === '-1' ? '***' : getAmountFormat(txt)}</span>,
       },
       {
         title: '付款时间',
@@ -730,10 +716,59 @@ class StaffTable extends Component {
           key: 'YJZXL',
           align: 'right',
           value:
-            queryType === 'MX_FZB' ? Number(ysglxx.FZBWCL) + '%' : Number(ysglxx.KYYSZXL) + '%',
+            queryType === 'MX_FZB'
+              ? Number(ysglxx.FZBWCL) + '%'
+              : queryType === 'MX_KY'
+              ? Number(ysglxx.KYYSZXL) + '%'
+              : Number(ysglxx.ZBRJWCL) + '%',
         },
       ];
-      if (queryType === 'MX_QT') return null;
+      if (queryType === 'MX_QT' && tableData.length > 0)
+        columnArr = [
+          {
+            width: '27%',
+            key: 'HTJ',
+            value: '合计：',
+            align: 'center',
+            style: {
+              backgroundColor: '#f5f7fa',
+              fontFamily: 'PingFangSC-Regular, PingFang SC',
+              fontWeight: 'bold',
+              color: '#606266',
+              borderRight: '1px solid #e8e8e8',
+            },
+          },
+          {
+            width: '13%',
+            key: 'HTJE',
+            value: getAmountFormat(Number(tableData[0].HTJEZJE)),
+            align: 'right',
+          },
+          {
+            width: '14%',
+            key: 'YFKJE',
+            align: 'right',
+            value: getAmountFormat(Number(tableData[0].FKZJE)),
+          },
+          {
+            width: '20%',
+            key: 'BLANK',
+            value: '',
+            align: 'right',
+          },
+          {
+            width: '12%',
+            key: 'BLANK2',
+            value: '',
+            align: 'right',
+          },
+          {
+            width: '14%',
+            key: 'KZXYS',
+            align: 'right',
+            value: getAmountFormat(Number(tableData[0].KZXYSZJE)),
+          },
+        ];
       return (
         <div className="budget-excute-table-footer">
           {columnArr.map(x => (
