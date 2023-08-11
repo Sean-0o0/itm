@@ -47,7 +47,7 @@ export default function ShowAllModal(props) {
         ),
         Number(moment().format('YYYYMMDD')),
       );
-      setDate([moment().subtract(30, 'days'), moment()])
+      setDate([moment().subtract(30, 'days'), moment()]);
     } else {
       //关闭时重置数据
       setTableData(p => ({
@@ -61,28 +61,27 @@ export default function ShowAllModal(props) {
   }, [visible]);
 
   //获取表格数据
-  const getTableData = (date, endDate) => {
-    // console.log('getTableData');
+  const getTableData = ({ date, endDate, current = 1, pageSize = 10 }) => {
     setTableData(p => ({ ...p, loading: true }));
     FetchQueryOwnerMessage({
-      cxlx: 'ALL',
+      cxlx: 'GG',
       date,
       endDate,
-      paging: -1,
-      current: 1,
-      pageSize: 10,
+      paging: 1,
+      current,
+      pageSize,
       total: -1,
       sort: '',
     })
       .then(res => {
         if (res?.success) {
-          const arr = [...res.record].filter(x => x.xxlx === '3' || x.xxlx === '4');
-          // console.log('🚀 ~ FetchQueryOwnerMessage ~ res', arr);
           setTableData(p => ({
             ...p,
-            data: arr,
-            total: arr.length,
+            data: [...res.record],
+            total: res.totalrows,
             loading: false,
+            current,
+            pageSize,
           }));
         }
       })
@@ -95,23 +94,20 @@ export default function ShowAllModal(props) {
 
   //表格操作后更新数据
   const handleTableChange = pagination => {
-    // console.log('handleTableChange', pagination, filters, sorter, extra);
     const { current = 1, pageSize = 10 } = pagination;
-    setTableData(p => ({
-      ...p,
-      current,
-      pageSize,
-    }));
+    getTableData({ current, pageSize });
   };
 
   //公告日期变化
   const onDateChange = (d, ds) => {
-    // console.log('🚀 ~ onDateChange ~ d, ds:', d, ds);
     setDate(d);
     if (d.length === 0) {
-      getTableData(Number(moment().format('YYYYMMDD')), undefined);
+      getTableData({ date: Number(moment().format('YYYYMMDD')), endDate: undefined });
     } else {
-      getTableData(Number(d[0].format('YYYYMMDD')), Number(d[1].format('YYYYMMDD')));
+      getTableData({
+        date: Number(d[0].format('YYYYMMDD')),
+        endDate: Number(d[1].format('YYYYMMDD')),
+      });
     }
   };
 

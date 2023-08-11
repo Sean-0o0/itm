@@ -195,10 +195,13 @@ function UploadModal(props) {
                   }}
                   multiple={true}
                   onChange={info => {
+                    console.log('🚀 ~ file: index.js:198 ~ UploadModal ~ info:', info);
                     let list = [...info.fileList];
+                    console.log('🚀 ~ file: index.js:199 ~ UploadModal ~ list:', list);
                     let newArr = newAddData.filter(
                       x => !(x.uid === info.file.uid && info.file.status === 'removed'),
                     );
+                    console.log('🚀 ~ file: index.js:202 ~ UploadModal ~ newArr:', newArr);
                     setNewAddData([...newArr]);
                     const fn = item => {
                       if (fileList.findIndex(x => x.uid === item.uid) === -1) {
@@ -228,36 +231,41 @@ function UploadModal(props) {
                         setIsTurenRed(false);
                       }
                     };
-                    list.forEach(x => {
-                      if (x.originFileObj !== undefined && x.uid !== +x.uid) {
-                        // console.log(x);
-                        if (
-                          [
-                            'application/pdf',
-                            'application/msword',
-                            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-                            'application/wps-office.docx',
-                            'application/wps-office.doc',
-                          ].includes(x.type)
-                        ) {
-                          const reader = new FileReader();
-                          reader.onloadend = function() {
-                            const arrayBuffer = reader.result;
-                            const headerBytes = new Uint8Array(arrayBuffer, 0, 8);
-                            const headerInfoHex = Array.from(headerBytes)
-                              .map(byte => byte.toString(16).padStart(2, '0'))
-                              .join('')
-                              .slice(0, 8);
-                            if (['504b0304', '25504446', 'd0cf11e0'].includes(headerInfoHex)) {
-                              fn(x);
-                            }
-                          };
-                          reader.readAsArrayBuffer(x.originFileObj);
+                    if (list.length > 0) {
+                      list.forEach(x => {
+                        if (x.originFileObj !== undefined && x.uid !== +x.uid) {
+                          // console.log(x);
+                          if (
+                            [
+                              'application/pdf',
+                              'application/msword',
+                              'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+                              'application/wps-office.docx',
+                              'application/wps-office.doc',
+                            ].includes(x.type)
+                          ) {
+                            const reader = new FileReader();
+                            reader.onloadend = function() {
+                              const arrayBuffer = reader.result;
+                              const headerBytes = new Uint8Array(arrayBuffer, 0, 8);
+                              const headerInfoHex = Array.from(headerBytes)
+                                .map(byte => byte.toString(16).padStart(2, '0'))
+                                .join('')
+                                .slice(0, 8);
+                              if (['504b0304', '25504446', 'd0cf11e0'].includes(headerInfoHex)) {
+                                fn(x);
+                              }
+                            };
+                            reader.readAsArrayBuffer(x.originFileObj);
+                          }
+                        } else {
+                          fn(x);
                         }
-                      } else {
-                        fn(x);
-                      }
-                    });
+                      });
+                    } else {
+                      setFileList([]);
+                      setIsTurenRed(true);
+                    }
                   }}
                   beforeUpload={async (file, fileList) => {
                     console.log('🚀 ~ file: index.js:253 ~ beforeUpload:', file);

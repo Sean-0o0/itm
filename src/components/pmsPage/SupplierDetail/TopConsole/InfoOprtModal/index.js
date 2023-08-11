@@ -120,13 +120,17 @@ function InfoOprtModal(props) {
           .then(res => {
             if (res?.success) {
               if (res.code === 1) {
-                resetFields();
-                message.success(oprtType === 'ADD' ? '新增成功' : '编辑成功', 1);
+                if (res.note === '成功') {
+                  message.success(oprtType === 'ADD' ? '新增成功' : '编辑成功', 1);
+                  //刷新数据
+                  getDetailData && getDetailData(splId);
+                  getTableData && getTableData({});
+                  setVisible(false);
+                  resetFields();
+                } else {
+                  message.error('该供应商信息已录入，不可重复录入', 1);
+                }
                 setIsSpinning(false);
-                //刷新数据
-                getDetailData && getDetailData(splId);
-                getTableData && getTableData({});
-                setVisible(false);
               }
             }
           })

@@ -76,8 +76,8 @@ export default function HomePage(props) {
   const [trackingData, setTrackingData] = useState([{ tableInfo: [] }]);
   const [isTrackingSpinning, setIsTrackingSpinning] = useState(false);
   const [showExtends, setShowExtends] = useState(false);
-  var s = 0;
-  var e = 0;
+  // var s = 0;
+  // var e = 0;
 
   //防抖定时器
   let timer = null;
@@ -107,8 +107,7 @@ export default function HomePage(props) {
 
   useEffect(() => {
     if (LOGIN_USER_INFO.id !== undefined) {
-      // getUserRole();
-      s = performance.now();
+      // s = performance.now();
       handlePromiseAll();
     }
     return () => {};
@@ -147,11 +146,21 @@ export default function HomePage(props) {
         });
         //获取待办、系统公告数据
         const todoPromise = FetchQueryOwnerMessage({
-          cxlx: 'ALL',
+          cxlx: 'DB',
           date: Number(new moment().format('YYYYMMDD')),
           paging: 1,
           current: 1,
           pageSize: 99999,
+          total: -1,
+          sort: '',
+        });
+        //获取系统公告数据
+        const sysNoticePromise = FetchQueryOwnerMessage({
+          cxlx: 'GG',
+          date: Number(new moment().format('YYYYMMDD')),
+          paging: 1,
+          current: 1,
+          pageSize: 3,
           total: -1,
           sort: '',
         });
@@ -185,6 +194,7 @@ export default function HomePage(props) {
           budgetPromise,
           prjPromise,
           todoPromise,
+          sysNoticePromise,
           overviewPromise,
           rptPromise,
           trackingPromise,
@@ -227,11 +237,12 @@ export default function HomePage(props) {
           PROMISE.push(supplierPromise);
         }
         const RESULT = await Promise.all(PROMISE);
-        const [budgetRes, prjRes, todoRes, overviewRes, rptRes, trackingRes] = RESULT;
+        const [budgetRes, prjRes, todoRes, sysNoticeRes, overviewRes, rptRes, trackingRes] = RESULT;
 
         const budgetResData = (await budgetRes) || {};
         const prjResData = (await prjRes) || {};
         const todoResData = (await todoRes) || {};
+        const sysNoticeResData = (await sysNoticeRes) || {};
         const overviewResData = (await overviewRes) || {};
         const rptResData = (await rptRes) || {};
         const trackingResData = (await trackingRes) || {};
@@ -267,16 +278,16 @@ export default function HomePage(props) {
           });
         }
         if (todoResData.success) {
-          setToDoData([...todoResData.record].filter(x => x.xxlx === '1'));
-          setNoticeData(
-            [...todoResData.record].filter(x => x.xxlx === '3' || x.xxlx === '4').slice(0, 3),
-          );
+          setToDoData([...todoResData.record]);
           setTotal(p => {
             return {
               ...p,
               todo: todoResData.totalrows,
             };
           });
+        }
+        if (sysNoticeResData.success) {
+          setNoticeData([...sysNoticeResData.record]);
         }
         if (overviewResData.success) {
           setOverviewInfo(overviewResData.record[0]);
@@ -298,7 +309,7 @@ export default function HomePage(props) {
           });
         }
         if (['二级部门领导', '普通人员'].includes(ROLE)) {
-          const processResData = (await RESULT[6]) || {};
+          const processResData = (await RESULT[7]) || {};
           if (processResData.success) {
             setProcessData(p => [...processResData.record]);
             setTotal(p => {
@@ -309,8 +320,8 @@ export default function HomePage(props) {
             });
           }
         } else {
-          const teamResData = (await RESULT[6]) || {};
-          const supplierResData = (await RESULT[7]) || {};
+          const teamResData = (await RESULT[7]) || {};
+          const supplierResData = (await RESULT[8]) || {};
           if (teamResData.success) {
             let arr = JSON.parse(teamResData.bmry).map(x => {
               return {
@@ -344,8 +355,8 @@ export default function HomePage(props) {
           }
         }
 
-        e = performance.now();
-        console.log(`Request time: ${e - s} milliseconds`, s, e);
+        // e = performance.now();
+        // console.log(`Request time: ${e - s} milliseconds`, s, e);
         setIsSpinning(false);
       }
     } catch (error) {

@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Button, Empty, message, Pagination, Popover, Select, Spin, Table } from 'antd';
+import { Button, Empty, message, Pagination, Popover, Select, Spin, Table, Tooltip } from 'antd';
 import moment from 'moment';
 import { QuerySupplierDemand } from '../../../services/pmsServices';
 import UploadModal from './UploadModal';
@@ -238,6 +238,9 @@ export default function SupplierDmInfo(props) {
       dataIndex: 'YQ',
       key: 'YQ',
       ellipsis: false,
+      render: (txt = '') => (
+        <span style={{ whiteSpace: 'pre-wrap' }}>{txt.replace(/<br>/g, '\n')}</span>
+      ),
     },
     {
       title: '操作',
@@ -333,14 +336,15 @@ export default function SupplierDmInfo(props) {
                 {SHOWDTL && (
                   <Popover
                     title={null}
-                    content={<div className="content">{XMJJ}</div>}
+                    content={<div className="content">{XMJJ.replace(/<br>/g, '\n')}</div>}
                     placement="bottomRight"
                     overlayClassName="empolyment-remark-popover"
+                    arrowPointAtCenter
                   >
                     <div className="float">详情</div>
                   </Popover>
                 )}
-                {XMJJ}
+                {XMJJ.replace(/<br>/g, '\n')}
               </div>
             </div>
           </div>

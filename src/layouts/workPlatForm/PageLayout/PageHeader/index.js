@@ -22,13 +22,23 @@ export default class PageHeader extends React.PureComponent {
     };
   }
   componentDidMount() {
-    this.getUnreadNum();
-    this.interval = setInterval(this.getUnreadNum, 30000);
+    if (
+      this.props.authorities?.TGYS_GYSRYQX === undefined &&
+      this.props.authorities?.V_GYSRYQX === undefined
+    ) {
+      this.getUnreadNum();
+      this.interval = setInterval(this.getUnreadNum, 30000);
+    }
   }
 
   componentWillUnmount() {
     LocalPathUtils.cleanRouterList();
-    clearInterval(this.interval);
+    if (
+      this.props.authorities?.TGYS_GYSRYQX === undefined &&
+      this.props.authorities?.V_GYSRYQX === undefined
+    ) {
+      clearInterval(this.interval);
+    }
   }
 
   getUnreadNum = () => {
@@ -118,8 +128,9 @@ export default class PageHeader extends React.PureComponent {
         {/*搜索框 */}
         <div
           style={{
-            display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : '',
+            display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : 'flex',
             borderBottom: '1px solid rgb(238, 239, 241)',
+            alignItems: 'center',
           }}
         >
           {searchModalVisible && (
@@ -147,7 +158,10 @@ export default class PageHeader extends React.PureComponent {
         </div>
         {/* 全局消息通知 */}
         {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined && (
-          <MsgNoticeDrawer dataProps={{ authorities, newMsgNum }} />
+          <MsgNoticeDrawer
+            dataProps={{ authorities, newMsgNum }}
+            funcProps={{ getUnreadNum: this.getUnreadNum }}
+          />
         )}
         {/*用户名*/}
         <div

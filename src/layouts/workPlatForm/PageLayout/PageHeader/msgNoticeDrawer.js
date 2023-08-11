@@ -1,14 +1,16 @@
 import React, { useEffect, useState, Fragment, useLayoutEffect, useCallback, useRef } from 'react';
-import { Avatar, Badge, Button, Drawer, message, Popconfirm, Spin } from 'antd';
+import { Avatar, Badge, Button, Drawer, Icon, message, Popconfirm, Spin } from 'antd';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
 import moment from 'moment';
 import { FetchQueryOwnerMessage, UpdateMessageState } from '../../../../services/pmsServices';
+import { Link } from 'react-router-dom';
+import { EncryptBase64 } from '../../../../components/Common/Encrypt';
 
 export default function MsgNoticeDrawer(props) {
   const { dataProps = {}, funcProps = {} } = props;
   const { newMsgNum } = dataProps;
-  const {} = funcProps;
+  const { getUnreadNum } = funcProps;
   const [data, setData] = useState([]); //消息数据
   const [visible, setVisible] = useState(false); //详情显隐
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
@@ -62,12 +64,13 @@ export default function MsgNoticeDrawer(props) {
         console.log('滚动到底部了', isNoMoreData);
         if (!isNoMoreData.current) {
           curPage.current = curPage.current + 1;
-          getMsgData(curPage.current);
+          handleReachBottom(curPage.current);
         }
       }, 500);
     }
   }, [isNoMoreData, curPage, container]);
 
+  //初始数据
   const getMsgData = async (current = 1) => {
     try {
       setIsSpinning(true);
@@ -77,12 +80,37 @@ export default function MsgNoticeDrawer(props) {
         date: Number(new moment().format('YYYYMMDD')),
         paging: 1,
         current,
-        pageSize: 80,
+        pageSize: 50,
         total: -1,
         sort: '',
       });
       if (res.success) {
-        if (res.totalrows <= 20) {
+        setData(res.record);
+        isNoMoreData.current = false;
+        setIsSpinning(false);
+      }
+    } catch (e) {
+      message.error('消息获取失败', 1);
+      console.error('🚀 ~ getMsgData ~ e:', e);
+      setIsSpinning(false);
+    }
+  };
+
+  const handleReachBottom = async (current = 1) => {
+    try {
+      setIsSpinning(true);
+      //获取消息通知数据
+      const res = await FetchQueryOwnerMessage({
+        cxlx: 'TX',
+        date: Number(new moment().format('YYYYMMDD')),
+        paging: 1,
+        current,
+        pageSize: 50,
+        total: -1,
+        sort: '',
+      });
+      if (res.success) {
+        if (res.totalrows <= 50) {
           setData(res.record);
           isNoMoreData.current = true;
         } else if (res.record.length === 0) {
@@ -94,7 +122,7 @@ export default function MsgNoticeDrawer(props) {
       }
     } catch (e) {
       message.error('消息获取失败', 1);
-      console.error('🚀 ~ getMsgData ~ e:', e);
+      console.error('🚀 ~ handleReachBottom ~ e:', e);
       setIsSpinning(false);
     }
   };
@@ -106,23 +134,32 @@ export default function MsgNoticeDrawer(props) {
       return acc;
     }, []);
     const handleAllRead = async () => {
-      console.log('🚀 ~ 未读消息idArr:', xxidArr);
-      // let PROMISE = xxidArr.reduce(
-      //   (acc, cur) => [
-      //     ...acc,
-      //     UpdateMessageState({
-      //       zxlx: 'READ',
-      //       xxid: cur,
-      //     }),
-      //   ],
-      //   [],
-      // );
-      // const RESULT = await Promise.all(PROMISE);
-      // console.log("🚀 ~ file: msgNoticeDrawer.js:121 ~ handleAllRead ~ RESULT:", RESULT)
+      // console.log('🚀 ~ 未读消息idArr:', xxidArr);
+      UpdateMessageState({
+        zxlx: 'READ_ALL',
+        xxid: -1,
+      })
+        .then(res => {
+          getMsgData();
+        })
+        .catch(e => {
+          console.error('🚀 ~ handleRead ', e);
+          message.error('操作失败', 1);
+        });
     };
     return (
       <div className="drawer-header">
         消息通知
+        {!isSpinning && (
+          <div
+            className="all-read"
+            style={{ marginRight: 6, marginLeft: 'auto' }}
+            onClick={() => getMsgData()}
+          >
+            <Icon type="sync" className="icon-msg-read" />
+            刷新
+          </div>
+        )}
         {!isSpinning && xxidArr.length !== 0 && (
           <Popconfirm title="确定全部设为已读吗？" onConfirm={handleAllRead}>
             <div className="all-read">
@@ -135,7 +172,8 @@ export default function MsgNoticeDrawer(props) {
     );
   };
 
-  const getMsgItem = (unread = true, obj = {}) => {
+  const getMsgItem = (unread1 = true, obj = {}) => {
+    const unread = unread1 && !obj.bgGray;
     const handleRead = () => {
       unread &&
         UpdateMessageState({
@@ -143,15 +181,24 @@ export default function MsgNoticeDrawer(props) {
           xxid: obj.xxid,
         })
           .then(res => {
-            getMsgData();
+            // getMsgData();
+            setData(p => {
+              let arr = JSON.parse(JSON.stringify(p));
+              arr.forEach(x => {
+                if (x.xxid === obj.xxid) {
+                  x.bgGray = true;
+                }
+              });
+              return arr;
+            });
           })
           .catch(e => {
-            console.error('🚀 ~ handleAllRead ', e);
+            console.error('🚀 ~ handleRead ', e);
             message.error('操作失败', 1);
           });
     };
     return (
-      <div className="msg-item" key={obj.xxid} onClick={handleRead}>
+      <div className="msg-item" key={obj.xxid + '-' + obj.ckzt} onClick={handleRead}>
         <Badge dot={unread} offset={[-4, 5]} className="item-avatar">
           <Avatar src={obj.xb === '女' ? avatarFemale : avatarMale} />
         </Badge>
@@ -160,10 +207,37 @@ export default function MsgNoticeDrawer(props) {
             {obj.txrmc || '--'}
             <span>{moment(obj.txrq).format('YYYY-MM-DD')}</span>
           </div>
+          {obj.xmid && (
+            <Link
+              onClick={e => {
+                e.stopPropagation();
+                onClose();
+              }}
+              to={{
+                pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
+                  JSON.stringify({
+                    xmid: Number(obj.xmid),
+                  }),
+                )}`,
+                state: {
+                  routes: [],
+                },
+              }}
+              className="info-prj-name"
+              style={unread ? {} : { color: '#909399', fontWeight: 400 }}
+            >
+              {obj.xmmc || ''}
+            </Link>
+          )}
           <div className="info-detail">{obj.txnr}</div>
         </div>
       </div>
     );
+  };
+  const onClose = () => {
+    setVisible(false);
+    setData([]);
+    getUnreadNum();
   };
 
   return (
@@ -171,7 +245,7 @@ export default function MsgNoticeDrawer(props) {
       <div className="msg-notice-box">
         <Badge
           count={newMsgNum}
-          offset={newMsgNum > 9 && newMsgNum <= 99 ? [4, 0] : newMsgNum > 99 ? [8, 0] : undefined}
+          offset={newMsgNum > 9 && newMsgNum <= 99 ? [4, 2] : newMsgNum > 99 ? [8, 2] : undefined}
           className="msg-bell"
           onClick={() => setVisible(true)}
         >
@@ -182,7 +256,7 @@ export default function MsgNoticeDrawer(props) {
         title={getTitleNode()}
         width={400}
         visible={visible}
-        onClose={() => setVisible(false)}
+        onClose={onClose}
         className="msg-notice-drawer"
         zIndex={101}
         closable={false}

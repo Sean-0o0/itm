@@ -31,7 +31,6 @@ class EditPrjTracking extends React.Component {
     console.log("recordrecord22", record)
     const {setFieldsValue} = this.props.form;
     setFieldsValue({
-
       progress: record.DQJD?.replace('%', ''),
       importantNotes: record.ZYSXSM,
       nextWeek: record.XZGZAP,
@@ -88,7 +87,7 @@ class EditPrjTracking extends React.Component {
             isSpinning: false,
           });
           this.props.closeContractModal();
-          message.success("修改成功！")
+          message.success(this.props.isFromToDo ? "填写成功！" : "修改成功！");
           getTableData({...params})
         }
       })
