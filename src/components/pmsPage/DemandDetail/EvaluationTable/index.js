@@ -168,8 +168,14 @@ export default function EvaluationTable(props) {
       key: 'LYSM',
       ellipsis: true,
       render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{ cursor: 'default' }}>{text}</span>
+        <Tooltip
+          title={text?.replace(/<br>/g, '\n').replace(/\\n/g, '\n')}
+          overlayClassName="pre-wrap-tooltip"
+          placement="left"
+        >
+          <span style={{ cursor: 'default' }}>
+            {text?.replace(/<br>/g, '').replace(/\\n/g, '')}
+          </span>
         </Tooltip>
       ),
     },
