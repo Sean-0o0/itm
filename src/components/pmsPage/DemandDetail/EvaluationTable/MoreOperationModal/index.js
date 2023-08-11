@@ -242,8 +242,14 @@ function MoreOperationModal(props) {
             />
           );
         return (
-          <Tooltip placement="bottomLeft" title={row['LYSM' + row.PCID]}>
-            <span style={{ cursor: 'default' }}>{row['LYSM' + row.PCID]}</span>
+          <Tooltip
+            placement="bottomLeft"
+            title={row['LYSM' + row.PCID]?.replace(/<br>/g, '\n').replace(/\\n/g, '\n')}
+            overlayClassName="pre-wrap-tooltip"
+          >
+            <span style={{ cursor: 'default' }}>
+              {row['LYSM' + row.PCID]?.replace(/<br>/g, '').replace(/\\n/g, '')}
+            </span>
           </Tooltip>
         );
       },
