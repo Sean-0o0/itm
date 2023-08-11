@@ -21,7 +21,7 @@ import EnterBidInfoModel from '../../../HardwareItems/EnterBidInfoModel';
 import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
-import EditBidInfoModel from "../../../HardwareItems/EditBidInfoModel";
+import EditBidInfoModel from '../../../HardwareItems/EditBidInfoModel';
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -69,7 +69,7 @@ class ItemBtn extends React.Component {
     fklcLoading: false, //获取付款流程列表的加载状态
     jumpLoading: false, //付款流程列表跳转加载状态
     currentFklcList: [], //查看的付款流程列表
-    oackzttxVisible: false, //oa流程查看-状态填写弹窗
+    oackzttxVisible: false, //oa流程查看-异常填写弹窗
     oackzttxPopoverVisible: false, //oa流程查看-Popover弹窗
     fklcPopoverVisible: false, //oa流程查看-Popover弹窗
   };
@@ -508,7 +508,7 @@ class ItemBtn extends React.Component {
   getLcfqck = (done, item) => {
     //是否付款流程
     const isFklc = item.sxmc === '付款流程';
-    //是否 OA流程查看 - 状态填写
+    //是否 OA流程查看 - 异常填写
     const isOACK = [
       '软件费用审批流程-有合同',
       '软件费用审批流程-无合同',
@@ -585,8 +585,9 @@ class ItemBtn extends React.Component {
         ]);
         this.setState({
           xwhyaModalVisible: true,
+          lbModalUrl: `/livebos/ShowWorkflow?wfid=${xwhid}&stepId=3&PopupWin=true&HideCancelBtn=true`,
         });
-        this.getLink(params, 'lbModalUrl');
+        // this.getLink(params, 'lbModalUrl'); //
         return;
       }
       if (item.sxmc === '需求发起') {
@@ -596,12 +597,9 @@ class ItemBtn extends React.Component {
             xmid: item.xmid,
           }),
         )}`;
-        // window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
-        //   JSON.stringify({ a:2,c: 3 })
-        // )}`;
         return;
       }
-      //查看流程 - 状态填写
+      //查看流程 - 异常填写
       if (isOACK) {
         this.setState({
           fklcLoading: true,
@@ -846,7 +844,7 @@ class ItemBtn extends React.Component {
         },
       });
     };
-    //状态填写
+    //异常填写
     const zttx = (lcid, lclx) => {
       //operate=TLC_OALCXX_ZTBG&Table=TLC_OALCXX&OALCID=
       const params = this.getParams(
@@ -865,7 +863,7 @@ class ItemBtn extends React.Component {
         Loginname,
       );
       this.setState({
-        lbModalTitle: '状态填写',
+        lbModalTitle: '异常填写',
         oackzttxVisible: true,
         oackzttxPopoverVisible: false,
       });
@@ -980,7 +978,7 @@ class ItemBtn extends React.Component {
                   </div>
                 </Tooltip>
                 <div className="opr-btn" onClick={() => zttx(x.url?.lcid, x.url?.lclx)}>
-                  状态填写
+                  异常填写
                 </div>
               </div>
             ))}
@@ -1394,10 +1392,10 @@ class ItemBtn extends React.Component {
       footer: null,
     };
 
-    //oa流程查看 - 状态填写
+    //oa流程查看 - 异常填写
     const oackzttxModalProps = {
       isAllWindow: 1,
-      title: '状态填写',
+      title: '异常填写',
       width: '800px',
       height: '300px',
       style: { top: '60px' },
@@ -1430,30 +1428,32 @@ class ItemBtn extends React.Component {
         )}
 
         {/* 硬件中标信息录入 */}
-        {hardWareBidModalVisible && (
-          lbModalUrl === 'ADD' ? <EnterBidInfoModel
-            xmid={Number(item.xmid)}
-            // operateType={lbModalUrl} //type
-            visible={hardWareBidModalVisible}
-            closeModal={() =>
-              this.setState({
-                hardWareBidModalVisible: false,
-              })
-            }
-            onSuccess={() => this.onSuccess(lbModalTitle)}
-          /> : <EditBidInfoModel
-            xmid={Number(item.xmid)}
-            // operateType={lbModalUrl} //type
-            visible={hardWareBidModalVisible}
-            closeModal={() =>
-              this.setState({
-                hardWareBidModalVisible: false,
-              })
-            }
-            onSuccess={() => this.onSuccess(lbModalTitle)}
-          />
-
-        )}
+        {hardWareBidModalVisible &&
+          (lbModalUrl === 'ADD' ? (
+            <EnterBidInfoModel
+              xmid={Number(item.xmid)}
+              // operateType={lbModalUrl} //type
+              visible={hardWareBidModalVisible}
+              closeModal={() =>
+                this.setState({
+                  hardWareBidModalVisible: false,
+                })
+              }
+              onSuccess={() => this.onSuccess(lbModalTitle)}
+            />
+          ) : (
+            <EditBidInfoModel
+              xmid={Number(item.xmid)}
+              // operateType={lbModalUrl} //type
+              visible={hardWareBidModalVisible}
+              closeModal={() =>
+                this.setState({
+                  hardWareBidModalVisible: false,
+                })
+              }
+              onSuccess={() => this.onSuccess(lbModalTitle)}
+            />
+          ))}
 
         {/* 硬件询比结果录入 */}
         {xbjglrModalVisible && (
@@ -1559,12 +1559,15 @@ class ItemBtn extends React.Component {
           <BridgeModel
             modalProps={xwhyaModalProps}
             onCancel={() => this.setState({ xwhyaModalVisible: false })}
-            // onSucess={this.OnSuccess}
+            onSucess={() => {
+              message.success('操作成功', 1);
+              this.setState({ ygpjVisible: false });
+            }}
             src={lbModalUrl}
           />
         )}
 
-        {/* oa流程查看 - 状态填写 */}
+        {/* oa流程查看 - 异常填写 */}
         {oackzttxVisible && (
           <BridgeModel
             modalProps={oackzttxModalProps}
