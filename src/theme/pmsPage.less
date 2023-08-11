@@ -8397,7 +8397,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     min-width: 100px;
     overflow: hidden;
     overflow-y: auto;
-    max-height: 155px;
+    max-height: 252px; //超6行滚动
 
     // margin-right: 5px;
     &::-webkit-scrollbar {
@@ -8427,7 +8427,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       //付款流程名称
       .subject {
-        max-width: 324px;
+        flex-grow: 1;
+        // max-width: 324px;
         text-overflow: ellipsis;
         overflow: hidden;
         white-space: nowrap;
@@ -8441,7 +8442,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         line-height: 14px;
         margin-top: 4px;
       }
-      //oa流程查看 - 后边加 状态填写按钮
+      //oa流程查看 - 后边加 异常填写按钮
       .oalcmc {
         flex-grow: 1;
       }
@@ -9608,6 +9609,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     overflow-y: auto;
     max-width: 400px;
     max-height: 336px;
+    white-space: pre-wrap;
 
     &::-webkit-scrollbar {
       width: 6px;
@@ -17374,6 +17376,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         .iconfont {
           padding-right: 8px;
           color: #909399;
+          cursor: pointer;
         }
       }
 
@@ -22117,6 +22120,9 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 
   .msg-bell {
+    .icon-message {
+      font-size: 24px;
+    }
     .ant-badge-count {
       text-align: unset;
     }
@@ -22136,13 +22142,16 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       display: flex;
       flex-direction: row;
       align-items: center;
-      justify-content: space-between;
+      // justify-content: space-between;
+      
       & > .all-read {
         font-size: 14px;
         font-family: PingFangSC-Regular, PingFang SC;
         font-weight: 400;
         color: #3361ff;
         cursor: pointer;
+        margin-top: 3px;
+
         i {
           font-size: 16px;
           color: #3361ff;
@@ -22194,6 +22203,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
       .item-avatar {
         margin-right: 16px;
+        flex-shrink: 0;
 
         .ant-avatar-image {
           height: 48px;
@@ -22207,6 +22217,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         }
       }
       .item-info {
+        flex-grow: 1;
         font-size: 14px;
         font-family: PingFangSC-Medium, PingFang SC;
         font-weight: bold;
@@ -22229,6 +22240,15 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-family: PingFangSC-Regular, PingFang SC;
             font-weight: 400;
             color: #858585;
+          }
+        }
+        .info-prj-name {
+          font-size: 12px;
+          font-family: PingFangSC-Regular, PingFang SC;
+          font-weight: bold;
+          color: #858585ad;
+          &:hover {
+            color: #3361ff;
           }
         }
       }
@@ -22370,5 +22390,102 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
   .no-auth-img {
     width: 400px;
+  }
+}
+
+//日历样式调整
+.ant-fullcalendar-selected-day > .ant-fullcalendar-date > .ant-fullcalendar-value,
+.ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value {
+  color: rgba(0, 0, 0, 0.65);
+  background: unset;
+}
+.ant-fullcalendar-selected-day.ant-dropdown-trigger > .ant-fullcalendar-value,
+.ant-fullcalendar-month-panel-selected-cell .ant-fullcalendar-value {
+  color: rgba(0, 0, 0, 0.65);
+  background: unset;
+  box-shadow: 0 0 0 1px #3361ff inset;
+}
+.ant-fullcalendar-today > .ant-fullcalendar-date > .ant-fullcalendar-value,
+.ant-fullcalendar-selected-day > .ant-fullcalendar-value,
+.ant-fullcalendar-month-panel-current-cell .ant-fullcalendar-value {
+  box-shadow: unset;
+}
+
+//\n换行
+.ant-tooltip.pre-wrap-tooltip {
+  max-width: 325px;
+  .ant-tooltip-content {
+    .ant-tooltip-inner {
+      white-space: pre-wrap;
+    }
+  }
+}
+
+//需求详情-需求信息-简历信息浮窗
+.demand-detail-resume-info-popover {
+  .ant-popover-inner-content {
+    padding: 0;
+  }
+  .fj-box {
+    padding: 16px;
+    padding-bottom: 8px;
+    font-size: 14px;
+    font-family: PingFangSC-Medium, PingFang SC;
+    min-width: 100px;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 252px; //超6行滚动
+
+    // margin-right: 5px;
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #f0f2f5;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #dbdfe6;
+      border-radius: 3px;
+    }
+
+    .fj-header {
+      display: flex;
+      margin-bottom: 8px;
+
+      .fj-title {
+        font-weight: bold;
+        color: #303133;
+      }
+
+      .fj-header-btn {
+        color: #3361ff;
+      }
+
+      .fj-header-btn:hover {
+        opacity: 0.7;
+        cursor: pointer;
+      }
+    }
+
+    .item {
+      font-size: 14px;
+      font-family: PingFangSC-Regular, PingFang SC;
+      font-weight: 400;
+      height: 28px;
+      line-height: 28px;
+      margin-bottom: 4px;
+      color: #3361ff;
+      cursor: pointer;
+      transition: all 0.3s;
+
+      &:last-child {
+        margin-bottom: 0;
+      }
+
+      &:hover {
+        color: #3361ffaf;
+        background-color: #fafafa;
+      }
+    }
   }
 }
