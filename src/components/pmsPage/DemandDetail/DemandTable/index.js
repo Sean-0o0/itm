@@ -6,13 +6,13 @@ import axios from 'axios';
 
 const { api } = config;
 const {
-  pmsServices: { queryFileStream },
+  pmsServices: { queryFileStream, zipLivebosFilesRowsPost },
 } = api;
 
 export default function DemandTable(props) {
-  const { dtlData = {}, fqrid, setIsSpinning, isDock } = props;
-  const { XQNR = [], XQSX_ORIGIN = [], JLXX = [] } = dtlData;
-  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
+  const { dtlData = {}, fqrid, setIsSpinning, isDock, xqid } = props;
+  const { XQNR = [], XQSX_ORIGIN = [], JLXX = [], XQXQ = [], XMXX = {} } = dtlData;
+  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   useEffect(() => {
     return () => {};
   }, []);
@@ -25,6 +25,109 @@ export default function DemandTable(props) {
       </div>
     );
   };
+  //批量下载
+  // const batchDownload = (arr = [], prefix = '') => {
+  //   let param = {
+  //     objectName: 'TWBXQ_JLSC',
+  //     columnName: 'JL',
+  //     title: prefix + XQXQ.find(xq => xq.XQID === xqid)?.XQMC + '.zip',
+  //   };
+  //   let attBaseInfos = arr.reduce(
+  //     (acc, cur) => [
+  //       ...acc,
+  //       {
+  //         id: cur.ENTRYNO,
+  //         rowid: cur.JLID,
+  //         title: cur.JLMC,
+  //       },
+  //     ],
+  //     [],
+  //   );
+  //   param.attBaseInfos = attBaseInfos;
+  //   axios({
+  //     method: 'POST',
+  //     url: zipLivebosFilesRowsPost,
+  //     responseType: 'blob',
+  //     data: param,
+  //   })
+  //     .then(res => {
+  //       const href = URL.createObjectURL(res.data);
+  //       const a = document.createElement('a');
+  //       a.download = prefix + XQXQ.find(xq => xq.XQID === xqid)?.XQMC + '.zip';
+  //       a.href = href;
+  //       a.click();
+  //     })
+  //     .catch(err => {
+  //       message.error('下载失败', 1);
+  //     });
+  // };
+
+  // //单个下载
+  // const singleDownload = (id, fileName, entryno) => {
+  //   setIsSpinning(true);
+  //   axios({
+  //     method: 'POST',
+  //     url: queryFileStream,
+  //     responseType: 'blob',
+  //     data: {
+  //       objectName: 'TWBXQ_JLSC',
+  //       columnName: 'JL',
+  //       id,
+  //       title: fileName,
+  //       extr: entryno,
+  //       type: '',
+  //     },
+  //   })
+  //     .then(res => {
+  //       const href = URL.createObjectURL(res.data);
+  //       const a = document.createElement('a');
+  //       a.download = fileName;
+  //       a.href = href;
+  //       a.click();
+  //       window.URL.revokeObjectURL(a.href);
+  //       setIsSpinning(false);
+  //     })
+  //     .catch(err => {
+  //       setIsSpinning(false);
+  //       message.error('简历下载失败', 1);
+  //     });
+  // };
+
+  // const batchDownloadContent = (arr = [], wdid) => {
+  //   console.log('🚀 ~ file: index.js:94 ~ DemandTable ~ arr:', arr);
+  //   return (
+  //     <div className="fj-box">
+  //       <div className="fj-header">
+  //         <div className="fj-title flex1">附件</div>
+  //         {arr.length > 0 && (
+  //           <div className="fj-header-btn" onClick={() => batchDownload(arr, wdid)}>
+  //             全部下载
+  //           </div>
+  //         )}
+  //       </div>
+  //       {
+  //         <div style={{ height: 'auto', width: 320 }}>
+  //           {arr.map(x => {
+  //             return (
+  //               <div
+  //                 className="item"
+  //                 key={x.ENTRYNO + x.JLMC + x.JLID}
+  //                 onClick={() => singleDownload(x.JLID, x.JLMC, x.ENTRYNO)}
+  //               >
+  //                 {x.JLMC}
+  //               </div>
+  //             );
+  //           })}
+  //         </div>
+  //       }
+  //       {arr.length === 0 && (
+  //         <div className="empty-box">
+  //           <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无风险信息" />
+  //         </div>
+  //       )}
+  //     </div>
+  //   );
+  // };
 
   const columns = [
     {
@@ -63,7 +166,11 @@ export default function DemandTable(props) {
       key: 'YQ',
       ellipsis: true,
       render: text => (
-        <Tooltip title={text?.replace(/<br>/g, '')} placement="topLeft">
+        <Tooltip
+          title={text?.replace(/<br>/g, '\n')}
+          placement="topLeft"
+          overlayClassName="pre-wrap-tooltip"
+        >
           <span style={{ cursor: 'default' }}>{text?.replace(/<br>/g, '')}</span>
         </Tooltip>
       ),
@@ -74,7 +181,11 @@ export default function DemandTable(props) {
       key: 'BZ',
       ellipsis: true,
       render: text => (
-        <Tooltip title={text?.replace(/<br>/g, '')} placement="topLeft">
+        <Tooltip
+          title={text?.replace(/<br>/g, '\n')}
+          placement="topLeft"
+          overlayClassName="pre-wrap-tooltip"
+        >
           <span style={{ cursor: 'default' }}>{text?.replace(/<br>/g, '')}</span>
         </Tooltip>
       ),
@@ -92,15 +203,17 @@ export default function DemandTable(props) {
       dataIndex: 'JLDATA',
       key: 'JLDATA',
       width:
-        (String(fqrid) === LOGIN_USER_ID &&
-          XQSX_ORIGIN.filter(x => x.SWMC === '简历分发')[0]?.ZXZT === '1' &&
-          JLXX.length !== 0) ||
-        (isDock && JLXX.length !== 0)
+        (String(fqrid) === LOGIN_USER_ID //发起人
+        || isDock  //外包项目对接人
+        // ||XMXX.XMJLID === LOGIN_USER_ID //项目经理
+        ) && 
+        JLXX.length !== 0 && //简历信息不为空
+        XQSX_ORIGIN.filter(x => x.SWMC === '简历查看')[0]?.ZXZT === '1' //且 简历查看 已执行
           ? '10%'
           : 0,
       align: 'center',
       ellipsis: true,
-      render: arr => {
+      render: (arr, row) => {
         const handleFilePreview = (id, fileName, entryno) => {
           setIsSpinning(true);
           axios({
@@ -148,8 +261,14 @@ export default function DemandTable(props) {
           <Popover
             placement="rightTop"
             title={null}
+            // content={batchDownloadContent(
+            //   arr.filter(x => x.ZT === '2'),
+            //   row.RYDJ + `|` + row.GW,
+            // )}
+            // overlayClassName="demand-detail-resume-info-popover"
             content={popoverContent(arr.filter(x => x.ZT === '2'))}
             overlayClassName="demand-detail-content-popover"
+            arrowPointAtCenter
           >
             <a style={{ color: '#3361ff' }}>查看详情</a>
           </Popover>

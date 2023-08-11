@@ -255,6 +255,7 @@ export default function DemandDetail(props) {
           fqrid={curFqrid}
           setIsSpinning={setIsSpinning}
           isDock={isDock}
+          xqid={curXqid}
         />
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
       </div>
