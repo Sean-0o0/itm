@@ -19,7 +19,7 @@ import { Link } from 'react-router-dom';
 const { TabPane } = Tabs;
 const { api } = config;
 const {
-  pmsServices: { queryFileStream },
+  pmsServices: { queryFileStream, zipLivebosFilesRowsPost },
 } = api;
 const { Item } = Breadcrumb;
 
@@ -153,6 +153,109 @@ export default function ResumeDistributionPage(props) {
         });
     }
   };
+
+  //下载方法参考，里边具体得改--start
+  const batchDownload = (arr = [], prefix = '') => {
+    let param = {
+      objectName: 'TWBXQ_JLSC',
+      columnName: 'JL',
+      title: prefix + XQXQ.find(xq => xq.XQID === xqid)?.XQMC + '.zip',
+    };
+    let attBaseInfos = arr.reduce(
+      (acc, cur) => [
+        ...acc,
+        {
+          id: cur.ENTRYNO,
+          rowid: cur.JLID,
+          title: cur.JLMC,
+        },
+      ],
+      [],
+    );
+    param.attBaseInfos = attBaseInfos;
+    axios({
+      method: 'POST',
+      url: zipLivebosFilesRowsPost,
+      responseType: 'blob',
+      data: param,
+    })
+      .then(res => {
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = prefix + XQXQ.find(xq => xq.XQID === xqid)?.XQMC + '.zip';
+        a.href = href;
+        a.click();
+      })
+      .catch(err => {
+        message.error('下载失败', 1);
+      });
+  };
+  //单个下载
+  const singleDownload = (id, fileName, entryno) => {
+    setIsSpinning(true);
+    axios({
+      method: 'POST',
+      url: queryFileStream,
+      responseType: 'blob',
+      data: {
+        objectName: 'TWBXQ_JLSC',
+        columnName: 'JL',
+        id,
+        title: fileName,
+        extr: entryno,
+        type: '',
+      },
+    })
+      .then(res => {
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = fileName;
+        a.href = href;
+        a.click();
+        window.URL.revokeObjectURL(a.href);
+        setIsSpinning(false);
+      })
+      .catch(err => {
+        setIsSpinning(false);
+        message.error('简历下载失败', 1);
+      });
+  };
+  const batchDownloadContent = (arr = [], wdid) => {
+    console.log('🚀 ~ file: index.js:94 ~ DemandTable ~ arr:', arr);
+    return (
+      <div className="fj-box">
+        <div className="fj-header">
+          <div className="fj-title flex1">附件</div>
+          {arr.length > 0 && (
+            <div className="fj-header-btn" onClick={() => batchDownload(arr, wdid)}>
+              全部下载
+            </div>
+          )}
+        </div>
+        {
+          <div style={{ height: 'auto', width: 320 }}>
+            {arr.map(x => {
+              return (
+                <div
+                  className="item"
+                  key={x.ENTRYNO + x.JLMC + x.JLID}
+                  onClick={() => singleDownload(x.JLID, x.JLMC, x.ENTRYNO)}
+                >
+                  {x.JLMC}
+                </div>
+              );
+            })}
+          </div>
+        }
+        {arr.length === 0 && (
+          <div className="empty-box">
+            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无风险信息" />
+          </div>
+        )}
+      </div>
+    );
+  };
+  //下载方法参考--end
 
   //展开、收起
   const handleUnfold = (bool, GYSID) => {

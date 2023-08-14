@@ -36,7 +36,7 @@ export default function ProjectItems(props) {
     XMXX = {},
     XQSX_ORIGIN = [],
   } = dtlData;
-  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
     msgConfirmation: false,
@@ -61,6 +61,7 @@ export default function ProjectItems(props) {
     xmmc: '',
     xmbh: '',
   }); //付款流程用
+  const [hideCount, setHideCount] = useState([0, 0, 0, 0]); //隐藏事项数，等于 x.length 时，整块item隐藏
   const location = useLocation();
 
   useEffect(() => {
@@ -73,7 +74,7 @@ export default function ProjectItems(props) {
 
     if (SWMC === '发送确认邮件') {
       modalName = 'msgConfirmation';
-    } else if (SWMC === '简历分发') {
+    } else if (SWMC === '简历查看') {
       // modalName = 'resumeDestribution';
       if (JLXX.length === 0) {
         message.info('请先上传简历', 1);
@@ -165,74 +166,58 @@ export default function ProjectItems(props) {
     });
   };
 
+  //是否评测人员
+  const isPcry = () => {
+    let arr = [];
+    ZHPC.forEach(x => {
+      arr = arr.concat(x.MSGID.split(','));
+    });
+    let newArr = [...new Set(arr)];
+    // console.log("🚀 ~ file: index.js:51 ~ isPcry ~ isPcry:", newArr,LOGIN_USER_ID)
+    return newArr.includes(LOGIN_USER_ID);
+  };
+
   const getItemBtn = (item, SWZXID) => {
     const { SWMC = '--', ZXZT = '2' } = item;
-    //是否评测人员
-    const isPcry = () => {
-      let arr = [];
-      ZHPC.forEach(x => {
-        arr = arr.concat(x.MSGID.split(','));
-      });
-      let newArr = [...new Set(arr)];
-      // console.log("🚀 ~ file: index.js:51 ~ isPcry ~ isPcry:", newArr,LOGIN_USER_ID)
-      return newArr.includes(LOGIN_USER_ID);
-    };
     //1 已执行， 2 未执行
     if (
       [
         '账号新增',
         '综合评测打分',
-        // '发送确认邮件', //暂时注释发送邮件
+        '发送确认邮件', //暂时注释
         '简历上传',
-        '简历分发',
+        '简历查看',
         '提交录用申请',
-        // '录用确认',
+        '录用确认', //暂时注释
       ].includes(SWMC)
     ) {
-      if (
-        (['账号新增', '发送确认邮件', '简历上传', '简历分发', '录用确认'].includes(SWMC) &&
-          isDock) ||
-        (['提交录用申请'].includes(SWMC) && isFqr) ||
-        (SWMC === '综合评测打分' &&
-          isPcry() &&
-          XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2')
-      )
-        return (
-          <div className="opr-btn" onClick={() => handleZx(item)}>
-            执行
-          </div>
-        );
-      return '';
+      return (
+        <div className="opr-btn" onClick={() => handleZx(item)}>
+          执行
+        </div>
+      );
     } else if (SWMC === '需求发起') {
-      if (isFqr)
-        return (
-          <div
-            className="reopr-btn"
-            onClick={() =>
-              setModalVisible(p => {
-                return {
-                  ...p,
-                  demandInitiation: true,
-                };
-              })
-            }
-          >
-            重新发起
-          </div>
-        );
-      return '';
+      return (
+        <div
+          className="reopr-btn"
+          onClick={() =>
+            setModalVisible(p => {
+              return {
+                ...p,
+                demandInitiation: true,
+              };
+            })
+          }
+        >
+          重新发起
+        </div>
+      );
     } else if (SWMC === '综合评测安排') {
-      if (
-        (isDock || isFqr) &&
-        XQSX_ORIGIN.filter(x => x.SWMC === '提交录用申请')[0]?.ZXZT === '2'
-      ) {
-        return (
-          <div className="opr-btn" onClick={() => handleZx(item)}>
-            执行
-          </div>
-        );
-      }
-      return '';
+      return (
+        <div className="opr-btn" onClick={() => handleZx(item)}>
+          执行
+        </div>
+      );
     } else {
       return '';
     }
@@ -470,6 +455,71 @@ export default function ProjectItems(props) {
       });
   };
 
+  const dockArr = [
+    '账号新增',
+    // '综合评测打分',
+    // '发送确认邮件', //暂时注释
+    '简历上传',
+    '简历查看',
+    // '提交录用申请',
+    // '录用确认', //暂时注释
+    // '需求发起',
+    // '综合评测安排',
+  ];
+  const fqrArr = [
+    // '账号新增',
+    // '综合评测打分',
+    // '发送确认邮件', //暂时注释
+    // '简历上传',
+    // '简历查看',
+    '提交录用申请',
+    // '录用确认', //暂时注释
+    '需求发起',
+    // '综合评测安排',
+  ];
+  const pcryArr = [
+    // '账号新增',
+    '综合评测打分',
+    // '发送确认邮件', //暂时注释
+    // '简历上传',
+    // '简历查看',
+    // '提交录用申请',
+    // '录用确认', //暂时注释
+    // '需求发起',
+    // '综合评测安排',
+  ];
+
+  //隐藏事项数
+  const getCount = () => {
+    let countArr = []; //隐藏事项数，大于等于 item.SXDATA.length 时，整块item隐藏
+    XQSX.forEach((item, index) => {
+      let count = 0;
+      item.SXDATA.forEach(x => {
+        if (
+          !(
+            (isDock &&
+              (dockArr.includes(x.SWMC) ||
+                (x.SWMC === '综合评测安排' &&
+                  XQSX_ORIGIN.filter(y => y.SWMC === '提交录用申请')[0]?.ZXZT === '2'))) ||
+            (isFqr &&
+              (fqrArr.includes(x.SWMC) ||
+                (x.SWMC === '综合评测安排' &&
+                  XQSX_ORIGIN.filter(y => y.SWMC === '提交录用申请')[0]?.ZXZT === '2'))) ||
+            (isPcry() &&
+              pcryArr.includes(x.SWMC) &&
+              XQSX_ORIGIN.filter(y => y.SWMC === '提交录用申请')[0]?.ZXZT === '2') ||
+            (x.SWMC === '简历查看' && XMXX.XMJLID === LOGIN_USER_ID)
+          )
+        ) {
+          count++;
+        }
+      });
+      countArr.push(count);
+    });
+    console.log('🚀 ~ file: index.js:521 ~ getCount ~ countArr:', countArr);
+    return countArr;
+  };
+  if (getCount().length === 0 || getCount().reduce((acc, cur) => acc + cur)) return null;
   return (
     <div className="prj-items-box">
       {/* 付款流程发起弹窗 */}
@@ -599,7 +649,7 @@ export default function ProjectItems(props) {
         />
       )}
 
-      {/* 简历分发 */}
+      {/* 简历查看 */}
       {modalVisible.resumeDestribution && (
         <ResumeDestributionModal
           visible={modalVisible.resumeDestribution}
@@ -751,34 +801,49 @@ export default function ProjectItems(props) {
         )}
       </div>
       <div className="bottom">
-        {XQSX.map(item => (
-          <div className="item" key={item.SWLX}>
-            <div className="item-top">{item.SWLX}</div>
-            <div className="item-bottom">
-              {item.SXDATA.map((x, i) => {
-                // 暂时隐藏
-                if (x.SWMC === '发送确认邮件' || x.SWMC === '录用确认') return '';
-                return (
-                  <div
-                    className="bottom-row"
-                    style={x.ZXZT === '2' ? {} : { color: '#3361ff' }}
-                    key={x.SWZXID}
-                  >
-                    {x.ZXZT === '2' ? (
-                      <i className="iconfont circle-reduce" />
-                    ) : (
-                      <i className="iconfont circle-check" />
-                    )}
-                    <Tooltip title={x.SWMC} placement="topLeft">
-                      <span>{x.SWMC}</span>
-                    </Tooltip>
-                    {getItemBtn(x, x.SWZXID)}
-                  </div>
-                );
-              })}
+        {XQSX.map((item, index) => {
+          if (getCount()[index] >= item.SXDATA.length) return '';
+          return (
+            <div className="item" key={item.SWLX}>
+              <div className="item-top">{item.SWLX}</div>
+              <div className="item-bottom">
+                {item.SXDATA.map((x, i) => {
+                  if (
+                    (isDock &&
+                      (dockArr.includes(x.SWMC) ||
+                        (x.SWMC === '综合评测安排' &&
+                          XQSX_ORIGIN.filter(y => y.SWMC === '提交录用申请')[0]?.ZXZT === '2'))) ||
+                    (isFqr &&
+                      (fqrArr.includes(x.SWMC) ||
+                        (x.SWMC === '综合评测安排' &&
+                          XQSX_ORIGIN.filter(y => y.SWMC === '提交录用申请')[0]?.ZXZT === '2'))) ||
+                    (isPcry() &&
+                      pcryArr.includes(x.SWMC) &&
+                      XQSX_ORIGIN.filter(y => y.SWMC === '提交录用申请')[0]?.ZXZT === '2')
+                  )
+                    return (
+                      <div
+                        className="bottom-row"
+                        style={x.ZXZT === '2' ? {} : { color: '#3361ff' }}
+                        key={x.SWZXID}
+                      >
+                        {x.ZXZT === '2' ? (
+                          <i className="iconfont circle-reduce" />
+                        ) : (
+                          <i className="iconfont circle-check" />
+                        )}
+                        <Tooltip title={x.SWMC} placement="topLeft">
+                          <span>{x.SWMC}</span>
+                        </Tooltip>
+                        {getItemBtn(x, x.SWZXID)}
+                      </div>
+                    );
+                  return '';
+                })}
+              </div>
             </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
     </div>
   );

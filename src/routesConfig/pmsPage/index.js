@@ -318,4 +318,9 @@ exports.routes = [
     path: `${prefix}/BudgetStatistic`,
     component: './pmsPage/BudgetStatistic',
   },
+  {
+    // 测试页面
+    path: `${prefix}/TestPage`,
+    component: './pmsPage/TestPage',
+  },
 ];
