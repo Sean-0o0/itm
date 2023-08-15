@@ -3,6 +3,7 @@ import {
   Button,
   Empty,
   Input,
+  Checkbox,
   message,
   Modal,
   Popconfirm,
@@ -11,9 +12,10 @@ import {
   Breadcrumb,
   Popover,
 } from 'antd';
+import moment from 'moment';
 import config from '../../../utils/config';
 import axios from 'axios';
-import { ResumeDistribution } from '../../../services/pmsServices';
+import { ResumeDistribution, InsertResumeDownloadRecord, QueryResumeDownloadRecords } from '../../../services/pmsServices';
 import { Link } from 'react-router-dom';
 
 const { TabPane } = Tabs;
@@ -22,10 +24,11 @@ const {
   pmsServices: { queryFileStream, zipLivebosFilesRowsPost },
 } = api;
 const { Item } = Breadcrumb;
+const LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).name;
 
 export default function ResumeDistributionPage(props) {
   const { params = {}, routes = [] } = props;
-  const { JLXX = [], xqid, swzxid, reflush } = params;
+  const { JLXX = [], xqid, swzxid, reflush, XMXX, isAuth, isDock } = params;
   const [isSpinning, setIsSpinning] = useState(false);
   const [data, setData] = useState([]); //数据
   const [dataShow, setDataShow] = useState([]); //数据展示
@@ -34,6 +37,9 @@ export default function ResumeDistributionPage(props) {
   const [activeKey, setActiveKey] = useState('1');
   const [jlTotal, setJlTotal] = useState(0); //简历数量
   const [editing, setEditing] = useState(false); //编辑状态
+  const [batchDownload, setBatchDownload] = useState(false); //批量下载状态
+  const [batchDownloadList, setBatchDownloadList] = useState([]); //批量下载选中的数据
+  const [downloadedResumeList, setDownloadedResumeList] = useState([]); //已下载的简历数据
 
   useEffect(() => {
     // console.log(JLXX);
@@ -77,8 +83,39 @@ export default function ResumeDistributionPage(props) {
       setJlTotal(total);
     }
 
+    queryResumeInsertRecords();
     return () => {};
   }, [JSON.stringify(JLXX)]);
+
+  // 判断简历是否被下载过
+  const isNewResume = (x) => {
+    let flag = false; // 是否下载过
+    downloadedResumeList.forEach(item => {
+      if(item.entryno == x.ENTRYNO && item.jlid == x.JLID) {
+        flag = true;
+      }
+    });
+    return flag;
+  };
+
+  const queryResumeInsertRecords = () => {
+    setIsSpinning(true);
+    QueryResumeDownloadRecords({
+      xqid: Number(xqid)
+    }).then(res => {
+      const { code = 0, note = '', records } = res;
+      setIsSpinning(false);
+      if(code > 0) {
+        let result = JSON.parse(records);
+        setDownloadedResumeList(result);
+      } else {
+        message.error(note);
+      }
+    }).catch(err => {
+      setIsSpinning(false);
+      message.error(err)
+    })
+  };
 
   //分发
   const handleDestribute = () => {
@@ -154,108 +191,6 @@ export default function ResumeDistributionPage(props) {
     }
   };
 
-  //下载方法参考，里边具体得改--start
-  const batchDownload = (arr = [], prefix = '') => {
-    let param = {
-      objectName: 'TWBXQ_JLSC',
-      columnName: 'JL',
-      title: prefix + XQXQ.find(xq => xq.XQID === xqid)?.XQMC + '.zip',
-    };
-    let attBaseInfos = arr.reduce(
-      (acc, cur) => [
-        ...acc,
-        {
-          id: cur.ENTRYNO,
-          rowid: cur.JLID,
-          title: cur.JLMC,
-        },
-      ],
-      [],
-    );
-    param.attBaseInfos = attBaseInfos;
-    axios({
-      method: 'POST',
-      url: zipLivebosFilesRowsPost,
-      responseType: 'blob',
-      data: param,
-    })
-      .then(res => {
-        const href = URL.createObjectURL(res.data);
-        const a = document.createElement('a');
-        a.download = prefix + XQXQ.find(xq => xq.XQID === xqid)?.XQMC + '.zip';
-        a.href = href;
-        a.click();
-      })
-      .catch(err => {
-        message.error('下载失败', 1);
-      });
-  };
-  //单个下载
-  const singleDownload = (id, fileName, entryno) => {
-    setIsSpinning(true);
-    axios({
-      method: 'POST',
-      url: queryFileStream,
-      responseType: 'blob',
-      data: {
-        objectName: 'TWBXQ_JLSC',
-        columnName: 'JL',
-        id,
-        title: fileName,
-        extr: entryno,
-        type: '',
-      },
-    })
-      .then(res => {
-        const href = URL.createObjectURL(res.data);
-        const a = document.createElement('a');
-        a.download = fileName;
-        a.href = href;
-        a.click();
-        window.URL.revokeObjectURL(a.href);
-        setIsSpinning(false);
-      })
-      .catch(err => {
-        setIsSpinning(false);
-        message.error('简历下载失败', 1);
-      });
-  };
-  const batchDownloadContent = (arr = [], wdid) => {
-    console.log('🚀 ~ file: index.js:94 ~ DemandTable ~ arr:', arr);
-    return (
-      <div className="fj-box">
-        <div className="fj-header">
-          <div className="fj-title flex1">附件</div>
-          {arr.length > 0 && (
-            <div className="fj-header-btn" onClick={() => batchDownload(arr, wdid)}>
-              全部下载
-            </div>
-          )}
-        </div>
-        {
-          <div style={{ height: 'auto', width: 320 }}>
-            {arr.map(x => {
-              return (
-                <div
-                  className="item"
-                  key={x.ENTRYNO + x.JLMC + x.JLID}
-                  onClick={() => singleDownload(x.JLID, x.JLMC, x.ENTRYNO)}
-                >
-                  {x.JLMC}
-                </div>
-              );
-            })}
-          </div>
-        }
-        {arr.length === 0 && (
-          <div className="empty-box">
-            <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description="暂无风险信息" />
-          </div>
-        )}
-      </div>
-    );
-  };
-  //下载方法参考--end
 
   //展开、收起
   const handleUnfold = (bool, GYSID) => {
@@ -302,6 +237,11 @@ export default function ResumeDistributionPage(props) {
           a.click();
           window.URL.revokeObjectURL(a.href);
           setIsSpinning(false);
+          insertResumeDownloadRecord([{
+            JLID: id,
+            ENTRYNO: entryno,
+            JLMC: fileName
+          }])
         })
         .catch(err => {
           setIsSpinning(false);
@@ -493,6 +433,10 @@ export default function ResumeDistributionPage(props) {
                   : {}
               }
             >
+              {
+                !isNewResume(x) &&  <div className="new-demand-exsit">新</div>
+              }
+
               {editing ? (
                 <Input
                   defaultValue={x.JLMC}
@@ -511,7 +455,11 @@ export default function ResumeDistributionPage(props) {
                   {x.destributeCancel ? (
                     <i className="iconfont circle-reduce edit-disabled" />
                   ) : (
-                   <i className="iconfont circle-check edit-disabled" /> 
+                    <>
+                      {
+                        !isAuth ? <i className="iconfont circle-check edit-disabled" /> : null
+                      }
+                    </>
                   )}
                   <span>{x.JLMC}</span>
                 </Fragment>
@@ -547,10 +495,35 @@ export default function ResumeDistributionPage(props) {
                   </Popover>
                 </Fragment>
               ) : (
-                <i
-                  className="iconfont icon-download"
-                  onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
-                />
+                <>
+                  {
+                    batchDownload ? (
+                      <Checkbox defaultChecked={false} style={{marginTop: '3px'}} onChange={(e) => {
+                        if(e.target.checked) {
+                          // 选中了
+                          let newBatchDownloadList = batchDownloadList;
+                          newBatchDownloadList.push(x);
+                          setBatchDownloadList(newBatchDownloadList);
+                        } else {
+                          // 取消选中
+                          let newBatchDownloadList = [];
+                          batchDownloadList.forEach(item => {
+                            if(item.JLID !== x.JLID || item.ENTRYNO !== x.ENTRYNO) {
+                              newBatchDownloadList.push(item);
+                            }
+                          });
+                          setBatchDownloadList(newBatchDownloadList);
+                        }
+                      }} />
+                    ) : (
+                      <i
+                        className="iconfont icon-download"
+                        onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
+                      />
+                    )
+                  }
+                </>
+
               )}
             </div>
           ))}
@@ -568,6 +541,323 @@ export default function ResumeDistributionPage(props) {
             </div>
           ))}
       </div>
+    );
+  };
+
+  // 项目经理获取全部简历
+  const getAllSplierItem = ({ GYSMC = '--', JLDATA = [], UNFOLD, GYSID, SHOWFOLD }, index) => {
+    //文件下载
+    const handleFileDownload = (id, fileName, entryno) => {
+      setIsSpinning(true);
+      axios({
+        method: 'POST',
+        url: queryFileStream,
+        responseType: 'blob',
+        data: {
+          objectName: 'TWBXQ_JLSC',
+          columnName: 'JL',
+          id,
+          title: fileName,
+          extr: entryno,
+          type: '',
+        },
+      })
+        .then(res => {
+          const href = URL.createObjectURL(res.data);
+          const a = document.createElement('a');
+          a.download = fileName;
+          a.href = href;
+          a.click();
+          window.URL.revokeObjectURL(a.href);
+          setIsSpinning(false);
+          insertResumeDownloadRecord([{
+            JLID: id,
+            ENTRYNO: entryno,
+            JLMC: fileName
+          }])
+        })
+        .catch(err => {
+          setIsSpinning(false);
+          message.error('简历下载失败', 1);
+        });
+    };
+    //单个编辑完成
+    const handleInputBlur = (e, x) => {
+      e.persist();
+      const oldSuffix = x.JLMC.slice(x.JLMC.lastIndexOf('.')); //旧的文件后缀
+      const newSuffix = e.target.value.slice(e.target.value.lastIndexOf('.')); //新的文件后缀
+      const newFileName = e.target.value.slice(0, e.target.value.lastIndexOf('.'));
+      const newNameOldSuffix = newFileName + oldSuffix;
+      //编辑完保存数据
+      const afterEdit = (newValue = '') => {
+        let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+        if (arr.length > 0) {
+          let jldata = [...arr[index].JLDATA];
+          jldata.forEach(j => {
+            if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
+              j.JLMC = newValue;
+            }
+          });
+          arr[index].JLDATA = jldata;
+          let dataArr = JSON.parse(JSON.stringify(data));
+          dataArr.forEach(d => {
+            if (d.RYXQ === activeKey) {
+              d.DATA = [...arr];
+            }
+          });
+          setData([...dataArr]);
+          let arrShow = JSON.parse(JSON.stringify(dataArr));
+          arrShow.forEach(x => {
+            x.DATA.forEach(y => {
+              y.UNFOLD = false;
+              y.SHOWFOLD = false;
+            });
+          });
+          setDataShow(arrShow);
+        }
+      };
+
+      if (e.target.value === '') {
+        message.error('文件全名不能为空', 1);
+        afterEdit(x.JLMC + ' ');
+      } else if (newFileName === '') {
+        message.error('文件名不能为空', 1);
+        afterEdit(x.JLMC + ' ');
+      } else if (newSuffix === '') {
+        message.error('文件扩展名不能为空', 1);
+        afterEdit(x.JLMC + ' ');
+      } else {
+        if (oldSuffix.trim() !== newSuffix.trim()) {
+          Modal.confirm({
+            content: (
+              <div>
+                修改文件扩展名，可能导致文件不可用。<div>是否确定修改？</div>
+              </div>
+            ),
+            onOk: () => {
+              afterEdit(e.target.value);
+            },
+            onCancel: () => {
+              afterEdit(newNameOldSuffix + ' ');
+            },
+          });
+        } else {
+          afterEdit(e.target.value);
+        }
+      }
+    };
+    //单个删除
+    const handleDelete = x => {
+      let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+      if (arr.length > 0) {
+        arr[index].JLDATA = arr[index].JLDATA.filter(
+          j => !(j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC),
+        );
+        if (
+          arr[index].JLDATA.length == 0 ||
+          arr[index].JLDATA.filter(jl => jl.JLID === x.JLID).length === 0
+        ) {
+          setEmptyArr(p => [
+            ...p,
+            {
+              JLID: x.JLID,
+              GYSID: arr[index].GYSID,
+              JLMC: JSON.stringify({ nextId: x.NEXTID, items: [] }).replace(/"/g, '!'),
+            },
+          ]);
+        }
+        let total = 0;
+        data.forEach(x => {
+          let total2 = 0;
+          x.DATA?.forEach(y => {
+            total2 += y.JLDATA?.length;
+          });
+          total += total2;
+        });
+        setJlTotal(total);
+        let dataArr = JSON.parse(JSON.stringify(data));
+        dataArr.forEach(d => {
+          if (d.RYXQ === activeKey) {
+            d.DATA = [...arr];
+          }
+        });
+        setData([...dataArr]);
+        let arrShow = JSON.parse(JSON.stringify(dataArr));
+        arrShow.forEach(x => {
+          x.DATA.forEach(y => {
+            y.UNFOLD = false;
+            y.SHOWFOLD = false;
+          });
+        });
+        setDataShow(arrShow);
+        message.success('删除成功', 1);
+      }
+    };
+    //不分发，但暂存
+    const handleDestributeCancel = x => {
+      let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+      if (arr.length > 0) {
+        arr[index].JLDATA.forEach(j => {
+          if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
+            j.destributeCancel = true; //不分发
+          }
+        });
+        let dataArr = JSON.parse(JSON.stringify(data));
+        dataArr.forEach(d => {
+          if (d.RYXQ === activeKey) {
+            d.DATA = [...arr];
+          }
+        });
+        setData([...dataArr]);
+        let arrShow = JSON.parse(JSON.stringify(dataArr));
+        arrShow.forEach(x => {
+          x.DATA.forEach(y => {
+            y.UNFOLD = false;
+            y.SHOWFOLD = false;
+          });
+        });
+        setDataShow(arrShow);
+        // message.success('删除成功', 1);
+      }
+    };
+    //取消不分发
+    const handleDestributeReback = x => {
+      let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
+      if (arr.length > 0) {
+        arr[index].JLDATA.forEach(j => {
+          if (j.ENTRYNO === x.ENTRYNO && j.JLID === x.JLID && j.JLMC === x.JLMC) {
+            j.destributeCancel = false; //取消不分发
+          }
+        });
+        let dataArr = JSON.parse(JSON.stringify(data));
+        dataArr.forEach(d => {
+          if (d.RYXQ === activeKey) {
+            d.DATA = [...arr];
+          }
+        });
+        setData([...dataArr]);
+        let arrShow = JSON.parse(JSON.stringify(dataArr));
+        arrShow.forEach(x => {
+          x.DATA.forEach(y => {
+            y.UNFOLD = false;
+            y.SHOWFOLD = false;
+          });
+        });
+        setDataShow(arrShow);
+        // message.success('删除成功', 1);
+      }
+    };
+
+    return (
+      <>
+        {JLDATA.map((x, i) => (
+          <div
+            className="resume-item"
+            key={`${x.JLMC}-${x.ENTRYNO}-${x.JLID}`}
+            style={
+              editing
+                ? {
+                  backgroundColor: '#fff',
+                  // border: x.destributeCancel ? '0' : '1px solid #3361ff',
+                }
+                : {}
+            }
+          >
+            {
+              !isNewResume(x) &&  <div className="new-demand-exsit">新</div>
+            }
+
+            {editing ? (
+              <Input
+                defaultValue={x.JLMC}
+                onBlur={e => handleInputBlur(e, x)}
+                style={{ width: '100%' }}
+                onFocus={e => {
+                  e.target.value = e.target.value.trim();
+                  const dotIndex = e.target.value.lastIndexOf('.');
+                  e.target.focus();
+                  e.target.setSelectionRange(0, dotIndex);
+                  e.target.setSelectionRange(0, dotIndex);
+                }}
+              />
+            ) : (
+              <Fragment>
+                {x.destributeCancel ? (
+                  <i className="iconfont circle-reduce edit-disabled" />
+                ) : (
+                  <>
+                    {
+                      !isAuth ? <i className="iconfont circle-check edit-disabled" /> : null
+                    }
+                  </>
+                )}
+                <span>{x.JLMC}</span>
+              </Fragment>
+            )}
+            {editing ? (
+              //    <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
+              //    <i className="iconfont delete" />
+              //  </Popconfirm>
+              <Fragment>
+                {x.destributeCancel ? (
+                  <i className="iconfont circle-add" onClick={() => handleDestributeReback(x)} />
+                ) : (
+                  <i
+                    className="iconfont circle-reduce"
+                    onClick={() => handleDestributeCancel(x)}
+                  />
+                )}
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  trigger="click"
+                  content={
+                    <div className="list">
+                      <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
+                        <div className="item">删除</div>
+                      </Popconfirm>
+                    </div>
+                  }
+                  overlayClassName="btn-more-content-popover"
+                  arrowPointAtCenter
+                >
+                  <i className="iconfont icon-more2" />
+                </Popover>
+              </Fragment>
+            ) : (
+              <>
+                {
+                  batchDownload ? (
+                    <Checkbox style={{marginTop: '3px'}} onChange={(e) => {
+                      if(e.target.checked) {
+                        // 选中了
+                        let newBatchDownloadList = batchDownloadList;
+                        newBatchDownloadList.push(x);
+                        setBatchDownloadList(newBatchDownloadList);
+                      } else {
+                        // 取消选中
+                        let newBatchDownloadList = [];
+                        batchDownloadList.forEach(item => {
+                          if(item.JLID !== x.JLID || item.ENTRYNO !== x.ENTRYNO) {
+                            newBatchDownloadList.push(item);
+                          }
+                        });
+                        setBatchDownloadList(newBatchDownloadList);
+                      }
+                    }} />
+                  ) : (
+                    <i
+                      className="iconfont icon-download"
+                      onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
+                    />
+                  )
+                }
+              </>
+
+            )}
+          </div>
+        ))}
+      </>
     );
   };
 
@@ -646,6 +936,84 @@ export default function ResumeDistributionPage(props) {
       });
     return total;
   };
+
+
+  const insertResumeDownloadRecord = (resumeList = []) => {
+    let info = [];
+    resumeList.forEach(item => {
+      info.push({
+        jlid: item.JLID,
+        entryno: item.ENTRYNO,
+        title: item.JLMC
+      })
+    });
+    InsertResumeDownloadRecord({
+      xqid: Number(xqid),
+      info: JSON.stringify(info)
+    }).then(res => {
+      const { code = 0, note = '' } = res;
+      if(code > 0) {
+        queryResumeInsertRecords();
+      } else {
+        message.error(note);
+      }
+    }).catch(err => {
+      message.error(err)
+    })
+  };
+
+
+  const operateBatchDownload = () => {
+    if(batchDownloadList.length === 0) {
+      message.warn("请至少选择一个文件！");
+      return false;
+    }
+    let tabName = '';
+    JLXX.forEach(item => {
+      if(item.RYXQ === activeKey) {
+        tabName = item.RYXQNR;
+      }
+    });
+    let param = {
+      objectName: 'TWBXQ_JLSC',
+      columnName: 'JL',
+      title: tabName + '-' + (XMXX.XMMC || '') + moment().format('YYYYMMDD') + '.zip'
+    };
+    let attBaseInfos = [];
+    batchDownloadList.forEach(item => {
+      attBaseInfos.push({
+        id: item.ENTRYNO,
+        rowid: item.JLID,
+        title: item.JLMC
+      })
+    });
+    param.attBaseInfos = attBaseInfos;
+    setIsSpinning(true);
+    axios({
+      method: 'POST',
+      url: zipLivebosFilesRowsPost,
+      responseType: 'blob',
+      data: param
+    }).then(res => {
+      const href = URL.createObjectURL(res.data);
+      const a = document.createElement('a');
+      a.download = tabName + '-' + (XMXX.XMMC || '') + moment().format('YYYYMMDD') + '.zip';
+      a.href = href;
+      a.click()
+      //批量记录下载历史
+      insertResumeDownloadRecord(batchDownloadList);
+      setBatchDownload(false);
+      setBatchDownloadList([]);
+      setBatchDownload(true);
+      setIsSpinning(false);
+    }).catch(err => {
+      setIsSpinning(false);
+      message.error(err)
+    });
+  };
+
+
+
   return (
     <div className="resume-destribution-box">
       <div className="top-console">
@@ -684,14 +1052,40 @@ export default function ResumeDistributionPage(props) {
               </>
             ) : (
               <>
-                <Popconfirm title="确认要分发吗？" onConfirm={handleDestribute}>
-                  <Button className="btn-opr">分发</Button>
-                </Popconfirm>
-                <Button className="btn-opr" onClick={handleModify}>
-                  修改
-                </Button>
+                {
+                  !batchDownload && !(isAuth && !isDock)  &&
+                    <>
+                      <Popconfirm title="确认要分发吗？" onConfirm={handleDestribute}>
+                        <Button className="btn-opr">分发</Button>
+                      </Popconfirm>
+                      <Button className="btn-opr" onClick={handleModify}>
+                        修改
+                      </Button>
+                    </>
+                }
               </>
             )}
+            {
+              !editing && batchDownload &&
+                <>
+                  <Button className="btn-opr" onClick={operateBatchDownload}>
+                    下载
+                  </Button>
+                  <Button className="btn-cancel" onClick={() => {
+                    setBatchDownload(false);
+                    setBatchDownloadList([]);
+                  }}>
+                    取消
+                  </Button>
+                </>
+            }
+            {
+              !editing && !batchDownload &&
+              <Button className="btn-opr" onClick={() => setBatchDownload(true)}>
+                批量下载
+              </Button>
+            }
+
           </div>
           {getActiveKeyTotal() === 0 && (
             <Empty
@@ -701,9 +1095,26 @@ export default function ResumeDistributionPage(props) {
             />
           )}
           <div className="splier-list">
-            {dataShow
-              .filter(x => x.RYXQ === activeKey)[0]
-              ?.DATA?.map((item, index) => getSplierItem(item, index))}
+
+            {isAuth && !isDock ? (
+              <div className="splier-item">
+                <div className="resume-list">
+                  {
+                    dataShow
+                      .filter(x => x.RYXQ === activeKey)[0]
+                      ?.DATA?.map((item, index) => getAllSplierItem(item, index))
+                  }
+                </div>
+              </div>
+            ) : (
+              <>
+                {
+                  dataShow
+                    .filter(x => x.RYXQ === activeKey)[0]
+                    ?.DATA?.map((item, index) => getSplierItem(item, index))
+                }
+              </>
+            )}
           </div>
         </div>
       </Spin>

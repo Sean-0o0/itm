@@ -18,19 +18,19 @@ const ResumeDestribution = props => {
     // console.log('🚀 ~ file: index.js:20 ~ ProjecDetail ~ obj:', obj);
     // console.log('🚀 ~ file: index.js ~ line 12 ~ ProjecDetail ~ routes', routes);
     routes2 = [...routes].concat({
-      name: '简历分发',
+      name: '简历查看',
       pathname: props?.pathname,
     });
     if (routes.length === 0) {
       obj.routes &&
         (routes2 = obj.routes?.concat({
-          name: '简历分发',
+          name: '简历查看',
           pathname: props?.pathname,
         }));
       // console.log('🚀 ~ file: index.js:29 ~ ProjecDetail ~ routes2:', routes2);
     }
   }
-  //去重 考虑到从其他区详情页面回退到简历分发页面的情况
+  //去重 考虑到从其他区详情页面回退到简历查看页面的情况
   const newArr = [];
   let name = [];
   for (let i = 0; i < routes2.length; i++) {

@@ -209,7 +209,7 @@ exports.routes = [
     component: './pmsPage/SupplierDmInfo',
   },
   {
-    // 简历分发页面
+    // 简历查看页面
     path: `${prefix}/ResumeDistribution/:params`,
     component: './pmsPage/ResumeDistribution',
   },

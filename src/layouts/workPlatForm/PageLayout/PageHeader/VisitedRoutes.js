@@ -244,7 +244,7 @@ function VisitedRoutes(props) {
                 urlEnd: 'MemberDetail',
               },
               {
-                title: '简历分发',
+                title: '简历查看',
                 urlEnd: 'ResumeDistribution',
               },
               {

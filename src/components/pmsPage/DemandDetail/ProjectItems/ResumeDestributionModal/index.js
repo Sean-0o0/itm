@@ -20,7 +20,7 @@ export default function ResumeDistributionModal(props) {
   useEffect(() => {
     setData(JSON.parse(JSON.stringify(JLXX)));
     setUnsaveData(JSON.parse(JSON.stringify(JLXX)));
-    let total = 0; 
+    let total = 0;
     JLXX.forEach(x => {
       total += x.JLDATA.length;
     });
@@ -154,7 +154,7 @@ export default function ResumeDistributionModal(props) {
                 />
               </span>
               {/* <i
-                    
+
                 className="iconfont icon-download"
                 onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
               /> */}
@@ -218,7 +218,7 @@ export default function ResumeDistributionModal(props) {
       destroyOnClose={true}
     >
       <div className="body-title-box">
-        <strong>简历分发</strong>
+        <strong>简历查看</strong>
       </div>
       <Spin spinning={isSpinning}>
         <div className="splier-list">

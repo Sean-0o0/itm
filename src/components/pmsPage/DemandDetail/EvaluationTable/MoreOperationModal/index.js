@@ -187,9 +187,11 @@ function MoreOperationModal(props) {
       key: 'ZHPCSJ',
       ellipsis: true,
       render: txt => {
+        let timeRange = txt.split('-');
+        let showTxt = timeRange[0] + "-" + moment(timeRange[1], 'YYYY/MM/DD HH:mm').format("HH:mm")
         return (
-          <Tooltip title={txt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
-            <span style={{ cursor: 'default' }}>{txt}</span>
+          <Tooltip title={showTxt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
+            <span style={{ cursor: 'default' }}>{showTxt}</span>
           </Tooltip>
         );
       },

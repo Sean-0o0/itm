@@ -232,7 +232,7 @@ export default function OverviewCard(props) {
     }
   };
 
-  //简历分发、提交录用申请
+  //简历查看、提交录用申请
   const jumpToDemandDetail = item => {
     if (item.kzzd !== '') {
       UpdateMessageState({
@@ -379,7 +379,7 @@ export default function OverviewCard(props) {
       case '外包人员面试评分':
         return handleWbrymspf(item);
       case '提交录用申请':
-      case '简历分发':
+      case '简历查看':
       case '外包需求简历更新':
         return jumpToDemandDetail(item);
       case '创建需求':

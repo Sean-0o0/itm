@@ -413,7 +413,7 @@ export default [
     code: '',
     key: 'resumeDistribution',
     url: '/projectManage/resumeDistribution',
-    dis: '简历分发',
+    dis: '简历查看',
   },
   {
     code: '',
@@ -679,4 +679,16 @@ export default [
     url: '/projectManage/queryUnreadInfo',
     dis: '前端轮询获取未读信息数量',
   },
+  {
+    code: '',
+    key: 'insertResumeDownloadRecords',
+    url: '/projectManage/insertResumeDownloadRecords',
+    dis: '新增简历下载记录',
+  },
+  {
+    code: '',
+    key: 'queryResumeDownloadRecords',
+    url: '/projectManage/queryResumeDownloadRecords',
+    dis: '查询简历下载记录',
+  }
 ];

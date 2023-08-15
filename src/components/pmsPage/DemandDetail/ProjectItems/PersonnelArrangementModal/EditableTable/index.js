@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useRef } from 'react';
-import { Form, Input, Tooltip, Select, DatePicker } from 'antd';
-
+import { Form, Input, TimePicker, Select, DatePicker } from 'antd';
+import moment from 'moment';
 const { Option } = Select;
 const EditableContext = React.createContext();
 const { RangePicker } = DatePicker;
@@ -12,6 +12,7 @@ const EditableRow = Form.create()(({ form, index, ...props }) => {
     </EditableContext.Provider>
   );
 });
+
 const EditableCell = props => {
   const [editing, setEditing] = useState(false); //正在编辑
   const inputRef = useRef(null);
@@ -113,35 +114,51 @@ const EditableCell = props => {
         return (
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
-              initialValue: record[recIndex],
-              rules: [
-                {
-                  required: true,
-                  message: `${title}不能为空`,
-                },
-              ],
+              // initialValue: record[recIndex],
+              // rules: [
+              //   {
+              //     required: true,
+              //     message: `${title}不能为空`,
+              //   },
+              // ],
             })(
-              <RangePicker
-                style={{ minWidth: '100%', width: 'unset' }}
-                showTime={{ format: 'HH:mm' }}
-                format="YYYY-MM-DD HH:mm"
-                placeholder="请选择"
-                onChange={v => {
-                  formdecorate.validateFields(
-                    [
-                      recIndex, //只校验当前编辑项
-                    ],
-                    (error, values) => {
-                      handleSave({ ...record, [recIndex]: v });
-                    },
-                  );
-                }}
-                onBlur={() => {
-                  formdecorate.validateFields([
-                    recIndex, //只校验当前编辑项
-                  ]);
-                }}
-              />,
+              <div style={{display: 'flex', justifyContent: 'space-evenly', alignItems: 'center'}}>
+                <DatePicker allowClear={false} style={{width: '40%'}}  format="YYYY-MM-DD" value={record[recIndex][0]} onChange={e => {
+                  let date = record[recIndex];
+                  date[0] = moment(e.format("YYYY-MM-DD") + ' ' + date[0].format('HH:mm'), 'YYYY-MM-DD HH:mm');
+                  date[1] = moment(e.format("YYYY-MM-DD") + ' ' + date[1].format('HH:mm'), 'YYYY-MM-DD HH:mm');
+                  handleSave({ ...record, [recIndex]: date });
+                }} />
+                <TimePicker
+                  allowClear={false}
+                  style={{ width: '25%' }}
+                  // showTime={{ format: 'HH:mm' }}
+                  format="HH:mm"
+                  value={record[recIndex][0]}
+                  placeholder="请选择"
+                  onChange={v => {
+                    let date = record[recIndex];
+                    date[0] = v;
+                    date[1] = v.add(1, 'hours');
+                    handleSave({ ...record, [recIndex]: date });
+                  }}
+                />
+                <div>~</div>
+                <TimePicker
+                  allowClear={false}
+                  style={{ width: '25%' }}
+                  // showTime={{ format: 'HH:mm' }}
+                  format="HH:mm"
+                  value={record[recIndex][1]}
+                  placeholder="请选择"
+                  onChange={v => {
+                    let date = record[recIndex];
+                    date[1] = v;
+                    handleSave({ ...record, [recIndex]: date });
+                  }}
+                />
+              </div>
+             ,
             )}
           </Form.Item>
         );

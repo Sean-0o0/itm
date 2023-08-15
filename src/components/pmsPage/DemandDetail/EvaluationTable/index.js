@@ -36,7 +36,7 @@ export default function EvaluationTable(props) {
     {
       title: '供应商名称',
       dataIndex: 'GYSMC',
-      width: isDock ? '11%' : '0',
+      width: isDock ? '18%' : '0',
       key: 'GYSMC',
       ellipsis: true,
       render: (text, row, index) => {
@@ -127,13 +127,15 @@ export default function EvaluationTable(props) {
     {
       title: '综合评测时间',
       dataIndex: 'ZHPCSJ',
-      width: '24%',
+      width: '17%',
       key: 'ZHPCSJ',
       ellipsis: true,
       render: txt => {
+        let timeRange = txt.split('-');
+        let showTxt = timeRange[0] + "-" + moment(timeRange[1], 'YYYY/MM/DD HH:mm').format("HH:mm");
         return (
-          <Tooltip title={txt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
-            <span style={{ cursor: 'default' }}>{txt}</span>
+          <Tooltip title={showTxt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
+            <span style={{ cursor: 'default' }}>{showTxt}</span>
           </Tooltip>
         );
       },

@@ -121,6 +121,8 @@ const {
     inviteMemberAgain,
     queryRequisitionData,
     queryUnreadInfo,
+    insertResumeDownloadRecords,
+    queryResumeDownloadRecords
   },
 } = api;
 
@@ -842,7 +844,7 @@ export async function SendMail(payload) {
   return request(option);
 }
 
-// 简历分发
+// 简历查看
 export async function ResumeDistribution(payload) {
   const option = {
     url: resumeDistribution,
@@ -1286,6 +1288,27 @@ export async function QueryRequisitionData(payload) {
 export async function QueryUnreadInfo(payload) {
   const option = {
     url: queryUnreadInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 插入简历下载记录
+export async function InsertResumeDownloadRecord(payload) {
+  const option = {
+    url: insertResumeDownloadRecords,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+
+// 查询简历下载记录
+export async function QueryResumeDownloadRecords(payload) {
+  const option = {
+    url: queryResumeDownloadRecords,
     method: 'post',
     data: payload,
   };

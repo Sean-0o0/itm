@@ -1,6 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import {
   Modal,
+  TimePicker,
   Form,
   message,
   Spin,
@@ -116,7 +117,7 @@ function PersonnelArrangementModal(props) {
           PCID: UUID,
           ['GYSID' + UUID]: -1,
           ['RYMC' + UUID]: '',
-          ['MSSJ' + UUID]: [],
+          ['MSSJ' + UUID]: [moment(), moment().add(1, 'hours')],
           NEW: true,
         },
       ]);
@@ -499,7 +500,7 @@ function PersonnelArrangementModal(props) {
                     PCID: UUID,
                     ['GYSID' + UUID]: -1,
                     ['RYMC' + UUID]: '',
-                    ['MSSJ' + UUID]: [],
+                    ['MSSJ' + UUID]: [moment(), moment().add(1, 'hours')],
                     NEW: true,
                   });
                   setTableData(p => [...arrData]);
