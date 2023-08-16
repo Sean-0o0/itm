@@ -117,7 +117,7 @@ function PersonnelArrangementModal(props) {
           PCID: UUID,
           ['GYSID' + UUID]: -1,
           ['RYMC' + UUID]: '',
-          ['MSSJ' + UUID]: [moment(), moment().add(1, 'hours')],
+          ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(1, 'hours')],
           NEW: true,
         },
       ]);
@@ -131,7 +131,8 @@ function PersonnelArrangementModal(props) {
       const zhpc = Object.values(
         ZHPC.reduce((acc, curr) => {
           let { XQNRID, RYMC, GYSID, ZHPCSJ, MSGID, PCID } = curr;
-          ZHPCSJ = moment(ZHPCSJ);
+          let timeRange = ZHPCSJ.split("-");
+          ZHPCSJ = [moment(timeRange[0]), moment(timeRange[1])];
           if (!acc[XQNRID]) {
             acc[XQNRID] = {
               XQNRID,
@@ -161,7 +162,7 @@ function PersonnelArrangementModal(props) {
               PCID: UUID,
               ['GYSID' + UUID]: -1,
               ['RYMC' + UUID]: '',
-              ['MSSJ' + UUID]: null,
+              ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(1, 'hours')],
               NEW: true,
             },
           ]);
@@ -500,7 +501,7 @@ function PersonnelArrangementModal(props) {
                     PCID: UUID,
                     ['GYSID' + UUID]: -1,
                     ['RYMC' + UUID]: '',
-                    ['MSSJ' + UUID]: [moment(), moment().add(1, 'hours')],
+                    ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(1, 'hours')],
                     NEW: true,
                   });
                   setTableData(p => [...arrData]);
