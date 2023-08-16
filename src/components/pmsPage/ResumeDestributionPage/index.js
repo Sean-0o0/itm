@@ -434,7 +434,7 @@ export default function ResumeDistributionPage(props) {
               }
             >
               {
-                !isNewResume(x) &&  <div className="new-demand-exsit">新</div>
+                !isNewResume(x) && !isDock &&  <div className="new-demand-exsit">新</div>
               }
 
               {editing ? (
@@ -457,7 +457,7 @@ export default function ResumeDistributionPage(props) {
                   ) : (
                     <>
                       {
-                        !isAuth ? <i className="iconfont circle-check edit-disabled" /> : null
+                        isDock ? <i className="iconfont circle-check edit-disabled" /> : null
                       }
                     </>
                   )}
@@ -751,111 +751,119 @@ export default function ResumeDistributionPage(props) {
     return (
       <>
         {JLDATA.map((x, i) => (
-          <div
-            className="resume-item"
-            key={`${x.JLMC}-${x.ENTRYNO}-${x.JLID}`}
-            style={
-              editing
-                ? {
-                  backgroundColor: '#fff',
-                  // border: x.destributeCancel ? '0' : '1px solid #3361ff',
-                }
-                : {}
-            }
-          >
+          <>
             {
-              !isNewResume(x) &&  <div className="new-demand-exsit">新</div>
+              !x.destributeCancel && (
+                <div
+                  className="resume-item"
+                  key={`${x.JLMC}-${x.ENTRYNO}-${x.JLID}`}
+                  style={
+                    editing
+                      ? {
+                        backgroundColor: '#fff',
+                        // border: x.destributeCancel ? '0' : '1px solid #3361ff',
+                      }
+                      : {}
+                  }
+                >
+                  {
+                    !isNewResume(x) && !isDock &&  <div className="new-demand-exsit">新</div>
+                  }
+
+                  {editing ? (
+                    <Input
+                      defaultValue={x.JLMC}
+                      onBlur={e => handleInputBlur(e, x)}
+                      style={{ width: '100%' }}
+                      onFocus={e => {
+                        e.target.value = e.target.value.trim();
+                        const dotIndex = e.target.value.lastIndexOf('.');
+                        e.target.focus();
+                        e.target.setSelectionRange(0, dotIndex);
+                        e.target.setSelectionRange(0, dotIndex);
+                      }}
+                    />
+                  ) : (
+                    <Fragment>
+                      {x.destributeCancel ? (
+                        <i className="iconfont circle-reduce edit-disabled" />
+                      ) : (
+                        <>
+                          {
+                            isDock ? <i className="iconfont circle-check edit-disabled" /> : null
+                          }
+                        </>
+                      )}
+                      <span>{x.JLMC}</span>
+                    </Fragment>
+                  )}
+                  {editing ? (
+                    //    <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
+                    //    <i className="iconfont delete" />
+                    //  </Popconfirm>
+                    <Fragment>
+                      {x.destributeCancel ? (
+                        <i className="iconfont circle-add" onClick={() => handleDestributeReback(x)} />
+                      ) : (
+                        <i
+                          className="iconfont circle-reduce"
+                          onClick={() => handleDestributeCancel(x)}
+                        />
+                      )}
+                      <Popover
+                        placement="bottom"
+                        title={null}
+                        trigger="click"
+                        content={
+                          <div className="list">
+                            <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
+                              <div className="item">删除</div>
+                            </Popconfirm>
+                          </div>
+                        }
+                        overlayClassName="btn-more-content-popover"
+                        arrowPointAtCenter
+                      >
+                        <i className="iconfont icon-more2" />
+                      </Popover>
+                    </Fragment>
+                  ) : (
+                    <>
+                      {
+                        batchDownload ? (
+                          <Checkbox style={{marginTop: '3px'}} onChange={(e) => {
+                            if(e.target.checked) {
+                              // 选中了
+                              let newBatchDownloadList = batchDownloadList;
+                              newBatchDownloadList.push(x);
+                              setBatchDownloadList(newBatchDownloadList);
+                            } else {
+                              // 取消选中
+                              let newBatchDownloadList = [];
+                              batchDownloadList.forEach(item => {
+                                if(item.JLID !== x.JLID || item.ENTRYNO !== x.ENTRYNO) {
+                                  newBatchDownloadList.push(item);
+                                }
+                              });
+                              setBatchDownloadList(newBatchDownloadList);
+                            }
+                          }} />
+                        ) : (
+                          <i
+                            className="iconfont icon-download"
+                            onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
+                          />
+                        )
+                      }
+                    </>
+
+                  )}
+                </div>
+              )
             }
 
-            {editing ? (
-              <Input
-                defaultValue={x.JLMC}
-                onBlur={e => handleInputBlur(e, x)}
-                style={{ width: '100%' }}
-                onFocus={e => {
-                  e.target.value = e.target.value.trim();
-                  const dotIndex = e.target.value.lastIndexOf('.');
-                  e.target.focus();
-                  e.target.setSelectionRange(0, dotIndex);
-                  e.target.setSelectionRange(0, dotIndex);
-                }}
-              />
-            ) : (
-              <Fragment>
-                {x.destributeCancel ? (
-                  <i className="iconfont circle-reduce edit-disabled" />
-                ) : (
-                  <>
-                    {
-                      !isAuth ? <i className="iconfont circle-check edit-disabled" /> : null
-                    }
-                  </>
-                )}
-                <span>{x.JLMC}</span>
-              </Fragment>
-            )}
-            {editing ? (
-              //    <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
-              //    <i className="iconfont delete" />
-              //  </Popconfirm>
-              <Fragment>
-                {x.destributeCancel ? (
-                  <i className="iconfont circle-add" onClick={() => handleDestributeReback(x)} />
-                ) : (
-                  <i
-                    className="iconfont circle-reduce"
-                    onClick={() => handleDestributeCancel(x)}
-                  />
-                )}
-                <Popover
-                  placement="bottom"
-                  title={null}
-                  trigger="click"
-                  content={
-                    <div className="list">
-                      <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
-                        <div className="item">删除</div>
-                      </Popconfirm>
-                    </div>
-                  }
-                  overlayClassName="btn-more-content-popover"
-                  arrowPointAtCenter
-                >
-                  <i className="iconfont icon-more2" />
-                </Popover>
-              </Fragment>
-            ) : (
-              <>
-                {
-                  batchDownload ? (
-                    <Checkbox style={{marginTop: '3px'}} onChange={(e) => {
-                      if(e.target.checked) {
-                        // 选中了
-                        let newBatchDownloadList = batchDownloadList;
-                        newBatchDownloadList.push(x);
-                        setBatchDownloadList(newBatchDownloadList);
-                      } else {
-                        // 取消选中
-                        let newBatchDownloadList = [];
-                        batchDownloadList.forEach(item => {
-                          if(item.JLID !== x.JLID || item.ENTRYNO !== x.ENTRYNO) {
-                            newBatchDownloadList.push(item);
-                          }
-                        });
-                        setBatchDownloadList(newBatchDownloadList);
-                      }
-                    }} />
-                  ) : (
-                    <i
-                      className="iconfont icon-download"
-                      onClick={() => handleFileDownload(x.JLID, x.JLMC, x.ENTRYNO)}
-                    />
-                  )
-                }
-              </>
+          </>
 
-            )}
-          </div>
         ))}
       </>
     );
@@ -1097,6 +1105,7 @@ export default function ResumeDistributionPage(props) {
           <div className="splier-list">
 
             {isAuth && !isDock ? (
+              //项目经理
               <div className="splier-item">
                 <div className="resume-list">
                   {
