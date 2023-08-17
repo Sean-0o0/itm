@@ -241,6 +241,13 @@ export default function DemandDetail(props) {
           dictionary={dictionary}
           routes={routes}
         />
+        <DemandTable
+          dtlData={dtlData}
+          fqrid={curFqrid}
+          setIsSpinning={setIsSpinning}
+          isDock={isDock}
+          xqid={curXqid}
+        />
         <EvaluationTable
           dtlData={dtlData}
           dictionary={dictionary}
@@ -250,15 +257,9 @@ export default function DemandDetail(props) {
           getDtldata={getDtldata}
           isDock={isDock}
         />
-        <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
-        <DemandTable
-          dtlData={dtlData}
-          fqrid={curFqrid}
-          setIsSpinning={setIsSpinning}
-          isDock={isDock}
-          xqid={curXqid}
-        />
+
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
+        <ResumeInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
       </div>
     </Spin>
   );
