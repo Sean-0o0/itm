@@ -583,7 +583,12 @@ class MainPageLayout extends React.PureComponent {
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
                     if (
                       path &&
-                      !path.includes('/pms/manage/SupplierDmInfo') &&
+                      !path.includes('/pms/manage/SupplierDmInfo')
+                      &&
+                      (location.pathname + location.search) !== '/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true'
+                      &&
+                      (location.pathname + location.search) !== '/UIProcessor?Table=V_RYKQ&hideTitlebar=true'
+                      &&
                       TGYS_GYSRYQX !== undefined &&
                       V_GYSRYQX !== undefined
                     ) {
