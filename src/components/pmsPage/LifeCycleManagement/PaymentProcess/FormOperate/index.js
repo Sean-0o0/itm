@@ -31,8 +31,9 @@ export default function FormOperate(props) {
     currentXmid = -2,
     rlwbData = {},
     ddcgje = 0,
+    dictionary = {},
   } = props;
-  // console.log('🚀 ~ file: index.js:33 ~ FormOperate ~ rlwbData:', rlwbData);
+  const { DJLX = [] } = dictionary;
   const {
     sfyht,
     setSfyht,
@@ -287,6 +288,34 @@ export default function FormOperate(props) {
         </Form.Item>
       </Col>
     );
+  };
+  //单据类型单选
+  const getDJLXRadio = () => {
+    if (DJLX.length > 0)
+      return (
+        <Col span={12}>
+          <Form.Item label="单据类型" required labelCol={{ span: 8 }} wrapperCol={{ span: 16 }}>
+            {getFieldDecorator('djlx', {
+              initialValue: DJLX[0].ibm,
+              rules: [
+                {
+                  required: true,
+                  message: '单据类型不允许空值',
+                },
+              ],
+            })(
+              <Radio.Group>
+                {DJLX.map(x => (
+                  <Radio key={x.ibm} value={x.ibm}>
+                    {x.note}
+                  </Radio>
+                ))}
+              </Radio.Group>,
+            )}
+          </Form.Item>
+        </Col>
+      );
+    return null;
   };
   //申请日期
   const getDatePicker = () => {
@@ -568,7 +597,7 @@ export default function FormOperate(props) {
       <div className="payment-info-title">付款信息</div>
       <Row>
         {getRadio('是否有合同', sfyht, onSfyhtChange, '是', '否')}
-        {getInputDisabled('法人实体', '****股份有限公司（ZSZQ）', 8, 16)}
+        {getDJLXRadio()}
       </Row>
       <Row>
         {getInput(htjeInputProps)}

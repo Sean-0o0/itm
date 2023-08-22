@@ -9,7 +9,16 @@ import { QueryProjectGeneralInfo } from '../../../../services/pmsServices';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
 
 export default function ProjectCard(props) {
-  const { itemWidth, getAfterItem, userRole, prjInfo, getPrjInfo, total, placement, setPlacement } = props;
+  const {
+    itemWidth,
+    getAfterItem,
+    userRole,
+    prjInfo,
+    getPrjInfo,
+    total,
+    placement,
+    setPlacement,
+  } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
@@ -29,7 +38,6 @@ export default function ProjectCard(props) {
   useEffect(() => {
     if (prjInfo.length !== 0) {
       setInfoList(p => [...prjInfo?.slice(0, getColNum(itemWidth) * 3)]);
-
       setIsUnfold(false);
     }
     return () => {};
@@ -106,7 +114,6 @@ export default function ProjectCard(props) {
             setIsLoading(false);
             setIsUnfold(bool);
           }
-            
         })
         .catch(e => {
           console.error('QueryProjectGeneralInfo', e);
@@ -489,7 +496,7 @@ export default function ProjectCard(props) {
     visible: fileAddVisible,
     footer: null,
   };
-
+  if (total === 0) return null;
   return (
     <div className="project-card-box">
       {/* 修改项目弹窗 */}
@@ -542,30 +549,35 @@ export default function ProjectCard(props) {
           />
         </Modal>
       )}
-      {userRole === '普通人员' ? (
-        <div className="home-card-title-box">
-          <div className="txt">我的项目</div>
-        </div>
-      ) : (
-        <div className="home-card-title-box">
-          <div className="txt">
-            团队项目
-            {/* <i className="iconfont circle-info" /> */}
-          </div>
-          {userRole !== '普通人员' && (
-            <span
-              onClick={() =>
-                (window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
-                  JSON.stringify({}),
-                )}`)
-              }
-            >
-              全部
-              <i className="iconfont icon-right" />
-            </span>
-          )}
-        </div>
-      )}
+      <div className="home-card-title-box">
+        <div className="txt">项目草稿</div>
+      </div>
+      {
+        // userRole === '普通人员' ? (
+        //   <div className="home-card-title-box">
+        //     <div className="txt">我的项目</div>
+        //   </div>
+        // ) : (
+        //   <div className="home-card-title-box">
+        //     <div className="txt">
+        //       团队项目
+        //       {/* <i className="iconfont circle-info" /> */}
+        //     </div>
+        //     {userRole !== '普通人员' && (
+        //       <span
+        //         onClick={() =>
+        //           (window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+        //             JSON.stringify({}),
+        //           )}`)
+        //         }
+        //       >
+        //         全部
+        //         <i className="iconfont icon-right" />
+        //       </span>
+        //     )}
+        //   </div>
+        // )
+      }
       <div className="project-box">
         {infoList?.map(item => {
           return getProjectItem({

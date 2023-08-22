@@ -10,6 +10,8 @@ import {
 } from '../../../../services/pmsServices';
 import ExpenseDetail from './ExpenseDetail';
 import moment from 'moment';
+import { connect } from 'dva';
+import ConnectApply from './ConnectApply';
 
 const { confirm } = Modal;
 
@@ -26,8 +28,6 @@ const PaymentProcess = props => {
   const [zhfw, setZhfw] = useState(1);
   //收款账户
   const [skzh, setSkzh] = useState([]);
-  //弹窗全屏
-  const [isModalFullScreen, setIsModalFullScreen] = useState(false);
   //加载状态
   const [isSpinning, setIsSpinning] = useState(false);
   //收款账户添加弹窗显示
@@ -52,6 +52,10 @@ const PaymentProcess = props => {
     mb: '',
     origin: [], //非树型的原数据
   }); //报销部门 下拉框数据、分摊模板
+  const [glsqData, setGlsqData] = useState({
+    radioObj: undefined,
+    radioValue: undefined,
+  }); //关联申请数据
 
   const {
     paymentModalVisible,
@@ -64,7 +68,9 @@ const PaymentProcess = props => {
     isHwPrj = false, //是否硬件入围项目类型
     ddcgje = 0, // 单独采购金额，为0时无值
     rlwbData = {}, //人力外包费用支付 - 付款流程总金额
+    dictionary = {},
   } = props;
+  const { DJLX = [], FRST = [] } = dictionary;
   // console.log('🚀 ~ file: index.js:63 ~ PaymentProcess ~ rlwbData:', rlwbData);
   const { validateFields, getFieldValue, resetFields } = form;
   const formData = {
@@ -215,7 +221,7 @@ const PaymentProcess = props => {
           contractAmount: String(getFieldValue('htje')),
           paidAmount: String(getFieldValue('yfkje')),
           attQuantity: String(getFieldValue('fjzs')),
-          legalEntity: '****股份有限公司（ZSZQ）',
+          legalEntity: getFieldValue('frst') || FRST.find(x => x.ibm === '1')?.cbm,
           orgId: String(LOGIN_USER_ORG_ID),
           projectName: String(currentXmmc),
           payName: String(skzhId),
@@ -223,6 +229,8 @@ const PaymentProcess = props => {
           projectCode,
           operateType,
           lcid,
+          requisitionInfo: glsqData.radioObj?.id,
+          specificationId: DJLX.find(x => x.ibm === getFieldValue('djlx'))?.cbm,
         };
         (isHwPrj || (!isHwPrj && ddcgje !== 0 && fklx === 2)) &&
           (submitData.yjyhtid = String(getFieldValue('glsb')));
@@ -349,16 +357,16 @@ const PaymentProcess = props => {
       )}
       <Modal
         wrapClassName="editMessage-modify payment-process-box-modal"
-        width={'900px'}
+        width={900}
         maskClosable={false}
         zIndex={100}
         maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
         cancelText={'关闭'}
         style={{
-          top: '10px',
+          top: 10,
         }}
         bodyStyle={{
-          padding: '0',
+          padding: 0,
           overflow: 'hidden',
         }}
         title={null}
@@ -384,6 +392,7 @@ const PaymentProcess = props => {
             ddcgje={ddcgje}
             currentXmid={currentXmid}
             rlwbData={rlwbData}
+            dictionary={dictionary}
           />
           <ExpenseDetail
             currentXmid={currentXmid}
@@ -397,9 +406,18 @@ const PaymentProcess = props => {
             bxbmData={bxbmData}
             setBxbmData={setBxbmData}
           />
+          <ConnectApply
+            dictionary={props.dictionary || {}}
+            userykbid={userykbid}
+            form={form}
+            glsqData={glsqData}
+            setGlsqData={setGlsqData}
+          />
         </Spin>
       </Modal>
     </>
   );
 };
-export default Form.create()(PaymentProcess);
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+}))(Form.create()(PaymentProcess));

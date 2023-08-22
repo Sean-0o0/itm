@@ -134,7 +134,7 @@ export default function HomePage(props) {
         });
         //项目信息
         const prjPromise = QueryProjectGeneralInfo({
-          queryType: 'SY',
+          queryType: 'CG',
           role: ROLE,
           org: Number(LOGIN_USER_INFO.org),
           paging: 1,
@@ -380,7 +380,7 @@ export default function HomePage(props) {
   const getPrjInfo = (role, year = moment().year()) => {
     setIsSpinning(true);
     QueryProjectGeneralInfo({
-      queryType: 'SY',
+      queryType: 'CG',
       role,
       org: Number(LOGIN_USER_INFO.org),
       paging: 1,
@@ -617,16 +617,16 @@ export default function HomePage(props) {
                 isLoading,
               }}
             />
-            {/*<ProjectCard*/}
-            {/*  itemWidth={itemWidth}*/}
-            {/*  getAfterItem={getAfterItem}*/}
-            {/*  userRole={userRole}*/}
-            {/*  prjInfo={prjInfo}*/}
-            {/*  getPrjInfo={getPrjInfo}*/}
-            {/*  total={total.project}*/}
-            {/*  placement={placement}*/}
-            {/*  setPlacement={setPlacement}*/}
-            {/*/>*/}
+            <ProjectCard
+              itemWidth={itemWidth}
+              getAfterItem={getAfterItem}
+              userRole={userRole}
+              prjInfo={prjInfo}
+              getPrjInfo={getPrjInfo}
+              total={total.project}
+              placement={placement}
+              setPlacement={setPlacement}
+            />
             {/*项目跟踪*/}
             <PrjTracking
               dictionary={dictionary}
