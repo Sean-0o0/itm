@@ -69,6 +69,41 @@ export default function PrjTracking(props) {
     isActive = false,
     index,
   ) => {
+    const latestWeek = XMZQ === trackingData[trackingData.length - 1].XMZQ;
+    const fontColor =
+      DQZT === '低风险'
+        ? '#05BEFE'
+        : DQZT === '中风险'
+        ? '#f9a812'
+        : DQZT === '高风险'
+        ? '#FF2F31'
+        : DQZT === '延期'
+        ? '#FF2F31'
+        : '#3361ff';
+    const bgColor =
+      DQZT === '低风险'
+        ? '#05BEFE1A'
+        : DQZT === '中风险'
+        ? '#F9A8121A'
+        : DQZT === '高风险'
+        ? '#FF2F311A'
+        : DQZT === '延期'
+        ? '#FF2F311A'
+        : '#3361FF1A';
+    const getRiskIcon = zt => {
+      return (
+        <div className="icon-wrapper" style={{ backgroundColor: bgColor }}>
+          {zt === '进度正常' ? (
+            <i className="iconfont icon-hourglass" />
+          ) : zt === '延期' ? (
+            <i className="iconfont icon-delay" />
+          ) : (
+            <i className="iconfont icon-alarm" style={{ color: fontColor }} />
+          )}
+        </div>
+      );
+    };
+
     return (
       <div
         className="tracking-item"
@@ -77,15 +112,11 @@ export default function PrjTracking(props) {
         onClick={() => handleStepChange(XMZQ, index)}
       >
         <div className="top">
-          项目第{XMZQ}周
-          <div className="icon-wrapper">
-            <i className="iconfont icon-hourglass" />
-            {/* <i className="iconfont icon-alarm" />  */}
-          </div>
-          <span style={isActive ? { color: '#303133' } : {}}>{DQZT}</span>
+          项目第{XMZQ}周{getRiskIcon(DQZT)}
+          <span style={latestWeek ? { color: '#303133' } : {}}>{DQZT}</span>
         </div>
         <div className="rate">
-          当前进度：<span style={isActive ? { color: '#3361ff' } : {}}>{DQJD}</span>
+          当前进度：<span style={latestWeek ? { color: fontColor } : {}}>{DQJD}</span>
         </div>
         <div className="date">
           {KSSJ ? moment(String(KSSJ)).format('YYYY.MM.DD') : '-.-.-'} -{' '}
@@ -97,10 +128,19 @@ export default function PrjTracking(props) {
 
   //底部信息盒子
   const getBottomBox = x => {
-    // console.log('🚀 ~ file: index.js:94 ~ getBottomBox ~  x:', x);
     const { DQJD = '0%', DQZT = '--', ZYSXSM = '--', BZGZNR = '--', XZGZAP = '--', XMZQ } = x;
-    const lateOrHighRisk = DQZT === '延期' || DQZT === '高风险';
     const latestWeek = XMZQ === trackingData[trackingData.length - 1].XMZQ;
+    const fontColor = !latestWeek
+      ? '#909399'
+      : DQZT === '低风险'
+      ? '#05BEFE'
+      : DQZT === '中风险'
+      ? '#f9a812'
+      : DQZT === '高风险'
+      ? '#FF2F31'
+      : DQZT === '延期'
+      ? '#FF2F31'
+      : '#3361ff';
     return (
       <div className="bottom-box">
         <div className="title">
@@ -122,11 +162,11 @@ export default function PrjTracking(props) {
               <div className="value">
                 <Progress
                   percent={Number(DQJD?.replace('%', '') ?? 0)}
-                  strokeColor={!latestWeek ? '#909399' : lateOrHighRisk ? '#ff3030' : '#3361ff'}
+                  strokeColor={fontColor}
                   format={p => (
                     <span
                       style={{
-                        color: !latestWeek ? '#909399' : lateOrHighRisk ? '#ff3030' : '#3361ff',
+                        color: fontColor,
                       }}
                     >
                       {p}%
@@ -139,10 +179,7 @@ export default function PrjTracking(props) {
             </div>
             <div className="info-item-col">
               <div className="label">当前状态：</div>
-              <div
-                className="value"
-                style={{ color: !latestWeek ? '#909399' : lateOrHighRisk ? '#ff3030' : '#3361ff' }}
-              >
+              <div className="value" style={{ color: fontColor }}>
                 {DQZT}
               </div>
             </div>
@@ -201,10 +238,14 @@ export default function PrjTracking(props) {
   const handleStepChange = v => {
     setActiveKey(v);
     let data = [...trackingData];
-    let currentIndex = Number(v) - 1;
+    let currentIndex = data.findIndex(x => x.XMZQ === v);
     if (data.length >= 3) {
-      if (currentIndex - 1 >= 0 && currentIndex + 1 < data.length) {
-        console.log('8888', currentIndex - 1, currentIndex + 2, startIndex, endIndex);
+      if (
+        currentIndex >= 1 &&
+        currentIndex < data.length - 1 &&
+        v !== data[data.length - 1].XMZQ &&
+        v !== data[data.length - 2].XMZQ
+      ) {
         setStartIndex(currentIndex - 1);
         setEndIndex(currentIndex + 2); //不包含
       } else if (currentIndex < 1) {
@@ -219,7 +260,12 @@ export default function PrjTracking(props) {
       setEndIndex(data.length);
     }
     if (data.length > 3) {
-      if (currentIndex - 1 >= 0 && currentIndex < data.length - 1) {
+      if (
+        currentIndex - 1 >= 0 &&
+        currentIndex < data.length - 1 &&
+        v !== data[data.length - 1].XMZQ &&
+        v !== data[data.length - 2].XMZQ
+      ) {
         setBtnVisible({
           last: true,
           next: true,
@@ -320,9 +366,9 @@ export default function PrjTracking(props) {
         )}
         {trackingData
           .slice(startIndex, endIndex)
-          .map(x => getTrackingItem(x, activeKey === x.XMZQ))}
+          .map((x, i) => getTrackingItem(x, activeKey === x.XMZQ, i))}
       </div>
-      {getBottomBox(trackingData.filter(x => x.XMZQ === activeKey)[0] ?? {})}
+      {getBottomBox(trackingData.find(x => x.XMZQ === activeKey) ?? {})}
     </div>
   );
 }

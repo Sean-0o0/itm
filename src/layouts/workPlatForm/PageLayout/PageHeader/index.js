@@ -24,7 +24,8 @@ export default class PageHeader extends React.PureComponent {
   componentDidMount() {
     if (
       this.props.authorities?.TGYS_GYSRYQX === undefined &&
-      this.props.authorities?.V_GYSRYQX === undefined
+      this.props.authorities?.V_GYSRYQX === undefined &&
+      this.props.authorities?.V_RYKQ === undefined
     ) {
       this.getUnreadNum();
       this.interval = setInterval(this.getUnreadNum, 30000);
@@ -35,7 +36,8 @@ export default class PageHeader extends React.PureComponent {
     LocalPathUtils.cleanRouterList();
     if (
       this.props.authorities?.TGYS_GYSRYQX === undefined &&
-      this.props.authorities?.V_GYSRYQX === undefined
+      this.props.authorities?.V_GYSRYQX === undefined &&
+      this.props.authorities?.V_RYKQ === undefined
     ) {
       clearInterval(this.interval);
     }
@@ -73,7 +75,7 @@ export default class PageHeader extends React.PureComponent {
       projectName,
       theme,
     } = this.props;
-    const { globalSearch, TGYS_GYSRYQX, V_GYSRYQX } = authorities;
+    const { globalSearch, TGYS_GYSRYQX, V_GYSRYQX, V_RYKQ } = authorities;
 
     // 引导
     const guidesRecords = [
@@ -128,7 +130,7 @@ export default class PageHeader extends React.PureComponent {
         {/*搜索框 */}
         <div
           style={{
-            display: TGYS_GYSRYQX || V_GYSRYQX ? 'none' : 'flex',
+            display: TGYS_GYSRYQX || V_GYSRYQX || V_RYKQ ? 'none' : 'flex',
             borderBottom: '1px solid rgb(238, 239, 241)',
             alignItems: 'center',
           }}
@@ -157,7 +159,7 @@ export default class PageHeader extends React.PureComponent {
           </div>
         </div>
         {/* 全局消息通知 */}
-        {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined && (
+        {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined && V_RYKQ === undefined && (
           <MsgNoticeDrawer
             dataProps={{ authorities, newMsgNum }}
             funcProps={{ getUnreadNum: this.getUnreadNum }}

@@ -57,6 +57,7 @@ const EditableCell = props => {
               initialValue: Number(record[recIndex] || ''),
             })(
               <InputNumber
+                style={{ width: '100%' }}
                 max={100}
                 min={0}
                 step={0.1}

@@ -385,7 +385,7 @@ export default function ProjectDetail(props) {
         setPrjDocData(p => ({
           ...p,
           data: JSON.parse(docData.wdResult),
-          // total: docData.totalrows,
+          pageTotal: docData.totalrows,
           current: 1,
           pageSize: 5,
           loading: false,
@@ -520,7 +520,7 @@ export default function ProjectDetail(props) {
           setPrjDocData(p => ({
             ...p,
             data: JSON.parse(res.wdResult),
-            total: res.totalrows,
+            pageTotal: res.totalrows,
             current,
             pageSize,
             loading: false,
@@ -706,7 +706,7 @@ export default function ProjectDetail(props) {
               getPrjDtlData={() => {
                 getPrjDtlData();
                 getMileStoneData();
-                // getPrjDocData({ totalChange: true });
+                getPrjDocData({ totalChange: true });
               }}
               setIsSpinning={setIsSpinning}
               isLeader={isLeader}

@@ -25,15 +25,7 @@ import {
 const { Option } = Select;
 
 function InterviewScoreModal(props) {
-  const {
-    visible,
-    setVisible,
-    form,
-    xqid = -2,
-    swzxid,
-    reflush,
-    WBRYGW = [],
-  } = props;
+  const { visible, setVisible, form, xqid = -2, swzxid, reflush, WBRYGW = [] } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
   const [editData, setEditData] = useState([]); //提交的修改数据
@@ -53,7 +45,7 @@ function InterviewScoreModal(props) {
     setIsSpinning(true);
     QueryEvaluationGradeInfo({
       xqid,
-      cxlx:'ALL',
+      cxlx: 'ALL',
     })
       .then(res => {
         if (res?.success) {
@@ -99,7 +91,7 @@ function InterviewScoreModal(props) {
           dfxx: JSON.stringify(submitTable),
           count: submitTable.length,
           xqid: Number(xqid),
-          swzxid:  Number(swzxid),
+          swzxid: Number(swzxid),
           czlx: 'XQ',
         };
         // console.log("🚀 ~ file: index.js:88 ~ handleOk ~ submitProps:", submitProps)
@@ -154,7 +146,7 @@ function InterviewScoreModal(props) {
     {
       title: '人员需求',
       dataIndex: 'RYDJ',
-      width: '20%',
+      // width: '15%',
       key: 'RYDJ',
       ellipsis: true,
       render: (txt, row) => {
@@ -170,7 +162,7 @@ function InterviewScoreModal(props) {
       title: '供应商名称',
       dataIndex: 'GYSMC',
       key: 'GYSMC',
-      width: isDock ? '45%' : '0',
+      width: isDock ? '20%' : '0',
       ellipsis: true,
       render: txt => (
         <Tooltip title={txt} placement="topLeft">
@@ -186,9 +178,31 @@ function InterviewScoreModal(props) {
       ellipsis: true,
     },
     {
+      title: '面试时间',
+      dataIndex: 'MSSJ',
+      width: '30%',
+      key: 'MSSJ',
+      ellipsis: true,
+      render: dateString => {
+        // 解析起始日期和时间
+        const startDateTime = moment(dateString.split('-')[0], 'YYYY/MM/DD HH:mm');
+        // 解析结束日期和时间
+        const endDateTime = moment(dateString.split('-')[1], 'YYYY/MM/DD HH:mm');
+
+        // 格式化起始日期和时间
+        const formattedStartDateTime = startDateTime.format('YYYY-MM-DD HH:mm');
+        // 格式化结束日期和时间
+        const formattedEndDateTime = endDateTime.format('HH:mm');
+
+        // 拼接格式化后的日期和时间
+        const formattedDateTime = `${formattedStartDateTime}-${formattedEndDateTime}`;
+        return formattedDateTime;
+      },
+    },
+    {
       title: '评分',
       dataIndex: 'FS',
-      width: '20%',
+      width: '15%',
       align: 'center',
       key: 'FS',
       ellipsis: true,

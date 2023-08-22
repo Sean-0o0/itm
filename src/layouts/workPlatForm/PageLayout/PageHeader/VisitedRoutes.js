@@ -156,7 +156,7 @@ function VisitedRoutes(props) {
   };
 
   let tabCount = 0;
-  const { TGYS_GYSRYQX, V_GYSRYQX } = authorities;
+  const { TGYS_GYSRYQX, V_GYSRYQX, V_RYKQ } = authorities;
 
   return (
     <div className={'clearfix top-tabs-box'} id="visited-scroll">
@@ -168,22 +168,26 @@ function VisitedRoutes(props) {
         }}
         activeKey={newPathname}
       >
-        {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined ? (
+        {TGYS_GYSRYQX === undefined && V_GYSRYQX === undefined && V_RYKQ === undefined ? (
           <TabPane
             tab={<Link to="/pms/manage/HomePage">个人工作台</Link>}
             closable={false}
             key="/pms/manage/HomePage"
           ></TabPane>
-        ) : (
+        ) : V_RYKQ === undefined ? (
           <TabPane
             tab={<Link to="/pms/manage/SupplierDmInfo">外包需求列表</Link>}
             closable={false}
             key="/pms/manage/SupplierDmInfo"
           ></TabPane>
+        ) : (
+          <TabPane
+            tab={<Link to="/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true">流程列表</Link>}
+            closable={false}
+            key="/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true"
+          ></TabPane>
         )}
         {handleUrls(urls).length > 0 &&
-          TGYS_GYSRYQX === undefined &&
-          V_GYSRYQX === undefined &&
           handleUrls(urls).map(item => {
             let { url = '', title = '' } = menuArray.find(m => m.url === item) || {};
             let urlEndArr = [
@@ -285,7 +289,16 @@ function VisitedRoutes(props) {
             if (item.includes('/pms/manage/HomePage')) {
               return null;
             }
-            if ((TGYS_GYSRYQX || V_GYSRYQX) && item.includes('/pms/manage/SupplierDmInfo')) {
+            if (V_RYKQ) {
+              url = item;
+              if (item.includes('/UIProcessor?Table=V_RYKQ&hideTitlebar=true')) title = '考勤打卡';
+              else return null;
+            }
+            if (
+              (TGYS_GYSRYQX || V_GYSRYQX) &&
+              V_RYKQ === undefined &&
+              item.includes('/pms/manage/SupplierDmInfo')
+            ) {
               return null;
             }
             if (title === '' && routerList.length > 0) {

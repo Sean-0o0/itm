@@ -1,30 +1,9 @@
-import React, { useEffect, useState, useRef } from 'react';
-import {
-  Button,
-  Divider,
-  Empty,
-  Icon,
-  message,
-  Popconfirm,
-  Popover,
-  Progress,
-  Rate,
-  Select,
-  Spin,
-  Tabs,
-  Tooltip,
-} from 'antd';
-import styles from '../../../Common/TagSelect/index.less';
-import {
-  FetchQueryCustomReportList,
-  ProjectCollect,
-  QueryProjectTracking,
-} from '../../../../services/pmsServices';
+import React, { useEffect, useState } from 'react';
+import { Empty, Icon, message, Popconfirm, Popover, Progress, Spin, Tooltip } from 'antd';
+import { ProjectCollect, QueryProjectTracking } from '../../../../services/pmsServices';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import { EncryptBase64 } from '../../../Common/Encrypt';
-
-const { TabPane } = Tabs;
 
 export default function PrjTracking(props) {
   const [filterResName, setFilterResName] = useState('查看全部');
@@ -50,11 +29,11 @@ export default function PrjTracking(props) {
   }, [XMGZSX, XMJDZT]);
 
   //项目内表格数据-本周/上周
-  const getDetailData = xmid => {
+  const getDetailData = (xmid, cycle) => {
     setIsTrackingSpinning(true);
     QueryProjectTracking({
       current: 1,
-      cycle: 1,
+      cycle,
       // endTime: 0,
       // org: 0,
       pageSize: 5,
@@ -119,9 +98,9 @@ export default function PrjTracking(props) {
         {trackingDetail && (
           <Spin className="prj-detail-spin" spinning={isTrackingSpinning}>
             <div className="prj-detail-bzgz">
-              <div className="prj-detail-bzgz-title">本周工作内容:</div>
+              <div className="title">本周工作内容:</div>
               {trackingDetail.BZGZNR ? (
-                <div className="prj-detail-bzgz-content">{trackingDetail.BZGZNR}</div>
+                <div className="content">{trackingDetail.BZGZNR}</div>
               ) : (
                 <Empty
                   description="暂无数据"
@@ -131,9 +110,9 @@ export default function PrjTracking(props) {
               )}
             </div>
             <div className="prj-detail-xzgz">
-              <div className="prj-detail-xzgz-title">下周工作计划:</div>
+              <div className="title">下周工作计划:</div>
               {trackingDetail.XZGZAP ? (
-                <div className="prj-detail-xzgz-content">{trackingDetail.XZGZAP}</div>
+                <div className="content">{trackingDetail.XZGZAP}</div>
               ) : (
                 <Empty
                   description="暂无数据"
@@ -142,11 +121,10 @@ export default function PrjTracking(props) {
                 />
               )}
             </div>
-            <Divider />
             <div className="prj-detail-sxsm">
-              <div className="prj-detail-sxsm-title">重要事项说明:</div>
+              <div className="title">重要事项说明:</div>
               {trackingDetail.ZYSXSM ? (
-                <div className="prj-detail-sxsm-content">{trackingDetail.ZYSXSM}</div>
+                <div className="content">{trackingDetail.ZYSXSM}</div>
               ) : (
                 <Empty
                   description="暂无数据"
@@ -224,7 +202,7 @@ export default function PrjTracking(props) {
             </div>
             <Link to={linkTo} style={{ display: 'contents' }}>
               <div className="prj-tracking-infos-right">
-                查看全部 <i className="iconfont icon-right"/>
+                查看全部 <i className="iconfont icon-right" />
               </div>
             </Link>
           </div>
@@ -281,9 +259,7 @@ export default function PrjTracking(props) {
                               />
                             </Popconfirm>
                           </div>
-                          <div className="prj-tracking-infos-week">
-                            Week&nbsp;{i.XMZQ}
-                          </div>
+                          <div className="prj-tracking-infos-week">Week&nbsp;{i.XMZQ}</div>
                         </div>
                         {
                           <div className="prj-tracking-infos-detail">
@@ -296,7 +272,7 @@ export default function PrjTracking(props) {
                                   trigger="hover"
                                   getPopupContainer={triggerNode => triggerNode.parentNode}
                                   autoAdjustOverflow={true}
-                                  content={getPrjDetail(i.XMID)}
+                                  content={getPrjDetail(i.XMID, i.XMZQ)}
                                   overlayClassName="prj-tracking-detail-popover"
                                 >
                                   <i
@@ -354,28 +330,28 @@ export default function PrjTracking(props) {
                               >
                                 {i.SZZT === 5 ? (
                                   <div className="prj-status-icon-lv1">
-                                    <i className="iconfont icon-hourglass"/>
+                                    <i className="iconfont icon-hourglass" />
                                   </div>
                                 ) : i.SZZT === 1 ? (
                                   <div className="prj-status-icon-lv2">
-                                    <i className="iconfont icon-alarm"/>
+                                    <i className="iconfont icon-alarm" />
                                   </div>
                                 ) : i.SZZT === 2 ? (
                                   <div className="prj-status-icon-lv3">
-                                    <i className="iconfont icon-alarm"/>
+                                    <i className="iconfont icon-alarm" />
                                   </div>
                                 ) : i.SZZT === 3 ? (
                                   <div className="prj-status-icon-lv4">
-                                    <i className="iconfont icon-alarm"/>
+                                    <i className="iconfont icon-alarm" />
                                   </div>
                                 ) : i.SZZT === 4 ? (
                                   <div className="prj-status-icon-lv5">
-                                    <i className="iconfont icon-delay"/>
+                                    <i className="iconfont icon-delay" />
                                   </div>
                                 ) : (
                                   i.SZZT === 6 && (
                                     <div className="prj-status-icon-lv6">
-                                      <i className="iconfont circle-check"/>
+                                      <i className="iconfont circle-check" />
                                     </div>
                                   )
                                 )}
@@ -394,28 +370,28 @@ export default function PrjTracking(props) {
                                   >
                                     {i.BZZT === 5 ? (
                                       <div className="prj-status-icon-lv1">
-                                        <i className="iconfont icon-hourglass"/>
+                                        <i className="iconfont icon-hourglass" />
                                       </div>
                                     ) : i.BZZT === 1 ? (
                                       <div className="prj-status-icon-lv2">
-                                        <i className="iconfont icon-alarm"/>
+                                        <i className="iconfont icon-alarm" />
                                       </div>
                                     ) : i.BZZT === 2 ? (
                                       <div className="prj-status-icon-lv3">
-                                        <i className="iconfont icon-alarm"/>
+                                        <i className="iconfont icon-alarm" />
                                       </div>
                                     ) : i.BZZT === 3 ? (
                                       <div className="prj-status-icon-lv4">
-                                        <i className="iconfont icon-alarm"/>
+                                        <i className="iconfont icon-alarm" />
                                       </div>
                                     ) : i.BZZT === 4 ? (
                                       <div className="prj-status-icon-lv5">
-                                        <i className="iconfont icon-delay"/>
+                                        <i className="iconfont icon-delay" />
                                       </div>
                                     ) : (
                                       i.BZZT === 6 && (
                                         <div className="prj-status-icon-lv6">
-                                          <i className="iconfont circle-check"/>
+                                          <i className="iconfont circle-check" />
                                         </div>
                                       )
                                     )}

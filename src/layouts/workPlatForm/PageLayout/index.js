@@ -424,7 +424,7 @@ class MainPageLayout extends React.PureComponent {
       dictionary,
       authUserInfo,
     } = this.props;
-    const { TGYS_GYSRYQX, V_GYSRYQX } = authorities;
+    const { TGYS_GYSRYQX, V_GYSRYQX, V_RYKQ } = authorities;
     const routes = lodash.get(route, 'routes', []);
     const { hasAuthed } = this.props;
     const {
@@ -582,15 +582,16 @@ class MainPageLayout extends React.PureComponent {
                   {// 路由
                   routes.map(({ key, path, component, keepAlive = true }, index) => {
                     if (
-                      path &&
-                      !path.includes('/pms/manage/SupplierDmInfo')
-                      &&
-                      (location.pathname + location.search) !== '/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true'
-                      &&
-                      (location.pathname + location.search) !== '/UIProcessor?Table=V_RYKQ&hideTitlebar=true'
-                      &&
-                      TGYS_GYSRYQX !== undefined &&
-                      V_GYSRYQX !== undefined
+                      (path &&
+                        !path.includes('/pms/manage/SupplierDmInfo') &&
+                        TGYS_GYSRYQX !== undefined &&
+                        V_GYSRYQX !== undefined &&
+                        V_RYKQ === undefined) ||
+                      (location.pathname + location.search !==
+                        '/UIProcessor?Table=WORKFLOW_TOTASKS&hideTitlebar=true' &&
+                        location.pathname + location.search !==
+                          '/UIProcessor?Table=V_RYKQ&hideTitlebar=true' &&
+                        V_RYKQ !== undefined)
                     ) {
                       return (
                         <Route

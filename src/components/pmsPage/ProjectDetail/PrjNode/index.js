@@ -14,7 +14,7 @@ export default function PrjNode(props) {
           <Tooltip title={nodeName} placement="topLeft">
             <div>{nodeName}</div>
           </Tooltip>
-          {ago !== '' && <span>距今{ago}天</span>}
+          {ago !== '' && <span>距今{Math.abs(Number(ago))}天</span>}
         </div>
         <div className="date">{date}</div>
       </div>

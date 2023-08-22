@@ -1,4 +1,4 @@
-import { Empty, Popover } from 'antd';
+import { Empty, Modal, Popconfirm, Popover } from 'antd';
 import React, { useEffect, useState } from 'react';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
@@ -32,12 +32,16 @@ export default function PrjMember(props) {
   }) => {
     const popoverContent = (
       <div className="list">
-        <div className="item" onClick={() => inviteAgain('ZCYQ')} key="再次邀请">
-          再次邀请
-        </div>
-        <div className="item" onClick={() => inviteAgain('BZXSQ')} key="不再显示">
-          不再显示
-        </div>
+        <Popconfirm title={`是否确认操作？`} onConfirm={() => inviteAgain('ZCYQ')} okText="确认">
+          <div className="item" key="再次邀请">
+            再次邀请
+          </div>
+        </Popconfirm>
+        <Popconfirm title={`是否确认操作？`} onConfirm={() => inviteAgain('BZXS')} okText="确认">
+          <div className="item" key="不再显示">
+            不再显示
+          </div>
+        </Popconfirm>
       </div>
     );
     //跳转人员详情
@@ -64,13 +68,13 @@ export default function PrjMember(props) {
       })
         .then(res => {
           if (res?.success) {
-            console.log('🚀 ~ InviteMemberAgain ~ res', res);
+            // console.log('🚀 ~ InviteMemberAgain ~ res', res);
             getPrjDtlData();
             message.success('操作成功', 1);
           }
         })
         .catch(e => {
-          console.error('🚀再次邀请', e);
+          console.error('🚀再次邀请/不再显示', e);
           message.error('操作失败', 1);
         });
     };

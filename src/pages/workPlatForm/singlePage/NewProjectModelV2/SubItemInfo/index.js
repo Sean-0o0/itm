@@ -928,7 +928,7 @@ class SubItemInfo extends Component {
           return (
             <InputNumber disabled={record['SUBSFBHYJ' + record.ID] === '' || record['SUBSFBHYJ' + record.ID] === "2"}
                          style={{width: '100%'}}
-                         value={record['SUBRJYSJE' + record.ID]} style={{width: '100%'}}
+                         value={record['SUBRJYSJE' + record.ID]}
                          onChange={(e) => _this.itemChange(Number(e), record, index, 'SUBRJYSJE')}
                          precision={0}/>)
         }

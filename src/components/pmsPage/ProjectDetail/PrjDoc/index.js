@@ -22,7 +22,7 @@ const {
   pmsServices: { queryFileStream },
 } = api;
 const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-let LOGIN_USER_NAME = LOGIN_USER_INFO.name;     //用const的话数据不会主动刷新
+let LOGIN_USER_NAME = LOGIN_USER_INFO.name; //用const的话数据不会主动刷新
 let LOGIN_USER_ID = String(LOGIN_USER_INFO.id); //用const的话数据不会主动刷新
 
 export default function PrjDoc(props) {
@@ -33,11 +33,15 @@ export default function PrjDoc(props) {
   }, []);
 
   //允许下载
-  const allowDownload = useCallback(() => {
-    const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
-    // console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
-    return arr.includes(LOGIN_USER_ID) || isLeader;
-  }, [isLeader, JSON.stringify(prjData.member ?? [])], prjData.member);
+  const allowDownload = useCallback(
+    () => {
+      const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
+      // console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
+      return arr.includes(LOGIN_USER_ID) || isLeader;
+    },
+    [isLeader, JSON.stringify(prjData.member ?? [])],
+    prjData.member,
+  );
 
   //里程碑下拉菜单
   const lcbContent = () => {
@@ -93,7 +97,7 @@ export default function PrjDoc(props) {
 
   //页面切换
   const handlePageChange = (current, pageSize) => {
-    getPrjDocData(current, pageSize);
+    getPrjDocData({ current, pageSize, LCBID: prjDocData.curLcb?.LCBID });
   };
 
   //文档下载
@@ -200,7 +204,10 @@ export default function PrjDoc(props) {
             expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
           >
             {prjDocData.data.map(x => (
-              <Collapse.Panel header={x.WDLX} key={x.WDID}>
+              <Collapse.Panel
+                header={x.WDLX + `（${JSON.parse(x.WDFJ)?.items?.length}）`}
+                key={x.WDID}
+              >
                 {JSON.parse(x.WDFJ)?.items?.map(y => (
                   <div
                     className="doc-item"
@@ -237,7 +244,7 @@ export default function PrjDoc(props) {
           size="small"
           current={prjDocData.current}
           pageSize={prjDocData.pageSize}
-          total={prjDocData.total}
+          total={prjDocData.pageTotal}
           onChange={handlePageChange}
         />
       </div>
