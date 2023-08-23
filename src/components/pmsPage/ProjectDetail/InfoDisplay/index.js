@@ -128,6 +128,31 @@ export default function InfoDisplay(props) {
       </div>
     );
   };
+
+  //评标报告
+  const getPbbg = (arr = []) => {
+    return (
+      <div
+        className="info-item"
+        key="评标报告："
+        style={{ width: '32%', display: 'flex', height: 'unset' }}
+      >
+        <div className="payment-label">评标报告：</div>
+        <div className="payment-plan">
+          {arr.map((x, i) => (
+            <a
+              style={{ color: '#3361ff', display: 'block' }}
+              key={i}
+              onClick={() => handleFile(bidding.ID, x[1], x[0])}
+            >
+              {x[1]}
+            </a>
+          ))}
+        </div>
+      </div>
+    );
+  };
+
   const otherSupplierPopover = data => (
     <div className="list">
       {data.map(x => (
@@ -659,23 +684,7 @@ export default function InfoDisplay(props) {
                   getInfoItem('招标保证金：', getAmountFormat(bidding.TBBZJ) + '元')}
                 {bidding.LYBZJ &&
                   getInfoItem('履约保证金：', getAmountFormat(bidding.LYBZJ) + '元')}
-                {bidding.PBBG && (
-                  <div className="info-item" key="评标报告：">
-                    <span>评标报告：</span>
-                    <a
-                      style={{ color: '#3361ff' }}
-                      onClick={() =>
-                        handleFile(
-                          bidding.ID,
-                          JSON.parse(bidding.PBBG)?.items[0][1],
-                          JSON.parse(bidding.PBBG)?.items[0][0],
-                        )
-                      }
-                    >
-                      {JSON.parse(bidding.PBBG)?.items[0][1]}
-                    </a>
-                  </div>
-                )}
+                {bidding.PBBG && getPbbg(JSON.parse(bidding.PBBG)?.items || [])}
                 {payment.length !== 0 && getPmtPlan(payment)}
                 {otrSupplier.length !== 0 && (
                   <div className="info-item" key="zcxx-4-1">
@@ -705,23 +714,7 @@ export default function InfoDisplay(props) {
               {notNull(prjBasic.ZBFS) !== '暂无数据' && getInfoItem('招采方式：', prjBasic.ZBFS)}
               {contrast.QSRQ &&
                 getInfoItem('签署日期：', moment(contrast.QSRQ).format('YYYY年MM月DD日'))}
-              {bidding.PBBG && (
-                <div className="info-item" key="评标报告：">
-                  <span>评标报告：</span>
-                  <a
-                    style={{ color: '#3361ff' }}
-                    onClick={() =>
-                      handleFile(
-                        bidding.ID,
-                        JSON.parse(bidding.PBBG)?.items[0][1],
-                        JSON.parse(bidding.PBBG)?.items[0][0],
-                      )
-                    }
-                  >
-                    {JSON.parse(bidding.PBBG)?.items[0][1]}
-                  </a>
-                </div>
-              )}
+              {bidding.PBBG && getPbbg(JSON.parse(bidding.PBBG)?.items || [])}
               {otrSupplier.length !== 0 && (
                 <div className="info-item" key="zcxx-4-1">
                   <span>其他投标供应商：</span>
@@ -743,26 +736,30 @@ export default function InfoDisplay(props) {
         <div className="info-box" key="zcxx">
           <div className="top-title">实施信息</div>
           <div className="info-row">
-            <div className="info-item" key="需求列表：">
-              <span>需求列表：</span>
-              {award[0]?.ID === '0' ? (
-                '暂无数据'
-              ) : (
-                <a style={{ color: '#3361ff' }} onClick={() => openXqlbModal(xmid)}>
-                  查看详情
-                </a>
-              )}
-            </div>
-            <div className="info-item" key="询比结果：">
-              <span>询比结果：</span>
-              {topic[0]?.XMID === '0' ? (
-                '暂无数据'
-              ) : (
-                <a style={{ color: '#3361ff' }} onClick={() => openXbjglbModal(xmid)}>
-                  查看详情
-                </a>
-              )}
-            </div>
+            {String(LOGIN_USER_INFO.id) === String(prjBasic.XMJLID) && (
+              <div className="info-item" key="需求列表：">
+                <span>需求列表：</span>
+                {award[0]?.ID === '0' ? (
+                  '暂无数据'
+                ) : (
+                  <a style={{ color: '#3361ff' }} onClick={() => openXqlbModal(xmid)}>
+                    查看详情
+                  </a>
+                )}
+              </div>
+            )}
+            {String(LOGIN_USER_INFO.id) === String(prjBasic.XMJLID) && (
+              <div className="info-item" key="询比结果：">
+                <span>询比结果：</span>
+                {topic[0]?.XMID === '0' ? (
+                  '暂无数据'
+                ) : (
+                  <a style={{ color: '#3361ff' }} onClick={() => openXbjglbModal(xmid)}>
+                    查看详情
+                  </a>
+                )}
+              </div>
+            )}
             <div className="info-item" key="标段统计：">
               <span>标段统计：</span>
               {demand[0]?.XMID === '0' ? (

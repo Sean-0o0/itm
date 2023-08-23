@@ -259,7 +259,7 @@ class BidInfoUpdate extends React.Component {
     })
       .then(res => {
         let rec = res.record;
-        // console.log('🚀 ~ file: index.js:228 ~ BidInfoUpdate ~ res.record:', res.record);
+        console.log('🚀 ~ 中标信息 ~ res.record:', res.record);
         this.setState({
           initialSkzhMc: rec[0].zbgysfkzhmc || '',
           initialSkzhId: Number(rec[0].zbgysfkzh),
@@ -281,16 +281,28 @@ class BidInfoUpdate extends React.Component {
             objectName: 'TXMXX_ZBXX',
           },
         });
-        if (res.url && res.base64 && rec[0].pbbg) {
-          let arrTemp = [];
-          arrTemp.push({
-            uid: Date.now(),
-            name: rec[0].pbbg,
-            status: 'done',
-            url: res.url,
-          });
+        // if (res.url && res.base64 && rec[0].pbbg) {
+        //   let arrTemp = [];
+        //   arrTemp.push({
+        //     uid: Date.now(),
+        //     name: rec[0].pbbg,
+        //     status: 'done',
+        //     url: res.url,
+        //   });
+        //   this.setState({
+        //     fileList: [...this.state.fileList, ...arrTemp],
+        //   });
+        // }
+        if (res.base64) {
+          let arr =
+            JSON.parse(res.base64)?.map((x, i) => ({
+              uid: Date.now() + '-' + i,
+              name: x.fileName,
+              status: 'done',
+              url: x.data,
+            })) ?? [];
           this.setState({
-            fileList: [...this.state.fileList, ...arrTemp],
+            fileList: arr,
           });
         }
         let arr = [];
@@ -575,56 +587,272 @@ class BidInfoUpdate extends React.Component {
         message.error('收款账号查询失败', 1);
       });
   };
-  // OnRadioChange = e => {
-  //   let rec = [...this.state.staticSkzhData];
-  //   let tempArr = rec.filter(x => {
-  //     let arr = x.ssr?.split(';');
-  //     return arr?.includes(String(this.props.loginUserId));
-  //   });
-  //   let finalArr = Number(e.target.value) === 1 ? [...rec] : [...tempArr];
-  //   this.setState({
-  //     radioValue: e.target.value,
-  //     skzhData: [...finalArr],
-  //   });
-  // };
+
+  //评标报告预览下载
+  onUploadDownload = file => {
+    if (!file.url) {
+      let reader = new FileReader();
+      reader.readAsDataURL(file.originFileObj);
+      reader.onload = e => {
+        var link = document.createElement('a');
+        link.href = e.target.result;
+        link.download = file.name;
+        link.click();
+        window.URL.revokeObjectURL(link.href);
+      };
+    } else {
+      // window.location.href=file.url;
+      var link = document.createElement('a');
+      link.href = file.url;
+      link.download = file.name;
+      link.click();
+      window.URL.revokeObjectURL(link.href);
+    }
+  };
+
+  //评标报告上传变化
+  onUploadChange = info => {
+    // let fileList = [...info.fileList];
+    // fileList = fileList.slice(0, 1);
+    // this.setState({ fileList }, () => {
+    //   console.log('目前fileList', this.state.fileList);
+    // });
+    // if (fileList.length === 0) {
+    //   this.setState({
+    //     pbbgTurnRed: true,
+    //   });
+    // } else {
+    //   this.setState({
+    //     pbbgTurnRed: false,
+    //   });
+    // }
+    let list = [...info.fileList];
+    const { fileList } = this.state;
+    if (list.length > 0) {
+      list.forEach(item => {
+        if (fileList.findIndex(x => x.uid === item.uid) === -1) {
+          this.setState({
+            fileList: [
+              ...fileList,
+              {
+                ...item,
+                uid: item.uid,
+                name: item.name,
+                status: item.status === 'uploading' ? 'done' : item.status,
+                // new: item.uid === +item.uid ? false : true,
+                // number: item.number || '',
+              },
+            ],
+          });
+        } else {
+          this.setState({
+            fileList: fileList.filter(x => x.status !== 'removed'),
+          });
+        }
+        if (list.length === 0) {
+          this.setState({
+            pbbgTurnRed: true,
+          });
+        } else {
+          this.setState({
+            pbbgTurnRed: false,
+          });
+        }
+      });
+    } else {
+      this.setState({
+        fileList: [],
+        pbbgTurnRed: true,
+      });
+    }
+  };
+
+  //评标报告上传处理
+  onBeforeUpload = file => {
+    // const {
+    //   uploadFileParams,
+    // } = this.state;
+    // let reader = new FileReader(); //实例化文件读取对象
+    // reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
+    // reader.onload = e => {
+    //   //文件读取成功完成时触发
+    //   let urlArr = e.target.result.split(',');
+    //   // console.log('uploadFileParamsuploadFileParams', uploadFileParams);
+    //   this.setState({
+    //     uploadFileParams: {
+    //       ...uploadFileParams,
+    //       documentData: urlArr[1], //获得文件读取成功后的DataURL,也就是base64编码
+    //       fileName: file.name,
+    //     },
+    //   });
+    // };
+  };
+
+  //弹窗确定
+  onModalOk = () => {
+    const { tableData, bidInfo, fileList, glgys, uploadFileParams } = this.state;
+    const { currentXmid, closeBidInfoModal, onSuccess } = this.props;
+    const { getFieldValue, validateFields } = this.props.form;
+    validateFields(async err => {
+      if (fileList.length !== 0) {
+        //评标报告不为空
+        if (!err) {
+          //表单部分必填不为空
+          this.setState({
+            isSpinning: true,
+          });
+          let arr = [...tableData];
+          let newArr = [];
+          arr.map(item => {
+            let obj = {
+              GYSMC: String(glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || ''),
+              GYSFKZH: '-1',
+              // GYSFKZH: String(
+              //   skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '',
+              // ),
+            };
+            newArr.push(obj);
+          });
+          newArr.push({});
+          const { zbgys, tbbzj, lybzj, zbgysskzh, pbbg } = bidInfo;
+          const {
+            columnName,
+            documentData,
+            fileLength,
+            fileName,
+            filePath,
+            id,
+            objectName,
+          } = uploadFileParams;
+
+          // let submitdata = {
+          //   columnName: 'PBBG',
+          //   czlx: 'UPDATE',
+          //   documentData,
+          //   fileLength,
+          //   glgys: 0,
+          //   gysfkzh: -1,
+          //   gysfkzh: Number(
+          //     // skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || '',
+          //     this.state.skzhId,
+          //   ),
+          //   ijson: JSON.stringify(newArr),
+          //   lybzj: Number(getFieldValue('lybzj')),
+          //   objectName: 'TXMXX_ZBXX',
+          //   pbbg: fileName,
+          //   rowcount: tableData.length,
+          //   tbbzj: Number(getFieldValue('tbbzj')),
+          //   xmmc: Number(currentXmid),
+          //   zbgys: Number(glgys?.filter(x => x.gysmc === getFieldValue('zbgys'))[0]?.id || ''),
+          // };
+          // console.log('🚀submitdata', submitdata);
+          // UpdateZbxx({
+          //   ...submitdata,
+          // })
+          //   .then(res => {
+          //     if (res?.code === 1) {
+          //       // message.success('中标信息修改成功', 1);
+          //       onSuccess();
+          //       closeBidInfoModal();
+          //       this.setState({ isSpinning: false, tableData: [] });
+          //     }
+          //   })
+          //   .catch(e => {
+          //     message.error('中标信息修改失败', 1);
+          //     this.setState({
+          //       isSpinning: false,
+          //     });
+          //   });
+
+          function convertFilesToBase64(fileArray) {
+            return Promise.all(
+              fileArray.map(file => {
+                if (file.url !== undefined)
+                  //查询到的已有旧文件的情况
+                  return new Promise((resolve, reject) => {
+                    resolve({ name: file.name, data: file.url });
+                  });
+                return new Promise((resolve, reject) => {
+                  const reader = new FileReader();
+
+                  reader.onload = function() {
+                    const base64 = reader.result.split(',')[1];
+                    const fileName = file.name;
+                    resolve({ name: fileName, data: base64 });
+                  };
+
+                  reader.onerror = function(error) {
+                    reject(error);
+                  };
+
+                  reader.readAsDataURL(file);
+                });
+              }),
+            );
+          }
+
+          try {
+            const fileArr = await convertFilesToBase64(fileList.map(x => x.originFileObj || x));
+            let submitdata = {
+              columnName: 'PBBG',
+              czlx: 'UPDATE',
+              documentData: JSON.stringify(fileArr),
+              fileLength,
+              glgys: 0,
+              gysfkzh: -1,
+              gysfkzh: Number(
+                // skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || '',
+                this.state.skzhId,
+              ),
+              ijson: JSON.stringify(newArr),
+              lybzj: Number(getFieldValue('lybzj')),
+              objectName: 'TXMXX_ZBXX',
+              pbbg: '',
+              rowcount: tableData.length,
+              tbbzj: Number(getFieldValue('tbbzj')),
+              xmmc: Number(currentXmid),
+              zbgys: Number(glgys?.filter(x => x.gysmc === getFieldValue('zbgys'))[0]?.id || ''),
+            };
+            console.log('🚀submitdata', submitdata);
+            const updateRes = await UpdateZbxx({
+              ...submitdata,
+            });
+            if (updateRes?.code === 1) {
+              onSuccess();
+              closeBidInfoModal();
+              this.setState({ isSpinning: false, tableData: [] });
+            }
+          } catch (error) {
+            message.error('中标信息修改失败', 1);
+            console.error('中标信息修改', error);
+            this.setState({
+              isSpinning: false,
+            });
+          }
+        }
+      } else {
+        this.setState({
+          pbbgTurnRed: true,
+        });
+      }
+    });
+  };
+
   render() {
     const {
-      isTableFullScreen,
-      isModalFullScreen,
       tableData,
       bidInfo,
-      selectedRowIds,
       isSelectorOpen1,
-      isSelectorOpen2,
-      uploadFileParams,
       fileList,
       pbbgTurnRed,
       glgys,
       addGysModalVisible,
       addSkzhModalVisible,
-      addGysModalUrl,
-      addSkzhModalUrl,
       skzhData,
       isSpinning,
-      // radioValue,
     } = this.state;
-    const {
-      currentXmid,
-      currentXmmc,
-      bidInfoModalVisible,
-      closeBidInfoModal,
-      onSuccess,
-    } = this.props;
-    const { getFieldDecorator, getFieldValue, setFieldsValue, validateFields } = this.props.form;
-    const rowSelection = {
-      onChange: (selectedRowKeys, selectedRows) => {
-        let newSelectedRowIds = [];
-        selectedRows?.forEach(item => {
-          newSelectedRowIds.push(item.id);
-        });
-        this.setState({ selectedRowIds: newSelectedRowIds });
-      },
-    };
+    const { currentXmmc, bidInfoModalVisible, closeBidInfoModal } = this.props;
+    const { getFieldDecorator } = this.props.form;
     const tableColumns = [
       {
         title: (
@@ -752,88 +980,7 @@ class BidInfoUpdate extends React.Component {
           }}
           title={null}
           visible={bidInfoModalVisible}
-          onOk={() => {
-            validateFields(err => {
-              if (fileList.length !== 0) {
-                //评标报告不为空
-                if (!err) {
-                  //表单部分必填不为空
-                  this.setState({
-                    isSpinning: true,
-                  });
-                  let arr = [...tableData];
-                  let newArr = [];
-                  arr.map(item => {
-                    let obj = {
-                      GYSMC: String(
-                        glgys?.filter(x => x.gysmc === item[`gysmc${item.id}`])[0]?.id || '',
-                      ),
-                      GYSFKZH: '-1',
-                      // GYSFKZH: String(
-                      //   skzhData?.filter(x => x.khmc === item[`gysskzh${item.id}`])[0]?.id || '',
-                      // ),
-                    };
-                    newArr.push(obj);
-                  });
-                  newArr.push({});
-                  const { zbgys, tbbzj, lybzj, zbgysskzh, pbbg } = bidInfo;
-                  const {
-                    columnName,
-                    documentData,
-                    fileLength,
-                    fileName,
-                    filePath,
-                    id,
-                    objectName,
-                  } = uploadFileParams;
-                  let submitdata = {
-                    columnName: 'PBBG',
-                    czlx: 'UPDATE',
-                    documentData,
-                    fileLength,
-                    glgys: 0,
-                    gysfkzh: -1,
-                    gysfkzh: Number(
-                      // skzhData?.filter(x => x.khmc === getFieldValue('zbgysskzh'))[0]?.id || '',
-                      this.state.skzhId,
-                    ),
-                    ijson: JSON.stringify(newArr),
-                    lybzj: Number(getFieldValue('lybzj')),
-                    objectName: 'TXMXX_ZBXX',
-                    pbbg: fileName,
-                    rowcount: tableData.length,
-                    tbbzj: Number(getFieldValue('tbbzj')),
-                    xmmc: Number(currentXmid),
-                    zbgys: Number(
-                      glgys?.filter(x => x.gysmc === getFieldValue('zbgys'))[0]?.id || '',
-                    ),
-                  };
-                  console.log('🚀submitdata', submitdata);
-                  UpdateZbxx({
-                    ...submitdata,
-                  })
-                    .then(res => {
-                      if (res?.code === 1) {
-                        // message.success('中标信息修改成功', 1);
-                        onSuccess();
-                        closeBidInfoModal();
-                        this.setState({ isSpinning: false, tableData: [] });
-                      }
-                    })
-                    .catch(e => {
-                      message.error('中标信息修改失败', 1);
-                      this.setState({
-                        isSpinning: false,
-                      });
-                    });
-                }
-              } else {
-                this.setState({
-                  pbbgTurnRed: true,
-                });
-              }
-            });
-          }}
+          onOk={this.onModalOk}
           onCancel={() => {
             this.setState({ tableData: [] });
             closeBidInfoModal();
@@ -1028,6 +1175,7 @@ class BidInfoUpdate extends React.Component {
                                     网点：{item.wdmc}
                                   </div>
                                 }
+                                placement="topLeft"
                               >
                                 <i
                                   className="iconfont icon-bank"
@@ -1094,64 +1242,15 @@ class BidInfoUpdate extends React.Component {
                   >
                     <Upload
                       action={'/api/projectManage/queryfileOnlyByupload'}
-                      onDownload={file => {
-                        if (!file.url) {
-                          let reader = new FileReader();
-                          reader.readAsDataURL(file.originFileObj);
-                          reader.onload = e => {
-                            var link = document.createElement('a');
-                            link.href = e.target.result;
-                            link.download = file.name;
-                            link.click();
-                            window.URL.revokeObjectURL(link.href);
-                          };
-                        } else {
-                          // window.location.href=file.url;
-                          var link = document.createElement('a');
-                          link.href = file.url;
-                          link.download = file.name;
-                          link.click();
-                          window.URL.revokeObjectURL(link.href);
-                        }
-                      }}
+                      onDownload={this.onUploadDownload}
                       showUploadList={{
                         showDownloadIcon: true,
                         showRemoveIcon: true,
-                        showPreviewIcon: true,
+                        showPreviewIcon: false,
                       }}
-                      onChange={info => {
-                        let fileList = [...info.fileList];
-                        fileList = fileList.slice(-1);
-                        this.setState({ fileList }, () => {
-                          // console.log('目前fileList', this.state.fileList);
-                        });
-                        if (fileList.length === 0) {
-                          this.setState({
-                            pbbgTurnRed: true,
-                          });
-                        } else {
-                          this.setState({
-                            pbbgTurnRed: false,
-                          });
-                        }
-                      }}
-                      beforeUpload={(file, fileList) => {
-                        // console.log("🚀 ~ file: index.js ~ line 674 ~ BidInfoUpdate ~ render ~ file, fileList", file, fileList)
-                        let reader = new FileReader(); //实例化文件读取对象
-                        reader.readAsDataURL(file); //将文件读取为 DataURL,也就是base64编码
-                        reader.onload = e => {
-                          //文件读取成功完成时触发
-                          let urlArr = e.target.result.split(',');
-                          // console.log('uploadFileParamsuploadFileParams', uploadFileParams);
-                          this.setState({
-                            uploadFileParams: {
-                              ...this.state.uploadFileParams,
-                              documentData: urlArr[1], //获得文件读取成功后的DataURL,也就是base64编码
-                              fileName: file.name,
-                            },
-                          });
-                        };
-                      }}
+                      multiple={true}
+                      onChange={this.onUploadChange}
+                      beforeUpload={this.onBeforeUpload}
                       accept={
                         '.doc,.docx,.xml,.pdf,.txt,application/msword,application/vnd.openxmlformats-officedocument.wordprocessingml.document'
                       }

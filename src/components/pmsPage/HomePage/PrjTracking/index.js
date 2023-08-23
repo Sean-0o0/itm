@@ -173,8 +173,8 @@ export default function PrjTracking(props) {
     },
   };
 
-  console.log('XMJDZT', XMJDZT);
-  console.log('trackingData', trackingData);
+  // console.log('XMJDZT', XMJDZT);
+  // console.log('trackingData', trackingData);
 
   return (
     <div className="prj-tracking-box-homePage">

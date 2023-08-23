@@ -508,7 +508,7 @@ export default function OverviewCard(props) {
           {percent !== '--' && (
             <>
               <span>/</span>
-              <span>{percent}%</span>
+              <span>{Number(percent)}%</span>
             </>
           )}
         </div>
@@ -677,7 +677,7 @@ export default function OverviewCard(props) {
             {['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(userRole) && (
               <div className="statistic-year">
                 统计年份：
-                <Dropdown overlay={menu} trigger="click">
+                <Dropdown overlay={menu} trigger={['click']}>
                   <span>
                     {statisticYearData.currentYear}
                     <i className="iconfont icon-fill-down" />

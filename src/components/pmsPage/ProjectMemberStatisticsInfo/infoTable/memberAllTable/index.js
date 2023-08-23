@@ -169,7 +169,7 @@ export default function MemberAllTable(props) {
           }
         },
         indicator: [
-          {name: '发起项目', max: max},
+          // {name: '发起项目', max: max},
           {name: '获奖项目', max: max},
           {name: '课题项目', max: max},
           {name: '专班项目', max: max},

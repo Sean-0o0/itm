@@ -123,9 +123,9 @@ export default {
             }
             // if (isFirst) {
             const {userid} = userBasicInfoTemp;
-            console.log("userid", userid)
+            // console.log("userid", userid)
             if (userid) {
-              console.log("userBasicInfoTemp", userBasicInfoTemp)
+              // console.log("userBasicInfoTemp", userBasicInfoTemp)
               localStorage.setItem('firstUserID', userid);
               localStorage.setItem('orgName', userBasicInfoTemp?.orgname);
             }

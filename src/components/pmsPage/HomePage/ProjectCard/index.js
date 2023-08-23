@@ -81,7 +81,7 @@ export default function ProjectCard(props) {
       // if (allPrj.length === 0) {
       setIsLoading(true);
       QueryProjectGeneralInfo({
-        queryType: 'SY',
+        queryType: 'CG',
         role: userRole,
         org: Number(LOGIN_USER_INFO.org),
         paging: -1,
@@ -599,7 +599,7 @@ export default function ProjectCard(props) {
         )}
         {getAfterItem(itemWidth)}
       </div>
-      {total > getColNum(itemWidth) * 3 &&
+      {total > getColNum(itemWidth) * 1 &&
         (isUnfold ? (
           <div className="more-item" onClick={() => handleUnfold(false)}>
             收起

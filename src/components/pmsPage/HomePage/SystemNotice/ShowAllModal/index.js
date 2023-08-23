@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Modal, DatePicker, Table, Spin } from 'antd';
+import { Modal, DatePicker, Table, Spin, message } from 'antd';
 import moment from 'moment';
 import { FetchQueryOwnerMessage } from '../../../../../services/pmsServices';
 
@@ -39,14 +39,14 @@ export default function ShowAllModal(props) {
   useEffect(() => {
     if (visible) {
       //开启时加载数据
-      getTableData(
-        Number(
+      getTableData({
+        date: Number(
           moment()
             .subtract(30, 'days')
             .format('YYYYMMDD'),
         ),
-        Number(moment().format('YYYYMMDD')),
-      );
+        endDate: Number(moment().format('YYYYMMDD')),
+      });
       setDate([moment().subtract(30, 'days'), moment()]);
     } else {
       //关闭时重置数据
@@ -95,7 +95,12 @@ export default function ShowAllModal(props) {
   //表格操作后更新数据
   const handleTableChange = pagination => {
     const { current = 1, pageSize = 10 } = pagination;
-    getTableData({ current, pageSize });
+    getTableData({
+      current,
+      pageSize,
+      date: Number(date[0]?.format('YYYYMMDD')),
+      endDate: Number(date[1]?.format('YYYYMMDD')),
+    });
   };
 
   //公告日期变化

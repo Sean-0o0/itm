@@ -1,48 +1,25 @@
-/**
- * 邮件发送弹窗页面
- */
-import {
-  Row,
-  Col,
-  Popconfirm,
-  Modal,
-  Form,
-  Input,
-  Table,
-  DatePicker,
-  message,
-  Select,
-  Spin,
-  Radio,
-  TreeSelect,
-  InputNumber,
-  Upload,
-  Button,
-  Icon, Divider, Tooltip,
-} from 'antd';
+import { Modal, Form, Input, message, Select, Spin, Icon, Divider, Tooltip } from 'antd';
 
-const {Option} = Select;
+const { Option } = Select;
 import React from 'react';
-import {connect} from 'dva';
-import searchModalIcon from "../../../../image/pms/searchModal/searchModalIcon@2x.png"
-import xmxxIcon from "../../../../image/pms/searchModal/xmxx@2x.png"
-import ysxxIcon from "../../../../image/pms/searchModal/ysxx@2x.png"
-import gysxxIcon from "../../../../image/pms/searchModal/gysxx@2x.png"
-import ryxxIcon from "../../../../image/pms/searchModal/ryxx@2x.png"
-import wdxxIcon from "../../../../image/pms/searchModal/wdxx@2x.png"
-import {InfoCircleOutlined} from "@ant-design/icons";
-import RichTextEditor from "../../../../components/pmsPage/SendMailModal/RichTextEditor";
-import {GlobalSearch, QueryUserRole} from "../../../../services/pmsServices";
-import {EncryptBase64} from "../../../../components/Common/Encrypt";
-import {Link} from "react-router-dom";
-import debounce from 'lodash.debounce';
-import axios from "axios";
-import config from "../../../../utils/config";
+import { connect } from 'dva';
+import searchModalIcon from '../../../../image/pms/searchModal/searchModalIcon@2x.png';
+import xmxxIcon from '../../../../image/pms/searchModal/xmxx@2x.png';
+import ysxxIcon from '../../../../image/pms/searchModal/ysxx@2x.png';
+import gysxxIcon from '../../../../image/pms/searchModal/gysxx@2x.png';
+import ryxxIcon from '../../../../image/pms/searchModal/ryxx@2x.png';
+import wdxxIcon from '../../../../image/pms/searchModal/wdxx@2x.png';
+import { GlobalSearch, QueryUserRole } from '../../../../services/pmsServices';
+import { EncryptBase64 } from '../../../../components/Common/Encrypt';
+import { Link } from 'react-router-dom';
+import axios from 'axios';
+import config from '../../../../utils/config';
+import { throttle, debounce } from 'lodash';
 
-const {api} = config;
-const {pmsServices: {queryFileStream,}} = api;
-
-let timer = null;
+const { api } = config;
+const {
+  pmsServices: { queryFileStream },
+} = api;
 
 class searchModal extends React.Component {
   state = {
@@ -74,64 +51,67 @@ class searchModal extends React.Component {
     isSearch: false,
   };
 
+  timer = null;
+
   componentDidMount() {
     // this.globalSearch();
   }
 
   componentWillUnmount() {
-    clearTimeout(timer);
+    clearTimeout(this.timer);
   }
 
   //防抖
   debounce = (fn, waits = 500) => {
-    if (timer) {
-      clearTimeout(timer);
-      timer = null;
+    if (this.timer) {
+      clearTimeout(this.timer);
+      this.timer = null;
     }
-    timer = setTimeout(() => {
+    this.timer = setTimeout(() => {
       fn();
     }, waits);
   };
 
-
-  globalSearch = (e) => {
-    console.log("String(e.target.value)", String(e.target.value))
-    console.log("String(e.target.value)", e)
-    console.log("String(e.target.value)", String(e.target.value) === "")
-    console.log("111111")
+  globalSearch = e => {
+    // console.log("String(e.target.value)", String(e.target.value))
+    // console.log("String(e.target.value)", e)
+    // console.log("String(e.target.value)", String(e.target.value) === "")
+    // console.log("111111")
     const key = String(e.target.value);
-    this.setState({
-      keyWord: String(e.target.value)
-    })
-    this.debounce(() => {
+    e.persist();
+    const fn = () => {
       const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+      this.setState({
+        keyWord: String(e.target.value),
+        isSpinning: true,
+      });
       QueryUserRole({
         userId: String(LOGIN_USER_INFO.id),
       })
         .then(res => {
           if (res?.code === 1) {
-            const {role = '', zyrole = ''} = res;
+            const { role = '', zyrole = '' } = res;
             GlobalSearch({
-              "content": key,
-              "current": 1,
-              "pageSize": 5,
-              "paging": 1,
-              "queryType": "ALL",
-              "sort": "",
-              "totalGys": -1,
-              "totalRy": -1,
-              "totalWd": -1,
-              "totalXm": -1,
-              "totalYs": -1,
-              js: zyrole === "暂无" ? role : zyrole,
+              content: key,
+              current: 1,
+              pageSize: 5,
+              paging: 1,
+              queryType: 'ALL',
+              sort: '',
+              totalGys: -1,
+              totalRy: -1,
+              totalWd: -1,
+              totalXm: -1,
+              totalYs: -1,
+              js: zyrole === '暂无' ? role : zyrole,
             })
               .then(res => {
                 if (res?.code === 1) {
                   this.setState({
                     isSearch: true,
-                  })
-                  if (key === "") {
-                    console.log("22222")
+                  });
+                  if (key === '') {
+                    // console.log('22222');
                     this.setState({
                       titleDataList: [],
                       //项目信息
@@ -154,7 +134,12 @@ class searchModal extends React.Component {
                       ryxxData: [],
                       totalrowsRy: 0,
                       ryxxDataMoreFlag: false,
-                    })
+                    });
+                    setTimeout(() => {
+                      this.setState({
+                        isSpinning: false,
+                      });
+                    }, 100);
                   } else {
                     const {
                       xmxx,
@@ -166,66 +151,76 @@ class searchModal extends React.Component {
                       totalrowsRy,
                       totalrowsWd,
                       totalrowsXm,
-                      totalrowsYs
+                      totalrowsYs,
                     } = res;
                     let titleDataList = [];
                     // let reg = new RegExp("(" + key + ")", "g");
                     let xmxxData = JSON.parse(xmxx);
                     xmxxData.map(item => {
-                      return item.XMMC = item.XMMC.split(key).flatMap(str => [<span
-                        style={{color: '#3361ff'}}>{key}</span>, str]).slice(1)
-                    })
+                      return (item.XMMC = item.XMMC.split(key)
+                        .flatMap(str => [<span style={{ color: '#3361ff' }}>{key}</span>, str])
+                        .slice(1));
+                    });
                     let ysxxData = JSON.parse(ysxx);
                     ysxxData.map(item => {
-                      return item.YSXM = item.YSXM.split(key).flatMap(str => [<span
-                        style={{color: '#3361ff'}}>{key}</span>, str]).slice(1)
-                    })
+                      return (item.YSXM = item.YSXM.split(key)
+                        .flatMap(str => [<span style={{ color: '#3361ff' }}>{key}</span>, str])
+                        .slice(1));
+                    });
                     let wdxxDataInit = JSON.parse(wdxx);
-                    let wdxxData = []
+                    let wdxxData = [];
                     wdxxDataInit.map(item => {
-                      const {DFJ = {}} = item;
-                      console.log("DFJ.items", JSON.parse(DFJ))
-                      JSON.parse(DFJ).items.length && JSON.parse(DFJ)?.items.map((i, index) => {
-                        console.log("i", i)
-                        const [id, title] = i;
-                        if (title.includes(key)) {
-                          let wdxxobj = {}
-                          wdxxobj.wdid = item.ID
-                          wdxxobj.xmmc = item.XMMC
-                          // wdxxobj.bb =  item.BB
-                          wdxxobj.id = id
-                          wdxxobj.titleinit = title;
-                          wdxxobj.title = title.split(key).flatMap(str => [<span
-                            style={{color: '#3361ff'}}>{key}</span>, str]).slice(1)
-                          wdxxData.push(wdxxobj);
-                        }
-                      })
-                    })
-                    console.log("wdxxDatawdxxData", wdxxData)
+                      const { DFJ = {} } = item;
+                      // console.log('DFJ.items', JSON.parse(DFJ));
+                      JSON.parse(DFJ).items.length &&
+                        JSON.parse(DFJ)?.items.map((i, index) => {
+                          // console.log('i', i);
+                          const [id, title] = i;
+                          if (title.includes(key)) {
+                            let wdxxobj = {};
+                            wdxxobj.wdid = item.ID;
+                            wdxxobj.xmmc = item.XMMC;
+                            // wdxxobj.bb =  item.BB
+                            wdxxobj.id = id;
+                            wdxxobj.titleinit = title;
+                            wdxxobj.title = title
+                              .split(key)
+                              .flatMap(str => [
+                                <span style={{ color: '#3361ff' }}>{key}</span>,
+                                str,
+                              ])
+                              .slice(1);
+                            wdxxData.push(wdxxobj);
+                          }
+                        });
+                    });
+                    // console.log('wdxxDatawdxxData', wdxxData);
                     let gysxxData = JSON.parse(gysxx);
                     gysxxData.map(item => {
-                      return item.GYSMC = item.GYSMC.split(key).flatMap(str => [<span
-                        style={{color: '#3361ff'}}>{key}</span>, str]).slice(1)
-                    })
+                      return (item.GYSMC = item.GYSMC.split(key)
+                        .flatMap(str => [<span style={{ color: '#3361ff' }}>{key}</span>, str])
+                        .slice(1));
+                    });
                     let ryxxData = JSON.parse(ryxx);
                     ryxxData.map(item => {
-                      return item.RYMC = item.RYMC.split(key).flatMap(str => [<span
-                        style={{color: '#3361ff'}}>{key}</span>, str]).slice(1)
-                    })
+                      return (item.RYMC = item.RYMC.split(key)
+                        .flatMap(str => [<span style={{ color: '#3361ff' }}>{key}</span>, str])
+                        .slice(1));
+                    });
                     if (xmxxData.length > 0) {
-                      titleDataList.push("项目")
+                      titleDataList.push('项目');
                     }
                     if (wdxxData.length > 0) {
-                      titleDataList.push("文档")
+                      titleDataList.push('文档');
                     }
                     if (ysxxData.length > 0) {
-                      titleDataList.push("预算")
+                      titleDataList.push('预算');
                     }
                     if (gysxxData.length > 0) {
-                      titleDataList.push("供应商")
+                      titleDataList.push('供应商');
                     }
                     if (ryxxData.length > 0) {
-                      titleDataList.push("人员")
+                      titleDataList.push('人员');
                     }
                     this.setState({
                       //标题
@@ -244,8 +239,13 @@ class searchModal extends React.Component {
                       totalrowsRy,
                       totalrowsWd,
                       totalrowsXm,
-                      totalrowsYs
-                    })
+                      totalrowsYs,
+                    });
+                    setTimeout(() => {
+                      this.setState({
+                        isSpinning: false,
+                      });
+                    }, 100);
                   }
                 }
               })
@@ -257,25 +257,29 @@ class searchModal extends React.Component {
         .catch(e => {
           message.error('用户信息查询失败', 1);
           console.error('QueryUserRole', e);
+          this.setState({
+            isSpinning: false,
+          });
         });
-    });
-  }
+    };
+    this.debounce(fn, 500);
+  };
 
   getMoreRes = (title, type) => {
-    const {keyWord} = this.state;
+    const { keyWord } = this.state;
     let params = {
-      "content": keyWord,
-      "paging": -1,
+      content: keyWord,
+      paging: -1,
       //ALL|全部；XM|项目；WD|文档；YS|预算；GYS|供应商；RY|人员；
-      "queryType": title,
-      "sort": "",
-      "totalGys": -1,
-      "totalRy": -1,
-      "totalWd": -1,
-      "totalXm": -1,
-      "totalYs": -1
-    }
-    if (type === "收起") {
+      queryType: title,
+      sort: '',
+      totalGys: -1,
+      totalRy: -1,
+      totalWd: -1,
+      totalXm: -1,
+      totalYs: -1,
+    };
+    if (type === '收起') {
       params.current = 1;
       params.pageSize = 5;
       params.paging = 1;
@@ -286,9 +290,9 @@ class searchModal extends React.Component {
     })
       .then(res => {
         if (res?.code === 1) {
-          const {role = '', zyrole = ''} = res;
-          params.js = zyrole === "暂无" ? role : zyrole;
-          GlobalSearch({...params})
+          const { role = '', zyrole = '' } = res;
+          params.js = zyrole === '暂无' ? role : zyrole;
+          GlobalSearch({ ...params })
             .then(res => {
               if (res?.code === 1) {
                 const {
@@ -301,109 +305,119 @@ class searchModal extends React.Component {
                   totalrowsRy,
                   totalrowsWd,
                   totalrowsXm,
-                  totalrowsYs
+                  totalrowsYs,
                 } = res;
-                if (title === "XM") {
+                if (title === 'XM') {
                   let xmxxData = JSON.parse(xmxx);
                   xmxxData.map(item => {
-                    return item.XMMC = item.XMMC.split(keyWord).flatMap(str => [<span
-                      style={{color: '#3361ff'}}>{keyWord}</span>, str]).slice(1)
-                  })
+                    return (item.XMMC = item.XMMC.split(keyWord)
+                      .flatMap(str => [<span style={{ color: '#3361ff' }}>{keyWord}</span>, str])
+                      .slice(1));
+                  });
                   this.setState({
                     //项目信息
                     xmxxData,
                     xmxxDataMoreFlag: true,
-                  })
+                  });
                 }
-                if (type === "收起") {
+                if (type === '收起') {
                   this.setState({
                     xmxxDataMoreFlag: false,
-                  })
+                  });
                 }
-                if (title === "YS") {
+                if (title === 'YS') {
                   let ysxxData = JSON.parse(ysxx);
                   ysxxData.map(item => {
-                    return item.YSXM = item.YSXM.split(keyWord).flatMap(str => [<span
-                      style={{color: '#3361ff'}}>{keyWord}</span>, str]).slice(1)
-                  })
+                    return (item.YSXM = item.YSXM.split(keyWord)
+                      .flatMap(str => [<span style={{ color: '#3361ff' }}>{keyWord}</span>, str])
+                      .slice(1));
+                  });
                   this.setState({
                     //项目信息
                     ysxxData,
                     ysxxDataMoreFlag: true,
-                  })
+                  });
                 }
-                if (type === "收起") {
+                if (type === '收起') {
                   this.setState({
                     ysxxDataMoreFlag: false,
-                  })
+                  });
                 }
-                if (title === "WD") {
+                if (title === 'WD') {
                   let wdxxDataInit = JSON.parse(wdxx);
-                  let wdxxData = []
+                  let wdxxData = [];
                   wdxxDataInit.map(item => {
-                    const {DFJ = {}} = item;
-                    console.log("DFJ.items", JSON.parse(DFJ))
-                    JSON.parse(DFJ).items.length && JSON.parse(DFJ)?.items.map((i, index) => {
-                      console.log("i", i)
-                      const [id, title] = i;
-                      if (title.includes(keyWord)) {
-                        let wdxxobj = {}
-                        wdxxobj.wdid = item.ID
-                        wdxxobj.xmmc = item.XMMC
-                        // wdxxobj.bb = item.BB
-                        wdxxobj.id = id
-                        wdxxobj.titleinit = title;
-                        wdxxobj.title = title.split(keyWord).flatMap(str => [<span
-                          style={{color: '#3361ff'}}>{keyWord}</span>, str]).slice(1)
-                        wdxxData.push(wdxxobj);
-                      }
-                    })
-                  })
-                  console.log("wdxxDatawdxxData", wdxxData)
+                    const { DFJ = {} } = item;
+                    // console.log('DFJ.items', JSON.parse(DFJ));
+                    JSON.parse(DFJ).items.length &&
+                      JSON.parse(DFJ)?.items.map((i, index) => {
+                        // console.log('i', i);
+                        const [id, title] = i;
+                        if (title.includes(keyWord)) {
+                          let wdxxobj = {};
+                          wdxxobj.wdid = item.ID;
+                          wdxxobj.xmmc = item.XMMC;
+                          // wdxxobj.bb = item.BB
+                          wdxxobj.id = id;
+                          wdxxobj.titleinit = title;
+                          wdxxobj.title = title
+                            .split(keyWord)
+                            .flatMap(str => [
+                              <span style={{ color: '#3361ff' }}>{keyWord}</span>,
+                              str,
+                            ])
+                            .slice(1);
+                          wdxxData.push(wdxxobj);
+                        }
+                      });
+                  });
+                  // console.log('wdxxDatawdxxData', wdxxData);
                   this.setState({
                     //项目信息
                     wdxxData,
                     wdxxDataMoreFlag: true,
-                  })
+                  });
                 }
-                if (type === "收起") {
+                if (type === '收起') {
                   this.setState({
                     wdxxDataMoreFlag: false,
-                  })
+                  });
                 }
-                if (title === "GYS") {
+                if (title === 'GYS') {
                   let gysxxData = JSON.parse(gysxx);
                   gysxxData.map(item => {
-                    return item.GYSMC = item.GYSMC.split(keyWord).flatMap(str => [<span
-                      style={{color: '#3361ff'}}>{keyWord}</span>, str]).slice(1)
-                  })
+                    return (item.GYSMC = item.GYSMC.split(keyWord)
+                      .flatMap(str => [<span style={{ color: '#3361ff' }}>{keyWord}</span>, str])
+                      .slice(1));
+                  });
                   this.setState({
                     //项目信息
                     gysxxData,
                     gysxxDataMoreFlag: true,
-                  })
+                  });
                 }
-                if (type === "收起") {
+                if (type === '收起') {
                   this.setState({
                     gysxxDataMoreFlag: false,
-                  })
+                  });
                 }
-                if (title === "RY") {
+                if (title === 'RY') {
                   let ryxxData = JSON.parse(ryxx);
                   ryxxData.map(item => {
-                    return item.RYMC = item.RYMC.split(keyWord).flatMap(str => [<span
-                      style={{color: '#3361ff'}}>{keyWord}</span>, str]).slice(1)
-                  })
+                    return (item.RYMC = item.RYMC.split(keyWord)
+                      .flatMap(str => [<span style={{ color: '#3361ff' }}>{keyWord}</span>, str])
+                      .slice(1));
+                  });
                   this.setState({
                     //项目信息
                     ryxxData,
                     ryxxDataMoreFlag: true,
-                  })
+                  });
                 }
-                if (type === "收起") {
+                if (type === '收起') {
                   this.setState({
                     ryxxDataMoreFlag: false,
-                  })
+                  });
                 }
               }
             })
@@ -411,19 +425,20 @@ class searchModal extends React.Component {
               message.error('全局搜索失败', 1);
             });
         }
-      }).catch(e => {
-      message.error('用户信息查询失败', 1);
-      console.error('QueryUserRole', e);
-    });
-  }
+      })
+      .catch(e => {
+        message.error('用户信息查询失败', 1);
+        console.error('QueryUserRole', e);
+      });
+  };
 
   closeModal = () => {
-    const {closeModal} = this.props;
+    const { closeModal } = this.props;
     closeModal();
     this.setState({
       isSearch: false,
-    })
-  }
+    });
+  };
 
   downlown = (id, title, wdid) => {
     axios({
@@ -435,18 +450,20 @@ class searchModal extends React.Component {
         columnName: 'DFJ',
         id: wdid,
         title: title,
-        extr: id
-      }
-    }).then(res => {
-      const href = URL.createObjectURL(res.data)
-      const a = document.createElement('a')
-      a.download = title
-      a.href = href
-      a.click()
-    }).catch(err => {
-      message.error(err)
+        extr: id,
+      },
     })
-  }
+      .then(res => {
+        const href = URL.createObjectURL(res.data);
+        const a = document.createElement('a');
+        a.download = title;
+        a.href = href;
+        a.click();
+      })
+      .catch(err => {
+        message.error(err);
+      });
+  };
 
   render() {
     const {
@@ -480,16 +497,16 @@ class searchModal extends React.Component {
       visible,
       dictionary: {},
       closeModal,
-      authorities: {TGYS_GYSRYQX, V_GYSRYQX}
+      authorities: { TGYS_GYSRYQX, V_GYSRYQX },
     } = this.props;
     // console.log("ccccc-cc-ccc-c-c",this.props.authorities)
-    const {getFieldDecorator,} = this.props.form;
+    const { getFieldDecorator } = this.props.form;
 
     return (
       <>
         <Modal
           wrapClassName="searchModal-modify"
-          style={{top: '120px'}}
+          style={{ top: '120px' }}
           width={'860px'}
           title={null}
           mask={false}
@@ -503,41 +520,56 @@ class searchModal extends React.Component {
           footer={null}
           visible={visible}
         >
-          <Spin spinning={isSpinning} style={{position: 'fixed'}} tip="加载中" size="large"
-                wrapperClassName="searchModal-box-spin">
+          <Spin
+            spinning={isSpinning}
+            style={{ maxHeight: '100%' }}
+            tip="加载中"
+            wrapperClassName="searchModal-box-spin"
+          >
             <div>
               <Input
+                autoFocus
                 className="searchModal-input"
                 placeholder="可查询项目、预算、文档、供应商、人员"
-                onFocus={() => this.setState({
-                  suffixVisable: true
-                })}
-                onBlur={() => this.setState({
-                  suffixVisable: false
-                })}
+                onFocus={() =>
+                  this.setState({
+                    suffixVisable: true,
+                  })
+                }
+                onBlur={() =>
+                  this.setState({
+                    suffixVisable: false,
+                  })
+                }
                 onChange={e => this.globalSearch(e)}
                 suffix={
-                  <i style={{display: suffixVisable ? '' : 'none', paddingRight: '24px'}}
-                     className="iconfont icon-search-name icon-personal"/>
+                  <i
+                    style={{ display: suffixVisable ? '' : 'none', paddingRight: '24px' }}
+                    className="iconfont icon-search-name icon-personal"
+                  />
                 }
               />
-              <Divider className="searchModal-divider"/>
-              {
-                xmxxData?.length > 0 || ysxxData?.length > 0 || wdxxData?.length > 0 || gysxxData?.length > 0 || ryxxData?.length > 0 ?
-                  <div className="searchRes-div">
-                    <div className="res-title">
-                      {
-                        titleDataList?.map((item, index) => {
-                          console.log("item", item)
-                          return <>
-                            <div className="title">{item}</div>
-                            <div className="content-box">
-                              {
-                                item === "项目" && xmxxData?.map(xmxx => {
-                                  return <div className="content">
-                                    <img className="icon" src={xmxxIcon}/>
+              <Divider className="searchModal-divider" />
+              {xmxxData?.length > 0 ||
+              ysxxData?.length > 0 ||
+              wdxxData?.length > 0 ||
+              gysxxData?.length > 0 ||
+              ryxxData?.length > 0 ? (
+                <div className="searchRes-div">
+                  <div className="res-title">
+                    {titleDataList?.map((item, index) => {
+                      // console.log('item', item);
+                      return (
+                        <>
+                          <div className="title">{item}</div>
+                          <div className="content-box">
+                            {item === '项目' &&
+                              xmxxData?.map(xmxx => {
+                                return (
+                                  <div className="content">
+                                    <img className="icon" src={xmxxIcon} />
                                     <Link
-                                      style={{fontWeight: 400, color: '#333333'}}
+                                      style={{ fontWeight: 400, color: '#333333' }}
                                       to={{
                                         pathname: `/pms/manage/ProjectDetail/${EncryptBase64(
                                           JSON.stringify({
@@ -550,92 +582,116 @@ class searchModal extends React.Component {
                                       }}
                                       className="table-link-strong"
                                     >
-                                      &nbsp;&nbsp;<span onClick={() => this.closeModal()}>{xmxx.XMMC}</span>
+                                      &nbsp;&nbsp;
+                                      <span onClick={() => this.closeModal()}>{xmxx.XMMC}</span>
                                     </Link>
                                   </div>
-                                })
-                              }
-                              {
-                                item === "项目" && totalrowsXm > 5 && (
-                                  xmxxDataMoreFlag ? <div className="more" onClick={() => this.getMoreRes("XM", "收起")}>
-                                    <a style={{fontWeight: 400, color: '#606266'}}>收起&nbsp;
-                                      <Icon
-                                        type="up"
-                                        className='label-selector-arrow'
-                                      />
-                                    </a>
-                                  </div> : <div className="more" onClick={() => this.getMoreRes("XM")}>
-                                    <a style={{fontWeight: 400, color: '#606266'}}>更多&nbsp;
-                                      <Icon
-                                        type="down"
-                                        className='label-selector-arrow'
-                                      />
-                                    </a>
-                                  </div>
-                                )
-                              }
-                              {
-                                item === "文档" && wdxxData?.map(wdxx => {
-                                  return <div className="content">
-                                    <img className="icon" src={wdxxIcon}/><a style={{fontWeight: 400, color: '#333333'}}
-                                                                             onClick={() => this.downlown(wdxx.id, wdxx.titleinit, wdxx.wdid)}>&nbsp;&nbsp;{wdxx.title}</a>
-                                    <span
-                                      style={{color: '#c0c4cc', fontSize: '14px'}}>&nbsp;&nbsp;(所属项目：{wdxx.xmmc})</span>
-                                  </div>
-                                })
-                              }
-                              {
-                                item === "文档" && totalrowsWd > 5 && (
-                                  wdxxDataMoreFlag ? <div className="more" onClick={() => this.getMoreRes("WD", "收起")}>
+                                );
+                              })}
+                            {item === '项目' &&
+                              totalrowsXm > 5 &&
+                              (xmxxDataMoreFlag ? (
+                                <div className="more" onClick={() => this.getMoreRes('XM', '收起')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
                                     收起&nbsp;
-                                    <Icon
-                                      type="up"
-                                      className='label-selector-arrow'
-                                    />
-                                  </div> : <div className="more" onClick={() => this.getMoreRes("WD")}>
+                                    <Icon type="up" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ) : (
+                                <div className="more" onClick={() => this.getMoreRes('XM')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
                                     更多&nbsp;
-                                    <Icon
-                                      type="down"
-                                      className='label-selector-arrow'
-                                    />
+                                    <Icon type="down" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ))}
+                            {item === '文档' &&
+                              wdxxData?.map(wdxx => {
+                                return (
+                                  <div className="content">
+                                    <img className="icon" src={wdxxIcon} />
+                                    <Tooltip title={wdxx.title} placement="topLeft">
+                                      <a
+                                        style={{
+                                          fontWeight: 400,
+                                          color: '#333',
+                                          overflow: 'hidden',
+                                          whiteSpace: 'nowrap',
+                                          textOverflow: 'ellipsis',
+                                        }}
+                                        onClick={() =>
+                                          this.downlown(wdxx.id, wdxx.titleinit, wdxx.wdid)
+                                        }
+                                      >
+                                        &nbsp;&nbsp;{wdxx.title}
+                                      </a>
+                                    </Tooltip>
+                                    <Tooltip title={wdxx.xmmc} placement="topLeft">
+                                      <span
+                                        style={{
+                                          color: '#c0c4cc',
+                                          fontSize: '14px',
+                                          overflow: 'hidden',
+                                          whiteSpace: 'nowrap',
+                                          textOverflow: 'ellipsis',
+                                          cursor: 'default',
+                                        }}
+                                      >
+                                        &nbsp;&nbsp;(所属项目：{wdxx.xmmc})
+                                      </span>
+                                    </Tooltip>
                                   </div>
-                                )
-                              }
-                              {
-                                item === "预算" && ysxxData?.map(ysxx => {
-                                  return <div className="content">
-                                    <img className="icon" src={ysxxIcon}/>&nbsp;&nbsp;{ysxx.YSXM}
+                                );
+                              })}
+                            {item === '文档' &&
+                              totalrowsWd > 5 &&
+                              (wdxxDataMoreFlag ? (
+                                <div className="more" onClick={() => this.getMoreRes('WD', '收起')}>
+                                  收起&nbsp;
+                                  <Icon type="up" className="label-selector-arrow" />
+                                </div>
+                              ) : (
+                                <div className="more" onClick={() => this.getMoreRes('WD')}>
+                                  更多&nbsp;
+                                  <Icon type="down" className="label-selector-arrow" />
+                                </div>
+                              ))}
+                            {item === '预算' &&
+                              ysxxData?.map(ysxx => {
+                                return (
+                                  <div className="content">
+                                    <img className="icon" src={ysxxIcon} />
+                                    &nbsp;&nbsp;{ysxx.YSXM}
                                   </div>
-                                })
-                              }
-                              {
-                                item === "预算" && totalrowsYs > 5 && (
-                                  ysxxDataMoreFlag ? <div className="more" onClick={() => this.getMoreRes("YS", "收起")}>
-                                    <a style={{fontWeight: 400, color: '#606266'}}>收起&nbsp;
-                                      <Icon
-                                        type="up"
-                                        className='label-selector-arrow'
-                                      />
-                                    </a>
-                                  </div> : <div className="more" onClick={() => this.getMoreRes("YS")}>
-                                    <a style={{fontWeight: 400, color: '#606266'}}>更多&nbsp;
-                                      <Icon
-                                        type="down"
-                                        className='label-selector-arrow'
-                                      />
-                                    </a>
-                                  </div>
-                                )
-                              }
-                              {
-                                item === "供应商" && gysxxData?.map(gysxx => {
-                                  return <div className="content">
-                                    <img className="icon" src={gysxxIcon}/>
+                                );
+                              })}
+                            {item === '预算' &&
+                              totalrowsYs > 5 &&
+                              (ysxxDataMoreFlag ? (
+                                <div className="more" onClick={() => this.getMoreRes('YS', '收起')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
+                                    收起&nbsp;
+                                    <Icon type="up" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ) : (
+                                <div className="more" onClick={() => this.getMoreRes('YS')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
+                                    更多&nbsp;
+                                    <Icon type="down" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ))}
+                            {item === '供应商' &&
+                              gysxxData?.map(gysxx => {
+                                return (
+                                  <div className="content">
+                                    <img className="icon" src={gysxxIcon} />
                                     <Link
-                                      style={{fontWeight: 400, color: '#333333'}}
+                                      style={{ fontWeight: 400, color: '#333333' }}
                                       to={{
                                         pathname: `/pms/manage/SupplierDetail/${EncryptBase64(
-                                          JSON.stringify({splId: gysxx.ID}),
+                                          JSON.stringify({ splId: gysxx.ID }),
                                         )}`,
                                         state: {
                                           // routes: [{ name: '供应商列表', pathname: location.pathname }],
@@ -643,35 +699,37 @@ class searchModal extends React.Component {
                                       }}
                                       className="table-link-strong"
                                     >
-                                      &nbsp;&nbsp;<span onClick={() => this.closeModal()}>{gysxx.GYSMC}</span>
+                                      &nbsp;&nbsp;
+                                      <span onClick={() => this.closeModal()}>{gysxx.GYSMC}</span>
                                     </Link>
                                   </div>
-                                })
-                              }
-                              {
-                                item === "供应商" && totalrowsGys > 5 && (
-                                  gysxxDataMoreFlag ?
-                                    <div className="more" onClick={() => this.getMoreRes("GYS", "收起")}>
-                                      <a style={{fontWeight: 400, color: '#606266'}}>收起&nbsp;
-                                        <Icon
-                                          type="up"
-                                          className='label-selector-arrow'
-                                        />
-                                      </a>
-                                    </div> : <div className="more" onClick={() => this.getMoreRes("GYS")}>
-                                      <a style={{fontWeight: 400, color: '#606266'}}>更多&nbsp;
-                                        <Icon
-                                          type="down"
-                                          className='label-selector-arrow'
-                                        />
-                                      </a>
-                                    </div>
-                                )
-                              }
-                              {
-                                item === "人员" && ryxxData?.map(ryxx => {
-                                  return <div className="content">
-                                    <img className="icon" src={ryxxIcon}/>
+                                );
+                              })}
+                            {item === '供应商' &&
+                              totalrowsGys > 5 &&
+                              (gysxxDataMoreFlag ? (
+                                <div
+                                  className="more"
+                                  onClick={() => this.getMoreRes('GYS', '收起')}
+                                >
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
+                                    收起&nbsp;
+                                    <Icon type="up" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ) : (
+                                <div className="more" onClick={() => this.getMoreRes('GYS')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
+                                    更多&nbsp;
+                                    <Icon type="down" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ))}
+                            {item === '人员' &&
+                              ryxxData?.map(ryxx => {
+                                return (
+                                  <div className="content">
+                                    <img className="icon" src={ryxxIcon} />
                                     <Link
                                       to={{
                                         pathname:
@@ -686,45 +744,51 @@ class searchModal extends React.Component {
                                         },
                                       }}
                                     >
-                                      &nbsp;&nbsp;<span onClick={() => this.closeModal()}>{ryxx.RYMC}</span>
+                                      &nbsp;&nbsp;
+                                      <span onClick={() => this.closeModal()}>{ryxx.RYMC}</span>
                                     </Link>
                                   </div>
-                                })
-                              }
-                              {
-                                item === "人员" && totalrowsRy > 5 && (
-                                  ryxxDataMoreFlag ? <div className="more" onClick={() => this.getMoreRes("RY", "收起")}>
-                                    <a style={{fontWeight: 400, color: '#606266'}}>收起&nbsp;
-                                      <Icon
-                                        type="up"
-                                        className='label-selector-arrow'
-                                      />
-                                    </a>
-                                  </div> : <div className="more" onClick={() => this.getMoreRes("RY")}>
-                                    <a style={{fontWeight: 400, color: '#606266'}}>更多&nbsp;
-                                      <Icon
-                                        type="down"
-                                        className='label-selector-arrow'
-                                      />
-                                    </a>
-                                  </div>
-                                )
-                              }
-                            </div>
-                            <Divider style={{display: index === titleDataList.length - 1 ? "none" : ''}}
-                                     className='content-divider'/>
-                          </>
-                        })
-                      }
-                    </div>
+                                );
+                              })}
+                            {item === '人员' &&
+                              totalrowsRy > 5 &&
+                              (ryxxDataMoreFlag ? (
+                                <div className="more" onClick={() => this.getMoreRes('RY', '收起')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
+                                    收起&nbsp;
+                                    <Icon type="up" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ) : (
+                                <div className="more" onClick={() => this.getMoreRes('RY')}>
+                                  <a style={{ fontWeight: 400, color: '#606266' }}>
+                                    更多&nbsp;
+                                    <Icon type="down" className="label-selector-arrow" />
+                                  </a>
+                                </div>
+                              ))}
+                          </div>
+                          <Divider
+                            style={{ display: index === titleDataList.length - 1 ? 'none' : '' }}
+                            className="content-divider"
+                          />
+                        </>
+                      );
+                    })}
                   </div>
-                  : <div className="searchModal-div">
-                    <div><img className="searchModal-img" src={searchModalIcon} alt=''/></div>
-                    <div style={{paddingTop: '12px'}}><span
-                      className="searchModal-span">{isSearch ? "暂无数据" : "随时随地，搜索项目相关信息"}</span></div>
+                </div>
+              ) : (
+                <div className="searchModal-div">
+                  <div>
+                    <img className="searchModal-img" src={searchModalIcon} alt="" />
                   </div>
-
-              }
+                  <div style={{ paddingTop: '12px' }}>
+                    <span className="searchModal-span">
+                      {isSearch ? '暂无数据' : '随时随地，搜索项目相关信息'}
+                    </span>
+                  </div>
+                </div>
+              )}
             </div>
           </Spin>
         </Modal>
@@ -733,7 +797,7 @@ class searchModal extends React.Component {
   }
 }
 
-export default connect(({global}) => ({
+export default connect(({ global }) => ({
   dictionary: global.dictionary,
   authorities: global.authorities,
 }))(Form.create()(searchModal));

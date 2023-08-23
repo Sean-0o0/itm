@@ -21,7 +21,7 @@ export default function SystemNotice(props) {
       }
       setNoticeData([...data]);
     }
-    console.log(noticeData);
+    // console.log(noticeData);
     return () => {};
   }, [JSON.stringify(noticeData)]);
 
