@@ -298,7 +298,7 @@ class SubItemInfo extends Component {
         XMJL: ['', undefined, null,' '].includes(item['SUBXMJL' + item.ID]) ? '-1' : item['SUBXMJL' + item.ID],
         XMLX: ['', undefined, null,' '].includes(item['SUBXMLX' + item.ID]) ? '-1' : item['SUBXMLX' + item.ID],
         // SUBGLRJ: item['SUBGLRJ' + item.ID],
-        YYBM: String(item['SUBYYBM' + item.ID].length === 0? '无' : item['SUBYYBM' + item.ID]),
+        YYBM: String(item['SUBYYBM' + item.ID]?.length === 0? '无' : item['SUBYYBM' + item.ID]),
         CGFS: String(['', undefined, null,' '].includes(item['SUBCGFS' + item.ID]) ? '-1' : item['SUBCGFS' + item.ID]),
         GLYS: ['', undefined, null,' '].includes(item['SUBGLYS' + item.ID]) ? '-99' : item['SUBGLYS' + item.ID],
         GLYSLX: ['', undefined, null,' '].includes(item['GLYSLX' + item.ID]) ? '无' : item['GLYSLX' + item.ID],
