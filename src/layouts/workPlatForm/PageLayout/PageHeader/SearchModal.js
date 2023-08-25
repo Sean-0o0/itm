@@ -103,7 +103,7 @@ class searchModal extends React.Component {
               totalWd: -1,
               totalXm: -1,
               totalYs: -1,
-              js: zyrole === '暂无' ? role : zyrole,
+              js: zyrole === '暂无' || role.includes('领导') ? role : zyrole,
             })
               .then(res => {
                 if (res?.code === 1) {
@@ -291,7 +291,7 @@ class searchModal extends React.Component {
       .then(res => {
         if (res?.code === 1) {
           const { role = '', zyrole = '' } = res;
-          params.js = zyrole === '暂无' ? role : zyrole;
+          params.js = zyrole === '暂无' || role.includes('领导') ? role : zyrole;
           GlobalSearch({ ...params })
             .then(res => {
               if (res?.code === 1) {
