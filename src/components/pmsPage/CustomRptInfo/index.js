@@ -4,6 +4,7 @@ import moment from 'moment';
 import {
   QueryCustomQueryCriteria,
   QueryCustomReport,
+  QueryUserRole,
   SaveCustomReportSetting,
 } from '../../../services/pmsServices/index';
 import TopConsole from './TopConsole';
@@ -166,7 +167,7 @@ export default function CustomRptInfo(props) {
                 },
               };
               setData(finalObj);
-              console.log("🚀 ~ file: index.js:169 ~ .then ~ finalObj:", finalObj)
+              console.log('🚀 ~ file: index.js:169 ~ .then ~ finalObj:', finalObj);
               getSQL({}, finalObj);
             })
             .catch(e => {
@@ -347,45 +348,49 @@ export default function CustomRptInfo(props) {
     })
       .then(res => {
         if (res?.success) {
-          const arrayList = [];
-          let exportData = JSON.parse(res.result);
-          console.log('exportData', exportData);
-          console.log('data.columns', data.columns);
-          //3条数据
-          // exportData.map(item => {
-          //   let array = {};
-          //   for (let key in item) {
-          //     data.columns.map((col, index) => {
-          //       if (Object.keys(item).includes(col.key)) {
-          //         if (col.key === key) {
-          //           array[col.title] = item[key];
-          //         }
-          //       } else {
-          //         array[col.title] = '';
-          //       }
-          //     })
-          //   }
-          //   arrayList.push(array);
-          // })
-          let dataIndexArr = data.columns.map(item => item.dataIndex);
-          let finalArr = [];
-          exportData.forEach(obj => {
-            let temp = {};
-            dataIndexArr.forEach(dataIndex => {
-              let title = data.columns.find(item => item.dataIndex === dataIndex)?.title;
-              temp[title] = obj[dataIndex];
-              delete obj[dataIndex];
+          const LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+          LOGIN_USERID &&
+            QueryUserRole({
+              userId: LOGIN_USERID,
+            }).then(res2 => {
+              if (res2.success) {
+                const isLeader = res2.role !== '普通人员';
+                const isBudgetMnger = res2.zyrole === '预算管理人'; //是否预算管理人
+                let exportData = JSON.parse(res.result);
+                console.log('exportData', exportData);
+                console.log('data.columns', data.columns);
+                let dataIndexArr = data.columns.map(item => item.dataIndex);
+                let finalArr = [];
+                exportData.forEach(obj => {
+                  let temp = {};
+                  dataIndexArr.forEach(dataIndex => {
+                    let title = data.columns.find(item => item.dataIndex === dataIndex)?.title;
+                    if (
+                      //金额类型
+                      ['XMYSJE', 'YSXMJE', 'HTJE', 'LVBZJ', 'TBBZJ', 'YFKFY', 'WFKFY'].includes(
+                        dataIndex,
+                      )
+                    ) {
+                      temp[title] =
+                        isLeader || LOGIN_USERID === Number(obj.XMJLID) || isBudgetMnger
+                          ? obj[dataIndex]
+                          : '***';
+                    } else {
+                      temp[title] = obj[dataIndex];
+                    }
+                    delete obj[dataIndex];
+                  });
+                  finalArr.push(temp);
+                });
+                console.log('🚀 ~ file: index.js:321 ~ handleExport ~ finalArr:', finalArr);
+                //导出的顺序
+                let titleOrder = [];
+                data.columns.forEach(e => {
+                  titleOrder.push(e.title);
+                });
+                exportExcelFile(finalArr, 'Sheet1', bbmc + '.xlsx');
+              }
             });
-            finalArr.push(temp);
-          });
-          console.log('🚀 ~ file: index.js:321 ~ handleExport ~ finalArr:', finalArr);
-          console.log('要导出的没顺序的数据', arrayList);
-          //导出的顺序
-          let titleOrder = [];
-          data.columns.forEach(e => {
-            titleOrder.push(e.title);
-          });
-          exportExcelFile(finalArr, 'Sheet1', bbmc + '.xlsx');
         }
       })
       .catch(e => {

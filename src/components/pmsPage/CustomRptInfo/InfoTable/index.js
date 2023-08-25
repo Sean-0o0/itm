@@ -29,6 +29,7 @@ export default function InfoTable(props) {
           .then(res => {
             if (res.success) {
               const isLeader = res.role !== '普通人员';
+              const isBudgetMnger = res.zyrole === '预算管理人'; //是否预算管理人
               let arr = [];
               arr = columns.map(x => {
                 switch (x.dataIndex) {
@@ -51,7 +52,7 @@ export default function InfoTable(props) {
                       sortDirections: ['descend', 'ascend'],
                       render: (txt, row) => (
                         <span style={{ marginRight: 30 }}>
-                          {isLeader || LOGIN_USERID === Number(row.XMJLID)
+                          {isLeader || LOGIN_USERID === Number(row.XMJLID) || isBudgetMnger
                             ? getAmountFormat(txt)
                             : '***'}
                         </span>
@@ -69,7 +70,9 @@ export default function InfoTable(props) {
                       align: 'left',
                       ellipsis: true,
                       render: txt =>
-                        ['', null, undefined, ' '].includes(txt) ? '' : moment(txt).format('YYYY-MM-DD'),
+                        ['', null, undefined, ' '].includes(txt)
+                          ? ''
+                          : moment(txt).format('YYYY-MM-DD'),
                     };
                   //跳转类型
                   case 'XMMC':
