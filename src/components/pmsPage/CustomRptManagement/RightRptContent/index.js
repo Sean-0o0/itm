@@ -96,7 +96,7 @@ export default function RightRptContent(props) {
   //分享人员下拉数据
   const getShareRyData = () => {
     FetchQueryOrganizationInfo({
-      type: 'XXJS',
+      type: 'FXRY',
     })
       .then(res => {
         if (res?.success) {

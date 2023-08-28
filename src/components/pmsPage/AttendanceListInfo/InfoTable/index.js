@@ -91,7 +91,7 @@ export default function InfoTable(props) {
       ellipsis: true,
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{moment(text).format('YYYY-MM-DD hh:mm:ss') || '-'}</span>,
+      render: text => <span style={{marginRight: 20}}>{text && moment(text).format('YYYY-MM-DD HH:mm:ss') || '-'}</span>,
     },
     {
       title: '工时',
