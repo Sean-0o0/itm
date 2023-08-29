@@ -115,17 +115,17 @@ export default function InfoTable(props) {
       // sortDirections: ['descend', 'ascend'],
       render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
     },
-    {
-      title: '是否有效',
-      dataIndex: 'SFYX',
-      width: '6%',
-      key: 'SFYX',
-      ellipsis: true,
-      // align: 'right',
-      // sorter: true,
-      // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
-    },
+    // {
+    //   title: '是否有效',
+    //   dataIndex: 'SFYX',
+    //   width: '6%',
+    //   key: 'SFYX',
+    //   ellipsis: true,
+    //   // align: 'right',
+    //   // sorter: true,
+    //   // sortDirections: ['descend', 'ascend'],
+    //   render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
+    // },
   ];
 
   return (
