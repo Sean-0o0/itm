@@ -1,12 +1,12 @@
-import React, {useEffect, useState} from 'react';
-import {Button, Table, Popover, message, Tooltip} from 'antd';
+import React, { useEffect, useState } from 'react';
+import { Button, Table, Popover, message, Tooltip } from 'antd';
 // import InfoDetail from '../InfoDetail';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel.js';
-import {EncryptBase64} from '../../../Common/Encrypt';
-import {Link} from 'react-router-dom';
-import {useLocation} from 'react-router';
+import { EncryptBase64 } from '../../../Common/Encrypt';
+import { Link } from 'react-router-dom';
+import { useLocation } from 'react-router';
 import InfoOprtModal from '../../SupplierDetail/TopConsole/InfoOprtModal/index.js';
-import moment from "moment";
+import moment from 'moment';
 
 export default function InfoTable(props) {
   const {
@@ -23,9 +23,9 @@ export default function InfoTable(props) {
   const location = useLocation();
 
   //表格操作后更新数据
-  const handleTableChange = (pagination) => {
+  const handleTableChange = pagination => {
     // console.log('handleTableChange', pagination, filters, sorter, extra);
-    const {current = 1, pageSize = 20} = pagination;
+    const { current = 1, pageSize = 20 } = pagination;
     // getTableData({ current, pageSize });
     handleSearch(current, pageSize);
   };
@@ -41,7 +41,11 @@ export default function InfoTable(props) {
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text}</span>,
+      render: text => (
+        <Tooltip title={text} placement="topLeft">
+          <span style={{ marginRight: 20, cursor: 'default' }}>{text}</span>
+        </Tooltip>
+      ),
     },
     {
       title: '人员名称',
@@ -49,26 +53,6 @@ export default function InfoTable(props) {
       width: '8%',
       key: 'RYMC',
       ellipsis: true,
-      render: (text, row, index) => {
-        return (
-          <Tooltip title={text} placement="topLeft">
-            {/*<Link*/}
-            {/*  style={{color: '#3361ff'}}*/}
-            {/*  to={{*/}
-            {/*    pathname: `/pms/manage/MemberDetail/${EncryptBase64(*/}
-            {/*      JSON.stringify({ryid: row.RYID}),*/}
-            {/*    )}`,*/}
-            {/*    state: {*/}
-            {/*      routes: [{name: '考勤列表', pathname: location.pathname}],*/}
-            {/*    },*/}
-            {/*  }}*/}
-            {/*  className="table-link-strong"*/}
-            {/*>*/}
-            {text}
-            {/*</Link>*/}
-          </Tooltip>
-        );
-      },
     },
     {
       title: '上班时间',
@@ -77,9 +61,9 @@ export default function InfoTable(props) {
       key: 'SBSJ',
       ellipsis: true,
       render: text => (
-        <Tooltip title={text} placement="topLeft">
-          <span style={{cursor: 'default'}}>{text && moment(text).format('YYYY-MM-DD HH:mm:ss') || '-'}</span>
-        </Tooltip>
+        <span style={{ cursor: 'default' }}>
+          {(text && moment(text).format('YYYY-MM-DD HH:mm:ss')) || '-'}
+        </span>
       ),
     },
     {
@@ -91,7 +75,11 @@ export default function InfoTable(props) {
       ellipsis: true,
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text && moment(text).format('YYYY-MM-DD HH:mm:ss') || '-'}</span>,
+      render: text => (
+        <span style={{ marginRight: 20 }}>
+          {(text && moment(text).format('YYYY-MM-DD HH:mm:ss')) || '-'}
+        </span>
+      ),
     },
     {
       title: '工时',
@@ -102,7 +90,7 @@ export default function InfoTable(props) {
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
+      render: text => <span style={{ marginRight: 20 }}>{text || '-'}</span>,
     },
     {
       title: '状态',
@@ -113,7 +101,7 @@ export default function InfoTable(props) {
       // align: 'right',
       // sorter: true,
       // sortDirections: ['descend', 'ascend'],
-      render: text => <span style={{marginRight: 20}}>{text || '-'}</span>,
+      render: text => <span style={{ marginRight: 20 }}>{text || '-'}</span>,
     },
     // {
     //   title: '是否有效',
