@@ -78,7 +78,7 @@ export default function InfoTable(props) {
       ellipsis: true,
       render: text => (
         <Tooltip title={text} placement="topLeft">
-          <span style={{cursor: 'default'}}>{moment(text).format('YYYY-MM-DD hh:mm:ss') || '-'}</span>
+          <span style={{cursor: 'default'}}>{text && moment(text).format('YYYY-MM-DD HH:mm:ss') || '-'}</span>
         </Tooltip>
       ),
     },
