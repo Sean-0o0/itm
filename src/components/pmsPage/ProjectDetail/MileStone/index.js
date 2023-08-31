@@ -1,17 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message, Popover, Steps, Tooltip } from 'antd';
 import overallRateImg from '../../../../assets/projectDetail/overall-rate.png';
-import {
-  FetchQueryLiftcycleMilestone,
-  FetchQueryLifecycleStuff,
-  CreateOperateHyperLink,
-} from '../../../../services/pmsServices/index';
-import lastBtn from '../../../../assets/projectDetail/last-milestone.png';
-import nextBtn from '../../../../assets/projectDetail/next-milestone.png';
+import { CreateOperateHyperLink } from '../../../../services/pmsServices/index';
 import moment from 'moment';
 import ItemBtn from './ItemBtn';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import Tool from '../../../../utils/api/tool';
 
 const { Step } = Steps;
 
@@ -41,7 +34,7 @@ export default function MileStone(props) {
     setEndIndex,
   } = stateProps;
   const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
-  // console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
+  console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
@@ -68,7 +61,7 @@ export default function MileStone(props) {
     // 页面变化时获取浏览器窗口的大小
     window.addEventListener('resize', resizeUpdate);
     window.dispatchEvent(new Event('resize', { bubbles: true, composed: true })); //刷新时能触发resize
-    console.log('里程碑更新了', xmid, prjBasic);
+    // console.log('里程碑更新了', xmid, prjBasic);
     return () => {
       // 组件销毁时移除监听事件
       window.removeEventListener('resize', resizeUpdate);
@@ -81,6 +74,10 @@ export default function MileStone(props) {
   useEffect(() => {
     // console.log('里程碑更新了', xmid, prjBasic);
     if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
+      //项目经理初始展开、迭代项目项目里程碑不论谁都初始收起
+      // setIsUnfold(
+      //   prjBasic.XMJLID === String(LOGIN_USER_INFO.id) && !prjBasic.XMBQ?.includes('迭代项目'),
+      // );
       setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
     }
     return () => {};
@@ -228,15 +225,16 @@ export default function MileStone(props) {
                 auth={{
                   isLeader,
                   isMember: (() => {
-                    const arr = [];
-                    member.forEach(x => {
-                      arr.push(x.RYID);
-                    });
-                    return arr
-                      .filter(x => x.RYID !== String(prjBasic.XMJLID))
-                      .includes(String(LOGIN_USER_INFO.id));
+                    const arr = member.reduce((acc, cur) => {
+                      if (cur.RYZT === '1' && cur.RYID !== String(prjBasic.XMJLID))
+                        return [...acc, cur];
+                      return acc;
+                    }, []);
+                    // console.log("🚀 ~ file: index.js:229 ~ arr ~ arr:", arr)
+                    return arr.includes(String(LOGIN_USER_INFO.id));
                   })(),
                   isMnger: String(prjBasic.XMJLID) === String(LOGIN_USER_INFO.id),
+                  isFXMJL: (prjBasic.FXMJL?.split(',') || []).includes(String(LOGIN_USER_INFO.id)),
                 }}
               />
             </div>

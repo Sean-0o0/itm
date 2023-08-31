@@ -114,7 +114,7 @@ export default function PrjMember(props) {
   if (getMemberData().length === 0) return null;
   return (
     <div className="prj-member-box">
-      <div className="top-title">项目人员</div>
+      <div className="top-title">项目人员（{getMemberData().length}）</div>
       <div className="bottom-box">
         {getMemberData().map(x =>
           getMemberItem({

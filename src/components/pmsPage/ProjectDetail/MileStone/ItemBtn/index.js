@@ -577,21 +577,27 @@ class ItemBtn extends React.Component {
       }
       if (item.sxmc.includes('信委会议案流程')) {
         const { xwhid } = this.props;
-        let params = this.getParams('LC_XWHYALC', 'TrackWork', [
-          {
-            name: 'ID',
-            value: Number(xwhid),
-          },
-        ]);
+        const { isLeader = false, isMnger = false } = this.props.auth;
+        if (isLeader) {
+          let params = this.getParams('LC_XWHYALC', 'TrackWork', [
+            {
+              name: 'ID',
+              value: Number(xwhid),
+            },
+          ]);
+          this.setState({
+            xwhyaModalVisible: true,
+            lbModalUrl: `/livebos/ShowWorkflow?wfid=${xwhid}&stepId=3&PopupWin=true&HideCancelBtn=true`,
+          });
+          this.getLink(params, 'lbModalUrl'); //
+        }
         this.setState({
           xwhyaModalVisible: true,
           lbModalUrl: `/livebos/ShowWorkflow?wfid=${xwhid}&stepId=3&PopupWin=true&HideCancelBtn=true`,
         });
-        // this.getLink(params, 'lbModalUrl'); //
         return;
       }
       if (item.sxmc === '需求发起') {
-        // console.log(item.xmid);
         window.location.href = `/#/pms/manage/DemandInfo/${EncryptBase64(
           JSON.stringify({
             xmid: item.xmid,
@@ -1053,7 +1059,12 @@ class ItemBtn extends React.Component {
   };
 
   //按钮事件配置
-  getItemBtn = (name, done, item, { isLeader = false, isMember = false, isMnger = false }) => {
+  getItemBtn = (
+    name,
+    done,
+    item,
+    { isLeader = false, isMember = false, isMnger = false, isFXMJL = false },
+  ) => {
     //！！！ 后边新增事项配置时，注意配置完整
     if (isLeader && !isMnger) {
       if (!done) return '';
@@ -1090,6 +1101,12 @@ class ItemBtn extends React.Component {
         default:
           console.error(`🚀 ~ 该事项名称【${name}】未配置`);
           return '';
+      }
+    } else if (isFXMJL && !isMnger && !isLeader) {
+      if (['需求发起', '付款流程'].includes(name)) {
+        return this.getLcfqck(done, item);
+      } else {
+        return '';
       }
     } else if (isMember && !isMnger) {
       // if (!done && (['项目立项', '项目招采'].includes(item.lcb) || item.sxmc === '需求发起'))

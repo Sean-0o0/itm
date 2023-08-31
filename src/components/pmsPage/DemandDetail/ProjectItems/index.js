@@ -6,7 +6,11 @@ import PersonnelArrangementModal from './PersonnelArrangementModal';
 import InterviewScoreModal from './InterviewScoreModal';
 import DemandInitiated from '../../HardwareItems/DemandInitiated';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
-import { CreateOperateHyperLink, FinishOutsourceWork, QueryOutsourceMemberList } from '../../../../services/pmsServices';
+import {
+  CreateOperateHyperLink,
+  FinishOutsourceWork,
+  QueryOutsourceMemberList,
+} from '../../../../services/pmsServices';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router-dom';
 import SendMailModal from '../../SendMailModal';
@@ -51,7 +55,8 @@ export default function ProjectItems(props) {
     newAccount: false,
     payment: false,
     staffEnter: false,
-    generateAccount: false
+    generateAccount: false,
+    personnelExchange: false,
   }); //弹窗显隐
   const [lbModal, setLbModal] = useState({
     url: '#',
@@ -76,17 +81,19 @@ export default function ProjectItems(props) {
   const queryOutsourceMemberList = () => {
     QueryOutsourceMemberList({
       cxlx: 'ZHXZ',
-      xmmc: Number(xqid)
-    }).then(res => {
-      const { code, note, result } = res;
-      if(code > 0) {
-        setAddAccountList(JSON.parse(result));
-      } else {
-        message.error(note);
-      }
-    }).catch(err => {
-      message.error(err);
+      xmmc: Number(xqid),
     })
+      .then(res => {
+        const { code, note, result } = res;
+        if (code > 0) {
+          setAddAccountList(JSON.parse(result));
+        } else {
+          message.error(note);
+        }
+      })
+      .catch(err => {
+        message.error(err);
+      });
   };
 
   //执行
@@ -117,12 +124,12 @@ export default function ProjectItems(props) {
       getLink('V_RYXX', 'V_RYXX_UPLOADBMXY', [
         {
           name: 'SWZXID',
-          value: SWZXID
+          value: SWZXID,
         },
         {
           name: 'SSWBXM2',
-          value: XMXX.XMID
-        }
+          value: XMXX.XMID,
+        },
       ]);
       modalName = 'staffEnter';
       setLbModal(p => {
@@ -131,7 +138,6 @@ export default function ProjectItems(props) {
           title: SWMC,
         };
       });
-
     } else if (SWMC === '简历上传') {
       getLink('View_JLSC1', 'View_JLSC1_M', [
         {
@@ -160,6 +166,29 @@ export default function ProjectItems(props) {
       });
     } else if (SWMC === '综合评测打分') {
       modalName = 'interviewScore';
+    } else if (SWMC === '人员调换') {
+      modalName = 'personnelExchange';
+      getLink('V_RYXX', 'V_RYXX_RYDH', [
+        //V_RYXX，方法V_RYXX_RYDH，入参SWZX：事务执行id，XMMC：项目id，WBXQ2：需求id
+        {
+          name: 'WBXQ2',
+          value: xqid,
+        },
+        {
+          name: 'SWZX',
+          value: SWZXID,
+        },
+        {
+          name: 'XMMC',
+          value: XMXX.XMID,
+        },
+      ]);
+      setLbModal(p => {
+        return {
+          ...p,
+          title: SWMC,
+        };
+      });
     } else if (SWMC === '提交录用申请') {
       modalName = 'employmentApplication';
       getLink('V_LYXX', 'V_LYXX_M', [
@@ -222,12 +251,12 @@ export default function ProjectItems(props) {
     getLink('V_RYXX', 'V_RYXX_ADD', [
       {
         name: 'SWZXID',
-        value: SWZXID
+        value: SWZXID,
       },
       {
         name: 'RYMC2',
-        value: RYID
-      }
+        value: RYID,
+      },
     ]);
     let modalName = 'generateAccount';
     setLbModal(p => {
@@ -259,13 +288,13 @@ export default function ProjectItems(props) {
       return newArr.includes(LOGIN_USER_ID);
     };
     //1 已执行， 2 未执行
-    if(isAuth && SWMC === '简历下载' && !isDock) {
+    if (isAuth && SWMC === '简历下载' && !isDock) {
       return (
         <div className="opr-btn" onClick={() => handleZx(item)}>
           执行
         </div>
       );
-    } else if(SWMC === '人员入场' && (isDock || (isAuth && !isDock))) {
+    } else if (SWMC === '人员入场' && (isDock || (isAuth && !isDock))) {
       return (
         <div className="opr-btn" onClick={() => handleZx(item)}>
           执行
@@ -292,83 +321,82 @@ export default function ProjectItems(props) {
       )
         return (
           <>
-            {
-              SWMC === '账号新增' ? (
-                <Popover
-                  onVisibleChange={(visible) => {
-                    if(visible) {
-                      queryOutsourceMemberList();
-                    }
-                  }}
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  placement="bottom"
-                  title={null}
-                  content={tablePopover(addAccountList, [
-                    {
-                      title: '人员名称',
-                      dataIndex: 'RYMC',
-                      width: 100,
-                      key: 'RYMC',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      )
-                    },
-                    {
-                      title: '岗位',
-                      dataIndex: 'RYGW',
-                      width: 100,
-                      key: 'RYGW',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      )
-                    },
-                    {
-                      title: '账号',
-                      dataIndex: 'WBRYZH',
-                      width: 100,
-                      key: 'WBRYZH',
-                      ellipsis: true,
-                      render: txt => (
-                        <Tooltip title={txt} placement="topLeft">
-                          <span style={{ cursor: 'default' }}>{txt}</span>
-                        </Tooltip>
-                      )
-                    },
-                    {
-                      title: '操作',
-                      dataIndex: 'ZH',
-                      width: 80,
-                      key: 'ZH',
-                      ellipsis: true,
-                      render: (txt, record) => (
-                        <>
-                          {
-                            record.WBRYZH === '未生成' &&
-                            <span style={{ cursor: 'pointer', color: '#4162F6'}} onClick={() => generateAccount(record.RYID, item)}>生成账号</span>
-                          }
-                        </>
-                      )
-                    },
-                  ])}
-                  overlayClassName="unplanned-demand-content-popover"
-                >
-                  <div className="opr-btn">
-                    执行
-                  </div>
-                </Popover>
-
-              ) : (
-                <div className="opr-btn" onClick={() => handleZx(item)}>
-                  执行
-                </div>
-              )
-            }
+            {SWMC === '账号新增' ? (
+              <Popover
+                onVisibleChange={visible => {
+                  if (visible) {
+                    queryOutsourceMemberList();
+                  }
+                }}
+                getPopupContainer={triggerNode => triggerNode.parentNode}
+                placement="bottom"
+                title={null}
+                content={tablePopover(addAccountList, [
+                  {
+                    title: '人员名称',
+                    dataIndex: 'RYMC',
+                    width: 100,
+                    key: 'RYMC',
+                    ellipsis: true,
+                    render: txt => (
+                      <Tooltip title={txt} placement="topLeft">
+                        <span style={{ cursor: 'default' }}>{txt}</span>
+                      </Tooltip>
+                    ),
+                  },
+                  {
+                    title: '岗位',
+                    dataIndex: 'RYGW',
+                    width: 100,
+                    key: 'RYGW',
+                    ellipsis: true,
+                    render: txt => (
+                      <Tooltip title={txt} placement="topLeft">
+                        <span style={{ cursor: 'default' }}>{txt}</span>
+                      </Tooltip>
+                    ),
+                  },
+                  {
+                    title: '账号',
+                    dataIndex: 'WBRYZH',
+                    width: 100,
+                    key: 'WBRYZH',
+                    ellipsis: true,
+                    render: txt => (
+                      <Tooltip title={txt} placement="topLeft">
+                        <span style={{ cursor: 'default' }}>{txt}</span>
+                      </Tooltip>
+                    ),
+                  },
+                  {
+                    title: '操作',
+                    dataIndex: 'ZH',
+                    width: 80,
+                    key: 'ZH',
+                    ellipsis: true,
+                    render: (txt, record) => (
+                      <>
+                        {record.WBRYZH === '未生成' && (
+                          <span
+                            style={{ cursor: 'pointer', color: '#4162F6' }}
+                            onClick={() => generateAccount(record.RYID, item)}
+                          >
+                            生成账号
+                          </span>
+                        )}
+                      </>
+                    ),
+                  },
+                ])}
+                overlayClassName="unplanned-demand-content-popover"
+              >
+                <div className="opr-btn">执行</div>
+              </Popover>
+            ) : (
+              <div className="opr-btn" onClick={() => handleZx(item)}>
+                执行
+              </div>
+            )}
           </>
         );
       return '';
@@ -402,6 +430,12 @@ export default function ProjectItems(props) {
         );
       }
       return '';
+    } else if (SWMC === '人员调换' && isDock && Number(item.THRY) > 0) {
+      return (
+        <div className="opr-btn" onClick={() => handleZx(item)}>
+          执行
+        </div>
+      );
     } else {
       return '';
     }
@@ -489,6 +523,16 @@ export default function ProjectItems(props) {
     title: '账号新增',
     style: { top: '60px' },
     visible: modalVisible.newAccount,
+    footer: null,
+  };
+
+  const personnelExchangeProps = {
+    isAllWindow: 1,
+    width: '760px',
+    height: '370px',
+    title: '人员调换',
+    style: { top: '60px' },
+    visible: modalVisible.personnelExchange,
     footer: null,
   };
 
@@ -661,10 +705,14 @@ export default function ProjectItems(props) {
   };
 
   // 判断是否全部没执行按钮
-  const isExecuteButton = (SXDATA) => {
+  const isExecuteButton = SXDATA => {
     let isExist = false; // 是否存在执行按钮
     SXDATA.forEach(item => {
-      if (item.SWMC !== '发送确认邮件' && item.SWMC !== '录用确认' && getItemBtn(item, item.SWZXID) !== '') {
+      if (
+        item.SWMC !== '发送确认邮件' &&
+        item.SWMC !== '录用确认' &&
+        getItemBtn(item, item.SWZXID) !== ''
+      ) {
         isExist = true;
       }
     });
@@ -675,7 +723,7 @@ export default function ProjectItems(props) {
   const isWholeProjectExecBtn = (XQSX = []) => {
     let isExist = false; // 是否存在执行按钮
     XQSX.forEach(item => {
-      if(isExecuteButton(item.SXDATA)) {
+      if (isExecuteButton(item.SXDATA)) {
         isExist = true;
       }
     });
@@ -683,7 +731,10 @@ export default function ProjectItems(props) {
   };
 
   return (
-    <div className="prj-items-box" style={{display: isWholeProjectExecBtn(XQSX) ? 'block' : 'none'}}>
+    <div
+      className="prj-items-box"
+      style={{ display: isWholeProjectExecBtn(XQSX) ? 'block' : 'none' }}
+    >
       {/* 付款流程发起弹窗 */}
       {modalVisible.payment && (
         <PaymentProcess
@@ -830,6 +881,32 @@ export default function ProjectItems(props) {
               return {
                 ...p,
                 staffEnter: false,
+              };
+            })
+          }
+          src={lbModal.url}
+        />
+      )}
+
+      {/*人员调换*/}
+      {modalVisible.personnelExchange && (
+        <BridgeModel
+          modalProps={personnelExchangeProps}
+          onSucess={() => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                personnelExchange: false,
+              };
+            });
+            reflush();
+            message.success('操作成功', 1);
+          }}
+          onCancel={() =>
+            setModalVisible(p => {
+              return {
+                ...p,
+                personnelExchange: false,
               };
             })
           }
@@ -1016,7 +1093,14 @@ export default function ProjectItems(props) {
       </div>
       <div className="bottom">
         {XQSX.map((item, index) => (
-          <div className="item" key={item.SWLX} style={{visibility: isExecuteButton(item.SXDATA) ? 'visible' : 'hidden', order: isExecuteButton(item.SXDATA) ? 0 : 1}}>
+          <div
+            className="item"
+            key={item.SWLX}
+            style={{
+              visibility: isExecuteButton(item.SXDATA) ? 'visible' : 'hidden',
+              order: isExecuteButton(item.SXDATA) ? 0 : 1,
+            }}
+          >
             <div className="item-top">{item.SWLX}</div>
             <div className="item-bottom">
               {item.SXDATA.map((x, i) => {
@@ -1024,8 +1108,7 @@ export default function ProjectItems(props) {
                 if (x.SWMC === '发送确认邮件' || x.SWMC === '录用确认') return '';
                 return (
                   <>
-                    {
-                      getItemBtn(x, x.SWZXID) !== '' &&
+                    {getItemBtn(x, x.SWZXID) !== '' && (
                       <div
                         className="bottom-row"
                         style={x.ZXZT === '2' ? {} : { color: '#3361ff' }}
@@ -1037,22 +1120,22 @@ export default function ProjectItems(props) {
                           <i className="iconfont circle-check" />
                         )}
 
-                        {
-                          x.SWMC === '简历下载' ? (
-                            <Tooltip title={(isAuth && !isDock) ? '简历下载' : '简历分发'} placement="topLeft">
-                              <span>{(isAuth && !isDock) ? '简历下载' : '简历分发'}</span>
-                            </Tooltip>
-                          ) : (
-                            <Tooltip title={x.SWMC} placement="topLeft">
-                              <span>{x.SWMC}</span>
-                            </Tooltip>
-                          )
-                        }
-
+                        {x.SWMC === '简历下载' ? (
+                          <Tooltip
+                            title={isAuth && !isDock ? '简历下载' : '简历分发'}
+                            placement="topLeft"
+                          >
+                            <span>{isAuth && !isDock ? '简历下载' : '简历分发'}</span>
+                          </Tooltip>
+                        ) : (
+                          <Tooltip title={x.SWMC} placement="topLeft">
+                            <span>{x.SWMC}</span>
+                          </Tooltip>
+                        )}
 
                         {getItemBtn(x, x.SWZXID)}
                       </div>
-                    }
+                    )}
                   </>
                 );
               })}

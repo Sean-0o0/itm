@@ -65,12 +65,12 @@ export default function DemandDetail(props) {
                     ? []
                     : Object.values(
                         JSON.parse(res.xqsx)?.reduce((acc, curr) => {
-                          let { XQID, SWLX, SWMC, ZXZT, SWZXID, WBSWID } = curr;
+                          let { XQID, SWLX, SWMC, ZXZT, SWZXID, WBSWID, THRY } = curr;
                           SWLX = WBSWLX?.filter(x => x.ibm === SWLX)[0]?.note ?? SWLX;
                           if (!acc[SWLX]) {
-                            acc[SWLX] = { XQID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT, SWZXID }] };
+                            acc[SWLX] = { XQID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT, SWZXID, THRY }] };
                           } else {
-                            acc[SWLX].SXDATA.push({ SWMC, ZXZT, SWZXID });
+                            acc[SWLX].SXDATA.push({ SWMC, ZXZT, SWZXID, THRY });
                           }
                           return acc;
                         }, {}),
