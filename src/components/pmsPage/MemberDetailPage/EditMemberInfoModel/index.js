@@ -179,11 +179,11 @@ class EditMemberInfoModel extends React.Component {
         message.warn('请选择试用期考核情况！');
         return;
       }
-      if (this.state.fileList.length === 0){
+      if (this.state.fileList.length === 0 && operateType === "bjxq"){
         message.warn('请上传简历！');
         return;
       }
-      if (this.state.fileList2.length === 0){
+      if (this.state.fileList2.length === 0 && operateType === "bjxq"){
         message.warn('请上传保密协议！');
         return;
       }
@@ -345,8 +345,7 @@ class EditMemberInfoModel extends React.Component {
           >
             <strong>{operateType === "syqkh" ? "试用期考核情况编辑" : "人员信息编辑"}</strong>
           </div>
-          <Spin spinning={isSpinning} style={{position: 'fixed'}} tip="加载中" size="large"
-                wrapperClassName="contrast-signing-modal-spin">
+          <Spin spinning={isSpinning} tip="加载中" wrapperClassName="contrast-signing-modal-spin">
             <div style={{padding: '0 24px'}}>
               <div className="steps-content">
                 <React.Fragment>
@@ -712,7 +711,7 @@ class EditMemberInfoModel extends React.Component {
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row>
+                      <Row gutter={24} style={{display: operateType === "bjxq" ? '' : 'none'}}>
                         <Col span={12}>
                           <Form.Item
                             label='保密协议:'
