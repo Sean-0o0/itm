@@ -34,7 +34,7 @@ export default function MileStone(props) {
     setEndIndex,
   } = stateProps;
   const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
-  console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
+  // console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
@@ -74,11 +74,11 @@ export default function MileStone(props) {
   useEffect(() => {
     // console.log('里程碑更新了', xmid, prjBasic);
     if (xmid !== -1 && JSON.stringify(prjBasic) !== '{}') {
-      //项目经理初始展开、迭代项目项目里程碑不论谁都初始收起
+      // 项目经理初始展开、迭代项目项目里程碑不论谁都初始收起
       // setIsUnfold(
       //   prjBasic.XMJLID === String(LOGIN_USER_INFO.id) && !prjBasic.XMBQ?.includes('迭代项目'),
       // );
-      setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id));
+      setIsUnfold(prjBasic.XMJLID === String(LOGIN_USER_INFO.id)); //生产版本
     }
     return () => {};
   }, [xmid, JSON.stringify(prjBasic)]);
@@ -227,10 +227,9 @@ export default function MileStone(props) {
                   isMember: (() => {
                     const arr = member.reduce((acc, cur) => {
                       if (cur.RYZT === '1' && cur.RYID !== String(prjBasic.XMJLID))
-                        return [...acc, cur];
+                        return [...acc, cur.RYID];
                       return acc;
                     }, []);
-                    // console.log("🚀 ~ file: index.js:229 ~ arr ~ arr:", arr)
                     return arr.includes(String(LOGIN_USER_INFO.id));
                   })(),
                   isMnger: String(prjBasic.XMJLID) === String(LOGIN_USER_INFO.id),

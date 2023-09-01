@@ -430,7 +430,7 @@ export default function ProjectItems(props) {
         );
       }
       return '';
-    } else if (SWMC === '人员调换' && isFqr && isDock && Number(item.THRY) > 0) {
+    } else if (SWMC === '人员调换' && (isFqr||isDock) && Number(item.THRY) > 0) {
       return (
         <div className="opr-btn" onClick={() => handleZx(item)}>
           执行
