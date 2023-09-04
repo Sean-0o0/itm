@@ -3605,7 +3605,7 @@ class EditProjectInfoModel extends React.Component {
                 uid: Date.now() + '-' + i,
                 name: x.fileName,
                 status: 'done',
-                url: x.data,
+                url: x.url,
               })) ?? [];
             this.setState({
               fileList: arr,
