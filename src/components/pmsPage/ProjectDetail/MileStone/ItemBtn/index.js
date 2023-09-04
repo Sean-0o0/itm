@@ -275,9 +275,9 @@ class ItemBtn extends React.Component {
     //权限控制
     const {
       // isLeader = false,
-      // isMember = false,
+      isMember = false,
       isMnger = false,
-      // isFXMJL = false,
+      isFXMJL = false,
     } = this.props.auth;
     const allAuth = () => {
       if (done)
@@ -332,6 +332,9 @@ class ItemBtn extends React.Component {
       return '';
     };
     if (isMnger) {
+      return allAuth();
+    } else if (isMember || isFXMJL) {
+      if (done) return onlyCk();
       return allAuth();
     } else {
       return onlyCk();
@@ -1091,6 +1094,7 @@ class ItemBtn extends React.Component {
     item,
     { isLeader = false, isMember = false, isMnger = false, isFXMJL = false },
   ) => {
+    const that = this;
     //！！！ 后边新增事项配置时，注意配置完整
     //全部权限
     const allAuth = () => {
@@ -1113,18 +1117,18 @@ class ItemBtn extends React.Component {
         case '框架外硬件采购流程':
         case '总办会流程':
         case '需求发起':
-          return this.getLcfqck(done, item);
+          return that.getLcfqck(done, item);
 
         //信息录入
         case '中标信息录入':
         case '软件合同信息录入':
-          return this.getXxlrxg(done, item);
+          return that.getXxlrxg(done, item);
         case '硬件中标信息录入':
-          return this.getYjxxlr(done, item);
+          return that.getYjxxlr(done, item);
         case '硬件合同信息录入':
-          return this.getYjxxlr(done, item, false);
+          return that.getYjxxlr(done, item, false);
         case '询比结果录入':
-          return this.getXbjglr(done, item);
+          return that.getXbjglr(done, item);
 
         //文档上传
         case '总办会会议纪要':
@@ -1151,12 +1155,12 @@ class ItemBtn extends React.Component {
         case '用户手册':
         case '硬件合同':
         case '验收报告':
-          return this.getWdscxg(done, item);
+          return that.getWdscxg(done, item);
 
         //操作
         case '员工评价开启':
         case '提醒子项目完善信息':
-          return this.getCz(done, item);
+          return that.getCz(done, item);
 
         default:
           console.error(`🚀 ~ 该事项名称【${name}】按钮尚未配置`);
@@ -1168,7 +1172,7 @@ class ItemBtn extends React.Component {
       switch (name) {
         //流程发起
         case '信委会议案流程':
-          return this.getLcfqck(done, item);
+          return that.getLcfqck(done, item);
         //文档上传
         case '总办会会议纪要':
         case '总办会提案':
@@ -1194,7 +1198,7 @@ class ItemBtn extends React.Component {
         case '用户手册':
         case '硬件合同':
         case '验收报告':
-          return this.getWdscxg(done, item);
+          return that.getWdscxg(done, item);
         default:
           return '';
       }
@@ -1227,7 +1231,7 @@ class ItemBtn extends React.Component {
         case '用户手册':
         case '硬件合同':
         case '验收报告':
-          return this.getWdscxg(done, item);
+          return that.getWdscxg(done, item);
         default:
           return '';
       }
@@ -1238,6 +1242,7 @@ class ItemBtn extends React.Component {
       return someAuth();
     } else if (isFXMJL && !isMnger) {
       //副项目经理权限
+      console.log('🚀 ~ 副项目经理权限');
       if (['需求发起', '付款流程'].includes(name)) {
         return this.getLcfqck(done, item);
       }
