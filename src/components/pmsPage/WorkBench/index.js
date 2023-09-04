@@ -18,8 +18,8 @@ const { Panel } = Collapse;
 class WorkBench extends React.Component {
   constructor(props) {
     super(props)
-    props.cacheLifecycles.didCache(this.componentDidCache)
-    props.cacheLifecycles.didRecover(this.componentDidRecover)
+    // props.cacheLifecycles.didCache(this.componentDidCache)
+    // props.cacheLifecycles.didRecover(this.componentDidRecover)
   }
   state = {
     wdsl: 0,
@@ -37,15 +37,15 @@ class WorkBench extends React.Component {
     isSpinning: false, //项目进度加载状态
   };
 
-  componentDidCache = () => {
-  }
+  // componentDidCache = () => {
+  // }
 
-  componentDidRecover = () => {
-    this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
-    this.fetchQueryOwnerWorkflow();
-    this.setIsSpinning(true);
-    this.fetchQueryOwnerProjectList();
-  }
+  // componentDidRecover = () => {
+  //   this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
+  //   this.fetchQueryOwnerWorkflow();
+  //   this.setIsSpinning(true);
+  //   this.fetchQueryOwnerProjectList();
+  // }
   componentDidMount() {
     this.fetchQueryOwnerMessage(1, moment(new Date()).format('YYYYMMDD'), 'UNDO');
     this.fetchQueryOwnerWorkflow();

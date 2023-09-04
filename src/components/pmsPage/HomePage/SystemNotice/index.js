@@ -17,7 +17,7 @@ export default function SystemNotice(props) {
       let data = [...noticeData];
       for (let i = 0; i < nodeArr.length; i++) {
         let x = nodeArr[i];
-        data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44);
+        data[i] && (data[i].textHide = !(x.clientHeight <= 44 && x.scrollHeight <= 44));
       }
       setNoticeData([...data]);
     }

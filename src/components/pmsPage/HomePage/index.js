@@ -646,7 +646,11 @@ export default function HomePage(props) {
           <div className="col-right">
             <GuideCard />
             <SystemNotice noticeData={noticeData} setNoticeData={setNoticeData} />
-            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo} />
+            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo}
+              toDoData={toDoData}
+              dictionary={dictionary}
+              toDoDataNum={total.todo}
+            />
             {['二级部门领导', '普通人员'].includes(userRole) ? (
               <Fragment>
                 <CptBudgetCard

@@ -4,9 +4,10 @@ import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import { message, Modal } from 'antd';
 import PrjTypeModal from './PrjTypeModal';
 import NewProjectModelV2 from '../../../../pages/workPlatForm/singlePage/NewProjectModelV2';
+import OverviewCard from '../OverviewCard';
 
 export default function ShortcutCard(props) {
-  const { userRole, getPrjInfo } = props;
+  const { userRole, getPrjInfo, toDoData = [], toDoDataNum = 0, dictionary } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [visible, setVisible] = useState(false); //类型弹窗显隐
@@ -51,11 +52,20 @@ export default function ShortcutCard(props) {
       );
     return (
       <div className="shortcut-box">
+        {userRole === '二级部门领导' && (
+          <OverviewCard
+            componentType="shortcut"
+            toDoData={toDoData}
+            dictionary={dictionary}
+            toDoDataNum={toDoDataNum}
+          />
+        )}
         {getShortcutItem('xjxm', '新建项目', () => {
           setVisible(true);
           // setFileAddVisible(true)
         })}
-        {getShortcutItem('yian', '议案审批', () => jumpToLBPage('V_XWHYALC_LDSP'))}
+        {userRole !== '二级部门领导' &&
+          getShortcutItem('yian', '议案审批', () => jumpToLBPage('V_XWHYALC_LDSP'))}
         {getShortcutItem('ysck', '预算查看', () => jumpToLBPage('YSTJ'))}
         {getShortcutItem(
           'bgck',
@@ -103,15 +113,6 @@ export default function ShortcutCard(props) {
   return (
     <div className="shortcut-card-box">
       <div className="home-card-title-box">快捷入口</div>
-
-      {/*{fileAddVisible && (*/}
-      {/*  <BridgeModel*/}
-      {/*    isSpining="customize"*/}
-      {/*    modalProps={fileAddModalProps}*/}
-      {/*    onCancel={closeFileAddModal}*/}
-      {/*    src={src_fileAdd}*/}
-      {/*  />*/}
-      {/*)}*/}
       {fileAddVisible && (
         <Modal
           wrapClassName="editMessage-modify xbjgEditStyle"

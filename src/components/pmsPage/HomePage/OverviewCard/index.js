@@ -6,7 +6,7 @@ import { Link } from 'react-router-dom';
 import moment from 'moment';
 import avatarMale from '../../../../assets/homePage/img_avatar_male.png';
 import avatarFemale from '../../../../assets/homePage/img_avatar_female.png';
-import { Dropdown, Menu, message, Modal, Popover, Tooltip } from 'antd';
+import { Badge, Dropdown, Menu, message, Modal, Popover, Tooltip } from 'antd';
 import {
   CreateOperateHyperLink,
   QueryProjectTracking,
@@ -30,6 +30,7 @@ export default function OverviewCard(props) {
     statisticYearData = {},
     setStatisticYearData,
     handleCurYearChange,
+    componentType = 'default', // 'shortcut'
   } = props;
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
@@ -546,270 +547,295 @@ export default function OverviewCard(props) {
     </Menu>
   );
 
-  return (
-    <div className="overview-card-box">
-      {/* 外包人员面试评分 */}
-      {modalVisible.wbrymspf && (
-        <InterviewScoreModal
-          visible={modalVisible.wbrymspf}
-          setVisible={v => {
-            setModalVisible(p => {
-              return {
-                ...p,
-                wbrymspf: v,
-              };
-            });
-          }}
-          xqid={Number(currentXqid)}
-          reflush={reflush}
-          WBRYGW={WBRYGW}
-          swzxid={Number(currentSwzxid)}
-        />
-      )}
-      {/* 付款流程发起弹窗 */}
-      {paymentModalVisible && (
-        <PaymentProcess
-          paymentModalVisible={paymentModalVisible}
-          fetchQueryLifecycleStuff={() => {}}
-          currentXmid={Number(currentXmid)}
-          currentXmmc={currentXmmc}
-          projectCode={projectCode}
-          closePaymentProcessModal={() => setPaymentModalVisible(false)}
-          onSuccess={() => {
-            UpdateMessageState({
-              zxlx: 'EXECUTE',
-              xxid: currentXxid,
-            })
-              .then((ret = {}) => {
-                const { code = 0, note = '', record = [] } = ret;
-                if (code === 1) {
-                  //刷新数据
-                  reflush();
-                }
-              })
-              .catch(error => {
-                message.error('操作失败', 1);
-                console.error('付款流程', !error.success ? error.message : error.note);
+  if (componentType === 'default')
+    return (
+      <div className="overview-card-box">
+        {/* 外包人员面试评分 */}
+        {modalVisible.wbrymspf && (
+          <InterviewScoreModal
+            visible={modalVisible.wbrymspf}
+            setVisible={v => {
+              setModalVisible(p => {
+                return {
+                  ...p,
+                  wbrymspf: v,
+                };
               });
-          }}
-          isHwPrj={isHwPrj} // 是否硬件入围
-          ddcgje={ddcgje} // 单独采购金额，为0时无值
-          rlwbData={rlwbData}
-        />
-      )}
-      {/*人员新增提醒弹窗*/}
-      {ryxztxModalVisible && (
-        <BridgeModel
-          modalProps={ryxztxModalProps}
-          onSucess={() => {
-            message.success('操作成功', 1);
-            reflush();
-            setRyxztxModalVisible(false);
-          }}
-          onCancel={() => setRyxztxModalVisible(false)}
-          src={ryxztxUrl}
-        />
-      )}
-      {fileAddVisible && (
-        <Modal
-          wrapClassName="editMessage-modify xbjgEditStyle"
-          width={'1000px'}
-          // height={'700px'}
-          maskClosable={false}
-          zIndex={100}
-          maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-          style={{ top: '10px' }}
-          visible={fileAddVisible}
-          okText="保存"
-          bodyStyle={{
-            padding: 0,
-          }}
-          onCancel={closeFileAddModal}
-          title={
-            <div
-              style={{
-                width: '100%',
-                display: 'flex',
-                alignItems: 'center',
-                backgroundColor: '#3361FF',
-                color: 'white',
-                borderRadius: '8px 8px 0 0',
-                fontSize: '16px',
-              }}
-            >
-              <strong>完善子项目</strong>
-            </div>
-          }
-          footer={null}
-        >
-          <EditProjectInfoModel
-            closeModel={closeFileAddModal}
-            successCallBack={() => {
-              closeFileAddModal();
-              reflush();
             }}
-            xmid={src_fileAdd.xmid}
-            type={src_fileAdd.type}
-            subItemFlag={src_fileAdd.subItemFlag}
-            subItemFinish={src_fileAdd.subItemFinish}
-            projectStatus={src_fileAdd.projectStatus}
+            xqid={Number(currentXqid)}
+            reflush={reflush}
+            WBRYGW={WBRYGW}
+            swzxid={Number(currentSwzxid)}
           />
-        </Modal>
-      )}
-      {/*编辑项目跟踪信息弹窗*/}
-      {trackingModal.visible && (
-        <EditPrjTracking
-          record={trackingModal.record}
-          cycle={trackingModal.cycle}
-          getTableData={onTrackingEditModalSuccess}
-          contractSigningVisible={trackingModal.visible}
-          closeContractModal={() => setTrackingModal(p => ({ ...p, visible: false }))}
-          isFromToDo={true} //成功提醒区分判断用
-        />
-      )}
-      <div className="avatar-card-box">
-        <div className="avatar">
-          <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
-        </div>
-        <div className="title">
-          <div className="title-top">
-            <span>{getGreeting()}</span>
-            {['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(userRole) && (
-              <div className="statistic-year">
-                统计年份：
-                <Dropdown overlay={menu} trigger={['click']}>
-                  <span>
-                    {statisticYearData.currentYear}
-                    <i className="iconfont icon-fill-down" />
-                  </span>
-                </Dropdown>
+        )}
+        {/* 付款流程发起弹窗 */}
+        {paymentModalVisible && (
+          <PaymentProcess
+            paymentModalVisible={paymentModalVisible}
+            fetchQueryLifecycleStuff={() => {}}
+            currentXmid={Number(currentXmid)}
+            currentXmmc={currentXmmc}
+            projectCode={projectCode}
+            closePaymentProcessModal={() => setPaymentModalVisible(false)}
+            onSuccess={() => {
+              UpdateMessageState({
+                zxlx: 'EXECUTE',
+                xxid: currentXxid,
+              })
+                .then((ret = {}) => {
+                  const { code = 0, note = '', record = [] } = ret;
+                  if (code === 1) {
+                    //刷新数据
+                    reflush();
+                  }
+                })
+                .catch(error => {
+                  message.error('操作失败', 1);
+                  console.error('付款流程', !error.success ? error.message : error.note);
+                });
+            }}
+            isHwPrj={isHwPrj} // 是否硬件入围
+            ddcgje={ddcgje} // 单独采购金额，为0时无值
+            rlwbData={rlwbData}
+          />
+        )}
+        {/*人员新增提醒弹窗*/}
+        {ryxztxModalVisible && (
+          <BridgeModel
+            modalProps={ryxztxModalProps}
+            onSucess={() => {
+              message.success('操作成功', 1);
+              reflush();
+              setRyxztxModalVisible(false);
+            }}
+            onCancel={() => setRyxztxModalVisible(false)}
+            src={ryxztxUrl}
+          />
+        )}
+        {fileAddVisible && (
+          <Modal
+            wrapClassName="editMessage-modify xbjgEditStyle"
+            width={'1000px'}
+            // height={'700px'}
+            maskClosable={false}
+            zIndex={100}
+            maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+            style={{ top: '10px' }}
+            visible={fileAddVisible}
+            okText="保存"
+            bodyStyle={{
+              padding: 0,
+            }}
+            onCancel={closeFileAddModal}
+            title={
+              <div
+                style={{
+                  width: '100%',
+                  display: 'flex',
+                  alignItems: 'center',
+                  backgroundColor: '#3361FF',
+                  color: 'white',
+                  borderRadius: '8px 8px 0 0',
+                  fontSize: '16px',
+                }}
+              >
+                <strong>完善子项目</strong>
               </div>
-            )}
+            }
+            footer={null}
+          >
+            <EditProjectInfoModel
+              closeModel={closeFileAddModal}
+              successCallBack={() => {
+                closeFileAddModal();
+                reflush();
+              }}
+              xmid={src_fileAdd.xmid}
+              type={src_fileAdd.type}
+              subItemFlag={src_fileAdd.subItemFlag}
+              subItemFinish={src_fileAdd.subItemFinish}
+              projectStatus={src_fileAdd.projectStatus}
+            />
+          </Modal>
+        )}
+        {/*编辑项目跟踪信息弹窗*/}
+        {trackingModal.visible && (
+          <EditPrjTracking
+            record={trackingModal.record}
+            cycle={trackingModal.cycle}
+            getTableData={onTrackingEditModalSuccess}
+            contractSigningVisible={trackingModal.visible}
+            closeContractModal={() => setTrackingModal(p => ({ ...p, visible: false }))}
+            isFromToDo={true} //成功提醒区分判断用
+          />
+        )}
+        <div className="avatar-card-box">
+          <div className="avatar">
+            <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
           </div>
-          <div className="desc">
-            {overviewInfo?.sm}
-            {overviewInfo?.sm && '，'}这是你在****的第
-            {moment().diff(moment(overviewInfo?.rzsj), 'days')}天
+          <div className="title">
+            <div className="title-top">
+              <span>{getGreeting()}</span>
+              {['二级部门领导', '一级部门领导', '信息技术事业部领导'].includes(userRole) && (
+                <div className="statistic-year">
+                  统计年份：
+                  <Dropdown overlay={menu} trigger={['click']}>
+                    <span>
+                      {statisticYearData.currentYear}
+                      <i className="iconfont icon-fill-down" />
+                    </span>
+                  </Dropdown>
+                </div>
+              )}
+            </div>
+            <div className="desc">
+              {overviewInfo?.sm}
+              {overviewInfo?.sm && '，'}这是你在****的第
+              {moment().diff(moment(overviewInfo?.rzsj), 'days')}天
+            </div>
           </div>
         </div>
+        <div className="divider"></div>
+        {userRole === '普通人员' ? (
+          <div className="overview-row">
+            {getOverviewItem({
+              title: '我的待办',
+              img: 'wddb',
+              amount: getAmountFormat(toDoDataNum),
+              addNum: overviewInfo?.dbjrxz,
+              unit: '项',
+              more: true,
+            })}
+            {getOverviewItem({
+              title: '现有风险',
+              img: 'xyfx',
+              amount: getAmountFormat(overviewInfo?.xyfx),
+              addNum: overviewInfo?.fxjrxz,
+              unit: '项',
+              more: false,
+            })}
+            {getOverviewItem({
+              title: '发起项目',
+              img: 'fqxm',
+              amount: getAmountFormat(overviewInfo?.fqxm),
+              fn: () => {
+                if (Number(overviewInfo?.fqxm) === 0) {
+                  message.info('暂无发起项目', 1);
+                } else {
+                  window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                    JSON.stringify({
+                      prjManager: Number(LOGIN_USER_INFO.id),
+                      cxlx: 'PERSON',
+                    }),
+                  )}`;
+                }
+              },
+            })}
+            {getOverviewItem({
+              title: '参与项目',
+              img: 'cyxm',
+              amount: getAmountFormat(overviewInfo?.cyxm),
+              fn: () => {
+                if (Number(overviewInfo?.cyxm) === 0) {
+                  message.info('暂无参与项目', 1);
+                } else {
+                  window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
+                    JSON.stringify({
+                      prjManager: Number(LOGIN_USER_INFO.id),
+                      cxlx: 'PARTICIPATE',
+                    }),
+                  )}`;
+                }
+              },
+            })}
+          </div>
+        ) : userRole !== '' ? (
+          <div className="overview-row">
+            {getOverviewItem({
+              title: '部门项目数量',
+              img: 'bmxmsl',
+              amount: getAmountFormat(overviewInfo?.xmzs),
+              addNum: overviewInfo?.xmjrxz,
+              unit: '项',
+              width: '22%',
+              linkTo: {
+                pathname: `/pms/manage/projectBuilding`,
+                state: {
+                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                },
+              },
+            })}
+            {getOverviewItem({
+              title: '部门队伍数量',
+              img: 'bmdwsl',
+              amount: getAmountFormat(overviewInfo?.ryzs),
+              addNum: overviewInfo?.ryjrxz,
+              unit: '人',
+              width: '22%',
+              linkTo: {
+                pathname: `/pms/manage/departmentOverview`,
+                state: {
+                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                },
+              },
+            })}
+            {getOverviewItem({
+              title: '预算执行金额(万元)/执行率',
+              img: 'yszxje',
+              amount: getAmountFormat(overviewInfo?.yszxje),
+              percent: overviewInfo?.yszxl,
+              addNum: overviewInfo?.ysjrxz,
+              unit: '万元',
+              width: '34%',
+              linkTo: {
+                pathname: `/pms/manage/BudgetExcute`,
+                state: {
+                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                },
+              },
+            })}
+            {getOverviewItem({
+              title: '供应商数量',
+              img: 'gyssl',
+              amount: getAmountFormat(overviewInfo?.gyssl),
+              addNum: overviewInfo?.gysjrxz,
+              unit: '家',
+              width: '22%',
+              linkTo: {
+                pathname: `/pms/manage/SupplierSituation`,
+                state: {
+                  routes: [{ name: '个人工作台', pathname: location.pathname }],
+                },
+              },
+            })}
+          </div>
+        ) : (
+          ''
+        )}
       </div>
-      <div className="divider"></div>
-      {userRole === '普通人员' ? (
-        <div className="overview-row">
-          {getOverviewItem({
-            title: '我的待办',
-            img: 'wddb',
-            amount: getAmountFormat(toDoDataNum),
-            addNum: overviewInfo?.dbjrxz,
-            unit: '项',
-            more: true,
-          })}
-          {getOverviewItem({
-            title: '现有风险',
-            img: 'xyfx',
-            amount: getAmountFormat(overviewInfo?.xyfx),
-            addNum: overviewInfo?.fxjrxz,
-            unit: '项',
-            more: false,
-          })}
-          {getOverviewItem({
-            title: '发起项目',
-            img: 'fqxm',
-            amount: getAmountFormat(overviewInfo?.fqxm),
-            fn: () => {
-              if (Number(overviewInfo?.fqxm) === 0) {
-                message.info('暂无发起项目', 1);
-              } else {
-                window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
-                  JSON.stringify({
-                    prjManager: Number(LOGIN_USER_INFO.id),
-                    cxlx: 'PERSON',
-                  }),
-                )}`;
-              }
-            },
-          })}
-          {getOverviewItem({
-            title: '参与项目',
-            img: 'cyxm',
-            amount: getAmountFormat(overviewInfo?.cyxm),
-            fn: () => {
-              if (Number(overviewInfo?.cyxm) === 0) {
-                message.info('暂无参与项目', 1);
-              } else {
-                window.location.href = `/#/pms/manage/ProjectInfo/${EncryptBase64(
-                  JSON.stringify({
-                    prjManager: Number(LOGIN_USER_INFO.id),
-                    cxlx: 'PARTICIPATE',
-                  }),
-                )}`;
-              }
-            },
-          })}
+    );
+  if (componentType === 'shortcut')
+    return (
+      <Popover
+        title={null}
+        placement="rightTop"
+        trigger="click"
+        visible={hovered}
+        onVisibleChange={handleVisibleChange}
+        getPopupContainer={triggerNode => triggerNode.parentNode}
+        autoAdjustOverflow={true}
+        content={getToDoItem(toDoData)}
+        overlayClassName="todo-card-content-popover"
+      >
+        <div className="shortcut-item">
+          <div className="item-img">
+            <Badge count={toDoDataNum} offset={[-12, 12]}>
+              <img src={require(`../../../../assets/homePage/icon_yian@2x.png`)} alt="" />
+            </Badge>
+          </div>
+          <div className="item-txt">我的待办</div>
         </div>
-      ) : userRole !== '' ? (
-        <div className="overview-row">
-          {getOverviewItem({
-            title: '部门项目数量',
-            img: 'bmxmsl',
-            amount: getAmountFormat(overviewInfo?.xmzs),
-            addNum: overviewInfo?.xmjrxz,
-            unit: '项',
-            width: '22%',
-            linkTo: {
-              pathname: `/pms/manage/projectBuilding`,
-              state: {
-                routes: [{ name: '个人工作台', pathname: location.pathname }],
-              },
-            },
-          })}
-          {getOverviewItem({
-            title: '部门队伍数量',
-            img: 'bmdwsl',
-            amount: getAmountFormat(overviewInfo?.ryzs),
-            addNum: overviewInfo?.ryjrxz,
-            unit: '人',
-            width: '22%',
-            linkTo: {
-              pathname: `/pms/manage/departmentOverview`,
-              state: {
-                routes: [{ name: '个人工作台', pathname: location.pathname }],
-              },
-            },
-          })}
-          {getOverviewItem({
-            title: '预算执行金额(万元)/执行率',
-            img: 'yszxje',
-            amount: getAmountFormat(overviewInfo?.yszxje),
-            percent: overviewInfo?.yszxl,
-            addNum: overviewInfo?.ysjrxz,
-            unit: '万元',
-            width: '34%',
-            linkTo: {
-              pathname: `/pms/manage/BudgetExcute`,
-              state: {
-                routes: [{ name: '个人工作台', pathname: location.pathname }],
-              },
-            },
-          })}
-          {getOverviewItem({
-            title: '供应商数量',
-            img: 'gyssl',
-            amount: getAmountFormat(overviewInfo?.gyssl),
-            addNum: overviewInfo?.gysjrxz,
-            unit: '家',
-            width: '22%',
-            linkTo: {
-              pathname: `/pms/manage/SupplierSituation`,
-              state: {
-                routes: [{ name: '个人工作台', pathname: location.pathname }],
-              },
-            },
-          })}
-        </div>
-      ) : (
-        ''
-      )}
-    </div>
-  );
+      </Popover>
+    );
+  return '';
 }
