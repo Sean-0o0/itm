@@ -341,7 +341,7 @@ export default function PrjTracking(props) {
       )}
       <div className="top-box">
         项目跟踪
-        <Popover
+        {/* <Popover
           placement="bottomRight"
           title={null}
           content={popoverContent}
@@ -351,7 +351,7 @@ export default function PrjTracking(props) {
             <i className="iconfont icon-file-fillout" />
             <span>进度及报告填写</span>
           </div>
-        </Popover>
+        </Popover> */}
       </div>
       <div className="middle-box">
         {btnVisible.last && (

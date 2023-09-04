@@ -690,5 +690,65 @@ export default [
     key: 'queryResumeDownloadRecords',
     url: '/projectManage/queryResumeDownloadRecords',
     dis: '查询简历下载记录',
-  }
+  },
+  {
+    code: '',
+    key: 'insertProjectUpdateInfo',
+    url: '/projectManage/insertProjectUpdateInfo',
+    dis: '新增、修改、删除自研项目升级内容',
+  },
+  {
+    code: '',
+    key: 'queryProjectUpdateInfo',
+    url: '/projectManage/queryProjectUpdateInfo',
+    dis: '查询自研项目升级内容',
+  },
+  {
+    code: '',
+    key: 'insertProjectAttendanceRcd',
+    url: '/projectManage/insertProjectAttendanceRcd',
+    dis: '自研项目考勤登记',
+  },
+  {
+    code: '',
+    key: 'queryMemberAttendanceRcd',
+    url: '/projectManage/queryMemberAttendanceRcd',
+    dis: '查询自研项目考勤记录',
+  },
+  {
+    code: '',
+    key: 'insertEvaluateInfo',
+    url: '/projectManage/insertEvaluateInfo',
+    dis: '新增、修改评估信息',
+  },
+  {
+    code: '',
+    key: 'queryEvaluateInfo',
+    url: '/projectManage/queryEvaluateInfo',
+    dis: '查询迭代项目评估信息',
+  },
+  {
+    code: '',
+    key: 'initIterationProjectInfo',
+    url: '/projectManage/initIterationProjectInfo',
+    dis: '初始化迭代项目信息',
+  },
+  {
+    code: '',
+    key: 'queryIteProjPayRcd',
+    url: '/projectManage/queryIteProjPayRcd',
+    dis: '查询迭代项目付款记录',
+  },
+  {
+    code: '',
+    key: 'queryIteProjPayPlan',
+    url: '/projectManage/queryIteProjPayPlan',
+    dis: '查询迭代项目付款计划',
+  },
+  {
+    code: '',
+    key: 'queryContractFlowInfo',
+    url: '/projectManage/queryContractFlowInfo',
+    dis: '查询合同签署流程',
+  },
 ];

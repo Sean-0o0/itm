@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import InfoDisplay from './InfoDisplay';
 import MileStone from './MileStone';
 import PrjMember from './PrjMember';
@@ -7,11 +7,15 @@ import TopConsole from './TopConsole';
 import {
   FetchQueryLifecycleStuff,
   FetchQueryLiftcycleMilestone,
+  QueryIteProjPayPlan,
+  QueryIteProjPayRcd,
+  QueryMemberAttendanceRcd,
   QueryProjectFiles,
   QueryProjectInfoAll,
   QueryProjectMessages,
   QueryProjectNode,
   QueryProjectTracking,
+  QueryProjectUpdateInfo,
   QueryUserRole,
 } from '../../../services/pmsServices/index';
 import { message, Spin } from 'antd';
@@ -19,12 +23,19 @@ import { FetchQueryProjectLabel } from '../../../services/projectManage';
 import PrjTracking from './PrjTracking';
 import PrjNode from './PrjNode';
 import PrjDoc from './PrjDoc';
+import ShortcutCard from './ShortcutCard';
+import PaymentRecord from './PaymentRecord';
+import IterationContent from './IterationContent';
+import IterationPayment from './IterationPayment';
+import AttendanceInfo from './AttendanceInfo';
+import moment from 'moment';
 
 export default function ProjectDetail(props) {
   const { routes, xmid, dictionary } = props;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [prjData, setPrjData] = useState({}); //项目信息-所有
-  const { HJRYDJ, ZSCQLX, RYGW, CGFS } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
+  const { HJRYDJ = [], ZSCQLX = [], RYGW = [], CGFS = [], ZYXMKQLX = [] } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
+  // console.log('🚀 ~ file: index.js:37 ~ ProjectDetail ~ ZYXMKQLX:', ZYXMKQLX);
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
   const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
@@ -48,6 +59,20 @@ export default function ProjectDetail(props) {
   const [startIndex, setStartIndex] = useState(0); //切割开始index
   const [endIndex, setEndIndex] = useState(5); //切割结束index
   const [isBdgtMnger, setIsBdgtMnger] = useState(false); //是否预算管理人
+  const [daysData, setDaysData] = useState({
+    curMonth: -1, //当前tab key，月份字符串
+    activeId: -1, //高亮的 RYID
+    attendanceDays: [], //出勤天
+    attendanceHalfDays: [], //出勤半天
+    leaveDays: [], //请假天
+    leaveHalfDays: [], //请假半天
+    overTimeDays: [], //加班天
+    overTimeHalfDays: [], //加班半天
+  }); //考勤信息
+  let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目'); // 是否迭代项目
+  let isDDXMFK =
+    prjData.prjBasic?.XMBQ?.includes('迭代项目') && !prjData.prjBasic?.XMBQ?.includes('自研项目'); // 是否迭代项目付款
+  let showKQXX = prjData.prjBasic?.YSLX === '科研预算'; //显示考勤信息
   // var s = 0;
   // var e = 0;
 
@@ -254,7 +279,6 @@ export default function ProjectDetail(props) {
           supplier: supplierArr,
           xmjbxxRecord: p(infoData.xmjbxxRecord),
         };
-        console.log('🚀 ~ file: index.js:229 ~ handlePromiseAll ~ obj:', obj);
         setPrjData(p => ({ ...p, ...obj }));
       }
       if (allMsData.success) {
@@ -415,6 +439,79 @@ export default function ProjectDetail(props) {
         //最初获取数据
         setMsgData([...JSON.parse(msgData.result)]);
       }
+      
+      if (infoData.success) {
+        const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
+        if (XMJBXX.YSLX === '科研预算') {
+          //获取考勤信息 - 左侧信息
+          const attendanceRes = await QueryMemberAttendanceRcd({
+            projectId: Number(xmid),
+            month: Number(getMonthRange(XMJBXX.CJRQ)[0]),
+            queryType: 'GL',
+          });
+          if (attendanceRes.success) {
+            let attendanceArr = JSON.parse(attendanceRes.result);
+            setPrjData(p => ({
+              ...p,
+              attendance: attendanceArr,
+            }));
+            setDaysData(p => ({ ...p, curMonth: getMonthRange(XMJBXX.CJRQ)[0] }));
+          }
+          //项目创建时间、考勤左侧信息获取后，开始获取右侧信息
+          if (infoData.success && attendanceRes.success) {
+            const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
+            const LEFT = JSON.parse(attendanceRes.result) || [];
+            // console.log('🚀 ~ file: index.js:473 ~ handlePromiseAll ~ LEFT:', LEFT);
+            if (LEFT.length !== 0 && getMonthRange(XMJBXX.CJRQ).length !== 0) {
+              // 获取个人考勤信息 - 右侧信息
+              getCalendarData(LEFT[0]?.RYID, Number(getMonthRange(XMJBXX.CJRQ)[0]), Number(xmid));
+            }
+          }
+        }
+
+        if (XMJBXX.XMBQ?.includes('迭代项目')) {
+
+          if (!XMJBXX.XMBQ?.includes('自研项目')) {
+            // 获取迭代项目付款记录
+            const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
+            if (paymentRecordData.success) {
+              let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
+              let yearArr = JSON.parse(paymentRecordData.nfxxResult);
+              setPrjData(p => ({
+                ...p,
+                paymentRecord: paymentRecordArr,
+                iterationYear: yearArr,
+              }));
+            }
+          }
+
+          //获取项目迭代内容
+          const iterationCtnPromise = QueryProjectUpdateInfo({
+            projectId: Number(xmid),
+          });
+          //获取迭代项目付款计划
+          const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
+          const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
+            iterationCtnPromise,
+            iterationPaymentPromise,
+          ]);
+          const iterationPaymentData = (await iterationPaymentRes) || {};
+          const iterationCtnData = (await iterationCtnRes) || {};
+          if (iterationCtnData.success) {
+            let iterationCtnArr = JSON.parse(iterationCtnData.result);
+            setPrjData(p => ({
+              ...p,
+              iterationCtn: iterationCtnArr,
+            }));
+          }
+          if (iterationPaymentData.success) {
+            setPrjData(p => ({
+              ...p,
+              iterationPayment: JSON.parse(iterationPaymentData.result),
+            }));
+          }
+        }
+      }
 
       // e = performance.now();
       // console.log(`Request time: ${e - s} milliseconds`, s, e);
@@ -426,7 +523,8 @@ export default function ProjectDetail(props) {
     }
   };
 
-  //获取项目详情数据 - 后续刷新数据
+  // - 后续刷新数据
+  //获取项目详情数据
   const getPrjDtlData = () => {
     setIsSpinning(true);
     QueryProjectInfoAll({
@@ -500,7 +598,7 @@ export default function ProjectDetail(props) {
       });
   };
 
-  //项目文档信息 - 后续刷新数据
+  //项目文档信息
   const getPrjDocData = ({ current = 1, pageSize = 5, LCBID = undefined, totalChange = false }) => {
     setPrjDocData(p => ({ ...p, loading: true }));
     QueryProjectFiles({
@@ -576,7 +674,7 @@ export default function ProjectDetail(props) {
         });
   };
 
-  //获取里程碑数据 - 后续刷新数据
+  //获取里程碑数据
   const getMileStoneData = async () => {
     setIsSpinning(true);
     try {
@@ -665,6 +763,7 @@ export default function ProjectDetail(props) {
 
   //获取项目跟踪数据
   const getTrackingData = () => {
+    setIsSpinning(true);
     QueryProjectTracking({
       projectId: Number(xmid),
       queryType: 'GZZB',
@@ -673,11 +772,134 @@ export default function ProjectDetail(props) {
       .then(res => {
         if (res?.success) {
           setPrjData(p => ({ ...p, trackingData: JSON.parse(res.result) }));
+          setIsSpinning(false);
         }
       })
       .catch(e => {
-        message.error('接口信息获取失败', 1);
+        console.error('🚀项目跟踪数据获取失败', e);
+        message.error('项目跟踪数据获取失败', 1);
+        setIsSpinning(false);
       });
+  };
+
+  //获取项目迭代内容
+  const getIterationCtn = () => {
+    setIsSpinning(true);
+    QueryProjectUpdateInfo({
+      projectId: Number(xmid),
+    })
+      .then(res => {
+        if (res?.success) {
+          setPrjData(p => ({ ...p, iterationCtn: JSON.parse(res.result) }));
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('🚀项目迭代内容获取失败', e);
+        message.error('项目迭代内容获取失败', 1);
+        setIsSpinning(false);
+      });
+  };
+
+  //考勤信息 - 月份范围
+  const getMonthRange = pastDateStr => {
+    // 项目创建时间
+    const pastDate = moment(pastDateStr, 'YYYYMMDD');
+    // 当前时间
+    const currentDate = moment();
+    // 获取从过去时间到当前时间的月份数组
+    const monthsArray = [];
+    let cursor = pastDate.clone(); // 使用克隆方法来避免改变原始时间对象
+    while (cursor.isSameOrBefore(currentDate, 'month')) {
+      monthsArray.push(cursor.format('YYYYMM'));
+      cursor.add(1, 'month');
+    }
+    return monthsArray;
+  };
+
+  // 获取个人考勤信息 - 右侧信息
+  const getCalendarData = async (memberId, month, projectId, fn = () => {}) => {
+    try {
+      fn(true);
+      const atdCalendarResult = await QueryMemberAttendanceRcd({
+        memberId,
+        month,
+        projectId,
+        queryType: 'XQ',
+      });
+      if (atdCalendarResult.success) {
+        // console.log('🚀 ~ atdCalendarResult:', JSON.parse(atdCalendarResult.result));
+        const atdCalendarArr = JSON.parse(atdCalendarResult.result);
+        const attendanceDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 3)
+          .map(x => moment(String(x.RQ)));
+        const attendanceHalfDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 1)
+          .map(x => moment(String(x.RQ)));
+        const leaveDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 4)
+          .map(x => moment(String(x.RQ)));
+        const leaveHalfDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 2)
+          .map(x => moment(String(x.RQ)));
+        const overTimeDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 5)
+          .map(x => moment(String(x.RQ)));
+        const overTimeHalfDaysArr = atdCalendarArr
+          .filter(x => x.KQLX === 6)
+          .map(x => moment(String(x.RQ)));
+        // console.log({
+        //   curMonth: String(month),
+        //   activeId: memberId,
+        //   attendanceDays: attendanceDaysArr,
+        //   attendanceHalfDays: attendanceHalfDaysArr,
+        //   leaveDays: leaveDaysArr,
+        //   leaveHalfDays: leaveHalfDaysArr,
+        //   overTimeDays: overTimeDaysArr,
+        //   overTimeHalfDays: overTimeHalfDaysArr,
+        // });
+        setDaysData({
+          curMonth: String(month),
+          activeId: memberId,
+          attendanceDays: attendanceDaysArr,
+          attendanceHalfDays: attendanceHalfDaysArr,
+          leaveDays: leaveDaysArr,
+          leaveHalfDays: leaveHalfDaysArr,
+          overTimeDays: overTimeDaysArr,
+          overTimeHalfDays: overTimeHalfDaysArr,
+        });
+        fn(false);
+      }
+    } catch (e) {
+      message.error('考勤信息获取失败', 1);
+      console.error('获取个人考勤信息 - 右侧信息', e);
+      fn(false);
+    }
+  };
+
+  //获取考勤信息 - 左侧信息
+  const getAttendanceData = async (month, projectId, fn = () => {}) => {
+    try {
+      fn(true);
+      const attendanceRes = await QueryMemberAttendanceRcd({
+        projectId,
+        month,
+        queryType: 'GL',
+      });
+      if (attendanceRes.success) {
+        let attendanceArr = JSON.parse(attendanceRes.result);
+        setPrjData(p => ({
+          ...p,
+          attendance: attendanceArr,
+        }));
+        setDaysData(p => ({ ...p, curMonth: String(month) }));
+        fn(false);
+      }
+    } catch (error) {
+      message.error('考勤信息获取失败', 1);
+      console.error('获取考勤信息 - 左侧信息', e);
+      fn(false);
+    }
   };
 
   return (
@@ -700,6 +922,10 @@ export default function ProjectDetail(props) {
         />
         <div className="detail-row">
           <div className="col-left">
+            {isDDXM && (
+              <IterationContent prjData={prjData} xmid={xmid} getIterationCtn={getIterationCtn} />
+            )}
+            {isDDXMFK && <IterationPayment prjData={prjData} />}
             <MileStone
               xmid={xmid}
               prjData={prjData}
@@ -727,7 +953,12 @@ export default function ProjectDetail(props) {
                 setEndIndex,
               }}
             />
-            <PrjTracking xmid={xmid} prjData={prjData} getTrackingData={getTrackingData} isLeader={isLeader}/>
+            <PrjTracking
+              xmid={xmid}
+              prjData={prjData}
+              getTrackingData={getTrackingData}
+              isLeader={isLeader}
+            />
             <InfoDisplay
               isHwSltPrj={isHwSltPrj}
               prjData={prjData}
@@ -736,8 +967,20 @@ export default function ProjectDetail(props) {
               isLeader={isLeader}
               isBdgtMnger={isBdgtMnger}
             />
+            {showKQXX && (
+              <AttendanceInfo
+                dataProps={{ prjData, xmid, daysData }}
+                funcProps={{ getMonthRange, getCalendarData, getAttendanceData }}
+              />
+            )}
           </div>
           <div className="col-right">
+            <ShortcutCard
+              prjData={prjData}
+              xmid={xmid}
+              ZYXMKQLX={ZYXMKQLX}
+              funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll }}
+            />
             <PrjMember
               routes={routes}
               prjData={prjData}
@@ -745,6 +988,7 @@ export default function ProjectDetail(props) {
               getPrjDtlData={getPrjDtlData}
               isLeader={isLeader}
             />
+            {isDDXM && <PaymentRecord prjData={prjData} />}
             <PrjNode prjData={prjData} />
             <PrjDoc
               prjDocData={prjDocData}

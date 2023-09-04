@@ -175,6 +175,11 @@ export default function PrjDoc(props) {
       });
   };
 
+  //跳转在线文档
+  const jumpToZxwd = url => {
+    window.open(url);
+  };
+
   if (prjDocData.data?.length === 0) return null;
   return (
     <div className="prj-doc-box">
@@ -203,39 +208,62 @@ export default function PrjDoc(props) {
             // defaultActiveKey={[data.children[0]?.value]}
             expandIcon={({ isActive }) => <Icon type="caret-right" rotate={isActive ? 90 : 0} />}
           >
-            {prjDocData.data.map(x => (
-              <Collapse.Panel
-                header={x.WDLX + `（${JSON.parse(x.WDFJ)?.items?.length}）`}
-                key={x.WDID}
-              >
-                {JSON.parse(x.WDFJ)?.items?.map(y => (
+            {prjDocData.data.map(x =>
+              x.ZXWD ? (
+                <Collapse.Panel header={x.WDLX + `（${x.WDSL}）`} key={x.WDID}>
                   <div
                     className="doc-item"
-                    key={y[0]}
+                    key={x.ZXWDMC}
                     style={allowDownload() ? {} : { color: '#303133', cursor: 'default' }}
                   >
                     <Tooltip
-                      title={y[1]}
+                      title={x.ZXWDMC}
                       placement="topLeft"
-                      onClick={() => (allowDownload() ? handleFilePreview(x.WDID, y[1], y[0]) : {})}
+                      onClick={() => (allowDownload() ? jumpToZxwd(x.ZXWD) : {})}
                     >
-                      {y[1]}
+                      {x.ZXWDMC}
                     </Tooltip>
-                    <Popover
-                      placement="bottomRight"
-                      content={historyContent()}
-                      overlayClassName="custom-rpt-management-popover"
-                      title={null}
-                      trigger="click"
-                      onVisibleChange={v => setPrjDocData(p => ({ ...p, history: [] }))}
-                      arrowPointAtCenter
-                    >
-                      <i className="iconfont icon-history" onClick={() => getHistoryData(x.WDID)} />
-                    </Popover>
                   </div>
-                ))}
-              </Collapse.Panel>
-            ))}
+                </Collapse.Panel>
+              ) : (
+                <Collapse.Panel
+                  header={x.WDLX + `（${JSON.parse(x.WDFJ)?.items?.length}）`}
+                  key={x.WDID}
+                >
+                  {JSON.parse(x.WDFJ)?.items?.map(y => (
+                    <div
+                      className="doc-item"
+                      key={y[0]}
+                      style={allowDownload() ? {} : { color: '#303133', cursor: 'default' }}
+                    >
+                      <Tooltip
+                        title={y[1]}
+                        placement="topLeft"
+                        onClick={() =>
+                          allowDownload() ? handleFilePreview(x.WDID, y[1], y[0]) : {}
+                        }
+                      >
+                        {y[1]}
+                      </Tooltip>
+                      <Popover
+                        placement="bottomRight"
+                        content={historyContent()}
+                        overlayClassName="custom-rpt-management-popover"
+                        title={null}
+                        trigger="click"
+                        onVisibleChange={v => setPrjDocData(p => ({ ...p, history: [] }))}
+                        arrowPointAtCenter
+                      >
+                        <i
+                          className="iconfont icon-history"
+                          onClick={() => getHistoryData(x.WDID)}
+                        />
+                      </Popover>
+                    </div>
+                  ))}
+                </Collapse.Panel>
+              ),
+            )}
           </Collapse>
         </Spin>
       </div>

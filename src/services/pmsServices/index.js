@@ -122,7 +122,17 @@ const {
     queryRequisitionData,
     queryUnreadInfo,
     insertResumeDownloadRecords,
-    queryResumeDownloadRecords
+    queryResumeDownloadRecords,
+    insertProjectUpdateInfo,
+    queryProjectUpdateInfo,
+    insertProjectAttendanceRcd,
+    queryMemberAttendanceRcd,
+    insertEvaluateInfo,
+    queryEvaluateInfo,
+    initIterationProjectInfo,
+    queryIteProjPayRcd,
+    queryIteProjPayPlan,
+    queryContractFlowInfo,
   },
 } = api;
 
@@ -1304,11 +1314,110 @@ export async function InsertResumeDownloadRecord(payload) {
   return request(option);
 }
 
-
 // 查询简历下载记录
 export async function QueryResumeDownloadRecords(payload) {
   const option = {
     url: queryResumeDownloadRecords,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 新增、修改、删除自研项目升级内容
+export async function InsertProjectUpdateInfo(payload) {
+  const option = {
+    url: insertProjectUpdateInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询自研项目升级内容
+export async function QueryProjectUpdateInfo(payload) {
+  const option = {
+    url: queryProjectUpdateInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 自研项目考勤登记
+export async function InsertProjectAttendanceRcd(payload) {
+  const option = {
+    url: insertProjectAttendanceRcd,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询自研项目考勤记录
+export async function QueryMemberAttendanceRcd(payload) {
+  const option = {
+    url: queryMemberAttendanceRcd,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 新增、修改评估信息
+export async function InsertEvaluateInfo(payload) {
+  const option = {
+    url: insertEvaluateInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询迭代项目评估信息
+export async function QueryEvaluateInfo(payload) {
+  const option = {
+    url: queryEvaluateInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 初始化迭代项目信息
+export async function InitIterationProjectInfo(payload) {
+  const option = {
+    url: initIterationProjectInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询迭代项目付款记录
+export async function QueryIteProjPayRcd(payload) {
+  const option = {
+    url: queryIteProjPayRcd,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询迭代项目付款计划
+export async function QueryIteProjPayPlan(payload) {
+  const option = {
+    url: queryIteProjPayPlan,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询合同签署流程
+export async function QueryContractFlowInfo(payload) {
+  const option = {
+    url: queryContractFlowInfo,
     method: 'post',
     data: payload,
   };

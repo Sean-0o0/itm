@@ -6,8 +6,8 @@ export default function PrjNode(props) {
   const { prjData } = props;
   const { nodeData = [] } = prjData;
 
-  const getPrjNodeItem = (nodeName = '--', date = '--', ago = '') => (
-    <div className="prj-node-item">
+  const getPrjNodeItem = (nodeName = '--', date = '--', ago = '', key) => (
+    <div className="prj-node-item" key={key}>
       <div className="node-arrow"></div>
       <div className="node-content">
         <div className="title">
@@ -45,7 +45,7 @@ export default function PrjNode(props) {
         <Timeline>
           <Timeline.Item dot=" " style={{ height: 38 }}></Timeline.Item>
           {nodeData.map((x, i) => (
-            <div key={x.SXMC}>
+            <div key={i}>
               <Timeline.Item
                 dot={
                   <div className="dot-wrapper">
@@ -61,6 +61,7 @@ export default function PrjNode(props) {
                   x.SXMC,
                   x.WCSJ ? moment(String(x.WCSJ)).format('YYYY-MM-DD') : '--',
                   getDiffDays(x.WCSJ, i, true),
+                  i,
                 )}
               </Timeline.Item>
               {i < nodeData.length - 1 && (

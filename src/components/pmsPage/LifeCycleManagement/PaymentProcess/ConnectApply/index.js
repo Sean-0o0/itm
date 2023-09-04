@@ -338,13 +338,14 @@ export default function ConnectApply(props) {
 
   return (
     <div className="connect-applay-box">
-      <div className="connect-applay-title">关联申请</div>
+      {form.getFieldValue('djlx') === '2' && <div className="connect-applay-title">关联申请</div>}
       {form.getFieldValue('djlx') === '2' && (
         <Button className="connect-applay-btn" onClick={handleBtnClick}>
           关联申请
         </Button>
       )}
       {glsqData.radioObj !== undefined && getSltedRadio(glsqData.radioObj)}
+      <div className="divide-line"></div>
       {getCompany('法人实体', FRST.length > 0 ? FRST[0].note : undefined, 4, 20)}
       <Modal
         wrapClassName="editMessage-modify payment-connect-apply-modal"
