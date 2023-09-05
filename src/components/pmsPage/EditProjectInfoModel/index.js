@@ -38,7 +38,8 @@ import {
   FetchQueryMemberInfo,
   FetchQueryMilestoneStageInfo,
   FetchQueryMatterUnderMilepost,
-  FetchQueryStationInfo, InsertSubProjects,
+  FetchQueryStationInfo,
+  InsertSubProjects,
 } from '../../../services/projectManage';
 import { DecryptBase64, EncryptBase64 } from '../../Common/Encrypt';
 import config from '../../../utils/config';
@@ -57,7 +58,7 @@ import {
 import BridgeModel from '../../Common/BasicModal/BridgeModel';
 import TableFullScreen from '../LifeCycleManagement/ContractInfoUpdate/TableFullScreen';
 import OthersInfos from './OthersInfos';
-import SubItemInfo from "../../../pages/workPlatForm/singlePage/NewProjectModelV2/SubItemInfo";
+import SubItemInfo from '../../../pages/workPlatForm/singlePage/NewProjectModelV2/SubItemInfo';
 
 const { Option, OptGroup } = Select;
 const { api } = config;
@@ -89,12 +90,12 @@ class EditableCell extends React.Component {
     formdecorate.validateFields(
       ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id'], 'fksj' + record['id']],
       (error, values) => {
-        console.log("valuesvalues", values)
-        console.log("errorerror", error)
+        console.log('valuesvalues', values);
+        console.log('errorerror', error);
         if (error && error[e.currentTarget.id]) {
           return;
         }
-        handleSave({...record, ...values});
+        handleSave({ ...record, ...values });
       },
     );
   };
@@ -143,7 +144,12 @@ class EditableCell extends React.Component {
             onChange={(data, dataString) => {
               const { record, handleSave } = this.props;
               form.validateFields(
-                ['fkqs' + record['id'], 'bfb' + record['id'], 'fkje' + record['id'], 'fksj' + record['id']],
+                [
+                  'fkqs' + record['id'],
+                  'bfb' + record['id'],
+                  'fkje' + record['id'],
+                  'fksj' + record['id'],
+                ],
                 (error, values) => {
                   // console.log('values-ccc', values);
                   // console.log('error-ccc', error);
@@ -151,7 +157,7 @@ class EditableCell extends React.Component {
                   //   return;
                   // }
                   let newValues = {};
-                  newValues = {...values};
+                  newValues = { ...values };
                   console.log('dataString', dataString);
                   for (let i in newValues) {
                     if (i === 'fksj' + record['id']) {
@@ -161,7 +167,7 @@ class EditableCell extends React.Component {
                   // console.log('save1111-ccc', newValues);
                   // console.log('save-ccc', {...record, ...newValues});
                   // this.toggleEdit();
-                  handleSave({...record, ...newValues});
+                  handleSave({ ...record, ...newValues });
                 },
               );
             }}
@@ -444,7 +450,7 @@ class EditProjectInfoModel extends React.Component {
     projectTypeList: [], //项目类型列表
     projectTypeZY: [], //自研项目下的项目类型
     projectTypeZYFlag: false, //是否选中自研项目下的类型
-    projectTypeRYJFlag: false,//选中软硬件项目
+    projectTypeRYJFlag: false, //选中软硬件项目
     organizationList: [], // 组织机构列表
     organizationTreeList: [], // 树形组织机构列表
     nowTime: moment(new Date()).format('YYYY-MM-DD'), // 当前时间
@@ -489,7 +495,7 @@ class EditProjectInfoModel extends React.Component {
     //基础信息
     basicInfo: {
       SFYJRW: 1, //是否硬件入围
-      haveHard: 2,//是否包含硬件
+      haveHard: 2, //是否包含硬件
       projectId: -1,
       projectName: '',
       projectType: 1,
@@ -641,15 +647,17 @@ class EditProjectInfoModel extends React.Component {
     haveType: 1,
   };
 
-
   componentWillMount() {
     // 查询关联预算项目信息-需先查出关联预算项目再查项目详情
-    this.fetchQueryBudgetProjects({type: 'NF', year: Number(this.state.budgetInfo.year.format("YYYY"))});
+    this.fetchQueryBudgetProjects({
+      type: 'NF',
+      year: Number(this.state.budgetInfo.year.format('YYYY')),
+    });
   }
 
   componentDidMount = async () => {
     const _this = this;
-    const {xmid, projectStatus, type, subItemFlag, subItemFinish} = _this.props
+    const { xmid, projectStatus, type, subItemFlag, subItemFinish } = _this.props;
     // const params = this.getUrlParams();
     if (xmid && xmid !== -1) {
       // ////console.log("paramsparams", params)
@@ -665,17 +673,17 @@ class EditProjectInfoModel extends React.Component {
     }
     // 判断是否是首页跳转过来的
     if (type) {
-      this.setState({type: true});
+      this.setState({ type: true });
     }
     // 判断是否是没有里程碑的子项目
     if (subItemFlag) {
-      this.setState({subItemFlag: true});
+      this.setState({ subItemFlag: true });
     }
     //子项目完善
     if (subItemFinish) {
-      this.setState({subItemFinish: true});
+      this.setState({ subItemFinish: true });
     }
-    setTimeout(function () {
+    setTimeout(function() {
       _this.fetchInterface();
     }, 300);
   };
@@ -721,11 +729,19 @@ class EditProjectInfoModel extends React.Component {
     await this.fetchQueryMilepostInfo({
       type: Number(this.state.basicInfo.projectType),
       isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-      xmid: this.state.subItemFlag && this.state.subItemFinish ? '-1' : this.state.basicInfo.projectId,
+      xmid:
+        this.state.subItemFlag && this.state.subItemFinish ? '-1' : this.state.basicInfo.projectId,
       biddingMethod: 1,
-      budget: this.state.subItemFlag && this.state.subItemFinish ? (String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget))) : 0,
+      budget:
+        this.state.subItemFlag && this.state.subItemFinish
+          ? String(this.state.basicInfo.haveHard) === '2'
+            ? this.state.budgetInfo.projectBudget
+            : Number(this.state.budgetInfo.softBudget) +
+              Number(this.state.budgetInfo.frameBudget) +
+              Number(this.state.budgetInfo.singleBudget)
+          : 0,
       label: this.state.basicInfo.labelTxt,
-      queryType: "ALL",
+      queryType: 'ALL',
       //项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
       haveType: this.state.haveType,
       //项目软件预算
@@ -791,14 +807,14 @@ class EditProjectInfoModel extends React.Component {
 
   // 查询里程碑信息
   fetchQueryMilepostInfo(params) {
-    console.log("------------查询里程碑信息-----------")
+    console.log('------------查询里程碑信息-----------');
     return FetchQueryMilepostInfo(params)
       .then(record => {
-        const {code = -1, result = ''} = record;
+        const { code = -1, result = '' } = record;
         let {
           nowTime,
           tomorrowTime,
-          mileInfo: {milePostInfo},
+          mileInfo: { milePostInfo },
         } = this.state;
         if (code > 0) {
           let data = JSON.parse(result);
@@ -827,11 +843,13 @@ class EditProjectInfoModel extends React.Component {
               } else {
                 item.addSxFlag = true;
               }
-              const { lcblxid = '' } = item
+              const { lcblxid = '' } = item;
               //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
               item.matterInfos.map(item => {
                 if (
-                  item.sxlb.length - 1 === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc&&i.lcbid === lcblxid).length
+                  item.sxlb.length - 1 ===
+                  this.state.mileItemInfo.filter(i => i.swlx === item.swlxmc && i.lcbid === lcblxid)
+                    .length
                 ) {
                   item.addFlag = false;
                 } else {
@@ -852,26 +870,26 @@ class EditProjectInfoModel extends React.Component {
             //纯硬件 软件金额从0变为其他  这个时候招采信息从之前的不存在变为存在
             if (this.state.pureHardwareFlag) {
               for (let i = 0; i < data.length; i++) {
-                if (data[i].lcbmc === "项目立项") {
+                if (data[i].lcbmc === '项目立项') {
                   milePostInfo.map(item => {
-                    if (item.lcbmc === "项目立项") {
-                      item.matterInfos = data[i].matterInfos
+                    if (item.lcbmc === '项目立项') {
+                      item.matterInfos = data[i].matterInfos;
                     }
-                  })
+                  });
                 }
                 if (data[i].lcbmc === '项目招采') {
                   if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
-                    milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+                    milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采');
                   }
                   if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
-                    milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                    milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0]);
                   }
                   milePostInfo.sort((a, b) => {
-                    return (a.xh - b.xh)
-                  })
+                    return a.xh - b.xh;
+                  });
                   this.setState({
                     pureHardwareFlag: false,
-                  })
+                  });
                 }
                 if (data[i].lcbmc === '项目实施') {
                   milePostInfo.map(item => {
@@ -882,34 +900,38 @@ class EditProjectInfoModel extends React.Component {
                 }
               }
             }
-            if (Number(this.state.budgetInfo.softBudget) === 0 && Number(this.state.budgetInfo.singleBudget) === 0 && String(this.state.basicInfo.haveHard) === "1") {
+            if (
+              Number(this.state.budgetInfo.softBudget) === 0 &&
+              Number(this.state.budgetInfo.singleBudget) === 0 &&
+              String(this.state.basicInfo.haveHard) === '1'
+            ) {
               if (Number(this.state.budgetInfo.frameBudget) > 0) {
                 if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
                   if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
-                    milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                    milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0]);
                   }
                   milePostInfo.sort((a, b) => {
-                    return (a.xh - b.xh)
-                  })
+                    return a.xh - b.xh;
+                  });
                 } else {
                   for (let i = 0; i < data.length; i++) {
-                    if (data[i].lcbmc === "项目立项") {
+                    if (data[i].lcbmc === '项目立项') {
                       milePostInfo.map(item => {
-                        if (item.lcbmc === "项目立项") {
-                          item.matterInfos = data[i].matterInfos
+                        if (item.lcbmc === '项目立项') {
+                          item.matterInfos = data[i].matterInfos;
                         }
-                      })
+                      });
                     }
                   }
                 }
               } else {
                 for (let i = 0; i < data.length; i++) {
-                  if (data[i].lcbmc === "项目立项") {
+                  if (data[i].lcbmc === '项目立项') {
                     milePostInfo.map(item => {
-                      if (item.lcbmc === "项目立项") {
-                        item.matterInfos = data[i].matterInfos
+                      if (item.lcbmc === '项目立项') {
+                        item.matterInfos = data[i].matterInfos;
                       }
-                    })
+                    });
                   }
                   if (data[i].lcbmc === '项目实施') {
                     milePostInfo.map(item => {
@@ -921,25 +943,28 @@ class EditProjectInfoModel extends React.Component {
                 }
               }
               //软件金额为0 去掉项目招采里程碑
-              milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+              milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采');
             }
-            if (Number(this.state.budgetInfo.singleBudget) !== 0 && String(this.state.basicInfo.haveHard) === "1") {
+            if (
+              Number(this.state.budgetInfo.singleBudget) !== 0 &&
+              String(this.state.basicInfo.haveHard) === '1'
+            ) {
               //单独采购有值的时候，都要有招采
               if (milePostInfo.filter(item => item.lcbmc === '项目立项').length === 0) {
                 if (arr.filter(item => item.lcbmc === '项目立项').length > 0) {
-                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0])
+                  milePostInfo.push(arr.filter(item => item.lcbmc === '项目立项')[0]);
                 }
                 milePostInfo.sort((a, b) => {
-                  return (a.xh - b.xh)
-                })
+                  return a.xh - b.xh;
+                });
               } else {
                 for (let i = 0; i < data.length; i++) {
-                  if (data[i].lcbmc === "项目立项") {
+                  if (data[i].lcbmc === '项目立项') {
                     milePostInfo.map(item => {
-                      if (item.lcbmc === "项目立项") {
-                        item.matterInfos = data[i].matterInfos
+                      if (item.lcbmc === '项目立项') {
+                        item.matterInfos = data[i].matterInfos;
                       }
-                    })
+                    });
                   }
                 }
               }
@@ -954,20 +979,22 @@ class EditProjectInfoModel extends React.Component {
               }
               //单独采购有值的时候，都要有招采
               if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
-                milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+                milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采');
               }
               if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0]);
               }
               milePostInfo.sort((a, b) => {
-                return (a.xh - b.xh)
-              })
+                return a.xh - b.xh;
+              });
             }
-            if (500000 > Number(this.state.budgetInfo.singleBudget)
-              && Number(this.state.budgetInfo.singleBudget) > 0
-              && Number(this.state.budgetInfo.frameBudget) === 0
-              && Number(this.state.budgetInfo.softBudget) === 0
-              && String(this.state.basicInfo.haveHard) === "1") {
+            if (
+              500000 > Number(this.state.budgetInfo.singleBudget) &&
+              Number(this.state.budgetInfo.singleBudget) > 0 &&
+              Number(this.state.budgetInfo.frameBudget) === 0 &&
+              Number(this.state.budgetInfo.softBudget) === 0 &&
+              String(this.state.basicInfo.haveHard) === '1'
+            ) {
               for (let i = 0; i < data.length; i++) {
                 if (data[i].lcbmc === '项目实施') {
                   milePostInfo.map(item => {
@@ -979,26 +1006,26 @@ class EditProjectInfoModel extends React.Component {
               }
               //单独采购小于500000大于0时，隐藏项目立项
               if (milePostInfo.filter(item => item.lcbmc === '项目立项').length > 0) {
-                milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目立项')
+                milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目立项');
               }
               //单独采购有值的时候，都要有招采
               if (milePostInfo.filter(item => item.lcbmc === '项目招采').length > 0) {
-                milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采')
+                milePostInfo = milePostInfo.filter(item => item.lcbmc !== '项目招采');
               }
               if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0]);
               }
               milePostInfo.sort((a, b) => {
-                return (a.xh - b.xh)
-              })
-            }else {
+                return a.xh - b.xh;
+              });
+            } else {
               for (let i = 0; i < data.length; i++) {
-                if (data[i].lcbmc === "项目立项") {
+                if (data[i].lcbmc === '项目立项') {
                   milePostInfo.map(item => {
-                    if (item.lcbmc === "项目立项") {
-                      item.matterInfos = data[i].matterInfos
+                    if (item.lcbmc === '项目立项') {
+                      item.matterInfos = data[i].matterInfos;
                     }
-                  })
+                  });
                 }
                 if (data[i].lcbmc === '项目招采') {
                   milePostInfo.map(item => {
@@ -1016,82 +1043,102 @@ class EditProjectInfoModel extends React.Component {
                 }
               }
             }
-            console.log("milePostInfo", milePostInfo)
+            console.log('milePostInfo', milePostInfo);
             //重新设置milePostInfo默认时间
             let now = nowTime;
             milePostInfo.forEach(item => {
-              if (item.lcbmc.includes("市场")) {
+              if (item.lcbmc.includes('市场')) {
                 if (now !== nowTime) {
                   item.kssj = now;
-                  item.jssj = moment(now).add(14, 'days').format('YYYY-MM-DD');
+                  item.jssj = moment(now)
+                    .add(14, 'days')
+                    .format('YYYY-MM-DD');
                 } else {
                   item.kssj = nowTime;
-                  item.jssj = moment(nowTime).add(14, 'days').format('YYYY-MM-DD');
+                  item.jssj = moment(nowTime)
+                    .add(14, 'days')
+                    .format('YYYY-MM-DD');
                 }
                 now = item.jssj;
               }
-              if (item.lcbmc.includes("立项")) {
+              if (item.lcbmc.includes('立项')) {
                 if (now !== nowTime) {
                   item.kssj = now;
-                  item.jssj = moment(now).add(7, 'days').format('YYYY-MM-DD');
+                  item.jssj = moment(now)
+                    .add(7, 'days')
+                    .format('YYYY-MM-DD');
                 } else {
                   item.kssj = nowTime;
-                  item.jssj = moment(nowTime).add(7, 'days').format('YYYY-MM-DD');
+                  item.jssj = moment(nowTime)
+                    .add(7, 'days')
+                    .format('YYYY-MM-DD');
                 }
                 now = item.jssj;
               }
-              if (item.lcbmc.includes("招采")) {
+              if (item.lcbmc.includes('招采')) {
                 if (now !== nowTime) {
                   item.kssj = now;
-                  item.jssj = moment(now).add(7, 'days').format('YYYY-MM-DD');
+                  item.jssj = moment(now)
+                    .add(7, 'days')
+                    .format('YYYY-MM-DD');
                 } else {
                   item.kssj = nowTime;
-                  item.jssj = moment(nowTime).add(7, 'days').format('YYYY-MM-DD');
+                  item.jssj = moment(nowTime)
+                    .add(7, 'days')
+                    .format('YYYY-MM-DD');
                 }
                 now = item.jssj;
               }
-              if (item.lcbmc.includes("实施")) {
+              if (item.lcbmc.includes('实施')) {
                 if (now !== nowTime) {
                   item.kssj = now;
-                  item.jssj = moment(now).add(1, 'months').format('YYYY-MM-DD');
+                  item.jssj = moment(now)
+                    .add(1, 'months')
+                    .format('YYYY-MM-DD');
                 } else {
                   item.kssj = nowTime;
-                  item.jssj = moment(nowTime).add(1, 'months').format('YYYY-MM-DD');
+                  item.jssj = moment(nowTime)
+                    .add(1, 'months')
+                    .format('YYYY-MM-DD');
                 }
                 now = item.jssj;
               }
-              if (item.lcbmc.includes("上线")) {
+              if (item.lcbmc.includes('上线')) {
                 if (now !== nowTime) {
                   item.kssj = now;
-                  item.jssj = moment(now).add(1, 'months').format('YYYY-MM-DD');
+                  item.jssj = moment(now)
+                    .add(1, 'months')
+                    .format('YYYY-MM-DD');
                 } else {
                   item.kssj = nowTime;
-                  item.jssj = moment(nowTime).add(1, 'months').format('YYYY-MM-DD');
+                  item.jssj = moment(nowTime)
+                    .add(1, 'months')
+                    .format('YYYY-MM-DD');
                 }
                 now = item.jssj;
               }
             });
-            this.setState({milePostInfo, mileInfo: {...this.state.mileInfo, milePostInfo}});
-          } else if (params.queryType === "ONLYZB") {
+            this.setState({ milePostInfo, mileInfo: { ...this.state.mileInfo, milePostInfo } });
+          } else if (params.queryType === 'ONLYZB') {
             if (milePostInfo.filter(item => item.lcbmc === '项目招采').length === 0) {
               if (arr.filter(item => item.lcbmc === '项目招采').length > 0) {
-                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0])
+                milePostInfo.push(arr.filter(item => item.lcbmc === '项目招采')[0]);
               }
               milePostInfo.sort((a, b) => {
-                return (a.xh - b.xh)
-              })
+                return a.xh - b.xh;
+              });
             } else {
               for (let i = 0; i < data.length; i++) {
-                if (data[i].lcbmc === "项目招采") {
+                if (data[i].lcbmc === '项目招采') {
                   milePostInfo.map(item => {
-                    if (item.lcbmc === "项目招采") {
-                      item.matterInfos = data[i].matterInfos
+                    if (item.lcbmc === '项目招采') {
+                      item.matterInfos = data[i].matterInfos;
                     }
-                  })
+                  });
                 }
               }
             }
-            this.setState({milePostInfo, mileInfo: {...this.state.mileInfo, milePostInfo}})
+            this.setState({ milePostInfo, mileInfo: { ...this.state.mileInfo, milePostInfo } });
           }
         }
       })
@@ -1237,8 +1284,8 @@ class EditProjectInfoModel extends React.Component {
     return result;
   }
 
-    //关联项目树状数据
-    toItemTree(list, parId) {
+  //关联项目树状数据
+  toItemTree(list, parId) {
     let a = list.reduce((pre, current, index) => {
       pre[current.ysLX] = pre[current.ysLX] || [];
       pre[current.ysLX].push({
@@ -1290,18 +1337,18 @@ class EditProjectInfoModel extends React.Component {
                 let treeDatamini = { children: [] };
                 if (item.zdbm === '6') {
                   b[item.zdbm].map(i => {
-                    let treeDataby = {}
-                    treeDataby.key = i.ysID
-                    treeDataby.value = i.ysID
-                    treeDataby.title = i.ysName
-                    treeDataby.ysID = i.ysID
-                    treeDataby.ysKGL = Number(i.ysKGL)
-                    treeDataby.ysLB = i.ysLB
-                    treeDataby.ysName = i.ysName
-                    treeDataby.ysZJE = Number(i.ysZJE)
-                    treeDataby.ysKZX = Number(i.ysKZX)
-                    treeDataby.zdbm = i.zdbm
-                    childrenDatamini.push(treeDataby)
+                    let treeDataby = {};
+                    treeDataby.key = i.ysID;
+                    treeDataby.value = i.ysID;
+                    treeDataby.title = i.ysName;
+                    treeDataby.ysID = i.ysID;
+                    treeDataby.ysKGL = Number(i.ysKGL);
+                    treeDataby.ysLB = i.ysLB;
+                    treeDataby.ysName = i.ysName;
+                    treeDataby.ysZJE = Number(i.ysZJE);
+                    treeDataby.ysKZX = Number(i.ysKZX);
+                    treeDataby.zdbm = i.zdbm;
+                    childrenDatamini.push(treeDataby);
                   });
                 } else {
                   treeDatamini.key = item.zdbm;
@@ -1439,7 +1486,7 @@ class EditProjectInfoModel extends React.Component {
           });
           // ////console.log("rygwSelectDictionary",newArray)
           // this.setState({rygwSelectDictionary: newArray, staffJobList: this.sortByKey(newStaffJobList, 'ibm', true)})
-          this.setState({rygwSelectDictionary: newArray, staffJobList: newStaffJobList});
+          this.setState({ rygwSelectDictionary: newArray, staffJobList: newStaffJobList });
           // ////console.log("arr",arr)
           // ////console.log("budgetProjectList",this.state.budgetProjectList)
           let totalBudget = 0;
@@ -1453,8 +1500,8 @@ class EditProjectInfoModel extends React.Component {
                 if (ite.key === result.budgetProject) {
                   budgetProjectName = ite.title;
                 }
-              })
-            })
+              });
+            });
           } else {
             this.state.budgetProjectList.forEach(item => {
               item.children.forEach(ite => {
@@ -1477,16 +1524,18 @@ class EditProjectInfoModel extends React.Component {
           // console.log("newOrgnewOrgnewOrg", newOrg)
           // console.log("labellabel", result.projectLabel === '' ? [] : result.projectLabel.split(','))
           // console.log("softwaresoftware", result.softwareId === '' ? [] : result.softwareId.split(','))
-          const flag = projectTypeZY.filter(item => String(item.ID) === String(result?.projectType)).length > 0;
-          const RYJFlag = String(result?.projectType) === "1";
+          const flag =
+            projectTypeZY.filter(item => String(item.ID) === String(result?.projectType)).length >
+            0;
+          const RYJFlag = String(result?.projectType) === '1';
           //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
           let haveType = 1;
-          if (String(result.haveHard) === "2") {
-            haveType = 1
-          } else if (String(result.haveHard) === "1" && Number(result.softBudget) === 0) {
-            haveType = 2
-          } else if (String(result.haveHard) === "1" && Number(result.softBudget) > 0) {
-            haveType = 3
+          if (String(result.haveHard) === '2') {
+            haveType = 1;
+          } else if (String(result.haveHard) === '1' && Number(result.softBudget) === 0) {
+            haveType = 2;
+          } else if (String(result.haveHard) === '1' && Number(result.softBudget) > 0) {
+            haveType = 3;
           }
           this.setState({
             haveType,
@@ -1497,7 +1546,7 @@ class EditProjectInfoModel extends React.Component {
             projectTypeZYFlag: flag,
             projectTypeRYJFlag: RYJFlag,
             basicInfo: {
-              haveHard: result.haveHard,//是否包含硬件
+              haveHard: result.haveHard, //是否包含硬件
               SFYJRW: Number(result.isShortListed),
               projectId: result.projectId,
               projectName: result.projectName,
@@ -1605,7 +1654,7 @@ class EditProjectInfoModel extends React.Component {
             if (String(e.orgId) === String(loginUser.org)) {
               loginUser.orgName = e.orgName;
             }
-            arr.push({...e});
+            arr.push({ ...e });
           });
           this.setState({
             loginUser: loginUser,
@@ -1686,7 +1735,7 @@ class EditProjectInfoModel extends React.Component {
             projectTypeList: this.toTypeTree(JSON.parse(xmlxRecord), 0),
           });
           const projectTypeZY = this.state.projectTypeList[0]?.children.filter(
-            item => String(item.NAME) === "自研项目",
+            item => String(item.NAME) === '自研项目',
           )[0]?.children;
           // console.log('projectTypeZY', projectTypeZY);
           this.setState({
@@ -1735,7 +1784,9 @@ class EditProjectInfoModel extends React.Component {
   searchStaff = (val, type) => {
     if (val.length !== 0) {
       let searchStaffList = [];
-      let isExist = this.state.staffList.filter(item => String(item.id) == String(this.state.loginUser.id));
+      let isExist = this.state.staffList.filter(
+        item => String(item.id) == String(this.state.loginUser.id),
+      );
       if (type === 'manage' && isExist.length === 0) {
         searchStaffList.push(this.state.loginUser);
       }
@@ -1799,14 +1850,16 @@ class EditProjectInfoModel extends React.Component {
         ? jobStaffName[Number(focusJob) - 1]
         : [];
       checkedStaffKey.forEach(item => {
-        const gw = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.gw
-        const namedefault =  this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.name
+        const gw = this.state.staffList.filter(i => i.id === item.substring(1, item.length))[0]?.gw;
+        const namedefault = this.state.staffList.filter(
+          i => i.id === item.substring(1, item.length),
+        )[0]?.name;
         const id = item.substring(1, item.length);
         if (!arr.includes(id)) {
           if ((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1') {
             arr.push(id);
-          } else if (gw !== null && !gw.includes("总经理") && focusJob === '1') {
-            message.warn("请选择总经理以上人员！")
+          } else if (gw !== null && !gw.includes('总经理') && focusJob === '1') {
+            message.warn('请选择总经理以上人员！');
             return;
           } else {
             arr.push(id);
@@ -1824,8 +1877,8 @@ class EditProjectInfoModel extends React.Component {
         if (!jobStaffNameArr.includes(itemname)) {
           if ((namedefault === '黄玉锋' || namedefault === '胡凡') && focusJob === '1') {
             jobStaffNameArr.push(itemname);
-          } else if (gw !== null && !gw.includes("总经理") && focusJob === '1') {
-            message.warn("请选择总经理以上人员！")
+          } else if (gw !== null && !gw.includes('总经理') && focusJob === '1') {
+            message.warn('请选择总经理以上人员！');
             return;
           } else {
             jobStaffNameArr.push(itemname);
@@ -1999,8 +2052,8 @@ class EditProjectInfoModel extends React.Component {
       staffJobList = [],
       projectTypeZYFlag = false,
       projectTypeRYJFlag = false,
-      staffInfo: {jobStaffList = []},
-      mileInfo: {milePostInfo = []},
+      staffInfo: { jobStaffList = [] },
+      mileInfo: { milePostInfo = [] },
       purchaseInfo = {},
       fileList = [],
       htxxVisiable = false,
@@ -2013,17 +2066,14 @@ class EditProjectInfoModel extends React.Component {
     } = this.state;
     //校验基础信息
     let basicflag;
-    if(String(this.state.subItem) === "1"){
+    if (String(this.state.subItem) === '1') {
       if (
         basicInfo.projectName !== '' &&
         basicInfo.projectType !== '' &&
         basicInfo.org !== '' &&
         basicInfo.org?.length !== 0
       ) {
-        if (
-          budgetInfo.projectBudget !== '' &&
-          budgetInfo.projectBudget !== null
-        ) {
+        if (budgetInfo.projectBudget !== '' && budgetInfo.projectBudget !== null) {
           basicflag = true;
         } else {
           basicflag = false;
@@ -2031,7 +2081,7 @@ class EditProjectInfoModel extends React.Component {
       } else {
         basicflag = false;
       }
-    }else{
+    } else {
       if (
         basicInfo.projectName !== '' &&
         basicInfo.projectType !== '' &&
@@ -2071,7 +2121,13 @@ class EditProjectInfoModel extends React.Component {
     }
     //软硬件项目需要校验是否包含硬件 是否包含硬件选是后要校验三个新增的金额
     if (projectTypeRYJFlag) {
-      if (!(String(basicInfo.haveHard) !== "-1" && basicInfo.haveHard != null && basicInfo.haveHard !== '')) {
+      if (
+        !(
+          String(basicInfo.haveHard) !== '-1' &&
+          basicInfo.haveHard != null &&
+          basicInfo.haveHard !== ''
+        )
+      ) {
         if (type === 1) {
           message.warn('项目预算信息-是否包含硬件未填写完整！');
           return;
@@ -2105,8 +2161,8 @@ class EditProjectInfoModel extends React.Component {
     //校验子项目信息
     let subItemflag = true;
     //校验子项目信息
-    if (String(subItem) === "1") {
-      console.log("-----------开始校验子项目表格信息-----------")
+    if (String(subItem) === '1') {
+      console.log('-----------开始校验子项目表格信息-----------');
       subItemflag = subItemRecord.filter(item => item.CZLX !== 'DELETE').length !== 0;
       if (!subItemflag) {
         message.warn('项目基本信息-子项目信息至少填写一条数据！');
@@ -2121,7 +2177,8 @@ class EditProjectInfoModel extends React.Component {
       //子项目单独采购金额之和
       let subSingleBudget = 0;
       subItemRecord.map(item => {
-        let ZYflag = this.state.projectTypeZY.filter(i => String(i.ID) === String(item.XMLX)).length > 0
+        let ZYflag =
+          this.state.projectTypeZY.filter(i => String(i.ID) === String(item.XMLX)).length > 0;
         //硬件项目校验是否包含硬件
         if (item.XMLX === '5') {
           if (item.SFBHYJ === '' || item.SFBHYJ == null) {
@@ -2129,28 +2186,33 @@ class EditProjectInfoModel extends React.Component {
           } else {
             //子项目是否包含硬件
             if (item.SFBHYJ === '1') {
-              if ((item.XMMC === '' || item.XMMC == null)
-                || (item.XMJL === '' || item.XMJL == null)
-                || (item.XMLX === '' || item.XMLX == null)
-                || (item.YYBM === '' || item.YYBM == null)
-                || (item.CGFS === '' || item.CGFS == null || item.CGFS === "-1")
-                || (item.GLYS === '' || item.GLYS == null)
+              if (
+                item.XMMC === '' ||
+                item.XMMC == null ||
+                item.XMJL === '' || item.XMJL == null ||
+                item.XMLX === '' || item.XMLX == null ||
+                item.YYBM === '' || item.YYBM == null ||
+                item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
+                item.GLYS === '' || item.GLYS == null ||
                 // || (item.XMYS === ''||item.XMYS == null)
-                || (item.RJYS === '' || item.RJYS == null)
-                || (item.SFBHYJ === '' || item.SFBHYJ == null)
-                || (item.SFWYJRWNXQ === '' || item.SFWYJRWNXQ == null)
-                || (item.KJCGJE === '' || item.KJCGJE == null)
-                || (item.DDCGJE === '' || item.DDCGJE == null)) {
+                item.RJYS === '' || item.RJYS == null ||
+                item.SFBHYJ === '' || item.SFBHYJ == null ||
+                item.SFWYJRWNXQ === '' || item.SFWYJRWNXQ == null ||
+                item.KJCGJE === '' || item.KJCGJE == null ||
+                item.DDCGJE === '' || item.DDCGJE == null
+              ) {
                 subItemflag = false;
               }
             } else if (item.SFBHYJ === '2') {
-              if ((item.XMMC === '' || item.XMMC == null)
-                || (item.XMJL === '' || item.XMJL == null)
-                || (item.XMLX === '' || item.XMLX == null)
-                || (item.YYBM === '' || item.YYBM == null)
-                || (item.CGFS === '' || item.CGFS == null || item.CGFS === "-1")
-                || (item.GLYS === '' || item.GLYS == null || item.GLYS === "-99")
-                || (item.XMYS === '' || item.XMYS == null)
+              if (
+                item.XMMC === '' ||
+                item.XMMC == null ||
+                item.XMJL === '' || item.XMJL == null ||
+                item.XMLX === '' || item.XMLX == null ||
+                item.YYBM === '' || item.YYBM == null ||
+                item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
+                item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
+                item.XMYS === '' || item.XMYS == null
                 // || (item.RJYS === ''||item.RJYS == null)
                 // || (item.SFBHYJ === ''||item.SFBHYJ == null)
               ) {
@@ -2160,25 +2222,29 @@ class EditProjectInfoModel extends React.Component {
           }
         } else if (ZYflag) {
           //校验自研项目-自研项目不校验CGFS采购方式
-          if ((item.XMMC === '' || item.XMMC == null)
-            || (item.XMJL === '' || item.XMJL == null)
-            || (item.XMLX === '' || item.XMLX == null)
-            || (item.YYBM === '' || item.YYBM == null)
-            || (item.GLYS === '' || item.GLYS == null || item.GLYS === "-99")
-            || (item.XMYS === '' || item.XMYS == null)
+          if (
+            item.XMMC === '' ||
+            item.XMMC == null ||
+            item.XMJL === '' || item.XMJL == null ||
+            item.XMLX === '' || item.XMLX == null ||
+            item.YYBM === '' || item.YYBM == null ||
+            item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
+            item.XMYS === '' || item.XMYS == null
             // || (item.RJYS === ''||item.RJYS == null)
             // || (item.SFBHYJ === ''||item.SFBHYJ == null)
           ) {
             subItemflag = false;
           }
         } else {
-          if ((item.XMMC === '' || item.XMMC == null)
-            || (item.XMJL === '' || item.XMJL == null)
-            || (item.XMLX === '' || item.XMLX == null)
-            || (item.YYBM === '' || item.YYBM == null)
-            || (item.CGFS === '' || item.CGFS == null || item.CGFS === "-1")
-            || (item.GLYS === '' || item.GLYS == null || item.GLYS === "-99")
-            || (item.XMYS === '' || item.XMYS == null)
+          if (
+            item.XMMC === '' ||
+            item.XMMC == null ||
+            item.XMJL === '' || item.XMJL == null ||
+            item.XMLX === '' || item.XMLX == null ||
+            item.YYBM === '' || item.YYBM == null ||
+            item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
+            item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
+            item.XMYS === '' || item.XMYS == null
             // || (item.RJYS === ''||item.RJYS == null)
             // || (item.SFBHYJ === ''||item.SFBHYJ == null)
           ) {
@@ -2187,41 +2253,49 @@ class EditProjectInfoModel extends React.Component {
         }
         if (item.CZLX !== 'DELETE') {
           let total = 0;
-          total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-          subProjectBudget = subProjectBudget + total
-          subSoftBudget = subSoftBudget + Number(item.RJYS)
-          subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-          subSingleBudget = subSingleBudget + Number(item.DDCGJE)
+          total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+          subProjectBudget = subProjectBudget + total;
+          subSoftBudget = subSoftBudget + Number(item.RJYS);
+          subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+          subSingleBudget = subSingleBudget + Number(item.DDCGJE);
         }
-      })
+      });
       if (!subItemflag && type === 1) {
         message.warn('项目基本信息-子项目信息未填写完整！');
         return;
       }
       //软件预算金额/单独采购金额/框架金额变化时要校验是否超过父项目金额
-      if (String(this.state.basicInfo.haveHard) === "1") {
+      if (String(this.state.basicInfo.haveHard) === '1') {
         //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
         if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-          message.warn("子项目软件预算金额不能超过父项目,请修改！")
+          message.warn('子项目软件预算金额不能超过父项目,请修改！');
           return;
         }
         if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-          message.warn("子项目框架采购金额不能超过父项目,请修改！")
+          message.warn('子项目框架采购金额不能超过父项目,请修改！');
           return;
         }
         if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-          message.warn("子项目单独采购金额不能超过父项目,请修改！")
+          message.warn('子项目单独采购金额不能超过父项目,请修改！');
           return;
         }
         //父项目不包含硬件-说明父项目只有总金额
-        if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-          message.warn("子项目总金额不能超过父项目,请修改！")
+        if (
+          subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget >
+          Number(this.state.budgetInfo.softBudget) +
+            Number(this.state.budgetInfo.frameBudget) +
+            Number(this.state.budgetInfo.singleBudget)
+        ) {
+          message.warn('子项目总金额不能超过父项目,请修改！');
           return;
         }
       } else {
         //父项目不包含硬件-说明父项目只有总金额
-        if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.projectBudget)) {
-          message.warn("子项目总金额不能超过父项目,请修改！")
+        if (
+          subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget >
+          Number(this.state.budgetInfo.projectBudget)
+        ) {
+          message.warn('子项目总金额不能超过父项目,请修改！');
           return;
         }
       }
@@ -2251,7 +2325,7 @@ class EditProjectInfoModel extends React.Component {
       }
     }
     if (Number(purchaseInfo.lxje) < Number(purchaseInfo.contractValue)) {
-      message.warn("合同金额不能超过本项目立项金额(" + purchaseInfo.lxje + "元),请修改！")
+      message.warn('合同金额不能超过本项目立项金额(' + purchaseInfo.lxje + '元),请修改！');
       return;
     }
     //付款金额总数
@@ -2274,15 +2348,19 @@ class EditProjectInfoModel extends React.Component {
     });
     arr.map(item => {
       //付款金额总数
-      fkjeTotal = fkjeTotal + Number(item['fkje' + item.id])
-      bfbTotal = bfbTotal + Number(item['bfb' + item.id])
+      fkjeTotal = fkjeTotal + Number(item['fkje' + item.id]);
+      bfbTotal = bfbTotal + Number(item['bfb' + item.id]);
     });
     if (Number(purchaseInfo.contractValue) < Number(fkjeTotal)) {
-      message.warn("子表格付款详情中总金额不能超过本项目的合同金额(" + purchaseInfo.contractValue + "元),请修改！")
+      message.warn(
+        '子表格付款详情中总金额不能超过本项目的合同金额(' +
+          purchaseInfo.contractValue +
+          '元),请修改！',
+      );
       return;
     }
     if (Number(bfbTotal) > 1) {
-      message.warn("子表格付款详情中占比不能超过1,请修改！")
+      message.warn('子表格付款详情中占比不能超过1,请修改！');
       return;
     }
     if (zbxxVisiable) {
@@ -2296,7 +2374,7 @@ class EditProjectInfoModel extends React.Component {
       }
     }
     //其他信息校验
-    if(!subItemFlag){
+    if (!subItemFlag) {
       console.log('开始校验其他信息tab');
       console.log('-------需求信息-------', requirementInfoRecord);
       console.log('-------获奖信息-------', prizeInfoRecord);
@@ -2372,13 +2450,13 @@ class EditProjectInfoModel extends React.Component {
       });
     }
     label = label.substring(0, label.length - 1);
-    let software = "";
+    let software = '';
     if (basicInfo.software?.length > 0) {
       basicInfo.software.map((item, index) => {
-        software = item.concat(";").concat(software);
-      })
+        software = item.concat(';').concat(software);
+      });
     }
-    software = software.substring(0, software.length - 1)
+    software = software.substring(0, software.length - 1);
     const params = {
       projectName: basicInfo.projectName,
       projectType: basicInfo.projectType,
@@ -2387,8 +2465,18 @@ class EditProjectInfoModel extends React.Component {
       software: software,
       biddingMethod: basicInfo.projectType === 2 ? 0 : Number(basicInfo.biddingMethod),
       year: Number(this.state.budgetInfo.year.format('YYYY')),
-      budgetProject: String(this.state.subItem) ==="1"? 0:(budgetInfo.budgetProjectId === '' ? -1:Number(budgetInfo.budgetProjectId)),
-      projectBudget: String(this.state.basicInfo.haveHard) === "1" ? Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.singleBudget) + Number(this.state.budgetInfo.frameBudget) : Number(budgetInfo.projectBudget),
+      budgetProject:
+        String(this.state.subItem) === '1'
+          ? 0
+          : budgetInfo.budgetProjectId === ''
+          ? -1
+          : Number(budgetInfo.budgetProjectId),
+      projectBudget:
+        String(this.state.basicInfo.haveHard) === '1'
+          ? Number(this.state.budgetInfo.softBudget) +
+            Number(this.state.budgetInfo.singleBudget) +
+            Number(this.state.budgetInfo.frameBudget)
+          : Number(budgetInfo.projectBudget),
     };
     const _this = this;
     const timeList = milePostInfo.filter(
@@ -2403,9 +2491,11 @@ class EditProjectInfoModel extends React.Component {
     //编辑页面进来  剩余预算是减掉编辑页面进来的初始项目预算金额的 所以判断的时候需要加上初始项目预算金额
     //budgetInfo.projectBudget > budgetInfo.relativeBudget + budgetInfo.projectBudgetinit
     //如果更换了预算项目 计算公式就是 budgetInfo.projectBudget > budgetInfo.relativeBudget
-    if (Number(budgetInfo.projectBudget) > Number(budgetInfo.relativeBudget)
-      && Number(budgetInfo.budgetProjectId) !== Number(budgetInfo.budgetProjectIdinit)
-      && String(this.state.basicInfo.haveHard) === "2") {
+    if (
+      Number(budgetInfo.projectBudget) > Number(budgetInfo.relativeBudget) &&
+      Number(budgetInfo.budgetProjectId) !== Number(budgetInfo.budgetProjectIdinit) &&
+      String(this.state.basicInfo.haveHard) === '2'
+    ) {
       confirm({
         okText: '确认',
         cancelText: '取消',
@@ -2425,14 +2515,18 @@ class EditProjectInfoModel extends React.Component {
                   title: '提示',
                   content: '确认完成？',
                   onOk() {
-                    _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                    _this.makeOperateParams(
+                      params,
+                      milePostInfo,
+                      staffJobParams,
+                      projectManager,
+                      type,
+                    );
                   },
-                  onCancel() {
-                  },
+                  onCancel() {},
                 });
               },
-              onCancel() {
-              },
+              onCancel() {},
             });
           } else {
             confirm({
@@ -2443,17 +2537,18 @@ class EditProjectInfoModel extends React.Component {
               onOk() {
                 _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
               },
-              onCancel() {
-              },
+              onCancel() {},
             });
           }
         },
-        onCancel() {
-        },
+        onCancel() {},
       });
-    } else if (Number(budgetInfo.projectBudget) > Number(budgetInfo.relativeBudget) + Number(budgetInfo.projectBudgetinit)
-      && Number(budgetInfo.budgetProjectId) === Number(budgetInfo.budgetProjectIdinit)
-      && String(this.state.basicInfo.haveHard) === "2") {
+    } else if (
+      Number(budgetInfo.projectBudget) >
+        Number(budgetInfo.relativeBudget) + Number(budgetInfo.projectBudgetinit) &&
+      Number(budgetInfo.budgetProjectId) === Number(budgetInfo.budgetProjectIdinit) &&
+      String(this.state.basicInfo.haveHard) === '2'
+    ) {
       confirm({
         okText: '确认',
         cancelText: '取消',
@@ -2473,14 +2568,18 @@ class EditProjectInfoModel extends React.Component {
                   title: '提示',
                   content: '确认完成？',
                   onOk() {
-                    _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
+                    _this.makeOperateParams(
+                      params,
+                      milePostInfo,
+                      staffJobParams,
+                      projectManager,
+                      type,
+                    );
                   },
-                  onCancel() {
-                  },
+                  onCancel() {},
                 });
               },
-              onCancel() {
-              },
+              onCancel() {},
             });
           } else {
             confirm({
@@ -2491,17 +2590,20 @@ class EditProjectInfoModel extends React.Component {
               onOk() {
                 _this.makeOperateParams(params, milePostInfo, staffJobParams, projectManager, type);
               },
-              onCancel() {
-              },
+              onCancel() {},
             });
           }
         },
-        onCancel() {
-        },
+        onCancel() {},
       });
-    } else if (Number(budgetInfo.softBudget) + Number(budgetInfo.singleBudget) > Number(budgetInfo.relativeBudget) + Number(budgetInfo.softBudgetinit) + Number(budgetInfo.singleBudgetinit)
-      && Number(budgetInfo.budgetProjectId) !== Number(budgetInfo.budgetProjectIdinit)
-      && String(this.state.basicInfo.haveHard) === "1") {
+    } else if (
+      Number(budgetInfo.softBudget) + Number(budgetInfo.singleBudget) >
+        Number(budgetInfo.relativeBudget) +
+          Number(budgetInfo.softBudgetinit) +
+          Number(budgetInfo.singleBudgetinit) &&
+      Number(budgetInfo.budgetProjectId) !== Number(budgetInfo.budgetProjectIdinit) &&
+      String(this.state.basicInfo.haveHard) === '1'
+    ) {
       confirm({
         okText: '确认',
         cancelText: '取消',
@@ -2519,12 +2621,16 @@ class EditProjectInfoModel extends React.Component {
             onCancel() {},
           });
         },
-        onCancel() {
-        },
+        onCancel() {},
       });
-    } else if (Number(budgetInfo.softBudget) + Number(budgetInfo.singleBudget) > Number(budgetInfo.relativeBudget) + Number(budgetInfo.softBudgetinit) + Number(budgetInfo.singleBudgetinit)
-      && Number(budgetInfo.budgetProjectId) === Number(budgetInfo.budgetProjectIdinit)
-      && String(this.state.basicInfo.haveHard) === "1") {
+    } else if (
+      Number(budgetInfo.softBudget) + Number(budgetInfo.singleBudget) >
+        Number(budgetInfo.relativeBudget) +
+          Number(budgetInfo.softBudgetinit) +
+          Number(budgetInfo.singleBudgetinit) &&
+      Number(budgetInfo.budgetProjectId) === Number(budgetInfo.budgetProjectIdinit) &&
+      String(this.state.basicInfo.haveHard) === '1'
+    ) {
       confirm({
         okText: '确认',
         cancelText: '取消',
@@ -2542,10 +2648,9 @@ class EditProjectInfoModel extends React.Component {
             onCancel() {},
           });
         },
-        onCancel() {
-        },
+        onCancel() {},
       });
-    }else{
+    } else {
       confirm({
         okText: '确认',
         cancelText: '取消',
@@ -2640,14 +2745,18 @@ class EditProjectInfoModel extends React.Component {
     params.type = this.state.subItemFlag && this.state.subItemFinish ? 'ADD' : 'MOD';
     params.czr = Number(this.state.loginUser.id);
     //资本性预算/非资本性预算
-    params.budgetType = String(this.state.subItem) ==="1"?"资本性预算":this.state.budgetInfo.budgetType;
+    params.budgetType =
+      String(this.state.subItem) === '1' ? '资本性预算' : this.state.budgetInfo.budgetType;
     params.isShortListed = Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2';
-      // 软件预算
-    params.softBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.softBudget : 0;
+    // 软件预算
+    params.softBudget =
+      String(this.state.basicInfo.haveHard) === '1' ? this.state.budgetInfo.softBudget : 0;
     // 框架预算
-    params.frameBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.frameBudget : 0;
+    params.frameBudget =
+      String(this.state.basicInfo.haveHard) === '1' ? this.state.budgetInfo.frameBudget : 0;
     // 单独采购金额
-    params.singleBudget = String(this.state.basicInfo.haveHard) === "1" ? this.state.budgetInfo.singleBudget : 0;
+    params.singleBudget =
+      String(this.state.basicInfo.haveHard) === '1' ? this.state.budgetInfo.singleBudget : 0;
     // 是否包含硬件
     params.haveHard = this.state.basicInfo.haveHard;
     //是否包含子项目
@@ -2655,7 +2764,7 @@ class EditProjectInfoModel extends React.Component {
     this.operateCreatProject(params, type);
   };
 
-  updateZBXX = async ()=>{
+  updateZBXX = async () => {
     const czrid = JSON.parse(sessionStorage.getItem('user')).id;
     //console.log("czridczrid", czrid)
     const {
@@ -2717,7 +2826,7 @@ class EditProjectInfoModel extends React.Component {
           if (file.url !== undefined)
             //查询到的已有旧文件的情况
             return new Promise((resolve, reject) => {
-              resolve({ name: file.name, data: file.url });
+              resolve({ name: file.name, data: file.base64 });
             });
           return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -2740,7 +2849,7 @@ class EditProjectInfoModel extends React.Component {
 
     try {
       const fileArr = await convertFilesToBase64(fileList.map(x => x.originFileObj || x));
-        let submitdata = {
+      let submitdata = {
         columnName: 'PBBG',
         documentData: JSON.stringify(fileArr),
         czr_id: czrid,
@@ -2768,7 +2877,7 @@ class EditProjectInfoModel extends React.Component {
       message.error('中标信息修改失败', 1);
       console.error('中标信息修改', error);
     }
-  }
+  };
 
   updateHTXX() {
     const {
@@ -2782,7 +2891,7 @@ class EditProjectInfoModel extends React.Component {
     } = this.state;
     let arr = [...tableData];
     console.log('staticSkzhData', staticSkzhData);
-    console.log("tableDatatableData", tableData)
+    console.log('tableDatatableData', tableData);
     arr.forEach(item => {
       for (let i in item) {
         if (i === 'fksj' + item.id) {
@@ -2799,7 +2908,7 @@ class EditProjectInfoModel extends React.Component {
     let newArr = [];
     arr.map(item => {
       let obj = {
-        ID: typeof (item.id) === "number" ? "-1" : item.id,
+        ID: typeof item.id === 'number' ? '-1' : item.id,
         FKQS: item['fkqs' + item.id],
         BFB: item['bfb' + item.id],
         FKJE: item['fkje' + item.id],
@@ -2887,7 +2996,12 @@ class EditProjectInfoModel extends React.Component {
 
   async operateCreatProject(params, type) {
     //更新其他信息
-    const {subItem, requirementInfoRecord = [], prizeInfoRecord = [], topicInfoRecord = []} = this.state;
+    const {
+      subItem,
+      requirementInfoRecord = [],
+      prizeInfoRecord = [],
+      topicInfoRecord = [],
+    } = this.state;
     if (
       requirementInfoRecord.length > 0 ||
       prizeInfoRecord.length > 0 ||
@@ -2911,16 +3025,16 @@ class EditProjectInfoModel extends React.Component {
           sessionStorage.setItem('projectId', projectId);
           sessionStorage.setItem('handleType', type);
           //保存子项目信息
-          if (String(subItem) === "1") {
+          if (String(subItem) === '1') {
             this.operateInsertSubProjects(params, projectId);
           } else {
             this.props.successCallBack();
             //子项目完善
             if (this.state.subItemFinish) {
-              message.success("子项目完善成功！")
+              message.success('子项目完善成功！');
               // window.location.href = '/#/pms/manage/ProjectInfo';
             } else {
-              message.success("编辑项目成功！")
+              message.success('编辑项目成功！');
             }
             //从首页进来的还需要跳转到项目信息页面
             // if (this.state.type && type === 1) {
@@ -3348,10 +3462,11 @@ class EditProjectInfoModel extends React.Component {
     ////console.log("arrarrarrarr", arr)
     arr.forEach(item => {
       //chenjian-判断是否显示新增按钮 没有可新增的sxlb就不展示
-      const { lcblxid = '' } = item
+      const { lcblxid = '' } = item;
       item.matterInfos.map(item => {
         if (
-          item.sxlb.length - 1 === this.state.mileItemInfo.filter((i) => i.swlx === item.swlxmc&&i.lcbid === lcblxid).length
+          item.sxlb.length - 1 ===
+          this.state.mileItemInfo.filter(i => i.swlx === item.swlxmc && i.lcbid === lcblxid).length
         ) {
           item.addFlag = false;
         } else {
@@ -3483,13 +3598,19 @@ class EditProjectInfoModel extends React.Component {
     });
   };
 
-  onRygwSelectConfirm = (e) => {
-    const {staffJobList, rygwDictionary, staffInfo, onRygwSelectValue, rygwSelectDictionary} = this.state;
+  onRygwSelectConfirm = e => {
+    const {
+      staffJobList,
+      rygwDictionary,
+      staffInfo,
+      onRygwSelectValue,
+      rygwSelectDictionary,
+    } = this.state;
     if (e !== '') {
       const filter = rygwDictionary.filter(item => item.ibm === e);
       staffJobList.push(filter[0]);
       let newArr = staffJobList.concat();
-      let newArray = rygwDictionary.filter(function (item) {
+      let newArray = rygwDictionary.filter(function(item) {
         return newArr.indexOf(item) === -1;
       });
       this.setState({
@@ -3497,7 +3618,7 @@ class EditProjectInfoModel extends React.Component {
         rygwSelect: false,
         onRygwSelectValue: '',
         staffJobList: staffJobList,
-        staffInfo: {...staffInfo, focusJob: e}
+        staffInfo: { ...staffInfo, focusJob: e },
       });
     }
   };
@@ -3606,6 +3727,7 @@ class EditProjectInfoModel extends React.Component {
                 name: x.fileName,
                 status: 'done',
                 url: x.url,
+                base64: x.data,
               })) ?? [];
             this.setState({
               fileList: arr,
@@ -3941,34 +4063,34 @@ class EditProjectInfoModel extends React.Component {
     });
   };
 
-  onOrgDropdown = (open) => {
+  onOrgDropdown = open => {
     if (open) {
       this.setState({
-        isDownOrg: false
+        isDownOrg: false,
       });
     } else {
       this.setState({
-        isDownOrg: true
+        isDownOrg: true,
       });
     }
-  }
+  };
 
-  onLabelDropdown = (open) => {
+  onLabelDropdown = open => {
     if (open) {
       this.setState({
-        isDownLabel: false
+        isDownLabel: false,
       });
     } else {
       this.setState({
-        isDownLabel: true
+        isDownLabel: true,
       });
     }
-  }
+  };
 
   // ---------------子项目相关数据处理-------------------
   //子项目信息-数据回调
-  subItemRecordCallback = (rec) => {
-    console.log("subItemRecord", rec)
+  subItemRecordCallback = rec => {
+    console.log('subItemRecord', rec);
     this.setState({
       //子项目信息
       subItemRecord: rec,
@@ -3978,33 +4100,35 @@ class EditProjectInfoModel extends React.Component {
   //子项目信息保存接口
   // 查询其他项目信息
   operateInsertSubProjects = (param, projectId) => {
-    console.log("-----------开始保存子项目信息-----------")
-    const {subItemRecord, budgetInfo = {}} = this.state;
+    console.log('-----------开始保存子项目信息-----------');
+    const { subItemRecord, budgetInfo = {} } = this.state;
     const params = {
       parentId: projectId,
       parentBudget: budgetInfo.budgetProjectId === '' ? -99 : Number(budgetInfo.budgetProjectId),
       parentBudgetType: String(budgetInfo.budgetType === '' ? '无' : budgetInfo.budgetType),
       parentOpType: String(param.type),
-      parentYear: Number(this.state.budgetInfo.year.format("YYYY")),
+      parentYear: Number(this.state.budgetInfo.year.format('YYYY')),
       rowcount: subItemRecord.length,
       subProjects: JSON.stringify(subItemRecord),
-    }
-    console.log("子项目信息入参", params)
-    InsertSubProjects({...params}).then((result) => {
-      const {code = -1,} = result;
-      if (code > 0) {
-        this.props.successCallBack();
-        message.success("编辑项目成功！")
-        //从首页进来的还需要跳转到项目信息页面
-        // if (this.state.type) {
-        //   //新建项目成功后跳转到项目信息页面
-        //   window.location.href = '/#/pms/manage/ProjectInfo';
-        // }
-      }
-    }).catch((error) => {
-      message.error(!error.success ? error.message : error.note);
-    });
-  }
+    };
+    console.log('子项目信息入参', params);
+    InsertSubProjects({ ...params })
+      .then(result => {
+        const { code = -1 } = result;
+        if (code > 0) {
+          this.props.successCallBack();
+          message.success('编辑项目成功！');
+          //从首页进来的还需要跳转到项目信息页面
+          // if (this.state.type) {
+          //   //新建项目成功后跳转到项目信息页面
+          //   window.location.href = '/#/pms/manage/ProjectInfo';
+          // }
+        }
+      })
+      .catch(error => {
+        message.error(!error.success ? error.message : error.note);
+      });
+  };
 
   //评标报告预览下载
   onUploadDownload = file => {
@@ -4026,7 +4150,7 @@ class EditProjectInfoModel extends React.Component {
       link.click();
       window.URL.revokeObjectURL(link.href);
     }
-  }
+  };
 
   //评标报告上传变化
   onUploadChange = info => {
@@ -4478,40 +4602,45 @@ class EditProjectInfoModel extends React.Component {
     };
     return (
       <Fragment>
-        <div className="editProject" style={{overflowY: 'auto', height: '638px'}}>
+        <div className="editProject" style={{ overflowY: 'auto', height: '638px' }}>
           <Spin
             spinning={loading}
             wrapperClassName="spin"
             tip="正在努力的加载中..."
             size="large"
-            style={{height: '100%'}}
+            style={{ height: '100%' }}
           >
-            <div style={{overflow: 'hidden', height: '100%'}}>
-              <div style={{height: '7%'}}>
-                <Tabs className='tabs' style={{height: '100%'}} defaultActiveKey="0" onChange={this.tabsCallback}>
+            <div style={{ overflow: 'hidden', height: '100%' }}>
+              <div style={{ height: '7%' }}>
+                <Tabs
+                  className="tabs"
+                  style={{ height: '100%' }}
+                  defaultActiveKey="0"
+                  onChange={this.tabsCallback}
+                >
                   {htxxVisiable || zbxxVisiable
                     ? tabs.map(item => {
-                      if(item.key === 4 && subItemFlag){
-                        return null;
-                      }else if(item.key === 4 && !subItemFlag){
-                        return <TabPane tab={item.title} key={item.key}></TabPane>;
-                      }else{
-                        return <TabPane tab={item.title} key={item.key}></TabPane>;
-                      }
-                    })
+                        if (item.key === 4 && subItemFlag) {
+                          return null;
+                        } else if (item.key === 4 && !subItemFlag) {
+                          return <TabPane tab={item.title} key={item.key}></TabPane>;
+                        } else {
+                          return <TabPane tab={item.title} key={item.key}></TabPane>;
+                        }
+                      })
                     : tabsdel.map(item => {
-                      if(item.key === 4 && subItemFlag){
-                        return null;
-                      }else if(item.key === 4 && !subItemFlag){
-                        return <TabPane tab={item.title} key={item.key}></TabPane>;
-                      }else{
-                        return <TabPane tab={item.title} key={item.key}></TabPane>;
-                      }
-                    })}
+                        if (item.key === 4 && subItemFlag) {
+                          return null;
+                        } else if (item.key === 4 && !subItemFlag) {
+                          return <TabPane tab={item.title} key={item.key}></TabPane>;
+                        } else {
+                          return <TabPane tab={item.title} key={item.key}></TabPane>;
+                        }
+                      })}
                 </Tabs>
               </div>
-              {// 基本信息
-                (
+              {
+                // 基本信息
                 <div
                   className="steps-content"
                   style={{
@@ -4535,19 +4664,18 @@ class EditProjectInfoModel extends React.Component {
                               //   ],
                               //   initialValue: basicInfo.projectName,
                               // })
-                              (
-                                <Input
-                                  disabled={subItemFlag}
-                                  placeholder="请输入项目名称"
-                                  value={basicInfo.projectName}
-                                  onChange={e => {
-                                    console.log("e.target.value", e.target.value)
-                                    this.setState({
-                                      basicInfo: {...basicInfo, projectName: e.target.value},
-                                    });
-                                  }}
-                                />
-                            )}
+                              <Input
+                                disabled={subItemFlag}
+                                placeholder="请输入项目名称"
+                                value={basicInfo.projectName}
+                                onChange={e => {
+                                  console.log('e.target.value', e.target.value);
+                                  this.setState({
+                                    basicInfo: { ...basicInfo, projectName: e.target.value },
+                                  });
+                                }}
+                              />
+                            }
                           </Form.Item>
                         </Col>
                         <Col span={12} style={{ paddingLeft: '24px' }}>
@@ -4592,10 +4720,17 @@ class EditProjectInfoModel extends React.Component {
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
                                 onChange={(e, nodeArr, extra) => {
                                   console.log('eeeeee', e);
-                                  const flag = projectTypeZY.filter(item => String(item.ID) === String(e)).length > 0;
-                                  const RYJFlag = String(e) === "1";
+                                  const flag =
+                                    projectTypeZY.filter(item => String(item.ID) === String(e))
+                                      .length > 0;
+                                  const RYJFlag = String(e) === '1';
                                   this.setState({
-                                    basicInfo: {...basicInfo, haveHard: 2, projectType: e, SFYJRW: 1},
+                                    basicInfo: {
+                                      ...basicInfo,
+                                      haveHard: 2,
+                                      projectType: e,
+                                      SFYJRW: 1,
+                                    },
                                     projectTypeZYFlag: flag,
                                     projectTypeRYJFlag: RYJFlag,
                                     budgetInfo: {
@@ -4603,23 +4738,38 @@ class EditProjectInfoModel extends React.Component {
                                       softBudget: 0,
                                       softBudgetinit: 0,
                                       frameBudget: 0,
-                                      singleBudget: 0
-                                    }
+                                      singleBudget: 0,
+                                    },
                                   });
                                   this.fetchQueryMilepostInfo({
                                     type: e,
-                                    isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                    isShortListed:
+                                      Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
                                     //项目预算类型
                                     haveType: this.state.haveType,
                                     //项目软件预算
-                                    softBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
+                                    softBudget:
+                                      RYJFlag && String(this.state.basicInfo.haveHard) === '2'
+                                        ? 0
+                                        : this.state.budgetInfo.softBudget,
                                     //框架预算
-                                    frameBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
+                                    frameBudget:
+                                      RYJFlag && String(this.state.basicInfo.haveHard) === '2'
+                                        ? 0
+                                        : this.state.budgetInfo.frameBudget,
                                     //单独采购预算
-                                    singleBudget: RYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
+                                    singleBudget:
+                                      RYJFlag && String(this.state.basicInfo.haveHard) === '2'
+                                        ? 0
+                                        : this.state.budgetInfo.singleBudget,
                                     xmid: basicInfo.projectId,
                                     biddingMethod: basicInfo.biddingMethod,
-                                    budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                    budget:
+                                      String(this.state.basicInfo.haveHard) === '2'
+                                        ? this.state.budgetInfo.projectBudget
+                                        : Number(this.state.budgetInfo.softBudget) +
+                                          Number(this.state.budgetInfo.frameBudget) +
+                                          Number(this.state.budgetInfo.singleBudget),
                                     label: basicInfo.labelTxt,
                                     //是否包含子项目
                                     haveChild: Number(this.state.subItem),
@@ -4641,16 +4791,17 @@ class EditProjectInfoModel extends React.Component {
                                 id="down"
                                 style={{
                                   width: '100%',
-                                  display: "inline-block",
-                                  position: "relative",
-                                  verticalAlign: "super",
-                                }}>
+                                  display: 'inline-block',
+                                  position: 'relative',
+                                  verticalAlign: 'super',
+                                }}
+                              >
                                 <TreeSelect
                                   multiple
                                   showSearch
                                   showArrow
                                   treeNodeFilterProp="title"
-                                  style={{width: '100%'}}
+                                  style={{ width: '100%' }}
                                   // tagRender={item => {
                                   //   return "weqweqwe" + item;
                                   // }}
@@ -4660,8 +4811,8 @@ class EditProjectInfoModel extends React.Component {
                                   maxTagPlaceholder={extraArr => {
                                     return `等${extraArr.length + 3}个`;
                                   }}
-                                  onDropdownVisibleChange={(open) => this.onLabelDropdown(open)}
-                                  dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                  onDropdownVisibleChange={open => this.onLabelDropdown(open)}
+                                  dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                                   treeData={projectLabelList}
                                   treeCheckable
                                   // placeholder="请选择项目标签"
@@ -4680,19 +4831,37 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                      isShortListed:
+                                        Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
                                       //项目预算类型
                                       haveType: this.state.haveType,
                                       //项目软件预算
-                                      softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
+                                      softBudget:
+                                        this.state.projectTypeRYJFlag &&
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? 0
+                                          : this.state.budgetInfo.softBudget,
                                       //框架预算
-                                      frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
+                                      frameBudget:
+                                        this.state.projectTypeRYJFlag &&
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? 0
+                                          : this.state.budgetInfo.frameBudget,
                                       //单独采购预算
-                                      singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
+                                      singleBudget:
+                                        this.state.projectTypeRYJFlag &&
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? 0
+                                          : this.state.budgetInfo.singleBudget,
                                       //子项目完善的时候，选了标签，调查里程碑的接口，不能传项目id
                                       xmid: subItemFlag ? -1 : basicInfo.projectId,
                                       biddingMethod: basicInfo.biddingMethod,
-                                      budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                      budget:
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? this.state.budgetInfo.projectBudget
+                                          : Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget),
                                       label: labelTxt,
                                       //是否包含子项目
                                       haveChild: Number(this.state.subItem),
@@ -4702,7 +4871,9 @@ class EditProjectInfoModel extends React.Component {
                                 />
                                 <Icon
                                   type="up"
-                                  className={'label-selector-arrow' + (isDownLabel ? ' selector-rotate' : '')}
+                                  className={
+                                    'label-selector-arrow' + (isDownLabel ? ' selector-rotate' : '')
+                                  }
                                 />
                               </div>,
                             )}
@@ -4715,7 +4886,7 @@ class EditProjectInfoModel extends React.Component {
                             })(
                               <Select
                                 showSearch
-                                mode='multiple'
+                                mode="multiple"
                                 showArrow={true}
                                 maxTagCount={1}
                                 value={basicInfo.software}
@@ -4724,9 +4895,9 @@ class EditProjectInfoModel extends React.Component {
                                   return `等${extraArr.length + 1}个`;
                                 }}
                                 onChange={e => {
-                                  console.log("3eeeeee", e)
+                                  console.log('3eeeeee', e);
                                   this.setState({
-                                    basicInfo: {...basicInfo, software: e,}
+                                    basicInfo: { ...basicInfo, software: e },
                                   });
                                 }}
                                 getPopupContainer={triggerNode => triggerNode.parentNode}
@@ -4798,18 +4969,36 @@ class EditProjectInfoModel extends React.Component {
                                     });
                                     this.fetchQueryMilepostInfo({
                                       type: basicInfo.projectType,
-                                      isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                      isShortListed:
+                                        Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
                                       //项目预算类型
                                       haveType: this.state.haveType,
                                       //项目软件预算
-                                      softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
+                                      softBudget:
+                                        this.state.projectTypeRYJFlag &&
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? 0
+                                          : this.state.budgetInfo.softBudget,
                                       //框架预算
-                                      frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
+                                      frameBudget:
+                                        this.state.projectTypeRYJFlag &&
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? 0
+                                          : this.state.budgetInfo.frameBudget,
                                       //单独采购预算
-                                      singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
+                                      singleBudget:
+                                        this.state.projectTypeRYJFlag &&
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? 0
+                                          : this.state.budgetInfo.singleBudget,
                                       xmid: basicInfo.projectId,
                                       biddingMethod: e,
-                                      budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
+                                      budget:
+                                        String(this.state.basicInfo.haveHard) === '2'
+                                          ? this.state.budgetInfo.projectBudget
+                                          : Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget),
                                       label: basicInfo.labelTxt,
                                       //是否包含子项目
                                       haveChild: Number(this.state.subItem),
@@ -4823,7 +5012,10 @@ class EditProjectInfoModel extends React.Component {
                         ) : null}
                         <Col
                           span={12}
-                          style={{ paddingLeft: !projectTypeZYFlag ? '24px' : '12px', paddingRight: '24px' }}
+                          style={{
+                            paddingLeft: !projectTypeZYFlag ? '24px' : '12px',
+                            paddingRight: '24px',
+                          }}
                         >
                           <Form.Item
                             label={
@@ -4854,24 +5046,25 @@ class EditProjectInfoModel extends React.Component {
                                 id="down"
                                 style={{
                                   width: '100%',
-                                  display: "inline-block",
-                                  position: "relative",
-                                  verticalAlign: "super",
-                                }}>
+                                  display: 'inline-block',
+                                  position: 'relative',
+                                  verticalAlign: 'super',
+                                }}
+                              >
                                 <TreeSelect
                                   multiple
                                   showSearch
                                   disabled={subItemFlag}
                                   value={basicInfo.org}
                                   treeNodeFilterProp="title"
-                                  style={{width: '100%'}}
+                                  style={{ width: '100%' }}
                                   maxTagCount={3}
                                   maxTagTextLength={42}
                                   maxTagPlaceholder={extraArr => {
                                     return `等${extraArr.length + 3}个`;
                                   }}
-                                  onDropdownVisibleChange={(open) => this.onOrgDropdown(open)}
-                                  dropdownStyle={{maxHeight: 300, overflow: 'auto'}}
+                                  onDropdownVisibleChange={open => this.onOrgDropdown(open)}
+                                  dropdownStyle={{ maxHeight: 300, overflow: 'auto' }}
                                   treeData={organizationTreeList}
                                   placeholder="请选择应用部门"
                                   // treeCheckable
@@ -4880,13 +5073,15 @@ class EditProjectInfoModel extends React.Component {
                                   treeDefaultExpandedKeys={orgExpendKeys}
                                   onChange={e => {
                                     this.setState({
-                                      basicInfo: {...basicInfo, org: e},
+                                      basicInfo: { ...basicInfo, org: e },
                                     });
                                   }}
                                 />
                                 <Icon
                                   type="up"
-                                  className={'label-selector-arrow' + (isDownOrg ? ' selector-rotate' : '')}
+                                  className={
+                                    'label-selector-arrow' + (isDownOrg ? ' selector-rotate' : '')
+                                  }
                                 />
                               </div>,
                             )}
@@ -4894,665 +5089,1582 @@ class EditProjectInfoModel extends React.Component {
                         </Col>
                       </Row>
 
-                      {
-                        String(this.state.subItem) === "1"?
-                          (<>
-                            <Row gutter={24}>
-                              <Col span={12} style={{display: projectTypeRYJFlag ? '' : 'none'}}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>是否包含硬件</span>}>
-                                  {
-                                    //   getFieldDecorator('haveHard', {
-                                    //   initialValue: Number(basicInfo.haveHard)
-                                    // })
-                                    (
-                                      <Radio.Group disabled={subItemFlag} value={Number(this.state.basicInfo.haveHard)}
-                                                   onChange={e => {
-                                                     console.log("eeeee", e);
-                                                     //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                     //包含硬件选择<否> 不展示 <是否在硬件入围内> <本项目软件金额> <框架采购金额> <单独采购金额> 把数据重置。
-                                                     //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
-                                                     let haveType = 1;
-                                                     if (String(e.target.value) === '2') {
-                                                       haveType = 1
-                                                     } else if (String(e.target.value) === '1') {
-                                                       haveType = 2
-                                                     }
-                                                     this.setState({
-                                                       haveType,
-                                                       basicInfo: {
-                                                         ...basicInfo,
-                                                         haveHard: String(e.target.value),
-                                                         SFYJRW: '1'
-                                                       },
-                                                       budgetInfo: {
-                                                         ...budgetInfo,
-                                                         projectBudget: 0,
-                                                         softBudget: 0,
-                                                         softBudgetinit: 0,
-                                                         singleBudget: 0,
-                                                         frameBudget: 0
-                                                       }
-                                                     });
-                                                     this.fetchQueryMilepostInfo({
-                                                       type: basicInfo.projectType,
-                                                       isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                       //项目预算类型
-                                                       haveType: haveType,
-                                                       //项目软件预算
-                                                       softBudget: 0,
-                                                       //框架预算
-                                                       frameBudget: 0,
-                                                       //单独采购预算
-                                                       singleBudget: 0,
-                                                       xmid: basicInfo.projectId,
-                                                       biddingMethod: basicInfo.biddingMethod,
-                                                       budget: 0,
-                                                       label: basicInfo.labelTxt,
-                                                       //是否包含子项目
-                                                       haveChild: Number(this.state.subItem),
-                                                       queryType: "ALL"
-                                                     });
-                                                   }}>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={2}>否</Radio>
-                                      </Radio.Group>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                              <Col span={12} style={{paddingLeft: '24px', display: this.state.basicInfo.haveHard === "1"  || String(this.state.budgetInfo.budgetProjectId) === "-12" ? 'none' : ''}}>
-                                <Form.Item
-                                  label={
-                                    <span>
-                                <span
-                                  style={{
-                                    fontFamily: 'SimSun, sans-serif',
-                                    color: '#f5222d',
-                                    marginRight: '4px',
-                                    lineHeight: 1,
-                                  }}
-                                >
-                                  *
-                                </span>
-                                本项目金额(元)
-                              </span>
-                                  }
-                                  className="formItem"
-                                >
-                                  {
-                                    // getFieldDecorator('projectBudget', {
-                                    // rules: [{
-                                    //   required: true,
-                                    //   message: '请输入本项目预算(元)'
-                                    // }, {
-                                    //   validator: this.handleValidatorProjectBudget
-                                    // }],
-                                    // initialValue: budgetInfo.projectBudget,
-                                    // }
-                                    // )
-                                    (
-                                      <InputNumber
-                                        disabled={subItemFlag}
-                                        value={Number(this.state.budgetInfo.projectBudget)}
-                                        onBlur={e => {
-                                          if (projectBudgetChangeFlag) {
-                                            //子项目总金额之和
-                                            let subProjectBudget = 0;
-                                            //子项目软件金额之和
-                                            let subSoftBudget = 0;
-                                            //子项目框架金额之和
-                                            let subFrameBudget = 0;
-                                            //子项目单独采购金额之和
-                                            let subSingleBudget = 0;
-                                            subItemRecord.map(item => {
-                                              if (item.CZLX !== 'DELETE') {
-                                                let total = 0;
-                                                total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                subProjectBudget = subProjectBudget + total
-                                                subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                              }
-                                            })
-                                            //父项目不包含硬件-说明父项目只有总金额
-                                            if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.projectBudget)) {
-                                              message.warn("子项目总金额超过父项目,请注意！")
-                                            }
-                                            this.fetchQueryMilepostInfo({
-                                              type: basicInfo.projectType,
-                                              isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                              //项目预算类型
-                                              haveType: this.state.haveType,
-                                              //项目软件预算
-                                              softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                              //框架预算
-                                              frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                              //单独采购预算
-                                              singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                              xmid: basicInfo.projectId,
-                                              biddingMethod: basicInfo.biddingMethod,
-                                              budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                              label: basicInfo.labelTxt,
-                                              //是否包含子项目
-                                              haveChild: Number(this.state.subItem),
-                                              queryType: 'ONLYLX',
-                                            });
-                                          }
-                                        }}
-                                        style={{ width: '100%' }}
-                                        onChange={e => {
-                                          let projectBudgetChangeFlag = false;
-                                          if (e !== this.state.budgetInfo.projectBudget) {
-                                            this.setState({
-                                              projectBudgetChangeFlag: true,
-                                              budgetInfo: {...budgetInfo, projectBudget: Number(e)},
-                                            });
-                                          }
-                                        }}
-                                        precision={0}
-                                      />
-                                    )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                              <Col span={12} style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>软件金额(元)</span>}>
-                                  {
-                                    //   getFieldDecorator('softBudget', {
-                                    //   // rules: [{
-                                    //   //   required: true,
-                                    //   //   message: '请输入本项目预算(元)'
-                                    //   // }, {
-                                    //   //   validator: this.handleValidatorProjectBudget
-                                    //   // }],
-                                    //   initialValue: budgetInfo.softBudget
-                                    // })
-                                    (
-                                      <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.softBudget)}
-                                                   onBlur={(e) => {
-                                                     if (this.state.softBudgetChangeFlag) {
-                                                       //只有数据变动了 就说明包含硬件选择了<是>
-                                                       //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                       //子项目总金额之和
-                                                       let pureHardwareFlag = false
-                                                       if (Number(this.state.budgetInfo.softBudgetinit) === 0 && Number(this.state.budgetInfo.softBudget) !== 0) {
-                                                         pureHardwareFlag = true;
-                                                       }
-                                                       let subProjectBudget = 0;
-                                                       //子项目软件金额之和
-                                                       let subSoftBudget = 0;
-                                                       //子项目框架金额之和
-                                                       let subFrameBudget = 0;
-                                                       //子项目单独采购金额之和
-                                                       let subSingleBudget = 0;
-                                                       subItemRecord.map(item => {
-                                                         if (item.CZLX !== 'DELETE') {
-                                                           let total = 0;
-                                                           total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                           subProjectBudget = subProjectBudget + total
-                                                           subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                           subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                                         }
-                                                       })
-                                                       //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
-                                                       if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-                                                         message.warn("子项目软件预算金额超过父项目,请注意！")
-                                                       }
-                                                       // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-                                                       //   message.warn("子项目框架采购金额超过父项目,请注意！")
-                                                       // }
-                                                       // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-                                                       //   message.warn("子项目单独采购金额超过父项目,请注意！")
-                                                       // }
-                                                       //总金额也不能超过
-                                                       if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目总金额超过父项目,请注意！")
-                                                       }
-                                                       //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
-                                                       let haveType = 1;
-                                                       if (String(this.state.basicInfo.haveHard) === '2') {
-                                                         haveType = 1
-                                                       } else if (String(this.state.basicInfo.haveHard) === '1' && Number(this.state.budgetInfo.softBudget) === 0) {
-                                                         haveType = 2
-                                                       } else if (String(this.state.basicInfo.haveHard) === '1' && Number(this.state.budgetInfo.softBudget) > 0) {
-                                                         haveType = 3
-                                                       }
-                                                       this.setState({
-                                                         pureHardwareFlag,
-                                                         haveType,
-                                                         budgetInfo: {
-                                                           ...budgetInfo,
-                                                           softBudget: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
-                                                           softBudgetinit: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
-                                                         },
-                                                       })
-                                                       this.fetchQueryMilepostInfo({
-                                                         type: basicInfo.projectType,
-                                                         isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                         //项目预算类型
-                                                         haveType: haveType,
-                                                         //项目软件预算
-                                                         softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                                         //框架预算
-                                                         frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                                         //单独采购预算
-                                                         singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                                         xmid: this.state.basicInfo.projectId,
-                                                         biddingMethod: this.state.basicInfo.biddingMethod,
-                                                         budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                                         label: this.state.basicInfo.labelTxt,
-                                                         //是否包含子项目
-                                                         haveChild: Number(this.state.subItem),
-                                                         queryType: "ONLYLX"
-                                                       });
-                                                     }
-                                                   }} style={{width: '100%'}} onChange={e => {
-                                        // console.log("eeeee", e)
-                                        let softBudgetChangeFlag = false
-                                        if (e !== this.state.budgetInfo.softBudget) {
-                                          this.setState({
-                                            softBudgetChangeFlag: true,
-                                            budgetInfo: {...budgetInfo, softBudget: Number(e),}
-                                          });
-                                        }
-                                      }} precision={0}/>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                              <Col span={12} style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>框架内采购硬件金额(元)</span>}>
-                                  {
-                                    //   getFieldDecorator('frameBudget', {
-                                    //   // rules: [{
-                                    //   //   required: true,
-                                    //   //   message: '请输入本项目预算(元)'
-                                    //   // }, {
-                                    //   //   validator: this.handleValidatorProjectBudget
-                                    //   // }],
-                                    //   initialValue: budgetInfo.frameBudget
-                                    // })
-                                    (
-                                      <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.frameBudget)}
-                                                   onBlur={(e) => {
-                                                     if (frameBudgetChangeFlag) {
-                                                       //只有数据变动了 就说明包含硬件选择了<是>
-                                                       //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                       //子项目总金额之和
-                                                       let subProjectBudget = 0;
-                                                       //子项目软件金额之和
-                                                       let subSoftBudget = 0;
-                                                       //子项目框架金额之和
-                                                       let subFrameBudget = 0;
-                                                       //子项目单独采购金额之和
-                                                       let subSingleBudget = 0;
-                                                       subItemRecord.map(item => {
-                                                         if (item.CZLX !== 'DELETE') {
-                                                           let total = 0;
-                                                           total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                           subProjectBudget = subProjectBudget + total
-                                                           subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                           subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                                         }
-                                                       })
-                                                       //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
-                                                       // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-                                                       //   message.warn("子项目软件预算金额超过父项目,请注意！")
-                                                       // }
-                                                       if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-                                                         message.warn("子项目框架采购金额超过父项目,请注意！")
-                                                       }
-                                                       // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-                                                       //   message.warn("子项目单独采购金额超过父项目,请注意！")
-                                                       // }
-                                                       //总金额也不能超过
-                                                       if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目总金额超过父项目,请注意！")
-                                                       }
-                                                       this.fetchQueryMilepostInfo({
-                                                         type: this.state.basicInfo.projectType,
-                                                         isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                         //项目预算类型
-                                                         haveType: this.state.haveType,
-                                                         //项目软件预算
-                                                         softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                                         //框架预算
-                                                         frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                                         //单独采购预算
-                                                         singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                                         xmid: this.state.basicInfo.projectId,
-                                                         biddingMethod: this.state.basicInfo.biddingMethod,
-                                                         budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                                         label: this.state.basicInfo.labelTxt,
-                                                         //是否包含子项目
-                                                         haveChild: Number(this.state.subItem),
-                                                         queryType: "ONLYLX"
-                                                       });
-                                                     }
-                                                   }} style={{width: '100%'}} onChange={e => {
-                                        let frameBudgetChangeFlag = false
-                                        if (e !== this.state.budgetInfo.frameBudget) {
-                                          this.setState({
-                                            frameBudgetChangeFlag: true,
-                                            budgetInfo: {...budgetInfo, frameBudget: Number(e)}
-                                          });
-                                        }
-                                      }} precision={0}/>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                              <Col span={12} style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>单独采购硬件金额(元)</span>}>
-                                  {
-                                    //   getFieldDecorator('singleBudget', {
-                                    //   // rules: [{
-                                    //   //   required: true,
-                                    //   //   message: '请输入本项目预算(元)'
-                                    //   // }, {
-                                    //   //   validator: this.handleValidatorProjectBudget
-                                    //   // }],
-                                    //   initialValue: budgetInfo.singleBudget
-                                    // })
-                                    (
-                                      <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.singleBudget)}
-                                                   onBlur={(e) => {
-                                                     if (singleBudgetChangeFlag) {
-                                                       //只有数据变动了 就说明包含硬件选择了<是>
-                                                       //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                       //子项目总金额之和
-                                                       let subProjectBudget = 0;
-                                                       //子项目软件金额之和
-                                                       let subSoftBudget = 0;
-                                                       //子项目框架金额之和
-                                                       let subFrameBudget = 0;
-                                                       //子项目单独采购金额之和
-                                                       let subSingleBudget = 0;
-                                                       subItemRecord.map(item => {
-                                                         if (item.CZLX !== 'DELETE') {
-                                                           let total = 0;
-                                                           total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                           subProjectBudget = subProjectBudget + total
-                                                           subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                           subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                                         }
-                                                       })
-                                                       //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
-                                                       // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-                                                       //   message.warn("子项目软件预算金额超过父项目,请注意！")
-                                                       // }
-                                                       // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-                                                       //   message.warn("子项目框架采购金额超过父项目,请注意！")
-                                                       // }
-                                                       if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目单独采购金额超过父项目,请注意！")
-                                                       }
-                                                       //总金额也不能超过
-                                                       if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目总金额超过父项目,请注意！")
-                                                       }
-                                                       this.fetchQueryMilepostInfo({
-                                                         type: this.state.basicInfo.projectType,
-                                                         isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                         //项目预算类型
-                                                         haveType: this.state.haveType,
-                                                         //项目软件预算
-                                                         softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                                         //框架预算
-                                                         frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                                         //单独采购预算
-                                                         singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                                         xmid: this.state.basicInfo.projectId,
-                                                         biddingMethod: this.state.basicInfo.biddingMethod,
-                                                         budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                                         label: this.state.basicInfo.labelTxt,
-                                                         //是否包含子项目
-                                                         haveChild: Number(this.state.subItem),
-                                                         queryType: "ONLYLX"
-                                                       });
-                                                     }
-                                                   }} style={{width: '100%'}} onChange={e => {
-                                        let singleBudgetChangeFlag = false
-                                        if (e !== this.state.budgetInfo.singleBudget) {
-                                          this.setState({
-                                            singleBudgetChangeFlag: true,
-                                            budgetInfo: {...budgetInfo, singleBudget: Number(e)}
-                                          });
-                                        }
-                                      }} precision={0}/>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </>):
-                          (<>
-                            <Row gutter={24}>
-                              <Col span={3} style={{ paddingRight: '4px' }}>
-                                <Form.Item
-                                  label={
-                                    <span>
-                                <span
-                                  style={{
-                                    fontFamily: 'SimSun, sans-serif',
-                                    color: '#f5222d',
-                                    marginRight: '4px',
-                                    lineHeight: 1,
-                                  }}
-                                >
-                                  *
-                                </span>
-                                关联预算
-                              </span>
-                                  }
-                                  className="formItem"
-                                >
-                                  {/*{getFieldDecorator('year', {*/}
-                                  {/*  initialValue: budgetInfo.year*/}
-                                  {/*})(*/}
-                                  <DatePicker
+                      {String(this.state.subItem) === '1' ? (
+                        <>
+                          <Row gutter={24}>
+                            <Col span={12} style={{ display: projectTypeRYJFlag ? '' : 'none' }}>
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    是否包含硬件
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('haveHard', {
+                                  //   initialValue: Number(basicInfo.haveHard)
+                                  // })
+                                  <Radio.Group
                                     disabled={subItemFlag}
-                                    value={budgetInfo.year}
-                                    allowClear={false}
-                                    ref={picker => (this.picker = picker)}
-                                    getCalendarContainer={triggerNode => triggerNode.parentNode}
-                                    onChange={v => {
-                                      const _this = this;
-                                      this.setState(
-                                        {
-                                          budgetInfo: {
-                                            ...this.state.budgetInfo,
-                                            budgetProjectId: '',
-                                            totalBudget: 0,
-                                            relativeBudget: 0,
-                                            year: v == null ? moment(new Date()) : v,
-                                          },
+                                    value={Number(this.state.basicInfo.haveHard)}
+                                    onChange={e => {
+                                      console.log('eeeee', e);
+                                      //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                      //包含硬件选择<否> 不展示 <是否在硬件入围内> <本项目软件金额> <框架采购金额> <单独采购金额> 把数据重置。
+                                      //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
+                                      let haveType = 1;
+                                      if (String(e.target.value) === '2') {
+                                        haveType = 1;
+                                      } else if (String(e.target.value) === '1') {
+                                        haveType = 2;
+                                      }
+                                      this.setState({
+                                        haveType,
+                                        basicInfo: {
+                                          ...basicInfo,
+                                          haveHard: String(e.target.value),
+                                          SFYJRW: '1',
                                         },
-                                        function() {
-                                          _this.props.form.resetFields(['projectBudget']);
-                                          _this.props.form.validateFields(['projectBudget']);
-                                          _this.fetchQueryBudgetProjects({
-                                            type: 'NF',
-                                            year: Number(
-                                              v == null
-                                                ? moment(new Date()).format('YYYY')
-                                                : v.format('YYYY'),
-                                            ),
-                                          });
+                                        budgetInfo: {
+                                          ...budgetInfo,
+                                          projectBudget: 0,
+                                          softBudget: 0,
+                                          softBudgetinit: 0,
+                                          singleBudget: 0,
+                                          frameBudget: 0,
                                         },
-                                      );
+                                      });
+                                      this.fetchQueryMilepostInfo({
+                                        type: basicInfo.projectType,
+                                        isShortListed:
+                                          Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                        //项目预算类型
+                                        haveType: haveType,
+                                        //项目软件预算
+                                        softBudget: 0,
+                                        //框架预算
+                                        frameBudget: 0,
+                                        //单独采购预算
+                                        singleBudget: 0,
+                                        xmid: basicInfo.projectId,
+                                        biddingMethod: basicInfo.biddingMethod,
+                                        budget: 0,
+                                        label: basicInfo.labelTxt,
+                                        //是否包含子项目
+                                        haveChild: Number(this.state.subItem),
+                                        queryType: 'ALL',
+                                      });
                                     }}
-                                    onPanelChange={v => {
-                                      this.picker.picker.state.open = false;
-                                      const _this = this;
-                                      this.setState(
-                                        {
-                                          budgetInfo: {
-                                            ...this.state.budgetInfo,
-                                            budgetProjectId: '',
-                                            totalBudget: 0,
-                                            relativeBudget: 0,
-                                            year: v,
-                                          },
-                                        },
-                                        function() {
-                                          _this.props.form.resetFields(['projectBudget']);
-                                          _this.props.form.validateFields(['projectBudget']);
-                                          _this.fetchQueryBudgetProjects({
-                                            type: 'NF',
-                                            year: Number(v.format('YYYY')),
-                                          });
-                                        },
-                                      );
+                                  >
+                                    <Radio value={1}>是</Radio>
+                                    <Radio value={2}>否</Radio>
+                                  </Radio.Group>
+                                }
+                              </Form.Item>
+                            </Col>
+                            <Col
+                              span={12}
+                              style={{
+                                paddingLeft: '24px',
+                                display:
+                                  this.state.basicInfo.haveHard === '1' ||
+                                  String(this.state.budgetInfo.budgetProjectId) === '-12'
+                                    ? 'none'
+                                    : '',
+                              }}
+                            >
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    本项目金额(元)
+                                  </span>
+                                }
+                                className="formItem"
+                              >
+                                {
+                                  // getFieldDecorator('projectBudget', {
+                                  // rules: [{
+                                  //   required: true,
+                                  //   message: '请输入本项目预算(元)'
+                                  // }, {
+                                  //   validator: this.handleValidatorProjectBudget
+                                  // }],
+                                  // initialValue: budgetInfo.projectBudget,
+                                  // }
+                                  // )
+                                  <InputNumber
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.projectBudget)}
+                                    onBlur={e => {
+                                      if (projectBudgetChangeFlag) {
+                                        //子项目总金额之和
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目不包含硬件-说明父项目只有总金额
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.projectBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        this.fetchQueryMilepostInfo({
+                                          type: basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: this.state.haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: basicInfo.projectId,
+                                          biddingMethod: basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
                                     }}
-                                    format="YYYY"
-                                    mode="year"
+                                    style={{ width: '100%' }}
+                                    onChange={e => {
+                                      let projectBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.projectBudget) {
+                                        this.setState({
+                                          projectBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, projectBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
+                                    precision={0}
                                   />
-                                  {/*)}*/}
-                                </Form.Item>
-                              </Col>
-                              <Col span={21} style={{ paddingLeft: '4px' }}>
-                                <Form.Item label=" " colon={false} className="formItem">
-                                  {getFieldDecorator('budgetProjectId', {
-                                    // rules: [{
-                                    //   required: true,
-                                    //   message: '请选择关联预算项目'
-                                    // }],
-                                    initialValue: budgetInfo.budgetProjectName
-                                      ? budgetInfo.budgetProjectName
-                                      : null,
-                                  })(
-                                    <TreeSelect
-                                      showSearch
-                                      disabled={subItemFlag}
-                                      treeNodeFilterProp="title"
-                                      style={{ width: '100%' }}
-                                      dropdownClassName="newproject-treeselect"
-                                      dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
-                                      treeData={budgetProjectList}
-                                      getPopupContainer={triggerNode => triggerNode.parentNode}
-                                      placeholder="请选择关联预算项目"
-                                      // treeDefaultExpandAll
-                                      onChange={e => {
-                                        budgetProjectList.forEach(item => {
-                                          if (Number(e) <= 0) {
-                                            item?.children?.forEach(ite => {
-                                              if (ite.value === e) {
-                                                // ////console.log("iteiteiteite",ite)
+                                }
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col
+                              span={12}
+                              style={{
+                                display:
+                                  projectTypeRYJFlag && this.state.basicInfo.haveHard === '1'
+                                    ? ''
+                                    : 'none',
+                              }}
+                            >
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    软件金额(元)
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('softBudget', {
+                                  //   // rules: [{
+                                  //   //   required: true,
+                                  //   //   message: '请输入本项目预算(元)'
+                                  //   // }, {
+                                  //   //   validator: this.handleValidatorProjectBudget
+                                  //   // }],
+                                  //   initialValue: budgetInfo.softBudget
+                                  // })
+                                  <InputNumber
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.softBudget)}
+                                    onBlur={e => {
+                                      if (this.state.softBudgetChangeFlag) {
+                                        //只有数据变动了 就说明包含硬件选择了<是>
+                                        //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                        //子项目总金额之和
+                                        let pureHardwareFlag = false;
+                                        if (
+                                          Number(this.state.budgetInfo.softBudgetinit) === 0 &&
+                                          Number(this.state.budgetInfo.softBudget) !== 0
+                                        ) {
+                                          pureHardwareFlag = true;
+                                        }
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+                                        if (
+                                          subSoftBudget > Number(this.state.budgetInfo.softBudget)
+                                        ) {
+                                          message.warn('子项目软件预算金额超过父项目,请注意！');
+                                        }
+                                        // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
+                                        //   message.warn("子项目框架采购金额超过父项目,请注意！")
+                                        // }
+                                        // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
+                                        //   message.warn("子项目单独采购金额超过父项目,请注意！")
+                                        // }
+                                        //总金额也不能超过
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
+                                        let haveType = 1;
+                                        if (String(this.state.basicInfo.haveHard) === '2') {
+                                          haveType = 1;
+                                        } else if (
+                                          String(this.state.basicInfo.haveHard) === '1' &&
+                                          Number(this.state.budgetInfo.softBudget) === 0
+                                        ) {
+                                          haveType = 2;
+                                        } else if (
+                                          String(this.state.basicInfo.haveHard) === '1' &&
+                                          Number(this.state.budgetInfo.softBudget) > 0
+                                        ) {
+                                          haveType = 3;
+                                        }
+                                        this.setState({
+                                          pureHardwareFlag,
+                                          haveType,
+                                          budgetInfo: {
+                                            ...budgetInfo,
+                                            softBudget: isNaN(this.state.budgetInfo.softBudget)
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                            softBudgetinit: isNaN(this.state.budgetInfo.softBudget)
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          },
+                                        });
+                                        this.fetchQueryMilepostInfo({
+                                          type: basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: this.state.basicInfo.projectId,
+                                          biddingMethod: this.state.basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: this.state.basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
+                                    style={{ width: '100%' }}
+                                    onChange={e => {
+                                      // console.log("eeeee", e)
+                                      let softBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.softBudget) {
+                                        this.setState({
+                                          softBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, softBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
+                                    precision={0}
+                                  />
+                                }
+                              </Form.Item>
+                            </Col>
+                            <Col
+                              span={12}
+                              style={{
+                                display:
+                                  projectTypeRYJFlag && this.state.basicInfo.haveHard === '1'
+                                    ? ''
+                                    : 'none',
+                              }}
+                            >
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    框架内采购硬件金额(元)
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('frameBudget', {
+                                  //   // rules: [{
+                                  //   //   required: true,
+                                  //   //   message: '请输入本项目预算(元)'
+                                  //   // }, {
+                                  //   //   validator: this.handleValidatorProjectBudget
+                                  //   // }],
+                                  //   initialValue: budgetInfo.frameBudget
+                                  // })
+                                  <InputNumber
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.frameBudget)}
+                                    onBlur={e => {
+                                      if (frameBudgetChangeFlag) {
+                                        //只有数据变动了 就说明包含硬件选择了<是>
+                                        //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                        //子项目总金额之和
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+                                        // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
+                                        //   message.warn("子项目软件预算金额超过父项目,请注意！")
+                                        // }
+                                        if (
+                                          subFrameBudget > Number(this.state.budgetInfo.frameBudget)
+                                        ) {
+                                          message.warn('子项目框架采购金额超过父项目,请注意！');
+                                        }
+                                        // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
+                                        //   message.warn("子项目单独采购金额超过父项目,请注意！")
+                                        // }
+                                        //总金额也不能超过
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        this.fetchQueryMilepostInfo({
+                                          type: this.state.basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: this.state.haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: this.state.basicInfo.projectId,
+                                          biddingMethod: this.state.basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: this.state.basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
+                                    style={{ width: '100%' }}
+                                    onChange={e => {
+                                      let frameBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.frameBudget) {
+                                        this.setState({
+                                          frameBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, frameBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
+                                    precision={0}
+                                  />
+                                }
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col
+                              span={12}
+                              style={{
+                                display:
+                                  projectTypeRYJFlag && this.state.basicInfo.haveHard === '1'
+                                    ? ''
+                                    : 'none',
+                              }}
+                            >
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    单独采购硬件金额(元)
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('singleBudget', {
+                                  //   // rules: [{
+                                  //   //   required: true,
+                                  //   //   message: '请输入本项目预算(元)'
+                                  //   // }, {
+                                  //   //   validator: this.handleValidatorProjectBudget
+                                  //   // }],
+                                  //   initialValue: budgetInfo.singleBudget
+                                  // })
+                                  <InputNumber
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.singleBudget)}
+                                    onBlur={e => {
+                                      if (singleBudgetChangeFlag) {
+                                        //只有数据变动了 就说明包含硬件选择了<是>
+                                        //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                        //子项目总金额之和
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+                                        // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
+                                        //   message.warn("子项目软件预算金额超过父项目,请注意！")
+                                        // }
+                                        // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
+                                        //   message.warn("子项目框架采购金额超过父项目,请注意！")
+                                        // }
+                                        if (
+                                          subSingleBudget >
+                                          Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目单独采购金额超过父项目,请注意！');
+                                        }
+                                        //总金额也不能超过
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        this.fetchQueryMilepostInfo({
+                                          type: this.state.basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: this.state.haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: this.state.basicInfo.projectId,
+                                          biddingMethod: this.state.basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: this.state.basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
+                                    style={{ width: '100%' }}
+                                    onChange={e => {
+                                      let singleBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.singleBudget) {
+                                        this.setState({
+                                          singleBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, singleBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
+                                    precision={0}
+                                  />
+                                }
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </>
+                      ) : (
+                        <>
+                          <Row gutter={24}>
+                            <Col span={3} style={{ paddingRight: '4px' }}>
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    关联预算
+                                  </span>
+                                }
+                                className="formItem"
+                              >
+                                {/*{getFieldDecorator('year', {*/}
+                                {/*  initialValue: budgetInfo.year*/}
+                                {/*})(*/}
+                                <DatePicker
+                                  disabled={subItemFlag}
+                                  value={budgetInfo.year}
+                                  allowClear={false}
+                                  ref={picker => (this.picker = picker)}
+                                  getCalendarContainer={triggerNode => triggerNode.parentNode}
+                                  onChange={v => {
+                                    const _this = this;
+                                    this.setState(
+                                      {
+                                        budgetInfo: {
+                                          ...this.state.budgetInfo,
+                                          budgetProjectId: '',
+                                          totalBudget: 0,
+                                          relativeBudget: 0,
+                                          year: v == null ? moment(new Date()) : v,
+                                        },
+                                      },
+                                      function() {
+                                        _this.props.form.resetFields(['projectBudget']);
+                                        _this.props.form.validateFields(['projectBudget']);
+                                        _this.fetchQueryBudgetProjects({
+                                          type: 'NF',
+                                          year: Number(
+                                            v == null
+                                              ? moment(new Date()).format('YYYY')
+                                              : v.format('YYYY'),
+                                          ),
+                                        });
+                                      },
+                                    );
+                                  }}
+                                  onPanelChange={v => {
+                                    this.picker.picker.state.open = false;
+                                    const _this = this;
+                                    this.setState(
+                                      {
+                                        budgetInfo: {
+                                          ...this.state.budgetInfo,
+                                          budgetProjectId: '',
+                                          totalBudget: 0,
+                                          relativeBudget: 0,
+                                          year: v,
+                                        },
+                                      },
+                                      function() {
+                                        _this.props.form.resetFields(['projectBudget']);
+                                        _this.props.form.validateFields(['projectBudget']);
+                                        _this.fetchQueryBudgetProjects({
+                                          type: 'NF',
+                                          year: Number(v.format('YYYY')),
+                                        });
+                                      },
+                                    );
+                                  }}
+                                  format="YYYY"
+                                  mode="year"
+                                />
+                                {/*)}*/}
+                              </Form.Item>
+                            </Col>
+                            <Col span={21} style={{ paddingLeft: '4px' }}>
+                              <Form.Item label=" " colon={false} className="formItem">
+                                {getFieldDecorator('budgetProjectId', {
+                                  // rules: [{
+                                  //   required: true,
+                                  //   message: '请选择关联预算项目'
+                                  // }],
+                                  initialValue: budgetInfo.budgetProjectName
+                                    ? budgetInfo.budgetProjectName
+                                    : null,
+                                })(
+                                  <TreeSelect
+                                    showSearch
+                                    disabled={subItemFlag}
+                                    treeNodeFilterProp="title"
+                                    style={{ width: '100%' }}
+                                    dropdownClassName="newproject-treeselect"
+                                    dropdownStyle={{ maxHeight: 200, overflow: 'auto' }}
+                                    treeData={budgetProjectList}
+                                    getPopupContainer={triggerNode => triggerNode.parentNode}
+                                    placeholder="请选择关联预算项目"
+                                    // treeDefaultExpandAll
+                                    onChange={e => {
+                                      budgetProjectList.forEach(item => {
+                                        if (Number(e) <= 0) {
+                                          item?.children?.forEach(ite => {
+                                            if (ite.value === e) {
+                                              // ////console.log("iteiteiteite",ite)
+                                              const _this = this;
+                                              this.setState(
+                                                {
+                                                  budgetInfo: {
+                                                    ...this.state.budgetInfo,
+                                                    budgetProjectId: ite.ysID,
+                                                    totalBudget: 0,
+                                                    relativeBudget: 0,
+                                                    // projectBudget: 0,
+                                                    // budgetProjectName: ite.ysName,
+                                                    budgetType: '资本性预算',
+                                                  },
+                                                  ysKZX: ite.ysKZX,
+                                                },
+                                                function() {
+                                                  _this.props.form.resetFields(['projectBudget']);
+                                                  _this.props.form.validateFields([
+                                                    'projectBudget',
+                                                  ]);
+                                                },
+                                              );
+                                            }
+                                          });
+                                        } else {
+                                          item?.children?.forEach(ite => {
+                                            ite?.children?.forEach(i => {
+                                              if (i.value === e) {
+                                                // ////console.log("iiiiii",i)
                                                 const _this = this;
                                                 this.setState(
                                                   {
                                                     budgetInfo: {
                                                       ...this.state.budgetInfo,
-                                                      budgetProjectId: ite.ysID,
-                                                      totalBudget: 0,
-                                                      relativeBudget: 0,
-                                                      // projectBudget: 0,
-                                                      // budgetProjectName: ite.ysName,
-                                                      budgetType: '资本性预算',
+                                                      budgetProjectId: i.ysID,
+                                                      // budgetProjectName: i.value,
+                                                      totalBudget: Number(i.ysZJE),
+                                                      relativeBudget: Number(i.ysKGL),
+                                                      budgetType: i.ysLX,
                                                     },
-                                                    ysKZX: ite.ysKZX,
+                                                    ysKZX: i.ysKZX,
                                                   },
-                                                  function () {
+                                                  function() {
                                                     _this.props.form.resetFields(['projectBudget']);
-                                                    _this.props.form.validateFields(['projectBudget']);
+                                                    _this.props.form.validateFields([
+                                                      'projectBudget',
+                                                    ]);
                                                   },
                                                 );
                                               }
                                             });
-                                          } else {
-                                            item?.children?.forEach(ite => {
-                                              ite?.children?.forEach(i => {
-                                                if (i.value === e) {
-                                                  // ////console.log("iiiiii",i)
-                                                  const _this = this;
-                                                  this.setState(
-                                                    {
-                                                      budgetInfo: {
-                                                        ...this.state.budgetInfo,
-                                                        budgetProjectId: i.ysID,
-                                                        // budgetProjectName: i.value,
-                                                        totalBudget: Number(i.ysZJE),
-                                                        relativeBudget: Number(i.ysKGL),
-                                                        budgetType: i.ysLX,
-                                                      },
-                                                      ysKZX: i.ysKZX,
-                                                    },
-                                                    function () {
-                                                      _this.props.form.resetFields(['projectBudget']);
-                                                      _this.props.form.validateFields(['projectBudget']);
-                                                    },
-                                                  );
-                                                }
-                                              });
-                                            });
+                                          });
+                                        }
+                                      });
+                                    }}
+                                  />,
+                                )}
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row
+                            gutter={24}
+                            style={{
+                              display:
+                                this.state.budgetInfo.budgetProjectId === '0' ||
+                                this.state.budgetInfo.budgetProjectId === '-12'
+                                  ? 'none'
+                                  : '',
+                            }}
+                          >
+                            <Col span={12} style={{ paddingRight: '24px' }}>
+                              <Form.Item label="总预算(元)" className="formItem">
+                                <InputNumber
+                                  disabled={true}
+                                  style={{ width: '100%' }}
+                                  value={budgetInfo.totalBudget}
+                                  precision={0}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col span={12} style={{ paddingLeft: '24px' }}>
+                              <Form.Item label="可执行预算(元)" className="formItem">
+                                <InputNumber
+                                  disabled={true}
+                                  style={{ width: '100%' }}
+                                  value={ysKZX}
+                                  precision={0}
+                                />
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col
+                              span={12}
+                              style={{
+                                paddingRight: '24px',
+                                display:
+                                  this.state.budgetInfo.budgetProjectId === '0' ||
+                                  this.state.budgetInfo.budgetProjectId === '-12'
+                                    ? 'none'
+                                    : '',
+                              }}
+                            >
+                              <Form.Item label="剩余预算(元)" className="formItem">
+                                <InputNumber
+                                  disabled={true}
+                                  style={{ width: '100%' }}
+                                  value={budgetInfo.relativeBudget}
+                                  precision={0}
+                                />
+                              </Form.Item>
+                            </Col>
+                            <Col
+                              span={12}
+                              style={{
+                                paddingLeft:
+                                  String(this.state.budgetInfo.budgetProjectId) === '0' ||
+                                  String(this.state.budgetInfo.budgetProjectId) === '-12'
+                                    ? '12px'
+                                    : '24px',
+                                display: this.state.basicInfo.haveHard === '1' ? 'none' : '',
+                              }}
+                            >
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    本项目金额(元)
+                                  </span>
+                                }
+                                className="formItem"
+                              >
+                                {
+                                  // getFieldDecorator('projectBudget', {
+                                  // rules: [{
+                                  //   required: true,
+                                  //   message: '请输入本项目预算(元)'
+                                  // }, {
+                                  //   validator: this.handleValidatorProjectBudget
+                                  // }],
+                                  // initialValue: budgetInfo.projectBudget,
+                                  // }
+                                  // )
+                                  <InputNumber
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.projectBudget)}
+                                    onBlur={e => {
+                                      if (projectBudgetChangeFlag) {
+                                        //子项目总金额之和
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
                                           }
                                         });
+                                        //父项目不包含硬件-说明父项目只有总金额
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.projectBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        this.fetchQueryMilepostInfo({
+                                          type: basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: this.state.haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: basicInfo.projectId,
+                                          biddingMethod: basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
+                                    style={{ width: '100%' }}
+                                    onChange={e => {
+                                      let projectBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.projectBudget) {
+                                        this.setState({
+                                          projectBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, projectBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
+                                    precision={0}
+                                  />
+                                }
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row gutter={24}>
+                            <Col span={12} style={{ display: projectTypeRYJFlag ? '' : 'none' }}>
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
                                       }}
-                                    />,
-                                  )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24} style={{display: this.state.budgetInfo.budgetProjectId === '0' || this.state.budgetInfo.budgetProjectId === '-12' ? 'none' : '',}}>
-                              <Col span={12} style={{ paddingRight: '24px' }}>
-                                <Form.Item label="总预算(元)" className="formItem">
+                                    >
+                                      *
+                                    </span>
+                                    是否包含硬件
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('haveHard', {
+                                  //   initialValue: Number(basicInfo.haveHard)
+                                  // })
+                                  <Radio.Group
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.basicInfo.haveHard)}
+                                    onChange={e => {
+                                      console.log('eeeee', e);
+                                      //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                      //包含硬件选择<否> 不展示 <是否在硬件入围内> <本项目软件金额> <框架采购金额> <单独采购金额> 把数据重置。
+                                      //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
+                                      let haveType = 1;
+                                      if (String(e.target.value) === '2') {
+                                        haveType = 1;
+                                      } else if (String(e.target.value) === '1') {
+                                        haveType = 2;
+                                      }
+                                      this.setState({
+                                        haveType,
+                                        basicInfo: {
+                                          ...basicInfo,
+                                          haveHard: String(e.target.value),
+                                          SFYJRW: '1',
+                                        },
+                                        budgetInfo: {
+                                          ...budgetInfo,
+                                          projectBudget: 0,
+                                          softBudget: 0,
+                                          softBudgetinit: 0,
+                                          singleBudget: 0,
+                                          frameBudget: 0,
+                                        },
+                                      });
+                                      this.fetchQueryMilepostInfo({
+                                        type: basicInfo.projectType,
+                                        isShortListed:
+                                          Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                        //项目预算类型
+                                        haveType: haveType,
+                                        //项目软件预算
+                                        softBudget: 0,
+                                        //框架预算
+                                        frameBudget: 0,
+                                        //单独采购预算
+                                        singleBudget: 0,
+                                        xmid: basicInfo.projectId,
+                                        biddingMethod: basicInfo.biddingMethod,
+                                        budget: 0,
+                                        label: basicInfo.labelTxt,
+                                        //是否包含子项目
+                                        haveChild: Number(this.state.subItem),
+                                        queryType: 'ALL',
+                                      });
+                                    }}
+                                  >
+                                    <Radio value={1}>是</Radio>
+                                    <Radio value={2}>否</Radio>
+                                  </Radio.Group>
+                                }
+                              </Form.Item>
+                            </Col>
+                            <Col
+                              span={12}
+                              style={{
+                                display:
+                                  projectTypeRYJFlag && this.state.basicInfo.haveHard === '1'
+                                    ? ''
+                                    : 'none',
+                              }}
+                            >
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    软件金额(元)
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('softBudget', {
+                                  //   // rules: [{
+                                  //   //   required: true,
+                                  //   //   message: '请输入本项目预算(元)'
+                                  //   // }, {
+                                  //   //   validator: this.handleValidatorProjectBudget
+                                  //   // }],
+                                  //   initialValue: budgetInfo.softBudget
+                                  // })
                                   <InputNumber
-                                    disabled={true}
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.softBudget)}
+                                    onBlur={e => {
+                                      if (this.state.softBudgetChangeFlag) {
+                                        //只有数据变动了 就说明包含硬件选择了<是>
+                                        //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                        //子项目总金额之和
+                                        let pureHardwareFlag = false;
+                                        if (
+                                          Number(this.state.budgetInfo.softBudgetinit) === 0 &&
+                                          Number(this.state.budgetInfo.softBudget) !== 0
+                                        ) {
+                                          pureHardwareFlag = true;
+                                        }
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+                                        if (
+                                          subSoftBudget > Number(this.state.budgetInfo.softBudget)
+                                        ) {
+                                          message.warn('子项目软件预算金额超过父项目,请注意！');
+                                        }
+                                        // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
+                                        //   message.warn("子项目框架采购金额超过父项目,请注意！")
+                                        // }
+                                        // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
+                                        //   message.warn("子项目单独采购金额超过父项目,请注意！")
+                                        // }
+                                        //总金额也不能超过
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
+                                        let haveType = 1;
+                                        if (String(this.state.basicInfo.haveHard) === '2') {
+                                          haveType = 1;
+                                        } else if (
+                                          String(this.state.basicInfo.haveHard) === '1' &&
+                                          Number(this.state.budgetInfo.softBudget) === 0
+                                        ) {
+                                          haveType = 2;
+                                        } else if (
+                                          String(this.state.basicInfo.haveHard) === '1' &&
+                                          Number(this.state.budgetInfo.softBudget) > 0
+                                        ) {
+                                          haveType = 3;
+                                        }
+                                        this.setState({
+                                          pureHardwareFlag,
+                                          haveType,
+                                          budgetInfo: {
+                                            ...budgetInfo,
+                                            softBudget: isNaN(this.state.budgetInfo.softBudget)
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                            softBudgetinit: isNaN(this.state.budgetInfo.softBudget)
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          },
+                                        });
+                                        this.fetchQueryMilepostInfo({
+                                          type: basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: this.state.basicInfo.projectId,
+                                          biddingMethod: this.state.basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: this.state.basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
                                     style={{ width: '100%' }}
-                                    value={budgetInfo.totalBudget}
+                                    onChange={e => {
+                                      // console.log("eeeee", e)
+                                      let softBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.softBudget) {
+                                        this.setState({
+                                          softBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, softBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
                                     precision={0}
                                   />
-                                </Form.Item>
-                              </Col>
-                              <Col span={12} style={{ paddingLeft: '24px' }}>
-                                <Form.Item label="可执行预算(元)" className="formItem">
+                                }
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                          <Row
+                            gutter={24}
+                            style={{
+                              display:
+                                projectTypeRYJFlag && this.state.basicInfo.haveHard === '1'
+                                  ? ''
+                                  : 'none',
+                            }}
+                          >
+                            <Col span={12}>
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    框架内采购硬件金额(元)
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('frameBudget', {
+                                  //   // rules: [{
+                                  //   //   required: true,
+                                  //   //   message: '请输入本项目预算(元)'
+                                  //   // }, {
+                                  //   //   validator: this.handleValidatorProjectBudget
+                                  //   // }],
+                                  //   initialValue: budgetInfo.frameBudget
+                                  // })
                                   <InputNumber
-                                    disabled={true}
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.frameBudget)}
+                                    onBlur={e => {
+                                      if (frameBudgetChangeFlag) {
+                                        //只有数据变动了 就说明包含硬件选择了<是>
+                                        //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                        //子项目总金额之和
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+                                        // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
+                                        //   message.warn("子项目软件预算金额超过父项目,请注意！")
+                                        // }
+                                        if (
+                                          subFrameBudget > Number(this.state.budgetInfo.frameBudget)
+                                        ) {
+                                          message.warn('子项目框架采购金额超过父项目,请注意！');
+                                        }
+                                        // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
+                                        //   message.warn("子项目单独采购金额超过父项目,请注意！")
+                                        // }
+                                        //总金额也不能超过
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        this.fetchQueryMilepostInfo({
+                                          type: this.state.basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: this.state.haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: this.state.basicInfo.projectId,
+                                          biddingMethod: this.state.basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: this.state.basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
                                     style={{ width: '100%' }}
-                                    value={ysKZX}
+                                    onChange={e => {
+                                      let frameBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.frameBudget) {
+                                        this.setState({
+                                          frameBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, frameBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
                                     precision={0}
                                   />
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                              <Col span={12} style={{paddingRight: '24px', display: this.state.budgetInfo.budgetProjectId === '0' || this.state.budgetInfo.budgetProjectId === '-12' ? 'none' : '',}}>
-                                <Form.Item label="剩余预算(元)" className="formItem">
+                                }
+                              </Form.Item>
+                            </Col>
+                            <Col span={12}>
+                              <Form.Item
+                                label={
+                                  <span>
+                                    <span
+                                      style={{
+                                        fontFamily: 'SimSun, sans-serif',
+                                        color: '#f5222d',
+                                        marginRight: '4px',
+                                        lineHeight: 1,
+                                      }}
+                                    >
+                                      *
+                                    </span>
+                                    单独采购硬件金额(元)
+                                  </span>
+                                }
+                              >
+                                {
+                                  //   getFieldDecorator('singleBudget', {
+                                  //   // rules: [{
+                                  //   //   required: true,
+                                  //   //   message: '请输入本项目预算(元)'
+                                  //   // }, {
+                                  //   //   validator: this.handleValidatorProjectBudget
+                                  //   // }],
+                                  //   initialValue: budgetInfo.singleBudget
+                                  // })
                                   <InputNumber
-                                    disabled={true}
-                                    style={{width: '100%'}}
-                                    value={budgetInfo.relativeBudget}
+                                    disabled={subItemFlag}
+                                    value={Number(this.state.budgetInfo.singleBudget)}
+                                    onBlur={e => {
+                                      if (singleBudgetChangeFlag) {
+                                        //只有数据变动了 就说明包含硬件选择了<是>
+                                        //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
+                                        //子项目总金额之和
+                                        let subProjectBudget = 0;
+                                        //子项目软件金额之和
+                                        let subSoftBudget = 0;
+                                        //子项目框架金额之和
+                                        let subFrameBudget = 0;
+                                        //子项目单独采购金额之和
+                                        let subSingleBudget = 0;
+                                        subItemRecord.map(item => {
+                                          if (item.CZLX !== 'DELETE') {
+                                            let total = 0;
+                                            total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS);
+                                            subProjectBudget = subProjectBudget + total;
+                                            subSoftBudget = subSoftBudget + Number(item.RJYS);
+                                            subFrameBudget = subFrameBudget + Number(item.KJCGJE);
+                                            subSingleBudget = subSingleBudget + Number(item.DDCGJE);
+                                          }
+                                        });
+                                        //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
+                                        // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
+                                        //   message.warn("子项目软件预算金额超过父项目,请注意！")
+                                        // }
+                                        // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
+                                        //   message.warn("子项目框架采购金额超过父项目,请注意！")
+                                        // }
+                                        if (
+                                          subSingleBudget >
+                                          Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目单独采购金额超过父项目,请注意！');
+                                        }
+                                        //总金额也不能超过
+                                        if (
+                                          subSingleBudget +
+                                            subFrameBudget +
+                                            subSoftBudget +
+                                            subProjectBudget >
+                                          Number(this.state.budgetInfo.softBudget) +
+                                            Number(this.state.budgetInfo.frameBudget) +
+                                            Number(this.state.budgetInfo.singleBudget)
+                                        ) {
+                                          message.warn('子项目总金额超过父项目,请注意！');
+                                        }
+                                        this.fetchQueryMilepostInfo({
+                                          type: this.state.basicInfo.projectType,
+                                          isShortListed:
+                                            Number(this.state.budgetInfo.frameBudget) > 0
+                                              ? '1'
+                                              : '2',
+                                          //项目预算类型
+                                          haveType: this.state.haveType,
+                                          //项目软件预算
+                                          softBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.softBudget,
+                                          //框架预算
+                                          frameBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.frameBudget,
+                                          //单独采购预算
+                                          singleBudget:
+                                            this.state.projectTypeRYJFlag &&
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? 0
+                                              : this.state.budgetInfo.singleBudget,
+                                          xmid: this.state.basicInfo.projectId,
+                                          biddingMethod: this.state.basicInfo.biddingMethod,
+                                          budget:
+                                            String(this.state.basicInfo.haveHard) === '2'
+                                              ? this.state.budgetInfo.projectBudget
+                                              : Number(this.state.budgetInfo.softBudget) +
+                                                Number(this.state.budgetInfo.frameBudget) +
+                                                Number(this.state.budgetInfo.singleBudget),
+                                          label: this.state.basicInfo.labelTxt,
+                                          //是否包含子项目
+                                          haveChild: Number(this.state.subItem),
+                                          queryType: 'ONLYLX',
+                                        });
+                                      }
+                                    }}
+                                    style={{ width: '100%' }}
+                                    onChange={e => {
+                                      let singleBudgetChangeFlag = false;
+                                      if (e !== this.state.budgetInfo.singleBudget) {
+                                        this.setState({
+                                          singleBudgetChangeFlag: true,
+                                          budgetInfo: { ...budgetInfo, singleBudget: Number(e) },
+                                        });
+                                      }
+                                    }}
                                     precision={0}
                                   />
-                                </Form.Item>
-                              </Col>
-                              <Col span={12} style={{paddingLeft: String(this.state.budgetInfo.budgetProjectId) === "0" || String(this.state.budgetInfo.budgetProjectId) === "-12"?'12px':'24px', display: this.state.basicInfo.haveHard === "1" ? 'none' : ''}}>
-                                <Form.Item
-                                  label={
-                                    <span>
+                                }
+                              </Form.Item>
+                            </Col>
+                          </Row>
+                        </>
+                      )}
+                      <Row gutter={24}>
+                        <Col span={12} style={{ display: subItemFlag ? 'none' : '' }}>
+                          <Form.Item
+                            label={
+                              <span>
                                 <span
                                   style={{
                                     fontFamily: 'SimSun, sans-serif',
@@ -5563,486 +6675,69 @@ class EditProjectInfoModel extends React.Component {
                                 >
                                   *
                                 </span>
-                                本项目金额(元)
+                                是否包含子项目
                               </span>
-                                  }
-                                  className="formItem"
-                                >
-                                  {
-                                    // getFieldDecorator('projectBudget', {
-                                    // rules: [{
-                                    //   required: true,
-                                    //   message: '请输入本项目预算(元)'
-                                    // }, {
-                                    //   validator: this.handleValidatorProjectBudget
-                                    // }],
-                                    // initialValue: budgetInfo.projectBudget,
-                                    // }
-                                    // )
-                                    (
-                                      <InputNumber
-                                        disabled={subItemFlag}
-                                        value={Number(this.state.budgetInfo.projectBudget)}
-                                        onBlur={e => {
-                                          if (projectBudgetChangeFlag) {
-                                            //子项目总金额之和
-                                            let subProjectBudget = 0;
-                                            //子项目软件金额之和
-                                            let subSoftBudget = 0;
-                                            //子项目框架金额之和
-                                            let subFrameBudget = 0;
-                                            //子项目单独采购金额之和
-                                            let subSingleBudget = 0;
-                                            subItemRecord.map(item => {
-                                              if (item.CZLX !== 'DELETE') {
-                                                let total = 0;
-                                                total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                subProjectBudget = subProjectBudget + total
-                                                subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                              }
-                                            })
-                                            //父项目不包含硬件-说明父项目只有总金额
-                                            if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.projectBudget)) {
-                                              message.warn("子项目总金额超过父项目,请注意！")
-                                            }
-                                            this.fetchQueryMilepostInfo({
-                                              type: basicInfo.projectType,
-                                              isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                              //项目预算类型
-                                              haveType: this.state.haveType,
-                                              //项目软件预算
-                                              softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                              //框架预算
-                                              frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                              //单独采购预算
-                                              singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                              xmid: basicInfo.projectId,
-                                              biddingMethod: basicInfo.biddingMethod,
-                                              budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                              label: basicInfo.labelTxt,
-                                              //是否包含子项目
-                                              haveChild: Number(this.state.subItem),
-                                              queryType: 'ONLYLX',
-                                            });
-                                          }
-                                        }}
-                                        style={{ width: '100%' }}
-                                        onChange={e => {
-                                          let projectBudgetChangeFlag = false;
-                                          if (e !== this.state.budgetInfo.projectBudget) {
-                                            this.setState({
-                                              projectBudgetChangeFlag: true,
-                                              budgetInfo: {...budgetInfo, projectBudget: Number(e)},
-                                            });
-                                          }
-                                        }}
-                                        precision={0}
-                                      />
-                                    )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24}>
-                              <Col span={12} style={{display: projectTypeRYJFlag ? '' : 'none'}}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>是否包含硬件</span>}>
-                                  {
-                                    //   getFieldDecorator('haveHard', {
-                                    //   initialValue: Number(basicInfo.haveHard)
-                                    // })
-                                    (
-                                      <Radio.Group disabled={subItemFlag} value={Number(this.state.basicInfo.haveHard)}
-                                                   onChange={e => {
-                                                     console.log("eeeee", e);
-                                                     //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                     //包含硬件选择<否> 不展示 <是否在硬件入围内> <本项目软件金额> <框架采购金额> <单独采购金额> 把数据重置。
-                                                     //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
-                                                     let haveType = 1;
-                                                     if (String(e.target.value) === '2') {
-                                                       haveType = 1
-                                                     } else if (String(e.target.value) === '1') {
-                                                       haveType = 2
-                                                     }
-                                                     this.setState({
-                                                       haveType,
-                                                       basicInfo: {
-                                                         ...basicInfo,
-                                                         haveHard: String(e.target.value),
-                                                         SFYJRW: '1'
-                                                       },
-                                                       budgetInfo: {
-                                                         ...budgetInfo,
-                                                         projectBudget: 0,
-                                                         softBudget: 0,
-                                                         softBudgetinit: 0,
-                                                         singleBudget: 0,
-                                                         frameBudget: 0
-                                                       }
-                                                     });
-                                                     this.fetchQueryMilepostInfo({
-                                                       type: basicInfo.projectType,
-                                                       isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                       //项目预算类型
-                                                       haveType: haveType,
-                                                       //项目软件预算
-                                                       softBudget: 0,
-                                                       //框架预算
-                                                       frameBudget: 0,
-                                                       //单独采购预算
-                                                       singleBudget: 0,
-                                                       xmid: basicInfo.projectId,
-                                                       biddingMethod: basicInfo.biddingMethod,
-                                                       budget: 0,
-                                                       label: basicInfo.labelTxt,
-                                                       //是否包含子项目
-                                                       haveChild: Number(this.state.subItem),
-                                                       queryType: "ALL"
-                                                     });
-                                                   }}>
-                                        <Radio value={1}>是</Radio>
-                                        <Radio value={2}>否</Radio>
-                                      </Radio.Group>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                              <Col span={12} style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>软件金额(元)</span>}>
-                                  {
-                                    //   getFieldDecorator('softBudget', {
-                                    //   // rules: [{
-                                    //   //   required: true,
-                                    //   //   message: '请输入本项目预算(元)'
-                                    //   // }, {
-                                    //   //   validator: this.handleValidatorProjectBudget
-                                    //   // }],
-                                    //   initialValue: budgetInfo.softBudget
-                                    // })
-                                    (
-                                      <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.softBudget)}
-                                                   onBlur={(e) => {
-                                                     if (this.state.softBudgetChangeFlag) {
-                                                       //只有数据变动了 就说明包含硬件选择了<是>
-                                                       //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                       //子项目总金额之和
-                                                       let pureHardwareFlag = false
-                                                       if (Number(this.state.budgetInfo.softBudgetinit) === 0 && Number(this.state.budgetInfo.softBudget) !== 0) {
-                                                         pureHardwareFlag = true;
-                                                       }
-                                                       let subProjectBudget = 0;
-                                                       //子项目软件金额之和
-                                                       let subSoftBudget = 0;
-                                                       //子项目框架金额之和
-                                                       let subFrameBudget = 0;
-                                                       //子项目单独采购金额之和
-                                                       let subSingleBudget = 0;
-                                                       subItemRecord.map(item => {
-                                                         if (item.CZLX !== 'DELETE') {
-                                                           let total = 0;
-                                                           total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                           subProjectBudget = subProjectBudget + total
-                                                           subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                           subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                                         }
-                                                       })
-                                                       //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
-                                                       if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-                                                         message.warn("子项目软件预算金额超过父项目,请注意！")
-                                                       }
-                                                       // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-                                                       //   message.warn("子项目框架采购金额超过父项目,请注意！")
-                                                       // }
-                                                       // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-                                                       //   message.warn("子项目单独采购金额超过父项目,请注意！")
-                                                       // }
-                                                       //总金额也不能超过
-                                                       if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目总金额超过父项目,请注意！")
-                                                       }
-                                                       //判断项目预算类型（1-是否包含硬件为否 2-是否包含硬件为是且软件金额是0 3-是否包含硬件为是且软件金额大于0）
-                                                       let haveType = 1;
-                                                       if (String(this.state.basicInfo.haveHard) === '2') {
-                                                         haveType = 1
-                                                       } else if (String(this.state.basicInfo.haveHard) === '1' && Number(this.state.budgetInfo.softBudget) === 0) {
-                                                         haveType = 2
-                                                       } else if (String(this.state.basicInfo.haveHard) === '1' && Number(this.state.budgetInfo.softBudget) > 0) {
-                                                         haveType = 3
-                                                       }
-                                                       this.setState({
-                                                         pureHardwareFlag,
-                                                         haveType,
-                                                         budgetInfo: {
-                                                           ...budgetInfo,
-                                                           softBudget: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
-                                                           softBudgetinit: isNaN(this.state.budgetInfo.softBudget) ? 0 : this.state.budgetInfo.softBudget,
-                                                         },
-                                                       })
-                                                       this.fetchQueryMilepostInfo({
-                                                         type: basicInfo.projectType,
-                                                         isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                         //项目预算类型
-                                                         haveType: haveType,
-                                                         //项目软件预算
-                                                         softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                                         //框架预算
-                                                         frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                                         //单独采购预算
-                                                         singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                                         xmid: this.state.basicInfo.projectId,
-                                                         biddingMethod: this.state.basicInfo.biddingMethod,
-                                                         budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                                         label: this.state.basicInfo.labelTxt,
-                                                         //是否包含子项目
-                                                         haveChild: Number(this.state.subItem),
-                                                         queryType: "ONLYLX"
-                                                       });
-                                                     }
-                                                   }} style={{width: '100%'}} onChange={e => {
-                                        // console.log("eeeee", e)
-                                        let softBudgetChangeFlag = false
-                                        if (e !== this.state.budgetInfo.softBudget) {
-                                          this.setState({
-                                            softBudgetChangeFlag: true,
-                                            budgetInfo: {...budgetInfo, softBudget: Number(e),}
-                                          });
-                                        }
-                                      }} precision={0}/>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                            <Row gutter={24} style={{display: projectTypeRYJFlag && this.state.basicInfo.haveHard === "1" ? '' : 'none'}}>
-                              <Col span={12}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>框架内采购硬件金额(元)</span>}>
-                                  {
-                                    //   getFieldDecorator('frameBudget', {
-                                    //   // rules: [{
-                                    //   //   required: true,
-                                    //   //   message: '请输入本项目预算(元)'
-                                    //   // }, {
-                                    //   //   validator: this.handleValidatorProjectBudget
-                                    //   // }],
-                                    //   initialValue: budgetInfo.frameBudget
-                                    // })
-                                    (
-                                      <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.frameBudget)}
-                                                   onBlur={(e) => {
-                                                     if (frameBudgetChangeFlag) {
-                                                       //只有数据变动了 就说明包含硬件选择了<是>
-                                                       //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                       //子项目总金额之和
-                                                       let subProjectBudget = 0;
-                                                       //子项目软件金额之和
-                                                       let subSoftBudget = 0;
-                                                       //子项目框架金额之和
-                                                       let subFrameBudget = 0;
-                                                       //子项目单独采购金额之和
-                                                       let subSingleBudget = 0;
-                                                       subItemRecord.map(item => {
-                                                         if (item.CZLX !== 'DELETE') {
-                                                           let total = 0;
-                                                           total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                           subProjectBudget = subProjectBudget + total
-                                                           subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                           subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                                         }
-                                                       })
-                                                       //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
-                                                       // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-                                                       //   message.warn("子项目软件预算金额超过父项目,请注意！")
-                                                       // }
-                                                       if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-                                                         message.warn("子项目框架采购金额超过父项目,请注意！")
-                                                       }
-                                                       // if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-                                                       //   message.warn("子项目单独采购金额超过父项目,请注意！")
-                                                       // }
-                                                       //总金额也不能超过
-                                                       if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目总金额超过父项目,请注意！")
-                                                       }
-                                                       this.fetchQueryMilepostInfo({
-                                                         type: this.state.basicInfo.projectType,
-                                                         isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                         //项目预算类型
-                                                         haveType: this.state.haveType,
-                                                         //项目软件预算
-                                                         softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                                         //框架预算
-                                                         frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                                         //单独采购预算
-                                                         singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                                         xmid: this.state.basicInfo.projectId,
-                                                         biddingMethod: this.state.basicInfo.biddingMethod,
-                                                         budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                                         label: this.state.basicInfo.labelTxt,
-                                                         //是否包含子项目
-                                                         haveChild: Number(this.state.subItem),
-                                                         queryType: "ONLYLX"
-                                                       });
-                                                     }
-                                                   }} style={{width: '100%'}} onChange={e => {
-                                        let frameBudgetChangeFlag = false
-                                        if (e !== this.state.budgetInfo.frameBudget) {
-                                          this.setState({
-                                            frameBudgetChangeFlag: true,
-                                            budgetInfo: {...budgetInfo, frameBudget: Number(e)}
-                                          });
-                                        }
-                                      }} precision={0}/>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                              <Col span={12}>
-                                <Form.Item label={<span><span style={{
-                                  fontFamily: 'SimSun, sans-serif',
-                                  color: '#f5222d',
-                                  marginRight: '4px',
-                                  lineHeight: 1
-                                }}>*</span>单独采购硬件金额(元)</span>}>
-                                  {
-                                    //   getFieldDecorator('singleBudget', {
-                                    //   // rules: [{
-                                    //   //   required: true,
-                                    //   //   message: '请输入本项目预算(元)'
-                                    //   // }, {
-                                    //   //   validator: this.handleValidatorProjectBudget
-                                    //   // }],
-                                    //   initialValue: budgetInfo.singleBudget
-                                    // })
-                                    (
-                                      <InputNumber disabled={subItemFlag} value={Number(this.state.budgetInfo.singleBudget)}
-                                                   onBlur={(e) => {
-                                                     if (singleBudgetChangeFlag) {
-                                                       //只有数据变动了 就说明包含硬件选择了<是>
-                                                       //包含硬件选择<是> 不展示<本项目金额>   <本项目金额> = <本项目软件金额>+<框架采购金额>+<单独采购金额>
-                                                       //子项目总金额之和
-                                                       let subProjectBudget = 0;
-                                                       //子项目软件金额之和
-                                                       let subSoftBudget = 0;
-                                                       //子项目框架金额之和
-                                                       let subFrameBudget = 0;
-                                                       //子项目单独采购金额之和
-                                                       let subSingleBudget = 0;
-                                                       subItemRecord.map(item => {
-                                                         if (item.CZLX !== 'DELETE') {
-                                                           let total = 0;
-                                                           total = item.SFBHYJ === '1' ? 0 : Number(item.XMYS)
-                                                           subProjectBudget = subProjectBudget + total
-                                                           subSoftBudget = subSoftBudget + Number(item.RJYS)
-                                                           subFrameBudget = subFrameBudget + Number(item.KJCGJE)
-                                                           subSingleBudget = subSingleBudget + Number(item.DDCGJE)
-                                                         }
-                                                       })
-                                                       //父项目包含硬件-说明父项目有软件预算金额/单独采购金额/框架金额,
-                                                       // if (subSoftBudget > Number(this.state.budgetInfo.softBudget)) {
-                                                       //   message.warn("子项目软件预算金额超过父项目,请注意！")
-                                                       // }
-                                                       // if (subFrameBudget > Number(this.state.budgetInfo.frameBudget)) {
-                                                       //   message.warn("子项目框架采购金额超过父项目,请注意！")
-                                                       // }
-                                                       if (subSingleBudget > Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目单独采购金额超过父项目,请注意！")
-                                                       }
-                                                       //总金额也不能超过
-                                                       if (subSingleBudget + subFrameBudget + subSoftBudget + subProjectBudget > Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)) {
-                                                         message.warn("子项目总金额超过父项目,请注意！")
-                                                       }
-                                                       this.fetchQueryMilepostInfo({
-                                                         type: this.state.basicInfo.projectType,
-                                                         isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                                         //项目预算类型
-                                                         haveType: this.state.haveType,
-                                                         //项目软件预算
-                                                         softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                                         //框架预算
-                                                         frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                                         //单独采购预算
-                                                         singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                                         xmid: this.state.basicInfo.projectId,
-                                                         biddingMethod: this.state.basicInfo.biddingMethod,
-                                                         budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                                         label: this.state.basicInfo.labelTxt,
-                                                         //是否包含子项目
-                                                         haveChild: Number(this.state.subItem),
-                                                         queryType: "ONLYLX"
-                                                       });
-                                                     }
-                                                   }} style={{width: '100%'}} onChange={e => {
-                                        let singleBudgetChangeFlag = false
-                                        if (e !== this.state.budgetInfo.singleBudget) {
-                                          this.setState({
-                                            singleBudgetChangeFlag: true,
-                                            budgetInfo: {...budgetInfo, singleBudget: Number(e)}
-                                          });
-                                        }
-                                      }} precision={0}/>
-                                    )}
-                                </Form.Item>
-                              </Col>
-                            </Row>
-                          </>)
-                      }
-                      <Row gutter={24}>
-                        <Col span={12} style={{display: subItemFlag ? 'none' : ''}}>
-                          <Form.Item label={<span><span style={{
-                            fontFamily: 'SimSun, sans-serif',
-                            color: '#f5222d',
-                            marginRight: '4px',
-                            lineHeight: 1
-                          }}>*</span>是否包含子项目</span>}>
+                            }
+                          >
                             {getFieldDecorator('subItem', {
-                              initialValue: Number(subItem)
+                              initialValue: Number(subItem),
                             })(
-                              <Radio.Group defaultValue={Number(subItem)} disabled={Number(subIteminit) === 1}
-                                           onChange={e => {
-                                             console.log("eeeee", e.target.value);
-                                             this.setState({subItem: String(e.target.value)});
-                                             this.fetchQueryMilepostInfo({
-                                               type: this.state.basicInfo.projectType,
-                                               isShortListed: Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
-                                               //项目预算类型
-                                               haveType: this.state.haveType,
-                                               //项目软件预算
-                                               softBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.softBudget,
-                                               //框架预算
-                                               frameBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.frameBudget,
-                                               //单独采购预算
-                                               singleBudget: this.state.projectTypeRYJFlag && String(this.state.basicInfo.haveHard) === '2' ? 0 : this.state.budgetInfo.singleBudget,
-                                               xmid: basicInfo.projectId,
-                                               biddingMethod: basicInfo.biddingMethod,
-                                               budget: String(this.state.basicInfo.haveHard) === "2" ? this.state.budgetInfo.projectBudget : (Number(this.state.budgetInfo.softBudget) + Number(this.state.budgetInfo.frameBudget) + Number(this.state.budgetInfo.singleBudget)),
-                                               label: basicInfo.labelTxt,
-                                               //是否包含子项目
-                                               haveChild: Number(e.target.value),
-                                               queryType: "ALL"
-                                             });
-                                           }}>
+                              <Radio.Group
+                                defaultValue={Number(subItem)}
+                                disabled={Number(subIteminit) === 1}
+                                onChange={e => {
+                                  console.log('eeeee', e.target.value);
+                                  this.setState({ subItem: String(e.target.value) });
+                                  this.fetchQueryMilepostInfo({
+                                    type: this.state.basicInfo.projectType,
+                                    isShortListed:
+                                      Number(this.state.budgetInfo.frameBudget) > 0 ? '1' : '2',
+                                    //项目预算类型
+                                    haveType: this.state.haveType,
+                                    //项目软件预算
+                                    softBudget:
+                                      this.state.projectTypeRYJFlag &&
+                                      String(this.state.basicInfo.haveHard) === '2'
+                                        ? 0
+                                        : this.state.budgetInfo.softBudget,
+                                    //框架预算
+                                    frameBudget:
+                                      this.state.projectTypeRYJFlag &&
+                                      String(this.state.basicInfo.haveHard) === '2'
+                                        ? 0
+                                        : this.state.budgetInfo.frameBudget,
+                                    //单独采购预算
+                                    singleBudget:
+                                      this.state.projectTypeRYJFlag &&
+                                      String(this.state.basicInfo.haveHard) === '2'
+                                        ? 0
+                                        : this.state.budgetInfo.singleBudget,
+                                    xmid: basicInfo.projectId,
+                                    biddingMethod: basicInfo.biddingMethod,
+                                    budget:
+                                      String(this.state.basicInfo.haveHard) === '2'
+                                        ? this.state.budgetInfo.projectBudget
+                                        : Number(this.state.budgetInfo.softBudget) +
+                                          Number(this.state.budgetInfo.frameBudget) +
+                                          Number(this.state.budgetInfo.singleBudget),
+                                    label: basicInfo.labelTxt,
+                                    //是否包含子项目
+                                    haveChild: Number(e.target.value),
+                                    queryType: 'ALL',
+                                  });
+                                }}
+                              >
                                 <Radio value={1}>是</Radio>
                                 <Radio value={2}>否</Radio>
-                              </Radio.Group>
+                              </Radio.Group>,
                             )}
                           </Form.Item>
                         </Col>
                       </Row>
-                      <Row gutter={24} style={{display: String(this.state.subItem) === "1" ? '' : 'none'}}>
+                      <Row
+                        gutter={24}
+                        style={{ display: String(this.state.subItem) === '1' ? '' : 'none' }}
+                      >
                         {/*子项目信息*/}
                         <SubItemInfo
                           //自研项目数据
@@ -6056,39 +6751,42 @@ class EditProjectInfoModel extends React.Component {
                           softwareList={softwareList}
                           bindMethodData={bindMethodData}
                           xmid={basicInfo.projectId}
-                          subItemRecordCallback={this.subItemRecordCallback}/>
+                          subItemRecordCallback={this.subItemRecordCallback}
+                        />
                       </Row>
                     </Form>
                     {/*</Form>*/}
                   </React.Fragment>
                 </div>
-                )}
-              {// 里程碑信息
-                (
-                  <div style={{
+              }
+              {
+                // 里程碑信息
+                <div
+                  style={{
                     display: current == 2 ? 'flex' : 'none',
-                    height: 'calc(93% - 53px)'
-                  }}>
-                    <Steps
-                      progressDot
-                      style={{height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px'}}
-                      direction="vertical"
-                      current={minicurrent}
-                      onChange={this.onChange}
-                    >
-                      {ministeps.map((item, index) => (
-                        <Step
-                          status={minicurrent === index ? 'finish' : 'wait'}
-                          style={{height: 71 / (ministeps.length * 1.8) + 'vh'}}
-                          key={index}
-                          title={item.title}
-                        />
-                      ))}
-                    </Steps>
-                    <Divider type="vertical" style={{height: 'auto'}}/>
-                    <div
-                      className="steps-content-2"
-                      id="lcbxxClass"
+                    height: 'calc(93% - 53px)',
+                  }}
+                >
+                  <Steps
+                    progressDot
+                    style={{ height: '71vh', maxWidth: '200px', margin: '0 auto', padding: '24px' }}
+                    direction="vertical"
+                    current={minicurrent}
+                    onChange={this.onChange}
+                  >
+                    {ministeps.map((item, index) => (
+                      <Step
+                        status={minicurrent === index ? 'finish' : 'wait'}
+                        style={{ height: 71 / (ministeps.length * 1.8) + 'vh' }}
+                        key={index}
+                        title={item.title}
+                      />
+                    ))}
+                  </Steps>
+                  <Divider type="vertical" style={{ height: 'auto' }} />
+                  <div
+                    className="steps-content-2"
+                    id="lcbxxClass"
                     style={{
                       overflowY: 'scroll',
                       overflowX: 'hidden',
@@ -6351,16 +7049,14 @@ class EditProjectInfoModel extends React.Component {
                                                   // }}
                                                   //milePostInfo[index].matterInfos[i].length
                                                   onChange={e => {
-                                                    this.setState({inputValue: e});
+                                                    this.setState({ inputValue: e });
                                                     this.addSwlxMx(
                                                       e,
                                                       index,
                                                       i,
                                                       `${milePostInfo[index].matterInfos[i].sxlb.length}`,
-                                                    )
-                                                  }
-
-                                                  }
+                                                    );
+                                                  }}
                                                   style={{
                                                     width: '120px',
                                                     marginTop: '6px',
@@ -6650,8 +7346,14 @@ class EditProjectInfoModel extends React.Component {
                                           >
                                             {' '}
                                           </div>
-                                          {item.lcbmc}{subItemFlag && item.lcbmc?.includes('项目立项') ? <div
-                                          style={{fontSize: '12px', fontWeight: 500,}}>&nbsp;(父项目已完成所有立项内容,无须额外操作)</div> : ''}
+                                          {item.lcbmc}
+                                          {subItemFlag && item.lcbmc?.includes('项目立项') ? (
+                                            <div style={{ fontSize: '12px', fontWeight: 500 }}>
+                                              &nbsp;(父项目已完成所有立项内容,无须额外操作)
+                                            </div>
+                                          ) : (
+                                            ''
+                                          )}
                                         </span>
                                       </div>
                                     </div>
@@ -6704,14 +7406,19 @@ class EditProjectInfoModel extends React.Component {
                                                 onClick={() => this.removeMilePostInfo(index)}
                                               />
                                             </Tooltip>
-                                        )}
+                                          )}
                                       </div>
                                     }
                                   </div>
-                                  <div style={{
-                                    display: subItemFlag && item.lcbmc.includes('项目立项') ? 'none' : 'flex',
-                                    padding: '6px 0 0 0'
-                                  }}>
+                                  <div
+                                    style={{
+                                      display:
+                                        subItemFlag && item.lcbmc.includes('项目立项')
+                                          ? 'none'
+                                          : 'flex',
+                                      padding: '6px 0 0 0',
+                                    }}
+                                  >
                                     <div
                                       style={{
                                         display: 'grid',
@@ -6810,11 +7517,14 @@ class EditProjectInfoModel extends React.Component {
                                           className="flow"
                                           key={i}
                                           style={{
-                                            display: subItemFlag && item.lcbmc.includes('项目立项') ? 'none' : (e.swlxmc === 'new' && e.sxlb?.length === 0
-                                              ? ''
-                                              : e.swlxmc !== 'new' && e.sxlb?.length === 0
+                                            display:
+                                              subItemFlag && item.lcbmc.includes('项目立项')
                                                 ? 'none'
-                                                : ''),
+                                                : e.swlxmc === 'new' && e.sxlb?.length === 0
+                                                ? ''
+                                                : e.swlxmc !== 'new' && e.sxlb?.length === 0
+                                                ? 'none'
+                                                : '',
                                           }}
                                         >
                                           <div
@@ -6866,13 +7576,13 @@ class EditProjectInfoModel extends React.Component {
                                                   // }}
                                                   //milePostInfo[index].matterInfos[i].length
                                                   onChange={e => {
-                                                    this.setState({inputValue: e});
+                                                    this.setState({ inputValue: e });
                                                     this.addSwlxMx(
                                                       e,
                                                       index,
                                                       i,
                                                       `${milePostInfo[index].matterInfos[i].sxlb.length}`,
-                                                    )
+                                                    );
                                                   }}
                                                   style={{
                                                     width: '120px',
@@ -7125,9 +7835,12 @@ class EditProjectInfoModel extends React.Component {
                                     <div
                                       className="addMilePost"
                                       style={{
-                                        display: subItemFlag && item.lcbmc.includes('项目立项') ? 'none' : '',
+                                        display:
+                                          subItemFlag && item.lcbmc.includes('项目立项')
+                                            ? 'none'
+                                            : '',
                                         width: 'calc(46% + 3.5rem)',
-                                        marginTop: '12px'
+                                        marginTop: '12px',
                                       }}
                                       onClick={() => this.addSwlx(item?.lcblxid, index)}
                                     >
@@ -7144,37 +7857,37 @@ class EditProjectInfoModel extends React.Component {
                         })}
                       {
                         <div className="addMilePost" onClick={this.addMilePostInfo}>
-                          <Icon type="plus" style={{fontSize: '12px'}}/>
-                          <span style={{paddingLeft: '6px', fontSize: '14px'}}>新增里程碑</span>
+                          <Icon type="plus" style={{ fontSize: '12px' }} />
+                          <span style={{ paddingLeft: '6px', fontSize: '14px' }}>新增里程碑</span>
                         </div>
                       }
                     </React.Fragment>
-                    </div>
                   </div>
-                )}
-              {// 人员信息
-                (
-                  <div style={{display: current == 1 ? '' : 'none',}} className="steps-content">
-                    <React.Fragment>
-                      <div className="staffInfo">
-                        <div className="tree" style={{margin: '0 16px 0 0'}}>
-                          {organizationStaffTreeList.length > 0 && (
-                            <Tree
-                              defaultExpandedKeys={[11167]}
-                              checkable
-                              checkedKeys={checkedStaffKey}
-                              onCheck={this.onCheckTreeStaff}
-                            >
-                              {this.renderTreeNodes(organizationStaffTreeList)}
-                            </Tree>
-                          )}
-                        </div>
-                        <div className="button">
-                          <Button
-                            style={{border: '1px solid #3461FF', color: '#3461FF'}}
-                            onClick={this.clickAddStaff}
+                </div>
+              }
+              {
+                // 人员信息
+                <div style={{ display: current == 1 ? '' : 'none' }} className="steps-content">
+                  <React.Fragment>
+                    <div className="staffInfo">
+                      <div className="tree" style={{ margin: '0 16px 0 0' }}>
+                        {organizationStaffTreeList.length > 0 && (
+                          <Tree
+                            defaultExpandedKeys={[11167]}
+                            checkable
+                            checkedKeys={checkedStaffKey}
+                            onCheck={this.onCheckTreeStaff}
                           >
-                            添加&nbsp;
+                            {this.renderTreeNodes(organizationStaffTreeList)}
+                          </Tree>
+                        )}
+                      </div>
+                      <div className="button">
+                        <Button
+                          style={{ border: '1px solid #3461FF', color: '#3461FF' }}
+                          onClick={this.clickAddStaff}
+                        >
+                          添加&nbsp;
                           <a
                             className="iconfont icon-right"
                             style={{
@@ -7291,11 +8004,11 @@ class EditProjectInfoModel extends React.Component {
                                   <Icon
                                     onClick={this.removeJob.bind(this, item.ibm)}
                                     type="close"
-                                    style={{paddingRight: '1rem', cursor: 'pointer'}}
+                                    style={{ paddingRight: '1rem', cursor: 'pointer' }}
                                   />
                                   <span>{item.note}：</span>
                                 </div>
-                                <div style={{width: '65%'}}>
+                                <div style={{ width: '65%' }}>
                                   <Select
                                     placeholder="请输入名字搜索人员"
                                     value={
@@ -7303,7 +8016,7 @@ class EditProjectInfoModel extends React.Component {
                                         ? jobStaffName[Number(item.ibm) - 1]
                                         : []
                                     }
-                                    onBlur={() => this.setState({height: 0})}
+                                    onBlur={() => this.setState({ height: 0 })}
                                     onSearch={e => this.searchStaff(e, 'staff')}
                                     onFocus={() =>
                                       this.setState({
@@ -7330,34 +8043,57 @@ class EditProjectInfoModel extends React.Component {
                                             this.state.staffList.filter(item => item.id === i)[0]
                                               ?.orgName +
                                             ')';
-                                          const gw = this.state.staffList.filter(item => item.id === i)[0]?.gw
-                                          const namedefault = this.state.staffList.filter(item => item.id === i)[0]?.name
-                                            if (!newJobStaffName.includes(name)) {
-                                              if (String(item.ibm) === '1' && (namedefault === '黄玉锋' || namedefault === '胡凡')) {
-                                                newJobStaffName.push(name);
-                                              } else if (gw !== null && !gw.includes("总经理") && String(item.ibm) === '1') {
-                                                message.warn("请选择总经理以上人员！")
-                                                return;
-                                              } else {
-                                                newJobStaffName.push(name);
-                                              }
-                                            } else {
-                                              message.warn('已存在该成员,请勿重复添加！');
+                                          const gw = this.state.staffList.filter(
+                                            item => item.id === i,
+                                          )[0]?.gw;
+                                          const namedefault = this.state.staffList.filter(
+                                            item => item.id === i,
+                                          )[0]?.name;
+                                          if (!newJobStaffName.includes(name)) {
+                                            if (
+                                              String(item.ibm) === '1' &&
+                                              (namedefault === '黄玉锋' || namedefault === '胡凡')
+                                            ) {
+                                              newJobStaffName.push(name);
+                                            } else if (
+                                              gw !== null &&
+                                              !gw.includes('总经理') &&
+                                              String(item.ibm) === '1'
+                                            ) {
+                                              message.warn('请选择总经理以上人员！');
                                               return;
+                                            } else {
+                                              newJobStaffName.push(name);
                                             }
-                                            newJobStaff.push(i);
+                                          } else {
+                                            message.warn('已存在该成员,请勿重复添加！');
+                                            return;
+                                          }
+                                          newJobStaff.push(i);
                                         } else {
                                           newJobStaffName.push(i);
                                           const id = this.state.staffList.filter(
                                             item => item.name === i.split('(')[0],
                                           )[0]?.id;
-                                          const gw = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.gw
-                                          const namedefault = this.state.staffList.filter(item => item.name === i.split('(')[0])[0]?.name
+                                          const gw = this.state.staffList.filter(
+                                            item => item.name === i.split('(')[0],
+                                          )[0]?.gw;
+                                          const namedefault = this.state.staffList.filter(
+                                            item => item.name === i.split('(')[0],
+                                          )[0]?.name;
                                           if (!newJobStaff.includes(id)) {
-                                            if (String(item.ibm) === '1' && namedefault === '黄玉锋' || namedefault === '胡凡') {
+                                            if (
+                                              (String(item.ibm) === '1' &&
+                                                namedefault === '黄玉锋') ||
+                                              namedefault === '胡凡'
+                                            ) {
                                               newJobStaff.push(id);
-                                            } else if (gw !== null && !gw.includes("总经理") && String(item.ibm) === '1') {
-                                              message.warn("请选择总经理以上人员！")
+                                            } else if (
+                                              gw !== null &&
+                                              !gw.includes('总经理') &&
+                                              String(item.ibm) === '1'
+                                            ) {
+                                              message.warn('请选择总经理以上人员！');
                                               return;
                                             } else {
                                               newJobStaff.push(id);
@@ -7380,9 +8116,9 @@ class EditProjectInfoModel extends React.Component {
                                         },
                                       });
                                     }}
-                                    dropdownStyle={{maxHeight: height, overflow: 'auto'}}
+                                    dropdownStyle={{ maxHeight: height, overflow: 'auto' }}
                                     mode="multiple"
-                                    style={{width: '100%'}}
+                                    style={{ width: '100%' }}
                                   >
                                     {searchStaffList.map((item, index) => {
                                       ////console.log("searchStaffList", searchStaffList)
@@ -7423,16 +8159,16 @@ class EditProjectInfoModel extends React.Component {
                               // e => this.onRygwSelectChange(e)
                               e => this.onRygwSelectConfirm(e)
                             }
-                            style={{padding: '9px 0 0 12px', width: '25rem'}}
+                            style={{ padding: '9px 0 0 12px', width: '25rem' }}
                             // onBlur={this.onRygwSelectConfirm}
                             filterOption={(input, option) =>
                               option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
                             }
                           >
                             {rygwSelectDictionary.length > 0 &&
-                            rygwSelectDictionary.map((item, index) => {
-                              return (
-                                <Option key={item.ibm} value={item.ibm}>
+                              rygwSelectDictionary.map((item, index) => {
+                                return (
+                                  <Option key={item.ibm} value={item.ibm}>
                                     {item.note}
                                   </Option>
                                 );
@@ -7443,9 +8179,9 @@ class EditProjectInfoModel extends React.Component {
                     </div>
                   </React.Fragment>
                 </div>
-              )}
-              {// 招采信息
-                (
+              }
+              {
+                // 招采信息
                 <div
                   className="steps-content"
                   style={{
@@ -7500,16 +8236,22 @@ class EditProjectInfoModel extends React.Component {
                               <Input
                                 type="number"
                                 placeholder="请输入合同金额"
-                                onBlur={(e) => {
+                                onBlur={e => {
                                   if (this.state.purchaseInfo.contractValueFlag) {
-                                    if (this.state.purchaseInfo.lxje < this.state.purchaseInfo.contractValue) {
-                                      message.warn("合同金额超过本项目立项金额(" + this.state.purchaseInfo.lxje + "元),请注意！")
+                                    if (
+                                      this.state.purchaseInfo.lxje <
+                                      this.state.purchaseInfo.contractValue
+                                    ) {
+                                      message.warn(
+                                        '合同金额超过本项目立项金额(' +
+                                          this.state.purchaseInfo.lxje +
+                                          '元),请注意！',
+                                      );
                                     }
                                   }
-                                }
-                                }
+                                }}
                                 onChange={e => {
-                                  let contractValueFlag = false
+                                  let contractValueFlag = false;
                                   if (e !== this.state.purchaseInfo.contractValue) {
                                     contractValueFlag = true;
                                   }
@@ -8002,26 +8744,32 @@ class EditProjectInfoModel extends React.Component {
                     {/*</Form>*/}
                   </React.Fragment>
                 </div>
-                )}
-              {// 其他信息
-                (
-                  <div className="steps-content"
-                       style={{display: current == 4 ? '' : 'none', overflowY: 'auto', overflowX: 'hidden'}}>
-                    <OthersInfos
-                      xmid={basicInfo.projectId}
-                      prizeInfoCallback={this.prizeInfoCallback}
-                      topicInfoCallback={this.topicInfoCallback}
-                      requirementInfoCallback={this.requirementInfoCallback}
-                    />
-                  </div>
-                )}
+              }
+              {
+                // 其他信息
+                <div
+                  className="steps-content"
+                  style={{
+                    display: current == 4 ? '' : 'none',
+                    overflowY: 'auto',
+                    overflowX: 'hidden',
+                  }}
+                >
+                  <OthersInfos
+                    xmid={basicInfo.projectId}
+                    prizeInfoCallback={this.prizeInfoCallback}
+                    topicInfoCallback={this.topicInfoCallback}
+                    requirementInfoCallback={this.requirementInfoCallback}
+                  />
+                </div>
+              }
               <div className="footer">
-                <Divider/>
-                <div style={{padding: '10px 16px'}}>
+                <Divider />
+                <div style={{ padding: '10px 16px' }}>
                   <Button onClick={this.handleCancel}>取消</Button>
                   <div className="steps-action">
                     <Button
-                      style={{marginLeft: '12px', backgroundColor: '#3361FF'}}
+                      style={{ marginLeft: '12px', backgroundColor: '#3361FF' }}
                       type="primary"
                       className="saveButton"
                       onClick={e => this.handleFormValidate(e, 1)}

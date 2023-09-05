@@ -300,6 +300,7 @@ class BidInfoUpdate extends React.Component {
               name: x.fileName,
               status: 'done',
               url: x.url,
+              base64: x.data,
             })) ?? [];
           this.setState({
             fileList: arr,
@@ -770,7 +771,7 @@ class BidInfoUpdate extends React.Component {
                 if (file.url !== undefined)
                   //查询到的已有旧文件的情况
                   return new Promise((resolve, reject) => {
-                    resolve({ name: file.name, data: file.url });
+                    resolve({ name: file.name, data: file.base64 });
                   });
                 return new Promise((resolve, reject) => {
                   const reader = new FileReader();
