@@ -819,27 +819,29 @@ export default function OverviewCard(props) {
     );
   if (componentType === 'shortcut')
     return (
-      <Popover
-        title={null}
-        placement="rightTop"
-        trigger="click"
-        visible={hovered}
-        onVisibleChange={handleVisibleChange}
-        getPopupContainer={triggerNode => triggerNode.parentNode}
-        autoAdjustOverflow={true}
-        content={getToDoItem(toDoData)}
-        overlayClassName="todo-card-content-popover"
-      >
-        <div className="shortcut-item">
-          {modalConfig}
-          <div className="item-img">
-            <Badge count={toDoDataNum} offset={[-12, 12]}>
-              <img src={require(`../../../../assets/homePage/icon_yian@2x.png`)} alt="" />
-            </Badge>
+      <Fragment>
+        {modalConfig}
+        <Popover
+          title={null}
+          placement="rightTop"
+          trigger="click"
+          visible={hovered}
+          onVisibleChange={handleVisibleChange}
+          getPopupContainer={triggerNode => triggerNode.parentNode}
+          autoAdjustOverflow={true}
+          content={getToDoItem(toDoData)}
+          overlayClassName="todo-card-content-popover"
+        >
+          <div className="shortcut-item">
+            <div className="item-img">
+              <Badge count={toDoDataNum} offset={[-12, 12]}>
+                <img src={require(`../../../../assets/homePage/icon_yian@2x.png`)} alt="" />
+              </Badge>
+            </div>
+            <div className="item-txt">我的待办</div>
           </div>
-          <div className="item-txt">我的待办</div>
-        </div>
-      </Popover>
+        </Popover>
+      </Fragment>
     );
   return '';
 }

@@ -655,6 +655,7 @@ export default function HomePage(props) {
                 getPrjInfo(userRole, statisticYearData.currentYear);
                 getTrackingData({ current: 1, pageSize: 9 });
               }}
+              reflush={handlePromiseAll}
               toDoData={toDoData}
               dictionary={dictionary}
               toDoDataNum={total.todo}
