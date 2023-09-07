@@ -623,6 +623,7 @@ export default function OverviewCard(props) {
         bodyStyle={{
           padding: 0,
         }}
+        destroyOnClose={true}
         onCancel={closeFileAddModal}
         title={
           <div
