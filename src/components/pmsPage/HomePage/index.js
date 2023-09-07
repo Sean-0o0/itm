@@ -622,7 +622,10 @@ export default function HomePage(props) {
               getAfterItem={getAfterItem}
               userRole={userRole}
               prjInfo={prjInfo}
-              getPrjInfo={getPrjInfo}
+              getPrjInfo={() => {
+                getPrjInfo(userRole, statisticYearData.currentYear);
+                getTrackingData({ current: 1, pageSize: 9 });
+              }}
               total={total.project}
               placement={placement}
               setPlacement={setPlacement}
@@ -646,7 +649,12 @@ export default function HomePage(props) {
           <div className="col-right">
             <GuideCard />
             <SystemNotice noticeData={noticeData} setNoticeData={setNoticeData} />
-            <ShortcutCard userRole={userRole} getPrjInfo={getPrjInfo}
+            <ShortcutCard
+              userRole={userRole}
+              getPrjInfo={() => {
+                getPrjInfo(userRole, statisticYearData.currentYear);
+                getTrackingData({ current: 1, pageSize: 9 });
+              }}
               toDoData={toDoData}
               dictionary={dictionary}
               toDoDataNum={total.todo}

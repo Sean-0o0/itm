@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 import { getAmountFormat } from '..';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import { useLocation } from 'react-router';
@@ -413,7 +413,7 @@ export default function OverviewCard(props) {
     return (
       <div>
         {data?.map(item => (
-          <div className="todo-card-box">
+          <div className="todo-card-box" key={item.xxid}>
             <div className="todo-card-title">
               <div className="todo-card-xmmc">{item.xmmc}</div>
               <div className="todo-deal-box">
@@ -547,128 +547,131 @@ export default function OverviewCard(props) {
     </Menu>
   );
 
+  const modalConfig = (
+    <Fragment>
+      {/* 外包人员面试评分 */}
+      {modalVisible.wbrymspf && (
+        <InterviewScoreModal
+          visible={modalVisible.wbrymspf}
+          setVisible={v => {
+            setModalVisible(p => {
+              return {
+                ...p,
+                wbrymspf: v,
+              };
+            });
+          }}
+          xqid={Number(currentXqid)}
+          reflush={reflush}
+          WBRYGW={WBRYGW}
+          swzxid={Number(currentSwzxid)}
+        />
+      )}
+      {/* 付款流程发起弹窗 */}
+      {paymentModalVisible && (
+        <PaymentProcess
+          paymentModalVisible={paymentModalVisible}
+          fetchQueryLifecycleStuff={() => {}}
+          currentXmid={Number(currentXmid)}
+          currentXmmc={currentXmmc}
+          projectCode={projectCode}
+          closePaymentProcessModal={() => setPaymentModalVisible(false)}
+          onSuccess={() => {
+            UpdateMessageState({
+              zxlx: 'EXECUTE',
+              xxid: currentXxid,
+            })
+              .then((ret = {}) => {
+                const { code = 0, note = '', record = [] } = ret;
+                if (code === 1) {
+                  //刷新数据
+                  reflush();
+                }
+              })
+              .catch(error => {
+                message.error('操作失败', 1);
+                console.error('付款流程', !error.success ? error.message : error.note);
+              });
+          }}
+          isHwPrj={isHwPrj} // 是否硬件入围
+          ddcgje={ddcgje} // 单独采购金额，为0时无值
+          rlwbData={rlwbData}
+        />
+      )}
+      {/*人员新增提醒弹窗*/}
+      {ryxztxModalVisible && (
+        <BridgeModel
+          modalProps={ryxztxModalProps}
+          onSucess={() => {
+            message.success('操作成功', 1);
+            reflush();
+            setRyxztxModalVisible(false);
+          }}
+          onCancel={() => setRyxztxModalVisible(false)}
+          src={ryxztxUrl}
+        />
+      )}
+      <Modal
+        wrapClassName="editMessage-modify xbjgEditStyle"
+        width={'1000px'}
+        maskClosable={false}
+        zIndex={100}
+        maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
+        style={{ top: '10px' }}
+        visible={fileAddVisible}
+        okText="保存"
+        bodyStyle={{
+          padding: 0,
+        }}
+        onCancel={closeFileAddModal}
+        title={
+          <div
+            style={{
+              width: '100%',
+              display: 'flex',
+              alignItems: 'center',
+              backgroundColor: '#3361FF',
+              color: 'white',
+              borderRadius: '8px 8px 0 0',
+              fontSize: '16px',
+            }}
+          >
+            <strong>完善子项目</strong>
+          </div>
+        }
+        footer={null}
+      >
+        <EditProjectInfoModel
+          closeModel={closeFileAddModal}
+          successCallBack={() => {
+            closeFileAddModal();
+            reflush();
+          }}
+          xmid={src_fileAdd.xmid}
+          type={src_fileAdd.type}
+          subItemFlag={src_fileAdd.subItemFlag}
+          subItemFinish={src_fileAdd.subItemFinish}
+          projectStatus={src_fileAdd.projectStatus}
+        />
+      </Modal>
+      {/*编辑项目跟踪信息弹窗*/}
+      {trackingModal.visible && (
+        <EditPrjTracking
+          record={trackingModal.record}
+          cycle={trackingModal.cycle}
+          getTableData={onTrackingEditModalSuccess}
+          contractSigningVisible={trackingModal.visible}
+          closeContractModal={() => setTrackingModal(p => ({ ...p, visible: false }))}
+          isFromToDo={true} //成功提醒区分判断用
+        />
+      )}
+    </Fragment>
+  );
+
   if (componentType === 'default')
     return (
       <div className="overview-card-box">
-        {/* 外包人员面试评分 */}
-        {modalVisible.wbrymspf && (
-          <InterviewScoreModal
-            visible={modalVisible.wbrymspf}
-            setVisible={v => {
-              setModalVisible(p => {
-                return {
-                  ...p,
-                  wbrymspf: v,
-                };
-              });
-            }}
-            xqid={Number(currentXqid)}
-            reflush={reflush}
-            WBRYGW={WBRYGW}
-            swzxid={Number(currentSwzxid)}
-          />
-        )}
-        {/* 付款流程发起弹窗 */}
-        {paymentModalVisible && (
-          <PaymentProcess
-            paymentModalVisible={paymentModalVisible}
-            fetchQueryLifecycleStuff={() => {}}
-            currentXmid={Number(currentXmid)}
-            currentXmmc={currentXmmc}
-            projectCode={projectCode}
-            closePaymentProcessModal={() => setPaymentModalVisible(false)}
-            onSuccess={() => {
-              UpdateMessageState({
-                zxlx: 'EXECUTE',
-                xxid: currentXxid,
-              })
-                .then((ret = {}) => {
-                  const { code = 0, note = '', record = [] } = ret;
-                  if (code === 1) {
-                    //刷新数据
-                    reflush();
-                  }
-                })
-                .catch(error => {
-                  message.error('操作失败', 1);
-                  console.error('付款流程', !error.success ? error.message : error.note);
-                });
-            }}
-            isHwPrj={isHwPrj} // 是否硬件入围
-            ddcgje={ddcgje} // 单独采购金额，为0时无值
-            rlwbData={rlwbData}
-          />
-        )}
-        {/*人员新增提醒弹窗*/}
-        {ryxztxModalVisible && (
-          <BridgeModel
-            modalProps={ryxztxModalProps}
-            onSucess={() => {
-              message.success('操作成功', 1);
-              reflush();
-              setRyxztxModalVisible(false);
-            }}
-            onCancel={() => setRyxztxModalVisible(false)}
-            src={ryxztxUrl}
-          />
-        )}
-        {fileAddVisible && (
-          <Modal
-            wrapClassName="editMessage-modify xbjgEditStyle"
-            width={'1000px'}
-            // height={'700px'}
-            maskClosable={false}
-            zIndex={100}
-            maskStyle={{ backgroundColor: 'rgb(0 0 0 / 30%)' }}
-            style={{ top: '10px' }}
-            visible={fileAddVisible}
-            okText="保存"
-            bodyStyle={{
-              padding: 0,
-            }}
-            onCancel={closeFileAddModal}
-            title={
-              <div
-                style={{
-                  width: '100%',
-                  display: 'flex',
-                  alignItems: 'center',
-                  backgroundColor: '#3361FF',
-                  color: 'white',
-                  borderRadius: '8px 8px 0 0',
-                  fontSize: '16px',
-                }}
-              >
-                <strong>完善子项目</strong>
-              </div>
-            }
-            footer={null}
-          >
-            <EditProjectInfoModel
-              closeModel={closeFileAddModal}
-              successCallBack={() => {
-                closeFileAddModal();
-                reflush();
-              }}
-              xmid={src_fileAdd.xmid}
-              type={src_fileAdd.type}
-              subItemFlag={src_fileAdd.subItemFlag}
-              subItemFinish={src_fileAdd.subItemFinish}
-              projectStatus={src_fileAdd.projectStatus}
-            />
-          </Modal>
-        )}
-        {/*编辑项目跟踪信息弹窗*/}
-        {trackingModal.visible && (
-          <EditPrjTracking
-            record={trackingModal.record}
-            cycle={trackingModal.cycle}
-            getTableData={onTrackingEditModalSuccess}
-            contractSigningVisible={trackingModal.visible}
-            closeContractModal={() => setTrackingModal(p => ({ ...p, visible: false }))}
-            isFromToDo={true} //成功提醒区分判断用
-          />
-        )}
+        {modalConfig}
         <div className="avatar-card-box">
           <div className="avatar">
             <img src={overviewInfo?.xb === '女' ? avatarFemale : avatarMale} alt="" />
@@ -828,6 +831,7 @@ export default function OverviewCard(props) {
         overlayClassName="todo-card-content-popover"
       >
         <div className="shortcut-item">
+          {modalConfig}
           <div className="item-img">
             <Badge count={toDoDataNum} offset={[-12, 12]}>
               <img src={require(`../../../../assets/homePage/icon_yian@2x.png`)} alt="" />

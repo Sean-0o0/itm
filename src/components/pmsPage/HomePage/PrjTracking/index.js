@@ -20,13 +20,8 @@ export default function PrjTracking(props) {
     showExtends,
     setShowExtends,
   } = stateProps;
-  const { XMGZSX, XMJDZT } = dictionary; //字典
+  const { XMGZSX = [], XMJDZT = [] } = dictionary; //字典
   const location = useLocation();
-
-  useEffect(() => {
-    // getTrackingData(params);
-    return () => {};
-  }, [XMGZSX, XMJDZT]);
 
   //项目内表格数据-本周/上周
   const getDetailData = (xmid, cycle) => {
@@ -207,8 +202,8 @@ export default function PrjTracking(props) {
             </Link>
           </div>
           <div className="prj-tracking-infos-box">
-            {trackingData.length > 0 ? (
-              trackingData.map(i => {
+            {trackingData?.length > 0 ? (
+              trackingData?.map(i => {
                 return (
                   <div className="prj-tracking-infos-content">
                     <div className="prj-tracking-infos-content-box">

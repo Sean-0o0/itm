@@ -226,7 +226,10 @@ class NewProjectModelV2 extends React.Component {
       for (let i = 0; i < milePostInfo.length; i++) {
         const jssj = milePostInfo[i].jssj.replace(reg1, "");
         const kssj = milePostInfo[i].kssj.replace(reg1, "");
-        if (Number(kssj) > Number(jssj)) {
+        if (kssj === '' || jssj === '') {
+          message.warn("里程碑时间不允许为空！");
+          break;
+        } else if (Number(kssj) > Number(jssj)) {
           message.warn("开始时间需要小于结束时间")
           break;
         } else {
@@ -356,7 +359,10 @@ class NewProjectModelV2 extends React.Component {
       for (let i = 0; i < milePostInfo.length; i++) {
         const jssj = milePostInfo[i].jssj.replace(reg1, "");
         const kssj = milePostInfo[i].kssj.replace(reg1, "");
-        if (Number(kssj) > Number(jssj)) {
+        if (kssj === '' || jssj === '') {
+          message.warn("里程碑时间不允许为空！");
+          break;
+        } else if (Number(kssj) > Number(jssj)) {
           message.warn("开始时间需要小于结束时间")
           break;
         } else {
@@ -1925,12 +1931,20 @@ class NewProjectModelV2 extends React.Component {
     }
     //校验里程碑信息
     let flag = true; // 日期选择是否符合开始时间小于结束时间
+    let haveEmpty = false; //是否存在空的
     milePostInfo.forEach(item => {
+      if(item.jssj === '' || item.kssj === '') {
+        haveEmpty = true;
+      }
       if (Number(moment(item.jssj, 'YYYY-MM-DD').format('YYYYMMDD'))
         < Number(moment(item.kssj, 'YYYY-MM-DD').format('YYYYMMDD'))) {
         flag = false;
       }
     });
+    if (haveEmpty) {
+      message.warn("里程碑时间不允许为空！");
+      return;
+    }
     if (!flag) {
       message.warn("存在里程碑信息开始时间大于结束时间！");
       return;
@@ -2482,27 +2496,15 @@ class NewProjectModelV2 extends React.Component {
     const { mileInfo: { milePostInfo = [] } } = this.state;
     // 多层数组的深拷贝方式  真暴力哦
     const mile = JSON.parse(JSON.stringify(milePostInfo));
-    const reg1 = new RegExp("-", "g");
-    const newDate = date.replace(reg1, "");
     if (type === 'start') {
-      // const jssj = mile[index].jssj.replace(reg1, "");
-      // if (Number(newDate) > Number(jssj)) {
-      //   message.warn("开始时间需要小于结束时间")
-      //   return;
-      // } else {
-      //
-      // }
-      const diff = moment(mile[index].jssj).diff(mile[index].kssj, 'day')
+      if(date === '') {
+        mile[index].jssj = '';
+      }else {
+        const diff = moment(mile[index].jssj).diff(mile[index].kssj, 'day');
+        mile[index].jssj = moment(date).add(diff, 'days').format('YYYY-MM-DD');
+      }
       mile[index].kssj = date;
-      mile[index].jssj = moment(date).add(diff, 'days').format('YYYY-MM-DD');
     } else if (type === 'end') {
-      // const kssj = mile[index].kssj.replace(reg1, "");
-      // if (Number(newDate) < Number(kssj)) {
-      //   message.warn("开始时间需要小于结束时间")
-      //   return;
-      // } else {
-      //   mile[index].jssj = date;
-      // }
       mile[index].jssj = date;
     }
     this.setState({ mileInfo: { ...this.state.mileInfo, milePostInfo: mile } });
@@ -2584,7 +2586,10 @@ class NewProjectModelV2 extends React.Component {
       for (let i = 0; i < milePostInfo.length; i++) {
         const jssj = milePostInfo[i].jssj.replace(reg1, "");
         const kssj = milePostInfo[i].kssj.replace(reg1, "");
-        if (Number(kssj) > Number(jssj)) {
+        if (kssj === '' || jssj === '') {
+          message.warn("里程碑时间不允许为空！");
+          break;
+        } else if (Number(kssj) > Number(jssj)) {
           message.warn("开始时间需要小于结束时间")
           break;
         } else {
@@ -2863,6 +2868,10 @@ class NewProjectModelV2 extends React.Component {
   operateInsertSubProjects = (param, projectId, type) => {
     console.log("-----------开始保存子项目信息-----------")
     const {subItemRecord, budgetInfo = {}} = this.state;
+    const subItemArr = subItemRecord.map(x=>({
+      ...x,
+      YYBM: x.YYBM?.length === 0 ? '无' : x.YYBM
+    }))
     const params = {
       parentId: projectId,
       parentBudget: budgetInfo.budgetProjectId === '' ? -99 : Number(budgetInfo.budgetProjectId),
@@ -2870,7 +2879,7 @@ class NewProjectModelV2 extends React.Component {
       parentOpType: String(param.type),
       parentYear: Number(this.state.budgetInfo.year.format("YYYY")),
       rowcount: subItemRecord.length,
-      subProjects: JSON.stringify(subItemRecord),
+      subProjects: JSON.stringify(subItemArr),
     }
     console.log("子项目信息入参", params)
     InsertSubProjects({...params}).then((result) => {
@@ -4725,7 +4734,7 @@ class NewProjectModelV2 extends React.Component {
                                         width: '270px'
                                       }} id="datePicker">
                                         <DatePicker format="YYYY.MM.DD"
-                                                    value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                    value={item.kssj === '' ? null : moment(item.kssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
                                                     onFocus={() => this.setState({
@@ -4741,7 +4750,7 @@ class NewProjectModelV2 extends React.Component {
                                         }}>~
                                         </div>
                                         <DatePicker format="YYYY.MM.DD"
-                                                    value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                    value={item.jssj === '' ? null : moment(item.jssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
                                                     onFocus={() => this.setState({
@@ -5079,7 +5088,7 @@ class NewProjectModelV2 extends React.Component {
                                         width: '270px'
                                       }} id="datePicker">
                                         <DatePicker format="YYYY.MM.DD"
-                                                    value={moment(item.kssj, 'YYYY-MM-DD')}
+                                                    value={item.kssj === '' ? null : moment(item.kssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'start')}
                                                     onFocus={() => this.setState({
@@ -5095,7 +5104,7 @@ class NewProjectModelV2 extends React.Component {
                                         }}>~
                                         </div>
                                         <DatePicker format="YYYY.MM.DD"
-                                                    value={moment(item.jssj, 'YYYY-MM-DD')}
+                                                    value={item.jssj === '' ? null : moment(item.jssj, 'YYYY-MM-DD')}
                                                     allowClear={false}
                                                     onChange={(date, str) => this.changeMilePostInfoTime(str, index, 'end')}
                                                     onFocus={() => this.setState({
