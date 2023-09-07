@@ -18,7 +18,6 @@ import React from 'react';
 import {
   FetchQueryGysInZbxx,
   FetchQueryHTXXByXQTC,
-  QueryContractFlowInfo,
   UpdateHTXX,
 } from '../../../../services/pmsServices';
 import moment from 'moment';
@@ -118,14 +117,14 @@ class EditableCell extends React.Component {
                   //   return;
                   // }
                   let newValues = {};
-                  newValues = { ...values };
+                  newValues = {...values};
                   for (let i in newValues) {
                     if (i === 'fksj' + record['id']) {
                       newValues[i] = dataString;
                     }
                   }
                   // this.toggleEdit();
-                  handleSave({ ...record, ...newValues });
+                  handleSave({...record, ...newValues});
                 },
               );
             }}
@@ -252,9 +251,8 @@ class ContractInfoUpdate extends React.Component {
     gys: '',
     currentGysId: '',
     addGysModalVisible: false,
-    isSpinning: false,
+    isSpinning: true,
     lxje: 0, //立项金额
-    glhtlcData: [], //关联合同流程数据
   };
 
   componentDidMount() {
@@ -268,51 +266,48 @@ class ContractInfoUpdate extends React.Component {
       xmmc: currentXmid,
     })
       .then(res => {
-        let rec = res.record || [];
-        rec = rec.filter(x => x.htxxid === this.props.curHtxxid) || [];
-        const firstRow = rec[0] || {};
-        let arr = rec.map(x => ({
-          id: x.fkxqid,
-          ['fkqs' + x.fkxqid]: Number(x.fkqs),
-          ['bfb' + x.fkxqid]: Number(x.bfb),
-          ['fkje' + x.fkxqid]: Number(x.fkje),
-          ['fksj' + x.fkxqid]: moment(x.fksj).format('YYYY-MM-DD'),
-          zt: x.zt,
-        }));
+        let rec = res.record;
         this.setState(
           {
-            contractInfo: { htje: Number(firstRow.htje), qsrq: firstRow.qsrq },
-            gys: firstRow.gys,
-            tableData: [...this.state.tableData, ...arr],
-            lxje: Number(res.lxje),
+            contractInfo: { htje: Number(rec[0]?.htje), qsrq: rec[0]?.qsrq },
+            gys: rec[0]?.gys,
           },
           () => {
             this.setState({
-              currentGysId: firstRow.gys,
+              currentGysId: rec[0]?.gys,
             });
-            this.getGlhtlcData();
           },
         );
+        // console.log('🚀 ~ file: index.js ~ line 233 ~ ContractInfoUpdate ~ rec[0]?.gys', rec[0]?.gys);
+        let arr = [];
+        for (let i = 0; i < rec.length; i++) {
+          arr.push({
+            id: rec[i]?.fkxqid,
+            ['fkqs' + rec[i]?.fkxqid]: Number(rec[i]?.fkqs),
+            ['bfb' + rec[i]?.fkxqid]: Number(rec[i]?.bfb),
+            ['fkje' + rec[i]?.fkxqid]: Number(rec[i]?.fkje),
+            ['fksj' + rec[i]?.fkxqid]: moment(rec[i]?.fksj).format('YYYY-MM-DD'),
+            zt: rec[i]?.zt,
+          });
+        }
+        this.setState({
+          tableData: [...this.state.tableData, ...arr],
+          isSpinning: false,
+          lxje: Number(res.lxje),
+        });
       })
       .catch(e => {
         message.error('合同信息查询失败', 1);
-        this.setState({
-          isSpinning: false,
-        });
       });
   };
-
   // 查询供应商下拉列表
-  fetchQueryGysInZbxx = () => {
-    this.setState({
-      isSpinning: true,
-    });
+  fetchQueryGysInZbxx = (current, pageSize) => {
     FetchQueryGysInZbxx({
       // paging: 1,
       paging: -1,
       sort: '',
-      current: 1,
-      pageSize: 10,
+      current,
+      pageSize,
       total: -1,
     })
       .then(res => {
@@ -330,35 +325,8 @@ class ContractInfoUpdate extends React.Component {
       })
       .catch(e => {
         message.error('供应商信息查询失败', 1);
-        this.setState({
-          isSpinning: false,
-        });
       });
   };
-
-  //获取关联合同流程信息
-  getGlhtlcData = () => {
-    QueryContractFlowInfo({
-      projectId: this.props.currentXmid,
-    })
-      .then(res => {
-        if (res?.success) {
-          console.log('🚀 ~ QueryContractFlowInfo ~ res', JSON.parse(res.result));
-          //to do ...
-          this.setState({
-            isSpinning: false,
-          });
-        }
-      })
-      .catch(e => {
-        console.error('🚀关联合同流程信息', e);
-        message.error('关联合同流程信息获取失败', 1);
-        this.setState({
-          isSpinning: false,
-        });
-      });
-  };
-
   //合同信息修改付款详情表格单行删除
   handleSingleDelete = id => {
     const dataSource = [...this.state.tableData];
@@ -554,7 +522,6 @@ class ContractInfoUpdate extends React.Component {
         cell: EditableCell,
       },
     };
-
     const addGysModalProps = {
       isAllWindow: 1,
       // defaultFullScreen: true,
@@ -564,83 +531,6 @@ class ContractInfoUpdate extends React.Component {
       style: { top: '120px' },
       visible: addGysModalVisible,
       footer: null,
-    };
-
-    const handleOk = () => {
-      this.props.form.validateFields(err => {
-        if (!err) {
-          let fkjeSum = 0,
-            bfbSum = 0;
-          tableData?.forEach(item => {
-            fkjeSum += Number(item['fkje' + item.id]);
-            bfbSum += Number(item['bfb' + item.id]);
-          });
-          if (bfbSum > 1) {
-            message.error('占比总额不能超过1', 1);
-          } else if (fkjeSum > getFieldValue('htje')) {
-            message.error('付款总额不能超过合同金额', 1);
-          } else {
-            this.setState({
-              isSpinning: true,
-            });
-            let arr = [...tableData];
-            arr.forEach(item => {
-              for (let i in item) {
-                if (i === 'fksj' + item.id) {
-                  item[i] = moment(item[i]).format('YYYYMMDD');
-                } else {
-                  item[i] = String(item[i]);
-                }
-              }
-            });
-            let newArr = [];
-            arr.map(item => {
-              let obj = {
-                ID: item.id,
-                FKQS: item['fkqs' + item.id],
-                BFB: item['bfb' + item.id],
-                FKJE: item['fkje' + item.id],
-                FKSJ: item['fksj' + item.id],
-                ZT: item.zt,
-                GYS: String(currentGysId),
-              };
-              newArr.push(obj);
-            });
-            newArr.push({});
-            // console.log('submitData', {
-            //     xmmc: Number(currentXmid),
-            //     json: JSON.stringify(newArr),
-            //     rowcount: tableData.length,
-            //     htje: Number(getFieldValue('htje')),
-            //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
-            // });
-            UpdateHTXX({
-              xmmc: Number(currentXmid),
-              json: JSON.stringify(newArr),
-              rowcount: tableData.length,
-              htje: Number(getFieldValue('htje')),
-              qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD')),
-              gysid: Number(currentGysId),
-              czlx: 'UPDATE',
-              lcid: Number(getFieldValue('glhtlc') || 0),
-              htid: Number(this.props.curHtxxid),
-            })
-              .then(res => {
-                if (res?.code === 1) {
-                  onSuccess();
-                  this.setState({ isSpinning: false, tableData: [] });
-                  closeMessageEditModal();
-                }
-              })
-              .catch(e => {
-                message.error('合同信息修改失败', 1);
-                this.setState({
-                  isSpinning: false,
-                });
-              });
-          }
-        }
-      });
     };
 
     return (
@@ -670,7 +560,80 @@ class ContractInfoUpdate extends React.Component {
           }}
           title={null}
           visible={editMessageVisible}
-          onOk={handleOk}
+          onOk={() => {
+            this.props.form.validateFields(err => {
+              if (!err) {
+                let fkjeSum = 0,
+                  bfbSum = 0;
+                tableData?.forEach(item => {
+                  fkjeSum += Number(item['fkje' + item.id]);
+                  bfbSum += Number(item['bfb' + item.id]);
+                });
+                if (bfbSum > 1) {
+                  message.error('占比总额不能超过1', 1);
+                } else if (fkjeSum > getFieldValue('htje')) {
+                  message.error('付款总额不能超过合同金额', 1);
+                } else {
+                  this.setState({
+                    isSpinning: true,
+                  });
+                  let arr = [...tableData];
+                  arr.forEach(item => {
+                    for (let i in item) {
+                      if (i === 'fksj' + item.id) {
+                        item[i] = moment(item[i]).format('YYYYMMDD');
+                      } else {
+                        item[i] = String(item[i]);
+                      }
+                    }
+                  });
+                  let newArr = [];
+                  arr.map(item => {
+                    let obj = {
+                      ID: item.id,
+                      FKQS: item['fkqs' + item.id],
+                      BFB: item['bfb' + item.id],
+                      FKJE: item['fkje' + item.id],
+                      FKSJ: item['fksj' + item.id],
+                      ZT: item.zt,
+                      GYS: String(currentGysId),
+                    };
+                    newArr.push(obj);
+                  });
+                  newArr.push({});
+                  // console.log('submitData', {
+                  //     xmmc: Number(currentXmid),
+                  //     json: JSON.stringify(newArr),
+                  //     rowcount: tableData.length,
+                  //     htje: Number(getFieldValue('htje')),
+                  //     qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD'))
+                  // });
+                  UpdateHTXX({
+                    xmmc: Number(currentXmid),
+                    json: JSON.stringify(newArr),
+                    rowcount: tableData.length,
+                    htje: Number(getFieldValue('htje')),
+                    qsrq: Number(getFieldValue('qsrq').format('YYYYMMDD')),
+                    gysid: Number(currentGysId),
+                    czlx: 'UPDATE',
+                  })
+                    .then(res => {
+                      if (res?.code === 1) {
+                        onSuccess();
+                        this.setState({ isSpinning: false, tableData: [] });
+                        closeMessageEditModal();
+                      }
+                    })
+                    .catch(e => {
+                      message.error('合同信息修改失败', 1);
+                      this.setState({
+                        isSpinning: false,
+                      });
+                    });
+                }
+              }
+            });
+          }}
           onCancel={() => {
             this.setState({ tableData: [] });
             closeMessageEditModal();
@@ -838,30 +801,6 @@ class ContractInfoUpdate extends React.Component {
                       fontSize: '20px',
                     }}
                   />
-                </Col>
-              </Row>
-              <Row>
-                <Col span={24}>
-                  <Form.Item label="关联合同流程" labelCol={{ span: 3 }} wrapperCol={{ span: 20 }}>
-                    {getFieldDecorator('glhtlc', {
-                      initialValue: this.props.curHtxxid,
-                    })(
-                      <Select
-                        style={{ width: '100%', borderRadius: '8px !important' }}
-                        placeholder="请选择供应商"
-                        showSearch
-                        allowClear
-                      >
-                        {/* {this.state.glhtlcData?.map((item = {}, ind) => {
-                          return (
-                            <Option key={ind} value={item.id}>
-                              {item.gysmc}
-                            </Option>
-                          );
-                        })} */}
-                      </Select>,
-                    )}
-                  </Form.Item>
                 </Col>
               </Row>
               <Row>
