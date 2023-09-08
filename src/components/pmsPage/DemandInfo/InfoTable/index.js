@@ -199,6 +199,23 @@ export default function InfoTable(props) {
   ];
 
   const expandedRowRender = record => {
+    const handleDel = async (xqid, xmid) => {
+      record.loading = true;
+      try {
+        const res = await OperateOutsourceRequirements({
+          xqid: Number(xqid),
+          czlx: 'SC',
+        });
+        if (res?.success) {
+          getSubTableData(Number(xmid)); //刷新
+          record.loading = false;
+          message.success('删除成功', 1);
+        }
+      } catch (e) {
+        record.loading = false;
+        message.error('删除失败', 1);
+      }
+    };
     //嵌套子表格，每个宽度都要设
     const columns = [
       {
@@ -294,7 +311,7 @@ export default function InfoTable(props) {
           return (
             <div className="opr-colomn">
               {row.SJZT === '1' && isDock && (
-                <a
+                <span
                   className="sj"
                   onClick={() => {
                     setDemandPublishVisible(true);
@@ -303,12 +320,13 @@ export default function InfoTable(props) {
                   }}
                 >
                   上架
-                </a>
+                </span>
               )}
               {row.SJZT === '2' && isDock && (
                 <Popconfirm
                   title="确定要下架吗?"
                   onConfirm={() => {
+                    record.loading = true;
                     OperateOutsourceRequirements({
                       xqid: Number(row.XQID),
                       czlx: 'XJ',
@@ -317,14 +335,16 @@ export default function InfoTable(props) {
                         if (res?.success) {
                           message.success('下架成功', 1);
                           getSubTableData(Number(row.XMID)); //刷新
+                          record.loading = false;
                         }
                       })
                       .catch(e => {
                         message.error('下架失败', 1);
+                        record.loading = false;
                       });
                   }}
                 >
-                  <a className="xj">下架</a>
+                  <span className="xj">下架</span>
                 </Popconfirm>
               )}
               {/* {row.SJZT === '3' && isDock && (
@@ -339,8 +359,8 @@ export default function InfoTable(props) {
                 </a>
               )} */}
               {row.SJZT !== '3' && (LOGIN_USER_ID === Number(row.FQRID) || isDock) && (
-                <a
-                  style={{ color: '#3361ff' }}
+                <span
+                  className="sj"
                   onClick={() => {
                     setVisible(p => {
                       return {
@@ -354,11 +374,11 @@ export default function InfoTable(props) {
                   }}
                 >
                   修改
-                </a>
+                </span>
               )}
               {LOGIN_USER_ID === Number(row.FQRID) && (
-                <a
-                  style={{ color: '#3361ff' }}
+                <span
+                  className="sj"
                   onClick={() => {
                     setVisible(p => {
                       return {
@@ -372,7 +392,12 @@ export default function InfoTable(props) {
                   }}
                 >
                   重新发起
-                </a>
+                </span>
+              )}
+              {row.SJZT === '1' && isDock && (
+                <Popconfirm title="确定要删除吗?" onConfirm={() => handleDel(row.XQID, row.XMID)}>
+                  <span className="sj">删除</span>
+                </Popconfirm>
               )}
             </div>
           );

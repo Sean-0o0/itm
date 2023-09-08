@@ -136,7 +136,7 @@ export default function InfoTable(props) {
         <Table
           loading={tableLoading}
           columns={columns}
-          rowKey={'RYID'}
+          rowKey={'KQID'}
           dataSource={tableData}
           onChange={handleTableChange}
           // scroll={{ y: 500 }}

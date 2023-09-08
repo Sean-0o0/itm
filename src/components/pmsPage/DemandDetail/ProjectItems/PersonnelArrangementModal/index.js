@@ -117,7 +117,7 @@ function PersonnelArrangementModal(props) {
           PCID: UUID,
           ['GYSID' + UUID]: -1,
           ['RYMC' + UUID]: '',
-          ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(1, 'hours')],
+          ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(30, 'minutes')],
           NEW: true,
         },
       ]);
@@ -131,7 +131,7 @@ function PersonnelArrangementModal(props) {
       const zhpc = Object.values(
         ZHPC.reduce((acc, curr) => {
           let { XQNRID, RYMC, GYSID, ZHPCSJ, MSGID, PCID } = curr;
-          let timeRange = ZHPCSJ.split("-");
+          let timeRange = ZHPCSJ.split('-');
           ZHPCSJ = [moment(timeRange[0]), moment(timeRange[1])];
           if (!acc[XQNRID]) {
             acc[XQNRID] = {
@@ -162,7 +162,10 @@ function PersonnelArrangementModal(props) {
               PCID: UUID,
               ['GYSID' + UUID]: -1,
               ['RYMC' + UUID]: '',
-              ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(1, 'hours')],
+              ['MSSJ' + UUID]: [
+                moment('10:00', 'HH:mm'),
+                moment('10:00', 'HH:mm').add(30, 'minutes'),
+              ],
               NEW: true,
             },
           ]);
@@ -487,7 +490,7 @@ function PersonnelArrangementModal(props) {
                 rowKey={'PCID'}
                 rowClassName={() => 'editable-row'}
                 dataSource={tableData}
-                scroll={tableData.length > 3 ? { y: 171 } : {}}
+                scroll={tableData.length > 6 ? { y: 342 } : {}}
                 pagination={false}
                 bordered
                 size="middle"
@@ -497,11 +500,21 @@ function PersonnelArrangementModal(props) {
                 onClick={() => {
                   let arrData = [...tableData];
                   const UUID = Date.now();
+                  const getSecMSSJ = () => {
+                    let arr = Object.keys(arrData[arrData.length - 1])
+                      .filter(key => key.includes('MSSJ'))
+                      .map(key => arrData[arrData.length - 1][key]);
+                    if (arr.length > 0) return arr[0][1]?.clone() || undefined;
+                    return undefined;
+                  };
                   arrData.push({
                     PCID: UUID,
                     ['GYSID' + UUID]: -1,
                     ['RYMC' + UUID]: '',
-                    ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(1, 'hours')],
+                    ['MSSJ' + UUID]:
+                      arrData.length === 0
+                        ? [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(30, 'minutes')]
+                        : [getSecMSSJ(), getSecMSSJ().add(30, 'minutes')],
                     NEW: true,
                   });
                   setTableData(p => [...arrData]);

@@ -446,7 +446,8 @@ const TableBox = props => {
         // fixed: 'right',
         borderLeft: true, //左边框
         render: (txt, row, index) => {
-          if (Number(row['TXRID' + row.ID]) === LOGIN_USER_ID || isAdministrator)
+          // if (Number(row['TXRID' + row.ID]) === LOGIN_USER_ID || isAdministrator)
+          if (isAdministrator)
             return (
               <div>
                 {dltData.findIndex(x => x.ID === row.ID) !== -1 ? (

@@ -122,24 +122,38 @@ const EditableCell = props => {
               //   },
               // ],
             })(
-              <div style={{display: 'flex', justifyContent: 'space-evenly', alignItems: 'center'}}>
-                <DatePicker allowClear={false} style={{width: '40%'}}  format="YYYY-MM-DD" value={record[recIndex] ? record[recIndex][0] : moment()} onChange={e => {
-                  let date = record[recIndex];
-                  date[0] = moment(e.format("YYYY-MM-DD") + ' ' + date[0].format('HH:mm'), 'YYYY-MM-DD HH:mm');
-                  date[1] = moment(e.format("YYYY-MM-DD") + ' ' + date[1].format('HH:mm'), 'YYYY-MM-DD HH:mm');
-                  handleSave({ ...record, [recIndex]: date });
-                }} />
+              <div
+                style={{ display: 'flex', justifyContent: 'space-evenly', alignItems: 'center' }}
+              >
+                <DatePicker
+                  allowClear={false}
+                  style={{ width: '40%' }}
+                  format="YYYY-MM-DD"
+                  value={record[recIndex] ? record[recIndex][0] : moment()}
+                  onChange={e => {
+                    let date = record[recIndex];
+                    date[0] = moment(
+                      e.format('YYYY-MM-DD') + ' ' + date[0].format('HH:mm'),
+                      'YYYY-MM-DD HH:mm',
+                    );
+                    date[1] = moment(
+                      e.format('YYYY-MM-DD') + ' ' + date[1].format('HH:mm'),
+                      'YYYY-MM-DD HH:mm',
+                    );
+                    handleSave({ ...record, [recIndex]: date });
+                  }}
+                />
                 <TimePicker
                   allowClear={false}
                   style={{ width: '25%' }}
                   // showTime={{ format: 'HH:mm' }}
                   format="HH:mm"
-                  value={record[recIndex] ? record[recIndex][0] : moment("10:00", "HH:mm")}
+                  value={record[recIndex] ? record[recIndex][0] : moment('10:00', 'HH:mm')}
                   placeholder="请选择"
                   onChange={v => {
                     let date = record[recIndex];
                     date[0] = v;
-                    date[1] = moment(v.format("HH:mm"), 'HH:mm').add(1, 'hours');
+                    date[1] = moment(v.format('HH:mm'), 'HH:mm').add(30, 'minutes');
                     handleSave({ ...record, [recIndex]: date });
                   }}
                 />
@@ -149,7 +163,11 @@ const EditableCell = props => {
                   style={{ width: '25%' }}
                   // showTime={{ format: 'HH:mm' }}
                   format="HH:mm"
-                  value={record[recIndex] ? record[recIndex][1] : moment('10:00', 'HH:mm').add(1, 'hours')}
+                  value={
+                    record[recIndex]
+                      ? record[recIndex][1]
+                      : moment('10:00', 'HH:mm').add(30, 'minutes')
+                  }
                   placeholder="请选择"
                   onChange={v => {
                     let date = record[recIndex];
@@ -157,8 +175,7 @@ const EditableCell = props => {
                     handleSave({ ...record, [recIndex]: date });
                   }}
                 />
-              </div>
-             ,
+              </div>,
             )}
           </Form.Item>
         );
