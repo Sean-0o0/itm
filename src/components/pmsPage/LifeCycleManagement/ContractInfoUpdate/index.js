@@ -764,6 +764,10 @@ class ContractInfoUpdate extends React.Component {
                         onDropdownVisibleChange={visible =>
                           this.setState({ isSelectorOpen: visible })
                         }
+                        optionFilterProp="children"
+                        filterOption={(input, option) =>
+                          option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                        }
                       >
                         {gysData?.map((item = {}, ind) => {
                           return (
