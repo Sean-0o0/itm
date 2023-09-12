@@ -15,11 +15,11 @@ export default function DemandDetail(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [dtlData, setDtlData] = useState({}); //详情信息
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
-  const LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
-  const isAuth = isDock || String(LOGIN_USER_ID) === String(fqrid); //是否为外包项目对接人或需求发起人
+  let LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
   const [curXqid, setCurXqid] = useState(xqid); //当前xqid
   const [curFqrid, setCurFqrid] = useState(fqrid); //当前fqrid
   const [activeKey, setActiveKey] = useState(xqid); //高亮的需求tab id
+  let isAuth = isDock || String(LOGIN_USER_ID) === String(curFqrid); //是否为外包项目对接人或需求发起人
 
   useEffect(() => {
     if (xqid !== -2 && WBRYGW.length !== 0 && WBSWLX.length !== 0) {
@@ -233,7 +233,7 @@ export default function DemandDetail(props) {
           dtlData={dtlData}
           isDock={isDock}
           isAuth={isAuth}
-          isFqr={String(LOGIN_USER_ID) === String(fqrid)}
+          isFqr={String(LOGIN_USER_ID) === String(curFqrid)}
           xqid={curXqid}
           fqrid={curFqrid}
           getDtldata={getDtldata}
