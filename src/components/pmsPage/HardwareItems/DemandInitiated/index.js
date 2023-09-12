@@ -239,10 +239,25 @@ class DemandInitiated extends React.Component {
           if (tableDataFlag > 0) {
             message.warn('请完善人员需求！');
           } else {
-            _this.setState({
-              isSpinning: true,
-            });
-            _this.operateOutsourceRequirements(values);
+            if (_this.props.operateType === 'relaunch') {
+              Modal.confirm({
+                title: '提示：',
+                content: '点击确定后，将重新发起新需求，不会覆盖当前流程',
+                okText: '确定',
+                cancelText: '取消',
+                onOk: () => {
+                  _this.setState({
+                    isSpinning: true,
+                  });
+                  _this.operateOutsourceRequirements(values);
+                },
+              });
+            } else {
+              _this.setState({
+                isSpinning: true,
+              });
+              _this.operateOutsourceRequirements(values);
+            }
           }
         }
       }
