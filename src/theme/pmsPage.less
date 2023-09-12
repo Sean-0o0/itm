@@ -16516,6 +16516,10 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         border-radius: 8px;
       }
     }
+
+    .ant-radio-wrapper {
+      margin-top: 9px;
+    }
   }
 }
 
@@ -16860,7 +16864,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         justify-content: center;
 
         .sj,
-        .xj{
+        .xj {
           color: #3361ff;
           margin-right: 6px;
           cursor: pointer;
@@ -21403,7 +21407,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               line-height: 18px;
 
               .prj-tracking-infos-detail-row1-name {
-                width: calc(100% - 95px);
+                // width: calc(100% - 95px);
+                flex-grow: 1;
 
                 .icon-detail {
                   margin-left: 6px;
@@ -21584,7 +21589,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
               .prj-tracking-infos-detail-row1-percent {
                 text-align: end;
-                width: 95px;
+                flex-shrink: 0;
                 height: 14px;
                 font-size: 14px;
                 font-family: THSMoneyfont-Medium, THSMoneyfont;
@@ -23504,7 +23509,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             .legend-rec-red {
               background-color: #ff2f31;
             }
-            
+
             .legend-rec-grey {
               background-color: #d7d7d7;
             }
@@ -23543,6 +23548,20 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     .ant-input:focus {
       border-color: #3361ff;
       box-shadow: 0 0 0 2px #3361ff33;
+    }
+  }
+}
+
+.resume-list-modal {
+  .default-modal();
+  .antd-table-adaptation();
+  .content-box {
+    height: 580px;
+    .ant-table-placeholder {
+      border: 0;
+    }
+    .ant-form-item {
+      margin-bottom: 16px;
     }
   }
 }

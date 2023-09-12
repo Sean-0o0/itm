@@ -121,6 +121,7 @@ const AddExpense = props => {
   const [oaData, setOaData] = useState([]); //oa数据
   const [otherData, setOtherData] = useState([]); //其他附件数据
   const [apportionErrors, setApportionErrors] = useState([]); //分摊报错信息
+  const [isGx, setIsGx] = useState(false); //是否点过更新
 
   //防抖定时器
   let timer = null;
@@ -293,7 +294,7 @@ const AddExpense = props => {
           if (!blxd) {
             apportionErrorsArr.push('ftbl');
           }
-          if (czsjyc() && czsjyc2()) {
+          if (czsjyc() && czsjyc2() && !isGx) {
             apportionErrorsArr.push('sjyc'); //数据异常
           }
           setApportionErrors(apportionErrorsArr);
@@ -306,7 +307,7 @@ const AddExpense = props => {
           } else if (!blxd) {
             message.error('分摊比例 ≠ 100%，请修改后重新提交', 1);
             return;
-          } else if (czsjyc() && czsjyc2()) {
+          } else if (czsjyc() && czsjyc2() && !isGx) {
             message.error('存在费用金额*分摊比例 ≠ 分摊金额的数据，请修正', 1);
             return;
           }
@@ -1175,7 +1176,7 @@ const AddExpense = props => {
             bxbmOrigin: bxbmData.origin,
             apportionErrors,
           }}
-          funcProps={{ setFormData, setApportionErrors }}
+          funcProps={{ setFormData, setApportionErrors, setIsGx }}
         />
         <div className="footer-btn">
           <Button onClick={handleClose} className="btn-cancel">

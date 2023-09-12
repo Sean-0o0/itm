@@ -27,7 +27,7 @@ export default function ApportionDetail(props) {
   } = dataProps;
   const { isApportion = false, apportionmentData = [] } = formData;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
-  const { setFormData, setApportionErrors } = funcProps;
+  const { setFormData, setApportionErrors, setIsGx } = funcProps;
   const [selectedRowIds, setSelectedRowIds] = useState([]); //选中行id
   const [updateModalData, setUpdateModalData] = useState({
     visible: false,
@@ -111,17 +111,26 @@ export default function ApportionDetail(props) {
                         title: '确定更新分摊比例？',
                         content: '系统将根据分摊金额，自动调整「费用金额、分摊比例」，确定更新？',
                         onOk: () => {
+                          setIsGx(true);
                           let data = [...apportionmentData];
                           setFieldsValue({ je: zftje() });
-                          data.forEach(x => {
-                            x['FTBL' + x.ID] = parseFloat(
+                          let sum = 0;
+                          data.forEach((x, i) => {
+                            const value = parseFloat(
                               ((x['FTJE' + x.ID] / zftje()) * 100).toFixed(2),
                             );
-                            setFieldsValue({
-                              ['FTBL' + x.ID]: parseFloat(
-                                ((x['FTJE' + x.ID] / zftje()) * 100).toFixed(2),
-                              ),
-                            });
+                            if (i === data.length - 1) {
+                              x['FTBL' + x.ID] = parseFloat((100 - sum).toFixed(2));
+                              setFieldsValue({
+                                ['FTBL' + x.ID]: parseFloat((100 - sum).toFixed(2)),
+                              });
+                            } else {
+                              x['FTBL' + x.ID] = value;
+                              setFieldsValue({
+                                ['FTBL' + x.ID]: value,
+                              });
+                              sum += value;
+                            }
                           });
                           setFormData(p => ({
                             ...p,
@@ -173,17 +182,25 @@ export default function ApportionDetail(props) {
                         title: '确定更新分摊金额？',
                         content: '系统将根据费用金额、分摊比例，自动调整「分摊金额」，确定更新？',
                         onOk: () => {
+                          setIsGx(true);
                           let data = [...apportionmentData];
-                          data.forEach(x => {
-                            x['FTJE' + x.ID] = parseFloat(
+                          let sum = 0;
+                          data.forEach((x, i) => {
+                            const value = parseFloat(
                               ((x['FTBL' + x.ID] / 100) * (getFieldValue('je') || 0)).toFixed(2),
                             );
-
-                            setFieldsValue({
-                              ['FTJE' + x.ID]: parseFloat(
-                                ((x['FTBL' + x.ID] / 100) * (getFieldValue('je') || 0)).toFixed(2),
-                              ),
-                            });
+                            if (i === data.length - 1) {
+                              x['FTJE' + x.ID] = parseFloat((getFieldValue('je') - sum).toFixed(2));
+                              setFieldsValue({
+                                ['FTJE' + x.ID]: parseFloat((getFieldValue('je') - sum).toFixed(2)),
+                              });
+                            } else {
+                              x['FTJE' + x.ID] = value;
+                              setFieldsValue({
+                                ['FTJE' + x.ID]: value,
+                              });
+                              sum += value;
+                            }
                           });
                           setFormData(p => ({
                             ...p,
