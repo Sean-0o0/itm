@@ -121,7 +121,9 @@ export default function BudgetStatistic(props) {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryBudgetProjects ~ res', res);
           let ysxmArr = (
-            res.record?.filter(x => x.ysLXID === (key === 'ZB' ? '1' : '2')) || []
+            res.record?.filter(
+              x => x.ysLXID === (key === 'ZB' ? '1' : key === 'FZB' ? '2' : '3'),
+            ) || []
           ).reduce((acc, cur) => {
             const index = acc.findIndex(item => item.value === cur.zdbm && item.title === cur.ysLB);
             if (index === -1) {
@@ -197,6 +199,7 @@ export default function BudgetStatistic(props) {
           >
             <TabPane tab="资本性预算" key="ZB"></TabPane>
             <TabPane tab="非资本性预算" key="FZB"></TabPane>
+            <TabPane tab="科研预算" key="KY"></TabPane>
           </Tabs>
         </div>
         <TableBox

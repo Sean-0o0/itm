@@ -170,6 +170,159 @@ const TableBox = props => {
     },
   ];
 
+  //列配置 - 科研预算
+  const columns_KY = [
+    {
+      title: '预算项目',
+      dataIndex: 'YSXM',
+      key: 'YSXM',
+      width: '12%',
+      ellipsis: true,
+      render: txt => (
+        <Tooltip title={txt} placement="topLeft">
+          <span style={{ cursor: 'default' }}>{txt}</span>
+        </Tooltip>
+      ),
+    },
+    {
+      title: '负责人',
+      dataIndex: 'FZR',
+      width: '7%',
+      key: 'FZR',
+      ellipsis: true,
+      render: (txt, row) => {
+        return (
+          <Link
+            style={{ color: '#3361ff' }}
+            to={{
+              pathname: `/pms/manage/staffDetail/${EncryptBase64(
+                JSON.stringify({
+                  ryid: row.FZRID,
+                }),
+              )}`,
+              state: {
+                routes: [{ name: '预算统计', pathname: location.pathname }],
+              },
+            }}
+            className="table-link-strong"
+          >
+            {txt}
+          </Link>
+        );
+      },
+    },
+    {
+      title: '总预算',
+      dataIndex: 'ZYZ',
+      width: '8%',
+      align: 'right',
+      key: 'ZYZ',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+    },
+    {
+      title: '可执行预算',
+      dataIndex: 'KZXYS',
+      width: '10%',
+      align: 'right',
+      key: 'KZXYS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => <span style={{ marginRight: 20 }}>{getAmountFormat(txt)}</span>,
+    },
+    {
+      title: '资本已执行预算',
+      dataIndex: 'ZBYZXYS',
+      width: '12%',
+      align: 'right',
+      key: 'ZBYZXYS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => (
+        <span style={{ marginRight: 20 }}>
+          {!allowExport && txt === '-1' ? '***' : getAmountFormat(txt)}
+        </span>
+      ),
+    },
+    {
+      title: '非资本已执行预算',
+      dataIndex: 'FZBYZXYS',
+      width: '14%',
+      align: 'right',
+      key: 'FZBYZXYS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => (
+        <span style={{ marginRight: 20 }}>
+          {!allowExport && txt === '-1' ? '***' : getAmountFormat(txt)}
+        </span>
+      ),
+    },
+    {
+      title: '人力已执行预算',
+      dataIndex: 'RLYZXYS',
+      width: '12%',
+      align: 'right',
+      key: 'RLYZXYS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => (
+        <span style={{ marginRight: 20 }}>
+          {!allowExport && txt === '-1' ? '***' : getAmountFormat(txt)}
+        </span>
+      ),
+    },
+    {
+      title: '总执行预算',
+      dataIndex: 'ZZXYS',
+      width: '9%',
+      align: 'right',
+      key: 'ZZXYS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => (
+        <span style={{ marginRight: 20 }}>
+          {!allowExport && txt === '-1' ? '***' : getAmountFormat(txt)}
+        </span>
+      ),
+    },
+    {
+      title: '执行率',
+      dataIndex: 'ZXL',
+      width: '7%',
+      align: 'right',
+      key: 'ZXL',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: txt => (
+        <span style={{ marginRight: 20 }}>{!allowExport && txt === '-1' ? '***' : txt + '%'}</span>
+      ),
+    },
+    {
+      title: '涉及项目数',
+      dataIndex: 'SJXMS',
+      width: '9%',
+      align: 'center',
+      key: 'SJXMS',
+      ellipsis: true,
+      sorter: true,
+      sortDirections: ['descend', 'ascend'],
+      render: (txt, row) => (
+        <a style={{ color: '#3361ff' }} onClick={() => openDrawer(Number(row.YSID))}>
+          {txt}
+        </a>
+      ),
+    },
+  ];
+
   const openDrawer = budgetId => {
     setSpinningData(p => ({
       tip: '付款信息加载中',
@@ -399,7 +552,9 @@ const TableBox = props => {
         if (res?.success) {
           // console.log('🚀 ~ FetchQueryBudgetProjects ~ res', res);
           let ysxmArr = (
-            res.record?.filter(x => x.ysLXID === (activeKey === 'ZB' ? '1' : '2')) || []
+            res.record?.filter(
+              x => x.ysLXID === (activeKey === 'ZB' ? '1' : activeKey === 'FZB' ? '2' : '3'),
+            ) || []
           ).reduce((acc, cur) => {
             const index = acc.findIndex(item => item.value === cur.zdbm && item.title === cur.ysLB);
             if (index === -1) {
@@ -464,27 +619,29 @@ const TableBox = props => {
               onPanelChange={handleYearChange}
             />
           </div>
-          <div className="console-item">
-            <div className="item-label">预算类别</div>
-            <Select
-              className="item-selector"
-              dropdownClassName={'item-selector-dropdown'}
-              filterOption={(input, option) =>
-                option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
-              }
-              showSearch
-              allowClear
-              onChange={v => setFilterData(p => ({ ...p, budgetCategory: v }))}
-              value={filterData.budgetCategory}
-              placeholder="请选择"
-            >
-              {filterData.budgetCategorySlt?.map((x, i) => (
-                <Option key={i} value={Number(x.ibm)}>
-                  {x.note}
-                </Option>
-              ))}
-            </Select>
-          </div>
+          {activeKey !== 'KY' && (
+            <div className="console-item">
+              <div className="item-label">预算类别</div>
+              <Select
+                className="item-selector"
+                dropdownClassName={'item-selector-dropdown'}
+                filterOption={(input, option) =>
+                  option.props.children.toLowerCase().indexOf(input.toLowerCase()) >= 0
+                }
+                showSearch
+                allowClear
+                onChange={v => setFilterData(p => ({ ...p, budgetCategory: v }))}
+                value={filterData.budgetCategory}
+                placeholder="请选择"
+              >
+                {filterData.budgetCategorySlt?.map((x, i) => (
+                  <Option key={i} value={Number(x.ibm)}>
+                    {x.note}
+                  </Option>
+                ))}
+              </Select>
+            </div>
+          )}
           <div className="console-item">
             <div className="item-label">预算项目</div>
             <TreeSelect
@@ -532,7 +689,7 @@ const TableBox = props => {
         </div>
         <div className="project-info-table-box">
           <Table
-            columns={columns}
+            columns={activeKey === 'KY' ? columns_KY : columns}
             rowKey={'YSID'}
             dataSource={tableData.data}
             onChange={handleTableChange}

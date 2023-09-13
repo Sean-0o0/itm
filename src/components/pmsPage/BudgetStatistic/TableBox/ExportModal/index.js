@@ -90,7 +90,49 @@ function ExportModal(props) {
       dataIndex: 'HTJE',
     },
     {
-      title: '涉及项目数（万元）',
+      title: '涉及项目数',
+      dataIndex: 'SJXMS',
+    },
+  ];
+  const columnsForKY = [
+    {
+      title: '预算项目',
+      dataIndex: 'YSXM',
+    },
+    {
+      title: '负责人',
+      dataIndex: 'FZR',
+    },
+    {
+      title: '总预算（万元）',
+      dataIndex: 'ZYZ',
+    },
+    {
+      title: '可执行预算（万元）',
+      dataIndex: 'KZXYS',
+    },
+    {
+      title: '资本已执行预算（万元）',
+      dataIndex: 'ZBYZXYS',
+    },
+    {
+      title: '非资本已执行预算（万元）',
+      dataIndex: 'FZBYZXYS',
+    },
+    {
+      title: '人力已执行预算（万元）',
+      dataIndex: 'RLYZXYS',
+    },
+    {
+      title: '总执行预算（万元）',
+      dataIndex: 'ZZXYS',
+    },
+    {
+      title: '执行率（%）',
+      dataIndex: 'ZXL',
+    },
+    {
+      title: '涉及项目数',
       dataIndex: 'SJXMS',
     },
   ];
@@ -102,11 +144,12 @@ function ExportModal(props) {
   const handleOk = () => {
     validateFields(err => {
       if (!err) {
-        // console.log(getFieldValue('budgetType'), curYear.year());
+        const type = getFieldValue('budgetType');
+        // console.log(type, curYear.year());
         setIsSpinning(true);
         //预算统计信息
         QueryBudgetStatistics({
-          budgetType: getFieldValue('budgetType'),
+          budgetType: type,
           current: 1,
           pageSize: 99999,
           paging: -1,
@@ -119,10 +162,9 @@ function ExportModal(props) {
             if (res?.success) {
               // console.log('🚀 ~ QueryBudgetStatistics ~ res', JSON.parse(res.budgetInfo));
               let tableArr =
-                getFieldValue('budgetType') === 'ALL'
-                  ? JSON.parse(res.allBudgetInfo)
-                  : JSON.parse(res.budgetInfo);
-              let columnsArr = getFieldValue('budgetType') === 'ALL' ? columnsForALL : columns;
+                type === 'ALL' ? JSON.parse(res.allBudgetInfo) : JSON.parse(res.budgetInfo);
+              let columnsArr =
+                type === 'ALL' ? columnsForALL : type === 'KY' ? columnsForKY : columns;
               let finalArr = [];
               tableArr.forEach(obj => {
                 let temp = {};
@@ -134,10 +176,12 @@ function ExportModal(props) {
               });
               // console.log('🚀 ~ 导出信息:', finalArr);
               let fileName =
-                (getFieldValue('budgetType') === 'ZB'
+                (type === 'ZB'
                   ? '资本性'
-                  : getFieldValue('budgetType') === 'FZB'
+                  : type === 'FZB'
                   ? '非资本性'
+                  : type === 'KY'
+                  ? '科研'
                   : '资本性和非资本性') +
                 '预算执行统计（' +
                 moment().format('YYYYMMDD') +
@@ -230,6 +274,7 @@ function ExportModal(props) {
                     <Radio value="ZB">资本性预算</Radio>
                     <Radio value="FZB">非资本性预算</Radio>
                     <Radio value="ALL">资本性和非资本性预算</Radio>
+                    <Radio value="KY">科研预算</Radio>
                   </Radio.Group>,
                 )}
               </Form.Item>
