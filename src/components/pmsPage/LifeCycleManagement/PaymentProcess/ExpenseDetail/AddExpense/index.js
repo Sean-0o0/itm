@@ -29,6 +29,7 @@ import {
 } from '../../../../../../services/pmsServices';
 import TreeUtils from '../../../../../../utils/treeUtils';
 import ApportionDetail from './ApportionDetail';
+import Decimal from 'decimal.js';
 const { TextArea } = Input;
 
 function getUUID() {
@@ -120,7 +121,6 @@ const AddExpense = props => {
   const [receiptDisplay, setReceiptDisplay] = useState([]); //发票数据-展示用
   const [oaData, setOaData] = useState([]); //oa数据
   const [otherData, setOtherData] = useState([]); //其他附件数据
-  const [apportionErrors, setApportionErrors] = useState([]); //分摊报错信息
   const [isGx, setIsGx] = useState(false); //是否点过更新
 
   //防抖定时器
@@ -229,35 +229,33 @@ const AddExpense = props => {
         if (formData.isApportion) {
           //总分摊金额
           const zftje = () => {
-            let sum = 0;
+            let sum = Decimal(0);
             formData.apportionmentData.forEach(x => {
-              sum += x['FTJE' + x.ID];
+              sum = sum.plus(x['FTJE' + x.ID]);
             });
-            return parseFloat(sum.toFixed(2));
+            return sum.toNumber();
           };
           //总金额比例
           const zjebl = () => {
-            let sum = 0;
+            let sum = Decimal(0);
             formData.apportionmentData.forEach(x => {
-              sum += x['FTBL' + x.ID];
-              // console.log("🚀 ~ file: index.js:271 ~ zjebl ~ x['FTBL' + x.ID]:", x['FTBL' + x.ID]);
+              sum = sum.plus(x['FTBL' + x.ID]);
             });
-            return parseFloat(sum.toFixed(2));
+            return sum.toNumber();
           };
           //存在分摊金额 / 费用金额 ≠ 分摊比例的数据
           const czsjyc = () => {
             let bool = false;
             formData.apportionmentData.forEach(x => {
-              // console.log(
-              //   '🚀 ~ file: index.js:254 ~ czsjyc',
-              //   parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)) !==
-              //     x['FTBL' + x.ID],
-              //   parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)),
-              //   x['FTBL' + x.ID],
-              // );
               if (
-                parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)) !==
-                x['FTBL' + x.ID]
+                // parseFloat(((x['FTJE' + x.ID] / getFieldValue('je')) * 100).toFixed(2)) !==
+                // x['FTBL' + x.ID]
+                parseFloat(
+                  Decimal(x['FTJE' + x.ID])
+                    .div(getFieldValue('je'))
+                    .times(100)
+                    .toFixed(2),
+                ) !== x['FTBL' + x.ID]
               ) {
                 bool = true;
               }
@@ -268,36 +266,24 @@ const AddExpense = props => {
           const czsjyc2 = () => {
             let bool = false;
             formData.apportionmentData.forEach(x => {
-              // console.log(
-              //   '🚀 ~ file: index.js:254 ~ czsjyc2',
-              //   parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)) !==
-              //     x['FTJE' + x.ID],
-              //   parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)),
-              //   x['FTJE' + x.ID],
-              // );
               if (
-                parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)) !==
-                x['FTJE' + x.ID]
+                // parseFloat(((x['FTBL' + x.ID] * getFieldValue('je')) / 100).toFixed(2)) !==
+                // x['FTJE' + x.ID]
+                parseFloat(
+                  Decimal(x['FTBL' + x.ID])
+                    .div(100)
+                    .times(getFieldValue('je'))
+                    .toFixed(2),
+                ) !== x['FTJE' + x.ID]
               ) {
                 bool = true;
               }
             });
             return bool;
           };
-          console.log('czsjyc() && czsjyc2()', czsjyc(), czsjyc2());
-          let apportionErrorsArr = [];
+          // console.log('czsjyc() && czsjyc2()', czsjyc(), czsjyc2());
           const jexd = zftje() === getFieldValue('je'); //费用金额 = 总分摊金额
           const blxd = zjebl() === 100; //分摊比例 = 100%
-          if (!jexd) {
-            apportionErrorsArr.push('ftje');
-          }
-          if (!blxd) {
-            apportionErrorsArr.push('ftbl');
-          }
-          if (czsjyc() && czsjyc2() && !isGx) {
-            apportionErrorsArr.push('sjyc'); //数据异常
-          }
-          setApportionErrors(apportionErrorsArr);
           if (formData.apportionmentData.length === 0) {
             message.error('分摊明细不允许空值', 1);
             return;
@@ -527,6 +513,7 @@ const AddExpense = props => {
       };
     });
     setUpdateExpense(undefined);
+    setIsGx(false);
     console.log('关闭时清空数据');
   };
 
@@ -1174,9 +1161,8 @@ const AddExpense = props => {
             form,
             bxbmData: bxbmData.selectorData,
             bxbmOrigin: bxbmData.origin,
-            apportionErrors,
           }}
-          funcProps={{ setFormData, setApportionErrors, setIsGx }}
+          funcProps={{ setFormData, setIsGx }}
         />
         <div className="footer-btn">
           <Button onClick={handleClose} className="btn-cancel">

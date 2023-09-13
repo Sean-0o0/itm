@@ -15,16 +15,11 @@ import {
 import moment from 'moment';
 import { EditableCell, EditableRow } from './EditableTable';
 import UpdateModal from './UpdateModal';
+import Decimal from 'decimal.js';
 
 export default function ApportionDetail(props) {
   const { dataProps = {}, funcProps = {} } = props;
-  const {
-    formData = {},
-    form = {},
-    bxbmData = [],
-    bxbmOrigin = [],
-    apportionErrors = [],
-  } = dataProps;
+  const { formData = {}, form = {}, bxbmData = [], bxbmOrigin = [] } = dataProps;
   const { isApportion = false, apportionmentData = [] } = formData;
   const { getFieldDecorator, getFieldValue, validateFields, resetFields, setFieldsValue } = form;
   const { setFormData, setApportionErrors, setIsGx } = funcProps;
@@ -40,21 +35,279 @@ export default function ApportionDetail(props) {
   }, [JSON.stringify(apportionmentData)]);
 
   //总分摊金额
+  // const zftje = () => {
+  //   let sum = 0;
+  //   apportionmentData.forEach(x => {
+  //     sum += x['FTJE' + x.ID];
+  //   });
+  //   return parseFloat(sum.toFixed(2));
+  // };
+  // //总金额比例
+  // const zjebl = () => {
+  //   let sum = 0;
+  //   apportionmentData.forEach(x => {
+  //     sum += x['FTBL' + x.ID];
+  //     // console.log("🚀 ~ file: index.js:271 ~ zjebl ~ x['FTBL' + x.ID]:", x['FTBL' + x.ID]);
+  //   });
+  //   return parseFloat(sum.toFixed(2));
+  // };
+  //总分摊金额
   const zftje = () => {
-    let sum = 0;
+    let sum = Decimal(0);
     apportionmentData.forEach(x => {
-      sum += x['FTJE' + x.ID];
+      sum = sum.plus(x['FTJE' + x.ID] || 0);
     });
-    return parseFloat(sum.toFixed(2));
+    return sum.toNumber();
   };
+
   //总金额比例
   const zjebl = () => {
-    let sum = 0;
+    let sum = Decimal(0);
     apportionmentData.forEach(x => {
-      sum += x['FTBL' + x.ID];
-      // console.log("🚀 ~ file: index.js:271 ~ zjebl ~ x['FTBL' + x.ID]:", x['FTBL' + x.ID]);
+      sum = sum.plus(x['FTBL' + x.ID] || 0);
     });
-    return parseFloat(sum.toFixed(2));
+    return sum.toNumber();
+  };
+
+  //分摊比例
+  const handleFTBL = () => {
+    let zdxx = []; //字段校验
+    apportionmentData.forEach(x => {
+      zdxx.push('FTBL' + x.ID);
+      zdxx.push('FTJE' + x.ID);
+    });
+    validateFields(zdxx, e => {
+      if (!e) {
+        let arr = apportionmentData.map(x => x['FTJE' + x.ID]);
+        if (apportionmentData.length === 0) {
+          message.info('请先添加分摊数据', 1);
+        } else if (arr.includes(0)) {
+          message.warn('无法更新分摊比例和费用金额，有为零的分摊金额', 1);
+        } else {
+          Modal.confirm({
+            title: '确定更新分摊比例？',
+            content: '系统将根据分摊金额，自动调整「费用金额、分摊比例」，确定更新？',
+            onOk: () => {
+              setIsGx(true);
+              let data = [...apportionmentData];
+              setFieldsValue({ je: zftje() });
+              // let sum = 0;
+              let sum = Decimal(0);
+              data.forEach((x, i) => {
+                // const value = parseFloat(((x['FTJE' + x.ID] / zftje()) * 100).toFixed(2));
+                const value = parseFloat(
+                  Decimal(x['FTJE' + x.ID])
+                    .div(zftje())
+                    .times(100)
+                    .toFixed(2),
+                );
+                // const lastValue = parseFloat((100 - sum).toFixed(2));
+                const lastValue = parseFloat(Decimal(100).minus(sum));
+                if (i === data.length - 1) {
+                  x['FTBL' + x.ID] = lastValue;
+                  setFieldsValue({
+                    ['FTBL' + x.ID]: lastValue,
+                  });
+                } else {
+                  x['FTBL' + x.ID] = value;
+                  setFieldsValue({
+                    ['FTBL' + x.ID]: value,
+                  });
+                  // sum += value;
+                  sum = sum.plus(value);
+                }
+              });
+              setFormData(p => ({
+                ...p,
+                apportionmentData: [...data],
+              }));
+            },
+          });
+        }
+      }
+    });
+  };
+
+  //分摊金额
+  const handleFTJE = () => {
+    let zdxx = []; //字段校验
+    apportionmentData.forEach(x => {
+      zdxx.push('FTBL' + x.ID);
+      zdxx.push('FTJE' + x.ID);
+    });
+    validateFields(zdxx, e => {
+      if (!e) {
+        if (apportionmentData.length === 0) {
+          message.info('请先添加分摊数据', 1);
+        } else if (zjebl() !== 100) {
+          message.warn('无法更新分摊金额，总分摊比例不等于100.00%', 1);
+        } else {
+          Modal.confirm({
+            title: '确定更新分摊金额？',
+            content: '系统将根据费用金额、分摊比例，自动调整「分摊金额」，确定更新？',
+            onOk: () => {
+              setIsGx(true);
+              let data = [...apportionmentData];
+              // let sum = 0;
+              let sum = Decimal(0);
+              data.forEach((x, i) => {
+                // const value = parseFloat(
+                //   ((x['FTBL' + x.ID] / 100) * (getFieldValue('je') || 0)).toFixed(2),
+                // );
+                const value = parseFloat(
+                  Decimal(x['FTBL' + x.ID])
+                    .div(100)
+                    .times(getFieldValue('je') || 0)
+                    .toFixed(2),
+                );
+                // const lastValue = parseFloat((getFieldValue('je') - sum).toFixed(2))
+                const lastValue = parseFloat(
+                  Decimal(getFieldValue('je') || 0)
+                    .minus(sum)
+                    .toFixed(2),
+                );
+                if (i === data.length - 1) {
+                  x['FTJE' + x.ID] = lastValue;
+                  setFieldsValue({
+                    ['FTJE' + x.ID]: lastValue,
+                  });
+                } else {
+                  x['FTJE' + x.ID] = value;
+                  setFieldsValue({
+                    ['FTJE' + x.ID]: value,
+                  });
+                  // sum += value;
+                  sum = sum.plus(value);
+                }
+              });
+              setFormData(p => ({
+                ...p,
+                apportionmentData: [...data],
+              }));
+            },
+          });
+        }
+      }
+    });
+  };
+
+  //平均分摊
+  const handleEven = () => {
+    Modal.confirm({
+      title: '确定平均分摊?',
+      content: '系统将根据费用金额，自动调整「分摊金额、分摊比例」，确定平均分摊？',
+      onOk: () => {
+        let data = [...apportionmentData];
+        let ftbl = parseFloat(
+          Decimal(100)
+            .div(data.length)
+            .toFixed(2),
+        );
+        if (Decimal(ftbl).times(data.length) === 100) {
+          const value = parseFloat(
+            Decimal(ftbl)
+              .div(100)
+              .times(getFieldValue('je') || 0)
+              .toFixed(2),
+          );
+          data.forEach(x => {
+            x['FTJE' + x.ID] = value;
+            x['FTBL' + x.ID] = ftbl;
+            setFieldsValue({
+              ['FTJE' + x.ID]: value,
+              ['FTBL' + x.ID]: ftbl,
+            });
+          });
+        } else if (ftbl * data.length > 100) {
+          data.forEach((x, i) => {
+            if (i === data.length - 1) {
+              ftbl = parseFloat(
+                Decimal(ftbl)
+                  .mimus(
+                    Decimal(ftbl)
+                      .times(data.length)
+                      .minus(100),
+                  )
+                  .toFixed(2),
+              );
+            }
+            const value = parseFloat(
+              Decimal(ftbl)
+                .div(100)
+                .times(getFieldValue('je') || 0)
+                .toFixed(2),
+            );
+            x['FTJE' + x.ID] = value;
+            x['FTBL' + x.ID] = ftbl;
+            setFieldsValue({
+              ['FTJE' + x.ID]: value,
+              ['FTBL' + x.ID]: ftbl,
+            });
+          });
+        } else if (ftbl * data.length < 100) {
+          data.forEach((x, i) => {
+            if (i === data.length - 1) {
+              ftbl = parseFloat(
+                Decimal(100)
+                  .minus(Decimal(ftbl).times(data.length))
+                  .plus(ftbl)
+                  .toFixed(2),
+              );
+            }
+            const value = parseFloat(
+              Decimal(ftbl)
+                .div(100)
+                .times(getFieldValue('je') || 0)
+                .toFixed(2),
+            );
+            x['FTJE' + x.ID] = value;
+            x['FTBL' + x.ID] = ftbl;
+            setFieldsValue({
+              ['FTJE' + x.ID]: value,
+              ['FTBL' + x.ID]: ftbl,
+            });
+          });
+        }
+        setFormData(p => ({
+          ...p,
+          apportionmentData: [...data],
+        }));
+      },
+    });
+  };
+
+  //添加平均分摊
+  const handleAddRow = () => {
+    let arrData = [...apportionmentData];
+    const UUID = String(Date.now());
+    const FTBL = Decimal(100)
+      .minus(zjebl())
+      .toNumber();
+    arrData.push({
+      ID: UUID,
+      ['BXBM' + UUID]: undefined,
+      ['BXBMYKBID' + UUID]: undefined,
+      ['FTBL' + UUID]: FTBL,
+      // ['FTJE' + UUID]: parseFloat(
+      //   (((getFieldValue('je') || 0) * parseFloat((100 - zjebl()).toFixed(2))) / 100).toFixed(2),
+      // ),
+      ['FTJE' + UUID]: parseFloat(
+        Decimal(getFieldValue('je') || 0)
+          .times(FTBL)
+          .div(100)
+          .toFixed(2),
+      ),
+    });
+
+    setFormData(p => ({
+      ...p,
+      apportionmentData: arrData,
+    }));
+    //滚动至底部
+    setTimeout(() => {
+      const element = document.querySelectorAll('.add-expense-drawer .ant-drawer-body')[0];
+      element.scrollTop = element.scrollHeight;
+    }, 200);
   };
 
   //表格数据保存
@@ -91,58 +344,7 @@ export default function ApportionDetail(props) {
             title="根据分摊金额，自动调整费用金额、分摊比例"
             overlayStyle={{ maxWidth: 300 }}
           >
-            <div
-              className="update-tag"
-              onClick={() => {
-                let zdxx = []; //字段校验
-                apportionmentData.forEach(x => {
-                  zdxx.push('FTBL' + x.ID);
-                  zdxx.push('FTJE' + x.ID);
-                });
-                validateFields(zdxx, e => {
-                  if (!e) {
-                    let arr = apportionmentData.map(x => x['FTJE' + x.ID]);
-                    if (apportionmentData.length === 0) {
-                      message.info('请先添加分摊数据', 1);
-                    } else if (arr.includes(0)) {
-                      message.warn('无法更新分摊比例和费用金额，有为零的分摊金额', 1);
-                    } else {
-                      Modal.confirm({
-                        title: '确定更新分摊比例？',
-                        content: '系统将根据分摊金额，自动调整「费用金额、分摊比例」，确定更新？',
-                        onOk: () => {
-                          setIsGx(true);
-                          let data = [...apportionmentData];
-                          setFieldsValue({ je: zftje() });
-                          let sum = 0;
-                          data.forEach((x, i) => {
-                            const value = parseFloat(
-                              ((x['FTJE' + x.ID] / zftje()) * 100).toFixed(2),
-                            );
-                            if (i === data.length - 1) {
-                              x['FTBL' + x.ID] = parseFloat((100 - sum).toFixed(2));
-                              setFieldsValue({
-                                ['FTBL' + x.ID]: parseFloat((100 - sum).toFixed(2)),
-                              });
-                            } else {
-                              x['FTBL' + x.ID] = value;
-                              setFieldsValue({
-                                ['FTBL' + x.ID]: value,
-                              });
-                              sum += value;
-                            }
-                          });
-                          setFormData(p => ({
-                            ...p,
-                            apportionmentData: [...data],
-                          }));
-                        },
-                      });
-                    }
-                  }
-                });
-              }}
-            >
+            <div className="update-tag" onClick={handleFTBL}>
               <Icon type="sync" />
               更新
             </div>
@@ -163,56 +365,7 @@ export default function ApportionDetail(props) {
             title="根据费用金额、分摊比例，自动调整分摊金额"
             overlayStyle={{ maxWidth: 300 }}
           >
-            <div
-              className="update-tag"
-              onClick={() => {
-                let zdxx = []; //字段校验
-                apportionmentData.forEach(x => {
-                  zdxx.push('FTBL' + x.ID);
-                  zdxx.push('FTJE' + x.ID);
-                });
-                validateFields(zdxx, e => {
-                  if (!e) {
-                    if (apportionmentData.length === 0) {
-                      message.info('请先添加分摊数据', 1);
-                    } else if (zjebl() !== 100) {
-                      message.warn('无法更新分摊金额，总分摊比例不等于100.00%', 1);
-                    } else {
-                      Modal.confirm({
-                        title: '确定更新分摊金额？',
-                        content: '系统将根据费用金额、分摊比例，自动调整「分摊金额」，确定更新？',
-                        onOk: () => {
-                          setIsGx(true);
-                          let data = [...apportionmentData];
-                          let sum = 0;
-                          data.forEach((x, i) => {
-                            const value = parseFloat(
-                              ((x['FTBL' + x.ID] / 100) * (getFieldValue('je') || 0)).toFixed(2),
-                            );
-                            if (i === data.length - 1) {
-                              x['FTJE' + x.ID] = parseFloat((getFieldValue('je') - sum).toFixed(2));
-                              setFieldsValue({
-                                ['FTJE' + x.ID]: parseFloat((getFieldValue('je') - sum).toFixed(2)),
-                              });
-                            } else {
-                              x['FTJE' + x.ID] = value;
-                              setFieldsValue({
-                                ['FTJE' + x.ID]: value,
-                              });
-                              sum += value;
-                            }
-                          });
-                          setFormData(p => ({
-                            ...p,
-                            apportionmentData: [...data],
-                          }));
-                        },
-                      });
-                    }
-                  }
-                });
-              }}
-            >
+            <div className="update-tag" onClick={handleFTJE}>
               <Icon type="sync" />
               更新
             </div>
@@ -305,55 +458,55 @@ export default function ApportionDetail(props) {
     });
   };
 
-  //平均分摊
-  const handleEven = () => {
-    Modal.confirm({
-      title: '确定平均分摊?',
-      content: '系统将根据费用金额，自动调整「分摊金额、分摊比例」，确定平均分摊？',
-      onOk: () => {
-        let data = [...apportionmentData];
-        let ftbl = parseFloat((100 / data.length).toFixed(2));
-        if (ftbl * data.length === 100) {
-          data.forEach(x => {
-            x['FTJE' + x.ID] = parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2));
-            x['FTBL' + x.ID] = ftbl;
-            setFieldsValue({
-              ['FTJE' + x.ID]: parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2)),
-              ['FTBL' + x.ID]: ftbl,
-            });
-          });
-        } else if (ftbl * data.length > 100) {
-          data.forEach((x, i) => {
-            if (i === data.length - 1) {
-              ftbl = parseFloat((ftbl - (ftbl * data.length - 100)).toFixed(2));
-            }
-            x['FTJE' + x.ID] = parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2));
-            x['FTBL' + x.ID] = ftbl;
-            setFieldsValue({
-              ['FTJE' + x.ID]: parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2)),
-              ['FTBL' + x.ID]: ftbl,
-            });
-          });
-        } else if (ftbl * data.length < 100) {
-          data.forEach((x, i) => {
-            if (i === data.length - 1) {
-              ftbl = parseFloat((ftbl + (100 - ftbl * data.length)).toFixed(2));
-            }
-            x['FTJE' + x.ID] = parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2));
-            x['FTBL' + x.ID] = ftbl;
-            setFieldsValue({
-              ['FTJE' + x.ID]: parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2)),
-              ['FTBL' + x.ID]: ftbl,
-            });
-          });
-        }
-        setFormData(p => ({
-          ...p,
-          apportionmentData: [...data],
-        }));
-      },
-    });
-  };
+  // //平均分摊
+  // const handleEven = () => {
+  //   Modal.confirm({
+  //     title: '确定平均分摊?',
+  //     content: '系统将根据费用金额，自动调整「分摊金额、分摊比例」，确定平均分摊？',
+  //     onOk: () => {
+  //       let data = [...apportionmentData];
+  //       let ftbl = parseFloat((100 / data.length).toFixed(2));
+  //       if (ftbl * data.length === 100) {
+  //         data.forEach(x => {
+  //           x['FTJE' + x.ID] = parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2));
+  //           x['FTBL' + x.ID] = ftbl;
+  //           setFieldsValue({
+  //             ['FTJE' + x.ID]: parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2)),
+  //             ['FTBL' + x.ID]: ftbl,
+  //           });
+  //         });
+  //       } else if (ftbl * data.length > 100) {
+  //         data.forEach((x, i) => {
+  //           if (i === data.length - 1) {
+  //             ftbl = parseFloat((ftbl - (ftbl * data.length - 100)).toFixed(2));
+  //           }
+  //           x['FTJE' + x.ID] = parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2));
+  //           x['FTBL' + x.ID] = ftbl;
+  //           setFieldsValue({
+  //             ['FTJE' + x.ID]: parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2)),
+  //             ['FTBL' + x.ID]: ftbl,
+  //           });
+  //         });
+  //       } else if (ftbl * data.length < 100) {
+  //         data.forEach((x, i) => {
+  //           if (i === data.length - 1) {
+  //             ftbl = parseFloat((ftbl + (100 - ftbl * data.length)).toFixed(2));
+  //           }
+  //           x['FTJE' + x.ID] = parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2));
+  //           x['FTBL' + x.ID] = ftbl;
+  //           setFieldsValue({
+  //             ['FTJE' + x.ID]: parseFloat(((ftbl / 100) * (getFieldValue('je') || 0)).toFixed(2)),
+  //             ['FTBL' + x.ID]: ftbl,
+  //           });
+  //         });
+  //       }
+  //       setFormData(p => ({
+  //         ...p,
+  //         apportionmentData: [...data],
+  //       }));
+  //     },
+  //   });
+  // };
 
   //批量删除
   const handleBatchDelete = () => {
@@ -371,29 +524,29 @@ export default function ApportionDetail(props) {
   };
 
   //添加分摊
-  const handleAddRow = () => {
-    let arrData = [...apportionmentData];
-    const UUID = String(Date.now());
-    arrData.push({
-      ID: UUID,
-      ['BXBM' + UUID]: undefined,
-      ['BXBMYKBID' + UUID]: undefined,
-      ['FTBL' + UUID]: parseFloat((100 - zjebl()).toFixed(2)),
-      ['FTJE' + UUID]: parseFloat(
-        (((getFieldValue('je') || 0) * parseFloat((100 - zjebl()).toFixed(2))) / 100).toFixed(2),
-      ),
-    });
+  // const handleAddRow = () => {
+  //   let arrData = [...apportionmentData];
+  //   const UUID = String(Date.now());
+  //   arrData.push({
+  //     ID: UUID,
+  //     ['BXBM' + UUID]: undefined,
+  //     ['BXBMYKBID' + UUID]: undefined,
+  //     ['FTBL' + UUID]: parseFloat((100 - zjebl()).toFixed(2)),
+  //     ['FTJE' + UUID]: parseFloat(
+  //       (((getFieldValue('je') || 0) * parseFloat((100 - zjebl()).toFixed(2))) / 100).toFixed(2),
+  //     ),
+  //   });
 
-    setFormData(p => ({
-      ...p,
-      apportionmentData: arrData,
-    }));
-    //滚动至底部
-    setTimeout(() => {
-      const element = document.querySelectorAll('.add-expense-drawer .ant-drawer-body')[0];
-      element.scrollTop = element.scrollHeight;
-    }, 200);
-  };
+  //   setFormData(p => ({
+  //     ...p,
+  //     apportionmentData: arrData,
+  //   }));
+  //   //滚动至底部
+  //   setTimeout(() => {
+  //     const element = document.querySelectorAll('.add-expense-drawer .ant-drawer-body')[0];
+  //     element.scrollTop = element.scrollHeight;
+  //   }, 200);
+  // };
 
   //勾选
   const handleApportionCheck = e => {
@@ -469,15 +622,6 @@ export default function ApportionDetail(props) {
               </div>
             )}
           </div>
-          {/* <div className="apportion-errors">
-            {apportionErrors.includes('ftje')
-              ? '费用金额 ≠ 总分摊金额，请修改后重新提交'
-              : apportionErrors.includes('ftbl')
-              ? '分摊比例 ≠ 100%，请修改后重新提交'
-              : apportionErrors.includes('sjyc')
-              ? '存在费用金额*分摊比例 ≠ 分摊金额的数据，请修正'
-              : ''}
-          </div> */}
           <Form.Item className="apportion-table-box">
             <Table
               columns={columns}
