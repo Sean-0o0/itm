@@ -133,6 +133,13 @@ const {
     queryIteProjPayRcd,
     queryIteProjPayPlan,
     queryContractFlowInfo,
+    copyCustomReport,
+    insertIteContract,
+    queryIteContractInfo,
+    updateItePayInfo,
+    queryUploadRcd,
+    feeCalculation,
+    querySelfDevProjWHstatistics,
   },
 } = api;
 
@@ -1418,6 +1425,76 @@ export async function QueryIteProjPayPlan(payload) {
 export async function QueryContractFlowInfo(payload) {
   const option = {
     url: queryContractFlowInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 复制自定义报告
+export async function CopyCustomReport(payload) {
+  const option = {
+    url: copyCustomReport,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 新增、修改迭代合同
+export async function InsertIteContract(payload) {
+  const option = {
+    url: insertIteContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询迭代合同信息
+export async function QueryIteContractInfo(payload) {
+  const option = {
+    url: queryIteContractInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 迭代付款后更新迭代付款信息
+export async function UpdateItePayInfo(payload) {
+  const option = {
+    url: updateItePayInfo,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询简历上传流水
+export async function QueryUploadRcd(payload) {
+  const option = {
+    url: queryUploadRcd,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 返回num1对num2的加减乘除保留两位数的结果
+export async function FeeCalculation(payload) {
+  const option = {
+    url: feeCalculation,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询自研项目工时统计
+export async function QuerySelfDevProjWHstatistics(payload) {
+  const option = {
+    url: querySelfDevProjWHstatistics,
     method: 'post',
     data: payload,
   };

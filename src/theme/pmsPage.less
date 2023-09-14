@@ -1182,10 +1182,34 @@
           .antd-table-adaptation();
           .ant-table-placeholder {
             border: 0;
-            top: 42px;
+            top: 83px;
           }
           .ant-table-wrapper {
             border: 0;
+          }
+          .ant-table-footer {
+            padding: 0;
+            background-color: #fff;
+            border: 1px solid #e8e8e8;
+            width: 100%;
+
+            .budget-excute-table-footer {
+              width: 100%;
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+
+              div {
+                padding: 9.17px;
+                .font-size-14();
+                .font-family-roboto();
+                font-weight: 400;
+                color: #303133;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+              }
+            }
           }
         }
       }
@@ -17909,6 +17933,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               white-space: nowrap;
               // height: 40px;
               line-height: 40px;
+              cursor: default;
             }
 
             .iconfont.circle-reduce,

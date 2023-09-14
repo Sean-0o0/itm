@@ -285,7 +285,7 @@ export default function InfoTable(props) {
         render: text => <span style={{ marginRight: 20 }}>{getAmountFormat(text)}</span>,
       },
       {
-        title: '开发商反馈期限',
+        title: '供应商反馈期限',
         dataIndex: 'KFSFKQX',
         key: 'KFSFKQX',
         width: '13%',

@@ -108,6 +108,7 @@ export default function ProjectItems(props) {
         message.info('请先上传简历', 1);
         return;
       }
+      // console.log("🚀 ~ file: index.js:115 ~ handleZx ~ xqid:", xqid)
       window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
         JSON.stringify({
           JLXX: JLXX2,
@@ -430,7 +431,7 @@ export default function ProjectItems(props) {
         );
       }
       return '';
-    } else if (SWMC === '人员调换' && (isFqr||isDock) && Number(item.THRY) > 0) {
+    } else if (SWMC === '人员调换' && (isFqr || isDock) && Number(item.THRY) > 0) {
       return (
         <div className="opr-btn" onClick={() => handleZx(item)}>
           执行
@@ -850,14 +851,15 @@ export default function ProjectItems(props) {
             reflush();
             message.success('上传成功', 1);
           }}
-          onCancel={() =>
+          onCancel={() => {
             setModalVisible(p => {
               return {
                 ...p,
                 resumeUpload: false,
               };
-            })
-          }
+            });
+            reflush();
+          }}
           src={lbModal.url}
         />
       )}

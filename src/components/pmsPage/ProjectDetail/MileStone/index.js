@@ -34,7 +34,6 @@ export default function MileStone(props) {
     setEndIndex,
   } = stateProps;
   const { risk = [], member = [], prjBasic = {}, xmjbxxRecord = [] } = prjData;
-  // console.log('🚀 ~ file: index.js:21 ~ MileStone ~ prjData:', prjData);
   const [itemWidth, setItemWidth] = useState('47.76%'); //块宽度
   const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
@@ -503,7 +502,7 @@ export default function MileStone(props) {
         项目里程碑
         <div className="overall-rate">
           <img src={overallRateImg} alt="" />
-          <span>项目整体进度：</span>
+          <span>事项完成度：</span>
           <span className="rate">{prjBasic.XMJD}%</span>
         </div>
       </div>

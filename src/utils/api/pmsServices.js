@@ -751,4 +751,46 @@ export default [
     url: '/projectManage/queryContractFlowInfo',
     dis: '查询合同签署流程',
   },
+  {
+    code: '',
+    key: 'copyCustomReport',
+    url: '/projectManage/copyCustomReport',
+    dis: '复制自定义报告',
+  },
+  {
+    code: '',
+    key: 'insertIteContract',
+    url: '/projectManage/insertIteContract',
+    dis: '新增、修改迭代合同',
+  },
+  {
+    code: '',
+    key: 'queryIteContractInfo',
+    url: '/projectManage/queryIteContractInfo',
+    dis: '查询迭代合同信息',
+  },
+  {
+    code: '',
+    key: 'updateItePayInfo',
+    url: '/projectManage/updateItePayInfo',
+    dis: '迭代付款后更新迭代付款信息',
+  },
+  {
+    code: '',
+    key: 'queryUploadRcd',
+    url: '/projectManage/queryUploadRcd',
+    dis: '查询简历上传流水',
+  },
+  {
+    code: '',
+    key: 'feeCalculation',
+    url: '/projectManage/feeCalculation',
+    dis: '返回num1对num2的加减乘除保留两位数的结果',
+  },
+  {
+    code: '',
+    key: 'querySelfDevProjWHstatistics',
+    url: '/projectManage/querySelfDevProjWHstatistics',
+    dis: '查询自研项目工时统计',
+  },
 ];

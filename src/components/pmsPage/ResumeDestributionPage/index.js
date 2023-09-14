@@ -11,6 +11,7 @@ import {
   Tabs,
   Breadcrumb,
   Popover,
+  Tooltip,
 } from 'antd';
 import moment from 'moment';
 import config from '../../../utils/config';
@@ -21,7 +22,7 @@ import {
   QueryResumeDownloadRecords,
 } from '../../../services/pmsServices';
 import { Link } from 'react-router-dom';
-// import ResumeListModal from './ResumeListModal';
+import ResumeListModal from './ResumeListModal';
 
 const { TabPane } = Tabs;
 const { api } = config;
@@ -29,7 +30,7 @@ const {
   pmsServices: { queryFileStream, zipLivebosFilesRowsPost },
 } = api;
 const { Item } = Breadcrumb;
-const LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).name;
+let LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).name;
 
 export default function ResumeDistributionPage(props) {
   const { params = {}, routes = [] } = props;
@@ -45,7 +46,7 @@ export default function ResumeDistributionPage(props) {
   const [batchDownload, setBatchDownload] = useState(false); //批量下载状态
   const [batchDownloadList, setBatchDownloadList] = useState([]); //批量下载选中的数据
   const [downloadedResumeList, setDownloadedResumeList] = useState([]); //已下载的简历数据
-  // const [listModalVisible, setListModalVisible] = useState(false); //列表弹窗显隐
+  const [listModalVisible, setListModalVisible] = useState(false); //列表弹窗显隐
 
   useEffect(() => {
     // console.log(JLXX);
@@ -464,7 +465,9 @@ export default function ResumeDistributionPage(props) {
                   ) : (
                     <>{isDock ? <i className="iconfont circle-check edit-disabled" /> : null}</>
                   )}
-                  <span>{x.JLMC}</span>
+                  <Tooltip title={x.JLMC} placement="topLeft">
+                    {x.JLMC}
+                  </Tooltip>
                 </Fragment>
               )}
               {editing ? (
@@ -793,7 +796,9 @@ export default function ResumeDistributionPage(props) {
                     ) : (
                       <>{isDock ? <i className="iconfont circle-check edit-disabled" /> : null}</>
                     )}
-                    <span>{x.JLMC}</span>
+                    <Tooltip title={x.JLMC} placement="topLeft">
+                      {x.JLMC}
+                    </Tooltip>
                   </Fragment>
                 )}
                 {editing ? (
@@ -1032,7 +1037,11 @@ export default function ResumeDistributionPage(props) {
 
   return (
     <div className="resume-destribution-box">
-      {/* <ResumeListModal visible={listModalVisible} setVisible={setListModalVisible} /> */}
+      <ResumeListModal
+        visible={listModalVisible}
+        setVisible={setListModalVisible}
+        ryxqid={activeKey}
+      />
       <div className="top-console">
         <Breadcrumb separator=">" style={{ marginTop: 19.4 }}>
           {routes?.map((item, index) => {
@@ -1105,11 +1114,11 @@ export default function ResumeDistributionPage(props) {
                 批量下载
               </Button>
             )}
-            {/* {!editing && !batchDownload && isDock && (
+            {!editing && !batchDownload && isDock && (
               <Button className="btn-opr" onClick={() => setListModalVisible(true)}>
                 列表展示
               </Button>
-            )} */}
+            )}
           </div>
           {getActiveKeyTotal() === 0 && (
             <Empty

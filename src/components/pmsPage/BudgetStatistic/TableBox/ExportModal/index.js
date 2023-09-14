@@ -105,7 +105,7 @@ function ExportModal(props) {
     },
     {
       title: '总预算（万元）',
-      dataIndex: 'ZYZ',
+      dataIndex: 'ZYS',
     },
     {
       title: '可执行预算（万元）',
@@ -133,7 +133,7 @@ function ExportModal(props) {
     },
     {
       title: '涉及项目数',
-      dataIndex: 'SJXMS',
+      dataIndex: 'SJXM',
     },
   ];
 

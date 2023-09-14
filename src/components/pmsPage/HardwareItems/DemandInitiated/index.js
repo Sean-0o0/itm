@@ -197,7 +197,7 @@ class DemandInitiated extends React.Component {
           return;
         }
         if (errs.includes('kfsrq')) {
-          message.warn('请选择开发商反馈期限！');
+          message.warn('请选择供应商反馈期限！');
           return;
         }
         if (errs.includes('pcrq')) {
@@ -529,13 +529,13 @@ class DemandInitiated extends React.Component {
                       </Row>
                       <Row gutter={24}>
                         <Col span={12}>
-                          <Form.Item label="开发商反馈期限">
+                          <Form.Item label="供应商反馈期限">
                             {getFieldDecorator('kfsrq', {
                               initialValue: kfsrqinit,
                               rules: [
                                 {
                                   required: true,
-                                  message: '请选择开发商反馈期限',
+                                  message: '请选择供应商反馈期限',
                                 },
                               ],
                             })(<DatePicker style={{ width: '100%' }} />)}

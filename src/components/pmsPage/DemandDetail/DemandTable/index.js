@@ -203,10 +203,9 @@ export default function DemandTable(props) {
       dataIndex: 'JLDATA',
       key: 'JLDATA',
       width:
-        (String(fqrid) === LOGIN_USER_ID //发起人
-        || isDock  //外包项目对接人
+        (String(fqrid) === LOGIN_USER_ID || //发起人
+          isDock) && //外包项目对接人
         // ||XMXX.XMJLID === LOGIN_USER_ID //项目经理
-        ) && 
         JLXX.length !== 0 && //简历信息不为空
         XQSX_ORIGIN.filter(x => x.SWMC === '简历查看')[0]?.ZXZT === '1' //且 简历查看 已执行
           ? '10%'
@@ -282,7 +281,7 @@ export default function DemandTable(props) {
     <div className="demand-table-box info-box">
       <div className="title">需求信息</div>
       <div className="date-row">
-        {getDateItem('开发商反馈期限：', XQNR[0]?.KFSFKQX)}
+        {getDateItem('供应商反馈期限：', XQNR[0]?.KFSFKQX)}
         {/* {getDateItem('预计初筛日期：', XQNR[0]?.CSRQ)} */}
         {getDateItem('预计综合评测日期：', XQNR[0]?.YJZHPCRQ)}
         {getDateItem('预计试用日期：', XQNR[0]?.YJSYRQ)}
