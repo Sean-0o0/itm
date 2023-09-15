@@ -4920,7 +4920,10 @@ class NewProjectModelV2 extends React.Component {
                                                       })
                                                     }
                                                   </Select>
-                                                ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
+                                                ) : (
+                                                  // e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
+                                                  mileItemInfo.filter(mi=>mi.swlx === e.swlxmc).length > 0 &&
+                                                  e.sxlb?.length !== 1 && e.swlxmc !== "new" &&
                                                   <div className='editProject addHover'
                                                        style={{
                                                          display: 'grid',
@@ -4972,14 +4975,6 @@ class NewProjectModelV2 extends React.Component {
                                                 right: '0.7%',
                                                 color: '#3461FF'
                                               }}>
-                                                {/*<Tag*/}
-                                                {/*  style={{background: '#fff', borderStyle: 'dashed'}}>*/}
-                                                {/*  <a className="iconfont circle-add"*/}
-                                                {/*     style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}*/}
-                                                {/*     onClick={() => this.showInput(index, i)}>新增</a>*/}
-                                                {/*</Tag>*/}
-                                                {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
-                                                {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
                                               </div>
                                             </div>
                                           </div>
@@ -5277,7 +5272,10 @@ class NewProjectModelV2 extends React.Component {
                                                       })
                                                     }
                                                   </Select>
-                                                ) : (e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
+                                                ) : (
+                                                  // e.sxlb?.length !== 1 && e.swlxmc !== "new" && e.addFlag &&
+                                                  mileItemInfo.filter(mi=>mi.swlx === e.swlxmc).length > 0 &&
+                                                  e.sxlb?.length !== 1 && e.swlxmc !== "new"&&
                                                   <div style={{
                                                     display: 'grid',
                                                     alignItems: 'center',
@@ -5326,14 +5324,6 @@ class NewProjectModelV2 extends React.Component {
                                                 right: '0.7%',
                                                 color: '#3461FF'
                                               }}>
-                                                {/*<Tag*/}
-                                                {/*  style={{background: '#fff', borderStyle: 'dashed'}}>*/}
-                                                {/*  <a className="iconfont circle-add"*/}
-                                                {/*     style={{fontSize: '2.038rem', color: 'rgb(51, 97, 255)',}}*/}
-                                                {/*     onClick={() => this.showInput(index, i)}>新增</a>*/}
-                                                {/*</Tag>*/}
-                                                {/*<span onClick={() => this.removeMilePostTypeInfo(index, i)}*/}
-                                                {/*      style={{cursor: 'pointer', fontSize: '2.5rem'}}>删除本行</span>*/}
                                               </div>
                                             </div>
                                           </div>
