@@ -6,8 +6,9 @@ import AttendanceRegister from './AttendanceRegister';
 
 export default function ShortcutCard(props) {
   const { xmid, ZYXMKQLX = [], funcProps = {}, prjData } = props;
-  const { prjBasic = {} } = prjData;
+  const { prjBasic = {}, member = [] } = prjData;
   const { getPrjDtlData, setIsSpinning, handlePromiseAll } = funcProps;
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [modalVisible, setModalVisible] = useState({
     attendanceRegister: false,
   }); //弹窗显隐
@@ -15,6 +16,12 @@ export default function ShortcutCard(props) {
   useEffect(() => {
     return () => {};
   }, []);
+
+  //考勤登记的按钮权限，给到项目里面的所有人
+  const isMember = () => {
+    let arr = member.map(x => x.RYID);
+    return arr.includes(String(LOGIN_USER_INFO.id));
+  };
 
   //获取快捷方式块
   const getShortcutItem = (imgTxt, txt, fn) => {
@@ -78,6 +85,7 @@ export default function ShortcutCard(props) {
         {getShortcutItem('hjry', '获奖荣誉', () => {})}
         {getShortcutItem('xclr', '信创录入', () => {})}
         {prjBasic?.YSLX === '科研预算' &&
+          isMember() &&
           getShortcutItem('kqdj', '考勤登记', handleAttendanceRegister)}
         {prjBasic.WJZT !== '1' && getShortcutItem('xmwj', '项目完结', () => handlePrjFinish(xmid))}
       </div>

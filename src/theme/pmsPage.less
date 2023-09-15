@@ -979,7 +979,8 @@
   }
 
   //预算统计
-  .budget-statistic-spin-wrapper {
+  .budget-statistic-spin-wrapper,
+  .attendance-statistic-spin-wrapper {
     height: 100%;
     & > div > .ant-spin {
       max-height: unset;
@@ -1162,9 +1163,9 @@
           overflow-y: auto;
           height: calc(100% - 129px);
           border-top: none;
-          padding: 0 24px;
           padding-right: 4px;
           margin-right: 20px;
+          margin-left: 24px;
           margin-bottom: 16px;
 
           &::-webkit-scrollbar {
@@ -1182,33 +1183,52 @@
           .antd-table-adaptation();
           .ant-table-placeholder {
             border: 0;
-            top: 83px;
+            top: 42px;
           }
           .ant-table-wrapper {
             border: 0;
           }
-          .ant-table-footer {
-            padding: 0;
+        }
+      }
+    }
+  }
+
+  .attendance-statistic-spin-wrapper {
+    .ant-spin-container {
+      & > .table-box {
+        & > .project-info-table-box {
+          height: calc(100% - 81px);
+          overflow-x: auto;
+          .ant-table-wrapper {
+            border: 0;
+            width: fit-content;
+          }
+          .ant-table-placeholder {
+            border: 0;
+            top: 83px;
+          }
+          .budget-excute-table-footer {
             background-color: #fff;
             border: 1px solid #e8e8e8;
+            border-top: 0;
             width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            position: sticky;
+            bottom: 0;
 
-            .budget-excute-table-footer {
-              width: 100%;
-              display: flex;
-              flex-direction: row;
-              align-items: center;
-
-              div {
-                padding: 9.17px;
-                .font-size-14();
-                .font-family-roboto();
-                font-weight: 400;
-                color: #303133;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
-              }
+            div {
+              padding: 9.17px;
+              min-height: 40px;
+              line-height: 21px;
+              .font-size-14();
+              .font-family-roboto();
+              font-weight: 400;
+              color: #303133;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
             }
           }
         }

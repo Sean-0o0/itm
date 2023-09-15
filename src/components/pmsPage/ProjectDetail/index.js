@@ -68,6 +68,7 @@ export default function ProjectDetail(props) {
     leaveHalfDays: [], //请假半天
     overTimeDays: [], //加班天
     overTimeHalfDays: [], //加班半天
+    monthData: [], //月份数据
   }); //考勤信息
   let isDDXM = prjData.prjBasic?.XMBQ?.includes('迭代项目'); // 是否迭代项目
   let isDDXMFK =
@@ -439,48 +440,80 @@ export default function ProjectDetail(props) {
         //最初获取数据
         setMsgData([...JSON.parse(msgData.result)]);
       }
-      
+
       if (infoData.success) {
         const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
         if (XMJBXX.YSLX === '科研预算') {
-          //获取考勤信息 - 左侧信息
-          const attendanceRes = await QueryMemberAttendanceRcd({
+          //获取考勤信息 - 月份数据
+          const attendanceMonthRes = await QueryMemberAttendanceRcd({
             projectId: Number(xmid),
-            month: Number(getMonthRange(XMJBXX.CJRQ)[0]),
-            queryType: 'GL',
+            month: -1,
+            queryType: 'YF',
           });
-          if (attendanceRes.success) {
-            let attendanceArr = JSON.parse(attendanceRes.result);
-            setPrjData(p => ({
-              ...p,
-              attendance: attendanceArr,
-            }));
-            setDaysData(p => ({ ...p, curMonth: getMonthRange(XMJBXX.CJRQ)[0] }));
-          }
-          //项目创建时间、考勤左侧信息获取后，开始获取右侧信息
-          if (infoData.success && attendanceRes.success) {
-            const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
-            const LEFT = JSON.parse(attendanceRes.result) || [];
-            // console.log('🚀 ~ file: index.js:473 ~ handlePromiseAll ~ LEFT:', LEFT);
-            if (LEFT.length !== 0 && getMonthRange(XMJBXX.CJRQ).length !== 0) {
-              // 获取个人考勤信息 - 右侧信息
-              getCalendarData(LEFT[0]?.RYID, Number(getMonthRange(XMJBXX.CJRQ)[0]), Number(xmid));
+          if (attendanceMonthRes.success) {
+            let YFArr = (JSON.parse(attendanceMonthRes.result) || [])
+              .map(x => String(x.YF))
+              .reverse();
+            if (YFArr.length > 0) {
+              //获取考勤信息 - 左侧信息
+              const attendanceRes = await QueryMemberAttendanceRcd({
+                projectId: Number(xmid),
+                month: Number(YFArr[YFArr.length - 1]),
+                queryType: 'GL',
+              });
+              if (attendanceRes.success) {
+                let attendanceArr = JSON.parse(attendanceRes.result);
+                setPrjData(p => ({
+                  ...p,
+                  attendance: attendanceArr,
+                }));
+                setDaysData(p => ({
+                  ...p,
+                  curMonth: YFArr[YFArr.length - 1],
+                  monthData: YFArr,
+                  activeId: -1, //高亮的 RYID
+                  attendanceDays: [], //出勤天
+                  attendanceHalfDays: [], //出勤半天
+                  leaveDays: [], //请假天
+                  leaveHalfDays: [], //请假半天
+                  overTimeDays: [], //加班天
+                  overTimeHalfDays: [], //加班半天
+                }));
+              }
             }
           }
+
+          // //项目创建时间、考勤左侧信息获取后，开始获取右侧信息
+          // if (infoData.success && attendanceRes.success) {
+          //   const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
+          //   const LEFT = JSON.parse(attendanceRes.result) || [];
+          //   // console.log('🚀 ~ file: index.js:473 ~ handlePromiseAll ~ LEFT:', LEFT);
+          //   if (LEFT.length !== 0 && getMonthRange(XMJBXX.CJRQ).length !== 0) {
+          //     // 获取个人考勤信息 - 右侧信息
+          //     getCalendarData(
+          //       LEFT[0]?.RYID,
+          //       Number(getMonthRange(XMJBXX.CJRQ)[getMonthRange(XMJBXX.CJRQ).length - 1]),
+          //       Number(xmid),
+          //     );
+          //   }
+          // }
         }
 
         if (XMJBXX.XMBQ?.includes('迭代项目')) {
-
           if (!XMJBXX.XMBQ?.includes('自研项目')) {
             // 获取迭代项目付款记录
             const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
             if (paymentRecordData.success) {
               let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
               let yearArr = JSON.parse(paymentRecordData.nfxxResult);
+              let curYear = yearArr.find(x => Number(x.ID) === Number(xmid))?.NF;
               setPrjData(p => ({
                 ...p,
                 paymentRecord: paymentRecordArr,
-                iterationYear: yearArr,
+                iterationYear: {
+                  currentYear: curYear,
+                  dropdown: yearArr,
+                },
               }));
             }
           }
@@ -825,7 +858,7 @@ export default function ProjectDetail(props) {
         memberId,
         month,
         projectId,
-        queryType: 'XQ',
+        queryType: 'XMRYXQ',
       });
       if (atdCalendarResult.success) {
         // console.log('🚀 ~ atdCalendarResult:', JSON.parse(atdCalendarResult.result));
@@ -858,7 +891,8 @@ export default function ProjectDetail(props) {
         //   overTimeDays: overTimeDaysArr,
         //   overTimeHalfDays: overTimeHalfDaysArr,
         // });
-        setDaysData({
+        setDaysData(p => ({
+          ...p,
           curMonth: String(month),
           activeId: memberId,
           attendanceDays: attendanceDaysArr,
@@ -867,7 +901,7 @@ export default function ProjectDetail(props) {
           leaveHalfDays: leaveHalfDaysArr,
           overTimeDays: overTimeDaysArr,
           overTimeHalfDays: overTimeHalfDaysArr,
-        });
+        }));
         fn(false);
       }
     } catch (e) {
@@ -892,13 +926,42 @@ export default function ProjectDetail(props) {
           ...p,
           attendance: attendanceArr,
         }));
-        setDaysData(p => ({ ...p, curMonth: String(month) }));
+        setDaysData(p => ({
+          ...p,
+          curMonth: String(month),
+          activeId: -1, //高亮的 RYID
+          attendanceDays: [], //出勤天
+          attendanceHalfDays: [], //出勤半天
+          leaveDays: [], //请假天
+          leaveHalfDays: [], //请假半天
+          overTimeDays: [], //加班天
+          overTimeHalfDays: [], //加班半天
+        }));
         fn(false);
       }
     } catch (error) {
       message.error('考勤信息获取失败', 1);
       console.error('获取考勤信息 - 左侧信息', e);
       fn(false);
+    }
+  };
+
+  //获取迭代项目付款计划
+  const getIterationPayment = async () => {
+    try {
+      setIsSpinning(true);
+      const iterationPaymentData = await QueryIteProjPayPlan({ projectId: Number(xmid) });
+      if (iterationPaymentData.success) {
+        setPrjData(p => ({
+          ...p,
+          iterationPayment: JSON.parse(iterationPaymentData.result),
+        }));
+        setIsSpinning(false);
+      }
+    } catch (error) {
+      message.error('考勤信息获取失败', 1);
+      console.error('获取考勤信息 - 左侧信息', e);
+      setIsSpinning(false);
     }
   };
 
@@ -919,13 +982,21 @@ export default function ProjectDetail(props) {
           isLeader={isLeader}
           haveSpl={!isHwSltPrj && prjData?.supplier?.length !== 0}
           setIsSpinning={setIsSpinning}
+          setPrjData={setPrjData}
+          isDDXM={isDDXM}
         />
         <div className="detail-row">
           <div className="col-left">
             {isDDXM && (
               <IterationContent prjData={prjData} xmid={xmid} getIterationCtn={getIterationCtn} />
             )}
-            {isDDXMFK && <IterationPayment prjData={prjData} />}
+            {isDDXMFK && (
+              <IterationPayment
+                prjData={prjData}
+                xmid={xmid}
+                getIterationPayment={getIterationPayment}
+              />
+            )}
             <MileStone
               xmid={xmid}
               prjData={prjData}
@@ -970,7 +1041,7 @@ export default function ProjectDetail(props) {
             {showKQXX && (
               <AttendanceInfo
                 dataProps={{ prjData, xmid, daysData }}
-                funcProps={{ getMonthRange, getCalendarData, getAttendanceData }}
+                funcProps={{ getCalendarData, getAttendanceData, setDaysData }}
               />
             )}
           </div>

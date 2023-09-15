@@ -1,20 +1,15 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { Button, Calendar, message, Spin, Tabs } from 'antd';
 import moment from 'moment';
-import { QueryMemberAttendanceRcd } from '../../../../services/pmsServices';
 
 const { TabPane } = Tabs;
 
 export default function AttendanceInfo(props) {
   const { dataProps = {}, funcProps = {} } = props;
   const { prjData = {}, xmid, daysData = {} } = dataProps;
-  const { getMonthRange, getCalendarData, getAttendanceData } = funcProps;
+  const { getCalendarData, getAttendanceData, setDaysData } = funcProps;
   const { attendance = [], prjBasic = {} } = prjData;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
-
-  useEffect(() => {
-    return () => {};
-  }, []);
 
   //左侧选择器
   const getLeftSelector = ({ attendanceDays = '--', overTimeDays = '--', leaveDays = '--' }) => {
@@ -102,7 +97,7 @@ export default function AttendanceInfo(props) {
       return (
         <div className="ant-fullcalendar-date" style={{ pointerEvents: 'none' }}>
           <div
-            class="ant-fullcalendar-value"
+            className="ant-fullcalendar-value"
             style={{
               textAlign: 'center',
               color:
@@ -129,14 +124,19 @@ export default function AttendanceInfo(props) {
           >
             {d.date()}
           </div>
-          <div class="ant-fullcalendar-content"></div>
+          <div className="ant-fullcalendar-content"></div>
         </div>
       );
     };
 
     return (
       <div className="calendar-box">
-        <Calendar headerRender={() => null} fullscreen={false} dateFullCellRender={renderCell} />
+        <Calendar
+          value={moment(daysData.curMonth)}
+          headerRender={() => null}
+          fullscreen={false}
+          dateFullCellRender={renderCell}
+        />
       </div>
     );
   };
@@ -152,13 +152,15 @@ export default function AttendanceInfo(props) {
     getAttendanceData(Number(key), Number(xmid), p => setIsSpinning(p));
   };
 
+  if (daysData.monthData?.length === 0) return null;
+
   return (
     <div className="attendance-info-box">
       <div className="top-title">考勤信息</div>
       <Spin spinning={isSpinning} tip="加载中">
         <div className="content">
           <Tabs activeKey={daysData.curMonth} onChange={handleTabsChange}>
-            {getMonthRange(String(prjBasic.CJRQ)).map(x => (
+            {daysData.monthData?.map(x => (
               <TabPane tab={handleMonthShow(x)} key={x}>
                 {getLeftSelector({
                   attendanceDays: attendance.reduce((acc, cur) => acc + cur.CQTS, 0),

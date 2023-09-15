@@ -19,11 +19,12 @@ import {
   InsertProjectAttendanceRcd,
   InsertProjectUpdateInfo,
   QueryMemberAttendanceRcd,
+  QueryWeekday,
 } from '../../../../../services/pmsServices';
 const { TextArea } = Input;
 
 export default function AttendanceRegister(props) {
-  const { xmid, visible, setVisible, ZYXMKQLX = [], handlePromiseAll } = props;
+  const { xmid, visible = false, setVisible, ZYXMKQLX = [], handlePromiseAll } = props;
   const [data, setData] = useState({
     selecting: [],
     attendance: [],
@@ -40,6 +41,11 @@ export default function AttendanceRegister(props) {
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [constData, setConstData] = useState([]); //不可修改的回显数据
   let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user')).id);
+  const [otherPrj, setOtherPrj] = useState({
+    one: [],
+    half: [],
+  }); //其他项目的
+  const [curWorkDays, setCurWorkDays] = useState([]); //当月工作日
 
   useEffect(() => {
     if (visible) {
@@ -64,7 +70,6 @@ export default function AttendanceRegister(props) {
         queryType: 'XQ',
       });
       if (atdCalendarResult.success) {
-        // console.log('🚀 ~ atdCalendarResult:', JSON.parse(atdCalendarResult.result));
         const atdCalendarArr = JSON.parse(atdCalendarResult.result);
         const attendanceDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 3 || x.KQLX === 5)
@@ -78,7 +83,21 @@ export default function AttendanceRegister(props) {
         const leaveHalfDaysArr = atdCalendarArr
           .filter(x => x.KQLX === 2)
           .map(x => moment(String(x.RQ)));
+        const otherPrjArr = atdCalendarArr
+          .filter(x => Number(x.XMMC) !== Number(xmid) && [3, 5, 4].includes(x.KQLX))
+          .map(x => moment(String(x.RQ)));
+        const otherPrjHalfArr = atdCalendarArr
+          .filter(x => Number(x.XMMC) !== Number(xmid) && [1, 6, 2].includes(x.KQLX))
+          .map(x => moment(String(x.RQ)));
+        setOtherPrj({
+          one: otherPrjArr,
+          half: otherPrjHalfArr,
+        });
         setConstData(
+          attendanceDaysArr.concat(attendanceHalfDaysArr, leaveDaysArr, leaveHalfDaysArr),
+        );
+        getWorkdaysOfMonth(
+          moment(String(month)),
           attendanceDaysArr.concat(attendanceHalfDaysArr, leaveDaysArr, leaveHalfDaysArr),
         );
         setData(p => ({
@@ -116,7 +135,7 @@ export default function AttendanceRegister(props) {
             YF: x.format('YYYYMM'),
             RQ: x.format('YYYYMMDD'),
             GS: '1',
-            KQLX: x.day() === 0 || x.day() === 6 ? '5' : '3', //周末则加班
+            KQLX: isInclude(x, curWorkDays) ? '3' : '5', //加班
           }));
         let arr2 = data.attendanceHalf
           .filter(x => !isInclude(x, constData))
@@ -125,7 +144,7 @@ export default function AttendanceRegister(props) {
             YF: x.format('YYYYMM'),
             RQ: x.format('YYYYMMDD'),
             GS: '0.5',
-            KQLX: x.day() === 0 || x.day() === 6 ? '6' : '1', //周末则加班
+            KQLX: isInclude(x, curWorkDays) ? '1' : '6', //加班
           }));
         let arr3 = data.leave
           .filter(x => !isInclude(x, constData))
@@ -142,7 +161,7 @@ export default function AttendanceRegister(props) {
             ID: '-1',
             YF: x.format('YYYYMM'),
             RQ: x.format('YYYYMMDD'),
-            GS: '0',
+            GS: '0.5',
             KQLX: '2',
           }));
         const finalArr = arr1.concat(arr2, arr3, arr4);
@@ -187,25 +206,29 @@ export default function AttendanceRegister(props) {
   };
 
   //工作日
-  const getWorkdaysOfMonth = () => {
-    const currentDate = moment();
-    const firstDayOfMonth = currentDate.clone().startOf('month');
-    const lastDayOfMonth = currentDate.clone().endOf('month');
-    const workdays = [];
-
-    let currentDay = firstDayOfMonth;
-    while (currentDay.isSameOrBefore(lastDayOfMonth)) {
-      if (
-        currentDay.day() !== 0 &&
-        currentDay.day() !== 6 &&
-        constData.findIndex(x => x.isSame(currentDay, 'day')) === -1
-      ) {
-        workdays.push(currentDay.clone());
-      }
-      currentDay.add(1, 'day');
-    }
-
-    return workdays;
+  const getWorkdaysOfMonth = (currentDate = moment(), constData = []) => {
+    let currentDay = currentDate.clone().startOf('month');
+    QueryWeekday({
+      begin: Number(currentDay.format('YYYYMMDD')),
+      days: 31,
+      queryType: 'ALL',
+    })
+      .then(res => {
+        if (res?.success) {
+          let arr = JSON.parse(res.result)
+            .map(x => moment(String(x.GZR)))
+            .filter(x => x.month() === currentDate.month())
+            .filter(x => constData.findIndex(y => y.isSame(x, 'day')) === -1);
+          console.log('🚀 ~ file: index.js:211 ~ getWorkdaysOfMonth', arr);
+          setCurWorkDays(arr);
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('🚀QueryWeekday', e);
+        message.error('工作日查询失败', 1);
+        setIsSpinning(false);
+      });
   };
 
   //无工时 反选
@@ -365,19 +388,25 @@ export default function AttendanceRegister(props) {
           onClick={handleSelecting}
         >
           <div
-            class="ant-fullcalendar-value"
+            className="ant-fullcalendar-value"
             style={{
               textAlign: 'center',
-              color: isInclude(d, data.attendance) || isInclude(d, data.leave) ? '#fff' : '',
-              backgroundColor: isInclude(d, data.attendance)
+              color:
+                isInclude(d, data.attendance) ||
+                isInclude(d, data.leave) ||
+                isInclude(d, otherPrj.one)
+                  ? '#fff'
+                  : '',
+              backgroundColor: isInclude(d, otherPrj.one)
+                ? '#d7d7d7'
+                : isInclude(d, data.attendance)
                 ? '#3361FF'
                 : isInclude(d, data.leave)
                 ? '#FF2F31'
                 : 'unset',
-              // boxShadow: isInclude(d, data.selecting) ? '0 0 0 1px #3361ff' : 'unset',
-              // border: isInclude(d, data.selecting) ? '1px solid #3361ff' : 'unset',
-              // fontWeight: isInclude(d, data.selecting) ? 'bold' : 'unset',
-              backgroundImage: isInclude(d, data.attendanceHalf)
+              backgroundImage: isInclude(d, otherPrj.half)
+                ? 'linear-gradient(to bottom, white 50%, #d7d7d7 50%)'
+                : isInclude(d, data.attendanceHalf)
                 ? 'linear-gradient(to bottom, white 50%, #3361FF 50%)'
                 : isInclude(d, data.leaveHalf)
                 ? 'linear-gradient(to bottom, white 50%, #FF2F31 50%)'
@@ -397,7 +426,7 @@ export default function AttendanceRegister(props) {
               ></div>
             )}
           </div>
-          <div class="ant-fullcalendar-content"></div>
+          <div className="ant-fullcalendar-content"></div>
         </div>
       </Dropdown>
     );
@@ -418,6 +447,10 @@ export default function AttendanceRegister(props) {
               <div className="legend-rec-red"></div>
               请假
             </div>
+            <div className="legend-item">
+              <div className="legend-rec-grey"></div>
+              其他项目
+            </div>
           </div>
         </div>
         <div className="slt-row">
@@ -433,7 +466,7 @@ export default function AttendanceRegister(props) {
                 });
                 // 调用函数获取本月所有工作日的 Moment 对象数组
                 if (e.target.checked) {
-                  setData(p => ({ ...p, selecting: getWorkdaysOfMonth() }));
+                  setData(p => ({ ...p, selecting: curWorkDays }));
                   setDropdownVisible(true);
                 } else {
                   setData(p => ({ ...p, selecting: [] }));
@@ -508,6 +541,20 @@ export default function AttendanceRegister(props) {
     );
   };
 
+  //日期面板变化回调
+  const onPanelChange = date => {
+    getCalendarData(LOGIN_USER_ID, Number(date.format('YYYYMM')), Number(xmid), setIsSpinning);
+    setData(p => ({
+      ...p,
+      selecting: [],
+    }));
+    setFastSlt({
+      workdays: false, //工作日
+      normal: false, //无工时日期
+      reverse: false, //反选
+    });
+  };
+
   return (
     <Modal
       wrapClassName="editMessage-modify attendance-register-modal"
@@ -538,7 +585,11 @@ export default function AttendanceRegister(props) {
         <div className="content">
           <div className="left-calendar">
             <div className="calendar-box">
-              <Calendar fullscreen={false} dateFullCellRender={renderCell} />
+              <Calendar
+                onPanelChange={onPanelChange}
+                fullscreen={false}
+                dateFullCellRender={renderCell}
+              />
             </div>
           </div>
           {getFastSlt()}

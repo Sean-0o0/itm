@@ -20,10 +20,8 @@ export default function IterationContent(props) {
   let timer = null;
 
   useEffect(() => {
-    if (iterationCtn.length > 0) {
-      setDataShow([...iterationCtn.slice(0, 6)]);
-      setIsUnfold(false);
-    }
+    setDataShow([...iterationCtn.slice(0, 6)]);
+    setIsUnfold(false);
     return () => {};
   }, [JSON.stringify(iterationCtn)]);
 
@@ -151,27 +149,29 @@ export default function IterationContent(props) {
           新增升级内容
         </span>
       </div>
-      <div
-        className="content"
-        style={iterationCtn.length === 0 ? { paddingTop: 0, marginBottom: 0 } : {}}
-      >
-        {dataShow.map(x =>
-          getContentItem({
-            date: x.SJRQ,
-            detail: x.SJNR,
-            key: x.ID,
-            times: x.SJCS,
-          }),
-        )}
-        {getAfterItem(itemWidth)}
-        {iterationCtn.length === 0 && (
-          <Empty
-            description="暂无内容"
-            image={Empty.PRESENTED_IMAGE_SIMPLE}
-            style={{ width: '100%' }}
-          />
-        )}
-      </div>
+      {iterationCtn.length !== 0 && (
+        <div
+          className="content"
+          style={iterationCtn.length === 0 ? { paddingTop: 0, marginBottom: 0 } : {}}
+        >
+          {dataShow.map(x =>
+            getContentItem({
+              date: x.SJRQ,
+              detail: x.SJNR,
+              key: x.ID,
+              times: x.SJCS,
+            }),
+          )}
+          {getAfterItem(itemWidth)}
+          {iterationCtn.length === 0 && (
+            <Empty
+              description="暂无内容"
+              image={Empty.PRESENTED_IMAGE_SIMPLE}
+              style={{ width: '100%' }}
+            />
+          )}
+        </div>
+      )}
       {iterationCtn.length > 6 &&
         (isUnfold ? (
           <Fragment>
