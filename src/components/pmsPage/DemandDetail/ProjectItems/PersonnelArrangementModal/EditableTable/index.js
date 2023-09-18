@@ -55,12 +55,6 @@ const EditableCell = props => {
           <Form.Item style={{ margin: 0 }}>
             {formdecorate.getFieldDecorator(recIndex, {
               initialValue: record[recIndex] === -1 ? '' : record[recIndex],
-              rules: [
-                {
-                  required: true,
-                  message: `${title}不能为空`,
-                },
-              ],
             })(
               <Select
                 placeholder="请选择"
