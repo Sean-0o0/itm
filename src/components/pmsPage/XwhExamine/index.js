@@ -7,7 +7,7 @@ import { debounce } from 'lodash';
 
 const { events } = Bridge.constants;
 
-let LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).userid;
+let LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).loginName;
 
 // 信委会议案上会审批
 export default function XwhExamine(props) {
