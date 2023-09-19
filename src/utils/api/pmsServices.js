@@ -793,4 +793,16 @@ export default [
     url: '/projectManage/querySelfDevProjWHstatistics',
     dis: '查询自研项目工时统计',
   },
+  {
+    code: '',
+    key: 'attendanceStatisticExportExcel',
+    url: '/projectManage/attendanceStatisticExportExcel',
+    dis: '导出自研项目考勤统计',
+  },
+  {
+    code: '',
+    key: 'queryLeadApprovalFlow',
+    url: '/projectManage/queryLeadApprovalFlow',
+    dis: '查询待领导审批流程',
+  },
 ];

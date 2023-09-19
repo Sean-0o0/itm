@@ -230,7 +230,8 @@ const PaymentProcess = props => {
           operateType,
           lcid,
           requisitionInfo: glsqData.radioObj?.id,
-          specificationId: DJLX.find(x => x.ibm === getFieldValue('djlx'))?.cbm,
+          // specificationId: DJLX.find(x => x.ibm === getFieldValue('djlx'))?.cbm,
+          specificationId: DJLX.find(x => x.ibm === getFieldValue('djlx'))?.note,
         };
         (isHwPrj || (!isHwPrj && ddcgje !== 0 && fklx === 2)) &&
           (submitData.yjyhtid = String(getFieldValue('glsb')));

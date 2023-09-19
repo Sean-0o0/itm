@@ -140,6 +140,8 @@ const {
     queryUploadRcd,
     feeCalculation,
     querySelfDevProjWHstatistics,
+    attendanceStatisticExportExcel,
+    queryLeadApprovalFlow,
   },
 } = api;
 
@@ -1495,6 +1497,26 @@ export async function FeeCalculation(payload) {
 export async function QuerySelfDevProjWHstatistics(payload) {
   const option = {
     url: querySelfDevProjWHstatistics,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 导出自研项目考勤统计
+export async function AttendanceStatisticExportExcel(payload) {
+  const option = {
+    url: attendanceStatisticExportExcel,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询待领导审批流程
+export async function QueryLeadApprovalFlow(payload) {
+  const option = {
+    url: queryLeadApprovalFlow,
     method: 'post',
     data: payload,
   };

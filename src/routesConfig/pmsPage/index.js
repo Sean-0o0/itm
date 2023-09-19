@@ -314,13 +314,23 @@ exports.routes = [
     component: './pmsPage/ProjectMemberStatisticsInfo',
   },
   {
-    // 项目人员/部门统计
+    // 统计分析 - 预算统计
     path: `${prefix}/BudgetStatistic`,
     component: './pmsPage/BudgetStatistic',
+  },
+  {
+    // 统计分析 - 考勤统计
+    path: `${prefix}/AttendanceStatistic`,
+    component: './pmsPage/AttendanceStatistic',
   },
   {
     // 测试页面
     path: `${prefix}/TestPage`,
     component: './pmsPage/TestPage',
+  },
+  {
+    // 信委会议案上会审批
+    path: `${prefix}/XwhExamine`,
+    component: './pmsPage/XwhExamine',
   },
 ];

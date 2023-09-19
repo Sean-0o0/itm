@@ -68,7 +68,12 @@ export default function DemandDetail(props) {
                           let { XQID, SWLX, SWMC, ZXZT, SWZXID, WBSWID, THRY } = curr;
                           SWLX = WBSWLX?.filter(x => x.ibm === SWLX)[0]?.note ?? SWLX;
                           if (!acc[SWLX]) {
-                            acc[SWLX] = { XQID, WBSWID, SWLX, SXDATA: [{ SWMC, ZXZT, SWZXID, THRY }] };
+                            acc[SWLX] = {
+                              XQID,
+                              WBSWID,
+                              SWLX,
+                              SXDATA: [{ SWMC, ZXZT, SWZXID, THRY }],
+                            };
                           } else {
                             acc[SWLX].SXDATA.push({ SWMC, ZXZT, SWZXID, THRY });
                           }
@@ -108,7 +113,9 @@ export default function DemandDetail(props) {
                           .flat();
                   return {
                     ...item1,
-                    JLDATA: jldata.filter(x => x.JLMC.substring(0, 4) !== '%no%'), //过滤有不分发标记的
+                    JLDATA: jldata
+                      .filter(x => x.JLMC.substring(0, 4) !== '%no%')
+                      .map(x => ({ ...x, JLMC: x.JLMC.substring(6) })), //过滤有不分发标记的
                   };
                 });
                 const zhpc =

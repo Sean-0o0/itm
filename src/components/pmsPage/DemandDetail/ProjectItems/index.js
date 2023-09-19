@@ -111,13 +111,14 @@ export default function ProjectItems(props) {
       // console.log("🚀 ~ file: index.js:115 ~ handleZx ~ xqid:", xqid)
       window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
         JSON.stringify({
-          JLXX: JLXX2,
+          // JLXX: JLXX2,
           xqid,
           XMXX,
           isDock,
           isAuth,
           swzxid: SWZXID,
           routes,
+          fqrid,
         }),
       )}`;
       return;

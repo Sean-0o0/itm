@@ -20,6 +20,8 @@ import {
   ResumeDistribution,
   InsertResumeDownloadRecord,
   QueryResumeDownloadRecords,
+  QueryUserRole,
+  QueryRequirementDetail,
 } from '../../../services/pmsServices';
 import { Link } from 'react-router-dom';
 import ResumeListModal from './ResumeListModal';
@@ -30,11 +32,11 @@ const {
   pmsServices: { queryFileStream, zipLivebosFilesRowsPost },
 } = api;
 const { Item } = Breadcrumb;
-let LOGIN_USER_NAME = JSON.parse(sessionStorage.getItem('user')).name;
+let LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user')).id;
 
 export default function ResumeDistributionPage(props) {
   const { params = {}, routes = [] } = props;
-  const { JLXX = [], xqid, swzxid, reflush, XMXX, isAuth, isDock } = params;
+  const { xqid = -2, fqrid = -1, swzxid, XMXX, isAuth, isDock } = params;
   const [isSpinning, setIsSpinning] = useState(false);
   const [data, setData] = useState([]); //数据
   const [dataShow, setDataShow] = useState([]); //数据展示
@@ -47,52 +49,126 @@ export default function ResumeDistributionPage(props) {
   const [batchDownloadList, setBatchDownloadList] = useState([]); //批量下载选中的数据
   const [downloadedResumeList, setDownloadedResumeList] = useState([]); //已下载的简历数据
   const [listModalVisible, setListModalVisible] = useState(false); //列表弹窗显隐
+  const [JLXX, setJLXX] = useState([]); //JLXX
 
   useEffect(() => {
-    // console.log(JLXX);
-    if (JLXX.length > 0) {
-      // console.log('🚀 ~ file: index.js:41 ~ useEffect ~ JLXX:', JLXX);
-      setActiveKey(JLXX[0].RYXQ);
-      let jlxxdata = JSON.parse(JSON.stringify(JLXX));
-      //处理不分发的前缀标记
-      jlxxdata.forEach(obj => {
-        obj.DATA.forEach(item => {
-          item.JLDATA.forEach(jItem => {
-            if (jItem.JLMC.substring(0, 4) === '%no%') {
-              jItem.destributeCancel = true;
-              jItem.JLMC = jItem.JLMC.substring(4);
-            }
-          });
-        });
-      });
-      // console.log('🚀 ~ file: index.js:54 ~ jlxxdata.forEach ~ jlxxdata:', jlxxdata);
-      setData(JSON.parse(JSON.stringify(jlxxdata)));
-      setUnsavedData([...JSON.parse(JSON.stringify(jlxxdata))]);
-      let arr = JSON.parse(JSON.stringify(jlxxdata));
-      arr.forEach(x => {
-        x.DATA.forEach(y => {
-          y.UNFOLD = false;
-          y.SHOWFOLD = y.JLDATA?.length > 8;
-          if (y.JLDATA?.length > 8) {
-            y.JLDATA = y.JLDATA.slice(0, 8);
-          }
-        });
-      });
-      setDataShow(arr);
-      let total = 0;
-      JLXX.forEach(x => {
-        let total2 = 0;
-        x.DATA.forEach(y => {
-          total2 += y.JLDATA.length;
-        });
-        total += total2;
-      });
-      setJlTotal(total);
+    console.log(xqid, fqrid);
+    if (xqid !== -2 && fqrid !== -2) {
+      getJLXX(Number(xqid), Number(fqrid));
     }
-
-    queryResumeInsertRecords();
     return () => {};
-  }, [JSON.stringify(JLXX)]);
+  }, [xqid, fqrid]);
+
+  //获取简历数据
+  const getJLXX = (xqid, fqrid) => {
+    setIsSpinning(true);
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          QueryRequirementDetail({
+            current: 1,
+            pageSize: 10,
+            paging: -1,
+            sort: '',
+            total: -1,
+            cxlx: 'JLXX',
+            js:
+              res.zyrole === '外包项目对接人'
+                ? res.zyrole
+                : String(LOGIN_USER_ID) === fqrid
+                ? '需求发起人'
+                : res.role,
+            xqid,
+          })
+            .then(res => {
+              if (res.code === 1) {
+                const output = JSON.parse(res.jlxx).reduce((acc, cur) => {
+                  const { RYXQ, RYXQNR, GYSID, GYSMC, JLID, JLMC } = cur;
+                  const jlData = JSON.parse(JLMC).items.map(([entryNo, jlmc]) => ({
+                    JLID,
+                    ENTRYNO: entryNo,
+                    JLMC: jlmc,
+                    NEXTID: JSON.parse(JLMC).nextId,
+                  }));
+                  acc[RYXQ] = acc[RYXQ] || { RYXQ, RYXQNR, DATA: [] };
+                  const ryData = acc[RYXQ].DATA.find(ry => ry.GYSID === GYSID);
+                  if (ryData) {
+                    ryData.JLDATA.push(...jlData);
+                  } else {
+                    acc[RYXQ].DATA.push({
+                      GYSID,
+                      GYSMC,
+                      JLDATA: jlData,
+                    });
+                  }
+                  acc[RYXQ].DATA.sort((a, b) => (a.GYSID > b.GYSID ? 1 : -1));
+                  acc[RYXQ].DATA.forEach(ry =>
+                    ry.JLDATA.sort((a, b) => (a.JLMC > b.JLMC ? 1 : -1)),
+                  );
+                  return acc;
+                }, {});
+
+                const JLXX = Object.values(output).sort((a, b) => (a.RYXQ > b.RYXQ ? 1 : -1));
+                setJLXX(JLXX);
+                if (JLXX.length > 0) {
+                  // console.log('🚀 ~ file: index.js:41 ~ useEffect ~ JLXX:', JLXX);
+                  setActiveKey(JLXX[0].RYXQ);
+                  let jlxxdata = JSON.parse(JSON.stringify(JLXX));
+                  //处理不分发的前缀标记
+                  jlxxdata.forEach(obj => {
+                    obj.DATA.forEach(item => {
+                      item.JLDATA.forEach(jItem => {
+                        if (jItem.JLMC.substring(0, 4) === '%no%') {
+                          jItem.destributeCancel = true; //不分发 - 横杠图标
+                          jItem.JLMC = jItem.JLMC.substring(4);
+                        } else if (jItem.JLMC.substring(0, 6) === '%tick%') {
+                          jItem.destributed = true; //已分发 - 图标边栏
+                          jItem.JLMC = jItem.JLMC.substring(6);
+                        }
+                      });
+                    });
+                  });
+                  console.log('🚀 ~ file: index.js:54 ~ jlxxdata.forEach ~ jlxxdata:', jlxxdata);
+                  setData(JSON.parse(JSON.stringify(jlxxdata)));
+                  setUnsavedData([...JSON.parse(JSON.stringify(jlxxdata))]);
+                  let arr = JSON.parse(JSON.stringify(jlxxdata));
+                  arr.forEach(x => {
+                    x.DATA.forEach(y => {
+                      y.UNFOLD = false;
+                      y.SHOWFOLD = y.JLDATA?.length > 8;
+                      if (y.JLDATA?.length > 8) {
+                        y.JLDATA = y.JLDATA.slice(0, 8);
+                      }
+                    });
+                  });
+                  setDataShow(arr);
+                  let total = 0;
+                  JLXX.forEach(x => {
+                    let total2 = 0;
+                    x.DATA.forEach(y => {
+                      total2 += y.JLDATA.length;
+                    });
+                    total += total2;
+                  });
+                  setJlTotal(total);
+                }
+                queryResumeInsertRecords();
+                setIsSpinning(false);
+              }
+            })
+            .catch(e => {
+              console.error(e);
+              message.error('简历数据获取失败', 1);
+            });
+        }
+      })
+      .catch(e => {
+        console.error('🚀 ~ file: index.js:168 ~ getJLXX ~ e:', e);
+        message.error('用户信息查询失败', 1);
+      });
+  };
 
   // 判断简历是否被下载过
   const isNewResume = x => {
@@ -127,7 +203,7 @@ export default function ResumeDistributionPage(props) {
   };
 
   //分发
-  const handleDestribute = () => {
+  const handleDestribute = (BFF = false) => {
     setIsSpinning(true);
     let arr = data.filter(x => x.RYXQ === activeKey)[0].DATA;
     if (arr.length > 0) {
@@ -144,8 +220,13 @@ export default function ResumeDistributionPage(props) {
             // group already exists
             if (jldata.destributeCancel) {
               groupItem.JLMC.items.push([jldata.ENTRYNO, '%no%' + jldata.JLMC.trim()]);
+            } else if (jldata.destributed) {
+              groupItem.JLMC.items.push([jldata.ENTRYNO, '%tick%' + jldata.JLMC.trim()]);
             } else {
-              groupItem.JLMC.items.push([jldata.ENTRYNO, jldata.JLMC.trim()]);
+              groupItem.JLMC.items.push([
+                jldata.ENTRYNO,
+                (BFF ? '' : '%tick%') + jldata.JLMC.trim(),
+              ]);
             }
           } else {
             // create new group
@@ -158,13 +239,22 @@ export default function ResumeDistributionPage(props) {
                   items: [[jldata.ENTRYNO, '%no%' + jldata.JLMC.trim()]],
                 },
               });
+            } else if (jldata.destributed) {
+              groupedData[JLID].push({
+                JLID,
+                GYSID,
+                JLMC: {
+                  nextId: NEXTID,
+                  items: [[jldata.ENTRYNO, '%tick%' + jldata.JLMC.trim()]],
+                },
+              });
             } else {
               groupedData[JLID].push({
                 JLID,
                 GYSID,
                 JLMC: {
                   nextId: NEXTID,
-                  items: [[jldata.ENTRYNO, jldata.JLMC.trim()]],
+                  items: [[jldata.ENTRYNO, (BFF ? '' : '%tick%') + jldata.JLMC.trim()]],
                 },
               });
             }
@@ -181,16 +271,18 @@ export default function ResumeDistributionPage(props) {
         };
       });
       submitArr2 = submitArr2.concat([...emptyArr]);
-      console.log('🚀 ~ file: index.js:124 ~ handleDestribute ~ submitArr2:', submitArr2);
+      console.log('🚀 ~ handleDestribute ~ submitArr:', submitArr2);
       ResumeDistribution({
         xqid: Number(xqid),
         swzxid: Number(swzxid),
         wjmc: JSON.stringify(submitArr2),
         count: submitArr2.length,
+        czlx: BFF ? 'BFF' : 'FF',
       })
         .then(res => {
           if (res?.success) {
-            message.success('分发成功', 1);
+            getJLXX(Number(xqid), Number(fqrid));
+            !BFF && message.success('分发成功', 1);
             setIsSpinning(false);
           }
         })
@@ -203,20 +295,45 @@ export default function ResumeDistributionPage(props) {
   //展开、收起
   const handleUnfold = (bool, GYSID) => {
     let arr = JSON.parse(JSON.stringify(data));
-    arr.forEach(x => {
+    let arr2 = JSON.parse(JSON.stringify(dataShow));
+    arr2.forEach(x => {
       if (x.RYXQ === activeKey) {
+        console.log(arr.find(m => m.RYXQ === activeKey).DATA.find(n => n.GYSID === GYSID).JLDATA);
         x.DATA.forEach(y => {
           if (y.GYSID === GYSID) {
             y.UNFOLD = bool;
-          }
-          y.SHOWFOLD = y.JLDATA?.length > 8;
-          if (!bool) {
-            y.JLDATA = y.JLDATA.slice(0, 8);
+            const originJLDATA =
+              arr.find(m => m.RYXQ === activeKey).DATA.find(n => n.GYSID === GYSID).JLDATA || [];
+            y.SHOWFOLD = originJLDATA.length > 8;
+            if (!bool) {
+              y.JLDATA = y.JLDATA.slice(0, 8);
+            } else {
+              y.JLDATA = originJLDATA;
+            }
           }
         });
       }
     });
-    setDataShow([...arr]);
+    // arr.forEach(x => {
+    //   if (x.RYXQ === activeKey) {
+    //     x.DATA.forEach(y => {
+    //       if (y.GYSID === GYSID) {
+    //         y.UNFOLD = bool;
+    //         y.SHOWFOLD = y.JLDATA?.length > 8;
+    //         if (!bool) {
+    //           y.JLDATA = y.JLDATA.slice(0, 8);
+    //         }
+    //       } else {
+    //         y.UNFOLD = false;
+    //         y.SHOWFOLD = y.JLDATA?.length > 8;
+    //         if (y.JLDATA?.length > 8) {
+    //           y.JLDATA = y.JLDATA.slice(0, 8);
+    //         }
+    //       }
+    //     });
+    //   }
+    // });
+    setDataShow([...arr2]);
   };
 
   //供应商块
@@ -372,6 +489,7 @@ export default function ResumeDistributionPage(props) {
     };
     //不分发，但暂存
     const handleDestributeCancel = x => {
+      console.log('🚀 ~ file: index.js:407 ~ handleDestributeCancel ~ x:', x);
       let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
       if (arr.length > 0) {
         arr[index].JLDATA.forEach(j => {
@@ -444,7 +562,12 @@ export default function ResumeDistributionPage(props) {
               }
             >
               {!isNewResume(x) && !isDock && <div className="new-demand-exsit">新</div>}
-
+              {editing &&
+                (x.destributeCancel ? (
+                  <i className="iconfont circle-reduce" />
+                ) : (
+                  <i className="iconfont circle-check" />
+                ))}
               {editing ? (
                 <Input
                   defaultValue={x.JLMC}
@@ -460,46 +583,49 @@ export default function ResumeDistributionPage(props) {
                 />
               ) : (
                 <Fragment>
-                  {x.destributeCancel ? (
-                    <i className="iconfont circle-reduce edit-disabled" />
-                  ) : (
-                    <>{isDock ? <i className="iconfont circle-check edit-disabled" /> : null}</>
-                  )}
+                  {isDock ? (
+                    <>
+                      {x.destributeCancel ? (
+                        <i className="iconfont circle-reduce edit-disabled" />
+                      ) : (
+                        <i
+                          className="iconfont circle-check edit-disabled"
+                          style={x.destributed ? { color: '#3361ff' } : {}}
+                        />
+                      )}
+                    </>
+                  ) : null}
                   <Tooltip title={x.JLMC} placement="topLeft">
                     {x.JLMC}
                   </Tooltip>
                 </Fragment>
               )}
               {editing ? (
-                //    <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
-                //    <i className="iconfont delete" />
-                //  </Popconfirm>
-                <Fragment>
-                  {x.destributeCancel ? (
-                    <i className="iconfont circle-add" onClick={() => handleDestributeReback(x)} />
-                  ) : (
-                    <i
-                      className="iconfont circle-reduce"
-                      onClick={() => handleDestributeCancel(x)}
-                    />
-                  )}
-                  <Popover
-                    placement="bottom"
-                    title={null}
-                    trigger="click"
-                    content={
-                      <div className="list">
-                        <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
-                          <div className="item">删除</div>
-                        </Popconfirm>
-                      </div>
-                    }
-                    overlayClassName="btn-more-content-popover"
-                    arrowPointAtCenter
-                  >
-                    <i className="iconfont icon-more2" />
-                  </Popover>
-                </Fragment>
+                <Popover
+                  placement="bottom"
+                  title={null}
+                  trigger="click"
+                  content={
+                    <div className="list">
+                      {x.destributeCancel ? (
+                        <div className="item" onClick={() => handleDestributeReback(x)}>
+                          分发
+                        </div>
+                      ) : (
+                        <div className="item" onClick={() => handleDestributeCancel(x)}>
+                          不分发
+                        </div>
+                      )}
+                      <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
+                        <div className="item">删除</div>
+                      </Popconfirm>
+                    </div>
+                  }
+                  overlayClassName="btn-more-content-popover"
+                  arrowPointAtCenter
+                >
+                  <i className="iconfont icon-more2" />
+                </Popover>
               ) : (
                 <>
                   {batchDownload ? (
@@ -731,6 +857,7 @@ export default function ResumeDistributionPage(props) {
     };
     //取消不分发
     const handleDestributeReback = x => {
+      console.log('🚀 ~ file: index.js:774 ~ handleDestributeReback ~ x:', x);
       let arr = data.filter(x => x.RYXQ === activeKey)[0]?.DATA;
       if (arr.length > 0) {
         arr[index].JLDATA.forEach(j => {
@@ -775,7 +902,12 @@ export default function ResumeDistributionPage(props) {
                 }
               >
                 {!isNewResume(x) && !isDock && <div className="new-demand-exsit">新</div>}
-
+                {editing &&
+                  (x.destributeCancel ? (
+                    <i className="iconfont circle-reduce" />
+                  ) : (
+                    <i className="iconfont circle-check" />
+                  ))}
                 {editing ? (
                   <Input
                     defaultValue={x.JLMC}
@@ -791,55 +923,54 @@ export default function ResumeDistributionPage(props) {
                   />
                 ) : (
                   <Fragment>
-                    {x.destributeCancel ? (
-                      <i className="iconfont circle-reduce edit-disabled" />
-                    ) : (
-                      <>{isDock ? <i className="iconfont circle-check edit-disabled" /> : null}</>
-                    )}
+                    {isDock ? (
+                      <>
+                        {x.destributeCancel ? (
+                          <i className="iconfont circle-reduce edit-disabled" />
+                        ) : (
+                          <i
+                            className="iconfont circle-check edit-disabled"
+                            style={x.destributed ? { color: '#3361ff' } : {}}
+                          />
+                        )}
+                      </>
+                    ) : null}
                     <Tooltip title={x.JLMC} placement="topLeft">
                       {x.JLMC}
                     </Tooltip>
                   </Fragment>
                 )}
                 {editing ? (
-                  //    <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
-                  //    <i className="iconfont delete" />
-                  //  </Popconfirm>
-                  <Fragment>
-                    {x.destributeCancel ? (
-                      <i
-                        className="iconfont circle-add"
-                        onClick={() => handleDestributeReback(x)}
-                      />
-                    ) : (
-                      <i
-                        className="iconfont circle-reduce"
-                        onClick={() => handleDestributeCancel(x)}
-                      />
-                    )}
-                    <Popover
-                      placement="bottom"
-                      title={null}
-                      trigger="click"
-                      content={
-                        <div className="list">
-                          <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
-                            <div className="item">删除</div>
-                          </Popconfirm>
-                        </div>
-                      }
-                      overlayClassName="btn-more-content-popover"
-                      arrowPointAtCenter
-                    >
-                      <i className="iconfont icon-more2" />
-                    </Popover>
-                  </Fragment>
+                  <Popover
+                    placement="bottom"
+                    title={null}
+                    trigger="click"
+                    content={
+                      <div className="list">
+                        {x.destributeCancel ? (
+                          <div className="item" onClick={() => handleDestributeReback(x)}>
+                            分发
+                          </div>
+                        ) : (
+                          <div className="item" onClick={() => handleDestributeCancel(x)}>
+                            不分发
+                          </div>
+                        )}
+                        <Popconfirm title="确定要删除该简历吗?" onConfirm={() => handleDelete(x)}>
+                          <div className="item">删除</div>
+                        </Popconfirm>
+                      </div>
+                    }
+                    overlayClassName="btn-more-content-popover"
+                    arrowPointAtCenter
+                  >
+                    <i className="iconfont icon-more2" />
+                  </Popover>
                 ) : (
                   <>
                     {batchDownload ? (
                       <Checkbox
                         style={{ marginTop: '3px' }}
-                        // value={}
                         onChange={e => {
                           if (e.target.checked) {
                             // 选中了
@@ -919,6 +1050,7 @@ export default function ResumeDistributionPage(props) {
     });
     setDataShow(arrShow);
     setEditing(false);
+    handleDestribute(true); //不分发，保存数据
     message.success('保存成功', 1);
   };
 
@@ -1029,7 +1161,7 @@ export default function ResumeDistributionPage(props) {
 
   const handleSelectAll = () => {
     const allData =
-      dataShow
+      data
         .filter(x => x.RYXQ === activeKey)[0]
         ?.DATA.reduce((acc, cur) => [...acc, ...cur.JLDATA], []) || [];
     operateBatchDownload(allData);
@@ -1080,7 +1212,7 @@ export default function ResumeDistributionPage(props) {
               <>
                 {!batchDownload && !(isAuth && !isDock) && (
                   <>
-                    <Popconfirm title="确认要分发吗？" onConfirm={handleDestribute}>
+                    <Popconfirm title="确认要分发吗？" onConfirm={() => handleDestribute(false)}>
                       <Button className="btn-opr">分发</Button>
                     </Popconfirm>
                     <Button className="btn-opr" onClick={handleModify}>

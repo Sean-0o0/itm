@@ -148,6 +148,8 @@ function VisitedRoutes(props) {
       /^\/pms\/manage\/CustomReportDetail/,
       /^\/pms\/manage\/CustomReportInfo/,
       /^\/pms\/manage\/BudgetStatistic/,
+      /^\/pms\/manage\/AttendanceStatistic/,
+      /^\/pms\/manage\/XwhExamine/,
     ];
     regExpArr.forEach(regExp => {
       matchFilter(regExp);
@@ -278,6 +280,14 @@ function VisitedRoutes(props) {
               {
                 title: '预算统计',
                 urlEnd: 'BudgetStatistic',
+              },
+              {
+                title: '考勤统计',
+                urlEnd: 'AttendanceStatistic',
+              },
+              {
+                title: '信委会议案上会审批',
+                urlEnd: 'XwhExamine',
               },
             ];
             urlEndArr.forEach(x => {
