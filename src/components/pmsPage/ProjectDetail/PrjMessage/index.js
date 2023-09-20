@@ -12,7 +12,7 @@ export default function PrjMessage(props) {
   const [newMsg, setNewMsg] = useState(false); //是否位新增留言
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [updatePage, setUpdatePage] = useState(-1); //刷新数据
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const { xmid, msgData = [], setMsgData } = props;
   const nodeArr = document.getElementsByClassName('content msg-node');
   //防抖定时器

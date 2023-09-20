@@ -4,7 +4,7 @@ import { EncryptBase64 } from '../../../Common/Encrypt';
 import { Link } from 'react-router-dom';
 import { useLocation } from 'react-router';
 import moment from 'moment';
-import { QueryUserRole } from '../../../../services/pmsServices';
+import { CopyCustomReport, QueryUserRole } from '../../../../services/pmsServices';
 
 export default function InfoTable(props) {
   const {
@@ -15,13 +15,15 @@ export default function InfoTable(props) {
     getSQL = () => {},
     data,
     routes,
+    bbid,
+    setIsSpinning,
   } = props; //表格数据
   const location = useLocation();
   const [tableColumns, setTableColumns] = useState([]); //处理过的列配置信息
 
   useEffect(() => {
     if (columns.length > 0) {
-      const LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+      let LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
       LOGIN_USERID &&
         QueryUserRole({
           userId: LOGIN_USERID,
@@ -313,9 +315,36 @@ export default function InfoTable(props) {
     return;
   };
 
+  //复制自定义报告
+  const handleCopy = () => {
+    setIsSpinning(true);
+    CopyCustomReport({
+      reportId: Number(bbid),
+    })
+      .then(res => {
+        if (res?.success) {
+          message.success('操作成功', 1);
+          setIsSpinning(false);
+        }
+      })
+      .catch(e => {
+        console.error('🚀复制自定义报告', e);
+        message.error('操作失败', 1);
+        setIsSpinning(false);
+      });
+  };
+
   return (
     <div className="info-table">
       <div className="btn-export-box">
+        <Button
+          type="primary"
+          className="btn-export"
+          style={{ marginRight: 8 }}
+          onClick={handleCopy}
+        >
+          保存至我的
+        </Button>
         <Button type="primary" className="btn-export" onClick={handleExport}>
           导出
         </Button>

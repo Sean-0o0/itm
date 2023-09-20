@@ -54,7 +54,7 @@ function ExpenseCalucationModal(props) {
   const [showAdd, setShowAdd] = useState(false); //是否允许新增
   const [tableOriginData, setTableOriginData] = useState([]); //用来最后获取校验用的人员数据
   const [checkQuarter, setCheckQuarter] = useState('第一季度'); //用来最后获取校验用的
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     getSelectorData();

@@ -26,7 +26,7 @@ export default function InfoDisplay(props) {
     supplier = [],
     member = [],
   } = prjData;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   //liveBos弹窗配置
   const [lbModal, setLbModal] = useState({
     url: '#',
@@ -87,10 +87,7 @@ export default function InfoDisplay(props) {
 
   //是否为项目成员或领导
   const isMember = () => {
-    const arr = [];
-    member.forEach(x => {
-      arr.push(x.RYID);
-    });
+    const arr = member.map(x => x.RYID && x.RYZT === '1');
     return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 

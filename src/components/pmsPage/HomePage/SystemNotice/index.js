@@ -9,7 +9,6 @@ export default function SystemNotice(props) {
   const { noticeData = [], setNoticeData } = props;
   const [modalVisible, setModalVisible] = useState(false); //弹窗需要
   const location = useLocation();
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     const nodeArr = document.querySelectorAll('.notice-item, .notice-item-unclick > .item-title');

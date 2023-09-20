@@ -32,7 +32,7 @@ const TableBox = props => {
   const [editingIndex, setEditingIndex] = useState(-1); //编辑
   const [editData, setEditData] = useState([]); //编辑数据
   const [dltData, setDltData] = useState([]); //删除行id
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   //管理员、填写人可以编辑
   const allowEdit =

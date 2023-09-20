@@ -38,7 +38,7 @@ export default function InfoTable(props) {
   const [currentXqid, setCurrentXqid] = useState(-1); //详情id
   const [currentXmid, setCurrentXmid] = useState(-1); //项目id
   const [currentXmmc, setCurrentXmmc] = useState(''); //项目名称
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
   const [sendMailVisible, setSendMailVisible] = useState(false); //发送邮件
 

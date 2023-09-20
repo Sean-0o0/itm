@@ -31,7 +31,7 @@ function InterviewScoreModal(props) {
   const [editData, setEditData] = useState([]); //提交的修改数据
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
-  const LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
+  let LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user'))?.id;
 
   useEffect(() => {
     if (xqid !== -2) {

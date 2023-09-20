@@ -11,7 +11,7 @@ const {
 export default function ResumeInfo(props) {
   const { dtlData = {}, isAuth, setIsSpinning } = props;
   const { JLXX = [], XMXX = {} } = dtlData;
-  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   useEffect(() => {
     return () => {};
   }, []);

@@ -18,7 +18,7 @@ function ExpenseExportModal(props) {
   const [isSpinning, setIsSpinning] = useState(false);
   const [dateRange, setDateRange] = useState(quarterData[0]?.range); //开始结束月份
   const [checkQuarter, setCheckQuarter] = useState('第一季度'); //用来最后获取校验用的
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     getSelectorData();

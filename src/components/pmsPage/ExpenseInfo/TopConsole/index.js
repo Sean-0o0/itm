@@ -34,7 +34,7 @@ export default forwardRef(function TopConsole(props, ref) {
     xmid,
     quarterData,
   } = props;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     // console.log(

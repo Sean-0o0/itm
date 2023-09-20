@@ -27,7 +27,6 @@ export default function TopConsole(props) {
 
   //查询的值
 
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   const handleReset = () => {
     // console.log('kkkk');

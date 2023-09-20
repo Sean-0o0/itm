@@ -15,7 +15,6 @@ export default function CptBudgetCard(props) {
     boxShadow = '',
   } = props;
   const location = useLocation();
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   // const getBudgetItem = ({
   //   title = '--',

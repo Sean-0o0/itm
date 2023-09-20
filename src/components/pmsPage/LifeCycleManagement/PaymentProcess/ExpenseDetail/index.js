@@ -25,8 +25,6 @@ import moment from 'moment';
 import AddExpense from './AddExpense';
 const { Option } = Select;
 
-const LOGIN_USER_ID = localStorage.getItem('firstUserID');
-
 const ExpenseDetail = props => {
   const {
     currentXmid,

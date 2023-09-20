@@ -37,7 +37,7 @@ export default function ProjectDetail(props) {
   const { HJRYDJ = [], ZSCQLX = [], RYGW = [], CGFS = [], ZYXMKQLX = [] } = dictionary; //获奖等级、知识产权类型、岗位、招采方式
   // console.log('🚀 ~ file: index.js:37 ~ ProjectDetail ~ ZYXMKQLX:', ZYXMKQLX);
   const [isLeader, setIsLeader] = useState(false); //判断用户是否为领导 - 权限控制
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isHwPrj, setIsHwPrj] = useState(false); //是否包含硬件
   const [isHwSltPrj, setIsHwSltPrj] = useState(false); //是否为硬件入围类型
   const [XMLX, setXMLX] = useState([]); //项目类型

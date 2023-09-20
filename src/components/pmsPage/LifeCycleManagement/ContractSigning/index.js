@@ -363,7 +363,7 @@ class ContractSigning extends React.Component {
       xmbh,
       dictionary: { LCJJCD = [], YZLX = [], CXBM = [] },
     } = this.props;
-    const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+    let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
     const basicFormItemLayout = {
       labelCol: {

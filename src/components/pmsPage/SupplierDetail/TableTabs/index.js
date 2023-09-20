@@ -18,7 +18,7 @@ export default function TableTabs(props) {
   const [curSort, setCurSort] = useState('XMID DESC'); //分页排序
   const [total, setTotal] = useState(0); //数据总量
   const [curTab, setCurTab] = useState('CGXM'); //当前tab
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
 
   // useEffect(() => {

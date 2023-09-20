@@ -33,7 +33,7 @@ export default forwardRef(function TopConsole(props, ref) {
     getSubTableData,
     setExpandedRowKeys,
   } = props;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   useEffect(() => {
     getFilterData();

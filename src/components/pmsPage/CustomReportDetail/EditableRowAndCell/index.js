@@ -18,7 +18,7 @@ const EditableFormRow = Form.create()(EditableRow);
 const EditableCell = props => {
   const [edited, setEdited] = useState(false);
   const targetNode = useRef(null);
-  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const {
     editable,
     dataIndex,

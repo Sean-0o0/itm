@@ -16,7 +16,7 @@ function getUUID() {
 export default function DemandInfo(props) {
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [total, setTotal] = useState(0); //数据总数
   const [curPage, setCurPage] = useState(1); //当前页码
   const [curPageSize, setCurPageSize] = useState(20); //每页数量

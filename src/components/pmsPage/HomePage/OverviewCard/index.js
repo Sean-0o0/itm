@@ -32,7 +32,7 @@ export default function OverviewCard(props) {
     handleCurYearChange,
     componentType = 'default', // 'shortcut'
   } = props;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
   const { WBRYGW } = dictionary;
   const [paymentModalVisible, setPaymentModalVisible] = useState(false); //付款流程发起弹窗

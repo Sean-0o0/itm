@@ -12,7 +12,7 @@ import { Link } from 'react-router-dom';
 
 export default function SupplierSituation(props) {
   const { dictionary = [], routes = [] } = props;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const { GYSLX, WBRYGW } = dictionary;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [tableData, setTableData] = useState([]); //表格数据-项目列表
@@ -71,7 +71,7 @@ export default function SupplierSituation(props) {
   //获取报表格数据
   const getTableData = ({ role, queryType = 'MX_ALL', current = 1, pageSize = 10 }) => {
     setTableLoading(true);
-    
+
     QuerySupplierOverviewInfo({
       org: Number(LOGIN_USER_INFO.org),
       queryType,

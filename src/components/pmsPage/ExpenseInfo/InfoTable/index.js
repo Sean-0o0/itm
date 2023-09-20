@@ -46,7 +46,7 @@ export default function InfoTable(props) {
     // export: false, //导出
   }); //弹窗显隐
   const [expandedRowKeys, setExpandedRowKeys] = useState([]); //默认展开行
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [isDock, setIsDock] = useState(false); //是否为外包项目对接人 - 权限控制
   const [userRole, setUserRole] = useState('普通人员'); //
   const [exporting, setExporting] = useState(false); //导出状态，出现单选

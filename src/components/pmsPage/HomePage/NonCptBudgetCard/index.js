@@ -16,7 +16,6 @@ export default function NonCptBudgetCard(props) {
     boxShadow = ''
   } = props;
   const location = useLocation();
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   const getBudgetItem = ({
                            title = '--',

@@ -38,7 +38,7 @@ export default function MileStone(props) {
   const [riskUrl, setRiskUrl] = useState(''); //风险弹窗
   const [riskVisible, setRiskVisible] = useState(false); //风险弹窗
   const [riskTxt, setRiskTxt] = useState(''); //风险弹窗
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
 
   //防抖定时器
@@ -423,10 +423,7 @@ export default function MileStone(props) {
 
   //是否成员或领导
   const isMember = () => {
-    const arr = [];
-    member.forEach(x => {
-      arr.push(x.RYID);
-    });
+    const arr = member.map(x => x.RYID && x.RYZT === '1');
     return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 

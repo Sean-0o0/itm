@@ -16,7 +16,7 @@ export default function CustomReportDetail(props) {
   const [edited, setEdited] = useState(false);
   const [monthData, setMonthData] = useState(null); //月份下拉框数据
   const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
 
   useEffect(() => {
     if (bgid !== -2 && LOGIN_USER_ID !== undefined) {

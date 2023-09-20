@@ -21,27 +21,23 @@ const { api } = config;
 const {
   pmsServices: { queryFileStream },
 } = api;
-const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
-let LOGIN_USER_NAME = LOGIN_USER_INFO.name; //用const的话数据不会主动刷新
-let LOGIN_USER_ID = String(LOGIN_USER_INFO.id); //用const的话数据不会主动刷新
 
 export default function PrjDoc(props) {
   const { prjDocData = {}, getPrjDocData, setPrjDocData, prjData = {}, isLeader } = props;
-
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_NAME = LOGIN_USER_INFO.name; //定义在方法外 或 使用const定义在方法内，均不会即时刷新数据
+  let LOGIN_USER_ID = String(LOGIN_USER_INFO.id); //定义在方法外 或 使用const定义在方法内，均不会即时刷新数据
+  
   useEffect(() => {
     return () => {};
   }, []);
 
   //允许下载
-  const allowDownload = useCallback(
-    () => {
-      const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
-      // console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
-      return arr.includes(LOGIN_USER_ID) || isLeader;
-    },
-    [isLeader, JSON.stringify(prjData.member ?? [])],
-    prjData.member,
-  );
+  const allowDownload = () => {
+    const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
+    console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
+    return arr.includes(LOGIN_USER_ID) || isLeader;
+  };
 
   //里程碑下拉菜单
   const lcbContent = () => {
@@ -118,6 +114,7 @@ export default function PrjDoc(props) {
     })
       .then(res => {
         const href = URL.createObjectURL(res.data);
+        console.log('🚀 ~ file: index.js:121 ~ handleFilePreview ~ res.data:', res.data);
         const a = document.createElement('a');
         a.download = fileName;
         a.href = href;

@@ -56,6 +56,8 @@ const PaymentProcess = props => {
     radioObj: undefined,
     radioValue: undefined,
   }); //关联申请数据
+  let LOGIN_USER = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_ORG_ID = LOGIN_USER.org;
 
   const {
     paymentModalVisible,
@@ -340,8 +342,7 @@ const PaymentProcess = props => {
     footer: null,
   };
 
-  const LOGIN_USER = JSON.parse(sessionStorage.getItem('user'));
-  const LOGIN_USER_ORG_ID = LOGIN_USER.org;
+  
 
   return (
     <>

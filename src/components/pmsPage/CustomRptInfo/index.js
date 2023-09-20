@@ -348,7 +348,7 @@ export default function CustomRptInfo(props) {
     })
       .then(res => {
         if (res?.success) {
-          const LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+          let LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
           LOGIN_USERID &&
             QueryUserRole({
               userId: LOGIN_USERID,
@@ -462,6 +462,8 @@ export default function CustomRptInfo(props) {
           handleExport={handleExport}
           exportExcelFile={exportExcelFile}
           routes={routes}
+          bbid={bbid}
+          setIsSpinning={setIsSpinning}
         />
       </div>
     </div>

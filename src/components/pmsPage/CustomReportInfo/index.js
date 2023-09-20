@@ -22,7 +22,7 @@ export default function CustomReportInfo(props) {
   }); //报告名称下拉框数据
   const [tableLoading, setTableLoading] = useState(false); //表格加载状态
   const [isAdministrator, setIsAdministrator] = useState(false); //是否管理员
-  const LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
   const { dictionary = {} } = props;
   const { BGLX, ZDYBGMB } = dictionary;
 

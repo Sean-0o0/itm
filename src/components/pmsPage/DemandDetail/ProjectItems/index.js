@@ -35,13 +35,12 @@ export default function ProjectItems(props) {
     XQSX = [],
     FKTX = {},
     JLXX = [],
-    JLXX2 = [],
     ZHPC = [],
     XQNR = [],
     XMXX = {},
     XQSX_ORIGIN = [],
   } = dtlData;
-  const LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
+  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
   const [modalVisible, setModalVisible] = useState({
     demandInitiation: false,
     msgConfirmation: false,
@@ -976,10 +975,11 @@ export default function ProjectItems(props) {
           }}
           XQNR={XQNR}
           xqid={xqid}
+          fqrid={fqrid}
           swzxid={swzxid}
           reflush={reflush}
           update={modalVisible.personelArrangementUpdate}
-          ZHPC={ZHPC}
+          // ZHPC={ZHPC}
           isDock={isDock}
         />
       )}

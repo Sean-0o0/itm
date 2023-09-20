@@ -31,7 +31,7 @@ export default function ToDoCard(props) {
   const [projectCode, setProjectCode] = useState('-1'); //当前项目编号
   const [isHwPrj, setIsHwPrj] = useState(false); //是否硬件入围 - 优先判断是否硬件入围
   const [ddcgje, setDdcgje] = useState(undefined); //单独采购金额
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
   const [allToDo, setAllToDo] = useState([]); //全部待办

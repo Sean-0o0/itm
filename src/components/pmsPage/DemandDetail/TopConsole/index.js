@@ -16,7 +16,6 @@ export default function TopConsole(props) {
   const [sqModaltxt, setSqModaltxt] = useState('');
   const [dmInitiatedVisible, setDmInitiatedVisible] = useState(false); //
   const { XMXX = {}, XQXQ = [] } = dtlData;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
 
   //获取项目标签
   const getTags = (text = '', idtxt = '') => {

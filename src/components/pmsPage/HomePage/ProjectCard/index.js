@@ -19,7 +19,7 @@ export default function ProjectCard(props) {
     placement,
     setPlacement,
   } = props;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [infoList, setInfoList] = useState([]); //项目信息 - 展示
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
