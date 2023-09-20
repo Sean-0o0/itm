@@ -35,7 +35,7 @@ export default function PrjDoc(props) {
   //允许下载
   const allowDownload = () => {
     const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
-    console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
+    // console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
     return arr.includes(LOGIN_USER_ID) || isLeader;
   };
 

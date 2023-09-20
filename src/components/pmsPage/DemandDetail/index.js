@@ -266,7 +266,7 @@ export default function DemandDetail(props) {
         />
 
         <EmploymentInfo dtlData={dtlData} isAuth={isAuth} setIsSpinning={setIsSpinning} />
-        <ResumeInfo dtlData={dtlData} isAuth={isDock} setIsSpinning={setIsSpinning} />
+        <ResumeInfo dtlData={dtlData} isDock={isDock} setIsSpinning={setIsSpinning} />
       </div>
     </Spin>
   );

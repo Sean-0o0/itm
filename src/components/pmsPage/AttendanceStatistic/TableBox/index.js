@@ -183,12 +183,12 @@ const TableBox = props => {
           },
           {
             title: '出勤天数（不含加班）',
-            dataIndex: 'XQTS',
+            dataIndex: 'CQTS',
             width: 180,
             align: 'right',
-            key: 'XQTS',
+            key: 'CQTS',
             ellipsis: true,
-            sorter: (a, b) => Number(a.XQTS || 0) - Number(b.XQTS || 0),
+            sorter: (a, b) => Number(a.CQTS || 0) - Number(b.CQTS || 0),
             sortDirections: ['descend', 'ascend'],
           },
           {
@@ -205,12 +205,12 @@ const TableBox = props => {
       }
     }
     return () => {};
-  }, [activeKey]);
+  }, [activeKey, JSON.stringify(filterData)]);
 
   const getDate = (year, month) => {
-    const startDate = moment({ year, month: month - 1, day: 1 });
+    //month，0表示1月
+    const startDate = moment({ year, month, day: 1 });
     const endDate = moment(startDate).endOf('month');
-
     const result = [];
 
     while (startDate.isSameOrBefore(endDate)) {
@@ -364,7 +364,7 @@ const TableBox = props => {
           this.inSertHistorySingle(wdid);
         })
         .catch(err => {
-          console.error('🚀导出数据', e);
+          console.error('🚀导出数据', err);
           message.error('导出数据获取失败', 1);
         });
     } else {
@@ -442,9 +442,6 @@ const TableBox = props => {
             rowKey={'RYID'}
             dataSource={tableData}
             pagination={false}
-            scroll={{
-              x: 1690,
-            }}
             bordered //记得注释
           />
           {tableFooter(summaryData)}

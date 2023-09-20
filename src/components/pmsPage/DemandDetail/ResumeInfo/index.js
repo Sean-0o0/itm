@@ -9,15 +9,20 @@ const {
 } = api;
 
 export default function ResumeInfo(props) {
-  const { dtlData = {}, isAuth, setIsSpinning } = props;
-  const { JLXX = [], XMXX = {} } = dtlData;
-  let LOGIN_USER_ID = String(JSON.parse(sessionStorage.getItem('user'))?.id);
-  useEffect(() => {
-    return () => {};
-  }, []);
+  const { dtlData = {}, isDock, setIsSpinning } = props;
+  const { JLXX = [] } = dtlData;
 
   //供应商块
   const getSplierItem = (label = '--', num = '--', arr = []) => {
+    //展示全部简历（包括不分发的），处理前缀
+    const getJLMC = (str = '') => {
+      if (str.substring(0, 4) === '%no%') {
+        return str.substring(4);
+      } else if (str.substring(0, 6) === '%tick%') {
+        return str.substring(6);
+      }
+      return str;
+    };
     const handleFilePreview = (id, fileName, entryno) => {
       setIsSpinning(true);
       axios({
@@ -52,10 +57,12 @@ export default function ResumeInfo(props) {
         {data.map(x => (
           <div
             className="item"
-            key={x.JLID}
+            key={x.JLID + x.JLMC + x.ENTRYNO}
             onClick={() => handleFilePreview(x.JLID, x.JLMC, x.ENTRYNO)}
           >
-            <a style={{ color: '#3361ff' }}>{x.JLMC}</a>
+            <Tooltip title={getJLMC(x.JLMC)} placement="topLeft">
+              <a style={{ color: '#3361ff' }}>{getJLMC(x.JLMC)}</a>
+            </Tooltip>
           </div>
         ))}
       </div>
@@ -88,7 +95,8 @@ export default function ResumeInfo(props) {
     return arr.map((x, k) => <i key={k} style={{ width }} />);
   };
 
-  if (JLXX.length === 0 || !isAuth || XMXX.XMJLID === LOGIN_USER_ID) return null;
+  //只有对接人、有数据时显示
+  if (JLXX.length === 0 || !isDock) return null;
   return (
     <div className="resume-info-box info-box">
       <div className="title">简历信息</div>

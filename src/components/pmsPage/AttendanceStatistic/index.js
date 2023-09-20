@@ -58,7 +58,7 @@ export default function AttendanceStatistic(props) {
           setTableData(
             queryType === 'KQTJ' ? JSON.parse(res.statisticsResult) : JSON.parse(res.summaryResult),
           );
-          querySummaryData(queryType, projectId);
+          querySummaryData(queryType, projectId, year, month);
         }
       })
       .catch(e => {
@@ -72,16 +72,16 @@ export default function AttendanceStatistic(props) {
   };
 
   //合计数据
-  const querySummaryData = (queryType = activeKey, projectId = filterData.prjId) => {
+  const querySummaryData = (queryType = activeKey, projectId = filterData.prjId, year, month) => {
     let params = {
       presentType: 'HJ',
       projectId,
       queryType,
     };
     if (queryType === 'KQTJ') {
-      params.year = filterData.year?.year();
+      params.year = year || filterData.year?.year();
     } else {
-      params.month = Number(filterData.month?.format('YYYYMM'));
+      params.month = month || Number(filterData.month?.format('YYYYMM'));
     }
     //合计数据
     QuerySelfDevProjWHstatistics(params)
@@ -147,7 +147,7 @@ export default function AttendanceStatistic(props) {
   };
 
   const handleTabsChange = key => {
-    queryTableData({queryType: key});
+    queryTableData({ queryType: key });
     setActiveKey(key);
   };
 
@@ -170,7 +170,7 @@ export default function AttendanceStatistic(props) {
           </Tabs>
         </div>
         <TableBox
-          dataProps={{ tableData, filterData,  activeKey, summaryData }}
+          dataProps={{ tableData, filterData, activeKey, summaryData }}
           funcProps={{ setFilterData, queryTableData }}
         />
       </Spin>

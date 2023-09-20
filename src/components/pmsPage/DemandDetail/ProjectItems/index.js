@@ -981,6 +981,7 @@ export default function ProjectItems(props) {
           update={modalVisible.personelArrangementUpdate}
           // ZHPC={ZHPC}
           isDock={isDock}
+          WBRYGW={WBRYGW}
         />
       )}
 

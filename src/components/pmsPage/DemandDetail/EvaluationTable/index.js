@@ -10,7 +10,7 @@ export default function EvaluationTable(props) {
   const { dtlData = {}, dictionary = {}, isAuth = false, xqid, getDtldata, fqrid, isDock } = props;
   const [modalVisible, setModalVisible] = useState(false); //更多操作弹窗显隐
   const { ZHPC = [], XQSX_ORIGIN = [] } = dtlData;
-  const { DFZT, LYZT } = dictionary;
+  const { DFZT = [], LYZT = [], WBRYGW = [] } = dictionary;
   const location = useLocation();
 
   useEffect(() => {
@@ -132,7 +132,7 @@ export default function EvaluationTable(props) {
       ellipsis: true,
       render: txt => {
         let timeRange = txt.split('-');
-        let showTxt = timeRange[0] + "-" + moment(timeRange[1], 'YYYY/MM/DD HH:mm').format("HH:mm");
+        let showTxt = timeRange[0] + '-' + moment(timeRange[1], 'YYYY/MM/DD HH:mm').format('HH:mm');
         return (
           <Tooltip title={showTxt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
             <span style={{ cursor: 'default' }}>{showTxt}</span>
@@ -191,7 +191,6 @@ export default function EvaluationTable(props) {
           visible={modalVisible}
           setVisible={setModalVisible}
           data={{
-            tableData: ZHPC,
             DFZT,
             LYZT,
             xqid,
@@ -202,6 +201,7 @@ export default function EvaluationTable(props) {
             swzxid_email: XQSX_ORIGIN.filter(x => x.SWMC === '发送确认邮件')[0]?.SWZXID,
             isDock,
             fqrid,
+            WBRYGW,
           }}
           tableColumns={columns}
         />

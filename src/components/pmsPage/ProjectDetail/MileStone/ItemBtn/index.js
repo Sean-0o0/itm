@@ -8,7 +8,7 @@ import {
   RemindSubProjectFinish,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
-import { message, Popover, Modal, Spin, Tooltip, Empty } from 'antd';
+import { message, Popover, Modal, Spin, Tooltip, Empty, Icon } from 'antd';
 import config from '../../../../../utils/config';
 import axios from 'axios';
 import BidInfoUpdate from '../../../LifeCycleManagement/BidInfoUpdate';
@@ -22,6 +22,7 @@ import AgreementEnterModel from '../../../HardwareItems/AgreementEnterModel';
 import PollResultEnterModel from '../../../HardwareItems/PollResultEnterModel';
 import DemandInitiated from '../../../HardwareItems/DemandInitiated';
 import EditBidInfoModel from '../../../HardwareItems/EditBidInfoModel';
+import IterationContrast from './IterationContrast';
 
 const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
 
@@ -72,6 +73,11 @@ class ItemBtn extends React.Component {
     oackzttxVisible: false, //oa流程查看-异常填写弹窗
     oackzttxPopoverVisible: false, //oa流程查看-Popover弹窗
     fklcPopoverVisible: false, //oa流程查看-Popover弹窗
+    ddhtxxlr: {
+      visible: false, //弹窗显隐
+      xmid: -1,
+      type: 'ADD',
+    }, //迭代合同信息录入弹窗
   };
   // timer = null;
 
@@ -457,6 +463,33 @@ class ItemBtn extends React.Component {
 
     return (
       <div className="opr-btn" onClick={() => lrxg(item, isBid, 'ADD')}>
+        录入
+      </div>
+    );
+  };
+
+  //迭代合同信息录入
+  getDdhtxxlr = (done, item) => {
+    const xxlrxg = (item, type = 'ADD') => {
+      this.setState({
+        ddhtxxlr: {
+          ...this.state.ddhtxxlr,
+          xmid: item.xmid,
+          visible: true,
+          type,
+        },
+      });
+    };
+    if (done)
+      return (
+        <div className="opr-more">
+          <div className="reopr-btn" onClick={() => xxlrxg(item, 'UPDATE')}>
+            修改
+          </div>
+        </div>
+      );
+    return (
+      <div className="opr-btn" onClick={() => xxlrxg(item)}>
         录入
       </div>
     );
@@ -1014,6 +1047,12 @@ class ItemBtn extends React.Component {
                 </Tooltip>
                 <div className="opr-btn" onClick={() => zttx(x.url?.lcid, x.url?.lclx)}>
                   异常填写
+                  <Tooltip
+                    title="当OA流程异常时，请补充填写流程异常原因。"
+                    overlayStyle={{ maxWidth: 'unset' }}
+                  >
+                    <Icon type="question-circle-o" style={{ marginLeft: 4 }} />
+                  </Tooltip>
                 </div>
               </div>
             ))}
@@ -1129,6 +1168,8 @@ class ItemBtn extends React.Component {
           return that.getYjxxlr(done, item, false);
         case '询比结果录入':
           return that.getXbjglr(done, item);
+        case '迭代合同信息录入':
+          return that.getDdhtxxlr(done, item);
 
         //文档上传
         case '总办会会议纪要':
@@ -1239,6 +1280,7 @@ class ItemBtn extends React.Component {
     if (isLeader && !isMnger) {
       //领导权限
       if (!done) return '';
+      if (item.sxmc === '信委会议案流程') return '';
       return someAuth();
     } else if (isFXMJL && !isMnger) {
       //副项目经理权限
@@ -1296,6 +1338,7 @@ class ItemBtn extends React.Component {
       xbjglrModalVisible,
       xqfqModalVisible,
       oackzttxVisible,
+      ddhtxxlr,
     } = this.state;
     const { item, xmmc, xmbh, isHwSltPrj, auth = {} } = this.props;
     // console.log('🚀 ~ file: index.js:1005 ~ ItemBtn ~ render ~ item:', item);
@@ -1627,6 +1670,13 @@ class ItemBtn extends React.Component {
             onSuccess={() => this.onSuccess('信息修改')}
           ></BidInfoUpdate>
         )}
+        <IterationContrast
+          dataProps={{ modalData: ddhtxxlr }}
+          funcProps={{
+            setModalData: v => this.setState({ ddhtxxlr: v }),
+            refresh: this.props.refresh,
+          }}
+        />
         <iframe src={src} id="Iframe" style={{ display: 'none' }} />
       </>
     );

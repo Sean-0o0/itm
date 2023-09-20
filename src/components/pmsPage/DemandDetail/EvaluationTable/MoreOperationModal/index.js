@@ -6,6 +6,8 @@ import {
   CreateOperateHyperLink,
   FinishOutsourceWork,
   OperateEvaluation,
+  QueryRequirementDetail,
+  QueryUserRole,
 } from '../../../../../services/pmsServices';
 import BridgeModel from '../../../../Common/BasicModal/BridgeModel';
 import SendMailModal from '../../../SendMailModal';
@@ -15,7 +17,6 @@ const { TextArea } = Input;
 function MoreOperationModal(props) {
   const { visible, setVisible, form, data = {} } = props;
   const {
-    tableData = [],
     DFZT = [],
     LYZT = [],
     xqid,
@@ -24,6 +25,7 @@ function MoreOperationModal(props) {
     isDock,
     fqrid,
     swzxid_email,
+    WBRYGW = [],
   } = data;
   const [isSpinning, setIsSpinning] = useState(false); //加载状态
   const [editing, setEditing] = useState(false); //编辑状态
@@ -49,18 +51,72 @@ function MoreOperationModal(props) {
     qrlysq: false,
   }); //面试通知状态
   const [gysmcArr, setGysmcArr] = useState([]); //邮件弹窗入参
+  const [ZHPC, setZHPC] = useState([]); //ZHPC
+  let LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user')).id;
 
   useEffect(() => {
-    let arr = tableData.map(x => {
-      return {
-        ...x,
-        ['LYZT' + x.PCID]: x.LYZT || '',
-        ['LYSM' + x.PCID]: x.LYSM || '',
-      };
-    });
-    setTableArr([...JSON.parse(JSON.stringify(arr))]);
+    if (visible && xqid !== -2 && fqrid !== -2 && WBRYGW.length !== 0) {
+      getZHPC(Number(xqid), Number(fqrid));
+    }
     return () => {};
-  }, [JSON.stringify(data)]);
+  }, [visible, xqid, fqrid, WBRYGW]);
+
+  const getZHPC = (xqid, fqrid) => {
+    setIsSpinning(true);
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          QueryRequirementDetail({
+            current: 1,
+            pageSize: 10,
+            paging: -1,
+            sort: '',
+            total: -1,
+            cxlx: 'ZHPC',
+            js:
+              res.zyrole === '外包项目对接人'
+                ? res.zyrole
+                : String(LOGIN_USER_ID) === fqrid
+                ? '需求发起人'
+                : res.role,
+            xqid,
+          })
+            .then(res => {
+              if (res.code === 1) {
+                const zhpcdata =
+                  JSON.parse(res.zhpc).length === 0
+                    ? []
+                    : JSON.parse(res.zhpc)[0].PCID === undefined
+                    ? []
+                    : JSON.parse(res.zhpc);
+                zhpcdata.forEach(x => {
+                  x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note;
+                });
+                setZHPC(zhpcdata);
+                let arr = zhpcdata.map(x => {
+                  return {
+                    ...x,
+                    ['LYZT' + x.PCID]: x.LYZT || '',
+                    ['LYSM' + x.PCID]: x.LYSM || '',
+                  };
+                });
+                setTableArr([...JSON.parse(JSON.stringify(arr))]);
+                setIsSpinning(false);
+              }
+            })
+            .catch(e => {
+              console.error(e);
+              message.error('数据获取失败', 1);
+            });
+        }
+      })
+      .catch(e => {
+        console.error('🚀 ~ getZHPC ~ e:', e);
+        message.error('用户信息查询失败', 1);
+      });
+  };
 
   //表格保存
   const handleTableSave = row => {
@@ -111,6 +167,7 @@ function MoreOperationModal(props) {
               if (res?.success) {
                 // form.resetFields();
                 reflush();
+                getZHPC(Number(xqid), Number(fqrid));
                 setIsSpinning(false);
                 message.success('操作成功', 1);
                 // setVisible(false);
@@ -188,7 +245,7 @@ function MoreOperationModal(props) {
       ellipsis: true,
       render: txt => {
         let timeRange = txt.split('-');
-        let showTxt = timeRange[0] + "-" + moment(timeRange[1], 'YYYY/MM/DD HH:mm').format("HH:mm")
+        let showTxt = timeRange[0] + '-' + moment(timeRange[1], 'YYYY/MM/DD HH:mm').format('HH:mm');
         return (
           <Tooltip title={showTxt} placement="topLeft" overlayStyle={{ maxWidth: 300 }}>
             <span style={{ cursor: 'default' }}>{showTxt}</span>
@@ -295,7 +352,7 @@ function MoreOperationModal(props) {
   const handleEditCancel = () => {
     if (!isSpinning) {
       setEditing(false);
-      let arr = tableData.map(x => {
+      let arr = ZHPC.map(x => {
         return {
           ...x,
           ['LYZT' + x.PCID]: x.LYZT || '',
@@ -647,7 +704,7 @@ function MoreOperationModal(props) {
           )}
         </div>
         <Table
-          rowSelection={status.mstz || status.qrlysq ? rowSelection : false}
+          rowSelection={status.mstz || status.qrlysq ? rowSelection : {}}
           loading={isSpinning}
           columns={columns}
           components={components}

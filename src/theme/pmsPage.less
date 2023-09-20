@@ -9266,6 +9266,32 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     }
   }
 }
+.demand-detail-content-popover {
+  .list {
+    min-width: 100px;
+    overflow: hidden;
+    overflow-y: auto;
+    max-height: 325px; //超10行滚动
+
+    // margin-right: 5px;
+    &::-webkit-scrollbar {
+      width: 6px;
+      background-color: #f0f2f5;
+      border-radius: 3px;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background-color: #dbdfe6;
+      border-radius: 3px;
+    }
+    .item {
+      max-width: 350px;
+      text-overflow: ellipsis;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+  }
+}
 .document-list-content-popover {
   .ant-spin-spinning {
     width: 100%;
@@ -9299,7 +9325,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       }
     }
     .item {
-      max-width: 324px;
+      max-width: 385px;
       text-overflow: ellipsis;
       overflow: hidden;
       white-space: nowrap;
@@ -9332,7 +9358,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         flex-shrink: 0;
         color: #3361ff;
         font-size: 14px;
-        padding: 0 6px;
+        padding: 0 10px;
         // width: 36px;
         height: 24px;
         background: rgba(51, 97, 255, 0.1);

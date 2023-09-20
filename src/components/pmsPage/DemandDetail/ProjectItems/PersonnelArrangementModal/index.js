@@ -19,23 +19,28 @@ import moment from 'moment';
 import {
   FetchQueryGysInZbxx,
   OperateEvaluation,
+  QueryRequirementDetail,
   QueryUserInfo,
+  QueryUserRole,
 } from '../../../../../services/pmsServices';
 
 const { Option } = Select;
 
 function PersonnelArrangementModal(props) {
+  let LOGIN_USER_ID = JSON.parse(sessionStorage.getItem('user')).id;
   const {
     visible,
     setVisible,
     form,
     XQNR = [],
-    xqid,
+    xqid = -2,
     swzxid,
     reflush,
     update = false,
-    ZHPC = [],
+    // ZHPC = [],
+    fqrid = -2,
     isDock,
+    WBRYGW = [],
   } = props;
   const { validateFields, getFieldValue, resetFields, getFieldDecorator } = form;
   const [tableData, setTableData] = useState([]); //表格数据
@@ -43,87 +48,145 @@ function PersonnelArrangementModal(props) {
   const [gysData, setGysData] = useState([]); //供应商
   const [updateData, setUpdateData] = useState({}); //更新回显
   const [isSpinning, setIsSpinning] = useState(false);
+  const [ZHPC, setZHPC] = useState([]); //ZHPC
 
   useEffect(() => {
-    getPcryData();
-    return () => {};
-  }, []);
-
-  useEffect(() => {
-    if (update) {
-      const zhpc = Object.values(
-        ZHPC.reduce((acc, curr) => {
-          let { XQNRID, RYMC, GYSID, ZHPCSJ, MSGID, PCID } = curr;
-          const mssjArr = ZHPCSJ.split('-');
-          if (mssjArr.length > 1) {
-            ZHPCSJ = [moment(mssjArr[0]), moment(mssjArr[1])];
-          } else {
-            ZHPCSJ = [];
-          }
-          if (!acc[XQNRID]) {
-            acc[XQNRID] = {
-              XQNRID,
-              MSGID: MSGID?.split(','),
-              TABLE: [
-                { PCID, ['RYMC' + PCID]: RYMC, ['GYSID' + PCID]: GYSID, ['MSSJ' + PCID]: ZHPCSJ },
-              ],
-            };
-          } else {
-            acc[XQNRID].TABLE.push({
-              PCID,
-              ['RYMC' + PCID]: RYMC,
-              ['GYSID' + PCID]: GYSID,
-              ['MSSJ' + PCID]: ZHPCSJ,
-            });
-          }
-          return acc;
-        }, {}),
-      );
-      if (zhpc.length > 0) {
-        const UUID = Date.now();
-        if (zhpc[0].TABLE?.length === 0) {
-          setTableData([
-            {
-              PCID: UUID,
-              ['GYSID' + UUID]: -1,
-              ['RYMC' + UUID]: '',
-              ['MSSJ' + UUID]: [],
-              NEW: true,
-            },
-          ]);
-        } else {
-          setTableData([...zhpc[0].TABLE]);
-        }
-        setUpdateData({
-          MSGID: zhpc[0].MSGID,
-          XQNRID: zhpc[0].XQNRID,
-        });
-      } else {
-        const UUID = Date.now();
-        setTableData([
-          {
-            PCID: UUID,
-            ['GYSID' + UUID]: -1,
-            ['RYMC' + UUID]: '',
-            ['MSSJ' + UUID]: [],
-            NEW: true,
-          },
-        ]);
-      }
-    } else {
-      const UUID = Date.now();
-      setTableData([
-        {
-          PCID: UUID,
-          ['GYSID' + UUID]: -1,
-          ['RYMC' + UUID]: '',
-          ['MSSJ' + UUID]: [moment('10:00', 'HH:mm'), moment('10:00', 'HH:mm').add(30, 'minutes')],
-          NEW: true,
-        },
-      ]);
+    if (visible && xqid !== -2 && fqrid !== -2 && WBRYGW.length !== 0) {
+      getPcryData();
+      getZHPC(Number(xqid), Number(fqrid));
     }
     return () => {};
-  }, [update, ZHPC]);
+  }, [visible, xqid, fqrid, update, WBRYGW]);
+
+  const getZHPC = (xqid, fqrid) => {
+    setIsSpinning(true);
+    QueryUserRole({
+      userId: Number(LOGIN_USER_ID),
+    })
+      .then(res => {
+        if (res.code === 1) {
+          QueryRequirementDetail({
+            current: 1,
+            pageSize: 10,
+            paging: -1,
+            sort: '',
+            total: -1,
+            cxlx: 'ZHPC',
+            js:
+              res.zyrole === '外包项目对接人'
+                ? res.zyrole
+                : String(LOGIN_USER_ID) === fqrid
+                ? '需求发起人'
+                : res.role,
+            xqid,
+          })
+            .then(res => {
+              if (res.code === 1) {
+                const zhpcdata =
+                  JSON.parse(res.zhpc).length === 0
+                    ? []
+                    : JSON.parse(res.zhpc)[0].PCID === undefined
+                    ? []
+                    : JSON.parse(res.zhpc);
+                zhpcdata.forEach(x => {
+                  x.GW = WBRYGW?.filter(y => y.ibm === x.GW)[0]?.note;
+                });
+                setZHPC(zhpcdata);
+                if (update) {
+                  // 修改时
+                  const zhpc = Object.values(
+                    zhpcdata.reduce((acc, curr) => {
+                      let { XQNRID, RYMC, GYSID, ZHPCSJ, MSGID, PCID } = curr;
+                      const mssjArr = ZHPCSJ.split('-');
+                      if (mssjArr.length > 1) {
+                        ZHPCSJ = [moment(mssjArr[0]), moment(mssjArr[1])];
+                      } else {
+                        ZHPCSJ = [];
+                      }
+                      if (!acc[XQNRID]) {
+                        acc[XQNRID] = {
+                          XQNRID,
+                          MSGID: MSGID?.split(','),
+                          TABLE: [
+                            {
+                              PCID,
+                              ['RYMC' + PCID]: RYMC,
+                              ['GYSID' + PCID]: GYSID,
+                              ['MSSJ' + PCID]: ZHPCSJ,
+                            },
+                          ],
+                        };
+                      } else {
+                        acc[XQNRID].TABLE.push({
+                          PCID,
+                          ['RYMC' + PCID]: RYMC,
+                          ['GYSID' + PCID]: GYSID,
+                          ['MSSJ' + PCID]: ZHPCSJ,
+                        });
+                      }
+                      return acc;
+                    }, {}),
+                  );
+                  if (zhpc.length > 0) {
+                    const UUID = Date.now();
+                    if (zhpc[0].TABLE?.length === 0) {
+                      setTableData([
+                        {
+                          PCID: UUID,
+                          ['GYSID' + UUID]: -1,
+                          ['RYMC' + UUID]: '',
+                          ['MSSJ' + UUID]: [],
+                          NEW: true,
+                        },
+                      ]);
+                    } else {
+                      setTableData([...zhpc[0].TABLE]);
+                    }
+                    setUpdateData({
+                      MSGID: zhpc[0].MSGID,
+                      XQNRID: zhpc[0].XQNRID,
+                    });
+                  } else {
+                    const UUID = Date.now();
+                    setTableData([
+                      {
+                        PCID: UUID,
+                        ['GYSID' + UUID]: -1,
+                        ['RYMC' + UUID]: '',
+                        ['MSSJ' + UUID]: [],
+                        NEW: true,
+                      },
+                    ]);
+                  }
+                } else {
+                  const UUID = Date.now();
+                  setTableData([
+                    {
+                      PCID: UUID,
+                      ['GYSID' + UUID]: -1,
+                      ['RYMC' + UUID]: '',
+                      ['MSSJ' + UUID]: [
+                        moment('10:00', 'HH:mm'),
+                        moment('10:00', 'HH:mm').add(30, 'minutes'),
+                      ],
+                      NEW: true,
+                    },
+                  ]);
+                }
+                setIsSpinning(false);
+              }
+            })
+            .catch(e => {
+              console.error(e);
+              message.error('数据获取失败', 1);
+            });
+        }
+      })
+      .catch(e => {
+        console.error('🚀 ~ getZHPC ~ e:', e);
+        message.error('用户信息查询失败', 1);
+      });
+  };
 
   //人员需求变化
   const handleRyxqXhange = v => {
