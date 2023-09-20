@@ -19,7 +19,7 @@ export default function ShortcutCard(props) {
 
   //考勤登记的按钮权限，给到项目里面的所有人
   const isMember = () => {
-    let arr = member.map(x => x.RYID);
+    let arr = member.map(x => x.RYID && x.RYZT === '1');
     return arr.includes(String(LOGIN_USER_INFO.id));
   };
 
