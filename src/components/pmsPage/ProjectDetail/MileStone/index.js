@@ -423,7 +423,7 @@ export default function MileStone(props) {
 
   //是否成员或领导
   const isMember = () => {
-    const arr = member.map(x => x.RYID && x.RYZT === '1');
+    const arr = member.filter(x => x.RYZT === '1').map(x => x.RYID);
     return arr.includes(String(LOGIN_USER_INFO.id)) || isLeader;
   };
 
