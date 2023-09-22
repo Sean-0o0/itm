@@ -1,9 +1,10 @@
 import React, { useEffect, useState, useRef, Fragment, useLayoutEffect } from 'react';
-import { Button, message, Pagination, Spin, Table, Tooltip } from 'antd';
+import { Button, Icon, message, Pagination, Spin, Table, Tooltip } from 'antd';
 import { CreateOperateHyperLink, QueryLeadApprovalFlow } from '../../../services/pmsServices';
 import BridgeModel from '../../Common/BasicModal/BridgeModel';
 import Bridge from 'livebos-bridge';
 import { debounce } from 'lodash';
+import moment from 'moment';
 
 const { events } = Bridge.constants;
 
@@ -22,6 +23,7 @@ export default function XwhExamine(props) {
     selectedRowKeys: [],
     curLink: undefined,
     curRowKey: -1,
+    slting: false, //正在选择 的状态
   });
   const [lbModal, setLbModal] = useState({
     visible: false,
@@ -73,7 +75,7 @@ export default function XwhExamine(props) {
     QueryLeadApprovalFlow({
       current: 1,
       pageSize: 10,
-      paging: 1,
+      paging: -1,
       queryType: 'XWH',
       sort: '',
       total: -1,
@@ -180,8 +182,8 @@ export default function XwhExamine(props) {
   };
 
   //点击行
-  const handleRowClick = (row = {}) => {
-    setTableData(p => ({ ...p, curLink: row.URL, curRowKey: row.ID }));
+  const handleRowClick = (URL, ID) => {
+    setTableData(p => ({ ...p, curLink: URL, curRowKey: ID }));
   };
 
   //全部选中
@@ -201,6 +203,51 @@ export default function XwhExamine(props) {
     } else {
       getLbLink(tableData.selectedRowKeys);
     }
+  };
+
+  const handleSlting = () => {
+    setTableData(p => ({ ...p, slting: true }));
+  };
+
+  const handleSltingCancel = () => {
+    setTableData(p => ({ ...p, slting: false, selectedRowKeys: [] }));
+  };
+
+  //流程块
+  const getItem = ({ ID, BT = '--', FQR = '--', RQ, URL = '' }) => {
+    const handleSlt = id => {
+      if (tableData.selectedRowKeys.includes(id)) {
+        setTableData(p => ({ ...p, selectedRowKeys: p.selectedRowKeys.filter(x => x !== id) }));
+      } else {
+        setTableData(p => ({ ...p, selectedRowKeys: [...p.selectedRowKeys, id] }));
+      }
+    };
+    return (
+      <div className="process-item-wrapper" key={ID}>
+        {tableData.slting && (
+          <div
+            className={tableData.selectedRowKeys.includes(ID) ? 'left-circle-slted' : 'left-circle'}
+            onClick={() => handleSlt(ID)}
+          ></div>
+        )}
+        <div
+          className={ID === tableData.curRowKey ? 'process-item-current' : 'process-item'}
+          onClick={() => handleRowClick(URL, ID)}
+        >
+          <div className="title-row">{BT}</div>
+          <div className="bottom-row">
+            <div className="row-left">
+              <span>发起人：</span>
+              {FQR}
+            </div>
+            <div className="row-right">
+              <span>操作时间：</span>
+              {moment(String(RQ)).format('YYYY-MM-DD')}
+            </div>
+          </div>
+        </div>
+      </div>
+    );
   };
 
   return (
@@ -233,17 +280,39 @@ export default function XwhExamine(props) {
         wrapperClassName="xwh-examine-box-spinning"
       >
         <div className="left-box">
-          {tableData.data?.length > 0 && (
-            <Fragment>
-              <Button type="primary" className="slt-all" onClick={handleSltAll}>
-                全选
-              </Button>
-              <Button type="primary" className="batch-opr-btn" onClick={handleApproval}>
-                审批通过
-              </Button>
-            </Fragment>
-          )}
-          <Table
+          <div className="btn-row">
+            {tableData.data?.length > 0 &&
+              (tableData.slting ? (
+                <Fragment>
+                  <Button type="default" className="cancel-btn" onClick={handleSltingCancel}>
+                    取消
+                  </Button>
+                  {tableData.selectedRowKeys.length === tableData.total ? (
+                    <Button type="default" className="clear-all" onClick={handleSltAllCancel}>
+                      清空
+                    </Button>
+                  ) : (
+                    <Button type="primary" className="slt-all" onClick={handleSltAll}>
+                      全选
+                    </Button>
+                  )}
+                  <Button type="primary" className="batch-pass-btn" onClick={handleApproval}>
+                    审批通过
+                  </Button>
+                </Fragment>
+              ) : (
+                <Button type="default" className="batch-opr-btn" onClick={handleSlting}>
+                  批量审批
+                </Button>
+              ))}
+            {tableData.data?.length > 0 && !tableData.slting && (
+              <div className="all-read" onClick={getTableData}>
+                <Icon type="sync" className="icon-msg-read" />
+                刷新
+              </div>
+            )}
+          </div>
+          {/* <Table
             onRow={record => {
               return {
                 onClick: event => {
@@ -271,7 +340,8 @@ export default function XwhExamine(props) {
             }}
             scroll={{ y: 'calc(100vh - 239px)' }}
             // bordered
-          />
+          /> */}
+          <div className="process-list">{tableData.data?.map(x => getItem(x))}</div>
         </div>
         <div className="right-box">
           <iframe

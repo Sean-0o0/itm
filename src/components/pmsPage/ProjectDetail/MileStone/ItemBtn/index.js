@@ -24,8 +24,6 @@ import DemandInitiated from '../../../HardwareItems/DemandInitiated';
 import EditBidInfoModel from '../../../HardwareItems/EditBidInfoModel';
 import IterationContrast from './IterationContrast';
 
-const Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
-
 const { api } = config;
 const { confirm } = Modal;
 const {
@@ -123,6 +121,7 @@ class ItemBtn extends React.Component {
 
   //Livebos弹窗参数
   getParams = (objName, oprName, data) => {
+    let Loginname = String(JSON.parse(sessionStorage.getItem('user')).loginName);
     return {
       attribute: 0,
       authFlag: 0,
@@ -640,7 +639,7 @@ class ItemBtn extends React.Component {
       if (item.sxmc.includes('信委会议案流程')) {
         const { xwhid } = this.props;
         const { isLeader = false, isMnger = false } = this.props.auth;
-        if (isLeader) {
+        if (isLeader && !isMnger) {
           let params = this.getParams('LC_XWHYALC', 'TrackWork', [
             {
               name: 'ID',
@@ -649,9 +648,9 @@ class ItemBtn extends React.Component {
           ]);
           this.setState({
             xwhyaModalVisible: true,
-            lbModalUrl: `/livebos/ShowWorkflow?wfid=${xwhid}&stepId=3&PopupWin=true&HideCancelBtn=true`,
           });
           this.getLink(params, 'lbModalUrl'); //
+          return;
         }
         this.setState({
           xwhyaModalVisible: true,
@@ -750,120 +749,75 @@ class ItemBtn extends React.Component {
         });
         return;
       }
-      let params = this.getParams(
-        'TLC_LCFQ',
-        'TLC_LCFQ_LXSQLCFQ',
-        [
+      let params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_LXSQLCFQ', [
+        {
+          name: 'GLXM',
+          value: Number(item.xmid),
+        },
+      ]);
+      if (item.sxmc === '软件费用审批流程-有合同') {
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_SUBMIT_RJGMHT', [
           {
             name: 'GLXM',
             value: Number(item.xmid),
           },
-        ],
-        Loginname,
-      );
-      if (item.sxmc === '软件费用审批流程-有合同') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_SUBMIT_RJGMHT',
-          [
-            {
-              name: 'GLXM',
-              value: Number(item.xmid),
-            },
-          ],
-          Loginname,
-        );
+        ]);
       }
       if (item.sxmc === '软件费用审批流程-无合同') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_RJGMWHT',
-          [
-            {
-              name: 'GLXM',
-              value: Number(item.xmid),
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_RJGMWHT', [
+          {
+            name: 'GLXM',
+            value: Number(item.xmid),
+          },
+        ]);
       }
       if (item.sxmc === '申请餐券') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_CQSQLC',
-          [
-            {
-              name: 'GLXM',
-              value: item.xmid,
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_CQSQLC', [
+          {
+            name: 'GLXM',
+            value: item.xmid,
+          },
+        ]);
       }
       if (item.sxmc === '申请权限' || item.sxmc === '申请VPN') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_VPNSQ',
-          [
-            {
-              name: 'GLXM',
-              value: item.xmid,
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_VPNSQ', [
+          {
+            name: 'GLXM',
+            value: item.xmid,
+          },
+        ]);
       }
       if (item.sxmc === '信委会议案流程') {
-        params = this.getParams(
-          'LC_XWHYALC',
-          'LC_XWHYALC_TAFQ',
-          [
-            {
-              name: 'XMMC',
-              value: Number(item.xmid),
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('LC_XWHYALC', 'LC_XWHYALC_TAFQ', [
+          {
+            name: 'XMMC',
+            value: Number(item.xmid),
+          },
+        ]);
       }
       if (item.sxmc === '会议议案提交' || item.sxmc === '总办会流程') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_HYYA',
-          [
-            {
-              name: 'GLXM',
-              value: Number(item.xmid),
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_HYYA', [
+          {
+            name: 'GLXM',
+            value: Number(item.xmid),
+          },
+        ]);
       }
       if (item.sxmc === '设备采购有合同' || item.sxmc === '框架外硬件采购流程') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_SBCGYHT',
-          [
-            {
-              name: 'XMMC',
-              value: Number(item.xmid),
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_SBCGYHT', [
+          {
+            name: 'XMMC',
+            value: Number(item.xmid),
+          },
+        ]);
       }
       if (item.sxmc === '设备采购无合同' || item.sxmc === '框架内硬件采购流程') {
-        params = this.getParams(
-          'TLC_LCFQ',
-          'TLC_LCFQ_SBCGWHT',
-          [
-            {
-              name: 'XMMC',
-              value: Number(item.xmid),
-            },
-          ],
-          Loginname,
-        );
+        params = this.getParams('TLC_LCFQ', 'TLC_LCFQ_SBCGWHT', [
+          {
+            name: 'XMMC',
+            value: Number(item.xmid),
+          },
+        ]);
       }
       this.setState({
         lbModalTitle: item.sxmc + '发起',
@@ -915,21 +869,16 @@ class ItemBtn extends React.Component {
     //异常填写
     const zttx = (lcid, lclx) => {
       //operate=TLC_OALCXX_ZTBG&Table=TLC_OALCXX&OALCID=
-      const params = this.getParams(
-        'TLC_OALCXX',
-        'TLC_OALCXX_ZTBG',
-        [
-          {
-            name: 'XTLCID',
-            value: Number(lcid),
-          },
-          {
-            name: 'LCLX',
-            value: lclx,
-          },
-        ],
-        Loginname,
-      );
+      const params = this.getParams('TLC_OALCXX', 'TLC_OALCXX_ZTBG', [
+        {
+          name: 'XTLCID',
+          value: Number(lcid),
+        },
+        {
+          name: 'LCLX',
+          value: lclx,
+        },
+      ]);
       this.setState({
         lbModalTitle: '异常填写',
         oackzttxVisible: true,
@@ -1280,7 +1229,7 @@ class ItemBtn extends React.Component {
     if (isLeader && !isMnger) {
       //领导权限
       if (!done) return '';
-      if (item.sxmc === '信委会议案流程') return '';
+      // if (item.sxmc === '信委会议案流程') return '';
       return someAuth();
     } else if (isFXMJL && !isMnger) {
       //副项目经理权限
@@ -1375,7 +1324,7 @@ class ItemBtn extends React.Component {
       width: '864px',
       height: '540px',
       title: lbModalTitle,
-      style: { top: '60px' },
+      style: { top: '10px' },
       visible: xxlrxgVisible,
       footer: null,
     };
@@ -1395,9 +1344,9 @@ class ItemBtn extends React.Component {
     const xwhyaModalProps = {
       isAllWindow: 1,
       title: '信委会立案流程查看',
-      width: '800px',
-      height: '600px',
-      style: { top: '60px' },
+      width: '1000px',
+      height: '680px',
+      style: { top: '10px' },
       visible: xwhyaModalVisible,
       footer: null,
     };

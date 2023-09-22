@@ -6770,7 +6770,8 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
 
     .iteration-content-box,
     .attendance-info-box,
-    .iteration-payment-box {
+    .iteration-payment-box,
+    .sub-prj-progress-box {
       margin-bottom: 16px;
       border-radius: 8px;
       background-color: #fff;
@@ -8349,6 +8350,138 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               a {
                 &:hover {
                   color: #3361ffb8 !important;
+                }
+              }
+            }
+          }
+        }
+      }
+
+      & > .sub-prj-progress-box {
+        margin-bottom: 16px;
+        & > .content {
+          overflow: hidden;
+
+          & > .sub-prj-item {
+            padding: 16px 24px;
+            padding-bottom: 0;
+
+            &:last-child {
+              & > .info-row {
+                border: 0;
+              }
+            }
+
+            & > .progress-row {
+              display: flex;
+              flex-direction: row;
+              align-items: center;
+              margin-bottom: 16px;
+              & > .prj-name {
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                height: 22px;
+                font-size: 16px;
+                font-family: PingFangSC-Medium, PingFang SC;
+                font-weight: bold;
+                color: #3361ff;
+                line-height: 22px;
+                cursor: pointer;
+
+                &:hover {
+                  color: #3361ffaf;
+                }
+              }
+              & > .prj-progress {
+                width: 250px;
+                flex-shrink: 0;
+                margin: 0 24px;
+              }
+              & > .prj-status {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+
+                & > .icon-wrapper {
+                  width: 20px;
+                  flex-shrink: 0;
+                  height: 20px;
+                  background: rgba(51, 97, 255, 0.1);
+                  border-radius: 11px;
+                  display: flex;
+                  flex-direction: row;
+                  align-items: center;
+                  margin-left: auto;
+                  justify-content: center;
+                  margin-right: 4px;
+                  font-weight: 400;
+                  font-family: PingFangSC-regular, PingFang SC;
+
+                  .icon-hourglass {
+                    color: #3361ff;
+                    font-size: 13px;
+                  }
+                  .icon-alarm {
+                    color: #ff2f31;
+                    font-size: 13px;
+                  }
+                  .icon-delay {
+                    color: #ff2f31;
+                    font-size: 13px;
+                  }
+                }
+                span {
+                  font-size: 12px;
+                  font-weight: 400;
+                  font-family: PingFangSC-regular, PingFang SC;
+                  color: #303133;
+                }
+              }
+            }
+
+            & > .info-row {
+              margin-bottom: 16px;
+              width: 100%;
+              display: flex;
+              flex-direction: row;
+              align-items: start;
+              padding-bottom: 16px;
+              border-bottom: 2px dashed #ebeef5;
+
+              &:last-child {
+                margin-bottom: 0;
+              }
+
+              & > .info-item {
+                height: 22px;
+                line-height: 22px;
+                font-size: 14px;
+                font-family: PingFangSC-Regular, PingFang SC;
+                font-weight: 400;
+                color: #303133;
+                width: 32%;
+                text-overflow: ellipsis;
+                overflow: hidden;
+                white-space: nowrap;
+                margin-right: 2%;
+
+                span {
+                  display: inline-block;
+                  width: 70px;
+                  text-align: right;
+                  color: #909399;
+                  margin-right: 8px;
+                }
+
+                &:last-child {
+                  margin-right: 0;
+                }
+
+                a {
+                  &:hover {
+                    color: #3361ffb8 !important;
+                  }
                 }
               }
             }
@@ -23659,13 +23792,152 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
       padding: 24px;
 
       & > .left-box {
-        width: 30%;
+        width: 33.33%;
         min-width: min-content;
         flex-shrink: 0;
         .function-block();
         margin-right: 16px;
-        padding: 16px 24px;
+        padding: 16px 12px;
         .antd-table-adaptation();
+
+        & > .btn-row {
+          display: flex;
+          flex-direction: row;
+          align-items: center;
+          padding-left: 12px;
+          margin-bottom: 16px;
+
+          .batch-pass-btn,
+          .slt-all-cancel,
+          .slt-all {
+            .antd-btn-primary();
+            margin-right: 12px;
+          }
+
+          .batch-opr-btn,
+          .clear-all,
+          .cancel-btn {
+            .antd-btn-default();
+            margin-right: 12px;
+          }
+
+          & > .all-read {
+            margin-left: auto;
+            font-size: 14px;
+            font-family: PingFangSC-Regular, PingFang SC;
+            font-weight: 400;
+            color: #3361ff;
+            cursor: pointer;
+    
+            i {
+              font-size: 16px;
+              color: #3361ff;
+              margin-right: 6px;
+            }
+            &:hover {
+              color: #3361ffaf;
+              i {
+                color: #3361ffaf;
+              }
+            }
+          }
+        }
+
+        & > .process-list {
+          width: 100%;
+          overflow: hidden;
+          overflow-y: auto;
+          height: calc(100% - 50px);
+          padding: 6px 12px;
+
+          &::-webkit-scrollbar {
+            width: 10px;
+            background-color: #fafafa;
+          }
+
+          &::-webkit-scrollbar-thumb {
+            background-color: #c1c1c1;
+            border-radius: 5px;
+            width: 10px;
+          }
+
+          & > .process-item-wrapper {
+            width: 100%;
+            display: flex;
+            flex-direction: row;
+            align-items: center;
+            margin-bottom: 16px;
+
+            &:last-child {
+              margin-bottom: 0;
+            }
+
+            & > .left-circle,
+            & > .left-circle-slted {
+              flex-shrink: 0;
+              height: 16px;
+              width: 16px;
+              border-radius: 50%;
+              border: 1px solid #e0e0e0;
+              cursor: pointer;
+              transition: all 0.3s;
+              margin-right: 8px;
+
+              &:hover {
+                border: 1px solid #3361ffaf;
+              }
+            }
+
+            & > .left-circle-slted {
+              border: 1px solid #3361ff;
+              background-color: #3361ff;
+            }
+
+            & > .process-item,
+            & > .process-item-current {
+              flex-grow: 1;
+              padding: 8px 12px;
+              border-radius: 8px;
+              box-shadow: 0px 0px 3px 1px rgba(0, 0, 0, 0.11);
+              cursor: pointer;
+
+              &:hover {
+                box-shadow: 0px 0px 3px 1px #3361ff69;
+              }
+
+              & > .title-row {
+                font-size: 16px;
+                font-family: PingFangSC-Medium, PingFang SC;
+                font-weight: bold;
+                color: #303133;
+                line-height: 24px;
+                margin-bottom: 12px;
+                cursor: default;
+              }
+              & > .bottom-row {
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+                & > .row-left,
+                & > .row-right {
+                  font-size: 14px;
+                  font-family: PingFangSC-Regular, PingFang SC;
+                  font-weight: 400;
+                  color: #303133;
+                  line-height: 22px;
+                  span {
+                    color: #909399;
+                  }
+                }
+              }
+            }
+
+            & > .process-item-current {
+              background-color: #eaeff9;
+            }
+          }
+        }
 
         tr {
           cursor: pointer;
@@ -23676,14 +23948,6 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
           td {
             background-color: #eaeff9;
           }
-        }
-
-        & > .batch-opr-btn,
-        .slt-all-cancel,
-        .slt-all {
-          .antd-btn-primary();
-          margin-bottom: 16px;
-          margin-right: 12px;
         }
 
         .ant-table .ant-table-placeholder {

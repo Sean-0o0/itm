@@ -335,6 +335,8 @@ export default function OverviewCard(props) {
       case '信委会议案被退回':
       case '信委会流程待审批':
       case '信委会议案流程待审批':
+      case '信委会流程待处理':
+      case '外包人员流程待处理':
         return jumpToLBPage('WORKFLOW_TOTASKS');
       case '信委会议案待上会前审批':
         return jumpToLBPage('V_XWHYALC_LDSP');
@@ -361,8 +363,6 @@ export default function OverviewCard(props) {
         return jumpToLBPage('V_FZBXYSNCLR');
       case '非资本性预算年初录入被退回':
         return jumpToLBPage('V_FZBXYSNCLR');
-      case '信委会流程待处理':
-        return jumpToLBPage('WORKFLOW_TOTASKS');
 
       //特殊处理
       case '付款流程':

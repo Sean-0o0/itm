@@ -216,7 +216,7 @@ export default function MileStone(props) {
                 item={x}
                 xmmc={prjBasic.XMMC || ''}
                 xmbh={prjBasic.XMBM || ''}
-                xwhid={prjBasic.XWHID || -1}
+                xwhid={isLeader ? prjBasic.XWHLCID || -1 : prjBasic.XWHID || -1}
                 setIsSpinning={setIsSpinning}
                 refresh={refresh}
                 isHwSltPrj={isHwSltPrj} //是否硬件入围
