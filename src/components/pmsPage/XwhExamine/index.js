@@ -91,6 +91,8 @@ export default function XwhExamine(props) {
             total: data.length || 0,
             curLink: data[0]?.URL,
             curRowKey: data[0]?.ID,
+            selectedRowKeys: [],
+            slting: false,
           }));
           setIsSpinning(false);
         }
