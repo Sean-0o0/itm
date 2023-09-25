@@ -286,7 +286,12 @@ export default function SupplierDmInfo(props) {
             <a
               style={{ color: '#3361ff' }}
               onClick={() => {
-                if (JLRQ && !moment().isBefore(moment(JLRQ))) {
+                // console.log(
+                //   '%%',
+                //   JLRQ,
+                //   moment('20230925', 'YYYYMMDD').isAfter(moment(JLRQ, 'YYYYMMDD')),
+                // );
+                if (JLRQ && moment('YYYYMMDD').isAfter(moment(JLRQ, 'YYYYMMDD'))) {
                   message.warn('已超过简历截止日期，不可再上传简历', 1);
                 } else if (gysid === -1) {
                   message.info('只有供应商联系人可以操作', 1);
