@@ -677,7 +677,7 @@ export default function ResumeDistributionPage(props) {
     );
   };
 
-  // 项目经理获取全部简历
+  // 发起人获取全部简历
   const getAllSplierItem = ({ GYSMC = '--', JLDATA = [], UNFOLD, GYSID, SHOWFOLD }, index) => {
     //文件下载
     const handleFileDownload = (id, fileName, entryno) => {
@@ -888,7 +888,7 @@ export default function ResumeDistributionPage(props) {
       <>
         {JLDATA.map((x, i) => (
           <>
-            {!x.destributeCancel && (
+            {x.destributed && (
               <div
                 className="resume-item"
                 key={`${x.JLMC}-${x.ENTRYNO}-${x.JLID}`}
@@ -1261,10 +1261,10 @@ export default function ResumeDistributionPage(props) {
           )}
           <div className="splier-list">
             {isAuth && !isDock ? (
-              //项目经理
+              //发起人
               <div className="splier-item">
                 <div className="resume-list">
-                  {dataShow
+                  {data
                     .filter(x => x.RYXQ === activeKey)[0]
                     ?.DATA?.map((item, index) => getAllSplierItem(item, index))}
                 </div>

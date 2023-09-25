@@ -195,7 +195,7 @@ export default function DemandDetail(props) {
                   XQSX: xqsx,
                   XQNR: xqnr2,
                   JLXX: jlxx, //简历信息展示
-                  JLXX2: jlxx2, //简历查看使用
+                  JLXX2: jlxx2, //简历分发使用
                   LYSQ: JSON.parse(res.lysq)[JSON.parse(res.lysq).length - 1] ?? {},
                   ZHPC: zhpc,
                   FKTX: JSON.parse(res.fktx)[0],

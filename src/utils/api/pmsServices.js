@@ -413,7 +413,7 @@ export default [
     code: '',
     key: 'resumeDistribution',
     url: '/projectManage/resumeDistribution',
-    dis: '简历查看',
+    dis: '简历分发',
   },
   {
     code: '',

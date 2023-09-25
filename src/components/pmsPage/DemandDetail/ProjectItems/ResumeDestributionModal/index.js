@@ -218,7 +218,7 @@ export default function ResumeDistributionModal(props) {
       destroyOnClose={true}
     >
       <div className="body-title-box">
-        <strong>简历查看</strong>
+        <strong>简历分发</strong>
       </div>
       <Spin spinning={isSpinning}>
         <div className="splier-list">

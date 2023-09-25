@@ -202,84 +202,6 @@ export default function SupplierDmInfo(props) {
     getSplierDmData({ ...sltParams, [paramName]: v });
   };
 
-  //列配置
-  const columns = [
-    {
-      title: '人员等级',
-      dataIndex: 'RYDJ',
-      width: '15%',
-      key: 'RYDJ',
-      ellipsis: true,
-    },
-    {
-      title: '岗位',
-      dataIndex: 'GW',
-      width: '15%',
-      key: 'GW',
-      ellipsis: true,
-    },
-    {
-      title: '人员数量',
-      dataIndex: 'RYSL',
-      align: 'center',
-      width: '15%',
-      key: 'RYSL',
-      ellipsis: true,
-    },
-    // {
-    //   title: '时长(人/月)',
-    //   dataIndex: 'SC',
-    //   width: '12%',
-    //   key: 'SC',
-    //   ellipsis: true,
-    // },
-    {
-      title: '要求',
-      dataIndex: 'YQ',
-      key: 'YQ',
-      ellipsis: false,
-      render: (txt = '') => (
-        <span style={{ whiteSpace: 'pre-wrap' }}>{txt.replace(/<br>/g, '\n')}</span>
-      ),
-    },
-    {
-      title: '操作',
-      dataIndex: 'CZ',
-      width: '10%',
-      key: 'CZ',
-      ellipsis: true,
-      render: (txt, row) => {
-        const arr = jlxx.filter(x => x.RYXQID === row.RYXQID);
-        let data = {};
-        if (arr.length > 0) {
-          data = {
-            ...arr[0],
-            JLXX: JSON.parse(arr[0].JLXX),
-          };
-        }
-        return (
-          <a
-            style={{ color: '#3361ff' }}
-            onClick={() => {
-              if (gysid === -1) {
-                message.info('只有供应商联系人可以操作', 1);
-              } else {
-                setUploadModalVisible(true);
-                setCurData({
-                  ryxqid: row.RYXQID,
-                  xqid: row.XQID,
-                  jldata: data,
-                });
-              }
-            }}
-          >
-            {arr.length === 0 ? '上传简历' : '更新简历'}
-          </a>
-        );
-      },
-    },
-  ];
-
   //信息块
   const getInfoItem = ({
     XQID = '--',
@@ -304,6 +226,86 @@ export default function SupplierDmInfo(props) {
         </div>
       );
     };
+
+    //列配置
+    const columns = [
+      {
+        title: '人员等级',
+        dataIndex: 'RYDJ',
+        width: '15%',
+        key: 'RYDJ',
+        ellipsis: true,
+      },
+      {
+        title: '岗位',
+        dataIndex: 'GW',
+        width: '15%',
+        key: 'GW',
+        ellipsis: true,
+      },
+      {
+        title: '人员数量',
+        dataIndex: 'RYSL',
+        align: 'center',
+        width: '15%',
+        key: 'RYSL',
+        ellipsis: true,
+      },
+      // {
+      //   title: '时长(人/月)',
+      //   dataIndex: 'SC',
+      //   width: '12%',
+      //   key: 'SC',
+      //   ellipsis: true,
+      // },
+      {
+        title: '要求',
+        dataIndex: 'YQ',
+        key: 'YQ',
+        ellipsis: false,
+        render: (txt = '') => (
+          <span style={{ whiteSpace: 'pre-wrap' }}>{txt.replace(/<br>/g, '\n')}</span>
+        ),
+      },
+      {
+        title: '操作',
+        dataIndex: 'CZ',
+        width: '10%',
+        key: 'CZ',
+        ellipsis: true,
+        render: (txt, row) => {
+          const arr = jlxx.filter(x => x.RYXQID === row.RYXQID);
+          let data = {};
+          if (arr.length > 0) {
+            data = {
+              ...arr[0],
+              JLXX: JSON.parse(arr[0].JLXX),
+            };
+          }
+          return (
+            <a
+              style={{ color: '#3361ff' }}
+              onClick={() => {
+                if (JLRQ && !moment().isBefore(moment(JLRQ))) {
+                  message.warn('已超过简历截止日期，不可再上传简历', 1);
+                } else if (gysid === -1) {
+                  message.info('只有供应商联系人可以操作', 1);
+                } else {
+                  setUploadModalVisible(true);
+                  setCurData({
+                    ryxqid: row.RYXQID,
+                    xqid: row.XQID,
+                    jldata: data,
+                  });
+                }
+              }}
+            >
+              {arr.length === 0 ? '上传简历' : '更新简历'}
+            </a>
+          );
+        },
+      },
+    ];
 
     return (
       <div className="info-item" key={XQID}>

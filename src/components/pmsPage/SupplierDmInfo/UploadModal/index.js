@@ -24,14 +24,26 @@ function UploadModal(props) {
     // console.log(jldata);
     // setFileList([...jldata]);
     let jlArr =
-      jldata.JLXX?.items?.map((x, i) => ({
-        uid: Date.now() + i,
-        name: x[1],
-        status: 'done',
-        // url: res.url,
-        new: false,
-        number: x[0],
-      })) ?? [];
+      jldata.JLXX?.items?.map((x, i) => {
+        let prefix = '';
+        let name = x[1] || '';
+        if (x[1]?.substring(0, 4) === '%no%') {
+          prefix = '%no%'; //不分发 - 横杠图标
+          name = x[1]?.substring(4);
+        } else if (x[1]?.substring(0, 6) === '%tick%') {
+          prefix = '%tick%'; //已分发 - 图标边栏
+          name = x[1]?.substring(6);
+        }
+        return {
+          uid: Date.now() + i,
+          name,
+          status: 'done',
+          // url: res.url,
+          new: false,
+          number: x[0],
+          prefix,
+        };
+      }) ?? [];
     setFileList(jlArr);
     setNextId(Number(jldata.JLXX?.nextId || 0));
 
@@ -55,7 +67,7 @@ function UploadModal(props) {
         .filter(x => !x.new)
         .map(y => ({
           number: y.number,
-          fileName: y.name,
+          fileName: y.prefix + y.name,
         }));
       updateArr.sort((a, b) => Number(a.number) - Number(b.number));
       // console.log('🚀 ~ file: index.js:59 ~ handleOk ~ pdateArr:', updateArr);

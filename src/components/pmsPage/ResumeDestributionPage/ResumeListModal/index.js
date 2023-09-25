@@ -289,6 +289,7 @@ export default Form.create()(function ResumeListModal(props) {
               showTotal: t => `共 ${tableData.total} 条数据`,
               total: tableData.total,
             }}
+            scroll={tableData.data.length > 10 ? { y: 402 } : {}}
             bordered //记得注释
           />
         </div>

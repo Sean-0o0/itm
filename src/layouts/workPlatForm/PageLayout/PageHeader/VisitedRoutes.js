@@ -250,7 +250,7 @@ function VisitedRoutes(props) {
                 urlEnd: 'MemberDetail',
               },
               {
-                title: '简历查看',
+                title: '简历分发',
                 urlEnd: 'ResumeDistribution',
               },
               {

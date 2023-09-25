@@ -213,7 +213,7 @@ export default function ToDoCard(props) {
     }
   };
 
-  //简历查看、提交录用申请
+  //简历分发、提交录用申请
   const jumpToDemandDetail = item => {
     if (item.kzzd !== '') {
       UpdateMessageState({
@@ -318,7 +318,7 @@ export default function ToDoCard(props) {
       case '外包人员面试评分':
         return handleWbrymspf(item);
       case '提交录用申请':
-      case '简历查看':
+      case '简历分发':
         return jumpToDemandDetail(item);
       case '创建需求':
         return handleCjxq(item);

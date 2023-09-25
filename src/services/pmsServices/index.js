@@ -863,7 +863,7 @@ export async function SendMail(payload) {
   return request(option);
 }
 
-// 简历查看
+// 简历分发
 export async function ResumeDistribution(payload) {
   const option = {
     url: resumeDistribution,

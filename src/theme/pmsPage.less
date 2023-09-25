@@ -7179,6 +7179,31 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             }
           }
         }
+
+        & > .more-item,
+        & > .more-item-unfold {
+          .font-size-14();
+          font-weight: normal;
+          margin: -4px 0 12px 0;
+          text-align: center;
+          line-height: 1em;
+          cursor: pointer;
+          color: #606266;
+
+          &:hover {
+            color: #3361ff;
+
+            i {
+              color: #3361ff;
+            }
+          }
+
+          i {
+            margin-left: 4px;
+            font-size: 1em;
+            color: #909399;
+          }
+        }
       }
 
       & > .mile-stone-box {
@@ -16442,7 +16467,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
   }
 }
 
-//需求详情 - 简历查看弹窗
+//需求详情 - 简历分发弹窗
 .resume-destribution-modal {
   .ant-modal-body {
     padding: 0;
@@ -23774,6 +23799,14 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
     .ant-form-item {
       margin-bottom: 16px;
     }
+    .ant-pagination-item:focus a,
+    .ant-pagination-item:hover a {
+      color: #3361ff;
+    }
+    .ant-pagination-item-active:focus a,
+    .ant-pagination-item-active:hover a {
+      color: #fff;
+    }
   }
 }
 
@@ -23828,7 +23861,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
             font-weight: 400;
             color: #3361ff;
             cursor: pointer;
-    
+
             i {
               font-size: 16px;
               color: #3361ff;
