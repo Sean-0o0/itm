@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useRef, Fragment, useLayoutEffect } from 'react';
-import { Button, Icon, message, Pagination, Spin, Table, Tooltip } from 'antd';
+import { Button, Empty, Icon, message, Pagination, Spin, Table, Tooltip } from 'antd';
 import { CreateOperateHyperLink, QueryLeadApprovalFlow } from '../../../services/pmsServices';
 import BridgeModel from '../../Common/BasicModal/BridgeModel';
 import Bridge from 'livebos-bridge';
@@ -343,7 +343,12 @@ export default function XwhExamine(props) {
             scroll={{ y: 'calc(100vh - 239px)' }}
             // bordered
           /> */}
-          <div className="process-list">{tableData.data?.map(x => getItem(x))}</div>
+          <div className="process-list">
+            {tableData.data?.map(x => getItem(x))}
+            {tableData.data?.length === 0 && (
+              <Empty description="暂无审批流程" />
+            )}
+          </div>
         </div>
         <div className="right-box">
           <iframe

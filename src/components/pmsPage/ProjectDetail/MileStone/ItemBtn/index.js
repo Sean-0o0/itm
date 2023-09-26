@@ -1,6 +1,7 @@
 import React from 'react';
 import {
   CreateOperateHyperLink,
+  FetchQueryHTXXByXQTC,
   FetchQueryOAUrl,
   FetchQueryOwnerWorkflow,
   FetchQueryWpsWDXX,
@@ -76,6 +77,13 @@ class ItemBtn extends React.Component {
       xmid: -1,
       type: 'ADD',
     }, //迭代合同信息录入弹窗
+    rjhtxxData: {
+      //软件合同信息优化新增的字段
+      list: [], //查看展示的列表
+      popoverVisible: false, //Popover弹窗
+      loading: false, //加载状态
+      curHtxxid: -1, //当前合同信息id
+    },
   };
   // timer = null;
 
@@ -391,6 +399,140 @@ class ItemBtn extends React.Component {
       });
       this.getLink(params, 'lbModalUrl');
     };
+    // if (done) {
+    //   if (item.sxmc === '软件合同信息录入') {
+    //     const htxxck = async () => {
+    //       try {
+    //         this.setState({
+    //           rjhtxxData: {
+    //             ...this.state.rjhtxxData,
+    //             loading: true,
+    //           },
+    //         });
+    //         // 查询供应商下拉列表、合同信息
+    //         const htxxRes = await FetchQueryHTXXByXQTC({
+    //           xmmc: Number(item.xmid),
+    //         });
+    //         if (htxxRes.success) {
+    //           const htxxData = [...htxxRes.record];
+    //           let htxxList = htxxData.reduce((acc, cur) => {
+    //             if (acc.findIndex(x => x.htxxid === cur.htxxid) === -1) {
+    //               return [...acc, cur];
+    //             }
+    //             return acc;
+    //           }, []);
+    //           this.setState({
+    //             rjhtxxData: {
+    //               ...this.state.rjhtxxData,
+    //               list: htxxList,
+    //               loading: false,
+    //             },
+    //           });
+    //           console.log('🚀 ~ htxxList:', htxxList);
+    //         }
+    //       } catch (error) {
+    //         console.error('查询供应商下拉列表、合同信息', error);
+    //         this.setState({
+    //           rjhtxxData: {
+    //             ...this.state.rjhtxxData,
+    //             loading: false,
+    //           },
+    //         });
+    //       }
+    //     };
+
+    //     const htxxxg = id => {
+    //       this.setState({
+    //         editMessageVisible: true,
+    //         rjhtxxData: {
+    //           ...this.state.rjhtxxData,
+    //           curHtxxid: id,
+    //           popoverVisible: false,
+    //         },
+    //       });
+    //     };
+    //     const reoprMoreContent = (
+    //       <div className="list">
+    //         <div className="item" onClick={() => xxlrxg(item)} key="录入">
+    //           录入
+    //         </div>
+    //       </div>
+    //     );
+    //     const documentContent = (
+    //       <Spin tip="加载中" spinning={this.state.rjhtxxData.loading} size="small">
+    //         <div className="list" style={this.state.rjhtxxData.loading ? { minHeight: 40 } : {}}>
+    //           {this.state.rjhtxxData.list?.map(x => (
+    //             <div
+    //               className="item"
+    //               key={x.htxxid}
+    //               style={{
+    //                 height: 'unset',
+    //                 lineHeight: 'unset',
+    //                 marginBottom: 0,
+    //                 paddingTop: 4,
+    //                 paddingBottom: 4,
+    //                 display: 'flex',
+    //                 alignItems: 'center',
+    //               }}
+    //             >
+    //               <Tooltip title={x.htbt} placement="topLeft" key={x.htxxid}>
+    //                 <div className="subject" style={{ color: '#1f1f1f' }}>
+    //                   {x.htbt}
+    //                 </div>
+    //               </Tooltip>
+    //               <div className="opr-btn" onClick={() => htxxxg(x.htxxid)}>
+    //                 修改
+    //               </div>
+    //             </div>
+    //           ))}
+    //           {this.state.rjhtxxData.list.length === 0 && (
+    //             <Empty
+    //               style={{ margin: 0 }}
+    //               image={Empty.PRESENTED_IMAGE_SIMPLE}
+    //               description="暂无数据"
+    //             />
+    //           )}
+    //         </div>
+    //       </Spin>
+    //     );
+    //     return (
+    //       <div className="opr-more">
+    //         <Popover
+    //           placement="bottomRight"
+    //           title={null}
+    //           content={documentContent}
+    //           overlayClassName="document-list-content-popover"
+    //           trigger="click"
+    //           visible={this.state.rjhtxxData.popoverVisible}
+    //           onVisibleChange={v =>
+    //             this.setState({ rjhtxxData: { ...this.state.rjhtxxData, popoverVisible: v } })
+    //           }
+    //         >
+    //           <div className="reopr-btn" onClick={() => htxxck(item)}>
+    //             查看
+    //           </div>
+    //         </Popover>
+    //         <Popover
+    //           placement="bottom"
+    //           title={null}
+    //           content={reoprMoreContent}
+    //           overlayClassName="btn-more-content-popover"
+    //         >
+    //           <div className="reopr-more">
+    //             <i className="iconfont icon-more2" />
+    //           </div>
+    //         </Popover>
+    //       </div>
+    //     );
+    //   }
+    //   return (
+    //     <div className="opr-more">
+    //       <div className="reopr-btn" onClick={() => xxlrxg(item, 'MOD')}>
+    //         修改
+    //       </div>
+    //     </div>
+    //   );
+    // }
     if (done)
       return (
         <div className="opr-more">
@@ -867,12 +1009,12 @@ class ItemBtn extends React.Component {
       });
     };
     //异常填写
-    const zttx = (lcid, lclx) => {
+    const zttx = (xmid, lclx) => {
       //operate=TLC_OALCXX_ZTBG&Table=TLC_OALCXX&OALCID=
       const params = this.getParams('TLC_OALCXX', 'TLC_OALCXX_ZTBG', [
         {
-          name: 'XTLCID',
-          value: Number(lcid),
+          name: 'XMID',
+          value: Number(xmid),
         },
         {
           name: 'LCLX',
@@ -891,6 +1033,17 @@ class ItemBtn extends React.Component {
         <div className="item" onClick={() => lcfq(item)} key="再次发起">
           {item.sxmc === '需求发起' ? '新增发起' : '再次发起'}
         </div>
+        {isOACK && (
+          <div className="item" key="异常填写" onClick={() => zttx(item.xmid, getLclx(item.sxmc))}>
+            异常填写
+            <Tooltip
+              title="当OA流程异常时，请补充填写流程异常原因。"
+              overlayStyle={{ maxWidth: 'unset' }}
+            >
+              <Icon type="question-circle-o" style={{ marginLeft: 4 }} />
+            </Tooltip>
+          </div>
+        )}
         {isFklc && (
           <div className="item" onClick={() => lcdy(item)} key="打印流程附件">
             打印流程附件
@@ -994,15 +1147,6 @@ class ItemBtn extends React.Component {
                     {x.subject}
                   </div>
                 </Tooltip>
-                <div className="opr-btn" onClick={() => zttx(x.url?.lcid, x.url?.lclx)}>
-                  异常填写
-                  <Tooltip
-                    title="当OA流程异常时，请补充填写流程异常原因。"
-                    overlayStyle={{ maxWidth: 'unset' }}
-                  >
-                    <Icon type="question-circle-o" style={{ marginLeft: 4 }} />
-                  </Tooltip>
-                </div>
               </div>
             ))}
           </div>
@@ -1356,7 +1500,7 @@ class ItemBtn extends React.Component {
       isAllWindow: 1,
       title: '异常填写',
       width: '800px',
-      height: '300px',
+      height: '330px',
       style: { top: '60px' },
       visible: oackzttxVisible,
       footer: null,
@@ -1556,6 +1700,7 @@ class ItemBtn extends React.Component {
             projectCode={xmbh}
             isHwPrj={isHwSltPrj}
             ddcgje={this.props.ddcgje}
+            // dhtData={this.props.dhtData}
           />
         )}
 
@@ -1571,6 +1716,7 @@ class ItemBtn extends React.Component {
               })
             }
             onSuccess={() => this.onSuccess('信息修改')}
+            // htxxid={this.state.rjhtxxData.curHtxxid}
           ></ContractInfoUpdate>
         )}
 

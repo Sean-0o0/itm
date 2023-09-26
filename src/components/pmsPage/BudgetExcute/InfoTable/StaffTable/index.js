@@ -274,7 +274,7 @@ class StaffTable extends Component {
       queryType,
       ysglxx = {},
     } = this.props;
-    console.log('🚀 ~ file: index.js:250 ~ StaffTable ~ render ~  tableData:', tableData);
+    // console.log('🚀 ~ file: index.js:250 ~ StaffTable ~ render ~  tableData:', tableData);
     const { current = 1, pageSize = 10 } = pageParam;
     const { drawerData = [], drawerVisible, drawerSpinning } = this.state;
     //金额格式化
@@ -799,7 +799,7 @@ class StaffTable extends Component {
               // expandIconColumnIndex={1}
               // expandIconAsCell={false}
               footer={tableFooter}
-              rowKey={'YSXMMC'}
+              rowKey={(row, index) => row.YSXMMC + index + queryType}
               dataSource={tableData}
               onChange={this.handleTableChange}
               pagination={false}

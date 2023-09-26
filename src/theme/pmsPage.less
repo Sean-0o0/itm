@@ -8379,6 +8379,83 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               }
             }
           }
+
+          .htxx-info-row-box {
+            display: flex;
+            flex-direction: row;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            width: 100%;
+
+            & > .info-item {
+              height: 22px;
+              line-height: 22px;
+              font-size: 14px;
+              font-family: PingFangSC-Regular, PingFang SC;
+              font-weight: 400;
+              color: #303133;
+              width: 32%;
+              text-overflow: ellipsis;
+              overflow: hidden;
+              white-space: nowrap;
+              margin-right: 2%;
+              margin-bottom: 16px;
+
+              &:nth-child(3n) {
+                margin-right: 0;
+              }
+
+              .item-top,
+              .item-bottom {
+                width: 100%;
+
+                span {
+                  display: inline-block;
+                  width: 70px;
+                  text-align: right;
+                  color: #909399;
+                  margin-right: 8px;
+                }
+              }
+
+              .payment-label {
+                width: fit-content;
+              }
+
+              .payment-plan {
+                // width: calc(100% - 70px);
+                display: inline-block;
+
+                div {
+                  margin-bottom: 4px;
+                  max-width: 100%;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                  white-space: nowrap;
+
+                  &:last-child {
+                    margin-bottom: 0;
+                  }
+                }
+              }
+
+              &:last-child {
+                margin-right: 0;
+              }
+
+              .payment-label,
+              span {
+                color: #909399;
+                margin-right: 8px;
+              }
+
+              a {
+                &:hover {
+                  color: #3361ffb8 !important;
+                }
+              }
+            }
+          }
         }
       }
 
