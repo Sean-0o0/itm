@@ -799,7 +799,7 @@ class StaffTable extends Component {
               // expandIconColumnIndex={1}
               // expandIconAsCell={false}
               footer={tableFooter}
-              rowKey={(row, index) => row.YSXMMC + index + queryType}
+              rowKey={(row, index) => index + queryType}
               dataSource={tableData}
               onChange={this.handleTableChange}
               pagination={false}
