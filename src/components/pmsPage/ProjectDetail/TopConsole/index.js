@@ -9,8 +9,8 @@ import {
   Icon,
   Popconfirm,
 } from 'antd';
-import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useHistory } from 'react-router-dom';
 import moment from 'moment';
 import { EncryptBase64 } from '../../../Common/Encrypt';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
@@ -32,6 +32,8 @@ export default function TopConsole(props) {
     haveSpl = false,
     setIsSpinning,
     getMileStoneData,
+    setPrjData,
+    isDDXM,
   } = props;
   const [fileAddVisible, setFileAddVisible] = useState(false); //项目信息修改弹窗显示
   const [src_fileAdd, setSrc_fileAdd] = useState({}); //项目信息修改弹窗显示
@@ -53,8 +55,9 @@ export default function TopConsole(props) {
     title: '',
     url: '#',
   }); //livebos弹窗、付款流程补录弹窗显隐
-  const { prjBasic = {}, member = [], payment = [] } = prjData;
-  const LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const { prjBasic = {}, member = [], payment = [], iterationYear = [] } = prjData;
+  let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
+  const history = useHistory();
 
   //项目经理
   const allowEdit = () => {
@@ -107,7 +110,6 @@ export default function TopConsole(props) {
           id: arr2[i],
         };
       });
-      // console.log('🚀 ~ file: index.js ~ line 73 ~ arr3 ~ arr3 ', arr3, arr, arr2);
       return arr3;
     };
     return (
@@ -366,6 +368,9 @@ export default function TopConsole(props) {
         {!haveSpl && (
           <Menu.Item onClick={() => openLbModal('供应商', 'blgys')}>供应商补录</Menu.Item>
         )}
+        <Menu.Item onClick={() => openLbModal('软件合同签署流程', 'rjhtqs')}>
+          软件合同签署流程
+        </Menu.Item>
         <Menu.Item onClick={() => handleSqModal()}>申请餐券</Menu.Item>
         <Menu.Item onClick={() => handleSqModal('申请权限')}>申请权限</Menu.Item>
       </Menu>
@@ -382,7 +387,6 @@ export default function TopConsole(props) {
     })
       .then(res => {
         if (res?.success) {
-          console.log('🚀 ~ ProjectCollect ~ res', res);
           getPrjDtlData();
         }
       })
@@ -402,14 +406,46 @@ export default function TopConsole(props) {
     getPrjDtlData();
   };
 
+  // 迭代年份
+  // const menu = (
+  //   <Menu>
+  //     {iterationYear.dropdown?.map(x => (
+  //       <Menu.Item
+  //         key={x.NF}
+  //         onClick={() => {
+  //           if (Number(x.NF) !== iterationYear.currentYear) {
+  //             setPrjData(p => ({
+  //               ...p,
+  //               iterationYear: {
+  //                 ...p.iterationYear,
+  //                 currentYear: Number(x.NF),
+  //               },
+  //             }));
+  //             history.push(
+  //               `/pms/manage/ProjectDetail/${EncryptBase64(
+  //                 JSON.stringify({
+  //                   routes,
+  //                   xmid: x.ID,
+  //                 }),
+  //               )}`,
+  //             );
+  //           }
+  //         }}
+  //       >
+  //         {x.NF}
+  //       </Menu.Item>
+  //     ))}
+  //   </Menu>
+  // );
+
   //申请餐券/权限弹窗
   const sqModalProps = {
     isAllWindow: 1,
     // defaultFullScreen: true,
     title: sqModaltxt,
-    width: '600px',
-    height: '300px',
-    style: { top: '60px' },
+    width: '800px',
+    height: '600px',
+    style: { top: '10px' },
     visible: sqModalVisible,
     footer: null,
   };
@@ -779,7 +815,12 @@ export default function TopConsole(props) {
         })}
       </Breadcrumb>
       <div className="prj-info-row">
-        <div className="prj-name">{prjBasic?.XMMC}</div>
+      <div className="prj-name">{prjBasic?.XMMC}</div>
+        {/* <div className="prj-name">
+          {prjBasic.XMMC &&
+            prjBasic.XMMC +
+              (iterationYear.currentYear && isDDXM ? `-${iterationYear.currentYear}` : '')}
+        </div> */}
         <div className="tag-row">
           {prjBasic.SFSC === '0' ? (
             <Popconfirm title="确定收藏吗？" onConfirm={() => handlePrjCollect('SCXM')}>
@@ -814,6 +855,17 @@ export default function TopConsole(props) {
         {prjBasic.XMJL}
         <span className="create-time">创建时间：</span>
         {prjBasic.CJRQ ? moment(prjBasic.CJRQ).format('YYYY-MM-DD') : null}
+        {/* {isDDXM && (
+          <div className="iteration-year">
+            迭代年份：
+            <Dropdown overlay={menu} trigger={['click']}>
+              <span>
+                {iterationYear.currentYear}
+                <i className="iconfont icon-fill-down" />
+              </span>
+            </Dropdown>
+          </div>
+        )} */}
       </div>
     </div>
   );

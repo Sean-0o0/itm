@@ -10,6 +10,7 @@ import {
 } from '../../../services/pmsServices';
 import BasicInfo from './BasicInfo';
 import AttendanceInfo from './AttendanceInfo';
+import moment from 'moment';
 
 class MemberDetailPage extends Component {
   state = {
@@ -107,6 +108,8 @@ class MemberDetailPage extends Component {
             XMJLID: ryxxdata[0]?.XMJLID,
             XMJL: ryxxdata[0]?.XMJL,
             XTZH: ryxxdata[0]?.XTZH,
+            RCSJ: ryxxdata[0]?.RCSJ ? moment(String(ryxxdata[0]?.RCSJ)) : null,
+            LCSJ: ryxxdata[0]?.LCSJ ? moment(String(ryxxdata[0]?.LCSJ)) : null,
           };
           let basicData = {
             JL: ryxxdata[0]?.JL,
@@ -114,6 +117,8 @@ class MemberDetailPage extends Component {
             SYKH: ryxxdata[0]?.SYKH,
             RYZT: ryxxdata[0]?.RYZT,
             BMXY: ryxxdata[0]?.BMXY,
+            RCSJ: ryxxdata[0]?.RCSJ ? moment(String(ryxxdata[0]?.RCSJ)) : null,
+            LCSJ: ryxxdata[0]?.LCSJ ? moment(String(ryxxdata[0]?.LCSJ)) : null,
           };
           let kqxxData = {
             ryid: ryxxdata[0]?.RYID,

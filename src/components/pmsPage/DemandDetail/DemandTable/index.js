@@ -105,6 +105,7 @@ export default function DemandTable(props) {
         {/* {getDateItem('预计初筛日期：', XQNR[0]?.CSRQ)} */}
         {getDateItem('预计综合评测日期：', XQNR[0]?.YJZHPCRQ)}
         {getDateItem('预计试用日期：', XQNR[0]?.YJSYRQ)}
+        {getDateItem('需求上架日期：', XQNR[0]?.XQSJRQ)}
       </div>
       <div className="table-box">
         <Table columns={columns} rowKey={'XQNRID'} dataSource={XQNR} pagination={false} />

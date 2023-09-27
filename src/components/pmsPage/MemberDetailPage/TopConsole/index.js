@@ -119,6 +119,7 @@ class ToConsole extends Component {
         XTZH = ""
       },
     } = this.props;
+    const isDock = zyrole === '外包项目对接人';
     console.log("routes1111", routes)
 
     const btnMoreContent = (
@@ -163,7 +164,7 @@ class ToConsole extends Component {
           editMemberInfoVisible &&
           <EditMemberInfoModel visible={editMemberInfoVisible} data={this.props.data} ryid={ryid}
                                operateType={operateType} closeModal={this.closeModal}
-                               successCallBack={this.successCallBack}/>
+                               successCallBack={this.successCallBack} isDock={isDock}/>
         }
         <div className="back-img">
           <Breadcrumb separator=">">
@@ -222,8 +223,7 @@ class ToConsole extends Component {
               </div>
             </div>
             {
-              //项目经理视角
-              String(LOGIN_USER_INFO.id) === XMJLID ?
+              !isDock ?
                 <div className="header-right flex-r flex1">
                   <Button className="btn-edit" onClick={() => this.handleEditMemberInfo("syqkh")}>
                     试用期考核
