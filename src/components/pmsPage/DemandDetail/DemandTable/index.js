@@ -17,12 +17,15 @@ export default function DemandTable(props) {
   }, []);
 
   const getDateItem = (label, date) => {
-    return (
-      <div className="date-item" key={label}>
-        <span>{label}</span>
-        {moment(date).format('YYYY-MM-DD')}
-      </div>
-    );
+    console.log("🚀 ~ file: index.js:20 ~ getDateItem ~ date:", date)
+    if (date !== undefined)
+      return (
+        <div className="date-item" key={label}>
+          <span>{label}</span>
+          {moment(date).format('YYYY-MM-DD')}
+        </div>
+      );
+    return null;
   };
 
   const columns = [

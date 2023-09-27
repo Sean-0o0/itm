@@ -164,6 +164,10 @@ class ContractSigning extends React.Component {
           message.warn('请选择紧急程度！');
           return;
         }
+        if (errs.includes('XMLX')) {
+          message.warn('请选择项目类型！');
+          return;
+        }
         if (errs.includes('issend')) {
           message.warn('请选择是否直接送审！');
           return;
@@ -261,6 +265,7 @@ class ContractSigning extends React.Component {
           BM2, //传空
           NGR1: '', //传空
           NGR2: '', //传空
+          XMLB: getFieldValue('XMLX'), //项目类型
         },
       },
       //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]
@@ -361,7 +366,7 @@ class ContractSigning extends React.Component {
     const {
       contractSigningVisible,
       xmbh,
-      dictionary: { LCJJCD = [], YZLX = [], CXBM = [] },
+      dictionary: { LCJJCD = [], YZLX = [], CXBM = [], OAXMLX = [] },
     } = this.props;
     let LOGIN_USER_ID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
     const { getFieldDecorator, getFieldValue, setFieldsValue } = this.props.form;
@@ -639,6 +644,37 @@ class ContractSigning extends React.Component {
                                   <Radio value={1}>直接送审</Radio>
                                   <Radio value={2}>发送至OA草稿箱</Radio>
                                 </Radio.Group>,
+                              )}
+                            </Form.Item>
+                          </Col>
+                          <Col span={12}>
+                            <Form.Item label="项目类型">
+                              {getFieldDecorator('XMLX', {
+                                rules: [
+                                  {
+                                    required: true,
+                                    message: '请选择项目类型',
+                                  },
+                                ],
+                              })(
+                                <Select
+                                  showSearch
+                                  showArrow
+                                  allowClear
+                                  filterOption={(input, option) =>
+                                    option.props.children
+                                      .toLowerCase()
+                                      .indexOf(input.toLowerCase()) >= 0
+                                  }
+                                >
+                                  {OAXMLX.map((item, index) => {
+                                    return (
+                                      <Option key={index} value={item.ibm}>
+                                        {item.note}
+                                      </Option>
+                                    );
+                                  })}
+                                </Select>,
                               )}
                             </Form.Item>
                           </Col>
