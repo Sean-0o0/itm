@@ -35,7 +35,7 @@ export default function InfoTable(props) {
     {
       title: '项目名称',
       dataIndex: 'XMMC',
-      width: '16%',
+      // width: '16%',
       key: 'XMMC',
       ellipsis: true,
       // align: 'right',
@@ -55,9 +55,21 @@ export default function InfoTable(props) {
       ellipsis: true,
     },
     {
+      title: '操作日期',
+      dataIndex: 'CZRQ',
+      width: '12%',
+      key: 'CZRQ',
+      ellipsis: true,
+      render: text => (
+        <span style={{ cursor: 'default' }}>
+          {(text && moment(String(text)).format('YYYY-MM-DD')) || '-'}
+        </span>
+      ),
+    },
+    {
       title: '上班时间',
       dataIndex: 'SBSJ',
-      width: '12%',
+      width: '16%',
       key: 'SBSJ',
       ellipsis: true,
       render: text => (
@@ -69,7 +81,7 @@ export default function InfoTable(props) {
     {
       title: '下班时间',
       dataIndex: 'XBSJ',
-      width: '12%',
+      width: '16%',
       // align: 'right',
       key: 'XBSJ',
       ellipsis: true,
@@ -84,7 +96,7 @@ export default function InfoTable(props) {
     {
       title: '工时',
       dataIndex: 'GS',
-      width: '6%',
+      width: '8%',
       key: 'GS',
       ellipsis: true,
       // align: 'right',
@@ -95,7 +107,7 @@ export default function InfoTable(props) {
     {
       title: '状态',
       dataIndex: 'ZT',
-      width: '6%',
+      width: '12%',
       key: 'ZT',
       ellipsis: true,
       // align: 'right',
