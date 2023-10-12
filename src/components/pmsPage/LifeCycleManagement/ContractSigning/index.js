@@ -222,7 +222,7 @@ class ContractSigning extends React.Component {
 
   //发起流程到oa
   individuationGetOAResult = values => {
-    // console.log("params", this.handleParams(values))
+    console.log("params", this.handleParams(values))
     return IndividuationGetOAResult(this.handleParams(values))
       .then(result => {
         const { code = -1, record = [] } = result;
@@ -265,7 +265,7 @@ class ContractSigning extends React.Component {
           BM2, //传空
           NGR1: '', //传空
           NGR2: '', //传空
-          XMLB: getFieldValue('XMLX'), //项目类型
+          XMLB: values.XMLX, //项目类型
         },
       },
       //关联文件id，数组形式，多个id用“,”隔开，比如[102,102]

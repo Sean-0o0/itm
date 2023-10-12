@@ -142,6 +142,8 @@ const {
     querySelfDevProjWHstatistics,
     attendanceStatisticExportExcel,
     queryLeadApprovalFlow,
+    updatePaymentContract,
+    queryIteContractList,
   },
 } = api;
 
@@ -1517,6 +1519,26 @@ export async function AttendanceStatisticExportExcel(payload) {
 export async function QueryLeadApprovalFlow(payload) {
   const option = {
     url: queryLeadApprovalFlow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 更新付款关联合同信息
+export async function UpdatePaymentContract(payload) {
+  const option = {
+    url: updatePaymentContract,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询迭代合同列表
+export async function QueryIteContractList(payload) {
+  const option = {
+    url: queryIteContractList,
     method: 'post',
     data: payload,
   };

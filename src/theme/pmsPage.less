@@ -6711,12 +6711,13 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         height: 22px;
         font-size: 14px;
         font-weight: 400;
-        color: #303133;
+        color: #909399;
         line-height: 22px;
         font-family: PingFangSC-regular, PingFang SC;
         margin-left: 58px;
 
         span {
+          color: #303133;
           cursor: pointer;
 
           .icon-fill-down {
@@ -6863,7 +6864,7 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
               .title-right-img {
                 height: 60px;
                 position: absolute;
-                right: 0;
+                right: 10px;
                 top: -6px;
               }
             }
@@ -6981,16 +6982,32 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
                 width: 100%;
                 height: 40px;
                 background: #f3f3f4;
-                font-size: 14px;
-                font-family: PingFangSC-Medium, PingFang SC;
-                font-weight: bold;
-                color: #303133;
-                line-height: 40px;
                 padding: 0 16px;
-                max-width: 100%;
-                text-overflow: ellipsis;
-                overflow: hidden;
-                white-space: nowrap;
+                display: flex;
+                flex-direction: row;
+                align-items: center;
+                justify-content: space-between;
+
+                .title-times {
+                  flex-grow: 1;
+                  text-overflow: ellipsis;
+                  overflow: hidden;
+                  white-space: nowrap;
+                  font-size: 14px;
+                  font-family: PingFangSC-Medium, PingFang SC;
+                  font-weight: bold;
+                  color: #303133;
+                  line-height: 40px;
+                }
+
+                .title-range {
+                  flex-shrink: 0;
+                  font-size: 14px;
+                  font-family: PingFangSC-Regular, PingFang SC;
+                  font-weight: 400;
+                  color: #909399;
+                  line-height: 22px;
+                }
               }
 
               & > .item-bottom {
@@ -24110,6 +24127,26 @@ li.ant-select-tree-treenode-disabled > .ant-select-tree-node-content-wrapper spa
         flex-grow: 1;
         .function-block();
       }
+    }
+  }
+}
+
+//关联迭代合同弹窗
+.association-contract-modal {
+  .default-modal();
+  .content-box {
+    .ant-form-item {
+      margin-bottom: 0px;
+    }
+  }
+}
+
+//软件费用审批流程-无合同发起
+.software-payment-wht-modal {
+  .default-modal();
+  .content-box {
+    max-height: 700px;
+    .ant-form-item {
     }
   }
 }

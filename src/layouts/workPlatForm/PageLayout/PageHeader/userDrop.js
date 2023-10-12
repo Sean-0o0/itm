@@ -89,7 +89,7 @@ export default class UserDrop extends React.Component {
 
   //获取用户性别
   getUserRole = () => {
-    JSON.parse(sessionStorage.getItem('user')).id &&
+    JSON.parse(sessionStorage.getItem('user')).id !== undefined &&
       QueryUserRole({
         userId: String(JSON.parse(sessionStorage.getItem('user')).id),
       })

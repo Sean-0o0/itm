@@ -805,4 +805,16 @@ export default [
     url: '/projectManage/queryLeadApprovalFlow',
     dis: '查询待领导审批流程',
   },
+  {
+    code: '',
+    key: 'updatePaymentContract',
+    url: '/projectManage/updatePaymentContract',
+    dis: '更新付款关联合同信息',
+  },
+  {
+    code: '',
+    key: 'queryIteContractList',
+    url: '/projectManage/queryIteContractList',
+    dis: '查询迭代合同列表',
+  },
 ];
