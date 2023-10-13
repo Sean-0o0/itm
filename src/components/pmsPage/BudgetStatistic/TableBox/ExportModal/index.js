@@ -274,7 +274,7 @@ function ExportModal(props) {
                     <Radio value="ZB">资本性预算</Radio>
                     <Radio value="FZB">非资本性预算</Radio>
                     <Radio value="ALL">资本性和非资本性预算</Radio>
-                    {/* <Radio value="KY">科研预算</Radio> */}
+                    <Radio value="KY">科研预算</Radio>
                   </Radio.Group>,
                 )}
               </Form.Item>
