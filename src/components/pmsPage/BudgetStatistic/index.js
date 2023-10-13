@@ -199,7 +199,7 @@ export default function BudgetStatistic(props) {
           >
             <TabPane tab="资本性预算" key="ZB"></TabPane>
             <TabPane tab="非资本性预算" key="FZB"></TabPane>
-            <TabPane tab="科研预算" key="KY"></TabPane>
+            {/* <TabPane tab="科研预算" key="KY"></TabPane> */}
           </Tabs>
         </div>
         <TableBox

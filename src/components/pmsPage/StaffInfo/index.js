@@ -91,7 +91,7 @@ export default function StaffInfo(props) {
             titleName: 'orgName',
             normalizeTitleName: 'title',
             normalizeKeyName: 'value',
-          })[0].children[0].children[0].children;
+          })[0].children[0].children[0].children[0].children;
           data.push({
             value: 'szyyzx',
             title: '数字应用中心',
