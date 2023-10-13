@@ -5,6 +5,7 @@ import {
   FetchqueryOutsourceRequirement,
   OperateOutsourceRequirements,
 } from '../../../../../services/pmsServices';
+import { connect } from 'dva';
 
 const { TextArea } = Input;
 

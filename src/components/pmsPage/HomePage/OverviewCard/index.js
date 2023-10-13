@@ -17,8 +17,11 @@ import PaymentProcess from '../../LifeCycleManagement/PaymentProcess';
 import BridgeModel from '../../../Common/BasicModal/BridgeModel';
 import EditProjectInfoModel from '../../EditProjectInfoModel';
 import EditPrjTracking from '../../ProjectTracking/editPrjTracking';
+import { connect } from 'dva';
 
-export default function OverviewCard(props) {
+export default connect(({ global }) => ({
+  dataAnonymization: global.dataAnonymization, //是否数据匿名化 脱敏
+}))(function OverviewCard(props) {
   const [hovered, setHovered] = useState(false);
   const {
     overviewInfo = [],
@@ -31,6 +34,7 @@ export default function OverviewCard(props) {
     setStatisticYearData,
     handleCurYearChange,
     componentType = 'default', // 'shortcut'
+    dataAnonymization,
   } = props;
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   const location = useLocation();
@@ -694,7 +698,7 @@ export default function OverviewCard(props) {
             </div>
             <div className="desc">
               {overviewInfo?.sm}
-              {overviewInfo?.sm && '，'}这是你在****的第
+              {overviewInfo?.sm && '，'}这是你在{dataAnonymization ? '****' : '浙商证券'}的第
               {moment().diff(moment(overviewInfo?.rzsj), 'days')}天
             </div>
           </div>
@@ -845,4 +849,4 @@ export default function OverviewCard(props) {
       </Fragment>
     );
   return '';
-}
+});

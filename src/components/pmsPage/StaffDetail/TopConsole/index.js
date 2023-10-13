@@ -7,6 +7,7 @@ import fqImg from '../../../../assets/staffDetail/img_fq.png';
 import cyImg from '../../../../assets/staffDetail/img_cy.png';
 import zbImg from '../../../../assets/staffDetail/img_zb.png';
 import ktImg from '../../../../assets/staffDetail/img_kt.png';
+import { connect } from 'dva';
 
 class ToConsole extends Component {
   state = {};
@@ -26,6 +27,7 @@ class ToConsole extends Component {
         xb = '-', //性别
         zbxm = '-', //专班项目
       },
+      dataAnonymization,
     } = this.props;
     console.log('routesroutes-ccc-staf', routes);
     return (
@@ -54,7 +56,7 @@ class ToConsole extends Component {
               <div className="staff-info-cont flex-c">
                 <div className="staff-line-import">
                   <span className="staff-name">{rymc}</span>
-                  <span className="staff-experience">&nbsp;已加入****{jrts}天</span>
+                  <span className="staff-experience">&nbsp;已加入{dataAnonymization ? '****' : '浙商证券'}{jrts}天</span>
                 </div>
                 <div className="staff-line flex1 flex-r">
                   <span className="staff-label">部门：</span>
@@ -116,4 +118,6 @@ class ToConsole extends Component {
   }
 }
 
-export default ToConsole;
+export default connect(({ global }) => ({
+  dataAnonymization: global.dataAnonymization, //是否数据匿名化 脱敏
+}))(ToConsole);
