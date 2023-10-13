@@ -55,7 +55,7 @@ export default function InfoTable(props) {
       ellipsis: true,
     },
     {
-      title: '操作日期',
+      title: '日期',
       dataIndex: 'CZRQ',
       width: '12%',
       key: 'CZRQ',
@@ -69,7 +69,7 @@ export default function InfoTable(props) {
     {
       title: '上班时间',
       dataIndex: 'SBSJ',
-      width: '16%',
+      width: '18%',
       key: 'SBSJ',
       ellipsis: true,
       render: text => (
@@ -81,7 +81,7 @@ export default function InfoTable(props) {
     {
       title: '下班时间',
       dataIndex: 'XBSJ',
-      width: '16%',
+      width: '18%',
       // align: 'right',
       key: 'XBSJ',
       ellipsis: true,
