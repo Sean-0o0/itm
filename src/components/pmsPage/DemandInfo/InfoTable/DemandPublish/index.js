@@ -9,7 +9,7 @@ import {
 const { TextArea } = Input;
 
 function ExpenseInfo(props) {
-  const { visible, setVisible, form, xqid = -2, WBRYGW = [], reflush } = props;
+  const { visible, setVisible, form, xqid = -2, WBRYGW = [], reflush, dataAnonymization } = props;
   const {
     validateFields,
     getFieldValue,
@@ -272,7 +272,9 @@ function ExpenseInfo(props) {
             {getInput(
               '需求名称',
               'xqmc',
-              `****人力外包需求（${moment().format('YYYYMMDD')}）（${data.wbxq.XMMC}）`,
+              dataAnonymization
+                ? `****人力外包需求（${moment().format('YYYYMMDD')}）（${data.wbxq.XMMC}）`
+                : `浙商证券人力外包需求（${moment().format('YYYYMMDD')}）（${data.wbxq.XMMC}）`,
             )}
           </Row>
           <Row>
@@ -323,4 +325,7 @@ function ExpenseInfo(props) {
     </Modal>
   );
 }
-export default Form.create()(ExpenseInfo);
+export default connect(({ global }) => ({
+  dictionary: global.dictionary,
+  dataAnonymization: global.dataAnonymization, //是否数据匿名化 脱敏
+}))(Form.create()(ExpenseInfo));

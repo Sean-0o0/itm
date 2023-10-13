@@ -1,9 +1,10 @@
 import React from 'react';
 import { connect } from 'dva';
 import { Layout } from 'antd';
-import classnames from 'classnames';
+import classnames from 'classnames'; 
 import LoginForm from '../../components/WorkPlatForm/LoginPage';
-import mapLogo from '../../assets/apex-logo-login1.png';
+import mapLogo from '../../assets/apex-logo-zszq-left.png';
+import mapLogo2 from '../../assets/apex-logo-login1.png';
 import mapImg from '../../assets/map.png';
 import TrackCanvas from './TrackCanvas';
 // import testImg from '../../../../src/assets/dev_app_qrcode.png';
@@ -77,7 +78,7 @@ class LoginPageLayout extends React.PureComponent {
 
   render() {
     const { fontcolor = '', bgpicture, logo, description, sysname, copyright, sbjcolor, captcha } = this.state;
-    const { dispatch, theme } = this.props;
+    const { dispatch, theme, dataAnonymization } = this.props;
     this.setLayoutBg();
 
     return (
@@ -86,7 +87,8 @@ class LoginPageLayout extends React.PureComponent {
           <div className="m-header-login-content">
             <div className="m-logo">
               <div style={{color: '#fff', fontSize: '20px', width: '200px'}}>
-              <img src={mapLogo} alt="" />
+              <img src={dataAnonymization ? mapLogo2: mapLogo} alt="" />
+                {!dataAnonymization && '浙商证券'}
                 </div>
               {/* {
                 logo && (
@@ -157,7 +159,7 @@ class LoginPageLayout extends React.PureComponent {
         }
         {
           copyright === '' && (
-            <Footer style={{ textAlign: 'center' }}>©福建顶点软件股份有限公司版权所有</Footer>
+            <Footer style={{ textAlign: 'center' }}>©{dataAnonymization ? '福建顶点软件' : '浙商证券'}股份有限公司版权所有</Footer>
           )
         }
       </Layout>
@@ -168,4 +170,5 @@ class LoginPageLayout extends React.PureComponent {
 export default connect(({ global, login }) => ({
   theme: global.theme,
   login,
+  dataAnonymization: global.dataAnonymization, //是否数据匿名化 脱敏
 }))(LoginPageLayout);

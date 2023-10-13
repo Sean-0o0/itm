@@ -19,8 +19,9 @@ class RealtivePicturePage extends Component {
   };
 
   componentDidMount() {
+    //这边不处理数据脱敏
     const dataSource = [
-      { XMMC: '****资管机构版网上交易项目', YSMC: '备用预算', GYS: '供应商1', RYMC: '文娟娟,童卫' },
+      { XMMC: '浙商证券资管机构版网上交易项目', YSMC: '备用预算', GYS: '供应商1', RYMC: '文娟娟,童卫' },
       {
         XMMC: '客户画像二期',
         YSMC: '数据治理与大数据应用',
@@ -179,7 +180,7 @@ class RealtivePicturePage extends Component {
         RYMC: '谢尚进',
       },
       {
-        XMMC: '同花顺联合运营-****汇金资讯投顾产品项目',
+        XMMC: '同花顺联合运营-浙商证券汇金资讯投顾产品项目',
         YSMC: '新业务支持',
         GYS: '供应商15',
         RYMC: '崔倬苒,王宪文,童卫',
@@ -188,7 +189,7 @@ class RealtivePicturePage extends Component {
       { XMMC: '业务专家招投标系统', YSMC: '自研项目无预算', GYS: '供应商15', RYMC: '杨学燃' },
       { XMMC: '财务制单系统', YSMC: '自研项目无预算', GYS: '供应商9', RYMC: '杨学燃' },
       {
-        XMMC: '****会议会务管理系统',
+        XMMC: '浙商证券会议会务管理系统',
         YSMC: '数字办公',
         GYS: '供应商39',
         RYMC: '徐文春,杨学燃',
@@ -307,7 +308,7 @@ class RealtivePicturePage extends Component {
       },
       {
         XMMC: '数据中心CISCO设备维保采购',
-        YSMC: '****机房网络设备续保项目',
+        YSMC: '浙商证券机房网络设备续保项目',
         GYS: '供应商5',
         RYMC: '邢玉平',
       },
@@ -381,7 +382,7 @@ class RealtivePicturePage extends Component {
         RYMC: '叶利娜',
       },
       {
-        XMMC: '****陆家嘴世纪金融广场1号楼27楼 智能化工程',
+        XMMC: '浙商证券陆家嘴世纪金融广场1号楼27楼 智能化工程',
         YSMC: '27楼智能化工程',
         GYS: '供应商7',
         RYMC: '江宾',
@@ -429,8 +430,8 @@ class RealtivePicturePage extends Component {
         RYMC: '钟政乐',
       },
       {
-        XMMC: '****股份有限公司数据中心非思科网络核心设备维保采购',
-        YSMC: '****机房网络设备续保项目',
+        XMMC: '浙商证券股份有限公司数据中心非思科网络核心设备维保采购',
+        YSMC: '浙商证券机房网络设备续保项目',
         GYS: '供应商28',
         RYMC: '李佩星',
       },
@@ -479,7 +480,7 @@ class RealtivePicturePage extends Component {
       },
       { XMMC: '投资管理系统', YSMC: '新业务支持', GYS: '供应商62', RYMC: '朱浩路,童卫' },
       {
-        XMMC: '****资管交易所交易行为控制功能采购项目',
+        XMMC: '浙商证券资管交易所交易行为控制功能采购项目',
         YSMC: '备用预算',
         GYS: '供应商72',
         RYMC: '徐海锋',

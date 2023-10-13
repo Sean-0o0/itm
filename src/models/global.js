@@ -28,6 +28,7 @@ export default {
     authoritiesFlag: false, // 获取用户功能权限点接口是否调用过
     userHighestLevelDept: '', // 当前登录人最高级别的营业部id
     globalDepartments: [],
+    dataAnonymization: false, //是否数据匿名化 脱敏 - 敏感信息不能输出到日志和返回到前端展示，即接口返回了敏感信息
   },
 
   subscriptions: {
