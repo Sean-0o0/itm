@@ -24,9 +24,9 @@ import PrjTracking from './PrjTracking';
 import PrjNode from './PrjNode';
 import PrjDoc from './PrjDoc';
 import ShortcutCard from './ShortcutCard';
-import PaymentRecord from './PaymentRecord';
-import IterationContent from './IterationContent';
-import IterationPayment from './IterationPayment';
+// import PaymentRecord from './PaymentRecord';
+// import IterationContent from './IterationContent';
+// import IterationPayment from './IterationPayment';
 import AttendanceInfo from './AttendanceInfo';
 import moment from 'moment';
 
@@ -517,34 +517,35 @@ export default function ProjectDetail(props) {
               }));
             }
           }
-
-          //获取项目迭代内容
-          const iterationCtnPromise = QueryProjectUpdateInfo({
-            projectId: Number(xmid),
-          });
-          //获取迭代项目付款计划
-          const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
-          const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
-            iterationCtnPromise,
-            iterationPaymentPromise,
-          ]);
-          const iterationPaymentData = (await iterationPaymentRes) || {};
-          const iterationCtnData = (await iterationCtnRes) || {};
-          if (iterationCtnData.success) {
-            let iterationCtnArr = JSON.parse(iterationCtnData.result);
-            setPrjData(p => ({
-              ...p,
-              iterationCtn: iterationCtnArr,
-            }));
-          }
-          if (iterationPaymentData.success) {
-            setPrjData(p => ({
-              ...p,
-              iterationPayment: JSON.parse(iterationPaymentData.result),
-            }));
-          }
         }
       }
+      //     //获取项目迭代内容
+      //     const iterationCtnPromise = QueryProjectUpdateInfo({
+      //       projectId: Number(xmid),
+      //     });
+      //     //获取迭代项目付款计划
+      //     const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
+      //     const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
+      //       iterationCtnPromise,
+      //       iterationPaymentPromise,
+      //     ]);
+      //     const iterationPaymentData = (await iterationPaymentRes) || {};
+      //     const iterationCtnData = (await iterationCtnRes) || {};
+      //     if (iterationCtnData.success) {
+      //       let iterationCtnArr = JSON.parse(iterationCtnData.result);
+      //       setPrjData(p => ({
+      //         ...p,
+      //         iterationCtn: iterationCtnArr,
+      //       }));
+      //     }
+      //     if (iterationPaymentData.success) {
+      //       setPrjData(p => ({
+      //         ...p,
+      //         iterationPayment: JSON.parse(iterationPaymentData.result),
+      //       }));
+      //     }
+      //   }
+      // }
 
       // e = performance.now();
       // console.log(`Request time: ${e - s} milliseconds`, s, e);
@@ -987,7 +988,7 @@ export default function ProjectDetail(props) {
         />
         <div className="detail-row">
           <div className="col-left">
-            {isDDXM && (
+            {/* {isDDXM && (
               <IterationContent prjData={prjData} xmid={xmid} getIterationCtn={getIterationCtn} />
             )}
             {isDDXMFK && (
@@ -996,7 +997,7 @@ export default function ProjectDetail(props) {
                 xmid={xmid}
                 getIterationPayment={getIterationPayment}
               />
-            )}
+            )}*/}
             <MileStone
               xmid={xmid}
               prjData={prjData}
@@ -1059,7 +1060,7 @@ export default function ProjectDetail(props) {
               getPrjDtlData={getPrjDtlData}
               isLeader={isLeader}
             />
-            {isDDXM && <PaymentRecord prjData={prjData} />}
+            {/* {isDDXM && <PaymentRecord prjData={prjData} />} */}
             <PrjNode prjData={prjData} />
             <PrjDoc
               prjDocData={prjDocData}
