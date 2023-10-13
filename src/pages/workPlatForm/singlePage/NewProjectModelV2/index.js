@@ -1397,7 +1397,7 @@ class NewProjectModelV2 extends React.Component {
           });
           this.setState({
             staffList: result,
-            organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), '1'),
+            organizationStaffTreeList: this.toOrgTree(this.state.organizationList.concat(arr), 0),
           });
         }
       })
@@ -1982,17 +1982,28 @@ class NewProjectModelV2 extends React.Component {
               if (
                 item.XMMC === '' ||
                 item.XMMC == null ||
-                item.XMJL === '' || item.XMJL == null ||
-                item.XMLX === '' || item.XMLX == null ||
-                item.YYBM === '' || item.YYBM == null ||
-                item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
-                item.GLYS === '' || item.GLYS == null ||
+                item.XMJL === '' ||
+                item.XMJL == null ||
+                item.XMLX === '' ||
+                item.XMLX == null ||
+                item.YYBM === '' ||
+                item.YYBM == null ||
+                item.CGFS === '' ||
+                item.CGFS == null ||
+                item.CGFS === '-1' ||
+                item.GLYS === '' ||
+                item.GLYS == null ||
                 // || (item.XMYS === ''||item.XMYS == null)
-                item.RJYS === '' || item.RJYS == null ||
-                item.SFBHYJ === '' || item.SFBHYJ == null ||
-                item.SFWYJRWNXQ === '' || item.SFWYJRWNXQ == null ||
-                item.KJCGJE === '' || item.KJCGJE == null ||
-                item.DDCGJE === '' || item.DDCGJE == null
+                item.RJYS === '' ||
+                item.RJYS == null ||
+                item.SFBHYJ === '' ||
+                item.SFBHYJ == null ||
+                item.SFWYJRWNXQ === '' ||
+                item.SFWYJRWNXQ == null ||
+                item.KJCGJE === '' ||
+                item.KJCGJE == null ||
+                item.DDCGJE === '' ||
+                item.DDCGJE == null
               ) {
                 subItemflag = false;
               }
@@ -2000,12 +2011,20 @@ class NewProjectModelV2 extends React.Component {
               if (
                 item.XMMC === '' ||
                 item.XMMC == null ||
-                item.XMJL === '' || item.XMJL == null ||
-                item.XMLX === '' || item.XMLX == null ||
-                item.YYBM === '' || item.YYBM == null ||
-                item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
-                item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
-                item.XMYS === '' || item.XMYS == null
+                item.XMJL === '' ||
+                item.XMJL == null ||
+                item.XMLX === '' ||
+                item.XMLX == null ||
+                item.YYBM === '' ||
+                item.YYBM == null ||
+                item.CGFS === '' ||
+                item.CGFS == null ||
+                item.CGFS === '-1' ||
+                item.GLYS === '' ||
+                item.GLYS == null ||
+                item.GLYS === '-99' ||
+                item.XMYS === '' ||
+                item.XMYS == null
                 // || (item.RJYS === ''||item.RJYS == null)
                 // || (item.SFBHYJ === ''||item.SFBHYJ == null)
               ) {
@@ -2017,11 +2036,17 @@ class NewProjectModelV2 extends React.Component {
           if (
             item.XMMC === '' ||
             item.XMMC == null ||
-            item.XMJL === '' || item.XMJL == null ||
-            item.XMLX === '' || item.XMLX == null ||
-            item.YYBM === '' || item.YYBM == null ||
-            item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
-            item.XMYS === '' || item.XMYS == null
+            item.XMJL === '' ||
+            item.XMJL == null ||
+            item.XMLX === '' ||
+            item.XMLX == null ||
+            item.YYBM === '' ||
+            item.YYBM == null ||
+            item.GLYS === '' ||
+            item.GLYS == null ||
+            item.GLYS === '-99' ||
+            item.XMYS === '' ||
+            item.XMYS == null
             // || (item.RJYS === ''||item.RJYS == null)
             // || (item.SFBHYJ === ''||item.SFBHYJ == null)
           ) {
@@ -2031,12 +2056,20 @@ class NewProjectModelV2 extends React.Component {
           if (
             item.XMMC === '' ||
             item.XMMC == null ||
-            item.XMJL === '' || item.XMJL == null ||
-            item.XMLX === '' || item.XMLX == null ||
-            item.YYBM === '' || item.YYBM == null ||
-            item.CGFS === '' || item.CGFS == null || item.CGFS === '-1' ||
-            item.GLYS === '' || item.GLYS == null || item.GLYS === '-99' ||
-            item.XMYS === '' || item.XMYS == null
+            item.XMJL === '' ||
+            item.XMJL == null ||
+            item.XMLX === '' ||
+            item.XMLX == null ||
+            item.YYBM === '' ||
+            item.YYBM == null ||
+            item.CGFS === '' ||
+            item.CGFS == null ||
+            item.CGFS === '-1' ||
+            item.GLYS === '' ||
+            item.GLYS == null ||
+            item.GLYS === '-99' ||
+            item.XMYS === '' ||
+            item.XMYS == null
             // || (item.RJYS === ''||item.RJYS == null)
             // || (item.SFBHYJ === ''||item.SFBHYJ == null)
           ) {

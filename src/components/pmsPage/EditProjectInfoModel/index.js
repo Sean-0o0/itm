@@ -1623,7 +1623,7 @@ class EditProjectInfoModel extends React.Component {
             };
             arr.push(e);
           });
-          let treeRes = this.toOrgTree(this.state.organizationList.concat(arr), '1');
+          let treeRes = this.toOrgTree(this.state.organizationList.concat(arr), 0);
           this.setState({
             staffList: result,
             organizationStaffTreeList: treeRes,
