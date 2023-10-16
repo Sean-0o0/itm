@@ -12,16 +12,18 @@ const CustomRptInfo = props => {
   // console.log("🚀 ~ file: index.js:12 ~ CustomRptInfo ~  props:",  props)
   let bbid = -1;
   let bbmc = '';
+  let cjrid = -1;
   let routes2 = [];
   if (props.match.params.params !== undefined) {
     let obj = JSON.parse(DecryptBase64(encryptParams));
     bbid = obj.bbid;
     bbmc = obj.bbmc;
+    cjrid = obj.cjrid;
     obj.routes &&
-    (routes2 = obj.routes?.concat({
-      name: '报表详情',
-      pathname: props?.location?.pathname,
-    }));
+      (routes2 = obj.routes?.concat({
+        name: '报表详情',
+        pathname: props?.location?.pathname,
+      }));
   }
 
   //去重
@@ -38,7 +40,13 @@ const CustomRptInfo = props => {
 
   return (
     <Fragment>
-      <CustomRptInfoTab dictionary={dictionary} routes={newArr} bbid={bbid} bbmc={bbmc}/>
+      <CustomRptInfoTab
+        dictionary={dictionary}
+        routes={newArr}
+        bbid={bbid}
+        bbmc={bbmc}
+        cjrid={cjrid}
+      />
     </Fragment>
   );
 };
