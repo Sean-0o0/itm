@@ -23,11 +23,11 @@ import { FetchQueryProjectLabel } from '../../../services/projectManage';
 import PrjTracking from './PrjTracking';
 import PrjNode from './PrjNode';
 import PrjDoc from './PrjDoc';
-// import ShortcutCard from './ShortcutCard';
-// import PaymentRecord from './PaymentRecord';
-// import IterationContent from './IterationContent';
-// import IterationPayment from './IterationPayment';
-// import AttendanceInfo from './AttendanceInfo';
+import ShortcutCard from './ShortcutCard';
+import PaymentRecord from './PaymentRecord';
+import IterationContent from './IterationContent';
+import IterationPayment from './IterationPayment';
+import AttendanceInfo from './AttendanceInfo';
 import moment from 'moment';
 
 export default function ProjectDetail(props) {
@@ -441,111 +441,110 @@ export default function ProjectDetail(props) {
         setMsgData([...JSON.parse(msgData.result)]);
       }
 
-      // if (infoData.success) {
-      //   const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
-      //   if (XMJBXX.YSLX === '科研预算') {
-      //     //获取考勤信息 - 月份数据
-      //     const attendanceMonthRes = await QueryMemberAttendanceRcd({
-      //       projectId: Number(xmid),
-      //       month: -1,
-      //       queryType: 'YF',
-      //     });
-      //     if (attendanceMonthRes.success) {
-      //       let YFArr = (JSON.parse(attendanceMonthRes.result) || [])
-      //         .map(x => String(x.YF))
-      //         .reverse();
-      //       if (YFArr.length > 0) {
-      //         //获取考勤信息 - 左侧信息
-      //         const attendanceRes = await QueryMemberAttendanceRcd({
-      //           projectId: Number(xmid),
-      //           month: Number(YFArr[YFArr.length - 1]),
-      //           queryType: 'GL',
-      //         });
-      //         if (attendanceRes.success) {
-      //           let attendanceArr = JSON.parse(attendanceRes.result);
-      //           setPrjData(p => ({
-      //             ...p,
-      //             attendance: attendanceArr,
-      //           }));
-      //           setDaysData(p => ({
-      //             ...p,
-      //             curMonth: YFArr[YFArr.length - 1],
-      //             monthData: YFArr,
-      //             activeId: -1, //高亮的 RYID
-      //             attendanceDays: [], //出勤天
-      //             attendanceHalfDays: [], //出勤半天
-      //             leaveDays: [], //请假天
-      //             leaveHalfDays: [], //请假半天
-      //             overTimeDays: [], //加班天
-      //             overTimeHalfDays: [], //加班半天
-      //           }));
-      //         }
-      //       }
-      //     }
+      if (infoData.success) {
+        const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
+        if (XMJBXX.YSLX === '科研预算') {
+          //获取考勤信息 - 月份数据
+          const attendanceMonthRes = await QueryMemberAttendanceRcd({
+            projectId: Number(xmid),
+            month: -1,
+            queryType: 'YF',
+          });
+          if (attendanceMonthRes.success) {
+            let YFArr = (JSON.parse(attendanceMonthRes.result) || [])
+              .map(x => String(x.YF))
+              .reverse();
+            if (YFArr.length > 0) {
+              //获取考勤信息 - 左侧信息
+              const attendanceRes = await QueryMemberAttendanceRcd({
+                projectId: Number(xmid),
+                month: Number(YFArr[YFArr.length - 1]),
+                queryType: 'GL',
+              });
+              if (attendanceRes.success) {
+                let attendanceArr = JSON.parse(attendanceRes.result);
+                setPrjData(p => ({
+                  ...p,
+                  attendance: attendanceArr,
+                }));
+                setDaysData(p => ({
+                  ...p,
+                  curMonth: YFArr[YFArr.length - 1],
+                  monthData: YFArr,
+                  activeId: -1, //高亮的 RYID
+                  attendanceDays: [], //出勤天
+                  attendanceHalfDays: [], //出勤半天
+                  leaveDays: [], //请假天
+                  leaveHalfDays: [], //请假半天
+                  overTimeDays: [], //加班天
+                  overTimeHalfDays: [], //加班半天
+                }));
+              }
+            }
+          }
 
-      //     // //项目创建时间、考勤左侧信息获取后，开始获取右侧信息
-      //     // if (infoData.success && attendanceRes.success) {
-      //     //   const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
-      //     //   const LEFT = JSON.parse(attendanceRes.result) || [];
-      //     //   // console.log('🚀 ~ file: index.js:473 ~ handlePromiseAll ~ LEFT:', LEFT);
-      //     //   if (LEFT.length !== 0 && getMonthRange(XMJBXX.CJRQ).length !== 0) {
-      //     //     // 获取个人考勤信息 - 右侧信息
-      //     //     getCalendarData(
-      //     //       LEFT[0]?.RYID,
-      //     //       Number(getMonthRange(XMJBXX.CJRQ)[getMonthRange(XMJBXX.CJRQ).length - 1]),
-      //     //       Number(xmid),
-      //     //     );
-      //     //   }
-      //     // }
-      //   }
+          // //项目创建时间、考勤左侧信息获取后，开始获取右侧信息
+          // if (infoData.success && attendanceRes.success) {
+          //   const XMJBXX = JSON.parse(infoData.xmjbxxRecord)[0] || {};
+          //   const LEFT = JSON.parse(attendanceRes.result) || [];
+          //   // console.log('🚀 ~ file: index.js:473 ~ handlePromiseAll ~ LEFT:', LEFT);
+          //   if (LEFT.length !== 0 && getMonthRange(XMJBXX.CJRQ).length !== 0) {
+          //     // 获取个人考勤信息 - 右侧信息
+          //     getCalendarData(
+          //       LEFT[0]?.RYID,
+          //       Number(getMonthRange(XMJBXX.CJRQ)[getMonthRange(XMJBXX.CJRQ).length - 1]),
+          //       Number(xmid),
+          //     );
+          //   }
+          // }
+        }
 
-      //   if (XMJBXX.XMBQ?.includes('迭代项目')) {
-      //     if (!XMJBXX.XMBQ?.includes('自研项目')) {
-      //       // 获取迭代项目付款记录
-      //       const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
-      //       if (paymentRecordData.success) {
-      //         let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
-      //         let yearArr = JSON.parse(paymentRecordData.nfxxResult);
-      //         let curYear = yearArr.find(x => Number(x.ID) === Number(xmid))?.NF;
-      //         setPrjData(p => ({
-      //           ...p,
-      //           paymentRecord: paymentRecordArr,
-      //           iterationYear: {
-      //             currentYear: curYear,
-      //             dropdown: yearArr,
-      //           },
-      //         }));
-      //       }
-      //     }
-      //   }
-      // }
-      //     //获取项目迭代内容
-      //     const iterationCtnPromise = QueryProjectUpdateInfo({
-      //       projectId: Number(xmid),
-      //     });
-      //     //获取迭代项目付款计划
-      //     const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
-      //     const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
-      //       iterationCtnPromise,
-      //       iterationPaymentPromise,
-      //     ]);
-      //     const iterationPaymentData = (await iterationPaymentRes) || {};
-      //     const iterationCtnData = (await iterationCtnRes) || {};
-      //     if (iterationCtnData.success) {
-      //       let iterationCtnArr = JSON.parse(iterationCtnData.result);
-      //       setPrjData(p => ({
-      //         ...p,
-      //         iterationCtn: iterationCtnArr,
-      //       }));
-      //     }
-      //     if (iterationPaymentData.success) {
-      //       setPrjData(p => ({
-      //         ...p,
-      //         iterationPayment: JSON.parse(iterationPaymentData.result),
-      //       }));
-      //     }
-      //   }
-      // }
+        if (XMJBXX.XMBQ?.includes('迭代项目')) {
+          if (!XMJBXX.XMBQ?.includes('自研项目')) {
+            // 获取迭代项目付款记录
+            const paymentRecordData = (await QueryIteProjPayRcd({ projectId: Number(xmid) })) || {};
+            if (paymentRecordData.success) {
+              let paymentRecordArr = JSON.parse(paymentRecordData.fkxxResult);
+              let yearArr = JSON.parse(paymentRecordData.nfxxResult);
+              let curYear = yearArr.find(x => Number(x.ID) === Number(xmid))?.NF;
+              setPrjData(p => ({
+                ...p,
+                paymentRecord: paymentRecordArr,
+                iterationYear: {
+                  currentYear: curYear,
+                  dropdown: yearArr,
+                },
+              }));
+            }
+          }
+
+          //获取项目迭代内容
+          const iterationCtnPromise = QueryProjectUpdateInfo({
+            projectId: Number(xmid),
+          });
+          //获取迭代项目付款计划
+          const iterationPaymentPromise = QueryIteProjPayPlan({ projectId: Number(xmid) });
+          const [iterationCtnRes, iterationPaymentRes] = await Promise.all([
+            iterationCtnPromise,
+            iterationPaymentPromise,
+          ]);
+          const iterationPaymentData = (await iterationPaymentRes) || {};
+          const iterationCtnData = (await iterationCtnRes) || {};
+          if (iterationCtnData.success) {
+            let iterationCtnArr = JSON.parse(iterationCtnData.result);
+            setPrjData(p => ({
+              ...p,
+              iterationCtn: iterationCtnArr,
+            }));
+          }
+          if (iterationPaymentData.success) {
+            setPrjData(p => ({
+              ...p,
+              iterationPayment: JSON.parse(iterationPaymentData.result),
+            }));
+          }
+        }
+      }
 
       // e = performance.now();
       // console.log(`Request time: ${e - s} milliseconds`, s, e);
@@ -988,7 +987,7 @@ export default function ProjectDetail(props) {
         />
         <div className="detail-row">
           <div className="col-left">
-            {/* {isDDXM && (
+            {isDDXM && (
               <IterationContent prjData={prjData} xmid={xmid} getIterationCtn={getIterationCtn} />
             )}
             {isDDXMFK && (
@@ -997,7 +996,7 @@ export default function ProjectDetail(props) {
                 xmid={xmid}
                 getIterationPayment={getIterationPayment}
               />
-            )}*/}
+            )}
             <MileStone
               xmid={xmid}
               prjData={prjData}
@@ -1039,20 +1038,20 @@ export default function ProjectDetail(props) {
               isLeader={isLeader}
               isBdgtMnger={isBdgtMnger}
             />
-            {/* {showKQXX && (
+            {showKQXX && (
               <AttendanceInfo
                 dataProps={{ prjData, xmid, daysData }}
                 funcProps={{ getCalendarData, getAttendanceData, setDaysData }}
               />
-            )} */}
+            )}
           </div>
           <div className="col-right">
-            {/* <ShortcutCard
+            <ShortcutCard
               prjData={prjData}
               xmid={xmid}
               ZYXMKQLX={ZYXMKQLX}
               funcProps={{ getPrjDtlData, setIsSpinning, handlePromiseAll }}
-            /> */}
+            />
             <PrjMember
               routes={routes}
               prjData={prjData}
@@ -1060,7 +1059,7 @@ export default function ProjectDetail(props) {
               getPrjDtlData={getPrjDtlData}
               isLeader={isLeader}
             />
-            {/* {isDDXM && <PaymentRecord prjData={prjData} />} */}
+            {isDDXM && <PaymentRecord prjData={prjData} />}
             <PrjNode prjData={prjData} />
             <PrjDoc
               prjDocData={prjDocData}
