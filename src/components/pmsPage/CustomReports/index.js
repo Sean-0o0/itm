@@ -134,7 +134,7 @@ export default function CustomReports(props) {
         cusRepDataKJBB={cusRepDataGX}
         // totalCJR={totalCJR}
         // totalKJBB={totalKJBB}
-        // tabsKey={tabsKey}
+        tabsKey={tabsKey}
       />
     </div>
   );

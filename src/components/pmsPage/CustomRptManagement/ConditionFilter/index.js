@@ -348,19 +348,6 @@ export default function ConditionFilter(props) {
             </Radio.Group>
           );
           break;
-          
-        case 'RADIO-XMZT':
-          component = (
-            <Radio.Group
-              value={SELECTORVALUE}
-              onChange={handleRadioChange}
-              className="item-component"
-            >
-              <Radio value={true}>正常</Radio>
-              <Radio value={false}>逾期</Radio>
-            </Radio.Group>
-          );
-          break;
         case 'SINGLE':
         case 'TREE-SINGLE':
 

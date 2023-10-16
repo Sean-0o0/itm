@@ -139,7 +139,6 @@ export default function RepInfos(props) {
         routes: [{name: '自定义报表', pathname: location.pathname}],
         bbid: i.BBID,
         bbmc: i.BBMC,
-        cjrid: i.CJRID,
       }),
     )}`
   }

@@ -13,7 +13,7 @@ import { Link } from 'react-router-dom';
 import * as XLSX from 'xlsx';
 
 export default function CustomRptInfo(props) {
-  const { bbid, bbmc, routes, cjrid } = props;
+  const { bbid, bbmc, routes } = props;
   const [data, setData] = useState({}); //通过报表id查询到的报表数据
   const [isUnfold, setIsUnfold] = useState(false); //是否展开
   const [tableData, setTableData] = useState({
@@ -121,7 +121,6 @@ export default function CustomRptInfo(props) {
     let filterData = JSON.parse(obj.QDZSSXZD);
     if (filterData.length > 0) {
       filterData.forEach(x => {
-        //TJBCXLX用于查询下拉框数据入参
         if (x.TJBCXLX) {
           QueryCustomQueryCriteria({
             queryType: x.TJBCXLX,
@@ -149,8 +148,6 @@ export default function CustomRptInfo(props) {
                   x.SELECTORDATA = buildTree(JSON.parse(res.result));
                 } else if (x.ZJLX === 'RADIO') {
                   // x.SELECTORVALUE = false;
-                } else if (x.ZJLX === 'RADIO-XMZT') {
-                  // x.SELECTORVALUE = false;
                 } else {
                   x.SELECTORDATA = JSON.parse(res.result);
                 }
@@ -177,26 +174,9 @@ export default function CustomRptInfo(props) {
               console.error('🚀', e);
               message.error(x.TJBCXLX + '信息获取失败', 1);
             });
-        } else {
-          //没有TJBCXLX的，比如金额输入框的
-          let finalObj = {
-            rptName: obj.BBMC,
-            authIds: obj.KJR?.split(';'),
-            columns,
-            filterData,
-            groupData: JSON.parse(obj.QDZSZHZD),
-            origin: {
-              columns: JSON.parse(obj.QDZSBTZD),
-              filterData: JSON.parse(obj.QDZSSXZD),
-              groupData: JSON.parse(obj.QDZSZHZD),
-            },
-          };
-          setData(finalObj);
-          getSQL({}, finalObj);
         }
       });
     } else {
-      //没有筛选条件的
       let finalObj = {
         rptName: obj.BBMC,
         authIds: obj.KJR?.split(';'),
@@ -257,25 +237,13 @@ export default function CustomRptInfo(props) {
           SXSJ = [x.SELECTORVALUE.min || 0, x.SELECTORVALUE.max || 9999999999];
           bmArr.push(x.BM);
         } else if (x.ZJLX === 'RADIO') {
-          //是否为父项目，暂时写死以下情况
+          //目前只有是否为父项目，暂时写死以下情况
           SXSJ = undefined;
           SXLX = 'ZHTJ';
           if (x.SELECTORVALUE) {
             SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) > 0';
           } else {
             SXTJ = '(SELECT COUNT(*) FROM TXMXX_XMXX WHERE GLFXM = XM.ID AND ZT != 0 ) <= 0';
-          }
-          bmArr.push(x.BM);
-        } else if (x.ZJLX === 'RADIO-XMZT') {
-          //项目状态，暂时写死以下情况
-          SXSJ = undefined;
-          SXLX = 'ZHTJ';
-          if (x.SELECTORVALUE) {
-            SXTJ =
-              '(SELECT COUNT(*) FROM TSMZQ_LCBZX WHERE ZT = 4 AND XGZT = 1 AND XMMC = XM.ID) = 0';
-          } else {
-            SXTJ =
-              '(SELECT COUNT(*) FROM TSMZQ_LCBZX WHERE ZT = 4 AND XGZT = 1 AND XMMC = XM.ID) > 0';
           }
           bmArr.push(x.BM);
         } else if (x.TJBCXLX === 'YSXM') {
@@ -381,47 +349,48 @@ export default function CustomRptInfo(props) {
       .then(res => {
         if (res?.success) {
           let LOGIN_USERID = Number(JSON.parse(sessionStorage.getItem('user'))?.id);
-          QueryUserRole({
-            userId: LOGIN_USERID,
-          }).then(res2 => {
-            if (res2.success) {
-              const isLeader = res2.role !== '普通人员';
-              const isBudgetMnger = res2.zyrole === '预算管理人'; //是否预算管理人
-              let exportData = JSON.parse(res.result);
-              console.log('exportData', exportData);
-              console.log('data.columns', data.columns);
-              let dataIndexArr = data.columns.map(item => item.dataIndex);
-              let finalArr = [];
-              exportData.forEach(obj => {
-                let temp = {};
-                dataIndexArr.forEach(dataIndex => {
-                  let title = data.columns.find(item => item.dataIndex === dataIndex)?.title;
-                  if (
-                    //金额类型
-                    ['XMYSJE', 'YSXMJE', 'HTJE', 'LVBZJ', 'TBBZJ', 'YFKFY', 'WFKFY'].includes(
-                      dataIndex,
-                    )
-                  ) {
-                    temp[title] =
-                      isLeader || LOGIN_USERID === Number(obj.XMJLID) || isBudgetMnger
-                        ? obj[dataIndex]
-                        : '***';
-                  } else {
-                    temp[title] = obj[dataIndex];
-                  }
-                  delete obj[dataIndex];
+          LOGIN_USERID &&
+            QueryUserRole({
+              userId: LOGIN_USERID,
+            }).then(res2 => {
+              if (res2.success) {
+                const isLeader = res2.role !== '普通人员';
+                const isBudgetMnger = res2.zyrole === '预算管理人'; //是否预算管理人
+                let exportData = JSON.parse(res.result);
+                console.log('exportData', exportData);
+                console.log('data.columns', data.columns);
+                let dataIndexArr = data.columns.map(item => item.dataIndex);
+                let finalArr = [];
+                exportData.forEach(obj => {
+                  let temp = {};
+                  dataIndexArr.forEach(dataIndex => {
+                    let title = data.columns.find(item => item.dataIndex === dataIndex)?.title;
+                    if (
+                      //金额类型
+                      ['XMYSJE', 'YSXMJE', 'HTJE', 'LVBZJ', 'TBBZJ', 'YFKFY', 'WFKFY'].includes(
+                        dataIndex,
+                      )
+                    ) {
+                      temp[title] =
+                        isLeader || LOGIN_USERID === Number(obj.XMJLID) || isBudgetMnger
+                          ? obj[dataIndex]
+                          : '***';
+                    } else {
+                      temp[title] = obj[dataIndex];
+                    }
+                    delete obj[dataIndex];
+                  });
+                  finalArr.push(temp);
                 });
-                finalArr.push(temp);
-              });
-              console.log('🚀 ~ file: index.js:321 ~ handleExport ~ finalArr:', finalArr);
-              //导出的顺序
-              let titleOrder = [];
-              data.columns.forEach(e => {
-                titleOrder.push(e.title);
-              });
-              exportExcelFile(finalArr, 'Sheet1', bbmc + '.xlsx');
-            }
-          });
+                console.log('🚀 ~ file: index.js:321 ~ handleExport ~ finalArr:', finalArr);
+                //导出的顺序
+                let titleOrder = [];
+                data.columns.forEach(e => {
+                  titleOrder.push(e.title);
+                });
+                exportExcelFile(finalArr, 'Sheet1', bbmc + '.xlsx');
+              }
+            });
         }
       })
       .catch(e => {
@@ -495,7 +464,6 @@ export default function CustomRptInfo(props) {
           routes={routes}
           bbid={bbid}
           setIsSpinning={setIsSpinning}
-          cjrid={cjrid}
         />
       </div>
     </div>
