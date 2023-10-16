@@ -229,6 +229,21 @@ export default function CustomRptManagement(props) {
                     console.error('🚀', e);
                     message.error(x.TJBCXLX + '信息获取失败', 1);
                   });
+              } else {
+                setSelectedData({
+                  conditionFilter: filterData,
+                  conditionGroup: JSON.parse(obj.QDZSZHZD),
+                  columnFields: JSON.parse(obj.QDZSBTZD),
+                });
+                setSelectedEditOrigin({
+                  conditionFilter: JSON.parse(JSON.stringify(filterData)),
+                  conditionGroup: JSON.parse(obj.QDZSZHZD),
+                  columnFields: JSON.parse(obj.QDZSBTZD),
+                });
+                setRptName(obj.BBMC);
+                setRptNameOrigin(obj.BBMC);
+                setStatus('editing');
+                setIsSpinning(false);
               }
             });
           } else {
