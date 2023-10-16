@@ -731,7 +731,8 @@ class ItemBtn extends React.Component {
         case '软件费用审批流程-无合同':
           return 'ZSZQ_RJGM';
         case '项目立项申请':
-          return ['ZSZQ_XMLXSQ', 'ZSZQ_XMLXSQXX', 'ZSZQ_XMLXSQZB'];
+          // return ['ZSZQ_XMLXSQ', 'ZSZQ_XMLXSQXX', 'ZSZQ_XMLXSQZB'];
+          return 'ZSZQ_XMLXSQ';
         case '软件合同签署流程':
           return 'ZSZQ_XXJSBRCHT';
         case '设备采购有合同':
