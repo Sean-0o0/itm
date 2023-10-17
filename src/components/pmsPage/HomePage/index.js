@@ -314,7 +314,14 @@ export default function HomePage(props) {
           setNoticeData([...sysNoticeResData.record]);
         }
         if (overviewResData1.success && overviewResData2.success) {
-          setOverviewInfo({ ...overviewResData1.result[0], ...overviewResData2.result[0] });
+          setOverviewInfo({
+            ...JSON.parse(overviewResData1.result)[0],
+            ...JSON.parse(overviewResData2.result)[0],
+          });
+          // console.log('🚀~ handlePromiseAll ~ OverviewInfo: ', {
+          //   ...JSON.parse(overviewResData1.result)[0],
+          //   ...JSON.parse(overviewResData2.result)[0],
+          // });
         }
         if (rptResData.success) {
           setCusRepDataWD(p => [...JSON.parse(rptResData.result)]);
