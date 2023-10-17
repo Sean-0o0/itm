@@ -327,7 +327,7 @@ class EditBidInfoModel extends React.Component {
             performanceBond: zbxxJson[0]?.lybzj,
           },
           tableData: arr,
-          tableDataSearch: arr,
+          tableDataSearch: [...arr],
           uploadFileParams: [...this.state.uploadFileParams, ...arrTemp2],
           fileList: [...this.state.fileList, ...arrTemp],
         });
