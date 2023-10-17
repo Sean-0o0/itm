@@ -12,6 +12,7 @@ import {
   FetchQueryOwnerProjectList,
   FetchQueryCustomReportList,
   QueryProjectTracking,
+  QueryProjectDraft,
 } from '../../../services/pmsServices';
 import CptBudgetCard from './CptBudgetCard';
 import GuideCard from './GuideCard';
@@ -76,8 +77,8 @@ export default function HomePage(props) {
   const [trackingData, setTrackingData] = useState([{ tableInfo: [] }]);
   const [isTrackingSpinning, setIsTrackingSpinning] = useState(false);
   const [showExtends, setShowExtends] = useState(false);
-  // var s = 0;
-  // var e = 0;
+  var s = 0;
+  var e = 0;
 
   //防抖定时器
   let timer = null;
@@ -107,7 +108,7 @@ export default function HomePage(props) {
 
   useEffect(() => {
     if (LOGIN_USER_INFO.id !== undefined) {
-      // s = performance.now();
+      s = performance.now();
       handlePromiseAll();
     }
     return () => {};
@@ -133,16 +134,20 @@ export default function HomePage(props) {
           year,
         });
         //项目信息
-        const prjPromise = QueryProjectGeneralInfo({
-          queryType: 'CG',
-          role: ROLE,
-          org: Number(LOGIN_USER_INFO.org),
-          paging: 1,
-          current: 1,
-          pageSize: 3,
-          total: -1,
-          sort: '',
-          year,
+        // const prjPromise = QueryProjectGeneralInfo({
+        //   queryType: 'CG',
+        //   role: ROLE,
+        //   org: Number(LOGIN_USER_INFO.org),
+        //   paging: 1,
+        //   current: 1,
+        //   pageSize: 3,
+        //   total: -1,
+        //   sort: '',
+        //   year,
+        // });
+        //项目信息
+        const prjPromise = QueryProjectDraft({
+          projectManager: Number(LOGIN_USER_INFO.id),
         });
         //获取待办、系统公告数据
         const todoPromise = FetchQueryOwnerMessage({
@@ -165,10 +170,17 @@ export default function HomePage(props) {
           sort: '',
         });
         //获取项目概览信息
-        const overviewPromise = QueryStagingOverviewInfo({
+        const overviewPromise1 = QueryStagingOverviewInfo({
           org: Number(LOGIN_USER_INFO.org),
           role: ROLE,
           year,
+          queryType: 'NR1',
+        });
+        const overviewPromise2 = QueryStagingOverviewInfo({
+          org: Number(LOGIN_USER_INFO.org),
+          role: ROLE,
+          year,
+          queryType: 'NR2',
         });
         //获取我的报表数据
         const rptPromise = FetchQueryCustomReportList({
@@ -195,7 +207,8 @@ export default function HomePage(props) {
           prjPromise,
           todoPromise,
           sysNoticePromise,
-          overviewPromise,
+          overviewPromise1,
+          overviewPromise2,
           rptPromise,
           trackingPromise,
           // processPromise,
@@ -237,13 +250,23 @@ export default function HomePage(props) {
           PROMISE.push(supplierPromise);
         }
         const RESULT = await Promise.all(PROMISE);
-        const [budgetRes, prjRes, todoRes, sysNoticeRes, overviewRes, rptRes, trackingRes] = RESULT;
+        const [
+          budgetRes,
+          prjRes,
+          todoRes,
+          sysNoticeRes,
+          overviewRes1,
+          overviewRes2,
+          rptRes,
+          trackingRes,
+        ] = RESULT;
 
         const budgetResData = (await budgetRes) || {};
         const prjResData = (await prjRes) || {};
         const todoResData = (await todoRes) || {};
         const sysNoticeResData = (await sysNoticeRes) || {};
-        const overviewResData = (await overviewRes) || {};
+        const overviewResData1 = (await overviewRes1) || {};
+        const overviewResData2 = (await overviewRes2) || {};
         const rptResData = (await rptRes) || {};
         const trackingResData = (await trackingRes) || {};
 
@@ -252,28 +275,29 @@ export default function HomePage(props) {
           setStatisticYearData(p => ({ ...p, dropdown: JSON.parse(budgetResData.ysqs) }));
         }
         if (prjResData.success) {
-          let arr = JSON.parse(prjResData.xmxx); //项目信息
-          arr?.forEach(item => {
-            let riskArr = []; //风险信息
-            let participantArr = []; //人员信息
-            JSON.parse(prjResData.fxxx).forEach(x => {
-              if (x.XMID === item.XMID) {
-                riskArr.push(x);
-              }
-            });
-            JSON.parse(prjResData.ryxx).forEach(x => {
-              if (x.XMID === item.XMID) {
-                participantArr.push(x);
-              }
-            });
-            item.riskData = [...riskArr];
-            item.participantData = [...participantArr];
-          });
+          let arr = JSON.parse(prjResData.result || '[]'); //项目草稿
+          // let arr = JSON.parse(prjResData.xmxx || '[]'); //项目信息
+          // arr?.forEach(item => {
+          //   let riskArr = []; //风险信息
+          //   let participantArr = []; //人员信息
+          //   JSON.parse(prjResData.fxxx || '[]').forEach(x => {
+          //     if (x.XMID === item.XMID) {
+          //       riskArr.push(x);
+          //     }
+          //   });
+          //   JSON.parse(prjResData.ryxx || '[]').forEach(x => {
+          //     if (x.XMID === item.XMID) {
+          //       participantArr.push(x);
+          //     }
+          //   });
+          //   item.riskData = [...riskArr];
+          //   item.participantData = [...participantArr];
+          // });
           setPrjInfo(p => [...arr]);
           setTotal(p => {
             return {
               ...p,
-              project: prjResData.totalrows,
+              project: arr.length,
             };
           });
         }
@@ -289,8 +313,8 @@ export default function HomePage(props) {
         if (sysNoticeResData.success) {
           setNoticeData([...sysNoticeResData.record]);
         }
-        if (overviewResData.success) {
-          setOverviewInfo(overviewResData.record[0]);
+        if (overviewResData1.success && overviewResData2.success) {
+          setOverviewInfo({ ...overviewResData1.result[0], ...overviewResData2.result[0] });
         }
         if (rptResData.success) {
           setCusRepDataWD(p => [...JSON.parse(rptResData.result)]);
@@ -309,7 +333,7 @@ export default function HomePage(props) {
           });
         }
         if (['二级部门领导', '普通人员'].includes(ROLE)) {
-          const processResData = (await RESULT[7]) || {};
+          const processResData = (await RESULT[8]) || {};
           if (processResData.success) {
             setProcessData(p => [...processResData.record]);
             setTotal(p => {
@@ -320,8 +344,8 @@ export default function HomePage(props) {
             });
           }
         } else {
-          const teamResData = (await RESULT[7]) || {};
-          const supplierResData = (await RESULT[8]) || {};
+          const teamResData = (await RESULT[8]) || {};
+          const supplierResData = (await RESULT[9]) || {};
           if (teamResData.success) {
             let arr = JSON.parse(teamResData.bmry).map(x => {
               return {
@@ -355,8 +379,8 @@ export default function HomePage(props) {
           }
         }
 
-        // e = performance.now();
-        // console.log(`Request time: ${e - s} milliseconds`, s, e);
+        e = performance.now();
+        console.log(`Request time: ${e - s} milliseconds`, s, e);
         setIsSpinning(false);
       }
     } catch (error) {
@@ -376,44 +400,48 @@ export default function HomePage(props) {
     handlePromiseAll(year);
   };
 
-  //项目信息 - 后续刷新数据
+  //项目草稿 - 后续刷新数据
   const getPrjInfo = (role, year = moment().year()) => {
     setIsSpinning(true);
-    QueryProjectGeneralInfo({
-      queryType: 'CG',
-      role,
-      org: Number(LOGIN_USER_INFO.org),
-      paging: 1,
-      current: 1,
-      pageSize: 3,
-      total: -1,
-      sort: '',
-      year,
+    // QueryProjectGeneralInfo({
+    //   queryType: 'CG',
+    //   role,
+    //   org: Number(LOGIN_USER_INFO.org),
+    //   paging: 1,
+    //   current: 1,
+    //   pageSize: 3,
+    //   total: -1,
+    //   sort: '',
+    //   year,
+    // })
+    QueryProjectDraft({
+      projectManager: Number(LOGIN_USER_INFO.id),
     })
       .then(res => {
         if (res?.success) {
-          let arr = JSON.parse(res?.xmxx); //项目信息
-          arr?.forEach(item => {
-            let riskArr = []; //风险信息
-            let participantArr = []; //人员信息
-            JSON.parse(res?.fxxx).forEach(x => {
-              if (x.XMID === item.XMID) {
-                riskArr.push(x);
-              }
-            });
-            JSON.parse(res?.ryxx).forEach(x => {
-              if (x.XMID === item.XMID) {
-                participantArr.push(x);
-              }
-            });
-            item.riskData = [...riskArr];
-            item.participantData = [...participantArr];
-          });
+          let arr = JSON.parse(res.result || '[]'); //项目草稿
+          // let arr = JSON.parse(res?.xmxx || '[]'); //项目信息
+          // arr?.forEach(item => {
+          //   let riskArr = []; //风险信息
+          //   let participantArr = []; //人员信息
+          //   JSON.parse(res?.fxxx || '[]').forEach(x => {
+          //     if (x.XMID === item.XMID) {
+          //       riskArr.push(x);
+          //     }
+          //   });
+          //   JSON.parse(res?.ryxx || '[]').forEach(x => {
+          //     if (x.XMID === item.XMID) {
+          //       participantArr.push(x);
+          //     }
+          //   });
+          //   item.riskData = [...riskArr];
+          //   item.participantData = [...participantArr];
+          // });
           setPrjInfo(p => [...arr]);
           setTotal(p => {
             return {
               ...p,
-              project: res.totalrows,
+              project: arr.length,
             };
           });
           setIsSpinning(false);

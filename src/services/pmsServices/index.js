@@ -144,6 +144,7 @@ const {
     queryLeadApprovalFlow,
     updatePaymentContract,
     queryIteContractList,
+    queryProjectDraft,
   },
 } = api;
 
@@ -1539,6 +1540,16 @@ export async function UpdatePaymentContract(payload) {
 export async function QueryIteContractList(payload) {
   const option = {
     url: queryIteContractList,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 查询项目草稿
+export async function QueryProjectDraft(payload) {
+  const option = {
+    url: queryProjectDraft,
     method: 'post',
     data: payload,
   };

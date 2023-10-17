@@ -10,12 +10,7 @@ const { TabPane } = Tabs;
 
 export default function AnalyzeRepsCard(props) {
   const { getCusRepData, stateProps = {} } = props;
-  const {
-    showExtendsWD,
-    totalWD,
-    cusRepDataWD,
-    isLoading,
-  } = stateProps;
+  const { showExtendsWD, totalWD, cusRepDataWD, isLoading } = stateProps;
   const location = useLocation();
 
   useEffect(() => {
@@ -82,18 +77,18 @@ export default function AnalyzeRepsCard(props) {
     <div className="custom-reports-box-homePage">
       {cusRepDataWD.length > 0 && (
         <div className="rep-infos">
-          <div className="rep-infos-title">
-            <div className="rep-infos-left">分析报表</div>
+          <div className="home-card-title-box">
+            <div className="txt">分析报表</div>
             <Link to={linkTo} style={{ display: 'contents' }}>
-              <div className="rep-infos-right">
+              <span className="rep-infos-right">
                 全部 <i className="iconfont icon-right" />
-              </div>
+              </span>
             </Link>
           </div>
           <div className="rep-infos-box">
             {cusRepDataWD.map(i => {
               return (
-                <div className="rep-infos-content" onClick={() => toDetail(i)}>
+                <div className="rep-infos-content" key={i.BBID} onClick={() => toDetail(i)}>
                   <div className="rep-infos-content-box">
                     <div className="rep-infos-name">
                       <i className="rep-infos-icon iconfont icon-report" />

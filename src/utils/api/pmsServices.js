@@ -817,4 +817,10 @@ export default [
     url: '/projectManage/queryIteContractList',
     dis: '查询迭代合同列表',
   },
+  {
+    code: '',
+    key: 'queryProjectDraft',
+    url: '/projectManage/queryProjectDraft',
+    dis: '查询项目草稿',
+  },
 ];

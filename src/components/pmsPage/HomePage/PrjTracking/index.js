@@ -148,6 +148,7 @@ export default function PrjTracking(props) {
                 getTrackingData({ ...params, projectType: Number(x.ibm) });
               }}
               id={x.ibm}
+              key={x.ibm}
               className="filter-box"
             >
               {x.note}
@@ -175,37 +176,39 @@ export default function PrjTracking(props) {
     <div className="prj-tracking-box-homePage">
       {
         <div className="prj-tracking-infos">
-          <div className="prj-tracking-infos-title">
-            <div className="prj-tracking-infos-left">
+          <div className="home-card-title-box">
+            <div className="txt">
               项目跟踪
-              <div className="prj-tracking-infos-left-select">
-                <Popover
-                  title={null}
-                  placement="bottom"
-                  trigger="click"
-                  visible={filterVisible}
-                  onVisibleChange={handleVisibleChange}
-                  getPopupContainer={triggerNode => triggerNode.parentNode}
-                  autoAdjustOverflow={true}
-                  content={getFilterDetail(XMGZSX)}
-                  overlayClassName="prj-tracking-filter-popover"
-                >
-                  <i className="iconfont icon-filter" />
-                  <div className="left-select-res">筛选：{filterResName}</div>
-                </Popover>
+              <div className="prj-tracking-infos-left">
+                <div className="prj-tracking-infos-left-select">
+                  <Popover
+                    title={null}
+                    placement="bottom"
+                    trigger="click"
+                    visible={filterVisible}
+                    onVisibleChange={handleVisibleChange}
+                    getPopupContainer={triggerNode => triggerNode.parentNode}
+                    autoAdjustOverflow={true}
+                    content={getFilterDetail(XMGZSX)}
+                    overlayClassName="prj-tracking-filter-popover"
+                  >
+                    <i className="iconfont icon-filter" />
+                    <div className="left-select-res">筛选：{filterResName}</div>
+                  </Popover>
+                </div>
               </div>
             </div>
             <Link to={linkTo} style={{ display: 'contents' }}>
-              <div className="prj-tracking-infos-right">
+              <span>
                 查看全部 <i className="iconfont icon-right" />
-              </div>
+              </span>
             </Link>
           </div>
           <div className="prj-tracking-infos-box">
             {trackingData?.length > 0 ? (
               trackingData?.map(i => {
                 return (
-                  <div className="prj-tracking-infos-content">
+                  <div className="prj-tracking-infos-content" key={i.XMID}>
                     <div className="prj-tracking-infos-content-box">
                       <Link
                         style={{ color: '#3361ff' }}
