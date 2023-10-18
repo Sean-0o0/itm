@@ -27,14 +27,14 @@ export default function PrjDoc(props) {
   let LOGIN_USER_INFO = JSON.parse(sessionStorage.getItem('user'));
   let LOGIN_USER_NAME = LOGIN_USER_INFO.name; //定义在方法外 或 使用const定义在方法内，均不会即时刷新数据
   let LOGIN_USER_ID = String(LOGIN_USER_INFO.id); //定义在方法外 或 使用const定义在方法内，均不会即时刷新数据
-  
+
   useEffect(() => {
     return () => {};
   }, []);
 
   //允许下载
   const allowDownload = () => {
-    const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []);
+    const arr = prjData.member?.reduce((acc, cur) => [...acc, String(cur.RYID)], []) || [];
     // console.log('🚀 ~ file: index.js:39 ~ allowDownload ~ arr:', arr, LOGIN_USER_ID, isLeader);
     return arr.includes(LOGIN_USER_ID) || isLeader;
   };

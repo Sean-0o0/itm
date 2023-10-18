@@ -107,7 +107,7 @@ export default function ProjectItems(props) {
         message.info('请先上传简历', 1);
         return;
       }
-      // console.log("🚀 ~ file: index.js:115 ~ handleZx ~ xqid:", xqid)
+      
       window.location.href = `/#/pms/manage/ResumeDistribution/${EncryptBase64(
         JSON.stringify({
           // JLXX: JLXX2,

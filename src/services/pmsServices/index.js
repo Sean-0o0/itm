@@ -145,6 +145,8 @@ const {
     updatePaymentContract,
     queryIteContractList,
     queryProjectDraft,
+    relIteContractFlow,
+    queryIteContractFlow,
   },
 } = api;
 
@@ -1550,6 +1552,26 @@ export async function QueryIteContractList(payload) {
 export async function QueryProjectDraft(payload) {
   const option = {
     url: queryProjectDraft,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 关联迭代合同
+export async function RelIteContractFlow(payload) {
+  const option = {
+    url: relIteContractFlow,
+    method: 'post',
+    data: payload,
+  };
+  return request(option);
+}
+
+// 关联迭代合同签署流程
+export async function QueryIteContractFlow(payload) {
+  const option = {
+    url: queryIteContractFlow,
     method: 'post',
     data: payload,
   };

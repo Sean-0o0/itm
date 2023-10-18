@@ -10,7 +10,17 @@ const { Item } = Breadcrumb;
 const { TabPane } = Tabs;
 
 export default function TopConsole(props) {
-  const { routes = [], dtlData = {}, xqid, getDtldata, isAuth, activeKey, setActiveKey } = props;
+  const {
+    routes = [],
+    dtlData = {},
+    xqid,
+    getDtldata,
+    isAuth,
+    activeKey,
+    setActiveKey,
+    setRouteArr,
+    fqrid,
+  } = props;
   const [sqModalUrl, setSqModalUrl] = useState('#'); //申请餐券/权限弹窗
   const [sqModalVisible, setSqModalVisible] = useState(false);
   const [sqModaltxt, setSqModaltxt] = useState('');
@@ -165,6 +175,16 @@ export default function TopConsole(props) {
     setActiveKey(key);
     getDtldata(key, XQXQ.filter(x => x.XQID === key)[0]?.LRRID);
     console.log('handleTabsChange', key);
+    let arr = JSON.parse(JSON.stringify([...routes]));
+    arr[arr.length - 1].pathname = `/pms/manage/DemandDetail/${EncryptBase64(
+      JSON.stringify({
+        xqid: key,
+        fqrid,
+        routes: arr.slice(0, arr.length),
+      }),
+    )}`;
+    // console.log("🚀 ~ file: index.js:186 ~ handleTabsChange ~ arr:", arr, xqid)
+    setRouteArr(arr);
   };
 
   //申请餐券/权限弹窗
